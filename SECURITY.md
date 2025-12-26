@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Any odin version after dev-2025, compiled using dev-2025-12:6130b87b
+Any python3 version after 3.13, uv and some dependencies like flask
 
 ## Reporting a Vulnerability
 
