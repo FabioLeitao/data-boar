@@ -1,6 +1,8 @@
 # python\_lgpd\_crowler
 
-Dashboard com capacidade de sondagem, apreciação e mapeamento dos dados pessoais e/ou sensíveis
+Dashboard com capacidade de sondagem, apreciação e mapeamento dos dados pessoais e/ou sensíveis para busca de violações de compliance de acordo com as recomendações do LGPD (adaptável mediante dicionário de regras)
+
+Web application that scans **databases** (for now) for compliance violations according to **LGPD** and other regulations. Implemented in Python3 with Flask for the backend and HTML/CSS/JavaScript for the frontend.
 
 
 ##### Implementation:
