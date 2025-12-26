@@ -2,7 +2,15 @@
 
 ## Supported Versions
 
-Any python3 version after 3.6 (tested on 3.13), uv, pip and some dependencies like flask
+Any Python3 version after 3.6 (tested on 3.13),... 
+
+* uv 
+* pip 
+* Flask
+* Flask-SQLAlchemy
+* ReportLab
+* Psycopg2 or MySQL Connector (depending on your database)
+* SQLite3
 
 ## Reporting a Vulnerability
 
