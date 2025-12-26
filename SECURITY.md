@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Any python3 version after 3.13, uv and some dependencies like flask
+Any python3 version after 3.6 (tested on 3.13), uv, pip and some dependencies like flask
 
 ## Reporting a Vulnerability
 
