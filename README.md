@@ -65,7 +65,7 @@ The application includes three main pages:
 
 1. Add More Compliance Requirements:
 
-* Add additional checks to the COMPLIANCE\_REQUIREMENTS dictionary
+* Add additional checks to the COMPLIANCE\_REQUIREMENTS dictionary (such as GDPR or CCPA) besides the current LGPD
 
 2. Implement Actual Database Scanning:
 
@@ -74,7 +74,7 @@ The application includes three main pages:
 
 3. Add More Data Types:
 
-* Expand the PersonalDataPattern class to include more patterns
+* Expand the PersonalDataPattern class to include more patterns (personal or sensitive data)
 * Add support for different languages and name formats
 * Add support for different data base engines, such as MS SQL, Oracle, etc
 * Add support for different data inputs types, such as DBF, CSV, XLS, XLSX, ODP, PMDX files
