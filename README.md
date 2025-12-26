@@ -5,25 +5,33 @@ Dashboard com capacidade de sondagem, apreciação e mapeamento dos dados pessoa
 
 ##### Implementation:
 
+###### Solution Overview
+
+1. **Dashboard** - Shows compliance status and scan results
+
+2. **Scanner** - Connects to databases and identifies sensitive data
+
+3. **Configuration** - Manages database connections and scan settings
+
 ###### Frontend 
 
 The application includes three main pages:
 
-1. Dashboard (index.html):
+1. **Dashboard** (index.html):
 
 * Shows compliance requirements and current status
 * Lists all configured databases
 * Shows recent scan results
 
-2. Configuration (config.html):
-
-* Form to add new database connections
-* List of existing configurations
-
-3. Scanning (scan.html):
+2. **Scanning** (scan.html):
 
 * Interface to start scans
 * Shows scan progress
+
+3. **Configuration** (config.html):
+
+* Form to add new database connections
+* List of existing configurations
 
 
 ##### TODO:
