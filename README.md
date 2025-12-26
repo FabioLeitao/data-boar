@@ -1,2 +1,75 @@
-# python_lgpd_crowler
-Dashboard com capacidade de sondagem, apreciação e mapeamento dos dados pessoais e/ou sensíveis 
+# python\_lgpd\_crowler
+
+Dashboard com capacidade de sondagem, apreciação e mapeamento dos dados pessoais e/ou sensíveis
+
+
+##### Implementation:
+
+###### Frontend 
+
+The application includes three main pages:
+
+1. Dashboard (index.html):
+
+* Shows compliance requirements and current status
+* Lists all configured databases
+* Shows recent scan results
+
+2. Configuration (config.html):
+
+* Form to add new database connections
+* List of existing configurations
+
+3. Scanning (scan.html):
+
+* Interface to start scans
+* Shows scan progress
+
+
+##### TODO:
+
+###### Key goals!
+
+1. Database Connection Management:
+
+* Supports PostgreSQL and MySQL
+* Stores configuration securely
+
+2. Compliance Checking:
+
+* Checks for common compliance requirements
+* Identifies sensitive data patterns (email, phone, CPF, etc.)
+
+3. Reporting:
+
+* Generates detailed PDF reports
+* Summarizes findings and compliance status
+
+4. User-Friendly Interface:
+
+* Clean dashboard showing scan history
+* Progress tracking for ongoing scans
+* Easy configuration management
+
+###### How to Extend This Solution?
+
+1. Add More Compliance Requirements:
+
+* Add additional checks to the COMPLIANCE\_REQUIREMENTS dictionary
+
+2. Implement Actual Database Scanning:
+
+* Connect to real databases using the get\_db\_connection function
+* Scan tables for sensitive data patterns
+
+3. Add More Data Types:
+
+* Expand the PersonalDataPattern class to include more patterns
+* Add support for different languages and name formats
+* Add support for different data base engines, such as MS SQL, Oracle, etc
+* Add support for different data inputs types, such as DBF, CSV, XLS, XLSX, ODP, PMDX files
+
+4. Enhance Reporting:
+
+* Add more detailed statistics to reports
+* Include database schema diagrams
