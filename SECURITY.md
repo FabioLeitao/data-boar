@@ -18,7 +18,6 @@ Any Python3 version after 3.6 (tested on 3.13),...
 2. uv venv
 3. source .venv/bin/activate
 4. uv self update
-5. uv install pip
 6. uv pip install setuptools
 7. uv pip install flask
 8. uv pip install flask_sqlalchemy
