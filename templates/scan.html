@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDPR Compliance Scanner</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --secondary: #4285f4;
+            --success: #0f9d58;
+            --warning: #f9ab00;
+            --danger: #db4437;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 4rem 0;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: none;
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+        }
+        
+        .progress {
+            height: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-compliant {
+            background-color: rgba(15, 157, 88, 0.15);
+            color: var(--success);
+        }
+        
+        .status-pending {
+            background-color: rgba(255, 152, 0, 0.15);
+            color: var(--warning);
+        }
+        
+        .status-non-compliant {
+            background-color: rgba(219, 68, 55, 0.15);
+            color: var(--danger);
+        }
+        
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(26, 115, 232, 0.1);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .scan-container {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .scan-progress {
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .scan-progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .result-item {
+            border-left: 3px solid transparent;
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .result-item.compliant {
+            border-left-color: var(--success);
+        }
+        
+        .result-item.pending {
+            border-left-color: var(--warning);
+        }
+        
+        .result-item.non-compliant {
+            border-left-color: var(--danger);
+        }
+        
+        .result-item h6 {
+            font-weight: 600;
+        }
+        
+        .recommendation {
+            background-color: rgba(249, 171, 0, 0.1);
+            border-left: 3px solid var(--warning);
+            padding: 10px 15px;
+            margin-top: 10px;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .compliance-score {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 20px 0;
+        }
+        
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(var(--success) 0% 85%, transparent 85% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            border: 8px solid white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 40px 0;
+            margin-top: 60px;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 2rem 0;
+            }
+            
+            .compliance-score {
+                font-size: 2.5rem;
+            }
+            
+            .score-circle {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .score-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="fas fa-shield-alt text-primary me-2"></i>
+                GDPR Compliance Scanner
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Scan Website</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Reports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Resources</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-4">GDPR Compliance Scanner</h1>
+            <p class="lead mb-5">Identify and fix potential GDPR violations on your website in minutes</p>
+            <a href="#" class="btn btn-light btn-lg px-5 py-3 fw-bold">Start Compliance Scan <i class="fas fa-arrow-right ms-2"></i></a>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container mb-5">
+        <!-- Compliance Score -->
+        <div class="row mb-5">
+            <div class="col-lg-8 mx-auto">
+                <div class="text-center mb-4">
+                    <h2>Your GDPR Compliance Score</h2>
+                    <p class="text-muted">Based on our comprehensive analysis</p>
+                </div>
+                
+                <div class="d-flex justify-content-center align-items-center mb-4">
+                    <div class="score-circle">
+                        <div class="score-value">85%</div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-center align-items-center mb-4">
+                    <div class="progress-container" style="width: 300px;">
+                        <div class="scan-progress">
+                            <div class="scan-progress-bar" style="width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row text-center mb-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="status-badge status-compliant">Compliant</div>
+                        <small class="text-muted">Personal Data</small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="status-badge status-pending">Pending</div>
+                        <small class="text-muted">Consent Mechanisms</small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="status-badge status-non-compliant">Non-Compliant</div>
+                        <small class="text-muted">Data Retention</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scan Interface -->
+        <div class="row">
+            <div class="col-lg-8 mb-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-search me-2"></i>Scan Your Website</h5>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary" id="rescanBtn">
+                                <i class="fas fa-redo"></i> Rescan
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="scan-container">
+                            <form id="scanForm">
+                                <div class="mb-4">
+                                    <label for="websiteUrl" class="form-label">Website URL</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                                        <input type="url" class="form-control" id="websiteUrl" placeholder="https://example.com" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="scanType" class="form-label">Scan Type</label>
+                                    <select class="form-select" id="scanType">
+                                        <option value="basic">Basic GDPR Check</option>
+                                        <option value="comprehensive">Comprehensive Audit</option>
+                                        <option value="deep">Deep Technical Scan</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">Additional Settings</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="checkCookies">
+                                        <label class="form-check-label" for="checkCookies">
+                                            Check for Cookie Compliance
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="checkAnalytics">
+                                        <label class="form-check-label" for="checkAnalytics">
+                                            Analyze Analytics Scripts
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="checkThirdParty">
+                                        <label class="form-check-label" for="checkThirdParty">
+                                            Check Third-Party Services
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-cogs me-2"></i> Start Scan
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Scans -->
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Scans</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item border-0">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-0">example.com</h6>
+                                    <span class="badge bg-success">Completed</span>
+                                </div>
+                                <small class="text-muted">Today, 10:30 AM</small>
+                            </li>
+                            <li class="list-group-item border-0">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-0">mybusiness.org</h6>
+                                    <span class="badge bg-warning">In Progress</span>
+                                </div>
+                                <small class="text-muted">Yesterday, 3:15 PM</small>
+                            </li>
+                            <li class="list-group-item border-0">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-0">blogspot-test.com</h6>
+                                    <span class="badge bg-info">Scheduled</span>
+                                </div>
+                                <small class="text-muted">May 12, 2023</small>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Compliance Tips -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>GDPR Compliance Tips</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-success d-flex align-items-center" role="alert">
+                            <i class="fas fa-check-circle me-2 fa-lg"></i>
+                            <div>
+                                <h6 class="alert-heading">Cookie Consent Banner</h6>
+                                <p class="mb-0">Ensure your website has a clear cookie consent banner with options for different types of cookies.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <i class="fas fa-exclamation-circle me-2 fa-lg"></i>
+                            <div>
+                                <h6 class="alert-heading">Data Retention Policy</h6>
+                                <p class="mb-0">Review your data retention policies to ensure personal data is not kept longer than necessary.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info d-flex align-items-center" role="alert">
+                            <i class="fas fa-info-circle me-2 fa-lg"></i>
+                            <div>
+                                <h6 class="alert-heading">Data Subject Rights</h6>
+                                <p class="mb-0">Make sure you have processes in place to handle data subject access requests (DSARs).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="container mt-5 mb-5">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>Scan Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <h6 class="mb-3">Personal Data Analysis</h6>
+                            <div class="result-item compliant">
+                                <h6><i class="fas fa-check-circle text-success me-2"></i>Found 3 email addresses</h6>
+                                <p class="mb-1">Your website appears to handle personal data appropriately.</p>
+                                <div class="recommendation">
+                                    <i class="fas fa-lightbulb text-warning"></i> Ensure you have a lawful basis for processing this data.
+                                </div>
+                            </div>
+                            
+                            <div class="result-item compliant">
+                                <h6><i class="fas fa-check-circle text-success me-2"></i>No social security numbers found</h6>
+                                <p class="mb-1">Good practice detected. Avoid storing sensitive personal data.</p>
+                            </div>
+                            
+                            <div class="result-item non-compliant">
+                                <h6><i class="fas fa-times-circle text-danger me-2"></i>Found 5 Google Analytics scripts</h6>
+                                <p class="mb-1">Potential GDPR issue detected. Ensure proper consent for analytics tracking.</p>
+                                <div class="recommendation">
+                                    <i class="fas fa-lightbulb text-warning"></i> Implement a cookie consent banner and update your privacy policy.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h6 class="mb-3">Consent Mechanism Analysis</h6>
+                            <div class="result-item non-compliant">
+                                <h6><i class="fas fa-times-circle text-danger me-2"></i>No clear consent mechanism found</h6>
+                                <p class="mb-1">Your website does not have a visible way for users to consent to data collection.</p>
+                                <div class="recommendation">
+                                    <i class="fas fa-lightbulb text-warning"></i> Add a cookie consent banner with options for different cookie types.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h6 class="mb-3">Third-Party Compliance</h6>
+                            <div class="result-item non-compliant">
+                                <h6><i class="fas fa-times-circle text-danger me-2"></i>Detected 2 third-party services with unknown compliance</h6>
+                                <p class="mb-1">Services like Facebook Pixel and Twitter widgets may require additional GDPR considerations.</p>
+                                <div class="recommendation">
+                                    <i class="fas fa-lightbulb text-warning"></i> Review the GDPR compliance of third-party services and update your privacy policy.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-download me-2"></i> Download Full Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>GDPR Compliance Scanner</h5>
+                    <p>Identify and fix potential GDPR violations on your website with our comprehensive scanning tool.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>© 2023 GDPR Compliance. All rights reserved.</p>
+                    <div>
+                        <a href="#" class="text-decoration-none me-3">Privacy Policy</a>
+                        <a href="#" class="text-decoration-none me-3">Terms of Service</a>
+                        <a href="#" class="text-decoration-none">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Form submission handling
+        document.getElementById('scanForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const websiteUrl = document.getElementById('websiteUrl').value;
+            const scanType = document.getElementById('scanType').value;
+            
+            // Show loading state
+            const submitButton = document.querySelector('button[type="submit"]');
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Scanning...';
+            submitButton.disabled = true;
+            
+            // Simulate scan process
+            setTimeout(function() {
+                // Reset button
+                submitButton.innerHTML = '<i class="fas fa-cogs me-2"></i> Start Scan';
+                submitButton.disabled = false;
+                
+                // Show success message and redirect to results
+                alert('Scan completed successfully! View results in the Results section.');
+                // In a real application, we would navigate to the results page
+                // window.location.href = 'results.html';
+            }, 3000);
+        });
+        
+        // Rescan button functionality
+        document.getElementById('rescanBtn').addEventListener('click', function() {
+            alert('This would trigger a new scan. In a real application, this would start a fresh scan of the website.');
+        });
+    </script>
+</body>
+</html>
+
