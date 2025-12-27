@@ -15,7 +15,7 @@ Any Python3 version after 3.6 (tested on 3.13),...
 #### Prereqs
 
 1. sudo apt -y install libsqlcipher-dev libsqlclient-dev libsqlite3-dev sqlite3 sqlite3-tools mariadb-plugin-connect python3-mariadb-connector dbconfig-mysql
-2. sudo apt -y install libmariadbd-dev libmariadb-dev
+2. sudo apt -y install libmariadbd-dev libmariadb-dev python3-dev
 3. uv venv
 4. source .venv/bin/activate
 5. uv self update
