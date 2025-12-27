@@ -1,4 +1,4 @@
-# python\_lgpd\_crowler
+# python\_lgpd\_crawler
 
 Dashboard com capacidade de sondagem, apreciação e mapeamento dos dados pessoais e/ou sensíveis para busca de violações de compliance de acordo com as recomendações do LGPD (adaptável mediante dicionário de regras)
 
