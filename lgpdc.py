@@ -26,10 +26,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-def init_db():
-    with app.app_context():
-        db.create_all()
-
 # Database Models
 class DatabaseConfig(db.Model):
     __tablename__ = 'database_configs'
@@ -267,6 +263,7 @@ def download_report(scan_id):
     return send_file(scan.report_file, as_attachment=True)
 
 if __name__ == '__main__':
-    init_db()
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
 
