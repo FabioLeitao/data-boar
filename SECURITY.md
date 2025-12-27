@@ -14,13 +14,14 @@ Any Python3 version after 3.6 (tested on 3.13),...
 
 #### Prereqs
 
-1. sudo apt install libsqlcipher-dev libsqlclient-dev libsqlite3-dev sqlite3 sqlite3-tools mariadb-plugin-connect python3-mariadb-connector dbconfig-mysql
-2. uv venv
-3. source .venv/bin/activate
-4. uv self update
-5. uv add -r requirements.txt
-6. uv sync
-7. uv run ./lgpdc.py
+1. sudo apt -y install libsqlcipher-dev libsqlclient-dev libsqlite3-dev sqlite3 sqlite3-tools mariadb-plugin-connect python3-mariadb-connector dbconfig-mysql
+2. sudo apt -y install libmariadbd-dev libmariadb-dev
+3. uv venv
+4. source .venv/bin/activate
+5. uv self update
+6. uv add -r requirements.txt
+7. uv sync
+8. uv run ./lgpdc.py
 
 
 ## Reporting a Vulnerability
