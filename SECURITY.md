@@ -18,6 +18,7 @@ Any Python3 version after 3.6 (tested on 3.13),...
 2. uv venv
 3. source .venv/bin/activate
 4. uv self update
+5. uv add -r requirements.txt
 6. uv sync
 7. uv run ./lgpdc.py
 
