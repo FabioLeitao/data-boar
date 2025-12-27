@@ -1,0 +1,321 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "serialNumber": "urn:uuid:7543b3c7-a8ae-49cd-8169-e645ef348c63",
+  "metadata": {
+    "timestamp": "2025-12-27T01:40:36.485532560Z",
+    "tools": [
+      {
+        "vendor": "Astral Software Inc.",
+        "name": "uv",
+        "version": "0.9.18"
+      }
+    ],
+    "component": {
+      "type": "library",
+      "bom-ref": "python3-lgpd-crawler-1@0.1.0",
+      "name": "python3-lgpd-crawler",
+      "version": "0.1.0"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "blinker-2@1.9.0",
+      "name": "blinker",
+      "version": "1.9.0",
+      "purl": "pkg:pypi/blinker@1.9.0"
+    },
+    {
+      "type": "library",
+      "bom-ref": "cffi-3@2.0.0",
+      "name": "cffi",
+      "version": "2.0.0",
+      "purl": "pkg:pypi/cffi@2.0.0",
+      "properties": [
+        {
+          "name": "uv:package:marker",
+          "value": "platform_python_implementation != 'PyPy'"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "charset-normalizer-4@3.4.4",
+      "name": "charset-normalizer",
+      "version": "3.4.4",
+      "purl": "pkg:pypi/charset-normalizer@3.4.4"
+    },
+    {
+      "type": "library",
+      "bom-ref": "click-5@8.3.1",
+      "name": "click",
+      "version": "8.3.1",
+      "purl": "pkg:pypi/click@8.3.1"
+    },
+    {
+      "type": "library",
+      "bom-ref": "colorama-6@0.4.6",
+      "name": "colorama",
+      "version": "0.4.6",
+      "purl": "pkg:pypi/colorama@0.4.6",
+      "properties": [
+        {
+          "name": "uv:package:marker",
+          "value": "sys_platform == 'win32'"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "cryptography-7@46.0.3",
+      "name": "cryptography",
+      "version": "46.0.3",
+      "purl": "pkg:pypi/cryptography@46.0.3"
+    },
+    {
+      "type": "library",
+      "bom-ref": "flask-8@3.1.2",
+      "name": "flask",
+      "version": "3.1.2",
+      "purl": "pkg:pypi/flask@3.1.2"
+    },
+    {
+      "type": "library",
+      "bom-ref": "flask-sqlalchemy-9@3.1.1",
+      "name": "flask-sqlalchemy",
+      "version": "3.1.1",
+      "purl": "pkg:pypi/flask-sqlalchemy@3.1.1"
+    },
+    {
+      "type": "library",
+      "bom-ref": "greenlet-10@3.3.0",
+      "name": "greenlet",
+      "version": "3.3.0",
+      "purl": "pkg:pypi/greenlet@3.3.0",
+      "properties": [
+        {
+          "name": "uv:package:marker",
+          "value": "platform_machine == 'AMD64' or platform_machine == 'WIN32' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'ppc64le' or platform_machine == 'win32' or platform_machine == 'x86_64'"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "itsdangerous-11@2.2.0",
+      "name": "itsdangerous",
+      "version": "2.2.0",
+      "purl": "pkg:pypi/itsdangerous@2.2.0"
+    },
+    {
+      "type": "library",
+      "bom-ref": "jinja2-12@3.1.6",
+      "name": "jinja2",
+      "version": "3.1.6",
+      "purl": "pkg:pypi/jinja2@3.1.6"
+    },
+    {
+      "type": "library",
+      "bom-ref": "markupsafe-13@3.0.3",
+      "name": "markupsafe",
+      "version": "3.0.3",
+      "purl": "pkg:pypi/markupsafe@3.0.3"
+    },
+    {
+      "type": "library",
+      "bom-ref": "oracledb-14@3.4.1",
+      "name": "oracledb",
+      "version": "3.4.1",
+      "purl": "pkg:pypi/oracledb@3.4.1"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pillow-15@12.0.0",
+      "name": "pillow",
+      "version": "12.0.0",
+      "purl": "pkg:pypi/pillow@12.0.0"
+    },
+    {
+      "type": "library",
+      "bom-ref": "psycopg2-binary-16@2.9.11",
+      "name": "psycopg2-binary",
+      "version": "2.9.11",
+      "purl": "pkg:pypi/psycopg2-binary@2.9.11"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pycparser-17@2.23",
+      "name": "pycparser",
+      "version": "2.23",
+      "purl": "pkg:pypi/pycparser@2.23",
+      "properties": [
+        {
+          "name": "uv:package:marker",
+          "value": "implementation_name != 'PyPy' and platform_python_implementation != 'PyPy'"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "reportlab-18@4.4.7",
+      "name": "reportlab",
+      "version": "4.4.7",
+      "purl": "pkg:pypi/reportlab@4.4.7"
+    },
+    {
+      "type": "library",
+      "bom-ref": "setuptools-19@80.9.0",
+      "name": "setuptools",
+      "version": "80.9.0",
+      "purl": "pkg:pypi/setuptools@80.9.0"
+    },
+    {
+      "type": "library",
+      "bom-ref": "sqlalchemy-20@2.0.45",
+      "name": "sqlalchemy",
+      "version": "2.0.45",
+      "purl": "pkg:pypi/sqlalchemy@2.0.45"
+    },
+    {
+      "type": "library",
+      "bom-ref": "typing-extensions-21@4.15.0",
+      "name": "typing-extensions",
+      "version": "4.15.0",
+      "purl": "pkg:pypi/typing-extensions@4.15.0"
+    },
+    {
+      "type": "library",
+      "bom-ref": "werkzeug-22@3.1.4",
+      "name": "werkzeug",
+      "version": "3.1.4",
+      "purl": "pkg:pypi/werkzeug@3.1.4"
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "blinker-2@1.9.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "cffi-3@2.0.0",
+      "dependsOn": [
+        "pycparser-17@2.23"
+      ]
+    },
+    {
+      "ref": "charset-normalizer-4@3.4.4",
+      "dependsOn": []
+    },
+    {
+      "ref": "click-5@8.3.1",
+      "dependsOn": [
+        "colorama-6@0.4.6"
+      ]
+    },
+    {
+      "ref": "colorama-6@0.4.6",
+      "dependsOn": []
+    },
+    {
+      "ref": "cryptography-7@46.0.3",
+      "dependsOn": [
+        "cffi-3@2.0.0"
+      ]
+    },
+    {
+      "ref": "flask-8@3.1.2",
+      "dependsOn": [
+        "blinker-2@1.9.0",
+        "click-5@8.3.1",
+        "itsdangerous-11@2.2.0",
+        "jinja2-12@3.1.6",
+        "markupsafe-13@3.0.3",
+        "werkzeug-22@3.1.4"
+      ]
+    },
+    {
+      "ref": "flask-sqlalchemy-9@3.1.1",
+      "dependsOn": [
+        "flask-8@3.1.2",
+        "sqlalchemy-20@2.0.45"
+      ]
+    },
+    {
+      "ref": "greenlet-10@3.3.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "itsdangerous-11@2.2.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "jinja2-12@3.1.6",
+      "dependsOn": [
+        "markupsafe-13@3.0.3"
+      ]
+    },
+    {
+      "ref": "markupsafe-13@3.0.3",
+      "dependsOn": []
+    },
+    {
+      "ref": "oracledb-14@3.4.1",
+      "dependsOn": [
+        "cryptography-7@46.0.3",
+        "typing-extensions-21@4.15.0"
+      ]
+    },
+    {
+      "ref": "pillow-15@12.0.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "psycopg2-binary-16@2.9.11",
+      "dependsOn": []
+    },
+    {
+      "ref": "pycparser-17@2.23",
+      "dependsOn": []
+    },
+    {
+      "ref": "python3-lgpd-crawler-1@0.1.0",
+      "dependsOn": [
+        "flask-8@3.1.2",
+        "flask-sqlalchemy-9@3.1.1",
+        "oracledb-14@3.4.1",
+        "psycopg2-binary-16@2.9.11",
+        "reportlab-18@4.4.7",
+        "setuptools-19@80.9.0"
+      ]
+    },
+    {
+      "ref": "reportlab-18@4.4.7",
+      "dependsOn": [
+        "charset-normalizer-4@3.4.4",
+        "pillow-15@12.0.0"
+      ]
+    },
+    {
+      "ref": "setuptools-19@80.9.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "sqlalchemy-20@2.0.45",
+      "dependsOn": [
+        "greenlet-10@3.3.0",
+        "typing-extensions-21@4.15.0"
+      ]
+    },
+    {
+      "ref": "typing-extensions-21@4.15.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "werkzeug-22@3.1.4",
+      "dependsOn": [
+        "markupsafe-13@3.0.3"
+      ]
+    }
+  ]
+}
