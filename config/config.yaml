@@ -1,0 +1,18 @@
+# Configuração de bancos de dados
+databases:
+  - name: "Banco1"
+    host: "192.168.1.10"
+    port: 3306
+    user: "usuario1"
+    password: "senha123"
+    dbname: "db1"
+    engine: "mysql"  # ou "postgresql"
+
+  - name: "Banco2"
+    host: "10.0.0.20"
+    port: 5432
+    user: "usuario2"
+    password: "senha456"
+    dbname: "db2"
+    engine: "postgresql"
+

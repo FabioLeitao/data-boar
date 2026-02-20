@@ -1,7 +1,7 @@
 import json
 import yaml
 from sqlalchemy import create_engine
-from sqlalchemy.inspector import Inspector
+from sqlalchemy import Inspector
 from concurrent.futures import ThreadPoolExecutor
 import re
 from typing import Dict, List, Optional
