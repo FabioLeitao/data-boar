@@ -1,0 +1,31 @@
+{
+  "databases": [
+    {
+      "name": "Banco de Clientes",
+      "host": "192.168.1.10",
+      "port": 3306,
+      "user": "db_user",
+      "password": "db_pass_secure",  // ⚠️ **Nunca armazenar senhas em texto plano!**
+      "database": "clientes",
+      "dialect": "mysql",
+      "version": "8.0",
+      "timeout": 10
+    },
+    {
+      "name": "Banco de Transações",
+      "host": "10.0.0.20",
+      "port": 5432,
+      "user": "db_user",
+      "password": "db_pass_secure",
+      "database": "transacoes",
+      "dialect": "postgresql",
+      "version": "15"
+    }
+  ],
+  "regulations": {
+    "lgpd": ["CPF", "RG", "Nome Completo", "Endereço", "Data Nascimento", "Email", "Telefone"],
+    "gdpr": ["Personal Data", "IP Address", "Location Data", "Biometric Data"],
+    "ccpa": ["Do Not Sell My Personal Information", "Personal Information"]
+  }
+}
+
