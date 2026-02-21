@@ -1,4 +1,5 @@
 asyncio
+cryptography>=46.0.5
 fastapi>=0.95.0
 flask>=3.0.0           # API (opcional)
 matplotlib>=3.8.2
