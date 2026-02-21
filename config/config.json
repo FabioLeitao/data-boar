@@ -1,0 +1,28 @@
+{
+    "databases": [
+        {
+            "name": "postgres",
+            "host": "192.168.1.100",
+            "port": 5432,
+            "user": "admin",
+            "password": "senha123",
+            "database": "banco_dados"
+        },
+        {
+            "name": "mysql",
+            "host": "192.168.1.101",
+            "port": 3306,
+            "user": "root",
+            "password": "senha456",
+            "database": "banco_dados"
+        }
+    ],
+    "file_scan": {
+        "directories": [
+            "/home/user/documents",
+            "/mnt/backup"
+        ],
+        "extensions": ["*.pdf", "*.csv", "*.xlsx"]
+    }
+}
+
