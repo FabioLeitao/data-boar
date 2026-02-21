@@ -2,6 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from typing import Dict, Any
 
+
 def get_db_connection(config: Dict[str, Any]) -> Any:
     """Cria conexão com banco de dados usando SQLAlchemy."""
     engine = create_engine(
@@ -11,8 +12,7 @@ def get_db_connection(config: Dict[str, Any]) -> Any:
             password=config["password"],
             host=config["host"],
             port=config["port"],
-            database=config["database"]
+            database=config["database"],
         )
     )
     return engine
-

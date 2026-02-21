@@ -8,6 +8,7 @@ from file_scan.text_extractor import detect_sensitive_data
 from report.sqlite_reporter import create_sqlite_report
 from logging_custom.logger import setup_logging, notify_violation
 
+
 def main():
     with open("config/config.json") as f:
         config = json.load(f)
@@ -30,7 +31,7 @@ def main():
                             notify_violation(data)
                             create_sqlite_report(data)
 
+
 if __name__ == "__main__":
     setup_logging({"log_level": "INFO"})
     main()
-

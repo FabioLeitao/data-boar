@@ -1,5 +1,6 @@
 import re
 
+
 class RegexPatterns:
     CPF = r"^\d{3}\.\d{3}\.\d{3}-\d{2}$"  # CPF brasileiro
     RG = r"^\d{2}\.\d{3}\.\d{3}-\d{1}$"  # RG brasileiro
@@ -26,4 +27,3 @@ class RegexPatterns:
         elif tipo == "DATA_NASCIMENTO":
             return re.match(cls.DATA_NASCIMENTO, dado)
         return None
-

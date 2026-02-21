@@ -1,11 +1,12 @@
 import logging
 
+
 class Logger:
     def __init__(self):
         self.logger = logging.getLogger("DataScanner")
         self.logger.setLevel(logging.INFO)
         handler = logging.FileHandler("scanner.log")
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
 
@@ -14,4 +15,3 @@ class Logger:
             self.logger.info(message)
         elif level == "error":
             self.logger.error(message)
-

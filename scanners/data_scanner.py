@@ -3,6 +3,7 @@ from utils.regex_patterns import RegexPatterns
 from utils.ml_classifier import MLClassifier
 from scanner.db_connector import DBConnector
 
+
 class DataScanner:
     def __init__(self, db_connector):
         self.db_connector = db_connector
@@ -11,12 +12,16 @@ class DataScanner:
 
     def validar_dado(self, dado, tipo):
         regex_result = self.regex_patterns.validar_dado(dado, tipo)
-        ml_result = self.ml_classifier.prever(dado) if tipo in ["CPF", "RG", "EMAIL", "DATA_NASCIMENTO"] else None
+        ml_result = (
+            self.ml_classifier.prever(dado)
+            if tipo in ["CPF", "RG", "EMAIL", "DATA_NASCIMENTO"]
+            else None
+        )
         return {
             "tipo": tipo,
             "valor": dado,
             "regex_match": bool(regex_result),
-            "ml_classification": ml_result
+            "ml_classification": ml_result,
         }
 
     def scan(self):
@@ -32,7 +37,14 @@ class DataScanner:
 
     def simular_consulta(self, db_name):
         # Simulação de consulta SQL (exemplo)
-        return [{"CPF": "123.456.789-00", "Email": "usuario@example.com", "RG": "12.345.678-9", "DataNascimento": "01/01/2000"}]
+        return [
+            {
+                "CPF": "123.456.789-00",
+                "Email": "usuario@example.com",
+                "RG": "12.345.678-9",
+                "DataNascimento": "01/01/2000",
+            }
+        ]
 
     def determinar_tipo_dado(self, coluna):
         # Lógica para identificar tipo de dado (ex: "CPF", "Email", etc.)
@@ -45,4 +57,3 @@ class DataScanner:
         elif "data" in coluna.lower():
             return "DATA_NASCIMENTO"
         return "GERAL"
-

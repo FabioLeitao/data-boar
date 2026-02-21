@@ -1,6 +1,7 @@
 import sqlite3
 from typing import List, Dict
 
+
 def create_sqlite_report(data: List[Dict]) -> None:
     """Cria banco SQLite com dados levantados."""
     conn = sqlite3.connect("auditoria_dados.sqlite")
@@ -30,9 +31,8 @@ def create_sqlite_report(data: List[Dict]) -> None:
                 item.get("sensitivity", ""),
                 item.get("ip", ""),
                 item.get("db_name", ""),
-                item.get("file_path", "")
-            )
+                item.get("file_path", ""),
+            ),
         )
     conn.commit()
     conn.close()
-
