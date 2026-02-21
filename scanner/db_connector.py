@@ -1,26 +1,18 @@
 from sqlalchemy import create_engine
-import yaml
-import os
+from sqlalchemy.exc import SQLAlchemyError
+from scanner.db_connector import DBConnector
+from utils.logger import Logger
 
 class DBConnector:
-    def __init__(self, config_path="config/db_config.yaml"):
-        self.config = self._load_config(config_path)
+    def __init__(self, logger: Logger):
+        self.logger = logger
         self.connections = {}
 
-    def _load_config(self, config_path):
-        with open(config_path, "r") as f:
-            return yaml.safe_load(f)
-
-    def connect(self):
-        for db in self.config["databases"]:
-            try:
-                engine = create_engine(db["driver"], 
-                                      connect_args={k:v for k, v in db.items() if k in ["host", "port", "user", "password", "database"]})
-                self.connections[db["name"]] = engine
-                self._log(f"Conexão estabelecida com {db['name']}")
-            except Exception as e:
-                self._log(f"Erro ao conectar com {db['name']}: {str(e)}", level="error")
-
-    def get_connection(self, db_name):
-        return self.connections.get(db_name)
+    def connect(self, db_url: str):
+        try:
+            self.engine = create_engine(db_url)
+            self.connections["main"] = self.engine
+            self.logger.info(f"Conexão estabelecida com o banco de dados: {db_url}")
+        except SQLAlchemyError as e:
+            self.logger.error(f"Erro ao conectar com o banco de dados: {str(e)}")
 
