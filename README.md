@@ -52,15 +52,26 @@ The application includes three main pages:
 
 3. Reporting:
 
-* Generates local database indicating finds and possible vectors of violations of privacy
-* Generates detailed PDF reports of quantities, locations...
-* Summarizes findings and compliance status including some sort of risc score (TBD)
+* Generates local database (SQLite) indicating finds and possible vectors of violations of privacy
+* Generates detailed PDF or Spreadsheet reports of quantities, locations, heatmap...
+* Summarizes findings and compliance status including some sort of risc score (TBD) and recommendations
 
 4. User-Friendly Interface:
 
 * Clean dashboard showing scan history (including age of last data gathering)
 * Progress tracking for ongoing scans (if so possible)
 * Easy configuration management (credentials, DBE flavor (and connector), subsets, etc.)
+
+5. How to execute the app so far:
+* ✅ CLI mode
+ ```
+python main.py --cli
+ ```
+* ✅ API mode
+ ```
+python main.py --api
+ ```
+
 
 ###### How to Extend This Solution?
 
@@ -70,8 +81,8 @@ The application includes three main pages:
 
 2. Implement Actual Database Scanning:
 
-* Connect to real databases using the get\_db\_connection function
-* Scan tables for further sensitive data patterns (via some form of regex) eigther collumn name or actual record
+* Connect to real databases using the get\_db\_connection function or SQLAlchemy library
+* Scan tables for further sensitive data patterns (via some form of regex) eigther collumn name or actual record and use it to teach machine learning to improve recognition
 
 3. Add More Data Types:
 
