@@ -1,31 +1,28 @@
-import argparse
-from scanner.data_scanner import DataScanner
-from scanner.db_connector import DBConnector
-from utils.logger import Logger
-from report.report_generator import ReportGenerator
+#!/usr/bin/env python3
+"""
+Main execution script
+"""
+from src.config import load_config
+from src.db import Database
+from src.scanner import ScannerFactory
 
 def main():
-    parser = argparse.ArgumentParser(description="Scanner de Dados Sensíveis")
-    parser.add_argument("--cli", action="store_true", help="Executar no modo CLI")
-    parser.add_argument("--api", action="store_true", help="Iniciar servidor API")
-    args = parser.parse_args()
-
-    logger = Logger()
-    db_connector = DBConnector(logger)
+    # Load configuration
+    config_path = 'config.yaml'
+    config = load_config(config_path)
     
-    # Exemplo de URL SQLAlchemy (ajuste conforme sua configuração)
-    db_url = "mysql+pymysql://user:password@localhost:3306/database_name"
+    # Initialize database
+    db = Database(config)
+    db.initialize()
     
-    db_connector.connect(db_url)
+    # Initialize scanner
+    scanner = ScannerFactory.get_scanner(config['scanner']['type'])
+    results = scanner.scan()
+    
+    # Generate report
+    report_renderer = ReportRenderer(config)
+    report_renderer.render(results, config['report']['output_path'])
 
-    if args.cli:
-        scanner = DataScanner(db_connector)
-        resultados = scanner.scan()
-        report = ReportGenerator(resultados)
-        print(report.gerar_relatorio())
-    elif args.api:
-        from app import app
-        app.run(host="0.0.0.0", port=8000)
-    else:
-        print("Use --cli para executar no modo CLI ou --api para iniciar o servidor API.")
+if __name__ == '__main__':
+    main()
 
