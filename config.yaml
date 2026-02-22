@@ -1,0 +1,19 @@
+targets:
+#  - name: "Produção_Postgres"
+#    type: "database"
+#    driver: "postgresql+psycopg2"
+#    host: "10.0.0.50"
+#    port: 5432
+#    user: "audit_user"
+#    pass: "secure_password"
+#    database: "customers_db"
+
+  - name: "Documentos_LGPD"
+    type: "filesystem"
+    path: "/home/leitao/Documents/LGPD/"
+    recursive: true
+
+  - name: "Documentos_RH"
+    type: "filesystem"
+    path: "/home/leitao/Documents/Concursos/"
+    recursive: true
