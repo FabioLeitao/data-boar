@@ -58,6 +58,9 @@ python main.py --config config.yaml --web --port 8088
 
 ### Deploying the server
 
+**Option: run from Docker (no Git clone)**  
+A pre-built image is available on Docker Hub: `fabioleitao/python3-lgpd-crawler:latest` ([hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)). Pull it and run with a mounted config at `/data/config.yaml` (see README “Deploy with Docker” and `deploy/DEPLOY.md`). You can use this instanced container instead of installing from source.
+
 1. **Install** the application and optional dependencies (e.g. `.[nosql]`, `.[shares]`) as in the README.
 2. **Prepare** a config file (e.g. `config.yaml`) with `targets`, `file_scan`, `report`, and optionally `api.port`.
 3. **Set config path** (optional):  
@@ -75,7 +78,7 @@ python main.py --config config.yaml --web --port 8088
    ```
 
 5. **Binding:** Default `0.0.0.0` means the server accepts connections from any interface. Restrict by using `--host 127.0.0.1` if only local access is needed.
-6. **Production:** Run behind a reverse proxy (nginx, Caddy, etc.), use a process manager (systemd, supervisord), or a container; ensure `CONFIG_PATH` and `report.output_dir` are set appropriately and that the process can write to the output directory and the SQLite path.
+6. **Production:** Run behind a reverse proxy (nginx, Traefik, Caddy, or similar), use a process manager (systemd, supervisord), or a container; ensure `CONFIG_PATH` and `report.output_dir` are set appropriately and that the process can write to the output directory and the SQLite path. The application behaves correctly behind NAT, load balancers, and reverse proxies: when TLS is terminated at the proxy, set **X-Forwarded-Proto: https** so security headers (e.g. HSTS) and scheme detection work. See [SECURITY.md](../SECURITY.md) for HTTP security headers.
 
 ### Base URL and accessing the API
 
@@ -96,7 +99,10 @@ When the API server is running, a **simple web dashboard** is available in the b
 | **Reports** | `http://<host>:<port>/reports` | List of all scan sessions (session ID, started/finished, status, tenant, technician, DB/FS/failures counts) with a “Download” link per session (regenerates and downloads the Excel report). |
 | **Configuration** | `http://<host>:<port>/config` | Edit the scan configuration (YAML) in the browser. “Save configuration” writes to the config file (see `CONFIG_PATH` or `config.yaml`). Changes apply to the next scan. |
 
-The dashboard uses the same API under the hood (`/status`, `/scan`, `/list`, `/reports/{session_id}`). Status polls automatically when a scan is running. No separate frontend build (Python + Jinja2 + minimal CSS/JS).
+| **Help** | `http://<host>:<port>/help` | Quickstart, config examples, and links to README/USAGE. |
+| **About** | `http://<host>:<port>/about` | Application name, version, author, and license (same as repository LICENSE). |
+
+The **Start scan** button sends `POST /scan` and triggers a **full audit of all targets** in the current configuration (the same databases, filesystems, APIs, and options defined in your config file). Saving the Configuration page updates the config used for the next scan. The dashboard uses the same API under the hood (`/status`, `/scan`, `/list`, `/reports/{session_id}`). Status polls automatically when a scan is running. No separate frontend build (Python + Jinja2 + minimal CSS/JS).
 
 ### API endpoints (summary)
 
@@ -114,6 +120,9 @@ The dashboard uses the same API under the hood (`/status`, `/scan`, `/list`, `/r
 | `GET`  | `/logs/{session_id}` | Download the first audit log file that contains that `session_id`, for session-level trace analysis. |
 | `PATCH` | `/sessions/{session_id}` | Set or clear tenant/customer name for an existing session. Body: `{ "tenant": "..." }`. |
 | `PATCH` | `/sessions/{session_id}/technician` | Set or clear technician/operator name for an existing session. Body: `{ "technician": "..." }`. |
+| `GET`  | `/about` | About page (HTML): application name, version, author, license. |
+| `GET`  | `/about/json` | Machine-readable about info (name, version, author, license, copyright). |
+| `GET`  | `/health` | Liveness/readiness for Docker and Kubernetes. |
 
 ---
 
@@ -504,10 +513,11 @@ report:
 
 api:
   port: 8088
+  workers: 1       # uvicorn workers; 1 = minimal, 2+ for concurrent API traffic
 
 sqlite_path: audit_results.db
 scan:
-  max_workers: 1   # 1 = sequential; >1 = parallel
+  max_workers: 1   # 1 = sequential; >1 = parallel targets (I/O-bound)
 ```
 
 ---
