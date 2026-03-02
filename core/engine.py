@@ -21,6 +21,22 @@ try:
     import connectors.rest_connector  # noqa: F401
 except ImportError:
     pass
+try:
+    import connectors.smb_connector  # noqa: F401
+except ImportError:
+    pass
+try:
+    import connectors.webdav_connector  # noqa: F401
+except ImportError:
+    pass
+try:
+    import connectors.sharepoint_connector  # noqa: F401
+except ImportError:
+    pass
+try:
+    import connectors.nfs_connector  # noqa: F401
+except ImportError:
+    pass
 
 from core.connector_registry import connector_for_target
 from core.database import LocalDBManager
@@ -91,11 +107,12 @@ class AuditEngine:
             )
             return
         connector_class, _ = resolved
-        if target.get("type") == "filesystem":
-            fs_config = self.config.get("file_scan", {})
-            ext = fs_config.get("extensions")
-            scan_sqlite_as_db = fs_config.get("scan_sqlite_as_db", True)
-            sample_limit = fs_config.get("sample_limit", 5)
+        t = target.get("type")
+        fs_config = self.config.get("file_scan", {})
+        scan_sqlite_as_db = fs_config.get("scan_sqlite_as_db", True)
+        sample_limit = fs_config.get("sample_limit", 5)
+        ext = fs_config.get("extensions")
+        if t == "filesystem":
             if ext is not None:
                 connector = connector_class(
                     target, self.scanner, self.db_manager,
@@ -106,6 +123,11 @@ class AuditEngine:
                     target, self.scanner, self.db_manager,
                     scan_sqlite_as_db=scan_sqlite_as_db, sample_limit=sample_limit,
                 )
+        elif t in ("sharepoint", "webdav", "smb", "cifs", "nfs"):
+            connector = connector_class(
+                target, self.scanner, self.db_manager,
+                extensions=ext, scan_sqlite_as_db=scan_sqlite_as_db, sample_limit=sample_limit,
+            )
         else:
             connector = connector_class(target, self.scanner, self.db_manager)
         try:

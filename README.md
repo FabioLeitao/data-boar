@@ -4,8 +4,9 @@ Application for auditing personal and sensitive data across databases and filesy
 
 ## Features
 
-- **Multi-target scanning**: Configure multiple databases and filesystem paths in a single YAML/JSON config.
+- **Multi-target scanning**: Configure multiple databases, filesystems, APIs, and remote shares in a single YAML/JSON config.
 - **SQL databases**: PostgreSQL, MySQL, MariaDB, SQLite, Microsoft SQL Server, Oracle (via SQLAlchemy drivers).
+- **Remote shares (optional)**: SharePoint, WebDAV, SMB/CIFS, NFS — by FQDN or IP with credentials in config; install `.[shares]`.
 - **NoSQL (optional)**: MongoDB, Redis — install optional deps: `uv pip install -e ".[nosql]"`.
 - **Filesystem**: Recursive scan of local (or mounted) directories; permission check before reading. Supports many extensions: text (`.txt`, `.csv`, `.json`, `.xml`, `.html`, `.md`, `.yml`, `.log`, `.ini`, `.sql`, `.rtf`, etc.), documents (`.pdf`, `.doc`, `.docx`, `.odt`, `.ods`, `.odp`, `.xls`, `.xlsx`, `.xlsm`, `.ppt`, `.pptx`), email (`.eml`, `.msg`), and data (`.sqlite`, `.db`). **SQLite files** (`.sqlite`, `.sqlite3`, `.db`) found on disk are opened and scanned as databases (discover tables/columns, sample and detect); set `file_scan.scan_sqlite_as_db: false` to skip. Set `file_scan.extensions` to a list of suffixes, or `"*"` / `"all"` for all supported types.
 - **Sensitivity detection**: Regex patterns (configurable) + ML classifier (TF-IDF + RandomForest) on column names and sampled content; no raw data is stored.
@@ -218,6 +219,63 @@ targets:
 ```
 
 Findings from API targets appear in the **Filesystem findings** sheet with `file_name` like `GET /users | email` (endpoint and field). The project uses **httpx** (already a dependency) for HTTP; no extra install is required for the REST connector.
+
+## SharePoint, WebDAV, SMB/CIFS, and NFS shares
+
+You can scan remote file shares by **FQDN or IP** with credentials in config. Install optional deps:  
+`uv pip install -e ".[shares]"`  
+(installs `smbprotocol`, `webdavclient3`, `requests_ntlm`).
+
+| Type | Host / URL | Credentials | Notes |
+|------|------------|-------------|--------|
+| **sharepoint** | `site_url`: `https://host/sites/sitename` | `user`, `pass`; NTLM or basic | On-prem or URL; path = server-relative folder (e.g. `Shared Documents`) |
+| **webdav** | `base_url`: `https://host/path` | `user`, `pass` | Recursive list and download |
+| **smb** / **cifs** | `host`: FQDN or IP, `share`: share name, `path`: path inside share | `user`, `pass`, optional `domain` | Port 445 default |
+| **nfs** | `path`: **local mount point** (NFS must be mounted first) | — | `host` / `export_path` for reporting only |
+
+**Example config (YAML):**
+
+```yaml
+targets:
+  # SMB/CIFS (Windows or Samba)
+  - name: "FileServer HR"
+    type: smb
+    host: "fileserver.company.local"   # or 10.0.0.10
+    share: "HR"
+    path: "Documents"
+    user: "audit_user"
+    pass: "***"
+    domain: "COMPANY"                 # optional
+    port: 445
+    recursive: true
+
+  # WebDAV
+  - name: "WebDAV Storage"
+    type: webdav
+    base_url: "https://webdav.company.com/dav"
+    user: "audit"
+    pass: "***"
+    path: "archive"
+    recursive: true
+    verify_ssl: true
+
+  # SharePoint (on-prem or URL; NTLM or basic)
+  - name: "SharePoint HR"
+    type: sharepoint
+    site_url: "https://sharepoint.company.com/sites/hr"
+    path: "Shared Documents"
+    user: "audit@company.com"
+    pass: "***"
+
+  # NFS (path = local mount point; mount NFS first)
+  - name: "NFS Export"
+    type: nfs
+    host: "nfs.company.local"
+    export_path: "/export/data"
+    path: "/mnt/nfs_data"             # local mount point
+```
+
+All share types use the same **file_scan** settings (extensions, recursive, scan_sqlite_as_db, sample_limit) from config. Findings appear in the **Filesystem findings** sheet.
 
 ## Logging and alerts
 

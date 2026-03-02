@@ -85,3 +85,4 @@ dependencies = [
 [project.optional-dependencies]
 nosql = ["pymongo>=4.0", "redis>=5.0"]
 bigdata = ["snowflake-connector-python>=3.0"]
+shares = ["smbprotocol>=1.2.0", "webdavclient3>=0.14.0", "requests_ntlm>=1.2.0"]

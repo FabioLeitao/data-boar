@@ -74,6 +74,18 @@ Textual description of modules, classes, and main functions and how they connect
   - **RESTConnector** — `__init__(target_config, scanner, db_manager, sample_limit=5)`; `connect()` builds httpx client and applies auth from `target["auth"]` (basic, bearer, oauth2_client, custom headers); `run()` GETs each path in `paths` or from `discover_url`, parses JSON, flattens keys/sample values, runs scanner, save_finding as filesystem (file_name e.g. `GET /path | field`). Registered for `api` and `rest` when httpx is available.
   - Auth: **basic** (username/password), **bearer** (token or token_from_env), **oauth2_client** (token_url, client_id, client_secret, scope), **custom** (headers). Target-level `user`/`pass` used as basic when no `auth` block.
 
+- **connectors/smb_connector.py** (optional: smbprotocol)
+  - **SMBConnector** — Connect to SMB/CIFS by host (FQDN or IP), share, path; credentials user, pass, optional domain. List files (smbclient.walk), download to temp, _read_text_sample + scanner; SQLite-as-DB when scan_sqlite_as_db. Registered for `smb` and `cifs`.
+
+- **connectors/webdav_connector.py** (optional: webdavclient3)
+  - **WebDAVConnector** — base_url, user, pass, path; list recursively, download to temp, same scan as filesystem. Registered for `webdav`.
+
+- **connectors/sharepoint_connector.py** (optional: requests_ntlm)
+  - **SharePointConnector** — site_url, path (server-relative folder), user, pass; NTLM or basic. REST GetFolderByServerRelativeUrl/Files, GetFileByServerRelativeUrl/$value, download to temp, scan. Registered for `sharepoint`.
+
+- **connectors/nfs_connector.py**
+  - **NFSConnector** — path = local NFS mount point (user mounts first); host/export_path for reporting. Delegates to FilesystemConnector. Registered for `nfs`.
+
 ---
 
 ## Report
