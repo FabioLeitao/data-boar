@@ -90,6 +90,26 @@ YAML/JSON list of `text` + `label` (sensitive / non_sensitive) to train or exten
   label: non_sensitive
 ```
 
+### Learned patterns (optional)
+
+At the end of each run (when a report is generated), the engine can write **learned patterns**: terms that were classified as sensitive in this scan, so you can merge them into `ml_patterns_file` for the next run. This improves future detection while limiting false positives (only HIGH sensitivity by default, minimum confidence, and exclusion of generic terms like `id`, `name`).
+
+Enable in config:
+
+```yaml
+learned_patterns:
+  enabled: true
+  output_file: learned_patterns.yaml
+  min_sensitivity: HIGH      # or MEDIUM to also capture borderline cases
+  min_confidence: 70
+  min_term_length: 3
+  require_pattern: true      # only learn when a pattern was actually detected
+  append: true               # merge with existing file
+  exclude_if_in_ml_patterns: true   # skip terms already in ml_patterns_file
+```
+
+**Merge into ML patterns:** Copy or merge entries from `learned_patterns.yaml` into your `ml_patterns_file`. Each entry has `text` and `label: sensitive`; optional `pattern_detected` and `norm_tag` help you review. Use the same format as the ML patterns file (list of `text` + `label`). After merging, the next run will use the expanded set for the classifier.
+
 ### Regex overrides (optional)
 
 YAML/JSON list of `name`, `pattern`, optional `norm_tag`:
