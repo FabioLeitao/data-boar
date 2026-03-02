@@ -118,6 +118,12 @@ app = FastAPI(title="LGPD/GDPR/CCPA Audit API", version="1.0.0")
 app.mount("/static", StaticFiles(directory=str(_api_dir / "static")), name="static")
 
 
+@app.get("/health")
+async def health():
+    """Liveness/readiness probe for Docker, Swarm and Kubernetes."""
+    return {"status": "ok"}
+
+
 @app.on_event("startup")
 async def startup_event():
     _get_config()
