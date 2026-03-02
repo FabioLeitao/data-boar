@@ -1,0 +1,36 @@
+# Docker Compose v3. Compatible with Docker Swarm: deploy with
+#   docker stack deploy -c deploy/docker-compose.yml lgpd-audit
+# Requires: config at /data/config.yaml (mount volume or bind).
+# Image: set to your registry (e.g. ghcr.io/FabioLeitao/python3-lgpd-crawler:latest).
+version: "3.8"
+
+services:
+  lgpd-audit:
+    image: ghcr.io/fabioleitao/python3-lgpd-crawler:latest
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    ports:
+      - "8088:8088"
+    environment:
+      CONFIG_PATH: /data/config.yaml
+    volumes:
+      - lgpd-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8088/health')\""]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
+
+volumes:
+  lgpd-data:
