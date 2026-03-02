@@ -263,7 +263,7 @@ scipy==1.17.1
     #   scikit-learn
 seaborn==0.13.2
     # via python3-lgpd-crawler (pyproject.toml)
-setuptools==80.9.0
+setuptools==82.0.0
     # via python3-lgpd-crawler (pyproject.toml)
 six==1.17.0
     # via
