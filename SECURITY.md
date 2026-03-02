@@ -53,6 +53,19 @@ Additional client libraries may be required depending on which connectors you us
 
 - When you change dependencies in `pyproject.toml`, regenerate `requirements.txt` using the command above so both files stay in sync.
 
+## HTTP security headers (web and API)
+
+The application adds the following headers to all web and API responses by default:
+
+- **X-Content-Type-Options: nosniff** – prevents MIME-type sniffing.
+- **X-Frame-Options: DENY** – prevents the app from being embedded in frames (clickjacking mitigation).
+- **Content-Security-Policy** – restricts script, style, and resource origins to the app and the Chart.js CDN; allows inline scripts/styles required by the current dashboard.
+- **Referrer-Policy: strict-origin-when-cross-origin** – limits referrer information sent on cross-origin requests.
+- **Permissions-Policy** – disables browser features not needed by the app (camera, microphone, geolocation, etc.).
+- **Strict-Transport-Security (HSTS)** – set only when the request is considered HTTPS (direct or via `X-Forwarded-Proto: https` from a trusted proxy), so HTTP-only deployments are not locked out. When present, it uses `max-age=31536000; includeSubDomains; preload`.
+
+When the app is behind a reverse proxy (e.g. nginx, Caddy, load balancer), ensure the proxy sets **X-Forwarded-Proto: https** for TLS-terminated requests so HSTS is applied correctly. Do not enable HSTS at the app layer for plain HTTP; the proxy can add HSTS when serving over HTTPS.
+
 ## Reporting a vulnerability
 
 If you believe you have found a security vulnerability in this project:
