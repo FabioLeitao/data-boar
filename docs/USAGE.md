@@ -105,8 +105,10 @@ The dashboard uses the same API under the hood (`/status`, `/scan`, `/list`, `/r
 | `POST` | `/scan_database` | One-off scan of a single database (body: name, host, port, user, password, database, driver, optional tenant/technician). Returns `session_id`. |
 | `GET`  | `/status` | Current run state: `running`, `current_session_id`, `findings_count`. |
 | `GET`  | `/report` | Download the **last generated** Excel report (or generate from last session if none). |
+| `GET`  | `/heatmap` | Download the **last generated** heatmap PNG (sensitivity/risk heatmap for the most recent session). |
 | `GET`  | `/list` or `/reports` | List past sessions (for choosing which report to download). Each entry includes tenant/technician when set. |
 | `GET`  | `/reports/{session_id}` | **Regenerate** and download the Excel report for that session. |
+| `GET`  | `/heatmap/{session_id}` | **Regenerate** the report (if needed) and download the heatmap PNG for that session. |
 | `PATCH` | `/sessions/{session_id}` | Set or clear tenant/customer name for an existing session. Body: `{ "tenant": "..." }`. |
 | `PATCH` | `/sessions/{session_id}/technician` | Set or clear technician/operator name for an existing session. Body: `{ "technician": "..." }`. |
 
@@ -212,6 +214,15 @@ curl -o report.xlsx http://localhost:8088/report
 - Returns the **last generated** Excel file.
 - If no report exists, the server may try to generate one from the current or most recent session; if none exists, you get **404** with body like: `{"detail": "Report not available. Run a scan first."}`.
 
+### Download current (last) heatmap PNG
+
+```bash
+curl -o heatmap.png http://localhost:8088/heatmap
+```
+
+- Returns the **last generated** heatmap PNG for the most recent session (creating it along with the report if needed).
+- If no suitable session exists, you get **404** with a message like `{"detail": "Heatmap not available. Run a scan first."}`.
+
 ### Download report for a specific (previous) session
 
 ```bash
@@ -220,6 +231,15 @@ curl -o report_20250301.xlsx "http://localhost:8088/reports/a1b2c3d4-20250301_14
 
 - **Regenerates** the Excel (and heatmap) for that `session_id` and returns the file.
 - If the session has no data or generation fails, you get **404** with `{"detail": "No data for session ... or report generation failed."}`.
+
+### Download heatmap for a specific (previous) session
+
+```bash
+curl -o heatmap_20250301.png "http://localhost:8088/heatmap/a1b2c3d4-20250301_143022"
+```
+
+- Regenerates the report (and heatmap) for that `session_id` if needed and returns the PNG.
+- If no heatmap is available for that session (e.g. no findings), you get **404** with `{"detail": "Heatmap not available for session ..."`}.
 
 **Typical workflow:**
 
