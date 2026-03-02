@@ -7,6 +7,8 @@ Este documento complementa o `docs/USAGE.md` em inglês e descreve, em portuguê
 - Navegar pelo **dashboard web**;
 - Iniciar varreduras e baixar relatórios/heatmaps usando **curl**.
 
+**English:** [USAGE.md](USAGE.md)
+
 > **Importante:** sempre que `docs/USAGE.md` for atualizado, mantenha este arquivo sincronizado (mesmas rotas, parâmetros e exemplos, traduzidos).
 
 ---
