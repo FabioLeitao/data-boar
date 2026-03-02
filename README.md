@@ -141,6 +141,8 @@ python main.py --config config.yaml --web --port 8088
 
 **Arguments:** `--config` (path to YAML/JSON, default `config.yaml`), `--web` (start API instead of one-shot), `--port` (default 8088). When using the API, the server loads config from the `CONFIG_PATH` environment variable or `config.yaml` in the working directory.
 
+**Web dashboard:** With the server running, open `http://localhost:8088/` for a simple dashboard: scan status, quantity/quality of discovered data (DB/FS findings, failures), start-scan button, recent sessions, and links to **Reports** (list and download) and **Configuration** (edit YAML in the browser).
+
 **API routes (summary):**
 
 | Method | Endpoint | Description |
