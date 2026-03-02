@@ -14,18 +14,24 @@ The main entry point is `main.py`. Prefer it over `run.py`.
 |----------|---------|-------------|
 | `--config` | `config.yaml` | Path to the configuration file (YAML or JSON). Used for both one-shot audit and to resolve `api.port` when starting the web server. |
 | `--web` | *(flag)* | Start the REST API server instead of running a one-shot audit. |
-| `--port` | `8088` | Port for the API when `--web` is set. Can be overridden by `api.port` in config. |
+| `--port` | `8088` | Port for the API when `--web` is set. Can be overridden by `api.port` in config. Ignored in one-shot mode. |
+| `--tenant` | *(none)* | Optional customer/tenant name for the scan in CLI mode. Stored on the session and surfaced on dashboard and reports. |
+| `--technician` | *(none)* | Optional technician/operator responsible for the scan in CLI mode. Stored on the session and surfaced on dashboard and reports. |
 
 ### Outcomes
 
 **One-shot audit (no `--web`):**
 
 ```bash
+# Minimal run
 python main.py --config config.yaml
+
+# Tag scan with tenant and technician metadata
+python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Silva"
 ```
 
 - Loads config, runs a full audit of all targets (databases, filesystems, APIs, shares as configured).
-- Creates a new session (UUID + timestamp), writes findings to the local SQLite DB, then generates the Excel report (and heatmap) for that session.
+- Creates a new session (UUID + timestamp), writes findings to the local SQLite DB (including optional `tenant_name` and `technician_name`), then generates the Excel report (and heatmap) for that session.
 - **Output:** Console prints `Scan session: <session_id>` and `Report written: <path>` (or "No findings to report.").
 - Report path is under `report.output_dir` from config (default: current directory). File name: `Relatorio_Auditoria_<session_id>.xlsx` (and `heatmap_<session_id>.png`).
 
@@ -85,8 +91,8 @@ When the API server is running, a **simple web dashboard** is available in the b
 
 | Page | URL | Description |
 |------|-----|--------------|
-| **Dashboard** | `http://<host>:<port>/` | Scan status (running/idle, current session, findings count), quantity/quality summary (DB findings, FS findings, failures, total), “Start scan” button, and recent sessions with download links. |
-| **Reports** | `http://<host>:<port>/reports` | List of all scan sessions (session ID, started/finished, status, DB/FS/failures counts) with a “Download” link per session (regenerates and downloads the Excel report). |
+| **Dashboard** | `http://<host>:<port>/` | Scan status (running/idle, current session, findings count), quantity/quality summary (DB findings, FS findings, failures, total), **“Progress over time” chart** (total findings + risk score per session), form inputs for **tenant/customer** and **technician/operator** before starting a scan, and a “Start scan” button. Recent sessions table shows session ID, started date, tenant, technician, findings, failures, and a download link. |
+| **Reports** | `http://<host>:<port>/reports` | List of all scan sessions (session ID, started/finished, status, tenant, technician, DB/FS/failures counts) with a “Download” link per session (regenerates and downloads the Excel report). |
 | **Configuration** | `http://<host>:<port>/config` | Edit the scan configuration (YAML) in the browser. “Save configuration” writes to the config file (see `CONFIG_PATH` or `config.yaml`). Changes apply to the next scan. |
 
 The dashboard uses the same API under the hood (`/status`, `/scan`, `/list`, `/reports/{session_id}`). Status polls automatically when a scan is running. No separate frontend build (Python + Jinja2 + minimal CSS/JS).
@@ -95,12 +101,14 @@ The dashboard uses the same API under the hood (`/status`, `/scan`, `/list`, `/r
 
 | Method | Endpoint | Purpose |
 |--------|----------|---------|
-| `POST` | `/scan` or `/start` | Start a full audit in the background. Returns `session_id`. |
-| `POST` | `/scan_database` | One-off scan of a single database (body: name, host, port, user, password, database, driver). Returns `session_id`. |
+| `POST` | `/scan` or `/start` | Start a full audit in the background. Returns `session_id`. Optional JSON body: `{ "tenant": "Acme Corp", "technician": "Alice" }` to tag the session. |
+| `POST` | `/scan_database` | One-off scan of a single database (body: name, host, port, user, password, database, driver, optional tenant/technician). Returns `session_id`. |
 | `GET`  | `/status` | Current run state: `running`, `current_session_id`, `findings_count`. |
 | `GET`  | `/report` | Download the **last generated** Excel report (or generate from last session if none). |
-| `GET`  | `/list` or `/reports` | List past sessions (for choosing which report to download). |
+| `GET`  | `/list` or `/reports` | List past sessions (for choosing which report to download). Each entry includes tenant/technician when set. |
 | `GET`  | `/reports/{session_id}` | **Regenerate** and download the Excel report for that session. |
+| `PATCH` | `/sessions/{session_id}` | Set or clear tenant/customer name for an existing session. Body: `{ "tenant": "..." }`. |
+| `PATCH` | `/sessions/{session_id}/technician` | Set or clear technician/operator name for an existing session. Body: `{ "technician": "..." }`. |
 
 ---
 
@@ -109,7 +117,13 @@ The dashboard uses the same API under the hood (`/status`, `/scan`, `/list`, `/r
 ### Start a full audit
 
 ```bash
+# Minimal: start a scan with default metadata
 curl -X POST http://localhost:8088/scan
+
+# Start a scan tagged with tenant/customer and technician/operator
+curl -X POST http://localhost:8088/scan \
+  -H "Content-Type: application/json" \
+  -d '{ "tenant": "Acme Corp", "technician": "Alice Silva" }'
 ```
 
 **Response (200):**
@@ -153,7 +167,9 @@ curl -X POST http://localhost:8088/scan_database \
     "user": "audit",
     "password": "secret",
     "database": "mydb",
-    "driver": "postgresql+psycopg2"
+    "driver": "postgresql+psycopg2",
+    "tenant": "Acme Corp",
+    "technician": "Alice Silva"
   }'
 ```
 
@@ -175,6 +191,8 @@ curl http://localhost:8088/list
       "started_at": "2025-03-01T14:30:22",
       "finished_at": "2025-03-01T14:35:10",
       "status": "completed",
+      "tenant_name": "Acme Corp",
+      "technician_name": "Alice Silva",
       "database_findings": 12,
       "filesystem_findings": 30,
       "scan_failures": 0

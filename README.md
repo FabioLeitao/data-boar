@@ -1,6 +1,6 @@
 # python3-lgpd-crawler
 
-Application for auditing personal and sensitive data across databases and filesystems, aligned with **LGPD**, **GDPR**, **CCPA**, **HIPAA**, and **GLBA**. It discovers and maps possible PII/sensitive data via regex and ML, stores metadata in a local SQLite database, and produces Excel reports with heatmaps and recommendations.
+Application for auditing personal and sensitive data across databases and filesystems, aligned with **LGPD**, **GDPR**, **CCPA**, **HIPAA**, and **GLBA**. It discovers and maps possible PII/sensitive data via regex and ML, stores metadata (including optional **tenant/customer** and **technician/operator** tags per scan) in a local SQLite database, and produces Excel reports with heatmaps and recommendations.
 
 ## Features
 
@@ -12,24 +12,71 @@ Application for auditing personal and sensitive data across databases and filesy
 - **NoSQL (optional)**: MongoDB, Redis — install optional deps: `uv pip install -e ".[nosql]"`.
 - **Filesystem**: Recursive scan of local (or mounted) directories; permission check before reading. Supports many extensions: text (`.txt`, `.csv`, `.json`, `.xml`, `.html`, `.md`, `.yml`, `.log`, `.ini`, `.sql`, `.rtf`, etc.), documents (`.pdf`, `.doc`, `.docx`, `.odt`, `.ods`, `.odp`, `.xls`, `.xlsx`, `.xlsm`, `.ppt`, `.pptx`), email (`.eml`, `.msg`), and data (`.sqlite`, `.db`). **SQLite files** (`.sqlite`, `.sqlite3`, `.db`) found on disk are opened and scanned as databases (discover tables/columns, sample and detect); set `file_scan.scan_sqlite_as_db: false` to skip. Set `file_scan.extensions` to a list of suffixes, or `"*"` / `"all"` for all supported types.
 - **Sensitivity detection**: Regex patterns (configurable) + ML classifier (TF-IDF + RandomForest) on column names and sampled content; no raw data is stored. **Lyrics and music tablature** are detected via heuristics so that date-like or digit sequences in song lyrics and guitar tabs are downgraded to MEDIUM/LOW to reduce false positives; strong PII (CPF, email, etc.) still reports HIGH.
-- **Single SQLite**: All findings and failures per session (UUID + timestamp); separate tables for database findings, filesystem findings, and scan failures.
-- **Reporting**: Excel with sheets "Database findings", "Filesystem findings", "Scan failures", "Recommendations", "Praise / existing controls" (indications of encryption/hashing/tokenization), **"Trends - Session comparison"** (vs previous run: improvements or new/increased findings for DPO and security team), and sensitivity/risk heatmap (PNG).
-- **CLI and REST API**: Run one-shot audit from command line or start API (default port 8088) for `/scan`, `/start`, `/scan_database`, `/status`, `/report`, `/list`, `/reports/{session_id}`.
+- **Single SQLite**: All findings and failures per session (UUID + timestamp); metadata per scan includes optional **tenant_name** (customer/tenant) and **technician_name** (operator responsible). Separate tables for database findings, filesystem findings, and scan failures.
+- **Reporting**: Excel with sheets **"Report info"** (Session ID, Started at, Tenant/Customer, Technician/Operator), "Database findings", "Filesystem findings", "Scan failures", "Recommendations", "Praise / existing controls" (indications of encryption/hashing/tokenization), **"Trends - Session comparison"** (vs previous run: improvements or new/increased findings for DPO and security team), and sensitivity/risk heatmap (PNG).
+- **CLI and REST API**: Run one-shot audit from command line or start API (default port 8088) for `/scan`, `/start`, `/scan_database`, `/status`, `/report`, `/list`, `/reports/{session_id}`. Both modes allow tagging scans with optional **tenant/customer** and **technician/operator** information.
 
-## Requirements
+## Requirements and environment preparation
 
-- Python 3.12+
-- Ubuntu 24.04 LTS / Debian 13 (or recent Linux/macOS/Windows)  
-- [uv](https://github.com/astral-sh/uv) (recommended) or pip
+- **Operating system**: Ubuntu 24.04 LTS / Debian 13 (recommended) or a recent Linux/macOS/Windows.
+- **Python**: 3.12+.
+- **Package manager**: [uv](https://github.com/astral-sh/uv) (recommended) or `pip`.
 
-## Install
+### Install Python and system libraries (Linux example)
+
+On Debian/Ubuntu:
 
 ```bash
-# With uv (recommended)
+sudo apt update
+sudo apt install -y python3.12 python3.12-venv python3.12-dev build-essential \
+  libpq-dev libssl-dev libffi-dev unixodbc-dev
+```
+
+- `python3.12[-dev]` and `build-essential` are required to build some drivers (e.g. database clients).
+- `libpq-dev`, `unixodbc-dev` and SSL/FFI headers help when using PostgreSQL, SQL Server, Oracle, or other SQLAlchemy drivers.
+
+On Windows:
+
+- Install **Python 3.12** from `python.org` and ensure “Add Python to PATH” is checked.
+- Install database client tools as needed (e.g. Oracle Instant Client, SQL Server ODBC driver) following their vendor docs.
+
+### Install uv
+
+`uv` is a fast Python package/dependency manager:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh          # Linux/macOS
+py -m pip install uv                                    # Windows (fallback if installer not used)
+```
+
+After installation, ensure `uv` is on your `PATH`:
+
+```bash
+uv --version
+```
+
+You can always fall back to plain `pip` + virtualenv if you prefer.
+
+## Install the application
+
+```bash
+# With uv (recommended) – creates a virtualenv and installs deps
 uv sync
 
-# Or with pip
+# Or with pip (inside an activated virtualenv)
 pip install -e .
+```
+
+### Running the app with uv
+
+`uv` can also run the application directly with all dependencies:
+
+```bash
+# One-shot CLI scan
+uv run python main.py --config config.yaml
+
+# Start the API server (equivalent to python main.py --web)
+uv run python main.py --config config.yaml --web --port 8088
 ```
 
 Optional NoSQL support (MongoDB, Redis):
@@ -128,31 +175,57 @@ YAML/JSON list of `name`, `pattern`, optional `norm_tag`:
 **CLI (one-shot audit):**
 
 ```bash
+# Minimal run with default options
 python main.py --config config.yaml
+
+# Change report/API port via config (no --web here; one-shot mode ignores --port)
+python main.py --config config_prod.yaml
+
+# Tag run with tenant/customer and technician/operator
+python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Silva"
+
 # Report written to report.output_dir, e.g. Relatorio_Auditoria_<session_id>.xlsx
 ```
 
 **REST API (default port 8088):**
 
 ```bash
-python main.py --config config.yaml --web --port 8088
-# Or: uvicorn api.routes:app --host 0.0.0.0 --port 8088
+# Start API with default port 8088
+python main.py --config config.yaml --web
+
+# Start API on a custom port
+python main.py --config config.yaml --web --port 9090
+
+# Equivalent (bypassing main.py CLI):
+uvicorn api.routes:app --host 0.0.0.0 --port 8088
 ```
 
-**Arguments:** `--config` (path to YAML/JSON, default `config.yaml`), `--web` (start API instead of one-shot), `--port` (default 8088). When using the API, the server loads config from the `CONFIG_PATH` environment variable or `config.yaml` in the working directory.
+**CLI arguments (reference):**
 
-**Web dashboard:** With the server running, open `http://localhost:8088/` for a simple dashboard: scan status, quantity/quality of discovered data (DB/FS findings, failures), start-scan button, recent sessions, and links to **Reports** (list and download) and **Configuration** (edit YAML in the browser).
+| Argument | Mode | Description | Examples |
+|---------|------|-------------|----------|
+| `--config PATH` | CLI & API | Path to YAML/JSON config file. Defaults to `config.yaml` if omitted. | `--config config.yaml`, `--config configs/prod.yaml` |
+| `--web` | API only | Start the REST API instead of running a one-shot scan. | `--web` |
+| `--port N` | API only | Port for the REST API when `--web` is set. Defaults to `8088`. Ignored in one-shot CLI mode. | `--web --port 9090` |
+| `--tenant NAME` | CLI only (one-shot) | Optional customer / tenant name for this scan. Stored in `scan_sessions.tenant_name`, shown on dashboard and in the **Report info** sheet. | `--tenant "Acme Corp"` |
+| `--technician NAME` | CLI only (one-shot) | Optional technician / operator responsible for this scan. Stored in `scan_sessions.technician_name`, shown on dashboard and in the **Report info** sheet. | `--technician "Alice Silva"` |
+
+When using the API (`--web`), the server loads config from **`CONFIG_PATH`** (environment variable) or `config.yaml` in the working directory if `--config` is not provided on the CLI.
+
+**Web dashboard:** With the server running, open `http://localhost:8088/` for a simple dashboard: scan status, quantity/quality of discovered data (DB/FS findings, failures), **progress graph over time** (total findings and a risk score per session), optional inputs for **tenant/customer** and **technician/operator** before starting a scan, recent sessions (including tenant/technician columns), and links to **Reports** (list and download) and **Configuration** (edit YAML in the browser).
 
 **API routes (summary):**
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/scan` or `/start` | Start full audit in background; returns `session_id` |
+| `POST` | `/scan` or `/start` | Start full audit in background; returns `session_id`. Optional JSON body: `{ "tenant": "Acme Corp", "technician": "Alice" }` to tag the session. |
 | `POST` | `/scan_database` | One-off scan of one database (JSON body); returns `session_id` |
 | `GET` | `/status` | `running`, `current_session_id`, `findings_count` |
 | `GET` | `/report` | Download **last generated** Excel report |
-| `GET` | `/list` or `/reports` | List past sessions (to pick a report) |
+| `GET` | `/list` or `/reports` | List past sessions (to pick a report); includes `tenant_name`, `technician_name`, counts, and status. |
 | `GET` | `/reports/{session_id}` | Regenerate and download report for that session |
+| `PATCH` | `/sessions/{session_id}` | Set or clear tenant/customer name for an existing session. Body: `{ "tenant": "..." }`. |
+| `PATCH` | `/sessions/{session_id}/technician` | Set or clear technician/operator name for an existing session. Body: `{ "technician": "..." }`. |
 
 For **deployment**, **using the web API** (with request/response examples), **configuration and credentials** (databases, filesystems, APIs with basic/bearer/OAuth2/custom auth, and shared content), and **downloading current and previous reports**, see **[docs/USAGE.md](docs/USAGE.md)**.
 
