@@ -7,11 +7,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-COPY pyproject.toml README.md ./
+COPY . .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir .
-
-COPY . .
 
 # Default: config and persistent data under /data (mount as volume).
 ENV CONFIG_PATH=/data/config.yaml
