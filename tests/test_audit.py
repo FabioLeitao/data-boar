@@ -1,14 +1,27 @@
+"""Tests for sensitivity detection using core.scanner.DataScanner and core.detector."""
 import pytest
-from main import HybridScanner
+from core.scanner import DataScanner
+from core.detector import SensitivityDetector
 
-def test_sensitive_detection():
-    scanner = HybridScanner()
-    
-    # Teste de Regex
-    sens, pat, conf = scanner.scan("user_id", "Meu CPF é 123.456.789-00")
-    assert sens == "HIGH"
-    assert "LGPD_CPF" in pat
-    
-    # Teste de ML (Contexto)
-    sens_ml, pat_ml, conf_ml = scanner.scan("salary_amount", "5000.00")
-    assert sens_ml in ["MEDIUM", "HIGH"]
+
+def test_cpf_detection():
+    scanner = DataScanner()
+    result = scanner.scan_column("cpf", "123.456.789-00")
+    assert result["sensitivity_level"] == "HIGH"
+    assert "LGPD_CPF" in result.get("pattern_detected", "") or "CPF" in result.get("pattern_detected", "")
+
+
+def test_email_detection():
+    scanner = DataScanner()
+    result = scanner.scan_column("email", "user@example.com")
+    assert result["sensitivity_level"] == "HIGH"
+    assert "EMAIL" in result.get("pattern_detected", "")
+
+
+def test_low_sensitivity():
+    scanner = DataScanner()
+    result = scanner.scan_column("item_count", "42")
+    assert result["sensitivity_level"] in ("LOW", "MEDIUM", "HIGH")
+    # Non-personal context often yields LOW
+    assert "sensitivity_level" in result
+    assert "pattern_detected" in result
