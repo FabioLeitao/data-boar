@@ -74,6 +74,15 @@ The effective port may also be overridden by
 in the configuration file.
 .
 .TP
+.B \-\-reset\-data
+Dangerous maintenance operation that wipes all scan sessions, findings and failures from the SQLite database, deletes generated Excel reports and heatmap PNGs under
+.I report.output_dir
+and records a single row in the
+.I data_wipe_log
+table with the time and reason of the wipe.
+When this flag is used, no scan is started; the process exits after the reset completes or fails.
+.
+.TP
 .BI "\-\-tenant " NAME
 Optional tenant or customer name for the scan in CLI (one\-shot) mode.
 This value is stored as
@@ -135,6 +144,13 @@ Sensitivity/risk heatmap images generated for each session, saved in the same di
 Minimal scan using the default configuration:
 .RS
 .B python main.py \-\-config config.yaml
+.RE
+.
+.TP
+.TP
+Reset local history (dangerous) by wiping scan sessions, findings and generated reports:
+.RS
+.B python main.py \-\-config config.yaml \-\-reset\-data
 .RE
 .
 .TP
