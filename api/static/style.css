@@ -1,0 +1,46 @@
+:root {
+  --bg: #0f1419;
+  --surface: #1a2332;
+  --border: #2d3a4d;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --accent: #58a6ff;
+  --success: #3fb950;
+  --error: #f85149;
+}
+
+* { box-sizing: border-box; }
+body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; min-height: 100vh; line-height: 1.5; }
+.nav { background: var(--surface); padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; gap: 1.5rem; }
+.nav a { color: var(--accent); text-decoration: none; }
+.nav a:hover { text-decoration: underline; }
+.main { max-width: 960px; margin: 0 auto; padding: 1.5rem; }
+
+h1 { font-size: 1.5rem; margin-top: 0; }
+h2 { font-size: 1.1rem; margin: 0 0 0.75rem; color: var(--muted); }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.25rem; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 1rem; margin-bottom: 0.75rem; }
+.stat { text-align: center; }
+.stat-value { display: block; font-size: 1.75rem; font-weight: 600; color: var(--accent); }
+.stat-label { font-size: 0.85rem; color: var(--muted); }
+.actions { margin-top: 1rem; }
+.btn { display: inline-block; padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; font-size: 0.9rem; text-decoration: none; }
+.btn:hover { background: var(--border); }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.btn-primary:hover:not(:disabled) { filter: brightness(1.1); }
+.btn-sm { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
+.feedback { margin-left: 0.75rem; color: var(--muted); font-size: 0.9rem; }
+.muted { color: var(--muted); font-size: 0.9rem; }
+.error { color: var(--error); }
+.success { color: var(--success); }
+
+.table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.table th, .table td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+.table th { color: var(--muted); font-weight: 600; }
+.table code { font-size: 0.85em; }
+
+.config-form .form-group { margin-bottom: 1rem; }
+.config-form label { display: block; margin-bottom: 0.25rem; color: var(--muted); }
+.config-form textarea { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-family: ui-monospace, monospace; font-size: 0.85rem; resize: vertical; }
+.config-form .mono { font-family: ui-monospace, monospace; }
