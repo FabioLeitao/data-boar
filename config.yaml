@@ -10,6 +10,15 @@ targets:
   #   pass: secure_password
   #   database: customers_db
 
+  # - name: "Produção_MariaDB"
+  #   type: database
+  #   driver: mysql+pymysql
+  #   host: 10.0.0.51
+  #   port: 3306
+  #   user: audit_user
+  #   pass: secure_password
+  #   database: customers_db
+
   - name: "Documentos_LGPD"
     type: filesystem
     path: "/home/leitao/Documents/LGPD/"
