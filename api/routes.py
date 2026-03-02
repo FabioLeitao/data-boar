@@ -1,5 +1,5 @@
 """
-FastAPI app: POST /scan, POST /start, GET /status, GET /report, GET /list, GET /reports/{session_id}.
+FastAPI app: POST /scan, POST /start, GET /status, GET /report, GET /list, GET /reports/{session_id}, POST /scan_database.
 On startup load config (config.yaml or CONFIG_PATH) and create AuditEngine.
 """
 import os
@@ -7,6 +7,18 @@ from pathlib import Path
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException
 from fastapi.responses import FileResponse
+from pydantic import BaseModel
+
+
+class DatabaseConfig(BaseModel):
+    """Single database target for one-off scan via POST /scan_database."""
+    name: str
+    host: str
+    port: int
+    user: str
+    password: str
+    database: str
+    driver: str = "postgresql+psycopg2"
 
 # Load config and create engine at import time (or on startup event)
 _config_path = os.environ.get("CONFIG_PATH", "config.yaml")
@@ -108,3 +120,34 @@ async def download_report_by_session(session_id: str):
     if path and Path(path).exists():
         return FileResponse(path, filename=Path(path).name, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     raise HTTPException(status_code=404, detail=f"No data for session {session_id} or report generation failed.")
+
+
+@app.post("/scan_database")
+async def scan_database(config: DatabaseConfig, background_tasks: BackgroundTasks):
+    """One-off scan of a single database (body: name, host, port, user, password, database, optional driver). Starts in background; returns session_id."""
+    engine = _get_engine()
+    if engine.is_running:
+        raise HTTPException(status_code=409, detail="Audit already in progress.")
+    target = {
+        "name": config.name,
+        "type": "database",
+        "driver": config.driver,
+        "host": config.host,
+        "port": config.port,
+        "user": config.user,
+        "pass": config.password,
+        "database": config.database,
+    }
+    from core.session import new_session_id
+    session_id = new_session_id()
+    engine.db_manager.set_current_session_id(session_id)
+    engine.db_manager.create_session_record(session_id)
+    def run_one_target():
+        engine._is_running = True
+        try:
+            engine._run_target(target)
+        finally:
+            engine._is_running = False
+            engine.db_manager.finish_session(session_id, "completed")
+    background_tasks.add_task(run_one_target)
+    return {"status": "started", "session_id": session_id}
