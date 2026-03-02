@@ -1,48 +1,58 @@
+"""
+Unified scanner that uses core.detector only. No duplicate regex/ML.
+Interface: scan_column(label, sample) and scan_file_content(content, path) returning
+structured result for LocalDBManager.save_finding.
+"""
+from pathlib import Path
+from typing import Any
 
-from core.ml_engine import MLSensitivityScanner
-import re
+from core.detector import SensitivityDetector
+
 
 class DataScanner:
-    def __init__(self):
-        self.ml_engine = MLSensitivityScanner()
-        self.patterns = {
-            "LGPD_CPF": r"\b\d{3}\.\d{3}\.\d{3}-\d{2}\b",
-            #"LGPD_RG": r"\b\d{2}\.\d{3}\.\d{3}-\d{1}\b",
-            #"LGPD_DATA": r"\b\d{2}\/\d{2}\/\d{4}\b",
-            #"LGPD_GENERO": r"m|M|masculino|Masculino|Masc|male|Male|f|F|feminino|Feminino|Fem|female|Female|FEMALE|MALE|Not prefer to say\b",
-            "EMAIL": r"[\w\.-]+@[\w\.-]+\.\w+",
-            #"CCPA_SSN": r"\b\d{3}-\d{2}-\d{4}\b",
-            "CARD": r"\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b"
-            "EMAIL": r"[\w\.-]+@[\w\.-]+\.\w+",
-            "CREDIT_CARD": r"\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b",
-            "PHONE": r"\+?\d{2,3}\s?\(?\d{2,3}\)?\s?\d{4,5}-?\d{4}"
-            # ... outros padrões
+    """Uses SensitivityDetector for DB columns and file content; returns dicts for save_finding."""
+
+    def __init__(
+        self,
+        regex_overrides_path: str | None = None,
+        ml_patterns_path: str | None = None,
+    ):
+        self.detector = SensitivityDetector(
+            regex_overrides_path=regex_overrides_path,
+            ml_patterns_path=ml_patterns_path,
+        )
+
+    def scan_column(self, column_name: str, sample_content: str) -> dict[str, Any]:
+        """
+        Analyze a DB column (name + sample). Returns dict with sensitivity_level, pattern_detected, norm_tag, ml_confidence.
+        Sample content is not stored.
+        """
+        level, pattern, norm, conf = self.detector.analyze(column_name, sample_content or "")
+        return {
+            "sensitivity_level": level,
+            "pattern_detected": pattern,
+            "norm_tag": norm,
+            "ml_confidence": conf,
         }
 
-    def analyze_data(self, column_name, sample_content):
+    def scan_file_content(self, content: str, file_path: str | Path) -> dict[str, Any] | None:
         """
-        Analisa a sensibilidade usando abordagem híbrida.
+        Analyze file content (and path for context). Returns same shape as scan_column if sensitivity != LOW; else None.
         """
-        score = 0.0
-        details = []
+        path_str = str(file_path)
+        name = Path(file_path).name if isinstance(file_path, (str, Path)) else path_str
+        level, pattern, norm, conf = self.detector.analyze(name, content or "")
+        if level == "LOW":
+            return None
+        return {
+            "sensitivity_level": level,
+            "pattern_detected": pattern,
+            "norm_tag": norm,
+            "ml_confidence": conf,
+        }
 
-        # 1. Verificação por Regex (Peso Alto)
-        for label, pattern in self.patterns.items():
-            if re.search(pattern, str(sample_content)):
-                score += 0.8
-                details.append(label)
-
-        # 2. Verificação por ML no nome da coluna e conteúdo (Peso Médio)
-        ml_score_name = self.ml_engine.predict_sensitivity(column_name)
-        ml_score_content = self.ml_engine.predict_sensitivity(sample_content)
-        
-        combined_ml = (ml_score_name * 0.4) + (ml_score_content * 0.6)
-        score += combined_ml
-
-        # Classificação Final baseada nos requisitos LGPD/GDPR/CCPA
-        if score > 0.9:
-            return "HIGH", " | ".join(details) if details else "ML_DETECTED_SENSITIVE"
-        elif score > 0.3:
-            return "MEDIUM", "POTENTIAL_PERSONAL_DATA"
-        
-        return "LOW", "GENERAL_DATA"
+    # Backward compatibility: analyze_data used by old code
+    def analyze_data(self, column_name: str, sample_content: str) -> tuple[str, str]:
+        """Returns (sensitivity_level, pattern_detected) for callers that expect a tuple."""
+        d = self.scan_column(column_name, sample_content)
+        return d["sensitivity_level"], d["pattern_detected"]

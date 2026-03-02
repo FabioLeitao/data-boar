@@ -1,98 +1,153 @@
-# python\_lgpd\_crawler
+# python3-lgpd-crawler
 
-Dashboard com capacidade de sondagem, apreciação e mapeamento dos dados pessoais e/ou sensíveis para busca de violações de compliance de acordo com as recomendações do LGPD (adaptável mediante dicionário de regras)
+Application for auditing personal and sensitive data across databases and filesystems, aligned with **LGPD**, **GDPR**, **CCPA**, **HIPAA**, and **GLBA**. It discovers and maps possible PII/sensitive data via regex and ML, stores metadata in a local SQLite database, and produces Excel reports with heatmaps and recommendations.
 
-Web application that scans **databases** (for now) for compliance violations according to **LGPD** and other regulations. Implemented in Python3 with Flask for the backend and HTML/CSS/JavaScript for the frontend.
+## Features
 
+- **Multi-target scanning**: Configure multiple databases and filesystem paths in a single YAML/JSON config.
+- **SQL databases**: PostgreSQL, MySQL, MariaDB, SQLite, Microsoft SQL Server, Oracle (via SQLAlchemy drivers).
+- **NoSQL (optional)**: MongoDB, Redis — install optional deps: `uv pip install -e ".[nosql]"`.
+- **Filesystem**: Recursive scan of local (or mounted) directories; permission check before reading; supports `.txt`, `.csv`, `.pdf`, `.doc`, `.docx`, `.odt`, `.xls`, `.xlsx`, `.sqlite`, `.json`.
+- **Sensitivity detection**: Regex patterns (configurable) + ML classifier (TF-IDF + RandomForest) on column names and sampled content; no raw data is stored.
+- **Single SQLite**: All findings and failures per session (UUID + timestamp); separate tables for database findings, filesystem findings, and scan failures.
+- **Reporting**: Excel with sheets "Database findings", "Filesystem findings", "Scan failures", "Recommendations", and sensitivity/risk heatmap (PNG).
+- **CLI and REST API**: Run one-shot audit from command line or start API (default port 8088) for `/scan`, `/status`, `/report`, `/list`, `/reports/{session_id}`.
 
-##### Implementation:
+## Requirements
 
-###### Solution Overview
+- Python 3.12+
+- Ubuntu 24.04 LTS / Debian 13 (or recent Linux/macOS/Windows)  
+- [uv](https://github.com/astral-sh/uv) (recommended) or pip
 
-1. **Dashboard** - Shows compliance status and scan results
+## Install
 
-2. **Scanner** - Connects to databases and identifies sensitive data
+```bash
+# With uv (recommended)
+uv sync
 
-3. **Configuration** - Manages database connections and scan settings
+# Or with pip
+pip install -e .
+```
 
-###### Frontend 
+Optional NoSQL support (MongoDB, Redis):
 
-The application includes three main pages:
+```bash
+uv pip install -e ".[nosql]"
+# or: pip install -e ".[nosql]"
+```
 
-1. **Dashboard** (index.html):
+## Configuration
 
-* Shows compliance requirements and current status
-* Lists all configured databases
-* Shows recent scan results
+Use a single config file in **YAML** or **JSON**. Example `config.yaml`:
 
-2. **Scanning** (scan.html):
+```yaml
+targets:
+  - name: "Produção_Postgres"
+    type: database
+    driver: postgresql+psycopg2
+    host: 10.0.0.50
+    port: 5432
+    user: audit_user
+    pass: secure_password
+    database: customers_db
 
-* Interface to start scans
-* Shows scan progress
+  - name: "Documentos_LGPD"
+    type: filesystem
+    path: /home/user/Documents/LGPD
+    recursive: true
 
-3. **Configuration** (config.html):
+file_scan:
+  extensions: [.txt, .csv, .pdf, .docx, .xlsx]
+  recursive: true
 
-* Form to add new database connections
-* List of existing configurations
+report:
+  output_dir: .
 
+api:
+  port: 8088
 
-##### TODO:
+sqlite_path: audit_results.db
+scan:
+  max_workers: 1   # 1 = sequential; >1 = parallel
 
-###### Key goals!
+# Optional: external pattern files (no code change)
+ml_patterns_file: ml_patterns.yaml
+regex_overrides_file: regex_overrides.yaml
+```
 
-1. Database Connection Management:
+Legacy `config/config.json` with `databases` and `file_scan.directories` is normalized automatically.
 
-* Supports PostgreSQL and MySQL (mariaDB)
-* Stores configuration securely
+### ML patterns file (optional)
 
-2. Compliance Checking:
+YAML/JSON list of `text` + `label` (sensitive / non_sensitive) to train or extend the classifier:
 
-* Checks for common compliance requirements
-* Identifies sensitive data patterns (email, phone, CPF, gender, etc.) via some form of regex
+```yaml
+- text: "cpf"
+  label: sensitive
+- text: "system_log"
+  label: non_sensitive
+```
 
-3. Reporting:
+### Regex overrides (optional)
 
-* Generates local database (SQLite) indicating finds and possible vectors of violations of privacy
-* Generates detailed PDF or Spreadsheet reports of quantities, locations, heatmap...
-* Summarizes findings and compliance status including some sort of risc score (TBD) and recommendations
+YAML/JSON list of `name`, `pattern`, optional `norm_tag`:
 
-4. User-Friendly Interface:
+```yaml
+- name: LGPD_CPF
+  pattern: "\b\d{3}\.?\d{3}\.?\d{3}-?\d{2}\b"
+  norm_tag: "LGPD Art. 5"
+```
 
-* Clean dashboard showing scan history (including age of last data gathering)
-* Progress tracking for ongoing scans (if so possible)
-* Easy configuration management (credentials, DBE flavor (and connector), subsets, etc.)
+## Run
 
-5. How to execute the app so far:
-* ✅ CLI mode
- ```
-python main.py --cli
- ```
-* ✅ API mode
- ```
-python main.py --api
- ```
+**CLI (one-shot audit):**
 
+```bash
+python main.py --config config.yaml
+# Report written to report output_dir, e.g. Relatorio_Auditoria_<session_id>.xlsx
+```
 
-###### How to Extend This Solution?
+**REST API (default port 8088):**
 
-1. Add More Compliance Requirements:
+```bash
+python main.py --config config.yaml --web --port 8088
+# Or: uvicorn api.routes:app --host 0.0.0.0 --port 8088
+```
 
-* Add additional checks to the COMPLIANCE\_REQUIREMENTS dictionary (such as GDPR or CCPA) besides the current LGPD
+API routes:
 
-2. Implement Actual Database Scanning:
+- `POST /scan` or `POST /start` — start audit in background; returns `session_id`
+- `GET /status` — `running`, `current_session_id`, `findings_count`
+- `GET /report` — download last generated Excel report
+- `GET /list` or `GET /reports` — list past sessions (session_id, timestamp, counts)
+- `GET /reports/{session_id}` — regenerate and download report for that session
 
-* Connect to real databases using the get\_db\_connection function or SQLAlchemy library
-* Scan tables for further sensitive data patterns (via some form of regex) eigther collumn name or actual record and use it to teach machine learning to improve recognition
+## Supported databases and drivers
 
-3. Add More Data Types:
+| Engine    | Driver (config)           | Note                    |
+|-----------|---------------------------|-------------------------|
+| PostgreSQL| `postgresql+psycopg2`     | psycopg2-binary         |
+| MySQL     | `mysql+pymysql`           | pymysql                 |
+| MariaDB   | `mysql+pymysql`           | same as MySQL           |
+| SQLite    | `sqlite`                  | database = path         |
+| SQL Server| `mssql+pyodbc`            | pyodbc                  |
+| Oracle    | `oracle+oracledb`         | oracledb                |
+| MongoDB   | `mongodb`                 | optional: pymongo       |
+| Redis     | `redis`                   | optional: redis         |
 
-* Expand the PersonalDataPattern class to include more patterns (personal or sensitive data), not hardcoded if feasable
-* Add support for different languages and name formats (mostly latin based, but not only, due to the international nature of the target company)
-* Add support for different data base engines, such as MS SQL, Oracle, etc. (including their connectors, data sets, schemas, etc)
-* Add support for different data inputs types besides BDE, such as DBF, CSV, XLS, XLSX, ODP, PMDX files, emails or forms that might also store personal and/or sensitive data
-* Add support for some sort of API integration (SOAP or REST) to gather such data where available (many systems and/or solutions might already expose data bases for other intentions that might assist us)
+For MongoDB/Redis, add a target with `type: database` and `driver: mongodb` or `redis` (host, port, database/password as needed). Install optional deps: `uv pip install -e ".[nosql]"`.
 
-4. Enhance Reporting:
+## Logging and alerts
 
-* Add more detailed statistics to reports based on authoritative feedbacks
-* Include database schema diagrams with forein keys connections, and cross reference of "possible same individual" as data gets unhidden (further indication of risc assestment)
+- Log file: `audit_YYYYMMDD.log` (and console).
+- On each finding (possible personal/sensitive data), the app logs and prints an `[ALERT]` to the console so the operator is notified on the fly.
+
+## Security and compliance
+
+- No raw sampled content is persisted; only metadata (location, pattern, sensitivity, norm tag).
+- Use recent, CVE-patched versions of the interpreter and dependencies (`uv sync` / `pip install -e .`).
+- Keep credentials in config files or environment; avoid committing secrets.
+
+## License
+
+See [LICENSE](LICENSE).
