@@ -1,0 +1,55 @@
+# Runs image default: web API + frontend (no command/args override).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lgpd-audit
+  labels:
+    app: lgpd-audit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lgpd-audit
+  template:
+    metadata:
+      labels:
+        app: lgpd-audit
+    spec:
+      containers:
+        - name: lgpd-audit
+          image: YOUR_DOCKERHUB_USER/python3-lgpd-crawler:latest
+          ports:
+            - containerPort: 8088
+          env:
+            - name: CONFIG_PATH
+              value: /data/config.yaml
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /data/config.yaml
+              subPath: config.yaml
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8088
+            initialDelaySeconds: 25
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8088
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "256Mi"
+            limits:
+              memory: "1Gi"
+      volumes:
+        - name: data
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: lgpd-audit-config
