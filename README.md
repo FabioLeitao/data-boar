@@ -15,8 +15,8 @@ Application for auditing personal and sensitive data across databases and filesy
 - **Filesystem**: Recursive scan of local (or mounted) directories; permission check before reading. Supports many extensions: text (`.txt`, `.csv`, `.json`, `.xml`, `.html`, `.md`, `.yml`, `.log`, `.ini`, `.sql`, `.rtf`, etc.), documents (`.pdf`, `.doc`, `.docx`, `.odt`, `.ods`, `.odp`, `.xls`, `.xlsx`, `.xlsm`, `.ppt`, `.pptx`), email (`.eml`, `.msg`), and data (`.sqlite`, `.db`). **SQLite files** (`.sqlite`, `.sqlite3`, `.db`) found on disk are opened and scanned as databases (discover tables/columns, sample and detect); set `file_scan.scan_sqlite_as_db: false` to skip. Set `file_scan.extensions` to a list of suffixes, or `"*"` / `"all"` for all supported types.
 - **Sensitivity detection**: Regex patterns (configurable) + ML classifier (TF-IDF + RandomForest) on column names and sampled content; no raw data is stored. **Lyrics and music tablature** are detected via heuristics so that date-like or digit sequences in song lyrics and guitar tabs are downgraded to MEDIUM/LOW to reduce false positives; strong PII (CPF, email, etc.) still reports HIGH.
 - **Single SQLite**: All findings and failures per session (UUID + timestamp); metadata per scan includes optional **tenant_name** (customer/tenant) and **technician_name** (operator responsible). Separate tables for database findings, filesystem findings, and scan failures.
-- **Reporting**: Excel with sheets **"Report info"** (Session ID, Started at, Tenant/Customer, Technician/Operator), "Database findings", "Filesystem findings", "Scan failures", "Recommendations", "Praise / existing controls" (indications of encryption/hashing/tokenization), **"Trends - Session comparison"** (vs previous run: improvements or new/increased findings for DPO and security team), and sensitivity/risk heatmap (PNG).
-- **CLI and REST API**: Run one-shot audit from command line or start API (default port 8088) for `/scan`, `/start`, `/scan_database`, `/status`, `/report`, `/list`, `/reports/{session_id}`. Both modes allow tagging scans with optional **tenant/customer** and **technician/operator** information.
+- **Reporting**: Excel with sheets **"Report info"** (Session ID, Started at, Tenant/Customer, Technician/Operator, Application, Version, Author, License, Copyright), "Database findings", "Filesystem findings", "Scan failures", "Recommendations", "Praise / existing controls" (indications of encryption/hashing/tokenization), **"Trends - Session comparison"** (vs previous run), and sensitivity/risk heatmap (PNG). The heatmap image and dashboard/reports pages include the same application and author attribution.
+- **CLI and REST API**: Run one-shot audit from command line or start API (default port 8088) for `/scan`, `/start`, `/scan_database`, `/status`, `/report`, `/list`, `/reports/{session_id}`, `/about`. Both modes allow tagging scans with optional **tenant/customer** and **technician/operator** information. The web dashboard includes **Help**, **About** (author and license), and security headers (see SECURITY.md). The application works behind NAT, load balancers, and reverse proxies (nginx, Traefik, Caddy); set `X-Forwarded-Proto: https` when TLS is terminated at the proxy.
 
 ## Requirements and environment preparation
 
@@ -460,19 +460,41 @@ When adding new CLI options or API capabilities, update both this README and `do
 
 ## Deploy with Docker
 
-You can run the API as a container or as a **Docker Swarm** service. Image: build from the repo or use a published image (e.g. GitHub Container Registry or Docker Hub).
+You can run the API as a **single container** (`docker run`), with **Docker Compose**, **Docker Swarm**, or **Kubernetes**. You may either **pull the pre-built image** from Docker Hub or **build from source** after cloning the repo.
+
+### Pre-built image (Docker Hub)
+
+A Docker image is available on **Docker Hub** so you can run the application without cloning the repository:
+
+- **Repository:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)
+- **Image name:** `fabioleitao/python3-lgpd-crawler:latest` (version tag `latest`; other tags may be published for specific releases)
+
+Example: run the web API with a local config directory:
+
+```bash
+docker pull fabioleitao/python3-lgpd-crawler:latest
+docker run -d -p 8088:8088 -v /path/to/your/data:/data -e CONFIG_PATH=/data/config.yaml fabioleitao/python3-lgpd-crawler:latest
+```
+
+Prepare `/data/config.yaml` from `deploy/config.example.yaml` (see [deploy/DEPLOY.md](deploy/DEPLOY.md)). You can decide to use this image as an instanced container instead of pulling the code from Git and building locally.
+
+### Build from source
 
 - **Build:** `docker build -t python3-lgpd-crawler:latest .`
 - **Run:** Mount config at `/data/config.yaml` (see `deploy/config.example.yaml`). Expose port 8088.
-- **Swarm:** `docker stack deploy -c deploy/docker-compose.yml lgpd-audit` (after preparing `/data` with config).
+- **Compose:** `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d` (prepare `./data/config.yaml` first).
+- **Swarm:** `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit`.
+- **Kubernetes:** `kubectl apply -f deploy/kubernetes/` (see `deploy/kubernetes/README.md`).
 
-Full steps (build, push to a registry, run with Compose, deploy as Swarm on your machine): **[deploy/DEPLOY.md](deploy/DEPLOY.md)**.
+Full steps (build, push, single container, Compose, Swarm, Kubernetes): **[deploy/DEPLOY.md](deploy/DEPLOY.md)**.
 
 ## Security and compliance
 
 - No raw sampled content is persisted; only metadata (location, pattern, sensitivity, norm tag).
+- The web API adds security headers by default (X-Content-Type-Options, X-Frame-Options, Content-Security-Policy, Referrer-Policy, Permissions-Policy, and HSTS when served over HTTPS). See [SECURITY.md](SECURITY.md).
 - Use recent, CVE-patched versions of the interpreter and dependencies (`uv sync` / `pip install -e .`).
 - Keep credentials in config files or environment; avoid committing secrets.
+- **Behind a reverse proxy (nginx, Traefik, Caddy):** Set `X-Forwarded-Proto: https` for TLS-terminated traffic so HSTS and scheme detection work correctly.
 - **Reporting vulnerabilities:** See [SECURITY.md](SECURITY.md). **Contributing:** See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
