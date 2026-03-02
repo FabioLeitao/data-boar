@@ -15,7 +15,7 @@ Textual description of modules, classes, and main functions and how they connect
 
 - **config/loader.py**
   - `load_config(path)` — Load YAML or JSON from path; return dict.
-  - `normalize_config(data)` — Normalize to unified schema: `targets[]`, `file_scan`, `report`, `api`, `ml_patterns_file`, `regex_overrides_file`, `sqlite_path`, `scan.max_workers`. Legacy `databases` + `file_scan.directories` converted to `targets`.
+  - `normalize_config(data)` — Normalize to unified schema: `targets[]`, `file_scan` (extensions, recursive, scan_sqlite_as_db, sample_limit), `report`, `api`, `ml_patterns_file`, `regex_overrides_file`, `sqlite_path`, `scan.max_workers`. Legacy `databases` + `file_scan.directories` converted to `targets`.
 
 ---
 
@@ -56,8 +56,9 @@ Textual description of modules, classes, and main functions and how they connect
   - **SQLConnector** — `__init__(target_config, scanner, db_manager, sample_limit)`; `connect()`, `close()`, `discover()` → list of {schema, table, columns}; `sample(schema, table, column_name)` → string (no persistence); `run()` — connect, discover, sample each column, run scanner, save_finding or save_failure. Registered for postgresql, mysql, mariadb, sqlite, mssql, oracle.
 
 - **connectors/filesystem_connector.py**
-  - **FilesystemConnector** — `__init__(target_config, scanner, db_manager, extensions)`; `run()` — walk path (recursive or not), check `os.access(path, R_OK)`, read text sample via `_read_text_sample()`, run scanner, save_finding or save_failure. Registered for filesystem.
-  - `_read_text_sample(path, ext, max_chars)` — Extract text from txt/csv/pdf/docx/odt/xlsx (helpers from pypdf, docx, pandas, odfpy).
+  - **FilesystemConnector** — `__init__(target_config, scanner, db_manager, extensions, scan_sqlite_as_db=True, sample_limit=5)`; `run()` — walk path (recursive or not), check `os.access(path, R_OK)`. For `.sqlite`/`.sqlite3`/`.db` when `scan_sqlite_as_db` is True: open as DB, discover tables/columns, sample and detect, save as filesystem_findings (file_name encodes `file.db | table.column`). Otherwise read text via `_read_text_sample()`, run scanner, save_finding or save_failure. Registered for filesystem.
+  - `_read_text_sample(path, ext, max_chars)` — Extract text from txt/csv/pdf/docx/odt/ods/odp/xlsx/pptx/msg/eml (pypdf, docx, pandas, odfpy, extract-msg, etc.).
+  - `_scan_sqlite_file_as_db(file_path, scanner, sample_limit)` — Open SQLite file, discover + sample + detect; return list of finding dicts for filesystem save_finding.
 
 - **connectors/mongodb_connector.py** (optional)
   - **MongoDBConnector** — connect, list collections, sample documents, run scanner on field names + combined sample text, save_finding. Registered for mongodb when pymongo is installed.
@@ -81,6 +82,7 @@ Textual description of modules, classes, and main functions and how they connect
 - **api/routes.py**
   - FastAPI `app`; startup loads config and creates AuditEngine (singleton).
   - `POST /scan`, `POST /start` — Create session_id, run `_run_audit_targets()` in background; return session_id.
+  - `POST /scan_database` — One-off scan of a single database (body: name, host, port, user, password, database, optional driver); starts in background, returns session_id.
   - `GET /status` — running, current_session_id, findings_count.
   - `GET /report` — Download last report file (or generate from last session).
   - `GET /list`, `GET /reports` — List sessions from SQLite.
@@ -102,8 +104,8 @@ Textual description of modules, classes, and main functions and how they connect
 ## Data flow (summary)
 
 1. **Config** → config/loader → normalized dict with targets, file_scan, report, api, sqlite_path.
-2. **Engine** → core/engine creates LocalDBManager, DataScanner; for each target, connector_for_target → connector.run().
-3. **Connectors** → connect, discover (and sample for DB), call scanner.scan_column or scan_file_content, db_manager.save_finding or save_failure; logger.log_connection / log_finding.
+2. **Engine** → core/engine creates LocalDBManager, DataScanner; for each target, connector_for_target → connector.run(). For filesystem targets, passes file_scan.scan_sqlite_as_db and sample_limit to FilesystemConnector.
+3. **Connectors** → connect, discover (and sample for DB); for filesystem, .sqlite/.db files are optionally opened as SQLite DBs and scanned (discover + sample + detect), results saved as filesystem_findings; other files use _read_text_sample and scanner; logger.log_connection / log_finding.
 4. **Report** → report/generator reads SQLite via db_manager.get_findings(session_id), writes Excel + heatmap, returns path.
 5. **API** → routes use same AuditEngine; /scan starts background _run_audit_targets; /report and /reports/{id} call generate_final_reports.
 

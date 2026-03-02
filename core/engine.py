@@ -88,11 +88,20 @@ class AuditEngine:
             return
         connector_class, _ = resolved
         if target.get("type") == "filesystem":
-            ext = self.config.get("file_scan", {}).get("extensions")
+            fs_config = self.config.get("file_scan", {})
+            ext = fs_config.get("extensions")
+            scan_sqlite_as_db = fs_config.get("scan_sqlite_as_db", True)
+            sample_limit = fs_config.get("sample_limit", 5)
             if ext is not None:
-                connector = connector_class(target, self.scanner, self.db_manager, extensions=ext)
+                connector = connector_class(
+                    target, self.scanner, self.db_manager,
+                    extensions=ext, scan_sqlite_as_db=scan_sqlite_as_db, sample_limit=sample_limit,
+                )
             else:
-                connector = connector_class(target, self.scanner, self.db_manager)
+                connector = connector_class(
+                    target, self.scanner, self.db_manager,
+                    scan_sqlite_as_db=scan_sqlite_as_db, sample_limit=sample_limit,
+                )
         else:
             connector = connector_class(target, self.scanner, self.db_manager)
         try:

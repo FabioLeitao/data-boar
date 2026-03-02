@@ -89,21 +89,17 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 
 ---
 
-### 2.6 SQLite / .db files in filesystem scan
+### 2.6 SQLite / .db files in filesystem scan — Done
 
-- Today: `.sqlite` / `.db` in file scan are path/name only (no content).
-- **Next step:** Optionally treat them as DB targets: when scanning a file with extension `.sqlite` or `.db`, open with SQLAlchemy and run the same discover + sample + detect flow as for a database target, then save as filesystem_findings (or a dedicated flag) so the report still separates “from filesystem” vs “from database” but content is analyzed.
+- **Implemented:** When `file_scan.scan_sqlite_as_db` is true (default), files with extension `.sqlite`, `.sqlite3`, or `.db` are opened with SQLAlchemy; discover tables/columns, sample rows, run detector; results saved as filesystem_findings with `file_name` encoding `path.db | table.column`. Config: `file_scan.scan_sqlite_as_db`, `file_scan.sample_limit`. “from filesystem” vs “from database” but content is analyzed.
 
 **Deliverable:** Design (config flag or auto-detect) and implementation for “scan SQLite files as DBs” in the file connector.
 
 ---
 
-### 2.7 TOPOLOGY and README upkeep
+### 2.7 TOPOLOGY and README upkeep — Done
 
-- After any of the above, update TOPOLOGY.md (new modules, removed ones, data flow).
-- README: keep supported DBs, file types, and optional connectors (including any new ones) in sync with the code.
-
-**Deliverable:** TOPOLOGY.md and README accurate after each change.
+- **Updated:** TOPOLOGY.md documents file_scan.scan_sqlite_as_db/sample_limit, FilesystemConnector SQLite-as-DB flow and `_scan_sqlite_file_as_db`, and API route `POST /scan_database`. README documents SQLite-as-DB behavior, `scan_sqlite_as_db`/`sample_limit`, and `/scan_database` route.
 
 ---
 
@@ -121,7 +117,7 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 | core/connector_registry.py | Registry | Done |
 | core/engine.py | Full engine + reports | Done |
 | connectors/sql_connector.py | Discover + sample | Done |
-| connectors/filesystem_connector.py | Permission, recursive, extensions | Done |
+| connectors/filesystem_connector.py | Permission, recursive, extensions, SQLite-as-DB (2.6) | Done |
 | connectors/mongodb_connector.py | Optional | Done |
 | connectors/redis_connector.py | Optional | Done |
 | report/generator.py | Single Excel + heatmap | Done; add praise (2.3) |
