@@ -63,9 +63,9 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 
 ---
 
-### 2.5 Optional connectors (BigData / APIs)
+### 2.5 Optional connectors (BigData / APIs) — Done
 
-- Plan: “Snowflake, REST/SOAP, SharePoint, Datalake, Graylog/Grafana as optional connectors; document config and install.”
+- **Implemented:** REST/API connector (`connectors/rest_connector.py`) with auth: basic, bearer (token or token_from_env), oauth2_client, custom headers. Targets `type: api` or `type: rest`; README documents auth table and YAML examples. (Legacy plan: “Snowflake, REST/SOAP, SharePoint, Datalake, Graylog/Grafana as optional connectors; document config and install.”
 - **Next step:** Add optional connector modules (e.g. `connectors/snowflake_connector.py`, `connectors/rest_connector.py`) behind optional deps (`bigdata`, `api`), or at least document in README:
   - How to add a target (type, driver, URL/credentials).
   - Which packages to install (e.g. snowflake-connector-python, httpx/requests).
