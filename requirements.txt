@@ -150,7 +150,7 @@ msoffcrypto-tool==6.0.0
     # via oletools
 mysql==0.0.3
     # via python3-lgpd-crawler (pyproject.toml)
-mysqlclient==2.2.7
+mysqlclient==2.2.8
     # via
     #   python3-lgpd-crawler (pyproject.toml)
     #   mysql
