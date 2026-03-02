@@ -7,17 +7,35 @@ and create a singleton AuditEngine.
 
 Path safety: all path expressions use only validated session_id or server-controlled paths;
 user-supplied session_id is validated to prevent path traversal before use in file paths.
+
+Cache: static assets get long-lived Cache-Control; API/HTML get no-store. Sessions list is cached
+in-memory for a short TTL when no scan is running to reduce SQLite reads on repeated dashboard loads.
+
+Security: default middleware adds X-Content-Type-Options, X-Frame-Options, Content-Security-Policy,
+Referrer-Policy, Permissions-Policy, and Strict-Transport-Security (only when served over HTTPS).
 """
 import os
 import re
+import time
 from pathlib import Path
 
 import yaml
+
+def _about_info() -> dict:
+    """Application name, version, author and license (from core.about, matches LICENSE and README)."""
+    return get_about_info()
+
+
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
+
+# In-memory cache for list_sessions (TTL seconds). Bypassed when a scan is running.
+_SESSIONS_CACHE_TTL = 2.0
+_sessions_cache: list[dict] | None = None
+_sessions_cache_time: float = 0.0
 
 _api_dir = Path(__file__).resolve().parent
 templates = Jinja2Templates(directory=str(_api_dir / "templates"))
@@ -131,7 +149,80 @@ def _get_engine():
     return _audit_engine
 
 
-app = FastAPI(title="LGPD/GDPR/CCPA Audit API", version="1.0.0")
+from core.about import get_about_info
+app = FastAPI(title="LGPD/GDPR/CCPA Audit API", version=get_about_info()["version"])
+
+
+def _list_sessions_cached() -> list[dict]:
+    """Return list of sessions; use short-TTL in-memory cache when no scan is running to reduce DB reads."""
+    global _sessions_cache, _sessions_cache_time
+    engine = _get_engine()
+    if engine.is_running:
+        _sessions_cache = None
+        return engine.db_manager.list_sessions()
+    now = time.monotonic()
+    if _sessions_cache is not None and (now - _sessions_cache_time) < _SESSIONS_CACHE_TTL:
+        return _sessions_cache
+    _sessions_cache = engine.db_manager.list_sessions()
+    _sessions_cache_time = now
+    return _sessions_cache
+
+
+def _invalidate_sessions_cache() -> None:
+    """Clear sessions cache so next read gets fresh data (e.g. after scan start or session PATCH)."""
+    global _sessions_cache
+    _sessions_cache = None
+
+
+def _is_secure_request(request: Request) -> bool:
+    """True if request was made over HTTPS (direct or via trusted proxy X-Forwarded-Proto)."""
+    proto = request.headers.get("x-forwarded-proto", "").strip().lower()
+    if proto == "https":
+        return True
+    return request.url.scheme == "https"
+
+
+@app.middleware("http")
+async def security_headers_middleware(request: Request, call_next):
+    """
+    Add current best-practice security headers to all responses.
+    HSTS is set only when the request is over HTTPS to avoid locking out HTTP users.
+    CSP allows 'self', CDN (Chart.js), and unsafe-inline for existing dashboard inline scripts/styles.
+    """
+    response = await call_next(request)
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    response.headers.setdefault(
+        "Permissions-Policy",
+        "camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=(), usb=(), "
+        "magnetometer=(), gyroscope=(), accelerometer=()",
+    )
+    # CSP: allow self, Chart.js CDN, and inline scripts/styles used by dashboard (no negative impact on main goals)
+    response.headers.setdefault(
+        "Content-Security-Policy",
+        "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; "
+        "base-uri 'self'; object-src 'none'",
+    )
+    if _is_secure_request(request):
+        response.headers.setdefault(
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains; preload",
+        )
+    return response
+
+
+@app.middleware("http")
+async def cache_control_middleware(request: Request, call_next):
+    """Set Cache-Control: long-lived for static assets, no-store for API and HTML."""
+    response = await call_next(request)
+    if request.url.path.startswith("/static/"):
+        response.headers.setdefault("Cache-Control", "public, max-age=86400")
+    else:
+        response.headers.setdefault("Cache-Control", "no-store")
+    return response
+
 
 app.mount("/static", StaticFiles(directory=str(_api_dir / "static")), name="static")
 
@@ -156,6 +247,22 @@ async def help_page(request: Request):
         name="help.html",
         context={},
     )
+
+
+@app.get("/about", response_class=HTMLResponse)
+async def about_page(request: Request):
+    """About: application name, version, author and license (same as established in the project LICENSE)."""
+    return templates.TemplateResponse(
+        request=request,
+        name="about.html",
+        context={"about": _about_info()},
+    )
+
+
+@app.get("/about/json")
+async def about_json():
+    """Machine-readable about info (name, version, author, license) for API consumers."""
+    return _about_info()
 
 
 def _build_chart_data(sessions: list[dict]) -> list[dict]:
@@ -184,7 +291,7 @@ async def dashboard(request: Request):
         "current_session_id": engine.db_manager.current_session_id,
         "findings_count": engine.get_current_findings_count(),
     }
-    sessions = engine.db_manager.list_sessions()
+    sessions = _list_sessions_cached()
     last_session = sessions[0] if sessions else None
     chart_data = _build_chart_data(sessions)
     return templates.TemplateResponse(
@@ -195,6 +302,7 @@ async def dashboard(request: Request):
             "sessions": sessions,
             "last_session": last_session,
             "chart_data": chart_data,
+            "about": _about_info(),
         },
     )
 
@@ -251,8 +359,7 @@ async def config_save(request: Request):
 @app.get("/reports", response_class=HTMLResponse)
 async def reports_page(request: Request):
     """Reports list page with download links. Query: sort=date_desc (newest first, default) or sort=date_asc (oldest first)."""
-    engine = _get_engine()
-    sessions = engine.db_manager.list_sessions()
+    sessions = _list_sessions_cached()
     sort = (request.query_params.get("sort") or "date_desc").strip().lower()
     if sort == "date_asc":
         sessions = list(reversed(sessions))
@@ -262,7 +369,7 @@ async def reports_page(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="reports.html",
-        context={"sessions": sessions, "sort": sort},
+        context={"sessions": sessions, "sort": sort, "about": _about_info()},
     )
 
 
@@ -290,6 +397,7 @@ async def start_scan(background_tasks: BackgroundTasks, body: ScanStartBody | No
     def run_targets():
         engine._run_audit_targets()
     background_tasks.add_task(run_targets)
+    _invalidate_sessions_cache()
     return {"status": "started", "session_id": session_id}
 
 
@@ -358,8 +466,7 @@ async def download_heatmap():
 @app.get("/list")
 async def list_sessions_api(sort: str = "date_desc"):
     """List past scan sessions (session_id, timestamp, tenant_name, counts) for report recreation (JSON API). Query: sort=date_desc (newest first, default) or sort=date_asc (oldest first)."""
-    engine = _get_engine()
-    sessions = engine.db_manager.list_sessions()
+    sessions = _list_sessions_cached()
     if (sort or "").strip().lower() == "date_asc":
         sessions = list(reversed(sessions))
     return {"sessions": sessions}
@@ -385,6 +492,7 @@ async def update_session_tenant(session_id: str, body: SessionTenantUpdate):
         raise HTTPException(status_code=404, detail=f"Session {session_id} not found.")
     tenant = (body.tenant or "").strip() or None
     engine.db_manager.update_session_tenant(session_id, tenant)
+    _invalidate_sessions_cache()
     return {"session_id": session_id, "tenant": tenant}
 
 
@@ -398,6 +506,7 @@ async def update_session_technician(session_id: str, body: SessionTechnicianUpda
         raise HTTPException(status_code=404, detail=f"Session {session_id} not found.")
     technician = (body.technician or "").strip() or None
     engine.db_manager.update_session_technician(session_id, technician)
+    _invalidate_sessions_cache()
     return {"session_id": session_id, "technician": technician}
 
 
@@ -499,4 +608,5 @@ async def scan_database(config: DatabaseConfig, background_tasks: BackgroundTask
             engine._is_running = False
             engine.db_manager.finish_session(session_id, "completed")
     background_tasks.add_task(run_one_target)
+    _invalidate_sessions_cache()
     return {"status": "started", "session_id": session_id}
