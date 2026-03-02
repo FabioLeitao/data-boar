@@ -289,6 +289,38 @@ async def download_report():
     raise HTTPException(status_code=404, detail="Report not available. Run a scan first.")
 
 
+@app.get("/heatmap")
+async def download_heatmap():
+    """Download last generated heatmap PNG (sensitivity/risk heatmap for the most recent session)."""
+    engine = _get_engine()
+    # Try to reuse last report path; if missing, generate from last known session as in /report.
+    path = engine.get_last_report_path()
+    sid: str | None = None
+    if not path or not Path(path).exists():
+        sid = engine.db_manager.current_session_id or None
+        if not sid:
+            sessions = engine.db_manager.list_sessions()
+            if sessions:
+                sid = sessions[0]["session_id"]
+        if not sid:
+            raise HTTPException(status_code=404, detail="Heatmap not available. Run a scan first.")
+        path = engine.generate_final_reports(sid)
+    # At this point we have a report path and can infer session_id if needed
+    if not path or not Path(path).exists():
+        raise HTTPException(status_code=404, detail="Heatmap not available. Run a scan first.")
+    report_path = Path(path)
+    if not sid:
+        # Recover session prefix from report filename: Relatorio_Auditoria_<session_prefix>.xlsx
+        name = report_path.name
+        prefix = name.removeprefix("Relatorio_Auditoria_").removesuffix(".xlsx")
+        sid = prefix
+    out_dir = report_path.parent
+    heatmap_path = out_dir / f"heatmap_{sid[:12]}.png"
+    if heatmap_path.exists():
+        return FileResponse(heatmap_path, filename=heatmap_path.name, media_type="image/png")
+    raise HTTPException(status_code=404, detail="Heatmap not available. Run a scan first or ensure the report was generated.")
+
+
 @app.get("/list")
 async def list_sessions_api(sort: str = "date_desc"):
     """List past scan sessions (session_id, timestamp, tenant_name, counts) for report recreation (JSON API). Query: sort=date_desc (newest first, default) or sort=date_asc (oldest first)."""
@@ -341,6 +373,20 @@ async def download_report_by_session(session_id: str):
     if path and Path(path).exists():
         return FileResponse(path, filename=Path(path).name, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     raise HTTPException(status_code=404, detail=f"No data for session {session_id} or report generation failed.")
+
+
+@app.get("/heatmap/{session_id}")
+async def download_heatmap_by_session(session_id: str):
+    """Regenerate report (if needed) and download heatmap PNG for the given session_id."""
+    engine = _get_engine()
+    path = engine.generate_final_reports(session_id)
+    if not path or not Path(path).exists():
+        raise HTTPException(status_code=404, detail=f"No data for session {session_id} or report generation failed.")
+    out_dir = Path(path).parent
+    heatmap_path = out_dir / f"heatmap_{session_id[:12]}.png"
+    if heatmap_path.exists():
+        return FileResponse(heatmap_path, filename=heatmap_path.name, media_type="image/png")
+    raise HTTPException(status_code=404, detail=f"Heatmap not available for session {session_id}. Run a scan and ensure findings exist.")
 
 
 @app.post("/scan_database")

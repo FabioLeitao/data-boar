@@ -2,6 +2,8 @@
 
 Application for auditing personal and sensitive data across databases and filesystems, aligned with **LGPD**, **GDPR**, **CCPA**, **HIPAA**, and **GLBA**. It discovers and maps possible PII/sensitive data via regex and ML, stores metadata (including optional **tenant/customer** and **technician/operator** tags per scan) in a local SQLite database, and produces Excel reports with heatmaps and recommendations.
 
+> **Documentation note:** This README and `docs/USAGE.md` are the canonical English references. For Brazilian Portuguese, see `README.pt_BR.md` and `docs/USAGE.pt_BR.md`. When features or options change, update **both** languages to keep them in sync.
+
 ## Features
 
 - **Multi-target scanning**: Configure multiple databases, filesystems, APIs, remote shares, **Power BI**, and **Power Apps (Dataverse)** in a single YAML/JSON config.
@@ -222,8 +224,10 @@ When using the API (`--web`), the server loads config from **`CONFIG_PATH`** (en
 | `POST` | `/scan_database` | One-off scan of one database (JSON body); returns `session_id` |
 | `GET` | `/status` | `running`, `current_session_id`, `findings_count` |
 | `GET` | `/report` | Download **last generated** Excel report |
+| `GET` | `/heatmap` | Download **last generated** heatmap PNG (sensitivity/risk heatmap for most recent session) |
 | `GET` | `/list` or `/reports` | List past sessions (to pick a report); includes `tenant_name`, `technician_name`, counts, and status. |
 | `GET` | `/reports/{session_id}` | Regenerate and download report for that session |
+| `GET` | `/heatmap/{session_id}` | Regenerate report (if needed) and download heatmap PNG for that session |
 | `PATCH` | `/sessions/{session_id}` | Set or clear tenant/customer name for an existing session. Body: `{ "tenant": "..." }`. |
 | `PATCH` | `/sessions/{session_id}/technician` | Set or clear technician/operator name for an existing session. Body: `{ "technician": "..." }`. |
 
@@ -419,11 +423,39 @@ To support a new data source (e.g. another database driver or API), see **[docs/
 
 ## Dependencies and security
 
-- **Sync locked deps:** From project root, generate a locked `requirements.txt` from `pyproject.toml` with:  
-  `uv pip compile pyproject.toml -o requirements.txt`  
-  (or keep `requirements.txt` in sync manually with `pyproject.toml`.)
+- **Sync locked deps:** From project root, treat `pyproject.toml` as the **single source of truth** and regenerate `requirements.txt` whenever dependencies change:
+
+  ```bash
+  # Generate requirements.txt from pyproject.toml using uv
+  uv pip compile pyproject.toml -o requirements.txt
+  ```
+
+  This keeps `requirements.txt` aligned with the versions and extras defined in `pyproject.toml` so environments that still rely on `pip install -r requirements.txt` behave identically to `uv sync`.
+
 - **Check for known CVEs:** Run `uv pip audit` (or `pip audit` if available) before deployment; fix or pin any vulnerable packages.
 - See also **Security and compliance** below.
+
+## Man page
+
+For systems that use the traditional
+`man`
+interface, a manual page is provided at
+`docs/lgpd_crawler.1`.
+It mirrors the main CLI and API behaviour described in this README (name, synopsis, options, environment, examples).
+To install it system\-wide on a typical Linux/BSD host:
+
+```bash
+sudo cp docs/lgpd_crawler.1 /usr/local/share/man/man1/
+sudo mandb    # or: sudo makewhatis   # depends on distro
+```
+
+After that you can run:
+
+```bash
+man lgpd_crawler
+```
+
+When adding new CLI options or API capabilities, update both this README and `docs/lgpd_crawler.1` so that the man page continues to reflect the current behaviour.
 
 ## Security and compliance
 
