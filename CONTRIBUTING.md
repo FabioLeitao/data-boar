@@ -1,1 +1,56 @@
-Feel free to contribute this project
+# Contributing to python3-lgpd-crawler
+
+Thank you for considering contributing. This document covers local setup, workflow, and best practices so you can run the app, tests, and open changes safely.
+
+## Quick start (development)
+
+1. **Clone and enter the repo**
+   ```bash
+   git clone https://github.com/YOUR_ORG/python3-lgpd-crawler.git
+   cd python3-lgpd-crawler
+   ```
+
+2. **Use Python 3.12+**  
+   The project targets Python 3.12 and 3.13. See [SECURITY.md](SECURITY.md) for supported versions.
+
+3. **Install dependencies with uv (recommended)**
+   ```bash
+   uv sync
+   ```
+   Or with pip inside a virtualenv: `pip install -e .`
+
+4. **Run tests**
+   ```bash
+   uv run pytest -v
+   ```
+
+5. **Run the app**
+   ```bash
+   uv run python main.py --config config.yaml
+   uv run python main.py --config config.yaml --web --port 8088
+   ```
+
+## Workflow
+
+- **Bugs and features:** Open an issue using the [Bug report](.github/ISSUE_TEMPLATE/bug_report.md) or [Feature request](.github/ISSUE_TEMPLATE/feature_request.md) templates.
+- **Security:** Do not post exploit details publicly. Use the [Security issue](.github/ISSUE_TEMPLATE/security.md) template (high-level only) or the process in [SECURITY.md](SECURITY.md).
+- **Pull requests:** Use the [PR template](.github/PULL_REQUEST_TEMPLATE.md). Ensure tests pass (`uv run pytest`) and that docs/README are updated when behaviour or setup changes.
+
+## Code and docs
+
+- **Style:** The repo uses [EditorConfig](.editorconfig) (indent, charset, line endings). Keeping Python style consistent (e.g. with Ruff or Black) is encouraged.
+- **Docs:** Keep [README.md](README.md) and [docs/USAGE.md](docs/USAGE.md) in sync with behaviour; update [README.pt_BR.md](README.pt_BR.md) and [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md) for Portuguese.
+- **Secrets:** Never commit credentials or real PII. Use `.env` or `config.local.yaml` (both are in `.gitignore`) and redact in issues/PRs.
+
+## CI and dependency hygiene
+
+- **CI:** GitHub Actions run tests and `uv pip audit` on push/PR to `main` (or `master`). Keep the branch green.
+- **Dependencies:** Declare all runtime and dev dependencies in `pyproject.toml`. If you add or change deps, run `uv sync` and optionally `uv pip compile pyproject.toml -o requirements.txt` if the project still ships a `requirements.txt`.
+- **Dependabot:** Pip and GitHub Actions are kept up to date via Dependabot; review and merge dependency PRs when safe.
+
+## Deployment and production
+
+- Use a dedicated config file (e.g. via `CONFIG_PATH`) and never commit it. Run `uv pip audit` before deploying.
+- For public or multi-tenant use, put the API behind a reverse proxy (HTTPS, rate limiting, auth) as described in the README.
+
+If you have questions, open a discussion or an issue. Thanks for contributing.

@@ -1,3 +1,13 @@
+# Project-specific: local DB, generated reports and heatmaps (do not commit scan results or credentials)
+audit_results.db
+audit_results.db-journal
+*.db-journal
+Relatorio_Auditoria_*.xlsx
+heatmap_*.png
+config.local.yaml
+.env.local
+.env.*.local
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
