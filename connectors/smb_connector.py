@@ -1,0 +1,176 @@
+"""
+SMB/CIFS connector: connect to Windows or Samba shares by host (FQDN or IP), list files,
+download to temp, run same text extraction and sensitivity detection as filesystem.
+Requires optional dependency: pip install smbprotocol (or uv pip install -e ".[shares]").
+"""
+import os
+import tempfile
+from pathlib import Path
+from typing import Any
+
+from core.connector_registry import register
+
+from connectors.filesystem_connector import (
+    SUPPORTED_EXTENSIONS,
+    _read_text_sample,
+    _scan_sqlite_file_as_db,
+)
+
+try:
+    import smbclient
+    _SMB_AVAILABLE = True
+except ImportError:
+    _SMB_AVAILABLE = False
+    smbclient = None
+
+SQLITE_EXTENSIONS = {".sqlite", ".sqlite3", ".db"}
+
+
+def _normalize_extensions(extensions: Any) -> set[str]:
+    if not extensions:
+        return set(SUPPORTED_EXTENSIONS)
+    exts = list(extensions) if isinstance(extensions, (list, set)) else [extensions]
+    use_all = any(str(x).strip().lower() in ("*", "all", ".*") for x in exts)
+    if use_all:
+        return set(SUPPORTED_EXTENSIONS)
+    return {e if e.startswith(".") else f".{e.lstrip('*')}" for e in exts}
+
+
+class SMBConnector:
+    """
+    Connect to SMB/CIFS share (host FQDN or IP, share name, path). Credentials: user, password, optional domain.
+    List files recursively, download to temp, run filesystem-style text extraction and scanner, save findings.
+    """
+
+    def __init__(
+        self,
+        target_config: dict[str, Any],
+        scanner: Any,
+        db_manager: Any,
+        extensions: set[str] | list[str] | None = None,
+        scan_sqlite_as_db: bool = True,
+        sample_limit: int = 5,
+    ):
+        self.config = target_config
+        self.scanner = scanner
+        self.db_manager = db_manager
+        self.scan_sqlite_as_db = scan_sqlite_as_db
+        self.sample_limit = sample_limit
+        self.extensions = _normalize_extensions(extensions)
+        self._session_registered = False
+
+    def _unc_path(self, *parts: str) -> str:
+        host = self.config.get("host", "").strip()
+        share = (self.config.get("share", "") or "").strip().replace("/", "\\")
+        path = "\\".join(p for p in parts if p).replace("/", "\\")
+        base = f"\\\\{host}\\{share}"
+        if path:
+            return base + "\\" + path.lstrip("\\")
+        return base
+
+    def run(self) -> None:
+        if not _SMB_AVAILABLE:
+            self.db_manager.save_failure(
+                self.config.get("name", "SMB"),
+                "error",
+                "smbprotocol not installed. Install with: pip install smbprotocol or uv pip install -e \".[shares]\"",
+            )
+            return
+        target_name = self.config.get("name", "SMB")
+        host = self.config.get("host", "").strip()
+        if not host:
+            self.db_manager.save_failure(target_name, "error", "Missing host (FQDN or IP)")
+            return
+        user = self.config.get("user", self.config.get("username", ""))
+        password = self.config.get("pass", self.config.get("password", ""))
+        domain = self.config.get("domain", "")
+        if domain and user and "\\" not in user:
+            user = f"{domain}\\{user}"
+        port = int(self.config.get("port", 445))
+        share = (self.config.get("share", "") or "").strip()
+        if not share:
+            self.db_manager.save_failure(target_name, "error", "Missing share name")
+            return
+        path_in_share = (self.config.get("path", "") or "").strip().replace("/", "\\").strip("\\")
+        recursive = self.config.get("recursive", True)
+        try:
+            smbclient.register_session(host, username=user, password=password, port=port)
+            self._session_registered = True
+        except Exception as e:
+            self.db_manager.save_failure(target_name, "auth_failed", str(e))
+            return
+        root_unc = self._unc_path(path_in_share) if path_in_share else self._unc_path("")
+        try:
+            if recursive:
+                walker = smbclient.walk(root_unc)
+            else:
+                entries = list(smbclient.scandir(root_unc))
+                files = [e.name for e in entries if e.is_file()]
+                walker = [(root_unc, [], files)]
+        except Exception as e:
+            self.db_manager.save_failure(target_name, "unreachable", str(e))
+            return
+        for dirpath, _dirnames, filenames in walker:
+            for filename in filenames:
+                ext = Path(filename).suffix.lower()
+                if ext not in self.extensions:
+                    continue
+                unc_file = dirpath + "\\" + filename
+                try:
+                    with smbclient.open_file(unc_file, mode="rb") as f:
+                        content = f.read()
+                except Exception as e:
+                    self.db_manager.save_failure(target_name, "permission_denied", f"{unc_file}: {e}")
+                    continue
+                if self.scan_sqlite_as_db and ext in SQLITE_EXTENSIONS:
+                    fd, temp_path = tempfile.mkstemp(suffix=ext)
+                    try:
+                        os.write(fd, content)
+                        os.close(fd)
+                        for finding in _scan_sqlite_file_as_db(Path(temp_path), self.scanner, self.sample_limit):
+                            self.db_manager.save_finding(
+                                "filesystem",
+                                target_name=target_name,
+                                path=dirpath,
+                                file_name=finding["file_name"],
+                                data_type=finding["data_type"],
+                                sensitivity_level=finding["sensitivity_level"],
+                                pattern_detected=finding["pattern_detected"],
+                                norm_tag=finding["norm_tag"],
+                                ml_confidence=finding["ml_confidence"],
+                            )
+                    finally:
+                        try:
+                            os.unlink(temp_path)
+                        except Exception:
+                            pass
+                    continue
+                fd, temp_path = tempfile.mkstemp(suffix=ext)
+                try:
+                    os.write(fd, content)
+                    os.close(fd)
+                    text = _read_text_sample(Path(temp_path), ext)
+                    res = self.scanner.scan_file_content(text, Path(unc_file))
+                    if res is None:
+                        continue
+                    self.db_manager.save_finding(
+                        "filesystem",
+                        target_name=target_name,
+                        path=dirpath,
+                        file_name=filename,
+                        data_type=ext.replace(".", "").upper(),
+                        sensitivity_level=res["sensitivity_level"],
+                        pattern_detected=res["pattern_detected"],
+                        norm_tag=res.get("norm_tag", ""),
+                        ml_confidence=res.get("ml_confidence", 0),
+                    )
+                finally:
+                    try:
+                        os.unlink(temp_path)
+                    except Exception:
+                        pass
+
+
+if _SMB_AVAILABLE:
+    register("smb", SMBConnector, ["name", "host", "share"])
+    register("cifs", SMBConnector, ["name", "host", "share"])

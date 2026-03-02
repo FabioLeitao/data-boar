@@ -32,6 +32,21 @@ def connector_for_target(target: dict[str, Any]) -> tuple[Type[Any], list[str]] 
     t = target.get("type", "")
     if t == "filesystem":
         return get_connector("filesystem")
+    if t in ("api", "rest"):
+        try:
+            return get_connector("api")
+        except KeyError:
+            return None
+    if t in ("sharepoint", "webdav", "smb", "cifs", "nfs"):
+        try:
+            return get_connector(t)
+        except KeyError:
+            return None
+    if t in ("powerbi", "dataverse", "powerapps"):
+        try:
+            return get_connector(t)
+        except KeyError:
+            return None
     if t == "database":
         driver = target.get("driver", "")
         # Normalize: postgresql+psycopg2 -> postgresql, mysql+pymysql -> mysql

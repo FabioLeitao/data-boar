@@ -82,6 +82,8 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
     out["file_scan"] = {
         "extensions": data.get("file_scan", {}).get("extensions", _default_extensions),
         "recursive": data.get("file_scan", {}).get("recursive", True),
+        "scan_sqlite_as_db": data.get("file_scan", {}).get("scan_sqlite_as_db", True),
+        "sample_limit": data.get("file_scan", {}).get("sample_limit", 5),
     }
     # Normalize extensions to list of suffixes (e.g. "*.pdf" -> ".pdf")
     exts = out["file_scan"]["extensions"]
@@ -110,5 +112,25 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
 
     # SQLite path for audit results
     out["sqlite_path"] = data.get("sqlite_path", "audit_results.db")
+
+    # Learned patterns (optional): write terms classified sensitive to a file for merging into ml_patterns_file
+    out["learned_patterns"] = data.get("learned_patterns") or {}
+    lp = out["learned_patterns"]
+    if "enabled" not in lp:
+        lp["enabled"] = False
+    if "output_file" not in lp:
+        lp["output_file"] = "learned_patterns.yaml"
+    if "min_sensitivity" not in lp:
+        lp["min_sensitivity"] = "HIGH"
+    if "min_confidence" not in lp:
+        lp["min_confidence"] = 70
+    if "min_term_length" not in lp:
+        lp["min_term_length"] = 3
+    if "require_pattern" not in lp:
+        lp["require_pattern"] = True
+    if "append" not in lp:
+        lp["append"] = True
+    if "exclude_if_in_ml_patterns" not in lp:
+        lp["exclude_if_in_ml_patterns"] = True
 
     return out

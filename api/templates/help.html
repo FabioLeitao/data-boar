@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Help & Docs — LGPD Audit{% endblock %}
+{% block content %}
+<h1>Help &amp; documentation</h1>
+
+<section class="card">
+  <h2>What this app does</h2>
+  <p>
+    This application scans configured data sources (databases, filesystems, APIs and shares) for personal and sensitive data,
+    stores only metadata in a local SQLite database, and generates Excel reports plus a sensitivity/risk heatmap PNG.
+  </p>
+  <p class="muted">
+    Each run is a scan session with optional <strong>tenant / customer</strong> and <strong>technician / operator</strong> tags, so you can attribute results.
+  </p>
+</section>
+
+<section class="card">
+  <h2>How to run a scan</h2>
+  <h3>From the web dashboard</h3>
+  <ol>
+    <li>Go to the <strong>Dashboard</strong> page.</li>
+    <li>(Optional) Fill in <strong>Customer / tenant</strong> and <strong>Technician / operator</strong>.</li>
+    <li>Click <strong>Start scan</strong>. The status panel will update and the page will auto-refresh when the run finishes.</li>
+  </ol>
+  <p class="muted">
+    Recent sessions are listed at the bottom of the dashboard and on the <strong>Reports</strong> page, with download links.
+  </p>
+
+  <h3>From the CLI</h3>
+  <pre><code>python main.py --config config.yaml
+python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Silva"</code></pre>
+</section>
+
+<section class="card">
+  <h2>Downloading reports, heatmaps and logs</h2>
+  <ul>
+    <li>
+      Use the <strong>Reports</strong> page to see all sessions and click <strong>Download</strong> to get the Excel report for a specific run.
+    </li>
+    <li>
+      Use the API to script downloads:
+      <pre><code># Last report, heatmap and log
+curl -o report.xlsx  http://&lt;host&gt;:&lt;port&gt;/report
+curl -o heatmap.png  http://&lt;host&gt;:&lt;port&gt;/heatmap
+curl -o audit.log    http://&lt;host&gt;:&lt;port&gt;/logs
+
+# Specific session
+curl -o report.xlsx  http://&lt;host&gt;:&lt;port&gt;/reports/&lt;session_id&gt;
+curl -o heatmap.png  http://&lt;host&gt;:&lt;port&gt;/heatmap/&lt;session_id&gt;
+curl -o audit.log    http://&lt;host&gt;:&lt;port&gt;/logs/&lt;session_id&gt;</code></pre>
+    </li>
+  </ul>
+</section>
+
+<section class="card">
+  <h2>Configuration examples</h2>
+  <p>The configuration file (YAML or JSON) defines which targets are scanned. Minimal YAML example:</p>
+  <pre><code>targets:
+  - name: "Produção_Postgres"
+    type: database
+    driver: postgresql+psycopg2
+    host: 10.0.0.50
+    port: 5432
+    user: audit_user
+    pass: secure_password
+    database: customers_db
+
+  - name: "Documentos_LGPD"
+    type: filesystem
+    path: /home/user/Documents/LGPD
+    recursive: true
+
+file_scan:
+  extensions: [.txt, .csv, .pdf, .docx, .xlsx]
+  recursive: true
+  scan_sqlite_as_db: true
+  sample_limit: 5
+
+report:
+  output_dir: .
+
+api:
+  port: 8088
+
+sqlite_path: audit_results.db
+scan:
+  max_workers: 1</code></pre>
+  <p class="muted">
+    Place this file alongside the application (default name <code>config.yaml</code>) or set the <code>CONFIG_PATH</code> environment
+    variable to point to a different location.
+  </p>
+</section>
+
+<section class="card">
+  <h2>More documentation</h2>
+  <p>
+    For full details, including optional connectors (Power BI, Dataverse, REST APIs, shares) and advanced tuning, see:
+  </p>
+  <ul>
+    <li><code>README.md</code> and <code>docs/USAGE.md</code> (English)</li>
+    <li><code>README.pt_BR.md</code> and <code>docs/USAGE.pt_BR.md</code> (Português – Brasil)</li>
+  </ul>
+  <p class="muted">
+    These files live in the project repository and should be kept in sync with the behaviour you see here.
+  </p>
+</section>
+{% endblock %}
+

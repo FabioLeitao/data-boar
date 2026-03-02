@@ -1,0 +1,272 @@
+.TH LGPD_CRAWLER 1 "March 2026" "python3-lgpd-crawler" "User Commands"
+.SH NAME
+lgpd_crawler \- audit databases and filesystems for personal and sensitive data
+.
+.SH SYNOPSIS
+.B lgpd_crawler
+[
+.B \-\-config
+.I FILE
+]
+[
+.B \-\-web
+]
+[
+.B \-\-port
+.I PORT
+]
+[
+.B \-\-tenant
+.I NAME
+]
+[
+.B \-\-technician
+.I NAME
+]
+.
+.P
+The actual entry point is usually:
+.br
+.RS 4
+.B python main.py
+[
+.I OPTIONS
+]
+.RE
+.
+.SH DESCRIPTION
+.B python3-lgpd-crawler
+is a data discovery tool designed to help organizations comply with LGPD, GDPR, CCPA and related regulations by scanning databases, filesystems and other data sources for personal and sensitive data.
+It uses configurable regular expressions and an ML classifier to identify potential PII, stores only metadata in a local SQLite database, and produces Excel reports and a sensitivity/risk heatmap PNG.
+.
+.P
+The application can be run as a one\-shot CLI tool or as a long\-running web API with a simple dashboard.
+Each scan run is stored as a session with optional
+.I tenant/customer
+and
+.I technician/operator
+tags for attribution.
+.
+.SH OPTIONS
+.TP
+.BI "\-\-config " FILE
+Path to the configuration file (YAML or JSON).
+Defaults to
+.IR config.yaml .
+Used both for one\-shot audits and to resolve API options when starting the web server.
+.
+.TP
+.B \-\-web
+Start the REST API server instead of running a one\-shot audit.
+When this flag is set the process does not run a scan automatically; scans are triggered via HTTP (for example with
+.BR curl (1)).
+.
+.TP
+.BI "\-\-port " PORT
+Port for the API when
+.B \-\-web
+is set.
+Defaults to
+.IR 8088 .
+Ignored in one\-shot mode.
+The effective port may also be overridden by
+.B api.port
+in the configuration file.
+.
+.TP
+.B \-\-reset\-data
+Dangerous maintenance operation that wipes all scan sessions, findings and failures from the SQLite database, deletes generated Excel reports and heatmap PNGs under
+.I report.output_dir
+and records a single row in the
+.I data_wipe_log
+table with the time and reason of the wipe.
+When this flag is used, no scan is started; the process exits after the reset completes or fails.
+.
+.TP
+.BI "\-\-tenant " NAME
+Optional tenant or customer name for the scan in CLI (one\-shot) mode.
+This value is stored as
+.I tenant_name
+on the scan session, appears on the web dashboard and reports list, and is written to the
+.I "Report info"
+sheet in the Excel report.
+.
+.TP
+.BI "\-\-technician " NAME
+Optional technician or operator name responsible for the scan in CLI (one\-shot) mode.
+This value is stored as
+.I technician_name
+on the scan session, appears on the web dashboard and reports list, and is written to the
+.I "Report info"
+sheet in the Excel report.
+.
+.SH ENVIRONMENT
+.TP
+.B CONFIG_PATH
+Path to the configuration file used by the web API.
+When the server is started with
+.B \-\-web
+and
+.B \-\-config
+is not provided, the application loads configuration from
+.B CONFIG_PATH
+if set, or from
+.IR config.yaml
+in the current working directory.
+.
+.SH FILES
+.TP
+.I config.yaml
+Default configuration file containing
+.B targets
+(databases, filesystems, APIs, shares), file scan options, report output directory and API settings.
+.
+.TP
+.I audit_results.db
+Local SQLite database where scan sessions, findings and failures are stored.
+The path is controlled by
+.B sqlite_path
+in the configuration.
+.
+.TP
+.I Relatorio_Auditoria_*.xlsx
+Excel reports generated for each session, written under the directory specified by
+.B report.output_dir
+in the configuration.
+.
+.TP
+.I heatmap_*.png
+Sensitivity/risk heatmap images generated for each session, saved in the same directory as the Excel reports.
+.
+.SH EXAMPLES
+.SS One\-shot CLI scans
+.TP
+Minimal scan using the default configuration:
+.RS
+.B python main.py \-\-config config.yaml
+.RE
+.
+.TP
+.TP
+Reset local history (dangerous) by wiping scan sessions, findings and generated reports:
+.RS
+.B python main.py \-\-config config.yaml \-\-reset\-data
+.RE
+.
+.TP
+Scan tagged with tenant and technician metadata:
+.RS
+.B python main.py \-\-config config.yaml \-\-tenant "Acme Corp" \-\-technician "Alice Silva"
+.RE
+.
+.SS Running the web API
+.TP
+Start the API on port 8088:
+.RS
+.B python main.py \-\-config config.yaml \-\-web \-\-port 8088
+.RE
+.
+.TP
+Set the configuration file via
+.B CONFIG_PATH
+and start the server:
+.RS
+.nf
+export CONFIG_PATH=/etc/lgpd\-audit/config.yaml
+python main.py \-\-web \-\-port 8088
+.fi
+.RE
+.
+.SS Using the API with curl
+.TP
+Start a full audit with default metadata:
+.RS
+.nf
+curl \-X POST http://localhost:8088/scan
+.fi
+.RE
+.
+.TP
+Start a full audit tagged with tenant and technician:
+.RS
+.nf
+curl \-X POST http://localhost:8088/scan \\
+  \-H "Content\-Type: application/json" \\
+  \-d '{ "tenant": "Acme Corp", "technician": "Alice Silva" }'
+.fi
+.RE
+.
+.TP
+Check scan status:
+.RS
+.nf
+curl http://localhost:8088/status
+.fi
+.RE
+.
+.TP
+Download the latest Excel report:
+.RS
+.nf
+curl \-o report.xlsx http://localhost:8088/report
+.fi
+.RE
+.
+.TP
+Download the latest heatmap PNG:
+.RS
+.nf
+curl \-o heatmap.png http://localhost:8088/heatmap
+.fi
+.RE
+.
+.TP
+Download the latest audit log file:
+.RS
+.nf
+curl \-o audit.log http://localhost:8088/logs
+.fi
+.RE
+.
+.TP
+Download report and heatmap for a specific session:
+.RS
+.nf
+curl \-o report_20250301.xlsx \\
+  "http://localhost:8088/reports/a1b2c3d4\-20250301_143022"
+
+curl \-o heatmap_20250301.png \\
+  "http://localhost:8088/heatmap/a1b2c3d4\-20250301_143022"
+.fi
+.RE
+.
+.TP
+Download the audit log that contains a specific session id:
+.RS
+.nf
+curl \-o audit_20250301.log \\
+  "http://localhost:8088/logs/a1b2c3d4\-20250301_143022"
+.fi
+.RE
+.
+.SH INSTALLATION
+To install this man page system\-wide on a typical Linux or BSD system:
+.PP
+.RS
+.nf
+sudo cp docs/lgpd_crawler.1 /usr/local/share/man/man1/
+sudo mandb            # or "sudo makewhatis" on some BSD systems
+.fi
+.RE
+.
+After installation, you can view it with:
+.PP
+.RS
+.B man lgpd_crawler
+.RE
+.
+.SH SEE ALSO
+.BR python (1),
+.BR curl (1),
+the project README and USAGE documentation in the source tree.
+
