@@ -6,7 +6,7 @@ Session id comes from core.session (UUID + timestamp); set via set_current_sessi
 from datetime import datetime, timezone
 from typing import Any
 
-from sqlalchemy import Column, DateTime, Integer, String, Text, create_engine
+from sqlalchemy import Column, DateTime, Integer, String, Text, create_engine, text
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 Base = declarative_base()
@@ -18,13 +18,14 @@ def _utc_now() -> datetime:
 
 
 class ScanSession(Base):
-    """One scan run: UUID + timestamp, status."""
+    """One scan run: UUID + timestamp, status. Optional tenant_name for customer/tenant attribution."""
     __tablename__ = "scan_sessions"
     id = Column(Integer, primary_key=True, autoincrement=True)
     session_id = Column(String(64), unique=True, nullable=False, index=True)
     started_at = Column(DateTime, default=_utc_now)
     finished_at = Column(DateTime, nullable=True)
     status = Column(String(20), default="running")  # running, completed, failed
+    tenant_name = Column(String(255), nullable=True)  # optional customer/tenant for this scan
 
 
 class DatabaseFinding(Base):
@@ -79,8 +80,17 @@ class LocalDBManager:
     def __init__(self, db_path: str = "audit_results.db"):
         self.engine = create_engine(f"sqlite:///{db_path}")
         Base.metadata.create_all(self.engine)
+        self._ensure_tenant_column()
         self._session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
         self._current_session_id: str | None = None
+
+    def _ensure_tenant_column(self) -> None:
+        """Add tenant_name column to scan_sessions if missing (migration for existing DBs)."""
+        with self.engine.connect() as conn:
+            r = conn.execute(text("SELECT 1 FROM pragma_table_info('scan_sessions') WHERE name='tenant_name'"))
+            if r.fetchone() is None:
+                conn.execute(text("ALTER TABLE scan_sessions ADD COLUMN tenant_name VARCHAR(255)"))
+                conn.commit()
 
     def set_current_session_id(self, session_id: str) -> None:
         self._current_session_id = session_id
@@ -154,6 +164,7 @@ class LocalDBManager:
                     "started_at": s.started_at.isoformat() if s.started_at else None,
                     "finished_at": s.finished_at.isoformat() if s.finished_at else None,
                     "status": s.status,
+                    "tenant_name": getattr(s, "tenant_name", None),
                     "database_findings": db_count,
                     "filesystem_findings": fs_count,
                     "scan_failures": fail_count,
@@ -173,11 +184,26 @@ class LocalDBManager:
                 return sessions[i + 1]
         return None
 
-    def create_session_record(self, session_id: str) -> None:
+    def create_session_record(self, session_id: str, tenant_name: str | None = None) -> None:
+        """Create a scan_sessions row. Optional tenant_name for customer/tenant attribution."""
         session = self._session_factory()
         try:
-            session.add(ScanSession(session_id=session_id, status="running"))
+            session.add(ScanSession(session_id=session_id, status="running", tenant_name=(tenant_name or None)))
             session.commit()
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+
+    def update_session_tenant(self, session_id: str, tenant_name: str | None) -> None:
+        """Set or clear tenant_name for an existing session."""
+        session = self._session_factory()
+        try:
+            rec = session.query(ScanSession).filter(ScanSession.session_id == session_id).first()
+            if rec:
+                rec.tenant_name = tenant_name or None
+                session.commit()
         except Exception:
             session.rollback()
             raise
