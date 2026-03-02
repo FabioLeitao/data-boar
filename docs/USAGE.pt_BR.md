@@ -85,9 +85,11 @@ python main.py --config config.yaml --web --port 8088
 | `GET`  | `/status`               | Retorna `running`, `current_session_id`, `findings_count`.                                                  |
 | `GET`  | `/report`               | Baixa o último relatório Excel gerado (ou gera a partir da sessão mais recente).                            |
 | `GET`  | `/heatmap`              | Baixa o último heatmap PNG gerado (sessão mais recente).                                                    |
+| `GET`  | `/logs`                 | Baixa o arquivo de log mais recente (`audit_YYYYMMDD.log`) com registros de conexões e achados.            |
 | `GET`  | `/list` ou `/reports`   | Lista sessões anteriores com data, status, contagens, `tenant_name` e `technician_name` (se definidos).     |
 | `GET`  | `/reports/{session_id}` | Gera (se necessário) e baixa o relatório Excel para a sessão indicada.                                      |
 | `GET`  | `/heatmap/{session_id}` | Gera (se necessário) e baixa o heatmap PNG para a sessão indicada.                                          |
+| `GET`  | `/logs/{session_id}`    | Baixa o primeiro arquivo de log que contiver o `session_id` informado (análise detalhada da sessão).        |
 | `PATCH`| `/sessions/{session_id}` | Atualiza/limpa o tenant de uma sessão existente (`{ "tenant": "..." }`).                                   |
 | `PATCH`| `/sessions/{session_id}/technician` | Atualiza/limpa o técnico de uma sessão existente (`{ "technician": "..." }`).                    |
 
@@ -180,6 +182,12 @@ Resposta (exemplo):
 curl -o report.xlsx http://localhost:8088/report
 ```
 
+### Baixar o último arquivo de log
+
+```bash
+curl -o audit.log http://localhost:8088/logs
+```
+
 ### Baixar o último heatmap PNG
 
 ```bash
@@ -195,6 +203,15 @@ curl -o report_20250301.xlsx \
 curl -o heatmap_20250301.png \
   "http://localhost:8088/heatmap/a1b2c3d4-20250301_143022"
 ```
+
+### Baixar o arquivo de log associado a uma sessão específica
+
+```bash
+curl -o audit_20250301.log \
+  "http://localhost:8088/logs/a1b2c3d4-20250301_143022"
+```
+
+Esse endpoint procura, entre os arquivos `audit_YYYYMMDD.log` disponíveis (do mais recente para o mais antigo), o primeiro cujo conteúdo contenha o `session_id` informado e devolve esse arquivo.
 
 ---
 

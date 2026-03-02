@@ -107,9 +107,11 @@ The dashboard uses the same API under the hood (`/status`, `/scan`, `/list`, `/r
 | `GET`  | `/status` | Current run state: `running`, `current_session_id`, `findings_count`. |
 | `GET`  | `/report` | Download the **last generated** Excel report (or generate from last session if none). |
 | `GET`  | `/heatmap` | Download the **last generated** heatmap PNG (sensitivity/risk heatmap for the most recent session). |
+| `GET`  | `/logs` | Download the most recent `audit_YYYYMMDD.log` file with connection/finding entries. |
 | `GET`  | `/list` or `/reports` | List past sessions (for choosing which report to download). Each entry includes tenant/technician when set. |
 | `GET`  | `/reports/{session_id}` | **Regenerate** and download the Excel report for that session. |
 | `GET`  | `/heatmap/{session_id}` | **Regenerate** the report (if needed) and download the heatmap PNG for that session. |
+| `GET`  | `/logs/{session_id}` | Download the first audit log file that contains that `session_id`, for session-level trace analysis. |
 | `PATCH` | `/sessions/{session_id}` | Set or clear tenant/customer name for an existing session. Body: `{ "tenant": "..." }`. |
 | `PATCH` | `/sessions/{session_id}/technician` | Set or clear technician/operator name for an existing session. Body: `{ "technician": "..." }`. |
 
@@ -215,6 +217,15 @@ curl -o report.xlsx http://localhost:8088/report
 - Returns the **last generated** Excel file.
 - If no report exists, the server may try to generate one from the current or most recent session; if none exists, you get **404** with body like: `{"detail": "Report not available. Run a scan first."}`.
 
+### Download current (last) audit log
+
+```bash
+curl -o audit.log http://localhost:8088/logs
+```
+
+- Returns the most recent `audit_YYYYMMDD.log` file written by the application.
+- If no log file is found, you get **404** with `{"detail": "No log files found."}`.
+
 ### Download current (last) heatmap PNG
 
 ```bash
@@ -241,6 +252,15 @@ curl -o heatmap_20250301.png "http://localhost:8088/heatmap/a1b2c3d4-20250301_14
 
 - Regenerates the report (and heatmap) for that `session_id` if needed and returns the PNG.
 - If no heatmap is available for that session (e.g. no findings), you get **404** with `{"detail": "Heatmap not available for session ..."`}.
+
+### Download audit log that contains a specific session
+
+```bash
+curl -o audit_20250301.log "http://localhost:8088/logs/a1b2c3d4-20250301_143022"
+```
+
+- Scans available `audit_YYYYMMDD.log` files (newest first) and returns the first one whose content contains that `session_id`.
+- If no such log file is found, you get **404** with `{"detail": "No log file contains session_id ..."`}.
 
 **Typical workflow:**
 

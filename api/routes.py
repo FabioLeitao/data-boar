@@ -399,6 +399,40 @@ async def download_heatmap_by_session(session_id: str):
     raise HTTPException(status_code=404, detail=f"Heatmap not available for session {session_id}. Run a scan and ensure findings exist.")
 
 
+@app.get("/logs")
+async def download_latest_log():
+    """
+    Download the most recent audit_YYYYMMDD.log file from the current working directory.
+    This file contains connection and finding logs for recent scan sessions.
+    """
+    log_dir = Path(".")
+    candidates = sorted(log_dir.glob("audit_*.log"), key=lambda p: p.stat().st_mtime, reverse=True)
+    if not candidates:
+        raise HTTPException(status_code=404, detail="No log files found.")
+    latest = candidates[0]
+    return FileResponse(latest, filename=latest.name, media_type="text/plain")
+
+
+@app.get("/logs/{session_id}")
+async def download_log_for_session(session_id: str):
+    """
+    Download the first audit_YYYYMMDD.log file that contains the given session_id.
+    This allows linking scan sessions to their corresponding console/audit trace.
+    """
+    log_dir = Path(".")
+    candidates = sorted(log_dir.glob("audit_*.log"), key=lambda p: p.stat().st_mtime, reverse=True)
+    if not candidates:
+        raise HTTPException(status_code=404, detail="No log files found.")
+    for p in candidates:
+        try:
+            text = p.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        if session_id in text:
+            return FileResponse(p, filename=p.name, media_type="text/plain")
+    raise HTTPException(status_code=404, detail=f"No log file contains session_id {session_id}.")
+
+
 @app.post("/scan_database")
 async def scan_database(config: DatabaseConfig, background_tasks: BackgroundTasks):
     """One-off scan of a single database (body: name, host, port, user, password, database, optional driver). Starts in background; returns session_id."""
