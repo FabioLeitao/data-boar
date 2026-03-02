@@ -131,7 +131,7 @@ API routes:
 | MariaDB   | `mysql+pymysql`           | same as MySQL           |
 | SQLite    | `sqlite`                  | database = path         |
 | SQL Server| `mssql+pyodbc`            | pyodbc                  |
-| Oracle    | `oracle+oracledb`         | oracledb                |
+| Oracle (19+ RAC) | `oracle+oracledb` | oracledb (thin mode; no Oracle Client). Config `database` = service name (e.g. customers_db or ORCL). |
 | MongoDB   | `mongodb`                 | optional: pymongo       |
 | Redis     | `redis`                   | optional: redis         |
 
