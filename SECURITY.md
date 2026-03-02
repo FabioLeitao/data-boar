@@ -39,14 +39,17 @@ Additional client libraries may be required depending on which connectors you us
 
 ## Keeping dependencies up to date
 
-- Use:
+- Dependencies in **`pyproject.toml`** use minimum versions (`>=`) so security patches are allowed; **Dependabot** (see `.github/dependabot.yml`) opens weekly PRs for pip and GitHub Actions. Prefer merging those PRs after CI (tests and audit) pass.
+
+- Locally, install and run a dependency audit:
 
   ```bash
   uv sync
-  uv pip audit
+  uv pip install pip-audit
+  uv run pip-audit
   ```
 
-  regularly to ensure dependencies are installed as declared and checked against known CVEs.
+  CI runs the same audit on every push/PR.
 
 - When you change dependencies in `pyproject.toml`, regenerate `requirements.txt` using the command above so both files stay in sync.
 
