@@ -71,7 +71,11 @@ def _praise_rows(db_rows: list[dict], fs_rows: list[dict]) -> list[dict]:
 
 
 def _recommendations_rows(db_rows: list[dict], fs_rows: list[dict]) -> list[dict]:
-    """Build recommendations from unique pattern_detected and norm_tag."""
+    """
+    Build recommendations from unique pattern_detected and norm_tag.
+    Each row explains what kind of personal/sensitive data was inferred, which legal norm might apply,
+    why it matters (risk description), and what action DPO / Security / Compliance teams should consider.
+    """
     seen = set()
     recs = []
     for r in db_rows + fs_rows:
@@ -84,34 +88,38 @@ def _recommendations_rows(db_rows: list[dict], fs_rows: list[dict]) -> list[dict
         if "CPF" in pat or "SSN" in pat or "LGPD" in norm:
             recs.append({
                 "Data / Pattern": pat,
-                "Base legal": norm,
-                "Risco": "Identificação direta de pessoa natural",
-                "Recomendação": "Anonimização ou hashing; restringir acesso (Least Privilege).",
+                "Base legal": norm or "LGPD/GDPR – identificação direta",
+                "Risco": "Identificação direta de pessoa natural (dados de cadastro/identidade).",
+                "Recomendação": "Anonimização ou hashing; restringir acesso (Least Privilege); revisar base legal e minimização.",
                 "Prioridade": "CRÍTICA",
+                "Relevante para": "DPO, Segurança da Informação, Compliance",
             })
         elif "EMAIL" in pat:
             recs.append({
                 "Data / Pattern": pat,
-                "Base legal": norm,
-                "Risco": "Vazamento de comunicação / marketing",
-                "Recomendação": "Criptografia da coluna; revisão de logs de acesso.",
+                "Base legal": norm or "LGPD/GDPR – contato eletrônico",
+                "Risco": "Vazamento de endereços de e-mail e possível uso indevido em campanhas/comunicações.",
+                "Recomendação": "Criptografia da coluna; revisão de logs de acesso; validação de consentimento e opt-out.",
                 "Prioridade": "ALTA",
+                "Relevante para": "DPO, Marketing, Segurança da Informação",
             })
         elif "CREDIT" in pat or "CARD" in pat:
             recs.append({
                 "Data / Pattern": pat,
-                "Base legal": norm,
-                "Risco": "Fraude financeira / PCI",
-                "Recomendação": "Não armazenar número completo; tokenização; conformidade PCI-DSS.",
+                "Base legal": norm or "LGPD/GDPR – dados financeiros / PCI-DSS",
+                "Risco": "Fraude financeira, chargeback e exposição de dados de cartão/conta.",
+                "Recomendação": "Não armazenar número completo; tokenização; mascaramento; conformidade PCI-DSS e políticas internas.",
                 "Prioridade": "CRÍTICA",
+                "Relevante para": "DPO, Segurança da Informação, Risco/Compliance financeiro",
             })
         else:
             recs.append({
                 "Data / Pattern": pat,
-                "Base legal": norm,
-                "Risco": "Dado pessoal ou sensível (LGPD/GDPR/CCPA)",
-                "Recomendação": "Avaliar necessidade; pseudonimização ou criptografia; controle de acesso.",
+                "Base legal": norm or "LGPD/GDPR/CCPA – dado pessoal ou sensível",
+                "Risco": "Dado pessoal ou sensível com possível aumento de superfície de exposição.",
+                "Recomendação": "Avaliar necessidade do tratamento; aplicar pseudonimização ou criptografia; reforçar controle de acesso.",
                 "Prioridade": "MÉDIA",
+                "Relevante para": "DPO, Segurança da Informação",
             })
     if not recs:
         recs.append({
@@ -120,6 +128,7 @@ def _recommendations_rows(db_rows: list[dict], fs_rows: list[dict]) -> list[dict
             "Risco": "Nenhum achado crítico nesta sessão",
             "Recomendação": "Manter boas práticas de proteção de dados.",
             "Prioridade": "INFO",
+            "Relevante para": "DPO, Segurança da Informação",
         })
     return recs
 
