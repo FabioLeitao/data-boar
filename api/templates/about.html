@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}About — LGPD Audit{% endblock %}
+{% block content %}
+<h1>About</h1>
+
+<section class="card">
+  <h2>Application</h2>
+  <p><strong>{{ about.name }}</strong> — {{ about.description }}</p>
+  <p><span class="muted">Version:</span> {{ about.version }}</p>
+</section>
+
+<section class="card">
+  <h2>Author</h2>
+  <p><strong>{{ about.author }}</strong></p>
+  <p class="muted">{{ about.copyright }}</p>
+</section>
+
+<section class="card">
+  <h2>License</h2>
+  <p>This project is released under the <strong>{{ about.license }}</strong>, as established in the <code>LICENSE</code> file in the project repository (see also <a href="{{ about.license_url }}" target="_blank" rel="noopener noreferrer">OSI BSD 3-Clause</a>).</p>
+  <p class="muted">Summary: Redistribution and use in source and binary forms, with or without modification, are permitted provided that the copyright notice, list of conditions and the following disclaimer are retained; redistributions in binary form must reproduce the same in documentation; and the name of the copyright holder may not be used to endorse or promote derived products without permission. Full text is in the repository <code>LICENSE</code> file.</p>
+</section>
+{% endblock %}
