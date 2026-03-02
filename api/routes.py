@@ -1,7 +1,9 @@
 """
-FastAPI app: dashboard (GET /), config (GET/POST /config), reports list (GET /reports),
-POST /scan, GET /status, GET /report, GET /list, GET /reports/{session_id}, POST /scan_database.
-On startup load config (config.yaml or CONFIG_PATH) and create AuditEngine.
+FastAPI app: dashboard (GET /), config (GET/POST /config), reports list (GET /reports).
+API: POST /scan and /start (optional tenant/technician tags), GET /status, /report, /list,
+GET /reports/{session_id}, POST /scan_database (optional tenant/technician), PATCH /sessions/{session_id}
+and /sessions/{session_id}/technician for metadata updates. On startup load config (config.yaml or CONFIG_PATH)
+and create a singleton AuditEngine.
 """
 import os
 from pathlib import Path

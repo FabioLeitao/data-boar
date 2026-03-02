@@ -21,7 +21,7 @@ except ImportError:
 
 
 def _create_heatmap(db_rows: list[dict], fs_rows: list[dict], output_dir: str, session_id: str) -> str | None:
-    """Build sensitivity/risk heatmap; save PNG. Return path or None."""
+    """Build sensitivity/risk heatmap from DB + filesystem findings; save PNG. Return path or None."""
     if not _PLOT_AVAILABLE:
         return None
     rows = []

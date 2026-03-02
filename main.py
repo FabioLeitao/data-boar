@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-CLI entry point: load config (YAML/JSON), run audit and report, or start API (--web) on --port (default 8088).
+CLI entry point: load config (YAML/JSON), run audit and report (optionally tagged with tenant/customer and technician/operator), or start API (--web) on --port (default 8088).
 """
 import argparse
 import sys
