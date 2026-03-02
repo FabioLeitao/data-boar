@@ -18,7 +18,10 @@ def _utc_now() -> datetime:
 
 
 class ScanSession(Base):
-    """One scan run: UUID + timestamp, status. Optional tenant_name for customer/tenant attribution."""
+    """
+    One scan run: UUID + timestamp, status.
+    Optional tenant_name for customer/tenant attribution and technician_name for operator identification.
+    """
     __tablename__ = "scan_sessions"
     id = Column(Integer, primary_key=True, autoincrement=True)
     session_id = Column(String(64), unique=True, nullable=False, index=True)
@@ -26,6 +29,7 @@ class ScanSession(Base):
     finished_at = Column(DateTime, nullable=True)
     status = Column(String(20), default="running")  # running, completed, failed
     tenant_name = Column(String(255), nullable=True)  # optional customer/tenant for this scan
+    technician_name = Column(String(255), nullable=True)  # optional technician/operator for this scan
 
 
 class DatabaseFinding(Base):
@@ -81,6 +85,7 @@ class LocalDBManager:
         self.engine = create_engine(f"sqlite:///{db_path}")
         Base.metadata.create_all(self.engine)
         self._ensure_tenant_column()
+        self._ensure_technician_column()
         self._session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
         self._current_session_id: str | None = None
 
@@ -90,6 +95,14 @@ class LocalDBManager:
             r = conn.execute(text("SELECT 1 FROM pragma_table_info('scan_sessions') WHERE name='tenant_name'"))
             if r.fetchone() is None:
                 conn.execute(text("ALTER TABLE scan_sessions ADD COLUMN tenant_name VARCHAR(255)"))
+                conn.commit()
+
+    def _ensure_technician_column(self) -> None:
+        """Add technician_name column to scan_sessions if missing (migration for existing DBs)."""
+        with self.engine.connect() as conn:
+            r = conn.execute(text("SELECT 1 FROM pragma_table_info('scan_sessions') WHERE name='technician_name'"))
+            if r.fetchone() is None:
+                conn.execute(text("ALTER TABLE scan_sessions ADD COLUMN technician_name VARCHAR(255)"))
                 conn.commit()
 
     def set_current_session_id(self, session_id: str) -> None:
@@ -165,6 +178,7 @@ class LocalDBManager:
                     "finished_at": s.finished_at.isoformat() if s.finished_at else None,
                     "status": s.status,
                     "tenant_name": getattr(s, "tenant_name", None),
+                    "technician_name": getattr(s, "technician_name", None),
                     "database_findings": db_count,
                     "filesystem_findings": fs_count,
                     "scan_failures": fail_count,
@@ -184,11 +198,23 @@ class LocalDBManager:
                 return sessions[i + 1]
         return None
 
-    def create_session_record(self, session_id: str, tenant_name: str | None = None) -> None:
-        """Create a scan_sessions row. Optional tenant_name for customer/tenant attribution."""
+    def create_session_record(
+        self,
+        session_id: str,
+        tenant_name: str | None = None,
+        technician_name: str | None = None,
+    ) -> None:
+        """Create a scan_sessions row. Optional tenant_name and technician_name metadata."""
         session = self._session_factory()
         try:
-            session.add(ScanSession(session_id=session_id, status="running", tenant_name=(tenant_name or None)))
+            session.add(
+                ScanSession(
+                    session_id=session_id,
+                    status="running",
+                    tenant_name=(tenant_name or None),
+                    technician_name=(technician_name or None),
+                )
+            )
             session.commit()
         except Exception:
             session.rollback()
@@ -203,6 +229,20 @@ class LocalDBManager:
             rec = session.query(ScanSession).filter(ScanSession.session_id == session_id).first()
             if rec:
                 rec.tenant_name = tenant_name or None
+                session.commit()
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+
+    def update_session_technician(self, session_id: str, technician_name: str | None) -> None:
+        """Set or clear technician_name for an existing session."""
+        session = self._session_factory()
+        try:
+            rec = session.query(ScanSession).filter(ScanSession.session_id == session_id).first()
+            if rec:
+                rec.technician_name = technician_name or None
                 session.commit()
         except Exception:
             session.rollback()

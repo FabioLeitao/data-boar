@@ -24,12 +24,12 @@ Textual description of modules, classes, and main functions and how they connect
 - **core/session.py**
   - `new_session_id()` — Return UUID4 hex (12 chars) + timestamp string for scan session.
 
-- **core/database.py**
-  - **ScanSession** — SQLAlchemy model: id, session_id, started_at, finished_at, status, tenant_name (optional customer/tenant).
+-- **core/database.py**
+  - **ScanSession** — SQLAlchemy model: id, session_id, started_at, finished_at, status, tenant_name (optional customer/tenant), technician_name (optional operator).
   - **DatabaseFinding** — session_id, target_name, server_ip, engine_details, schema_name, table_name, column_name, data_type, sensitivity_level, pattern_detected, norm_tag, ml_confidence, created_at.
   - **FilesystemFinding** — session_id, target_name, path, file_name, data_type, sensitivity_level, pattern_detected, norm_tag, ml_confidence, created_at.
   - **ScanFailure** — session_id, target_name, reason, details, created_at.
-  - **LocalDBManager** — `__init__(db_path)` (migrates adding tenant_name if missing), `set_current_session_id(sid)`, `current_session_id`, `save_finding(source_type, **kwargs)`, `save_failure(target_name, reason, details)`, `get_findings(session_id)`, `list_sessions()` (includes tenant_name, scan_failures count), `get_previous_session(session_id)` (for trend comparison), `create_session_record(session_id, tenant_name=None)`, `update_session_tenant(session_id, tenant_name)`, `finish_session(session_id, status)`, `get_current_findings_count()`.
+  - **LocalDBManager** — `__init__(db_path)` (migrates adding tenant_name/technician_name if missing), `set_current_session_id(sid)`, `current_session_id`, `save_finding(source_type, **kwargs)`, `save_failure(target_name, reason, details)`, `get_findings(session_id)`, `list_sessions()` (includes tenant_name, technician_name, scan_failures count), `get_previous_session(session_id)` (for trend comparison), `create_session_record(session_id, tenant_name=None, technician_name=None)`, `update_session_tenant(session_id, tenant_name)`, `update_session_technician(session_id, technician_name)`, `finish_session(session_id, status)`, `get_current_findings_count()`.
 
 - **core/detector.py**
   - **SensitivityDetector** — `__init__(regex_overrides_path, ml_patterns_path)`; loads regex (built-in + overrides) and ML patterns; `analyze(column_name, sample_text)` → (sensitivity_level, pattern_detected, norm_tag, confidence). Uses TF-IDF + RandomForest when ML file or defaults available.
@@ -91,7 +91,7 @@ Textual description of modules, classes, and main functions and how they connect
 ## Report
 
 - **report/generator.py**
-  - `generate_report(db_manager, session_id, output_dir)` — Read `get_findings(session_id)` (database_findings, filesystem_findings, scan_failures); write Excel with **"Report info"** (Session ID, Started at, Tenant/Customer), "Database findings", "Filesystem findings", "Scan failures", "Recommendations", "Praise / existing controls" (if any), **"Trends - Session comparison"**, "Heatmap data"; call `_create_heatmap()` to save PNG; return Excel path.
+  - `generate_report(db_manager, session_id, output_dir)` — Read `get_findings(session_id)` (database_findings, filesystem_findings, scan_failures); write Excel with **"Report info"** (Session ID, Started at, Tenant/Customer, Technician/Operator), "Database findings", "Filesystem findings", "Scan failures", "Recommendations", "Praise / existing controls" (if any), **"Trends - Session comparison"**, "Heatmap data"; call `_create_heatmap()` to save PNG; return Excel path.
   - `_create_heatmap(db_rows, fs_rows, output_dir, session_id)` — Build pivot and seaborn heatmap, save PNG.
   - `_praise_rows(db_rows, fs_rows)` — Rows where column/file name or pattern_detected suggests existing protections (encrypted, hash, tokenized, masked, etc.); written to "Praise / existing controls" sheet.
   - `_trends_rows(db_manager, session_id, current_db, current_fs, current_fail, current_started_at)` — Compare this run with previous run (db_manager.get_previous_session); build rows: Metric, This run (count/date), Previous run (count/date), Change, Note (Improvement / New or increased / No change). Written to "Trends - Session comparison" for DPO and security team.

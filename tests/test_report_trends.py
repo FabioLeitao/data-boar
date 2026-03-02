@@ -38,18 +38,18 @@ def test_report_includes_trends_sheet(tmp_path):
         mgr.dispose()
 
 
-def test_report_includes_report_info_and_tenant(tmp_path):
-    """Report has 'Report info' sheet with Session ID, Started at, Tenant/Customer."""
+def test_report_includes_report_info_tenant_and_technician(tmp_path):
+    """Report has 'Report info' sheet with Session ID, Started at, Tenant/Customer, Technician/Operator."""
     db_path = str(tmp_path / "audit2.db")
     out_dir = str(tmp_path / "out2")
     Path(out_dir).mkdir(parents=True, exist_ok=True)
     mgr = LocalDBManager(db_path)
     try:
-        mgr.set_current_session_id("s-tenant")
-        mgr.create_session_record("s-tenant", tenant_name="Acme Corp")
+        mgr.set_current_session_id("s-tenant-tech")
+        mgr.create_session_record("s-tenant-tech", tenant_name="Acme Corp", technician_name="Maria Colleague-V")
         mgr.save_finding("database", target_name="T1", column_name="email", sensitivity_level="HIGH", pattern_detected="EMAIL", norm_tag="GDPR", ml_confidence=80)
         mgr.finish_session("s-tenant")
-        path = generate_report(mgr, "s-tenant", output_dir=out_dir)
+        path = generate_report(mgr, "s-tenant-tech", output_dir=out_dir)
         assert path is not None
         import pandas as pd
         with pd.ExcelFile(path) as xl:
@@ -58,5 +58,7 @@ def test_report_includes_report_info_and_tenant(tmp_path):
         assert "Field" in df.columns and "Value" in df.columns
         row_tenant = df[df["Field"] == "Tenant / Customer"].iloc[0]
         assert row_tenant["Value"] == "Acme Corp"
+        row_tech = df[df["Field"] == "Technician / Operator"].iloc[0]
+        assert row_tech["Value"] == "Maria Colleague-V"
     finally:
         mgr.dispose()

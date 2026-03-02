@@ -77,13 +77,21 @@ class AuditEngine:
     def get_current_findings_count(self) -> int:
         return self.db_manager.get_current_findings_count()
 
-    def start_audit(self) -> str:
+    def start_audit(
+        self,
+        tenant_name: str | None = None,
+        technician_name: str | None = None,
+    ) -> str:
         """
         Run audit for all targets (sequential or parallel). Returns session_id (UUID + timestamp).
         """
         session_id = new_session_id()
         self.db_manager.set_current_session_id(session_id)
-        self.db_manager.create_session_record(session_id)
+        self.db_manager.create_session_record(
+            session_id,
+            tenant_name=tenant_name,
+            technician_name=technician_name,
+        )
         self._run_audit_targets()
         return session_id
 
