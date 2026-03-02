@@ -20,7 +20,8 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 | connectors/mongodb_connector.py | Done | Optional, pymongo |
 | connectors/redis_connector.py | Done | Optional, redis |
 | report/generator.py | Done | Excel + heatmap, DB/FS/failures/recommendations |
-| api/routes.py | Done | /scan, /start, /status, /report, /list, /reports/{id} |
+| api/routes.py | Done | /scan, /start, /status, /report, /list, /reports/{id}; GET /, /reports, /config (dashboard) |
+| Web dashboard (frontend) | Done | GET / dashboard, GET /reports list, GET/POST /config editor; Jinja2 + static; no WebSocket (per plan) |
 | main.py | Done | --config, --web, --port 8088 |
 | utils/logger.py | Done | Unified logger, log_finding, notify_violation |
 | README.md | Done | Install, config, run, DBs, file types |
@@ -89,6 +90,17 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 
 ---
 
+### 2.8 Web dashboard (frontend) — Done
+
+- **Per plan:** “No WebSocket/streaming UI; REST API and file download only.” The frontend is encoded accordingly: server-rendered HTML (Jinja2), no SPA, no separate build.
+- **Implemented:**
+  - **Dashboard (GET /):** Scan status (running/idle, current session, findings count), quantity/quality summary (DB findings, FS findings, failures, total for last run), “Start scan” button, recent sessions table with download links. Status polls every 2s while a scan is running.
+  - **Reports (GET /reports):** List of all sessions (session ID, started/finished, status, DB/FS/failures) with “Download” link per session (uses existing `GET /reports/{session_id}`).
+  - **Configuration (GET /config, POST /config):** Edit scan configuration (YAML) in browser; save writes to config file (CONFIG_PATH or config.yaml) and reloads in-memory config/engine for next scan.
+- **Artifacts:** `api/templates/` (base.html, dashboard.html, reports.html, config.html), `api/static/` (style.css, app.js), routes in `api/routes.py` (dashboard, config get/post, reports page, static mount). Documented in README and docs/USAGE.md.
+
+---
+
 ## 3. File-level checklist (from plan)
 
 | Path | Action | Status |
@@ -107,7 +119,9 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 | connectors/mongodb_connector.py | Optional | Done |
 | connectors/redis_connector.py | Optional | Done |
 | report/generator.py | Single Excel + heatmap + Praise sheet | Done (2.3) |
-| api/routes.py | All routes | Done |
+| api/routes.py | All routes + dashboard, config, reports pages | Done |
+| api/templates/*.html | Dashboard, reports list, config editor (Jinja2) | Done (2.8) |
+| api/static/* | CSS, JS for dashboard | Done (2.8) |
 | main.py | CLI + API | Done |
 | utils/logger.py | Unified logger | Done |
 | README.md | Install, config, DBs, files | Done; keep updated (2.7) |
@@ -128,7 +142,7 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 - No storage of raw DB/file content; only metadata (and optional anonymized example).
 - **SMB/NFS/WebDAV/SharePoint:** Now supported via optional connectors (type smb, cifs, nfs, webdav, sharepoint; install `.[shares]`). NFS requires a pre-mounted path.
 - Deep learning is optional later; default remains regex + TF-IDF classifier.
-- No WebSocket/streaming UI; REST API and file download only.
+- No WebSocket/streaming UI; REST API and file download only. The web dashboard (2.8) follows this: server-rendered pages (Jinja2) consuming the same REST API; no separate frontend stack or build.
 
 ---
 
@@ -141,3 +155,4 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 5. **2.2** – Learned patterns (optional, when ML tuning is a priority).
 6. **2.6** – SQLite-as-DB in file scan (optional, when .sqlite/.db scanning is required).
 7. **2.5** – Optional BigData/API connectors (when a specific integration is needed).
+8. **2.8** – Web dashboard (frontend): dashboard, reports list, config editor; server-rendered, REST + file download only — Done.
