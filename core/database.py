@@ -135,15 +135,15 @@ class LocalDBManager:
             session.close()
 
     def list_sessions(self) -> list[dict]:
-        """List all scan sessions with summary (session_id, started_at, status, counts)."""
+        """List all scan sessions with summary (session_id, started_at, status, counts including scan_failures)."""
         session = self._session_factory()
         try:
-            from sqlalchemy import func
             sessions = session.query(ScanSession).order_by(ScanSession.started_at.desc()).all()
             out = []
             for s in sessions:
                 db_count = session.query(DatabaseFinding).filter(DatabaseFinding.session_id == s.session_id).count()
                 fs_count = session.query(FilesystemFinding).filter(FilesystemFinding.session_id == s.session_id).count()
+                fail_count = session.query(ScanFailure).filter(ScanFailure.session_id == s.session_id).count()
                 out.append({
                     "session_id": s.session_id,
                     "started_at": s.started_at.isoformat() if s.started_at else None,
@@ -151,10 +151,22 @@ class LocalDBManager:
                     "status": s.status,
                     "database_findings": db_count,
                     "filesystem_findings": fs_count,
+                    "scan_failures": fail_count,
                 })
             return out
         finally:
             session.close()
+
+    def get_previous_session(self, session_id: str) -> dict | None:
+        """
+        Return the session immediately before the given one (by started_at desc), for trend comparison.
+        Returns dict with session_id, started_at, database_findings, filesystem_findings, scan_failures, or None.
+        """
+        sessions = self.list_sessions()
+        for i, s in enumerate(sessions):
+            if s["session_id"] == session_id and i + 1 < len(sessions):
+                return sessions[i + 1]
+        return None
 
     def create_session_record(self, session_id: str) -> None:
         session = self._session_factory()
