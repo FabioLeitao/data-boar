@@ -27,11 +27,13 @@ class DatabaseConfig(BaseModel):
     database: str
     driver: str = "postgresql+psycopg2"
     tenant: str | None = None  # optional customer/tenant name for this scan
+    technician: str | None = None  # optional technician/operator name for this scan
 
 
 class ScanStartBody(BaseModel):
-    """Optional body for POST /scan to associate the scan with a tenant/customer."""
+    """Optional body for POST /scan to associate the scan with a tenant/customer and technician/operator."""
     tenant: str | None = None
+    technician: str | None = None
 
 # Load config and create engine at import time (or on startup event)
 _config_path = os.environ.get("CONFIG_PATH", "config.yaml")
@@ -231,17 +233,24 @@ async def reports_page(request: Request):
 @app.post("/scan")
 @app.post("/start")
 async def start_scan(background_tasks: BackgroundTasks, body: ScanStartBody | None = None):
-    """Start audit in background. Optional body.tenant to associate scan with a customer/tenant. Returns session_id."""
+    """Start audit in background. Optional body.tenant and body.technician to tag the scan. Returns session_id."""
     engine = _get_engine()
     if engine.is_running:
         raise HTTPException(status_code=409, detail="Audit already in progress.")
     from core.session import new_session_id
     session_id = new_session_id()
     tenant = (body.tenant if body else None) or None
+    technician = (body.technician if body else None) or None
     if isinstance(tenant, str):
         tenant = tenant.strip() or None
+    if isinstance(technician, str):
+        technician = technician.strip() or None
     engine.db_manager.set_current_session_id(session_id)
-    engine.db_manager.create_session_record(session_id, tenant_name=tenant)
+    engine.db_manager.create_session_record(
+        session_id,
+        tenant_name=tenant,
+        technician_name=technician,
+    )
     def run_targets():
         engine._run_audit_targets()
     background_tasks.add_task(run_targets)
@@ -293,6 +302,11 @@ class SessionTenantUpdate(BaseModel):
     tenant: str | None = None
 
 
+class SessionTechnicianUpdate(BaseModel):
+    """Body for PATCH /sessions/{session_id}/technician: set technician/operator name for a session."""
+    technician: str | None = None
+
+
 @app.patch("/sessions/{session_id}")
 async def update_session_tenant(session_id: str, body: SessionTenantUpdate):
     """Set or clear the tenant/customer name for an existing scan session."""
@@ -303,6 +317,18 @@ async def update_session_tenant(session_id: str, body: SessionTenantUpdate):
     tenant = (body.tenant or "").strip() or None
     engine.db_manager.update_session_tenant(session_id, tenant)
     return {"session_id": session_id, "tenant": tenant}
+
+
+@app.patch("/sessions/{session_id}/technician")
+async def update_session_technician(session_id: str, body: SessionTechnicianUpdate):
+    """Set or clear the technician/operator name for an existing scan session."""
+    engine = _get_engine()
+    sessions = [s for s in engine.db_manager.list_sessions() if s.get("session_id") == session_id]
+    if not sessions:
+        raise HTTPException(status_code=404, detail=f"Session {session_id} not found.")
+    technician = (body.technician or "").strip() or None
+    engine.db_manager.update_session_technician(session_id, technician)
+    return {"session_id": session_id, "technician": technician}
 
 
 @app.get("/reports/{session_id}")
@@ -334,8 +360,13 @@ async def scan_database(config: DatabaseConfig, background_tasks: BackgroundTask
     from core.session import new_session_id
     session_id = new_session_id()
     tenant = (config.tenant or "").strip() or None
+    technician = (config.technician or "").strip() or None
     engine.db_manager.set_current_session_id(session_id)
-    engine.db_manager.create_session_record(session_id, tenant_name=tenant)
+    engine.db_manager.create_session_record(
+        session_id,
+        tenant_name=tenant,
+        technician_name=technician,
+    )
     def run_one_target():
         engine._is_running = True
         try:

@@ -12,6 +12,7 @@
       <th>Finished</th>
       <th>Status</th>
       <th>Tenant / Customer</th>
+      <th>Technician / Operator</th>
       <th>DB findings</th>
       <th>FS findings</th>
       <th>Failures</th>
@@ -26,13 +27,14 @@
       <td>{{ s.finished_at or "—" }}</td>
       <td>{{ s.status }}</td>
       <td>{{ s.tenant_name or "—" }}</td>
+      <td>{{ s.technician_name or "—" }}</td>
       <td>{{ s.database_findings }}</td>
       <td>{{ s.filesystem_findings }}</td>
       <td>{{ s.scan_failures }}</td>
       <td><a href="/reports/{{ s.session_id }}" download class="btn btn-sm">Download</a></td>
     </tr>
     {% else %}
-    <tr><td colspan="9">No sessions yet. Run a scan from the <a href="/">dashboard</a>.</td></tr>
+    <tr><td colspan="10">No sessions yet. Run a scan from the <a href="/">dashboard</a>.</td></tr>
     {% endfor %}
   </tbody>
 </table>
