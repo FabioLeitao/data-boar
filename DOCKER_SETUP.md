@@ -2,6 +2,24 @@
 
 Run these steps in a terminal where **Docker** is available (e.g. PowerShell or CMD after starting Docker Desktop).
 
+**Pre-built image:** The application is also published on Docker Hub as `fabioleitao/python3-lgpd-crawler:latest` ([hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)). You can `docker pull` and run that image instead of building from source (see README and `deploy/DEPLOY.md`).
+
+**Upgrading your local image:** To refresh Docker Desktop with the current version from the repository, pull the image and restart your container(s):
+
+```powershell
+docker pull fabioleitao/python3-lgpd-crawler:latest
+# If you run a single container:
+docker stop lgpd-audit
+docker rm lgpd-audit
+docker run -d --name lgpd-audit -p 8088:8088 -v "${PWD}/data:/data" -e CONFIG_PATH=/data/config.yaml fabioleitao/python3-lgpd-crawler:latest
+
+# If you use Compose:
+docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml pull
+docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d
+```
+
+Repeat this whenever you want to pick up a new version pushed to Docker Hub (e.g. after releases or updates to the repo).
+
 ---
 
 ## 1. Connect Cursor to Docker Desktop MCP
@@ -34,7 +52,7 @@ If you use a community Docker MCP (e.g. `cursor-docker-mcp`), add it in Cursor S
 
 ## 2. Build the image (web API mode)
 
-From the **project root**:
+The Dockerfile uses a multi-stage build (minimal runtime image; build tools only in the builder stage). From the **project root**:
 
 ```powershell
 cd c:\Users\fabio\Documents\dev\python3-lgpd-crawler
@@ -86,13 +104,14 @@ docker run -d --name lgpd-audit `
   python3-lgpd-crawler:latest
 ```
 
-Or with Compose:
+Or with **Docker Compose** (alternative to single-container run):
 
 ```powershell
-docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.example.yml up -d
+copy deploy\docker-compose.override.example.yml deploy\docker-compose.override.yml
+docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d
 ```
 
-(Ensure `deploy/docker-compose.override.example.yml` uses `./data:/data` or copy it to `docker-compose.override.yml` and adjust.)
+(Ensure `./data/config.yaml` exists; the override mounts `./data` at `/data`.) For **Docker Swarm** or **Kubernetes**, see **[deploy/DEPLOY.md](deploy/DEPLOY.md)**.
 
 ---
 
@@ -111,4 +130,4 @@ docker stop lgpd-audit
 docker rm lgpd-audit
 ```
 
-Or with Compose: `docker compose -f deploy/docker-compose.yml down`
+Or with Compose: `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml down`

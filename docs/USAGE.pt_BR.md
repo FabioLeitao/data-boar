@@ -60,12 +60,18 @@ python main.py --config config.yaml --web --port 8088
 
 ## 2. API web e dashboard
 
+**Opção: executar via Docker (sem clonar o Git)**  
+Uma imagem pré-construída está disponível no Docker Hub: `fabioleitao/python3-lgpd-crawler:latest` ([hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)). Faça pull e execute com um config montado em `/data/config.yaml` (veja o README “Deploy com Docker” e `deploy/DEPLOY.md`). Você pode usar esse container em vez de instalar a partir do código.
+
 ### URLs principais
 
 - **Dashboard:** `http://<host>:<port>/`
 - **Reports:** `http://<host>:<port>/reports`
 - **Configuration:** `http://<host>:<port>/config`
+- **Help:** `http://<host>:<port>/help` — início rápido e exemplos de config
+- **About:** `http://<host>:<port>/about` — aplicação, versão, autor e licença (conforme LICENSE)
 - **Swagger UI:** `http://<host>:<port>/docs`
+- **Health:** `http://<host>:<port>/health` — sonda para Docker/Kubernetes
 
 ### O que o dashboard mostra
 
@@ -92,6 +98,9 @@ python main.py --config config.yaml --web --port 8088
 | `GET`  | `/logs/{session_id}`    | Baixa o primeiro arquivo de log que contiver o `session_id` informado (análise detalhada da sessão).        |
 | `PATCH`| `/sessions/{session_id}` | Atualiza/limpa o tenant de uma sessão existente (`{ "tenant": "..." }`).                                   |
 | `PATCH`| `/sessions/{session_id}/technician` | Atualiza/limpa o técnico de uma sessão existente (`{ "technician": "..." }`).                    |
+| `GET`  | `/about`       | Página About (HTML): aplicação, versão, autor, licença.                                           |
+| `GET`  | `/about/json`  | Informações de about em JSON (nome, versão, autor, licença, copyright).                           |
+| `GET`  | `/health`      | Sonda de liveness/readiness para Docker e Kubernetes.                                             |
 
 ---
 
@@ -224,6 +233,9 @@ Esse endpoint procura, entre os arquivos `audit_YYYYMMDD.log` disponíveis (do m
   - `api` – porta da API.
   - `sqlite_path` – caminho do banco SQLite com resultados.
   - `scan` – `max_workers` para paralelismo.
+  - `api.workers` – número de workers uvicorn (padrão 1; 2+ para mais requisições concorrentes).
 
 Para detalhes de todos os campos e exemplos completos, consulte `README.md` e `docs/USAGE.md` (inglês), que são as referências canônicas.
+
+**Produção atrás de proxy reverso (nginx, Traefik, Caddy):** A aplicação se comporta corretamente atrás de NAT, load balancer ou proxy reverso. Quando o TLS for terminado no proxy, defina **X-Forwarded-Proto: https** para que os cabeçalhos de segurança (ex.: HSTS) funcionem. Veja [SECURITY.md](../SECURITY.md) para os cabeçalhos HTTP de segurança.
 

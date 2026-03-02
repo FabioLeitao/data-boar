@@ -1,14 +1,14 @@
 """
 Single report generator: reads database_findings, filesystem_findings, scan_failures from LocalDBManager
-for a session; produces Excel with sheets "Database findings", "Filesystem findings", "Scan failures",
-"Recommendations", "Praise / existing controls", "Trends - Session comparison", and heatmap image (sensitivity/risk).
-Returns path to Excel file.
+for a session; produces Excel with sheets "Report info" (session + about), "Database findings", etc.,
+and heatmap image (sensitivity/risk) with about footer. Returns path to Excel file.
 """
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 
+from core.about import get_about_info
 from core.database import failure_hint
 
 # Optional matplotlib/seaborn for heatmap
@@ -23,7 +23,7 @@ except ImportError:
 
 
 def _create_heatmap(db_rows: list[dict], fs_rows: list[dict], output_dir: str, session_id: str) -> str | None:
-    """Build sensitivity/risk heatmap from DB + filesystem findings; save PNG. Return path or None."""
+    """Build sensitivity/risk heatmap from DB + filesystem findings; save PNG with about footer. Return path or None."""
     if not _PLOT_AVAILABLE:
         return None
     rows = []
@@ -33,14 +33,19 @@ def _create_heatmap(db_rows: list[dict], fs_rows: list[dict], output_dir: str, s
         rows.append({"target": r.get("target_name", ""), "source": "filesystem", "sensitivity": r.get("sensitivity_level", "LOW")})
     if not rows:
         return None
+    about = get_about_info()
     df = pd.DataFrame(rows)
     pivot = df.groupby(["target", "sensitivity"]).size().unstack(fill_value=0)
     plt.figure(figsize=(10, 6))
     sns.heatmap(pivot, annot=True, cmap="YlOrRd", fmt="d", cbar_kws={"label": "Findings"})
     plt.title("Sensitivity / Risk Heatmap")
+    # About footer on the image (detached heatmap carries app credit and license)
+    footer = f"{about['name']} v{about['version']} · {about['author']} · {about['license']}"
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.12)
+    plt.figtext(0.5, 0.02, footer, ha="center", fontsize=7, style="italic")
     out_path = Path(output_dir) / f"heatmap_{session_id[:12]}.png"
-    plt.savefig(out_path)
+    plt.savefig(out_path, bbox_inches="tight")
     plt.close()
     return str(out_path)
 
@@ -224,14 +229,20 @@ def generate_report(db_manager: Any, session_id: str, output_dir: str = ".") -> 
             tenant_name = s.get("tenant_name")
             technician_name = s.get("technician_name")
             break
+    about = get_about_info()
     out_path = Path(output_dir) / f"Relatorio_Auditoria_{session_id[:16]}.xlsx"
     with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
-        # Report info sheet: session id, started at, tenant/customer, technician/operator (first so it's visible when opening)
+        # Report info sheet: session + tenant/technician + about (application, author, license)
         report_info = [
             {"Field": "Session ID", "Value": session_id},
             {"Field": "Started at", "Value": current_started_at or "—"},
             {"Field": "Tenant / Customer", "Value": tenant_name or "—"},
             {"Field": "Technician / Operator", "Value": technician_name or "—"},
+            {"Field": "Application", "Value": about["name"]},
+            {"Field": "Version", "Value": about["version"]},
+            {"Field": "Author", "Value": about["author"]},
+            {"Field": "License", "Value": about["license"]},
+            {"Field": "Copyright", "Value": about["copyright"]},
         ]
         pd.DataFrame(report_info).to_excel(writer, sheet_name="Report info", index=False)
         if db_rows:

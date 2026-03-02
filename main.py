@@ -118,8 +118,10 @@ def main() -> None:
     if args.web and not args.reset_data:
         import uvicorn
         from api.routes import app
-        port = config.get("api", {}).get("port", args.port)
-        uvicorn.run(app, host="0.0.0.0", port=port)
+        api_cfg = config.get("api", {})
+        port = api_cfg.get("port", args.port)
+        workers = int(api_cfg.get("workers", 1))
+        uvicorn.run(app, host="0.0.0.0", port=port, workers=workers)
         return
 
     engine = AuditEngine(config)
