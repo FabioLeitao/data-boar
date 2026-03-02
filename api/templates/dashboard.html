@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — LGPD Audit{% endblock %}
+{% block content %}
+<h1>Audit Dashboard</h1>
+
+<section class="card status-card" id="status-card">
+  <h2>Scan status</h2>
+  <div id="status-content">
+    <p><strong>State:</strong> <span id="status-running">{{ "Running" if status.running else "Idle" }}</span></p>
+    <p><strong>Current session:</strong> <span id="status-session">{{ status.current_session_id or "—" }}</span></p>
+    <p><strong>Findings this run:</strong> <span id="status-findings">{{ status.findings_count }}</span></p>
+  </div>
+  <div class="actions">
+    <button type="button" class="btn btn-primary" id="btn-start-scan" {% if status.running %}disabled{% endif %}>Start scan</button>
+    <span id="scan-feedback" class="feedback"></span>
+  </div>
+</section>
+
+<section class="card stats-card">
+  <h2>Data discovery (last run)</h2>
+  <div class="stats-grid">
+    <div class="stat">
+      <span class="stat-value" id="stat-db">{{ last_session.database_findings if last_session else 0 }}</span>
+      <span class="stat-label">Database findings</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value" id="stat-fs">{{ last_session.filesystem_findings if last_session else 0 }}</span>
+      <span class="stat-label">Filesystem findings</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value" id="stat-failures">{{ last_session.scan_failures if last_session else 0 }}</span>
+      <span class="stat-label">Scan failures</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value" id="stat-total">{{ (last_session.database_findings + last_session.filesystem_findings) if last_session else 0 }}</span>
+      <span class="stat-label">Total findings</span>
+    </div>
+  </div>
+  <p class="muted">Session: {{ last_session.session_id[:20] + "…" if last_session and last_session.session_id else "—" }} · {{ last_session.started_at if last_session else "—" }}</p>
+</section>
+
+<section class="card reports-preview">
+  <h2>Recent sessions</h2>
+  <p><a href="/reports">View all reports</a></p>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Session</th>
+        <th>Started</th>
+        <th>DB</th>
+        <th>FS</th>
+        <th>Failures</th>
+        <th>Report</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in sessions[:10] %}
+      <tr>
+        <td><code>{{ s.session_id[:16] }}…</code></td>
+        <td>{{ s.started_at or "—" }}</td>
+        <td>{{ s.database_findings }}</td>
+        <td>{{ s.filesystem_findings }}</td>
+        <td>{{ s.scan_failures }}</td>
+        <td><a href="/reports/{{ s.session_id }}" download>Download</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6">No sessions yet. Start a scan.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+(function() {
+  var btn = document.getElementById('btn-start-scan');
+  var feedback = document.getElementById('scan-feedback');
+  var statusRunning = document.getElementById('status-running');
+  var statusSession = document.getElementById('status-session');
+  var statusFindings = document.getElementById('status-findings');
+  function pollStatus() {
+    fetch('/status').then(function(r) { return r.json(); }).then(function(d) {
+      statusRunning.textContent = d.running ? 'Running' : 'Idle';
+      statusSession.textContent = d.current_session_id || '—';
+      statusFindings.textContent = d.findings_count;
+      if (d.running) { btn.disabled = true; setTimeout(pollStatus, 2000); }
+      else { btn.disabled = false; if (document.getElementById('stat-db')) location.reload(); }
+    });
+  }
+  if (btn) btn.addEventListener('click', function() {
+    feedback.textContent = 'Starting…';
+    fetch('/scan', { method: 'POST' }).then(function(r) { return r.json(); }).then(function(d) {
+      feedback.textContent = 'Started: ' + (d.session_id || '').slice(0, 16) + '…';
+      pollStatus();
+    }).catch(function(e) { feedback.textContent = 'Error: ' + e.message; });
+  });
+  if (statusRunning && statusRunning.textContent === 'Running') pollStatus();
+})();
+</script>
+{% endblock %}
