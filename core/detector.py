@@ -1,6 +1,12 @@
 """
 Unified sensitivity detector: regex (from config or built-in) + ML (terms from external config).
 Returns (sensitivity, pattern_detected, norm_tag, confidence); no storage of sample content.
+
+To reduce false positives on song lyrics and music tablature/chord sheets:
+- Content heuristics detect lyrics (verse/chorus keywords, short lines) and tabs (digit/pipe lines).
+- In that context, weak patterns (DATE_DMY, PHONE_BR) are downgraded to MEDIUM; ML confidence
+  is penalized so borderline cases stay MEDIUM/LOW. Strong PII (CPF, EMAIL, CREDIT_CARD, SSN)
+  still reports HIGH.
 """
 from pathlib import Path
 from typing import Any
@@ -38,7 +44,63 @@ DEFAULT_ML_TERMS = [
     ("nome completo", 1), ("rg", 1), ("ssn", 1), ("salary", 1), ("salário", 1),
     ("system_log", 0), ("item_count", 0), ("config_file", 0), ("temp_data", 0),
     ("id_interno", 0), ("quantidade_estoque", 0),
+    # Lyrics and music notation context → reduce false positives
+    ("lyrics", 0), ("verse", 0), ("chorus", 0), ("bridge", 0), ("refrão", 0), ("estrofe", 0),
+    ("letra", 0), ("cifra", 0), ("tab", 0), ("tablature", 0), ("chord", 0), ("guitar", 0),
+    ("intro", 0), ("outro", 0), ("riff", 0), ("bass", 0), ("capo", 0), ("tuning", 0),
 ]
+
+# Regex patterns that often match in lyrics/tabs without real PII (dates in lyrics, digits in tabs)
+WEAK_PATTERNS_IN_ENTERTAINMENT = frozenset({"DATE_DMY", "PHONE_BR"})
+
+
+def _looks_like_lyrics(sample: str) -> bool:
+    """
+    Heuristic: content resembles song lyrics (short lines, verse/chorus keywords).
+    Used to downgrade false positives from dates/numbers in lyrics.
+    """
+    if not sample or len(sample.strip()) < 30:
+        return False
+    lower = sample.lower()
+    keywords = (
+        "verse", "chorus", "bridge", "refrão", "estrofe", "letra", "lyrics",
+        "intro", "outro", "la la", "na na", "oh oh", "yeah yeah", "repeat",
+    )
+    if any(k in lower for k in keywords):
+        return True
+    lines = [ln.strip() for ln in sample.splitlines() if ln.strip()]
+    if len(lines) >= 5:
+        avg_len = sum(len(ln) for ln in lines) / len(lines)
+        if avg_len < 55:
+            return True
+    return False
+
+
+def _looks_like_music_tab(sample: str) -> bool:
+    """
+    Heuristic: content resembles guitar/bass tablature or chord sheets.
+    Used to downgrade false positives from digit sequences (tabs) or chord names.
+    """
+    if not sample or len(sample.strip()) < 20:
+        return False
+    lines = [ln.strip() for ln in sample.splitlines() if ln.strip()]
+    tab_score = 0
+    chord_score = 0
+    for ln in lines[:30]:
+        if len(ln) > 2:
+            # Tab: digits, |, -, [, ], h, p, b, /, \
+            tab_chars = sum(1 for c in ln if c in "0123456789|-[ ]hp/b\\")
+            if tab_chars >= min(4, len(ln) // 2):
+                tab_score += 1
+            # Chord line: capital letter + optional m/7/dim etc.
+            if re.match(r"^[\sA-G][mM0-9#b\s/dim]*$", ln) and len(ln) >= 2:
+                chord_score += 1
+    if tab_score >= 2 or chord_score >= 2:
+        return True
+    lower = sample.lower()
+    if any(k in lower for k in ("tab", "tablature", "cifra", "chord", "capo", "tuning", "e|---", "a|---", "b|---")):
+        return True
+    return False
 
 
 def _load_regex_overrides(path: str | None) -> dict[str, tuple[str, str]]:
@@ -126,9 +188,13 @@ class SensitivityDetector:
     def analyze(self, column_name: str, sample_text: str) -> tuple[str, str, str, int]:
         """
         Returns (sensitivity_level, pattern_detected, norm_tag, ml_confidence 0-100).
-        Does not store sample_text.
+        Does not store sample_text. Downgrades classification when content looks like
+        song lyrics or music tabs to reduce false positives.
         """
         combined = f"{column_name} {sample_text}"
+        sample_only = sample_text or ""
+        entertainment_context = _looks_like_lyrics(sample_only) or _looks_like_music_tab(sample_only)
+
         found_patterns: list[tuple[str, str]] = []
         for name, (_, norm_tag) in self.patterns.items():
             rex = self._compiled.get(name)
@@ -144,10 +210,23 @@ class SensitivityDetector:
             except Exception:
                 pass
 
-        if found_patterns:
-            names = ", ".join(p[0] for p in found_patterns)
-            norms = ", ".join(p[1] for p in found_patterns)
-            return "HIGH", names, norms, max(ml_confidence, 80)
+        if entertainment_context:
+            ml_confidence = max(0, ml_confidence - 25)
+            if found_patterns:
+                matched_names = {p[0] for p in found_patterns}
+                only_weak = matched_names <= WEAK_PATTERNS_IN_ENTERTAINMENT
+                if only_weak:
+                    names = ", ".join(p[0] for p in found_patterns)
+                    norms = ", ".join(p[1] for p in found_patterns)
+                    return "MEDIUM", names + " (lyrics/tabs context)", norms, min(ml_confidence, 55)
+                names = ", ".join(p[0] for p in found_patterns)
+                norms = ", ".join(p[1] for p in found_patterns)
+                return "HIGH", names, norms, max(ml_confidence, 70)
+        else:
+            if found_patterns:
+                names = ", ".join(p[0] for p in found_patterns)
+                norms = ", ".join(p[1] for p in found_patterns)
+                return "HIGH", names, norms, max(ml_confidence, 80)
         if ml_confidence >= 70:
             return "HIGH", "ML_DETECTED", "LGPD/GDPR/CCPA context", ml_confidence
         if ml_confidence >= 40:
