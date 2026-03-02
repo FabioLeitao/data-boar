@@ -1,19 +1,7 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+"""
+Re-export the single FastAPI app from api.routes for backward compatibility.
+Use: from api.routes import app (or from api.app import app).
+"""
+from api.routes import app
 
-app = FastAPI()
-
-
-class DatabaseConfig(BaseModel):
-    name: str
-    host: str
-    port: int
-    user: str
-    password: str
-    database: str
-
-
-@app.post("/scan_database")
-async def scan_database(config: DatabaseConfig):
-    # Lógica de escaneamento
-    return {"status": "success"}
+__all__ = ["app"]

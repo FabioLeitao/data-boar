@@ -1,3 +1,4 @@
+"""Legacy: prefer core.database.LocalDBManager and report.generator for new code."""
 import sqlite3
 from typing import List, Dict
 
