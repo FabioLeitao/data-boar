@@ -18,6 +18,14 @@ DRIVER_MAP = {
     "oracle": "oracle+oracledb",
 }
 
+# Oracle system schemas to skip when discovering (credential sees only accessible schemas; skip Oracle-maintained)
+ORACLE_SYSTEM_SCHEMAS = frozenset({
+    "SYS", "SYSTEM", "OUTLN", "DBSNMP", "DIP", "ORACLE_OCM", "APPQOSSYS", "WMSYS",
+    "EXFSYS", "CTXSYS", "XDB", "ANONYMOUS", "MDSYS", "OLAPSYS", "ORDSYS", "ORDDATA",
+    "SI_INFORMTN_SCHEMA", "LBACSYS", "DVF", "DVSYS", "GSMADMIN_INTERNAL", "OJVMSYS",
+    "GSMCATUSER", "GSMUSER", "MDDATA", "REMOTE_SCHEDULER_AGENT", "DBSFWUSER",
+})
+
 
 def _build_url(target: dict[str, Any]) -> str:
     """Build SQLAlchemy URL from target config."""
@@ -75,20 +83,27 @@ class SQLConnector:
             self.engine = None
 
     def discover(self) -> list[dict[str, Any]]:
-        """Return list of {schema, table, columns: [{name, type}]}."""
+        """Return list of {schema, table, columns: [{name, type}]}. For Oracle, skips system schemas."""
         inspector = inspect(self.engine)
         result = []
+        dialect = self.engine.dialect.name if self.engine else ""
         schemas = inspector.get_schema_names()
+        skip_schemas = {"information_schema", "sys", "pg_catalog", "performance_schema"}
+        if dialect == "oracle":
+            skip_schemas = ORACLE_SYSTEM_SCHEMAS
         for schema in schemas:
-            if schema in ("information_schema", "sys", "pg_catalog", "performance_schema"):
+            if schema and (schema.upper() if dialect == "oracle" else schema) in skip_schemas:
                 continue
-            for table in inspector.get_table_names(schema=schema):
-                columns = inspector.get_columns(table, schema=schema)
-                result.append({
-                    "schema": schema,
-                    "table": table,
-                    "columns": [{"name": c["name"], "type": str(c["type"])} for c in columns],
-                })
+            try:
+                for table in inspector.get_table_names(schema=schema):
+                    columns = inspector.get_columns(table, schema=schema)
+                    result.append({
+                        "schema": schema or "",
+                        "table": table,
+                        "columns": [{"name": c["name"], "type": str(c["type"])} for c in columns],
+                    })
+            except Exception:
+                continue
         # If no schemas (e.g. SQLite), get_table_names() without schema
         if not result and hasattr(inspector, "get_table_names"):
             for table in inspector.get_table_names():
@@ -112,6 +127,12 @@ class SQLConnector:
             elif dialect == "mysql":
                 t = f'`{schema}`.`{safe_table}`' if schema else f'`{safe_table}`'
                 q = text(f'SELECT `{safe_col}` FROM {t} LIMIT {self.sample_limit}')
+            elif dialect == "oracle":
+                # Oracle: quoted identifiers; use ROWNUM for limit (no LIMIT)
+                t = f'"{schema}"."{safe_table}"' if schema else f'"{safe_table}"'
+                q = text(
+                    f'SELECT "{safe_col}" FROM {t} WHERE ROWNUM <= :lim'
+                ).bindparams(lim=self.sample_limit)
             else:
                 t = f'"{schema}"."{safe_table}"' if schema else f'"{safe_table}"'
                 q = text(f'SELECT "{safe_col}" FROM {t} LIMIT {self.sample_limit}')
