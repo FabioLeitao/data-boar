@@ -3,12 +3,13 @@
 # Default: runs the image CMD = web API + frontend (dashboard, reports, config UI) on port 8088.
 # No "command:" override = container starts the API. For CLI one-shot use a separate run with entrypoint override.
 # Requires: config at /data/config.yaml (mount volume or bind).
-# Image: set to your registry (e.g. ghcr.io/fabioleitao/python3-lgpd-crawler or YOUR_DOCKERHUB_USER/python3-lgpd-crawler).
+# Image: pre-built on Docker Hub (hub.docker.com/r/fabioleitao/python3-lgpd-crawler) or override with build: for local build.
+# Resources: tuned for I/O-bound workload (network/FS are the bottleneck). CPU left unconstrained for report-generation bursts.
 version: "3.8"
 
 services:
   lgpd-audit:
-    image: ghcr.io/fabioleitao/python3-lgpd-crawler:latest
+    image: fabioleitao/python3-lgpd-crawler:latest
     # command not set: use image default = web API + frontend
     build:
       context: ..
@@ -34,6 +35,7 @@ services:
           memory: 1G
         reservations:
           memory: 256M
+          cpus: "0.25"
 
 volumes:
   lgpd-data:
