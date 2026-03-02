@@ -458,6 +458,16 @@ man lgpd_crawler
 
 When adding new CLI options or API capabilities, update both this README and `docs/lgpd_crawler.1` so that the man page continues to reflect the current behaviour.
 
+## Deploy with Docker
+
+You can run the API as a container or as a **Docker Swarm** service. Image: build from the repo or use a published image (e.g. GitHub Container Registry or Docker Hub).
+
+- **Build:** `docker build -t python3-lgpd-crawler:latest .`
+- **Run:** Mount config at `/data/config.yaml` (see `deploy/config.example.yaml`). Expose port 8088.
+- **Swarm:** `docker stack deploy -c deploy/docker-compose.yml lgpd-audit` (after preparing `/data` with config).
+
+Full steps (build, push to a registry, run with Compose, deploy as Swarm on your machine): **[deploy/DEPLOY.md](deploy/DEPLOY.md)**.
+
 ## Security and compliance
 
 - No raw sampled content is persisted; only metadata (location, pattern, sensitivity, norm tag).
