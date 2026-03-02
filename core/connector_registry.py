@@ -42,6 +42,11 @@ def connector_for_target(target: dict[str, Any]) -> tuple[Type[Any], list[str]] 
             return get_connector(t)
         except KeyError:
             return None
+    if t in ("powerbi", "dataverse", "powerapps"):
+        try:
+            return get_connector(t)
+        except KeyError:
+            return None
     if t == "database":
         driver = target.get("driver", "")
         # Normalize: postgresql+psycopg2 -> postgresql, mysql+pymysql -> mysql

@@ -37,6 +37,14 @@ try:
     import connectors.nfs_connector  # noqa: F401
 except ImportError:
     pass
+try:
+    import connectors.powerbi_connector  # noqa: F401
+except ImportError:
+    pass
+try:
+    import connectors.dataverse_connector  # noqa: F401
+except ImportError:
+    pass
 
 from core.connector_registry import connector_for_target
 from core.database import LocalDBManager
@@ -128,6 +136,8 @@ class AuditEngine:
                 target, self.scanner, self.db_manager,
                 extensions=ext, scan_sqlite_as_db=scan_sqlite_as_db, sample_limit=sample_limit,
             )
+        elif t in ("powerbi", "dataverse", "powerapps"):
+            connector = connector_class(target, self.scanner, self.db_manager, sample_limit=sample_limit)
         else:
             connector = connector_class(target, self.scanner, self.db_manager)
         try:
