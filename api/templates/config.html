@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Configuration — LGPD Audit{% endblock %}
+{% block content %}
+<h1>Scan configuration</h1>
+<p>Edit the audit configuration (YAML). Saved file: <code>{{ config_path }}</code>. Changes apply to the next scan.</p>
+{% if config_save_error %}<p class="error">{{ config_save_error }}</p>{% endif %}
+{% if config_saved %}<p class="success">Configuration saved successfully.</p>{% endif %}
+<form method="post" action="/config" class="config-form">
+  <div class="form-group">
+    <label for="yaml">YAML configuration</label>
+    <textarea id="yaml" name="yaml" rows="24" class="mono">{{ config_yaml }}</textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">Save configuration</button>
+</form>
+<p class="muted">See <a href="https://github.com/your-org/python3-lgpd-crawler/blob/main/README.md" target="_blank" rel="noopener">README</a> and <code>docs/USAGE.md</code> for target types (database, filesystem, api, powerbi, dataverse, shares) and options.</p>
+{% endblock %}
