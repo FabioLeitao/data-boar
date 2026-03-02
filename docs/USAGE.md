@@ -2,7 +2,10 @@
 
 This guide covers **command-line arguments and outcomes**, **deploying and using the web API**, **configuration (targets and credentials)**, and **downloading reports** (current and previous sessions).
 
+**Português (Brasil):** [USAGE.pt_BR.md](USAGE.pt_BR.md)
+
 ---
+
 
 ## 1. Command-line interface (CLI)
 
