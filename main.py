@@ -18,6 +18,7 @@ def main() -> None:
     parser.add_argument("--config", default="config.yaml", help="Path to YAML or JSON config")
     parser.add_argument("--web", action="store_true", help="Start REST API instead of one-shot audit")
     parser.add_argument("--port", type=int, default=8088, help="API port when --web (default 8088)")
+    parser.add_argument("--technician", default=None, help="Name of the technician/operator responsible for this scan")
     args = parser.parse_args()
 
     try:
@@ -37,7 +38,8 @@ def main() -> None:
         return
 
     engine = AuditEngine(config)
-    session_id = engine.start_audit()
+    technician = (args.technician or "").strip() or None
+    session_id = engine.start_audit(technician_name=technician)
     print(f"Scan session: {session_id}")
     report_path = engine.generate_final_reports(session_id)
     if report_path:
