@@ -1,5 +1,8 @@
-# LGPD/GDPR/CCPA audit app – API mode. Python 3.12, non-root user, /data for config + DB + reports.
+# LGPD/GDPR/CCPA audit app. Default: web API + frontend (dashboard, reports, config UI).
+# Override CMD to run CLI one-shot scan (see deploy/DEPLOY.md).
 FROM python:3.12-slim
+
+LABEL org.opencontainers.image.description="LGPD/GDPR/CCPA audit. Default: web API and frontend on port 8088. Override command for CLI one-shot."
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq5 libffi7 \
@@ -22,5 +25,6 @@ USER appuser
 
 EXPOSE 8088
 
-# API mode only; override CMD for one-shot CLI (e.g. docker run ... python main.py --config /data/config.yaml).
+# Default: web API and frontend (dashboard, reports, config). No command override in Compose/Kubernetes = this runs.
+# CLI one-shot: docker run ... --entrypoint python IMAGE main.py --config /data/config.yaml [--tenant X --technician Y]
 CMD ["python", "main.py", "--config", "/data/config.yaml", "--web", "--port", "8088"]
