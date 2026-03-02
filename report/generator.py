@@ -9,6 +9,8 @@ from typing import Any
 
 import pandas as pd
 
+from core.database import failure_hint
+
 # Optional matplotlib/seaborn for heatmap
 try:
     import matplotlib
@@ -237,7 +239,18 @@ def generate_report(db_manager: Any, session_id: str, output_dir: str = ".") -> 
         if fs_rows:
             pd.DataFrame(fs_rows).to_excel(writer, sheet_name="Filesystem findings", index=False)
         if fail_rows:
-            pd.DataFrame(fail_rows).to_excel(writer, sheet_name="Scan failures", index=False)
+            enriched_failures: list[dict] = []
+            for r in fail_rows:
+                reason = r.get("reason") or "error"
+                enriched_failures.append(
+                    {
+                        **r,
+                        "Category": reason,
+                        "Impact": "Target was not fully scanned; overall coverage for this environment is incomplete until this issue is fixed.",
+                        "Suggested next step": failure_hint(reason),
+                    }
+                )
+            pd.DataFrame(enriched_failures).to_excel(writer, sheet_name="Scan failures", index=False)
         recs = _recommendations_rows(db_rows, fs_rows)
         pd.DataFrame(recs).to_excel(writer, sheet_name="Recommendations", index=False)
         praise = _praise_rows(db_rows, fs_rows)
