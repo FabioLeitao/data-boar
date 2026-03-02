@@ -7,7 +7,7 @@ Textual description of modules, classes, and main functions and how they connect
 ## Entry points
 
 - **main.py** — CLI: `main()` parses `--config`, `--web`, `--port`; loads config via `config.loader.load_config`; if not `--web`, creates `AuditEngine(config)`, runs `start_audit()`, then `generate_final_reports()`; if `--web`, runs uvicorn with `api.routes.app` on given port.
-- **api/routes.py** — FastAPI app: startup loads config and creates `AuditEngine`. Routes: POST `/scan`, `/start`; GET `/status`, `/report`, `/list`, `/reports`; GET `/reports/{session_id}`.
+- **api/routes.py** — FastAPI app: startup loads config and creates `AuditEngine`. API routes: POST `/scan`, `/start`; GET `/status`, `/report`, `/list`; GET `/reports/{session_id}`. Web dashboard (Jinja2): GET `/` (dashboard), GET `/reports` (reports list page), GET `/config`, POST `/config` (config editor). Static: `/static` → `api/static`.
 
 ---
 
@@ -102,13 +102,9 @@ Textual description of modules, classes, and main functions and how they connect
 ## API
 
 - **api/routes.py**
-  - FastAPI `app`; startup loads config and creates AuditEngine (singleton).
-  - `POST /scan`, `POST /start` — Create session_id, run `_run_audit_targets()` in background; return session_id.
-  - `POST /scan_database` — One-off scan of a single database (body: name, host, port, user, password, database, optional driver); starts in background, returns session_id.
-  - `GET /status` — running, current_session_id, findings_count.
-  - `GET /report` — Download last report file (or generate from last session).
-  - `GET /list`, `GET /reports` — List sessions from SQLite.
-  - `GET /reports/{session_id}` — Regenerate report for session and return file.
+  - FastAPI `app`; startup loads config and creates AuditEngine (singleton). Static files mounted at `/static` (api/static). Jinja2 templates from api/templates.
+  - **API:** `POST /scan`, `POST /start` — Create session_id, run `_run_audit_targets()` in background; return session_id. `POST /scan_database` — One-off scan of a single database (body: name, host, port, user, password, database, optional driver); starts in background, returns session_id. `GET /status` — running, current_session_id, findings_count. `GET /report` — Download last report file (or generate from last session). `GET /list` — List sessions (JSON). `GET /reports/{session_id}` — Regenerate report for session and return file.
+  - **Web dashboard (plan: REST + file download only, no WebSocket):** `GET /` — Dashboard page (scan status, quantity/quality stats, recent sessions, start-scan button; status polling when running). `GET /reports` — Reports list page (all sessions with download links). `GET /config` — Config editor (YAML textarea). `POST /config` — Save YAML to config file (validates, then reloads in-memory config/engine). Helpers: `_get_config_path()`, `_get_config_raw()`, `_save_config_yaml()`.
 
 ---
 
