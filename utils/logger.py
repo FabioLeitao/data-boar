@@ -3,7 +3,7 @@ Unified logger: one schema, file (audit_YYYYMMDD.log) + console; optional sessio
 On violation: log and print to console immediately so operator is notified on the fly.
 """
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 _LOGGER: logging.Logger | None = None
@@ -17,7 +17,7 @@ def get_logger(session_id: str | None = None) -> logging.Logger:
         _LOGGER = logging.getLogger("LGPDAudit")
         _LOGGER.setLevel(logging.INFO)
         _LOGGER.handlers.clear()
-        log_file = f"audit_{datetime.utcnow().strftime('%Y%m%d')}.log"
+        log_file = f"audit_{datetime.now(timezone.utc).strftime('%Y%m%d')}.log"
         fh = logging.FileHandler(log_file, encoding="utf-8")
         ch = logging.StreamHandler()
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
