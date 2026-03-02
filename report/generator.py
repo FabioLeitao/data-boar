@@ -1,7 +1,7 @@
 """
 Single report generator: reads database_findings, filesystem_findings, scan_failures from LocalDBManager
 for a session; produces Excel with sheets "Database findings", "Filesystem findings", "Scan failures",
-"Recommendations", and heatmap image (sensitivity/risk). Returns path to Excel file.
+"Recommendations", "Praise / existing controls", and heatmap image (sensitivity/risk). Returns path to Excel file.
 """
 from pathlib import Path
 from typing import Any
@@ -40,6 +40,33 @@ def _create_heatmap(db_rows: list[dict], fs_rows: list[dict], output_dir: str, s
     plt.savefig(out_path)
     plt.close()
     return str(out_path)
+
+
+# Keywords that suggest existing data protection (column name or pattern_detected)
+_PRAISE_KEYWORDS = ("encrypted", "hash", "hashed", "tokenized", "token", "masked", "mask", "pseudonym", "anon", "redact", "hmac", "cipher")
+
+
+def _praise_rows(db_rows: list[dict], fs_rows: list[dict]) -> list[dict]:
+    """
+    Build rows for "Praise / existing controls": findings where column name or pattern_detected
+    suggests existing protections (encryption, hashing, tokenization, masking, etc.).
+    """
+    rows = []
+    for r, source in [(x, "database") for x in db_rows] + [(x, "filesystem") for x in fs_rows]:
+        col = (r.get("column_name") or r.get("file_name") or "").lower()
+        pat = (r.get("pattern_detected") or "").lower()
+        combined = f"{col} {pat}"
+        for kw in _PRAISE_KEYWORDS:
+            if kw in combined:
+                rows.append({
+                    "Target": r.get("target_name", ""),
+                    "Source": source,
+                    "Column / File": r.get("column_name") or r.get("file_name") or "-",
+                    "Pattern detected": r.get("pattern_detected", ""),
+                    "Indication": f"Possible protection: '{kw}'",
+                })
+                break
+    return rows
 
 
 def _recommendations_rows(db_rows: list[dict], fs_rows: list[dict]) -> list[dict]:
@@ -114,6 +141,9 @@ def generate_report(db_manager: Any, session_id: str, output_dir: str = ".") -> 
             pd.DataFrame(fail_rows).to_excel(writer, sheet_name="Scan failures", index=False)
         recs = _recommendations_rows(db_rows, fs_rows)
         pd.DataFrame(recs).to_excel(writer, sheet_name="Recommendations", index=False)
+        praise = _praise_rows(db_rows, fs_rows)
+        if praise:
+            pd.DataFrame(praise).to_excel(writer, sheet_name="Praise / existing controls", index=False)
         # Summary heatmap data as sheet
         rows = [{"target": r.get("target_name"), "sensitivity": r.get("sensitivity_level")} for r in db_rows + fs_rows]
         if rows:
