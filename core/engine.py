@@ -17,6 +17,38 @@ try:
     import connectors.redis_connector  # noqa: F401
 except ImportError:
     pass
+try:
+    import connectors.rest_connector  # noqa: F401
+except ImportError:
+    pass
+try:
+    import connectors.smb_connector  # noqa: F401
+except ImportError:
+    pass
+try:
+    import connectors.webdav_connector  # noqa: F401
+except ImportError:
+    pass
+try:
+    import connectors.sharepoint_connector  # noqa: F401
+except ImportError:
+    pass
+try:
+    import connectors.nfs_connector  # noqa: F401
+except ImportError:
+    pass
+try:
+    import connectors.powerbi_connector  # noqa: F401
+except ImportError:
+    pass
+try:
+    import connectors.dataverse_connector  # noqa: F401
+except ImportError:
+    pass
+try:
+    import connectors.snowflake_connector  # noqa: F401
+except ImportError:
+    pass
 
 from core.connector_registry import connector_for_target
 from core.database import LocalDBManager
@@ -45,13 +77,21 @@ class AuditEngine:
     def get_current_findings_count(self) -> int:
         return self.db_manager.get_current_findings_count()
 
-    def start_audit(self) -> str:
+    def start_audit(
+        self,
+        tenant_name: str | None = None,
+        technician_name: str | None = None,
+    ) -> str:
         """
         Run audit for all targets (sequential or parallel). Returns session_id (UUID + timestamp).
         """
         session_id = new_session_id()
         self.db_manager.set_current_session_id(session_id)
-        self.db_manager.create_session_record(session_id)
+        self.db_manager.create_session_record(
+            session_id,
+            tenant_name=tenant_name,
+            technician_name=technician_name,
+        )
         self._run_audit_targets()
         return session_id
 
@@ -87,12 +127,29 @@ class AuditEngine:
             )
             return
         connector_class, _ = resolved
-        if target.get("type") == "filesystem":
-            ext = self.config.get("file_scan", {}).get("extensions")
+        t = target.get("type")
+        fs_config = self.config.get("file_scan", {})
+        scan_sqlite_as_db = fs_config.get("scan_sqlite_as_db", True)
+        sample_limit = fs_config.get("sample_limit", 5)
+        ext = fs_config.get("extensions")
+        if t == "filesystem":
             if ext is not None:
-                connector = connector_class(target, self.scanner, self.db_manager, extensions=ext)
+                connector = connector_class(
+                    target, self.scanner, self.db_manager,
+                    extensions=ext, scan_sqlite_as_db=scan_sqlite_as_db, sample_limit=sample_limit,
+                )
             else:
-                connector = connector_class(target, self.scanner, self.db_manager)
+                connector = connector_class(
+                    target, self.scanner, self.db_manager,
+                    scan_sqlite_as_db=scan_sqlite_as_db, sample_limit=sample_limit,
+                )
+        elif t in ("sharepoint", "webdav", "smb", "cifs", "nfs"):
+            connector = connector_class(
+                target, self.scanner, self.db_manager,
+                extensions=ext, scan_sqlite_as_db=scan_sqlite_as_db, sample_limit=sample_limit,
+            )
+        elif t in ("powerbi", "dataverse", "powerapps"):
+            connector = connector_class(target, self.scanner, self.db_manager, sample_limit=sample_limit)
         else:
             connector = connector_class(target, self.scanner, self.db_manager)
         try:
@@ -103,6 +160,7 @@ class AuditEngine:
     def generate_final_reports(self, session_id: str | None = None) -> str | None:
         """
         Build Excel + heatmap from SQLite for session_id (or current). Return report file path or None.
+        If learned_patterns.enabled, also writes learned_patterns.yaml from findings.
         """
         from report.generator import generate_report
         sid = session_id or self.db_manager.current_session_id
@@ -112,6 +170,12 @@ class AuditEngine:
         path = generate_report(self.db_manager, sid, output_dir=out_dir)
         if path:
             self._last_report_path = path
+        # Optional: write learned patterns for merging into ml_patterns_file (2.2)
+        from core.learned_patterns import write_learned_patterns
+        learned_path = write_learned_patterns(self.db_manager, sid, self.config)
+        if learned_path:
+            from utils.logger import get_logger
+            get_logger().info("Learned patterns written to %s (merge into ml_patterns_file for next run)", learned_path)
         return path
 
     def get_last_report_path(self) -> str | None:
