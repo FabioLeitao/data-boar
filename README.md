@@ -4,12 +4,14 @@ Application for auditing personal and sensitive data across databases and filesy
 
 ## Features
 
-- **Multi-target scanning**: Configure multiple databases, filesystems, APIs, and remote shares in a single YAML/JSON config.
+- **Multi-target scanning**: Configure multiple databases, filesystems, APIs, remote shares, **Power BI**, and **Power Apps (Dataverse)** in a single YAML/JSON config.
 - **SQL databases**: PostgreSQL, MySQL, MariaDB, SQLite, Microsoft SQL Server, Oracle (via SQLAlchemy drivers).
+- **Power BI (optional)**: Discover workspaces, datasets, and tables via Power BI REST API; sample with DAX. Azure AD OAuth2 (client credentials). Findings in **Database findings** sheet.
+- **Power Apps / Dataverse (optional)**: Discover entities and attributes via Dataverse Web API; sample rows. Azure AD OAuth2 (client credentials). Findings in **Database findings** sheet.
 - **Remote shares (optional)**: SharePoint, WebDAV, SMB/CIFS, NFS — by FQDN or IP with credentials in config; install `.[shares]`.
 - **NoSQL (optional)**: MongoDB, Redis — install optional deps: `uv pip install -e ".[nosql]"`.
 - **Filesystem**: Recursive scan of local (or mounted) directories; permission check before reading. Supports many extensions: text (`.txt`, `.csv`, `.json`, `.xml`, `.html`, `.md`, `.yml`, `.log`, `.ini`, `.sql`, `.rtf`, etc.), documents (`.pdf`, `.doc`, `.docx`, `.odt`, `.ods`, `.odp`, `.xls`, `.xlsx`, `.xlsm`, `.ppt`, `.pptx`), email (`.eml`, `.msg`), and data (`.sqlite`, `.db`). **SQLite files** (`.sqlite`, `.sqlite3`, `.db`) found on disk are opened and scanned as databases (discover tables/columns, sample and detect); set `file_scan.scan_sqlite_as_db: false` to skip. Set `file_scan.extensions` to a list of suffixes, or `"*"` / `"all"` for all supported types.
-- **Sensitivity detection**: Regex patterns (configurable) + ML classifier (TF-IDF + RandomForest) on column names and sampled content; no raw data is stored.
+- **Sensitivity detection**: Regex patterns (configurable) + ML classifier (TF-IDF + RandomForest) on column names and sampled content; no raw data is stored. **Lyrics and music tablature** are detected via heuristics so that date-like or digit sequences in song lyrics and guitar tabs are downgraded to MEDIUM/LOW to reduce false positives; strong PII (CPF, email, etc.) still reports HIGH.
 - **Single SQLite**: All findings and failures per session (UUID + timestamp); separate tables for database findings, filesystem findings, and scan failures.
 - **Reporting**: Excel with sheets "Database findings", "Filesystem findings", "Scan failures", "Recommendations", "Praise / existing controls" (indications of encryption/hashing/tokenization), **"Trends - Session comparison"** (vs previous run: improvements or new/increased findings for DPO and security team), and sensitivity/risk heatmap (PNG).
 - **CLI and REST API**: Run one-shot audit from command line or start API (default port 8088) for `/scan`, `/start`, `/scan_database`, `/status`, `/report`, `/list`, `/reports/{session_id}`.
@@ -39,7 +41,7 @@ uv pip install -e ".[nosql]"
 
 ## Configuration
 
-Use a single config file in **YAML** or **JSON**. Example `config.yaml`:
+Use a single config file in **YAML** or **JSON**. The API loads it from `CONFIG_PATH` or `config.yaml` in the working directory. For detailed **targets and credentials** (databases, filesystems, APIs with basic/bearer/OAuth2, and shared content), see **[docs/USAGE.md](docs/USAGE.md)**. Example `config.yaml`:
 
 ```yaml
 targets:
@@ -127,7 +129,7 @@ YAML/JSON list of `name`, `pattern`, optional `norm_tag`:
 
 ```bash
 python main.py --config config.yaml
-# Report written to report output_dir, e.g. Relatorio_Auditoria_<session_id>.xlsx
+# Report written to report.output_dir, e.g. Relatorio_Auditoria_<session_id>.xlsx
 ```
 
 **REST API (default port 8088):**
@@ -137,14 +139,20 @@ python main.py --config config.yaml --web --port 8088
 # Or: uvicorn api.routes:app --host 0.0.0.0 --port 8088
 ```
 
-API routes:
+**Arguments:** `--config` (path to YAML/JSON, default `config.yaml`), `--web` (start API instead of one-shot), `--port` (default 8088). When using the API, the server loads config from the `CONFIG_PATH` environment variable or `config.yaml` in the working directory.
 
-- `POST /scan` or `POST /start` — start audit in background; returns `session_id`
-- `POST /scan_database` — one-off scan of a single database (body: name, host, port, user, password, database, optional driver); returns `session_id`
-- `GET /status` — `running`, `current_session_id`, `findings_count`
-- `GET /report` — download last generated Excel report
-- `GET /list` or `GET /reports` — list past sessions (session_id, timestamp, counts)
-- `GET /reports/{session_id}` — regenerate and download report for that session
+**API routes (summary):**
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/scan` or `/start` | Start full audit in background; returns `session_id` |
+| `POST` | `/scan_database` | One-off scan of one database (JSON body); returns `session_id` |
+| `GET` | `/status` | `running`, `current_session_id`, `findings_count` |
+| `GET` | `/report` | Download **last generated** Excel report |
+| `GET` | `/list` or `/reports` | List past sessions (to pick a report) |
+| `GET` | `/reports/{session_id}` | Regenerate and download report for that session |
+
+For **deployment**, **using the web API** (with request/response examples), **configuration and credentials** (databases, filesystems, APIs with basic/bearer/OAuth2/custom auth, and shared content), and **downloading current and previous reports**, see **[docs/USAGE.md](docs/USAGE.md)**.
 
 ## Supported databases and drivers
 
@@ -220,6 +228,53 @@ targets:
 
 Findings from API targets appear in the **Filesystem findings** sheet with `file_name` like `GET /users | email` (endpoint and field). The project uses **httpx** (already a dependency) for HTTP; no extra install is required for the REST connector.
 
+## Power BI and Power Apps (Dataverse)
+
+You can scan **Power BI** (datasets and tables) and **Power Apps / Dataverse** (entities and columns) as data sources. Both use **Azure AD OAuth2 client credentials** (app registration with a client secret). No extra install is required (httpx is already a dependency).
+
+### Power BI
+
+- **Type:** `powerbi`
+- **Auth:** Azure AD app with Power BI permissions (`Dataset.Read.All` or `Dataset.ReadWrite.All`). Enable “Allow service principals to use Power BI APIs” in the Power BI admin portal if using a service principal.
+- **Config:** `tenant_id`, `client_id`, `client_secret` (or under `auth:`). Optional: `workspace_ids` or `group_ids` to limit to specific workspaces; omit to use “My workspace” and all workspaces the app can see.
+
+The connector lists datasets and tables (push datasets expose table schema; for others it samples via DAX), runs sensitivity detection on column names and sample values, and writes **Database findings** (schema = dataset name, table = table name, column = column).
+
+**Example config (YAML):**
+
+```yaml
+targets:
+  - name: "Power BI Compliance"
+    type: powerbi
+    tenant_id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    client_id: "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
+    client_secret: "${POWERBI_CLIENT_SECRET}"   # or literal
+    # optional: limit to specific workspaces
+    # workspace_ids: ["group-guid-1", "group-guid-2"]
+```
+
+### Power Apps / Dataverse
+
+- **Type:** `dataverse` or `powerapps`
+- **Auth:** Azure AD app with application permission to Dataverse (e.g. “Common Data Service” / `user_impersonation` or env-specific application permission). Admin consent required.
+- **Config:** `org_url` (or `environment_url`), e.g. `https://myorg.crm.dynamics.com`, plus `tenant_id`, `client_id`, `client_secret` (or under `auth:`).
+
+The connector lists entities (tables), their attributes, samples rows, runs sensitivity detection, and writes **Database findings** (schema = entity logical name, table = entity set, column = attribute).
+
+**Example config (YAML):**
+
+```yaml
+targets:
+  - name: "Dataverse HR"
+    type: dataverse
+    org_url: "https://myorg.crm.dynamics.com"
+    tenant_id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    client_id: "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
+    client_secret: "${DATAVERSE_CLIENT_SECRET}"
+```
+
+Use the same `file_scan.sample_limit` (default 5) to control how many rows are sampled per table/entity for Power BI and Dataverse.
+
 ## SharePoint, WebDAV, SMB/CIFS, and NFS shares
 
 You can scan remote file shares by **FQDN or IP** with credentials in config. Install optional deps:  
@@ -276,6 +331,10 @@ targets:
 ```
 
 All share types use the same **file_scan** settings (extensions, recursive, scan_sqlite_as_db, sample_limit) from config. Findings appear in the **Filesystem findings** sheet.
+
+## Adding new connectors
+
+To support a new data source (e.g. another database driver or API), see **[docs/ADDING_CONNECTORS.md](docs/ADDING_CONNECTORS.md)**. It describes the connector contract, how to register a new type (or driver), optional dependencies, and includes step-by-step instructions plus examples (database-style and API-style).
 
 ## Logging and alerts
 

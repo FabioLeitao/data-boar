@@ -24,6 +24,44 @@ class TestAuditLogic(unittest.TestCase):
             self.assertIn("sensitivity_level", out)
             self.assertIn("pattern_detected", out)
 
+    def test_lyrics_with_date_like_content_downgraded(self):
+        """Dates/numbers in song lyrics should not be classified as HIGH (false positive)."""
+        scanner = DataScanner()
+        lyrics = """Verse 1
+        We met on 01/01/2020 and the sun was high
+        Chorus
+        La la la la la
+        Bridge
+        Oh oh oh"""
+        result = scanner.scan_column("lyrics", lyrics)
+        # Should be MEDIUM or LOW due to lyrics context (DATE_DMY is weak in entertainment)
+        self.assertIn(result["sensitivity_level"], ("LOW", "MEDIUM"))
+        if result["sensitivity_level"] == "MEDIUM":
+            self.assertIn("lyrics", result.get("pattern_detected", "").lower() or "lyrics" in result.get("pattern_detected", ""))
+
+    def test_music_tab_with_digits_downgraded(self):
+        """Digit sequences in guitar tabs should not be classified as HIGH (false positive)."""
+        scanner = DataScanner()
+        tab = """e|--0--2--0----
+        B|--1--3--1----
+        G|--0--0--0----
+        D|--2--0--2----
+        A|--3-------3--
+        E|------------"""
+        result = scanner.scan_column("guitar_tab", tab)
+        self.assertIn(result["sensitivity_level"], ("LOW", "MEDIUM"))
+
+    def test_real_cpf_in_lyrics_still_high(self):
+        """Strong PII (CPF) in content that looks like lyrics should still be HIGH."""
+        scanner = DataScanner()
+        lyrics_with_cpf = """Verse 1
+        Chorus
+        The CPF is 123.456.789-00 for the form
+        La la la"""
+        result = scanner.scan_column("form_data", lyrics_with_cpf)
+        self.assertEqual(result["sensitivity_level"], "HIGH")
+        self.assertIn("CPF", result.get("pattern_detected", ""))
+
 
 if __name__ == "__main__":
     unittest.main()
