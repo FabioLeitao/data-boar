@@ -73,9 +73,41 @@ class ScanFailure(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     session_id = Column(String(64), nullable=False, index=True)
     target_name = Column(String(100))
-    reason = Column(String(50))  # unreachable, auth_failed, permission_denied, error
+    reason = Column(String(50))  # unreachable, auth_failed, permission_denied, timeout, error
     details = Column(Text, nullable=True)
     created_at = Column(DateTime, default=_utc_now)
+
+
+def failure_hint(reason: str) -> str:
+    """
+    Map a failure reason into a human-friendly next step.
+    Used in reports and logs to help operators fix issues before re-running.
+    """
+    r = (reason or "").lower()
+    if r == "unreachable":
+        return (
+            "Target did not respond. Check network connectivity (DNS, VPN, routing, firewall rules) "
+            "and that the host/path is reachable from the audit host or container."
+        )
+    if r in {"auth_failed", "authentication_failed"}:
+        return (
+            "Authentication failed. Verify username/password, tokens or OAuth client credentials, "
+            "and check for account lockouts or IP restrictions."
+        )
+    if r == "permission_denied":
+        return (
+            "Permission denied. Grant the scanner read access to this resource (filesystem/share/endpoint) "
+            "or run it as a user/service account that already has permission."
+        )
+    if r == "timeout":
+        return (
+            "Operation timed out. Check for high latency, overloaded target, or too strict timeouts. "
+            "Consider increasing timeout values and re-running during off-peak hours."
+        )
+    return (
+        "Unexpected error. Review the detailed message and audit log, verify the target configuration "
+        "(host, port, path, credentials) and test connectivity manually before re-running."
+    )
 
 
 class DataWipeLog(Base):
@@ -149,6 +181,22 @@ class LocalDBManager:
         sid = self._current_session_id
         if not sid:
             return
+        # Best-effort logging: mirror failures into the unified audit log so operators
+        # can see which target was skipped and why.
+        try:
+            from utils.logger import get_logger
+
+            logger = get_logger()
+            logger.error(
+                "Scan failure: session=%s target=%s reason=%s details=%s",
+                sid,
+                target_name,
+                reason,
+                (details or "").strip(),
+            )
+        except Exception:
+            # Logging must not break persistence.
+            pass
         session = self._session_factory()
         try:
             session.add(ScanFailure(session_id=sid, target_name=target_name, reason=reason, details=details))
