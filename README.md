@@ -160,6 +160,65 @@ API routes:
 
 For MongoDB/Redis, add a target with `type: database` and `driver: mongodb` or `redis` (host, port, database/password as needed). Install optional deps: `uv pip install -e ".[nosql]"`.
 
+## REST/API targets and authentication
+
+You can scan remote HTTP(S) APIs for personal or sensitive data by adding targets with `type: api` or `type: rest`. The connector calls the configured endpoints (GET), parses JSON, and runs the same sensitivity detection on field names and sample values. **Authentication** is configurable so you can use static credentials, bearer tokens (e.g. negotiated or issued by an IdP), or OAuth2 client credentials.
+
+**Required:** `name`, `base_url` (or `url`). **Optional:** `paths` or `endpoints` (list of path strings, e.g. `["/users", "/orders"]`), `discover_url` (GET returns a list of paths to scan), `timeout`, `headers`, and an `auth` block.
+
+### Auth types
+
+| Type | Use case | Config |
+|------|----------|--------|
+| **basic** | Static username and password | `auth: { type: basic, username: "...", password: "..." }` |
+| **bearer** | Static or negotiated token (e.g. from Kerberos/AD, or API key) | `auth: { type: bearer, token: "..." }` or `token_from_env: "MY_TOKEN_VAR"` |
+| **oauth2_client** | OAuth2 client credentials (machine-to-machine) | `auth: { type: oauth2_client, token_url: "https://...", client_id: "...", client_secret: "..." }` (or `client_secret: "${ENV_VAR}"` to read from environment) |
+| **custom** | Custom headers (e.g. `Authorization: Negotiate ...`, API key header) | `auth: { type: custom, headers: { "Authorization": "Bearer ...", "X-API-Key": "..." } }` |
+
+If you omit `auth` but set `user`/`username` and `pass`/`password` on the target, **basic** auth is used.
+
+**Example config (YAML):**
+
+```yaml
+targets:
+  - name: "Internal Users API"
+    type: api
+    base_url: "https://api.example.com"
+    paths: ["/users", "/profiles"]
+    auth:
+      type: oauth2_client
+      token_url: "https://auth.example.com/oauth/token"
+      client_id: "audit-client"
+      client_secret: "${API_OAUTH_SECRET}"
+      scope: "read:users"
+  - name: "Legacy API (basic)"
+    type: rest
+    base_url: "https://legacy.example.com"
+    paths: ["/v1/contacts"]
+    auth:
+      type: basic
+      username: "audit_user"
+      password: "***"
+  - name: "API with bearer token (e.g. negotiated)"
+    type: api
+    base_url: "https://api.example.com"
+    paths: ["/data"]
+    auth:
+      type: bearer
+      token_from_env: "NEGOTIATED_TOKEN"   # or use "token" for static value
+  - name: "API with custom header"
+    type: api
+    base_url: "https://api.example.com"
+    paths: ["/export"]
+    auth:
+      type: custom
+      headers:
+        Authorization: "Bearer ..."
+        X-Requested-By: "lgpd-audit"
+```
+
+Findings from API targets appear in the **Filesystem findings** sheet with `file_name` like `GET /users | email` (endpoint and field). The project uses **httpx** (already a dependency) for HTTP; no extra install is required for the REST connector.
+
 ## Logging and alerts
 
 - Log file: `audit_YYYYMMDD.log` (and console).
