@@ -38,4 +38,9 @@
     {% endfor %}
   </tbody>
 </table>
+
+<section class="card about-report" aria-label="Application and report attribution" style="margin-top: 1.5rem;">
+  <h2>About this application</h2>
+  <p class="muted"><strong>{{ about.name }}</strong> v{{ about.version }} · Author: {{ about.author }} · {{ about.license }} · {{ about.copyright }}. Downloaded Excel reports and heatmap images include this information in the spreadsheet and on the image. See <a href="/about">About</a> for full details.</p>
+</section>
 {% endblock %}
