@@ -6,8 +6,8 @@ Textual description of modules, classes, and main functions and how they connect
 
 ## Entry points
 
-- **main.py** — CLI: `main()` parses `--config`, `--web`, `--port`; loads config via `config.loader.load_config`; if not `--web`, creates `AuditEngine(config)`, runs `start_audit()`, then `generate_final_reports()`; if `--web`, runs uvicorn with `api.routes.app` on given port.
-- **api/routes.py** — FastAPI app: startup loads config and creates `AuditEngine`. API routes: POST `/scan` (optional body `{ "tenant": "..." }`), `/start`; GET `/status`, `/report`, `/list`; GET `/reports/{session_id}`; PATCH `/sessions/{session_id}` (body `{ "tenant": "..." }` to set/clear tenant). POST `/scan_database` accepts optional `tenant`. Web dashboard (Jinja2): GET `/` (dashboard with optional tenant input), GET `/reports` (reports list with tenant column), GET `/config`, POST `/config` (config editor). Static: `/static` → `api/static`.
+- **main.py** — CLI: `main()` parses `--config`, `--web`, `--port`, optional `--tenant`, `--technician`; loads config via `config.loader.load_config`; if not `--web`, creates `AuditEngine(config)`, runs `start_audit(tenant_name=..., technician_name=...)`, then `generate_final_reports()`; if `--web`, runs uvicorn with `api.routes.app` on given port.
+- **api/routes.py** — FastAPI app: startup loads config and creates `AuditEngine`. API routes: POST `/scan` (optional body `{ "tenant": "...", "technician": "..." }`), `/start`; GET `/status`, `/report`, `/list`; GET `/reports/{session_id}`; PATCH `/sessions/{session_id}` (body `{ "tenant": "..." }` to set/clear tenant), PATCH `/sessions/{session_id}/technician` (body `{ "technician": "..." }` to set/clear technician). POST `/scan_database` accepts optional `tenant` and `technician`. Web dashboard (Jinja2): GET `/` (dashboard with optional tenant/technician inputs and progress chart), GET `/reports` (reports list with tenant/technician columns), GET `/config`, POST `/config` (config editor). Static: `/static` → `api/static`.
 
 ---
 
