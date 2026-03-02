@@ -1,12 +1,15 @@
 # Docker Compose v3. Compatible with Docker Swarm: deploy with
 #   docker stack deploy -c deploy/docker-compose.yml lgpd-audit
+# Default: runs the image CMD = web API + frontend (dashboard, reports, config UI) on port 8088.
+# No "command:" override = container starts the API. For CLI one-shot use a separate run with entrypoint override.
 # Requires: config at /data/config.yaml (mount volume or bind).
-# Image: set to your registry (e.g. ghcr.io/FabioLeitao/python3-lgpd-crawler:latest).
+# Image: set to your registry (e.g. ghcr.io/fabioleitao/python3-lgpd-crawler or YOUR_DOCKERHUB_USER/python3-lgpd-crawler).
 version: "3.8"
 
 services:
   lgpd-audit:
     image: ghcr.io/fabioleitao/python3-lgpd-crawler:latest
+    # command not set: use image default = web API + frontend
     build:
       context: ..
       dockerfile: Dockerfile
