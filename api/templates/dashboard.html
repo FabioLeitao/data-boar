@@ -10,6 +10,10 @@
     <p><strong>Current session:</strong> <span id="status-session">{{ status.current_session_id or "—" }}</span></p>
     <p><strong>Findings this run:</strong> <span id="status-findings">{{ status.findings_count }}</span></p>
   </div>
+  <div class="form-group" style="margin-bottom: 0.75rem;">
+    <label for="scan-tenant" class="muted" style="display: block; margin-bottom: 0.25rem;">Customer / tenant name (optional)</label>
+    <input type="text" id="scan-tenant" placeholder="e.g. Acme Corp" maxlength="255" style="width: 100%; max-width: 280px; padding: 0.4rem 0.5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 0.9rem;">
+  </div>
   <div class="actions">
     <button type="button" class="btn btn-primary" id="btn-start-scan" {% if status.running %}disabled{% endif %}>Start scan</button>
     <span id="scan-feedback" class="feedback"></span>
@@ -36,7 +40,16 @@
       <span class="stat-label">Total findings</span>
     </div>
   </div>
-  <p class="muted">Session: {{ last_session.session_id[:20] + "…" if last_session and last_session.session_id else "—" }} · {{ last_session.started_at if last_session else "—" }}</p>
+  <p class="muted">Session: {{ last_session.session_id[:20] + "…" if last_session and last_session.session_id else "—" }} · {{ last_session.started_at if last_session else "—" }}{% if last_session and last_session.get('tenant_name') %} · <strong>Tenant:</strong> {{ last_session.tenant_name }}{% endif %}</p>
+</section>
+
+<section class="card chart-card">
+  <h2>Progress over time</h2>
+  <p class="muted">Total findings and risk score (0–100) per scan, in chronological order.</p>
+  <div class="chart-container">
+    <canvas id="progress-chart" aria-label="Findings and score over sequential scans"></canvas>
+  </div>
+  <p class="muted" id="chart-empty" style="display: none;">Run at least one scan to see the progress graph.</p>
 </section>
 
 <section class="card reports-preview">
@@ -47,6 +60,7 @@
       <tr>
         <th>Session</th>
         <th>Started</th>
+        <th>Tenant / Customer</th>
         <th>DB</th>
         <th>FS</th>
         <th>Failures</th>
@@ -58,21 +72,62 @@
       <tr>
         <td><code>{{ s.session_id[:16] }}…</code></td>
         <td>{{ s.started_at or "—" }}</td>
+        <td>{{ s.tenant_name or "—" }}</td>
         <td>{{ s.database_findings }}</td>
         <td>{{ s.filesystem_findings }}</td>
         <td>{{ s.scan_failures }}</td>
         <td><a href="/reports/{{ s.session_id }}" download>Download</a></td>
       </tr>
       {% else %}
-      <tr><td colspan="6">No sessions yet. Start a scan.</td></tr>
+      <tr><td colspan="7">No sessions yet. Start a scan.</td></tr>
       {% endfor %}
     </tbody>
   </table>
 </section>
 {% endblock %}
 {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-3BhmPouZ5+0u/L1qQ2wr+knfB2n0+9iJ5nF5o5d4m2E+2FdjxQjBf0sJWdNt0lUg" crossorigin="anonymous"></script>
 <script>
 (function() {
+  var chartData = {{ chart_data | tojson }};
+  var canvas = document.getElementById('progress-chart');
+  var emptyEl = document.getElementById('chart-empty');
+  if (typeof Chart !== 'undefined') {
+    Chart.defaults.color = '#8b949e';
+    Chart.defaults.borderColor = '#2d3a4d';
+    Chart.defaults.font.family = 'system-ui, -apple-system, sans-serif';
+  }
+  if (chartData.length > 0 && canvas) {
+    if (emptyEl) emptyEl.style.display = 'none';
+    var labels = chartData.map(function(d) { return d.label; });
+    var findings = chartData.map(function(d) { return d.total_findings; });
+    var scores = chartData.map(function(d) { return d.score; });
+    new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          { label: 'Total findings', data: findings, borderColor: 'rgb(88, 166, 255)', backgroundColor: 'rgba(88, 166, 255, 0.1)', fill: true, yAxisID: 'y' },
+          { label: 'Risk score (0–100)', data: scores, borderColor: 'rgb(243, 133, 81)', backgroundColor: 'rgba(243, 133, 81, 0.1)', fill: true, yAxisID: 'y1' }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2,
+        interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { position: 'top' } },
+        scales: {
+          y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'Total findings' }, min: 0, ticks: { precision: 0 } },
+          y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: 'Risk score' }, min: 0, max: 100, grid: { drawOnChartArea: false } }
+        }
+      }
+    });
+  } else {
+    if (emptyEl) emptyEl.style.display = 'block';
+    if (canvas) canvas.style.display = 'none';
+  }
+
   var btn = document.getElementById('btn-start-scan');
   var feedback = document.getElementById('scan-feedback');
   var statusRunning = document.getElementById('status-running');
@@ -88,8 +143,11 @@
     });
   }
   if (btn) btn.addEventListener('click', function() {
+    var tenantInput = document.getElementById('scan-tenant');
+    var tenant = (tenantInput && tenantInput.value && tenantInput.value.trim()) ? tenantInput.value.trim() : null;
     feedback.textContent = 'Starting…';
-    fetch('/scan', { method: 'POST' }).then(function(r) { return r.json(); }).then(function(d) {
+    var opts = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(tenant != null ? { tenant: tenant } : {}) };
+    fetch('/scan', opts).then(function(r) { return r.json(); }).then(function(d) {
       feedback.textContent = 'Started: ' + (d.session_id || '').slice(0, 16) + '…';
       pollStatus();
     }).catch(function(e) { feedback.textContent = 'Error: ' + e.message; });

@@ -36,3 +36,27 @@ def test_report_includes_trends_sheet(tmp_path):
         assert "Improvement" in str(total_row["Note"]) or "reduced" in str(total_row["Note"]).lower()
     finally:
         mgr.dispose()
+
+
+def test_report_includes_report_info_and_tenant(tmp_path):
+    """Report has 'Report info' sheet with Session ID, Started at, Tenant/Customer."""
+    db_path = str(tmp_path / "audit2.db")
+    out_dir = str(tmp_path / "out2")
+    Path(out_dir).mkdir(parents=True, exist_ok=True)
+    mgr = LocalDBManager(db_path)
+    try:
+        mgr.set_current_session_id("s-tenant")
+        mgr.create_session_record("s-tenant", tenant_name="Acme Corp")
+        mgr.save_finding("database", target_name="T1", column_name="email", sensitivity_level="HIGH", pattern_detected="EMAIL", norm_tag="GDPR", ml_confidence=80)
+        mgr.finish_session("s-tenant")
+        path = generate_report(mgr, "s-tenant", output_dir=out_dir)
+        assert path is not None
+        import pandas as pd
+        with pd.ExcelFile(path) as xl:
+            assert "Report info" in xl.sheet_names
+            df = pd.read_excel(xl, sheet_name="Report info")
+        assert "Field" in df.columns and "Value" in df.columns
+        row_tenant = df[df["Field"] == "Tenant / Customer"].iloc[0]
+        assert row_tenant["Value"] == "Acme Corp"
+    finally:
+        mgr.dispose()

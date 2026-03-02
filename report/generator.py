@@ -195,7 +195,7 @@ def generate_report(db_manager: Any, session_id: str, output_dir: str = ".") -> 
     """
     Read session from db_manager (database_findings, filesystem_findings, scan_failures);
     write Excel and heatmap. Return path to Excel file or None.
-    Includes "Trends - Session comparison" sheet when previous run exists (improvements vs new findings).
+    Includes "Report info" (session + tenant), "Trends - Session comparison" when previous run exists.
     """
     db_rows, fs_rows, fail_rows = db_manager.get_findings(session_id)
     if not db_rows and not fs_rows and not fail_rows:
@@ -203,14 +203,23 @@ def generate_report(db_manager: Any, session_id: str, output_dir: str = ".") -> 
     current_db = len(db_rows)
     current_fs = len(fs_rows)
     current_fail = len(fail_rows)
-    # Current session date for trends sheet
+    # Session metadata for trends and report info sheet
     current_started_at = None
+    tenant_name = None
     for s in (db_manager.list_sessions() or []):
         if s.get("session_id") == session_id:
             current_started_at = s.get("started_at")
+            tenant_name = s.get("tenant_name")
             break
     out_path = Path(output_dir) / f"Relatorio_Auditoria_{session_id[:16]}.xlsx"
     with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
+        # Report info sheet: session id, started at, tenant/customer (first so it's visible when opening)
+        report_info = [
+            {"Field": "Session ID", "Value": session_id},
+            {"Field": "Started at", "Value": current_started_at or "—"},
+            {"Field": "Tenant / Customer", "Value": tenant_name or "—"},
+        ]
+        pd.DataFrame(report_info).to_excel(writer, sheet_name="Report info", index=False)
         if db_rows:
             pd.DataFrame(db_rows).to_excel(writer, sheet_name="Database findings", index=False)
         if fs_rows:

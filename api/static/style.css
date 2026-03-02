@@ -32,8 +32,13 @@ h2 { font-size: 1.1rem; margin: 0 0 0.75rem; color: var(--muted); }
 .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
 .feedback { margin-left: 0.75rem; color: var(--muted); font-size: 0.9rem; }
 .muted { color: var(--muted); font-size: 0.9rem; }
+.sort-row { margin-bottom: 1rem; font-size: 0.9rem; color: var(--muted); }
+.sort-row a { color: var(--accent); }
+.sort-row strong { color: var(--text); }
 .error { color: var(--error); }
 .success { color: var(--success); }
+
+.chart-container { max-width: 100%; min-height: 200px; margin-bottom: 0.5rem; }
 
 .table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 .table th, .table td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }

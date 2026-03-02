@@ -26,6 +26,12 @@ class DatabaseConfig(BaseModel):
     password: str
     database: str
     driver: str = "postgresql+psycopg2"
+    tenant: str | None = None  # optional customer/tenant name for this scan
+
+
+class ScanStartBody(BaseModel):
+    """Optional body for POST /scan to associate the scan with a tenant/customer."""
+    tenant: str | None = None
 
 # Load config and create engine at import time (or on startup event)
 _config_path = os.environ.get("CONFIG_PATH", "config.yaml")
@@ -114,9 +120,26 @@ async def startup_event():
     _get_engine()
 
 
+def _build_chart_data(sessions: list[dict]) -> list[dict]:
+    """
+    Build progress chart data: one point per session (oldest first) with total findings and risk score.
+    Score formula: min(100, total_findings * 2 + scan_failures * 5). Used for dashboard "Progress over time" chart.
+    """
+    ordered = list(reversed(sessions))  # chronological order for time axis
+    out = []
+    for s in ordered:
+        total = s["database_findings"] + s["filesystem_findings"]
+        score = min(100, total * 2 + s["scan_failures"] * 5)
+        started = s.get("started_at") or ""
+        # Short label for axis (date only if ISO format)
+        label = started[:10] if len(started) >= 10 else started or "—"
+        out.append({"label": label, "started_at": started, "total_findings": total, "score": round(score, 1)})
+    return out
+
+
 @app.get("/", response_class=HTMLResponse)
 async def dashboard(request: Request):
-    """Dashboard: scan status, discovery stats, recent sessions, start scan."""
+    """Dashboard: scan status, discovery stats, progress chart, recent sessions, start scan."""
     engine = _get_engine()
     status = {
         "running": engine.is_running,
@@ -125,10 +148,16 @@ async def dashboard(request: Request):
     }
     sessions = engine.db_manager.list_sessions()
     last_session = sessions[0] if sessions else None
+    chart_data = _build_chart_data(sessions)
     return templates.TemplateResponse(
         request=request,
         name="dashboard.html",
-        context={"status": status, "sessions": sessions, "last_session": last_session},
+        context={
+            "status": status,
+            "sessions": sessions,
+            "last_session": last_session,
+            "chart_data": chart_data,
+        },
     )
 
 
@@ -183,27 +212,36 @@ async def config_save(request: Request):
 
 @app.get("/reports", response_class=HTMLResponse)
 async def reports_page(request: Request):
-    """Reports list page with download links."""
+    """Reports list page with download links. Query: sort=date_desc (newest first, default) or sort=date_asc (oldest first)."""
     engine = _get_engine()
     sessions = engine.db_manager.list_sessions()
+    sort = (request.query_params.get("sort") or "date_desc").strip().lower()
+    if sort == "date_asc":
+        sessions = list(reversed(sessions))
+        sort = "date_asc"
+    else:
+        sort = "date_desc"
     return templates.TemplateResponse(
         request=request,
         name="reports.html",
-        context={"sessions": sessions},
+        context={"sessions": sessions, "sort": sort},
     )
 
 
 @app.post("/scan")
 @app.post("/start")
-async def start_scan(background_tasks: BackgroundTasks):
-    """Start audit in background. Returns session_id."""
+async def start_scan(background_tasks: BackgroundTasks, body: ScanStartBody | None = None):
+    """Start audit in background. Optional body.tenant to associate scan with a customer/tenant. Returns session_id."""
     engine = _get_engine()
     if engine.is_running:
         raise HTTPException(status_code=409, detail="Audit already in progress.")
     from core.session import new_session_id
     session_id = new_session_id()
+    tenant = (body.tenant if body else None) or None
+    if isinstance(tenant, str):
+        tenant = tenant.strip() or None
     engine.db_manager.set_current_session_id(session_id)
-    engine.db_manager.create_session_record(session_id)
+    engine.db_manager.create_session_record(session_id, tenant_name=tenant)
     def run_targets():
         engine._run_audit_targets()
     background_tasks.add_task(run_targets)
@@ -241,11 +279,30 @@ async def download_report():
 
 
 @app.get("/list")
-async def list_sessions():
-    """List past scan sessions (session_id, timestamp, counts) for report recreation (JSON API)."""
+async def list_sessions_api(sort: str = "date_desc"):
+    """List past scan sessions (session_id, timestamp, tenant_name, counts) for report recreation (JSON API). Query: sort=date_desc (newest first, default) or sort=date_asc (oldest first)."""
     engine = _get_engine()
     sessions = engine.db_manager.list_sessions()
+    if (sort or "").strip().lower() == "date_asc":
+        sessions = list(reversed(sessions))
     return {"sessions": sessions}
+
+
+class SessionTenantUpdate(BaseModel):
+    """Body for PATCH /sessions/{session_id}: set tenant/customer name for a session."""
+    tenant: str | None = None
+
+
+@app.patch("/sessions/{session_id}")
+async def update_session_tenant(session_id: str, body: SessionTenantUpdate):
+    """Set or clear the tenant/customer name for an existing scan session."""
+    engine = _get_engine()
+    sessions = [s for s in engine.db_manager.list_sessions() if s.get("session_id") == session_id]
+    if not sessions:
+        raise HTTPException(status_code=404, detail=f"Session {session_id} not found.")
+    tenant = (body.tenant or "").strip() or None
+    engine.db_manager.update_session_tenant(session_id, tenant)
+    return {"session_id": session_id, "tenant": tenant}
 
 
 @app.get("/reports/{session_id}")
@@ -276,8 +333,9 @@ async def scan_database(config: DatabaseConfig, background_tasks: BackgroundTask
     }
     from core.session import new_session_id
     session_id = new_session_id()
+    tenant = (config.tenant or "").strip() or None
     engine.db_manager.set_current_session_id(session_id)
-    engine.db_manager.create_session_record(session_id)
+    engine.db_manager.create_session_record(session_id, tenant_name=tenant)
     def run_one_target():
         engine._is_running = True
         try:
