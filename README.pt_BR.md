@@ -12,16 +12,10 @@ Aplicação para auditoria de dados pessoais e sensíveis em bancos de dados e s
 - **Heurísticas para reduzir falsos positivos:** letras de música e cifras de violão são detectadas e tratadas de forma especial para reduzir falsos positivos (datas/números em letras/cifras não viram HIGH sozinhos).
 - **SQLite único:** todas as sessões de varredura são gravadas em `audit_results.db`, com tabelas separadas para achados de banco de dados, achados de filesystem e falhas de varredura. Cada sessão tem `session_id`, `started_at`, `finished_at`, `status`, `tenant_name` (cliente/tenant) e `technician_name` (técnico/operador).
 - **Relatórios:** para cada sessão, é gerado um arquivo Excel com abas:
-  - **Report info** (Session ID, Started at, Tenant/Customer, Technician/Operator)
-  - Database findings
-  - Filesystem findings
-  - Scan failures
-  - Recommendations
-  - Praise / existing controls (colunas/arquivos que indicam criptografia, hashing, tokenização etc.)
-  - Trends – Session comparison (comparação com a sessão anterior)
-  - Heatmap data (dados agregados para o heatmap)
-- Um arquivo **heatmap_\<session_prefix\>.png** é gerado com o mapa de calor de sensibilidade/risco.
-- **CLI e API REST:** modo de execução única via linha de comando ou modo servidor (FastAPI) com dashboard web simples e endpoints para iniciar varreduras e baixar relatórios/heatmaps.
+  - **Report info** (Session ID, Started at, Tenant/Customer, Technician/Operator, Application, Version, Author, License, Copyright)
+  - Database findings, Filesystem findings, Scan failures, Recommendations, Praise / existing controls, Trends – Session comparison, Heatmap data
+- Um arquivo **heatmap_\<session_prefix\>.png** é gerado com o mapa de calor de sensibilidade/risco (inclui rodapé com aplicação, autor e licença).
+- **CLI e API REST:** modo de execução única via linha de comando ou modo servidor (FastAPI) com dashboard web (Help, About com autor e licença), endpoints para varreduras e relatórios. A aplicação funciona atrás de NAT, load balancer ou proxy reverso (nginx, Traefik, Caddy); defina **X-Forwarded-Proto: https** quando o TLS for terminado no proxy.
 
 ## Requisitos e preparação do ambiente
 
@@ -118,6 +112,7 @@ Com a API em execução (`--web`), acesse no navegador:
   - Mostra estado da varredura (Running/Idle), sessão atual, contagem de achados.
   - Bloco de “Data discovery (last run)” com contagens de achados em bancos, filesystem e falhas.
   - Gráfico **“Progress over time”** (total de achados + score de risco 0–100 por sessão).
+  - Botão **"Start scan"**: dispara varredura completa de **todos os alvos** da configuração atual (mesmo que o CLI com esse config).
   - Campos opcionais para **cliente/tenant** e **técnico/operador** antes de iniciar uma nova varredura.
   - Tabela de sessões recentes com ID, data, tenant, técnico, achados e link para download.
 
@@ -126,6 +121,8 @@ Com a API em execução (`--web`), acesse no navegador:
 
 - **Configuration:** `http://<host>:<port>/config`
   - Editor de YAML da configuração; ao salvar, o arquivo apontado por `CONFIG_PATH` ou `config.yaml` é atualizado.
+- **Help:** `http://<host>:<port>/help` — início rápido, exemplos de config e links para README/USAGE.
+- **About:** `http://<host>:<port>/about` — nome da aplicação, versão, autor e licença (conforme LICENSE do repositório).
 
 ## API (rotas principais)
 
@@ -141,6 +138,9 @@ Com a API em execução (`--web`), acesse no navegador:
 | `GET`  | `/heatmap/{session_id}` | Gera (se preciso) e baixa o heatmap PNG dessa sessão.                                          |
 | `PATCH`| `/sessions/{session_id}`            | Ajusta/limpa o `tenant` de uma sessão existente.                                  |
 | `PATCH`| `/sessions/{session_id}/technician`| Ajusta/limpa o `technician` de uma sessão existente.                              |
+| `GET`  | `/about`       | Página About (HTML): aplicação, versão, autor, licença.                           |
+| `GET`  | `/about/json`  | Informações de about em JSON (nome, versão, autor, licença).                       |
+| `GET`  | `/health`      | Sonda de liveness/readiness para Docker e Kubernetes.                              |
 
 ## Exemplos com curl
 
@@ -163,6 +163,36 @@ Baixar o último heatmap PNG:
 ```bash
 curl -o heatmap.png http://localhost:8088/heatmap
 ```
+
+## Deploy com Docker
+
+Você pode executar a API como **container único** (`docker run`), com **Docker Compose**, **Docker Swarm** ou **Kubernetes**. É possível **usar a imagem pré-construída** no Docker Hub ou **construir a partir do código** após clonar o repositório.
+
+### Imagem pré-construída (Docker Hub)
+
+Uma imagem Docker está disponível no **Docker Hub**, permitindo executar a aplicação sem clonar o repositório:
+
+- **Repositório:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)
+- **Nome da imagem:** `fabioleitao/python3-lgpd-crawler:latest` (tag `latest`; outras tags de versão podem ser publicadas)
+
+Exemplo: executar a API web com um diretório local de configuração:
+
+```bash
+docker pull fabioleitao/python3-lgpd-crawler:latest
+docker run -d -p 8088:8088 -v /caminho/para/seu/data:/data -e CONFIG_PATH=/data/config.yaml fabioleitao/python3-lgpd-crawler:latest
+```
+
+Prepare `/data/config.yaml` a partir de `deploy/config.example.yaml` (veja [deploy/DEPLOY.md](deploy/DEPLOY.md)). Você pode optar por usar essa imagem como container em vez de clonar o código do Git e construir localmente.
+
+### Construir a partir do código
+
+- **Build:** `docker build -t python3-lgpd-crawler:latest .`
+- **Executar:** Monte o config em `/data/config.yaml`. Exponha a porta 8088.
+- **Compose:** `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d` (prepare `./data/config.yaml` antes).
+- **Swarm:** `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit`.
+- **Kubernetes:** `kubectl apply -f deploy/kubernetes/` (veja `deploy/kubernetes/README.md`).
+
+Passos completos em **[deploy/DEPLOY.md](deploy/DEPLOY.md)**. A aplicação se comporta corretamente atrás de NAT, load balancer ou proxy reverso (nginx, Traefik, Caddy); defina **X-Forwarded-Proto: https** quando o TLS for terminado no proxy. Cabeçalhos de segurança HTTP (incl. HSTS quando em HTTPS) são aplicados por padrão; veja [SECURITY.md](SECURITY.md).
 
 ## Dependências e sincronização (pyproject.toml e requirements.txt)
 

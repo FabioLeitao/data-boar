@@ -100,6 +100,8 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
     out["api"] = data.get("api", {})
     if "port" not in out["api"]:
         out["api"]["port"] = 8088
+    if "workers" not in out["api"]:
+        out["api"]["workers"] = 1  # 1 = minimal footprint; 2+ for concurrent API traffic
 
     # Optional external pattern files
     out["ml_patterns_file"] = data.get("ml_patterns_file") or ""
