@@ -244,6 +244,30 @@ targets:
 
 Credentials: `user`, `pass` (or `password`). Optional: `url` to pass a full SQLAlchemy URL instead of host/port/user/database.
 
+**Snowflake (optional, .[bigdata]):**
+
+```yaml
+targets:
+  - name: "Warehouse_LGPD"
+    type: database
+    driver: snowflake
+    account: "xy12345.us-east-1"
+    user: "AUDIT_USER"
+    pass: "secret"
+    database: "COMPLIANCE_DB"
+    schema: "PUBLIC"
+    warehouse: "AUDIT_WH"
+    role: "ANALYST"   # optional
+```
+
+Install the optional dependency with:
+
+```bash
+uv pip install -e ".[bigdata]"
+```
+
+The Snowflake connector uses the same pattern as other SQL engines: discover tables/columns, sample rows (no raw storage), run sensitivity detection, and save findings as database metadata (schema, table, column, data type, sensitivity, pattern, norm tag, confidence).
+
 ### Targets: filesystem
 
 ```yaml
