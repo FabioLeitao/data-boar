@@ -3,7 +3,7 @@ name = "python3-lgpd-crawler"
 version = "0.1.0"
 description = "App de sondagem, apreciação e mapeamento dos dados pessoais e/ou sensíveis para busca de violações de compliance de acordo com as recomendações do LGPD (adaptável mediante dicionário de regras)"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "annotated-doc>=0.0.4",
     "annotated-types>=0.7.0",
@@ -81,3 +81,7 @@ dependencies = [
     "uvicorn>=0.41.0",
     "werkzeug==3.1.6",
 ]
+
+[project.optional-dependencies]
+nosql = ["pymongo>=4.0", "redis>=5.0"]
+bigdata = ["snowflake-connector-python>=3.0"]
