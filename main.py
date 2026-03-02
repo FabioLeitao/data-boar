@@ -125,11 +125,27 @@ def main() -> None:
     engine = AuditEngine(config)
 
     if args.reset_data:
+        # Require explicit confirmation: no undo, no going back.
+        print()
+        print("*** WIPE ALL GATHERED DATA ***")
+        print()
+        print("This will permanently:")
+        print("  - Remove all scan sessions, findings and failures from the SQLite database")
+        print("  - Delete all generated Excel reports and heatmap PNGs under report.output_dir")
+        print()
+        print("There is NO going back after this step. There is NO undo button.")
+        print("Only a log entry in the database will record that a wipe was performed.")
+        print()
+        try:
+            answer = input("Type 'yes' to confirm and proceed, or anything else to abort: ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            answer = ""
+        if answer != "yes":
+            print("Aborted. No data was wiped.")
+            return
         # Wipe DB contents and generated artifacts, but leave an immutable audit entry of the wipe itself.
         reason = f"CLI --reset-data invoked using config {args.config}"
         engine.db_manager.wipe_all_data(reason)
-        from pathlib import Path
-
         out_dir = config.get("report", {}).get("output_dir", ".")
         out_path = Path(out_dir)
         # Best-effort cleanup of reports and heatmaps; ignore missing files.
