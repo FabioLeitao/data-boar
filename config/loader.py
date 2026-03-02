@@ -73,11 +73,14 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
                 "recursive": fs.get("recursive", True),
             })
 
-    # File scan defaults (for filesystem targets that don't override)
+    # File scan defaults: all compatible extensions when not specified (see connectors.filesystem_connector.SUPPORTED_EXTENSIONS)
+    _default_extensions = [
+        ".txt", ".csv", ".pdf", ".doc", ".docx", ".odt", ".ods", ".odp", ".xls", ".xlsx", ".xlsm", ".ppt", ".pptx",
+        ".sqlite", ".sqlite3", ".db", ".json", ".jsonl", ".xml", ".html", ".htm", ".md", ".yml", ".yaml",
+        ".log", ".ini", ".cfg", ".conf", ".env", ".sql", ".rtf", ".eml", ".msg", ".tex", ".bib",
+    ]
     out["file_scan"] = {
-        "extensions": data.get("file_scan", {}).get("extensions", [
-            ".txt", ".csv", ".pdf", ".doc", ".docx", ".odt", ".xls", ".xlsx", ".sqlite", ".json"
-        ]),
+        "extensions": data.get("file_scan", {}).get("extensions", _default_extensions),
         "recursive": data.get("file_scan", {}).get("recursive", True),
     }
     # Normalize extensions to list of suffixes (e.g. "*.pdf" -> ".pdf")
