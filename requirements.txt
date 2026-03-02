@@ -69,7 +69,7 @@ defusedxml==0.7.1
     #   odfpy
 easygui==0.98.3
     # via oletools
-ebcdic==1.1.1
+ebcdic==2.0.0
     # via extract-msg
 et-xmlfile==2.0.0
     # via
