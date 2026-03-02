@@ -463,6 +463,7 @@ When adding new CLI options or API capabilities, update both this README and `do
 - No raw sampled content is persisted; only metadata (location, pattern, sensitivity, norm tag).
 - Use recent, CVE-patched versions of the interpreter and dependencies (`uv sync` / `pip install -e .`).
 - Keep credentials in config files or environment; avoid committing secrets.
+- **Reporting vulnerabilities:** See [SECURITY.md](SECURITY.md). **Contributing:** See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
