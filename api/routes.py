@@ -1,13 +1,20 @@
 """
-FastAPI app: POST /scan, POST /start, GET /status, GET /report, GET /list, GET /reports/{session_id}, POST /scan_database.
+FastAPI app: dashboard (GET /), config (GET/POST /config), reports list (GET /reports),
+POST /scan, GET /status, GET /report, GET /list, GET /reports/{session_id}, POST /scan_database.
 On startup load config (config.yaml or CONFIG_PATH) and create AuditEngine.
 """
 import os
 from pathlib import Path
 
-from fastapi import BackgroundTasks, FastAPI, HTTPException
-from fastapi.responses import FileResponse
+import yaml
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
+
+_api_dir = Path(__file__).resolve().parent
+templates = Jinja2Templates(directory=str(_api_dir / "templates"))
 
 
 class DatabaseConfig(BaseModel):
@@ -26,6 +33,55 @@ if not Path(_config_path).exists():
     _config_path = "config.yaml"
 _config = None
 _audit_engine = None
+
+
+def _get_config_path() -> str:
+    """Return path to config file (for dashboard display and save)."""
+    return _config_path
+
+
+def _get_config_raw() -> str:
+    """Return raw config file content (YAML) for editing. If file missing, return default YAML."""
+    p = Path(_config_path)
+    if p.exists():
+        return p.read_text(encoding="utf-8")
+    return _default_config_yaml()
+
+
+def _default_config_yaml() -> str:
+    return """# LGPD Audit configuration
+targets: []
+file_scan:
+  extensions: [.txt, .csv, .pdf, .docx, .xlsx]
+  recursive: true
+  scan_sqlite_as_db: true
+  sample_limit: 5
+report:
+  output_dir: .
+api:
+  port: 8088
+sqlite_path: audit_results.db
+scan:
+  max_workers: 1
+"""
+
+
+def _save_config_yaml(yaml_content: str) -> None:
+    """Validate and save config file; reset in-memory config and engine so next request reloads."""
+    from config.loader import normalize_config
+    p = Path(_config_path)
+    try:
+        data = yaml.safe_load(yaml_content)
+        if not isinstance(data, dict):
+            raise ValueError("Config must be a YAML object")
+        normalize_config(data)
+    except Exception as e:
+        raise ValueError(f"Invalid YAML or config: {e}") from e
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(yaml_content, encoding="utf-8")
+    global _config, _audit_engine
+    _config = None
+    _audit_engine = None
 
 
 def _get_config():
@@ -49,11 +105,91 @@ def _get_engine():
 
 app = FastAPI(title="LGPD/GDPR/CCPA Audit API", version="1.0.0")
 
+app.mount("/static", StaticFiles(directory=str(_api_dir / "static")), name="static")
+
 
 @app.on_event("startup")
 async def startup_event():
     _get_config()
     _get_engine()
+
+
+@app.get("/", response_class=HTMLResponse)
+async def dashboard(request: Request):
+    """Dashboard: scan status, discovery stats, recent sessions, start scan."""
+    engine = _get_engine()
+    status = {
+        "running": engine.is_running,
+        "current_session_id": engine.db_manager.current_session_id,
+        "findings_count": engine.get_current_findings_count(),
+    }
+    sessions = engine.db_manager.list_sessions()
+    last_session = sessions[0] if sessions else None
+    return templates.TemplateResponse(
+        request=request,
+        name="dashboard.html",
+        context={"status": status, "sessions": sessions, "last_session": last_session},
+    )
+
+
+@app.get("/config", response_class=HTMLResponse)
+async def config_page(request: Request, saved: bool = False, error: str = None):
+    """Configuration editor (YAML)."""
+    return templates.TemplateResponse(
+        request=request,
+        name="config.html",
+        context={
+            "config_path": _get_config_path(),
+            "config_yaml": _get_config_raw(),
+            "config_saved": saved,
+            "config_save_error": error,
+        },
+    )
+
+
+@app.post("/config", response_class=HTMLResponse)
+async def config_save(request: Request):
+    """Save configuration (form body: yaml=...). Redirects back to GET /config with success or error."""
+    form = await request.form()
+    yaml_content = form.get("yaml", "")
+    if not yaml_content:
+        return templates.TemplateResponse(
+            request=request,
+            name="config.html",
+            context={
+                "config_path": _get_config_path(),
+                "config_yaml": _get_config_raw(),
+                "config_saved": False,
+                "config_save_error": "No YAML content provided.",
+            },
+        )
+    try:
+        _save_config_yaml(yaml_content)
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url="/config?saved=1", status_code=303)
+    except ValueError as e:
+        return templates.TemplateResponse(
+            request=request,
+            name="config.html",
+            context={
+                "config_path": _get_config_path(),
+                "config_yaml": yaml_content,
+                "config_saved": False,
+                "config_save_error": str(e),
+            },
+        )
+
+
+@app.get("/reports", response_class=HTMLResponse)
+async def reports_page(request: Request):
+    """Reports list page with download links."""
+    engine = _get_engine()
+    sessions = engine.db_manager.list_sessions()
+    return templates.TemplateResponse(
+        request=request,
+        name="reports.html",
+        context={"sessions": sessions},
+    )
 
 
 @app.post("/scan")
@@ -104,9 +240,8 @@ async def download_report():
 
 
 @app.get("/list")
-@app.get("/reports")
 async def list_sessions():
-    """List past scan sessions (session_id, timestamp, counts) for report recreation."""
+    """List past scan sessions (session_id, timestamp, counts) for report recreation (JSON API)."""
     engine = _get_engine()
     sessions = engine.db_manager.list_sessions()
     return {"sessions": sessions}
