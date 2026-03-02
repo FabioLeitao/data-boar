@@ -12,12 +12,17 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 Base = declarative_base()
 
 
+def _utc_now() -> datetime:
+    """Timezone-aware UTC now for SQLAlchemy column defaults."""
+    return datetime.now(timezone.utc)
+
+
 class ScanSession(Base):
     """One scan run: UUID + timestamp, status."""
     __tablename__ = "scan_sessions"
     id = Column(Integer, primary_key=True, autoincrement=True)
     session_id = Column(String(64), unique=True, nullable=False, index=True)
-    started_at = Column(DateTime, default=datetime.utcnow)
+    started_at = Column(DateTime, default=_utc_now)
     finished_at = Column(DateTime, nullable=True)
     status = Column(String(20), default="running")  # running, completed, failed
 
@@ -38,7 +43,7 @@ class DatabaseFinding(Base):
     pattern_detected = Column(String(100))
     norm_tag = Column(String(100))  # e.g. LGPD Art. 5, GDPR Art. 4(1)
     ml_confidence = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=_utc_now)
 
 
 class FilesystemFinding(Base):
@@ -54,7 +59,7 @@ class FilesystemFinding(Base):
     pattern_detected = Column(String(100))
     norm_tag = Column(String(100))
     ml_confidence = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=_utc_now)
 
 
 class ScanFailure(Base):
@@ -65,7 +70,7 @@ class ScanFailure(Base):
     target_name = Column(String(100))
     reason = Column(String(50))  # unreachable, auth_failed, permission_denied, error
     details = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=_utc_now)
 
 
 class LocalDBManager:
@@ -204,3 +209,7 @@ class LocalDBManager:
             return db_c + fs_c
         finally:
             session.close()
+
+    def dispose(self) -> None:
+        """Release engine connections. Call when done with the manager (e.g. in tests)."""
+        self.engine.dispose()

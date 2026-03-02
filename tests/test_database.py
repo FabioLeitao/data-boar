@@ -28,34 +28,40 @@ def test_normalize_config_legacy_databases():
 def test_local_db_manager(tmp_path):
     db_path = str(tmp_path / "test_audit.db")
     mgr = LocalDBManager(db_path)
-    mgr.set_current_session_id("test-session-123")
-    mgr.create_session_record("test-session-123")
-    mgr.save_finding("database", target_name="T", server_ip="127.0.0.1", schema_name="s", table_name="t", column_name="c", data_type="VARCHAR", sensitivity_level="HIGH", pattern_detected="CPF", norm_tag="LGPD", ml_confidence=90)
-    db_findings, fs_findings, failures = mgr.get_findings("test-session-123")
-    assert len(db_findings) == 1
-    assert db_findings[0]["column_name"] == "c"
-    mgr.finish_session("test-session-123")
-    sessions = mgr.list_sessions()
-    assert any(s["session_id"] == "test-session-123" for s in sessions)
-    assert "scan_failures" in sessions[0]
+    try:
+        mgr.set_current_session_id("test-session-123")
+        mgr.create_session_record("test-session-123")
+        mgr.save_finding("database", target_name="T", server_ip="127.0.0.1", schema_name="s", table_name="t", column_name="c", data_type="VARCHAR", sensitivity_level="HIGH", pattern_detected="CPF", norm_tag="LGPD", ml_confidence=90)
+        db_findings, fs_findings, failures = mgr.get_findings("test-session-123")
+        assert len(db_findings) == 1
+        assert db_findings[0]["column_name"] == "c"
+        mgr.finish_session("test-session-123")
+        sessions = mgr.list_sessions()
+        assert any(s["session_id"] == "test-session-123" for s in sessions)
+        assert "scan_failures" in sessions[0]
+    finally:
+        mgr.dispose()
 
 
 def test_get_previous_session(tmp_path):
     db_path = str(tmp_path / "test_prev.db")
     mgr = LocalDBManager(db_path)
-    mgr.set_current_session_id("session-first")
-    mgr.create_session_record("session-first")
-    mgr.save_finding("database", target_name="T", session_id="session-first", column_name="c1", sensitivity_level="HIGH", pattern_detected="CPF", norm_tag="LGPD", ml_confidence=80)
-    mgr.finish_session("session-first")
-    mgr.set_current_session_id("session-second")
-    mgr.create_session_record("session-second")
-    mgr.save_finding("database", target_name="T", session_id="session-second", column_name="c2", sensitivity_level="HIGH", pattern_detected="EMAIL", norm_tag="GDPR", ml_confidence=85)
-    mgr.finish_session("session-second")
-    prev = mgr.get_previous_session("session-second")
-    assert prev is not None
-    assert prev["session_id"] == "session-first"
-    assert prev["database_findings"] == 1
-    assert mgr.get_previous_session("session-first") is None
+    try:
+        mgr.set_current_session_id("session-first")
+        mgr.create_session_record("session-first")
+        mgr.save_finding("database", target_name="T", session_id="session-first", column_name="c1", sensitivity_level="HIGH", pattern_detected="CPF", norm_tag="LGPD", ml_confidence=80)
+        mgr.finish_session("session-first")
+        mgr.set_current_session_id("session-second")
+        mgr.create_session_record("session-second")
+        mgr.save_finding("database", target_name="T", session_id="session-second", column_name="c2", sensitivity_level="HIGH", pattern_detected="EMAIL", norm_tag="GDPR", ml_confidence=85)
+        mgr.finish_session("session-second")
+        prev = mgr.get_previous_session("session-second")
+        assert prev is not None
+        assert prev["session_id"] == "session-first"
+        assert prev["database_findings"] == 1
+        assert mgr.get_previous_session("session-first") is None
+    finally:
+        mgr.dispose()
 
 
 def test_load_config_file(config_path=None):
