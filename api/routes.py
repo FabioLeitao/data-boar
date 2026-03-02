@@ -124,6 +124,16 @@ async def startup_event():
     _get_engine()
 
 
+@app.get("/help", response_class=HTMLResponse)
+async def help_page(request: Request):
+    """Help and documentation page: quickstart, config example, links to README/USAGE docs."""
+    return templates.TemplateResponse(
+        request=request,
+        name="help.html",
+        context={},
+    )
+
+
 def _build_chart_data(sessions: list[dict]) -> list[dict]:
     """
     Build progress chart data: one point per session (oldest first) with total findings and risk score.
