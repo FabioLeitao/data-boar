@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Reports — LGPD Audit{% endblock %}
+{% block content %}
+<h1>Reports</h1>
+<p>Download Excel reports (and heatmap) for each scan session. “Download” regenerates the report for that session.</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Session ID</th>
+      <th>Started</th>
+      <th>Finished</th>
+      <th>Status</th>
+      <th>DB findings</th>
+      <th>FS findings</th>
+      <th>Failures</th>
+      <th>Report</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in sessions %}
+    <tr>
+      <td><code>{{ s.session_id }}</code></td>
+      <td>{{ s.started_at or "—" }}</td>
+      <td>{{ s.finished_at or "—" }}</td>
+      <td>{{ s.status }}</td>
+      <td>{{ s.database_findings }}</td>
+      <td>{{ s.filesystem_findings }}</td>
+      <td>{{ s.scan_failures }}</td>
+      <td><a href="/reports/{{ s.session_id }}" download class="btn btn-sm">Download</a></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="8">No sessions yet. Run a scan from the <a href="/">dashboard</a>.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
