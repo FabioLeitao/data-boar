@@ -8,7 +8,7 @@ from pathlib import Path
 
 import yaml
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
@@ -133,8 +133,10 @@ async def dashboard(request: Request):
 
 
 @app.get("/config", response_class=HTMLResponse)
-async def config_page(request: Request, saved: bool = False, error: str = None):
-    """Configuration editor (YAML)."""
+async def config_page(request: Request):
+    """Configuration editor (YAML). Query: saved=1 or error=... for feedback after POST."""
+    saved = request.query_params.get("saved") == "1"
+    error = request.query_params.get("error")
     return templates.TemplateResponse(
         request=request,
         name="config.html",
@@ -165,7 +167,6 @@ async def config_save(request: Request):
         )
     try:
         _save_config_yaml(yaml_content)
-        from fastapi.responses import RedirectResponse
         return RedirectResponse(url="/config?saved=1", status_code=303)
     except ValueError as e:
         return templates.TemplateResponse(
