@@ -126,7 +126,7 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 ## 4. Out of scope (per plan)
 
 - No storage of raw DB/file content; only metadata (and optional anonymized example).
-- No built-in SMB/NFS client; only local or OS-mounted paths.
+- **SMB/NFS/WebDAV/SharePoint:** Now supported via optional connectors (type smb, cifs, nfs, webdav, sharepoint; install `.[shares]`). NFS requires a pre-mounted path.
 - Deep learning is optional later; default remains regex + TF-IDF classifier.
 - No WebSocket/streaming UI; REST API and file download only.
 
