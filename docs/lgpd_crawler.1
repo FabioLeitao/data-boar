@@ -221,6 +221,14 @@ curl \-o heatmap.png http://localhost:8088/heatmap
 .RE
 .
 .TP
+Download the latest audit log file:
+.RS
+.nf
+curl \-o audit.log http://localhost:8088/logs
+.fi
+.RE
+.
+.TP
 Download report and heatmap for a specific session:
 .RS
 .nf
@@ -229,6 +237,15 @@ curl \-o report_20250301.xlsx \\
 
 curl \-o heatmap_20250301.png \\
   "http://localhost:8088/heatmap/a1b2c3d4\-20250301_143022"
+.fi
+.RE
+.
+.TP
+Download the audit log that contains a specific session id:
+.RS
+.nf
+curl \-o audit_20250301.log \\
+  "http://localhost:8088/logs/a1b2c3d4\-20250301_143022"
 .fi
 .RE
 .

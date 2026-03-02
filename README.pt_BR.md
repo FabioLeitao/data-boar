@@ -104,6 +104,7 @@ python main.py --web --port 8088
 | `--config PATH`   | CLI & API    | Caminho do arquivo de configuração YAML/JSON (padrão `config.yaml`).                            |
 | `--web`           | API          | Inicia o servidor FastAPI em vez de executar uma varredura única.                               |
 | `--port N`        | API          | Porta da API (padrão 8088). Ignorada em modo CLI.                                                |
+| `--reset-data`    | CLI          | **Perigoso**: apaga todas as sessões/achados/falhas do SQLite, remove relatórios/heatmaps em `report.output_dir` e grava um registro na tabela `data_wipe_log`. Não executa varredura. |
 | `--tenant NAME`   | CLI          | Nome do cliente/tenant para a sessão; exibido no dashboard, relatórios e aba “Report info”.     |
 | `--technician NAME` | CLI        | Nome do técnico/operador responsável pela sessão; também exibido no dashboard e relatórios.     |
 
