@@ -1,6 +1,11 @@
 """Tests for connector registry and engine (no live DB/FS required)."""
 import pytest
-from core.connector_registry import connector_for_target, list_connector_types, register
+
+# Ensure connectors register themselves (registry is populated on import)
+import connectors.filesystem_connector  # noqa: F401
+import connectors.sql_connector  # noqa: F401
+
+from core.connector_registry import connector_for_target, list_connector_types
 
 
 def test_registry_has_sql_and_filesystem():

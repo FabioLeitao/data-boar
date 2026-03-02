@@ -10,7 +10,7 @@ Application for auditing personal and sensitive data across databases and filesy
 - **Filesystem**: Recursive scan of local (or mounted) directories; permission check before reading. Supports many extensions: text (`.txt`, `.csv`, `.json`, `.xml`, `.html`, `.md`, `.yml`, `.log`, `.ini`, `.sql`, `.rtf`, etc.), documents (`.pdf`, `.doc`, `.docx`, `.odt`, `.ods`, `.odp`, `.xls`, `.xlsx`, `.xlsm`, `.ppt`, `.pptx`), email (`.eml`, `.msg`), and data (`.sqlite`, `.db`). **SQLite files** (`.sqlite`, `.sqlite3`, `.db`) found on disk are opened and scanned as databases (discover tables/columns, sample and detect); set `file_scan.scan_sqlite_as_db: false` to skip. Set `file_scan.extensions` to a list of suffixes, or `"*"` / `"all"` for all supported types.
 - **Sensitivity detection**: Regex patterns (configurable) + ML classifier (TF-IDF + RandomForest) on column names and sampled content; no raw data is stored.
 - **Single SQLite**: All findings and failures per session (UUID + timestamp); separate tables for database findings, filesystem findings, and scan failures.
-- **Reporting**: Excel with sheets "Database findings", "Filesystem findings", "Scan failures", "Recommendations", and sensitivity/risk heatmap (PNG).
+- **Reporting**: Excel with sheets "Database findings", "Filesystem findings", "Scan failures", "Recommendations", "Praise / existing controls" (indications of encryption/hashing/tokenization), and sensitivity/risk heatmap (PNG).
 - **CLI and REST API**: Run one-shot audit from command line or start API (default port 8088) for `/scan`, `/start`, `/scan_database`, `/status`, `/report`, `/list`, `/reports/{session_id}`.
 
 ## Requirements
@@ -144,6 +144,14 @@ For MongoDB/Redis, add a target with `type: database` and `driver: mongodb` or `
 
 - Log file: `audit_YYYYMMDD.log` (and console).
 - On each finding (possible personal/sensitive data), the app logs and prints an `[ALERT]` to the console so the operator is notified on the fly.
+
+## Dependencies and security
+
+- **Sync locked deps:** From project root, generate a locked `requirements.txt` from `pyproject.toml` with:  
+  `uv pip compile pyproject.toml -o requirements.txt`  
+  (or keep `requirements.txt` in sync manually with `pyproject.toml`.)
+- **Check for known CVEs:** Run `uv pip audit` (or `pip audit` if available) before deployment; fix or pin any vulnerable packages.
+- See also **Security and compliance** below.
 
 ## Security and compliance
 
