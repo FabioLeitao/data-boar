@@ -44,12 +44,10 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 
 ---
 
-### 2.2 Learned patterns (optional)
+### 2.2 Learned patterns (optional) — Done
 
-- Plan: “Append new terms classified sensitive to a ‘learned’ file; document how to merge into ml_patterns_file.”
-- **Next step:** Add optional step in `AuditEngine` or report: at end of scan, write `learned_patterns.yaml` (or append to a file) with terms that were classified sensitive (e.g. column names that scored HIGH). Document in README: “Merge entries from `learned_patterns.yaml` into `ml_patterns_file` for the next run.”
-
-**Deliverable:** Optional learned-patterns output + short README section.
+- **Implemented:** Optional `learned_patterns` config; when report is generated, terms from HIGH (or MEDIUM) findings are collected (min_confidence, min_term_length, require_pattern, exclude_generic). Output YAML compatible with ml_patterns_file; README documents merge.
+- (e.g. column names that scored HIGH). Document in README: “Merge entries from `learned_patterns.yaml` into `ml_patterns_file` for the next run.”
 
 ---
 
