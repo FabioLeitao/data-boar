@@ -131,10 +131,67 @@ def _read_text_sample(path: Path, ext: str, max_chars: int = 10000) -> str:
         if ext in (".eml", ".mht", ".mhtml"):
             with open(path, "r", encoding="utf-8", errors="replace") as f:
                 return f.read(max_chars)
-        # .sqlite, .db, .accdb, .mdb: path/name only (no raw DB read in file scan)
+        # .sqlite, .db, .accdb, .mdb: path/name only for text; SQLite files scanned as DB in run() when scan_sqlite_as_db
         return ""
     except Exception:
         return ""
+
+
+def _scan_sqlite_file_as_db(
+    file_path: Path,
+    scanner: Any,
+    sample_limit: int = 5,
+) -> list[dict[str, Any]]:
+    """
+    Open a .sqlite/.sqlite3/.db file with SQLAlchemy, discover tables/columns, sample and detect.
+    Returns list of findings (dicts for save_finding source_type=filesystem); file_name encodes table.column.
+    No raw content stored.
+    """
+    from sqlalchemy import create_engine, inspect, text
+    findings = []
+    try:
+        engine = create_engine(f"sqlite:///{file_path.resolve()}", pool_pre_ping=True)
+    except Exception:
+        return []
+    try:
+        inspector = inspect(engine)
+        with engine.connect() as conn:
+            for table in inspector.get_table_names():
+                try:
+                    columns = inspector.get_columns(table)
+                except Exception:
+                    columns = []
+                for col in columns:
+                    cname = col["name"]
+                    ctype = str(col["type"])
+                    sample_parts = []
+                    try:
+                        safe_table = table.replace('"', '""')
+                        safe_col = cname.replace('"', '""')
+                        row = conn.execute(text(f'SELECT "{safe_col}" FROM "{safe_table}" LIMIT {sample_limit}'))
+                        for r in row:
+                            if r[0] is not None:
+                                sample_parts.append(str(r[0])[:200])
+                    except Exception:
+                        pass
+                    sample = " ".join(sample_parts)
+                    res = scanner.scan_column(cname, sample)
+                    if res["sensitivity_level"] == "LOW":
+                        continue
+                    findings.append({
+                        "path": str(file_path.parent),
+                        "file_name": f"{file_path.name} | {table}.{cname}",
+                        "data_type": ctype,
+                        "sensitivity_level": res["sensitivity_level"],
+                        "pattern_detected": res["pattern_detected"],
+                        "norm_tag": res.get("norm_tag", ""),
+                        "ml_confidence": res.get("ml_confidence", 0),
+                    })
+    except Exception:
+        pass
+    finally:
+        engine.dispose()
+    return findings
 
 
 class FilesystemConnector:
@@ -143,16 +200,22 @@ class FilesystemConnector:
     run sensitivity detection, save filesystem findings. Implements run() for engine.
     """
 
+    SQLITE_EXTENSIONS = {".sqlite", ".sqlite3", ".db"}
+
     def __init__(
         self,
         target_config: dict[str, Any],
         scanner: Any,
         db_manager: Any,
         extensions: set[str] | list[str] | None = None,
+        scan_sqlite_as_db: bool = True,
+        sample_limit: int = 5,
     ):
         self.config = target_config
         self.scanner = scanner
         self.db_manager = db_manager
+        self.scan_sqlite_as_db = scan_sqlite_as_db
+        self.sample_limit = sample_limit
         # "*" or "all" in list => use full SUPPORTED_EXTENSIONS; else use provided list or default
         use_all = False
         if extensions:
@@ -188,7 +251,28 @@ class FilesystemConnector:
             if not os.access(file_path, os.R_OK):
                 self.db_manager.save_failure(target_name, "permission_denied", str(file_path))
                 continue
-            content = _read_text_sample(file_path, file_path.suffix.lower())
+            ext = file_path.suffix.lower()
+            # 2.6: treat .sqlite/.sqlite3/.db as DBs when scan_sqlite_as_db is True
+            if self.scan_sqlite_as_db and ext in self.SQLITE_EXTENSIONS:
+                for finding in _scan_sqlite_file_as_db(file_path, self.scanner, self.sample_limit):
+                    self.db_manager.save_finding(
+                        source_type="filesystem",
+                        target_name=target_name,
+                        path=finding["path"],
+                        file_name=finding["file_name"],
+                        data_type=finding["data_type"],
+                        sensitivity_level=finding["sensitivity_level"],
+                        pattern_detected=finding["pattern_detected"],
+                        norm_tag=finding["norm_tag"],
+                        ml_confidence=finding["ml_confidence"],
+                    )
+                    try:
+                        from utils.logger import log_finding
+                        log_finding("filesystem", target_name, finding["file_name"], finding["sensitivity_level"], finding["pattern_detected"])
+                    except Exception:
+                        pass
+                continue
+            content = _read_text_sample(file_path, ext)
             res = self.scanner.scan_file_content(content, file_path)
             if res is None:
                 continue
