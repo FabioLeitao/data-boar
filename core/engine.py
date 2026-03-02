@@ -17,6 +17,10 @@ try:
     import connectors.redis_connector  # noqa: F401
 except ImportError:
     pass
+try:
+    import connectors.rest_connector  # noqa: F401
+except ImportError:
+    pass
 
 from core.connector_registry import connector_for_target
 from core.database import LocalDBManager

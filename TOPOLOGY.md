@@ -70,6 +70,10 @@ Textual description of modules, classes, and main functions and how they connect
 - **connectors/redis_connector.py** (optional)
   - **RedisConnector** — connect, SCAN keys, run scanner on key names, save_finding. Registered for redis when redis package is installed.
 
+- **connectors/rest_connector.py**
+  - **RESTConnector** — `__init__(target_config, scanner, db_manager, sample_limit=5)`; `connect()` builds httpx client and applies auth from `target["auth"]` (basic, bearer, oauth2_client, custom headers); `run()` GETs each path in `paths` or from `discover_url`, parses JSON, flattens keys/sample values, runs scanner, save_finding as filesystem (file_name e.g. `GET /path | field`). Registered for `api` and `rest` when httpx is available.
+  - Auth: **basic** (username/password), **bearer** (token or token_from_env), **oauth2_client** (token_url, client_id, client_secret, scope), **custom** (headers). Target-level `user`/`pass` used as basic when no `auth` block.
+
 ---
 
 ## Report
