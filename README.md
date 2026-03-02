@@ -2,7 +2,8 @@
 
 Application for auditing personal and sensitive data across databases and filesystems, aligned with **LGPD**, **GDPR**, **CCPA**, **HIPAA**, and **GLBA**. It discovers and maps possible PII/sensitive data via regex and ML, stores metadata (including optional **tenant/customer** and **technician/operator** tags per scan) in a local SQLite database, and produces Excel reports with heatmaps and recommendations.
 
-> **Documentation note:** This README and `docs/USAGE.md` are the canonical English references. For Brazilian Portuguese, see `README.pt_BR.md` and `docs/USAGE.pt_BR.md`. When features or options change, update **both** languages to keep them in sync.
+> **Documentation note:** This README and `docs/USAGE.md` are the canonical English references. When features or options change, update **both** languages to keep them in sync.  
+> **Brazilian Portuguese (pt-BR):** [README.pt_BR.md](README.pt_BR.md) · [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md)
 
 ## Features
 
