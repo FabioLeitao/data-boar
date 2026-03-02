@@ -166,10 +166,11 @@ For **deployment**, **using the web API** (with request/response examples), **co
 | SQLite    | `sqlite`                  | database = path         |
 | SQL Server| `mssql+pyodbc`            | pyodbc                  |
 | Oracle (19+ RAC) | `oracle+oracledb` | oracledb (thin mode; no Oracle Client). Config `database` = service name (e.g. customers_db or ORCL). |
+| Snowflake | `snowflake`               | optional: `uv pip install -e ".[bigdata]"`; config uses `account`, `user`, `pass`, `database`, `schema`, `warehouse`, optional `role`. |
 | MongoDB   | `mongodb`                 | optional: pymongo       |
 | Redis     | `redis`                   | optional: redis         |
 
-For MongoDB/Redis, add a target with `type: database` and `driver: mongodb` or `redis` (host, port, database/password as needed). Install optional deps: `uv pip install -e ".[nosql]"`.
+For MongoDB/Redis, add a target with `type: database` and `driver: mongodb` or `redis` (host, port, database/password as needed). Install optional deps: `uv pip install -e ".[nosql]"`. For Snowflake, add a target with `type: database` and `driver: snowflake` and install the `.[bigdata]` extra.
 
 ## REST/API targets and authentication
 
