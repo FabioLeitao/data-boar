@@ -1,19 +1,35 @@
+# Unified config: targets (database or filesystem), file_scan, report, api.
+# Use main.py --config config.yaml or main.py --web --port 8088
 targets:
-#  - name: "Produção_Postgres"
-#    type: "database"
-#    driver: "postgresql+psycopg2"
-#    host: "10.0.0.50"
-#    port: 5432
-#    user: "audit_user"
-#    pass: "secure_password"
-#    database: "customers_db"
+  # - name: "Produção_Postgres"
+  #   type: database
+  #   driver: postgresql+psycopg2
+  #   host: 10.0.0.50
+  #   port: 5432
+  #   user: audit_user
+  #   pass: secure_password
+  #   database: customers_db
 
   - name: "Documentos_LGPD"
-    type: "filesystem"
+    type: filesystem
     path: "/home/leitao/Documents/LGPD/"
     recursive: true
 
   - name: "Documentos_RH"
-    type: "filesystem"
+    type: filesystem
     path: "/home/leitao/Documents/Concursos/"
     recursive: true
+
+file_scan:
+  extensions: [.txt, .csv, .pdf, .doc, .docx, .odt, .xls, .xlsx, .sqlite, .json]
+  recursive: true
+
+report:
+  output_dir: .
+
+api:
+  port: 8088
+
+sqlite_path: audit_results.db
+scan:
+  max_workers: 1
