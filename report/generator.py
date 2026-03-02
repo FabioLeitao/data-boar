@@ -206,18 +206,21 @@ def generate_report(db_manager: Any, session_id: str, output_dir: str = ".") -> 
     # Session metadata for trends and report info sheet
     current_started_at = None
     tenant_name = None
+    technician_name = None
     for s in (db_manager.list_sessions() or []):
         if s.get("session_id") == session_id:
             current_started_at = s.get("started_at")
             tenant_name = s.get("tenant_name")
+            technician_name = s.get("technician_name")
             break
     out_path = Path(output_dir) / f"Relatorio_Auditoria_{session_id[:16]}.xlsx"
     with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
-        # Report info sheet: session id, started at, tenant/customer (first so it's visible when opening)
+        # Report info sheet: session id, started at, tenant/customer, technician/operator (first so it's visible when opening)
         report_info = [
             {"Field": "Session ID", "Value": session_id},
             {"Field": "Started at", "Value": current_started_at or "—"},
             {"Field": "Tenant / Customer", "Value": tenant_name or "—"},
+            {"Field": "Technician / Operator", "Value": technician_name or "—"},
         ]
         pd.DataFrame(report_info).to_excel(writer, sheet_name="Report info", index=False)
         if db_rows:

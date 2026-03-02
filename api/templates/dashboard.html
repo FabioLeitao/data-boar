@@ -14,6 +14,10 @@
     <label for="scan-tenant" class="muted" style="display: block; margin-bottom: 0.25rem;">Customer / tenant name (optional)</label>
     <input type="text" id="scan-tenant" placeholder="e.g. Acme Corp" maxlength="255" style="width: 100%; max-width: 280px; padding: 0.4rem 0.5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 0.9rem;">
   </div>
+  <div class="form-group" style="margin-bottom: 0.75rem;">
+    <label for="scan-technician" class="muted" style="display: block; margin-bottom: 0.25rem;">Technician / operator (optional)</label>
+    <input type="text" id="scan-technician" placeholder="e.g. João Silva" maxlength="255" style="width: 100%; max-width: 280px; padding: 0.4rem 0.5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 0.9rem;">
+  </div>
   <div class="actions">
     <button type="button" class="btn btn-primary" id="btn-start-scan" {% if status.running %}disabled{% endif %}>Start scan</button>
     <span id="scan-feedback" class="feedback"></span>
@@ -40,7 +44,11 @@
       <span class="stat-label">Total findings</span>
     </div>
   </div>
-  <p class="muted">Session: {{ last_session.session_id[:20] + "…" if last_session and last_session.session_id else "—" }} · {{ last_session.started_at if last_session else "—" }}{% if last_session and last_session.get('tenant_name') %} · <strong>Tenant:</strong> {{ last_session.tenant_name }}{% endif %}</p>
+  <p class="muted">
+    Session: {{ last_session.session_id[:20] + "…" if last_session and last_session.session_id else "—" }} · {{ last_session.started_at if last_session else "—" }}
+    {% if last_session and last_session.get('tenant_name') %} · <strong>Tenant:</strong> {{ last_session.tenant_name }}{% endif %}
+    {% if last_session and last_session.get('technician_name') %} · <strong>Technician:</strong> {{ last_session.technician_name }}{% endif %}
+  </p>
 </section>
 
 <section class="card chart-card">
@@ -61,6 +69,7 @@
         <th>Session</th>
         <th>Started</th>
         <th>Tenant / Customer</th>
+        <th>Technician / Operator</th>
         <th>DB</th>
         <th>FS</th>
         <th>Failures</th>
@@ -73,13 +82,14 @@
         <td><code>{{ s.session_id[:16] }}…</code></td>
         <td>{{ s.started_at or "—" }}</td>
         <td>{{ s.tenant_name or "—" }}</td>
+        <td>{{ s.technician_name or "—" }}</td>
         <td>{{ s.database_findings }}</td>
         <td>{{ s.filesystem_findings }}</td>
         <td>{{ s.scan_failures }}</td>
         <td><a href="/reports/{{ s.session_id }}" download>Download</a></td>
       </tr>
       {% else %}
-      <tr><td colspan="7">No sessions yet. Start a scan.</td></tr>
+      <tr><td colspan="8">No sessions yet. Start a scan.</td></tr>
       {% endfor %}
     </tbody>
   </table>
@@ -145,8 +155,13 @@
   if (btn) btn.addEventListener('click', function() {
     var tenantInput = document.getElementById('scan-tenant');
     var tenant = (tenantInput && tenantInput.value && tenantInput.value.trim()) ? tenantInput.value.trim() : null;
+    var techInput = document.getElementById('scan-technician');
+    var technician = (techInput && techInput.value && techInput.value.trim()) ? techInput.value.trim() : null;
     feedback.textContent = 'Starting…';
-    var opts = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(tenant != null ? { tenant: tenant } : {}) };
+    var body = {};
+    if (tenant != null) body.tenant = tenant;
+    if (technician != null) body.technician = technician;
+    var opts = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) };
     fetch('/scan', opts).then(function(r) { return r.json(); }).then(function(d) {
       feedback.textContent = 'Started: ' + (d.session_id || '').slice(0, 16) + '…';
       pollStatus();
