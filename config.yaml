@@ -19,6 +19,46 @@ targets:
   #   pass: secure_password
   #   database: customers_db
 
+  # Microsoft SQL Server Always On HA - node 1
+  # - name: "Produção_MSSQL_HA_61"
+  #   type: database
+  #   driver: mssql+pyodbc
+  #   host: 10.0.0.61
+  #   port: 1433
+  #   user: audit_user
+  #   pass: secure_password
+  #   database: customers_db
+
+  # Microsoft SQL Server Always On HA - node 2
+  # - name: "Produção_MSSQL_HA_62"
+  #   type: database
+  #   driver: mssql+pyodbc
+  #   host: 10.0.0.62
+  #   port: 1433
+  #   user: audit_user
+  #   pass: secure_password
+  #   database: customers_db
+
+  # Oracle DB 19 RAC HA - node 1 (service_name = database; adjust if your service is different)
+  # - name: "Produção_Oracle_RAC_71"
+  #   type: database
+  #   driver: oracle+oracledb
+  #   host: 10.0.0.71
+  #   port: 1521
+  #   user: audit_user
+  #   pass: secure_password
+  #   database: customers_db
+
+  # Oracle DB 19 RAC HA - node 2
+  # - name: "Produção_Oracle_RAC_72"
+  #   type: database
+  #   driver: oracle+oracledb
+  #   host: 10.0.0.72
+  #   port: 1521
+  #   user: audit_user
+  #   pass: secure_password
+  #   database: customers_db
+
   - name: "Documentos_LGPD"
     type: filesystem
     path: "/home/leitao/Documents/LGPD/"
