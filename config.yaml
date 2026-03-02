@@ -70,7 +70,43 @@ targets:
     recursive: true
 
 file_scan:
-  extensions: [.txt, .csv, .pdf, .doc, .docx, .odt, .xls, .xlsx, .sqlite, .json]
+  # All compatible types (omit or set to [] to use app default full list). Recursive scan in folders.
+  extensions:
+    - .txt
+    - .csv
+    - .pdf
+    - .doc
+    - .docx
+    - .odt
+    - .ods
+    - .odp
+    - .xls
+    - .xlsx
+    - .xlsm
+    - .ppt
+    - .pptx
+    - .sqlite
+    - .sqlite3
+    - .db
+    - .json
+    - .jsonl
+    - .xml
+    - .html
+    - .htm
+    - .md
+    - .yml
+    - .yaml
+    - .log
+    - .ini
+    - .cfg
+    - .conf
+    - .env
+    - .sql
+    - .rtf
+    - .eml
+    - .msg
+    - .tex
+    - .bib
   recursive: true
 
 report:

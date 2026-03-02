@@ -7,7 +7,7 @@ Application for auditing personal and sensitive data across databases and filesy
 - **Multi-target scanning**: Configure multiple databases and filesystem paths in a single YAML/JSON config.
 - **SQL databases**: PostgreSQL, MySQL, MariaDB, SQLite, Microsoft SQL Server, Oracle (via SQLAlchemy drivers).
 - **NoSQL (optional)**: MongoDB, Redis — install optional deps: ` uv pip install-e ".[nosql]"`.
-- **Filesystem**: Recursive scan of local (or mounted) directories; permission check before reading; supports `.txt`, `.csv`, `.pdf`, `.doc`, `.docx`, `.odt`, `.xls`, `.xlsx`, `.sqlite`, `.json`.
+- **Filesystem**: Recursive scan of local (or mounted) directories; permission check before reading. Supports many extensions: text (`.txt`, `.csv`, `.json`, `.xml`, `.html`, `.md`, `.yml`, `.log`, `.ini`, `.sql`, `.rtf`, etc.), documents (`.pdf`, `.doc`, `.docx`, `.odt`, `.ods`, `.odp`, `.xls`, `.xlsx`, `.xlsm`, `.ppt`, `.pptx`), email (`.eml`, `.msg`), and data (`.sqlite`, `.db`). Set `file_scan.extensions` in config to a list of suffixes, or use `"*"` / `"all"` to scan all supported types.
 - **Sensitivity detection**: Regex patterns (configurable) + ML classifier (TF-IDF + RandomForest) on column names and sampled content; no raw data is stored.
 - **Single SQLite**: All findings and failures per session (UUID + timestamp); separate tables for database findings, filesystem findings, and scan failures.
 - **Reporting**: Excel with sheets "Database findings", "Filesystem findings", "Scan failures", "Recommendations", and sensitivity/risk heatmap (PNG).
