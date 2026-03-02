@@ -112,6 +112,7 @@ class AuditEngine:
     def generate_final_reports(self, session_id: str | None = None) -> str | None:
         """
         Build Excel + heatmap from SQLite for session_id (or current). Return report file path or None.
+        If learned_patterns.enabled, also writes learned_patterns.yaml from findings.
         """
         from report.generator import generate_report
         sid = session_id or self.db_manager.current_session_id
@@ -121,6 +122,12 @@ class AuditEngine:
         path = generate_report(self.db_manager, sid, output_dir=out_dir)
         if path:
             self._last_report_path = path
+        # Optional: write learned patterns for merging into ml_patterns_file (2.2)
+        from core.learned_patterns import write_learned_patterns
+        learned_path = write_learned_patterns(self.db_manager, sid, self.config)
+        if learned_path:
+            from utils.logger import get_logger
+            get_logger().info("Learned patterns written to %s (merge into ml_patterns_file for next run)", learned_path)
         return path
 
     def get_last_report_path(self) -> str | None:

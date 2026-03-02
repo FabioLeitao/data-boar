@@ -45,8 +45,12 @@ Textual description of modules, classes, and main functions and how they connect
   - `connector_for_target(target)` — From target type/driver resolve (connector_class, required_keys).
 
 - **core/engine.py**
-  - **AuditEngine** — `__init__(config, db_path)`; holds `db_manager` (LocalDBManager), `scanner` (DataScanner). `start_audit()` → session_id (creates session, runs `_run_audit_targets()`); `_run_audit_targets()` runs each target via registry (sequential or parallel); `_run_target(target)` resolves connector and calls `connector.run()`. `generate_final_reports(session_id)` → report path via `report.generator.generate_report`. Properties: `is_running`, `get_current_findings_count()`, `get_last_report_path()`.
+  - **AuditEngine** — `__init__(config, db_path)`; holds `db_manager` (LocalDBManager), `scanner` (DataScanner). `start_audit()` → session_id (creates session, runs `_run_audit_targets()`); `_run_audit_targets()` runs each target via registry (sequential or parallel); `_run_target(target)` resolves connector and calls `connector.run()`. `generate_final_reports(session_id)` → report path via `report.generator.generate_report`; if `learned_patterns.enabled`, also calls `core.learned_patterns.write_learned_patterns()`. Properties: `is_running`, `get_current_findings_count()`, `get_last_report_path()`.
   - Imports connectors so they register (sql_connector, filesystem_connector, optional mongodb_connector, redis_connector).
+
+- **core/learned_patterns.py**
+  - `collect_learned_entries(db_rows, fs_rows, min_sensitivity=HIGH, min_confidence=70, ...)` — From findings build list of { text, label, pattern_detected, norm_tag, count }; filters by sensitivity rank, confidence, term length, require_pattern (skip GENERAL), exclude_generic (id, name, key, …).
+  - `write_learned_patterns(db_manager, session_id, config)` — If `config.learned_patterns.enabled`, get findings, collect entries, optionally merge with existing output file, write YAML (format compatible with ml_patterns_file). Returns output path or None.
 
 ---
 
