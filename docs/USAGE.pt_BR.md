@@ -22,6 +22,7 @@ O ponto de entrada é `main.py`.
 | `--config`     | `config.yaml` | Caminho do arquivo de configuração (YAML ou JSON). Usado tanto em varredura única quanto para inicializar a API. |
 | `--web`        | *(flag)*    | Inicia o servidor FastAPI em vez de executar uma varredura única.                            |
 | `--port`       | `8088`      | Porta da API quando `--web` é usado. Ignorado em modo CLI.                                   |
+| `--reset-data` | *(flag)*    | Operação de manutenção perigosa: apaga todas as sessões/achados/falhas do SQLite, remove relatórios/heatmaps em `report.output_dir` e registra o wipe na tabela `data_wipe_log`. Não inicia varredura. |
 | `--tenant`     | *(vazio)*   | Nome do cliente/tenant na execução CLI; gravado na sessão e exibido em dashboard/relatórios. |
 | `--technician` | *(vazio)*   | Nome do técnico/operador na execução CLI; também gravado na sessão e relatórios.             |
 

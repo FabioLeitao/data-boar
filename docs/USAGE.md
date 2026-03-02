@@ -15,6 +15,7 @@ The main entry point is `main.py`. Prefer it over `run.py`.
 | `--config` | `config.yaml` | Path to the configuration file (YAML or JSON). Used for both one-shot audit and to resolve `api.port` when starting the web server. |
 | `--web` | *(flag)* | Start the REST API server instead of running a one-shot audit. |
 | `--port` | `8088` | Port for the API when `--web` is set. Can be overridden by `api.port` in config. Ignored in one-shot mode. |
+| `--reset-data` | *(flag)* | Dangerous maintenance operation: wipe all scan sessions, findings and failures from SQLite, delete generated reports/heatmaps under `report.output_dir`, and record the wipe in `data_wipe_log`. Does not start a scan. |
 | `--tenant` | *(none)* | Optional customer/tenant name for the scan in CLI mode. Stored on the session and surfaced on dashboard and reports. |
 | `--technician` | *(none)* | Optional technician/operator responsible for the scan in CLI mode. Stored on the session and surfaced on dashboard and reports. |
 

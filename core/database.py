@@ -78,6 +78,18 @@ class ScanFailure(Base):
     created_at = Column(DateTime, default=_utc_now)
 
 
+class DataWipeLog(Base):
+    """
+    Audit log for destructive maintenance operations (e.g. wiping all scan data).
+    Rows in this table are preserved when wipe_all_data() is called so that there is a trace
+    of when and why previous history was cleared.
+    """
+    __tablename__ = "data_wipe_log"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    wiped_at = Column(DateTime, default=_utc_now)
+    reason = Column(Text, nullable=False)
+
+
 class LocalDBManager:
     """Single SQLite DB for all audit results; session id set externally (core.session)."""
 
@@ -273,6 +285,29 @@ class LocalDBManager:
             db_c = session.query(DatabaseFinding).filter(DatabaseFinding.session_id == sid).count()
             fs_c = session.query(FilesystemFinding).filter(FilesystemFinding.session_id == sid).count()
             return db_c + fs_c
+        finally:
+            session.close()
+
+    def wipe_all_data(self, reason: str) -> None:
+        """
+        Delete all scan sessions and findings from the SQLite database, but keep an audit entry
+        in data_wipe_log so there is a record of when and why the wipe happened.
+        Intended to be called from maintenance/CLI tooling (e.g. --reset-data).
+        """
+        session = self._session_factory()
+        try:
+            # Delete findings and failures for all sessions
+            session.query(DatabaseFinding).delete(synchronize_session=False)
+            session.query(FilesystemFinding).delete(synchronize_session=False)
+            session.query(ScanFailure).delete(synchronize_session=False)
+            # Delete all scan session rows
+            session.query(ScanSession).delete(synchronize_session=False)
+            # Record the wipe event itself
+            session.add(DataWipeLog(reason=reason))
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
         finally:
             session.close()
 

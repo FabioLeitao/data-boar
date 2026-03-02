@@ -209,6 +209,7 @@ uvicorn api.routes:app --host 0.0.0.0 --port 8088
 | `--config PATH` | CLI & API | Path to YAML/JSON config file. Defaults to `config.yaml` if omitted. | `--config config.yaml`, `--config configs/prod.yaml` |
 | `--web` | API only | Start the REST API instead of running a one-shot scan. | `--web` |
 | `--port N` | API only | Port for the REST API when `--web` is set. Defaults to `8088`. Ignored in one-shot CLI mode. | `--web --port 9090` |
+| `--reset-data` | CLI only (maintenance) | **Dangerous**: wipe all scan sessions, findings and failures from SQLite, delete generated reports/heatmaps under `report.output_dir`, and record the wipe event in `data_wipe_log` for auditability. Does not start a scan. | `--reset-data` |
 | `--tenant NAME` | CLI only (one-shot) | Optional customer / tenant name for this scan. Stored in `scan_sessions.tenant_name`, shown on dashboard and in the **Report info** sheet. | `--tenant "Acme Corp"` |
 | `--technician NAME` | CLI only (one-shot) | Optional technician / operator responsible for this scan. Stored in `scan_sessions.technician_name`, shown on dashboard and in the **Report info** sheet. | `--technician "Alice Colleague-V"` |
 

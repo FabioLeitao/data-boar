@@ -3,7 +3,7 @@ import pytest
 from pathlib import Path
 
 from config.loader import load_config, normalize_config
-from core.database import LocalDBManager, ScanSession, DatabaseFinding
+from core.database import LocalDBManager, ScanSession, DatabaseFinding, DataWipeLog
 
 
 def test_normalize_config_empty():
@@ -60,6 +60,44 @@ def test_get_previous_session(tmp_path):
         assert prev["session_id"] == "session-first"
         assert prev["database_findings"] == 1
         assert mgr.get_previous_session("session-first") is None
+    finally:
+        mgr.dispose()
+
+
+def test_wipe_all_data_logs_and_clears(tmp_path):
+    db_path = str(tmp_path / "test_wipe.db")
+    mgr = LocalDBManager(db_path)
+    try:
+        # Create two sessions with findings
+        mgr.set_current_session_id("s1")
+        mgr.create_session_record("s1")
+        mgr.save_finding("database", target_name="T1", schema_name="s", table_name="t", column_name="c1", data_type="VARCHAR", sensitivity_level="HIGH", pattern_detected="CPF", norm_tag="LGPD", ml_confidence=90)
+        mgr.finish_session("s1")
+
+        mgr.set_current_session_id("s2")
+        mgr.create_session_record("s2")
+        mgr.save_finding("database", target_name="T2", schema_name="s", table_name="t", column_name="c2", data_type="VARCHAR", sensitivity_level="HIGH", pattern_detected="EMAIL", norm_tag="GDPR", ml_confidence=85)
+        mgr.finish_session("s2")
+
+        # Sanity check: we have sessions and findings
+        assert mgr.list_sessions()
+        db_rows, fs_rows, fail_rows = mgr.get_findings("s1")
+        assert db_rows
+
+        # Wipe everything and ensure sessions/findings are gone but a wipe log exists
+        mgr.wipe_all_data("pytest wipe")
+
+        sessions_after = mgr.list_sessions()
+        assert sessions_after == []
+
+        # Directly inspect DataWipeLog via a new session factory
+        s = mgr._session_factory()
+        try:
+            wipes = s.query(DataWipeLog).all()
+            assert len(wipes) == 1
+            assert "pytest wipe" in wipes[0].reason
+        finally:
+            s.close()
     finally:
         mgr.dispose()
 
