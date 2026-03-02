@@ -71,8 +71,9 @@ Textual description of modules, classes, and main functions and how they connect
 ## Report
 
 - **report/generator.py**
-  - `generate_report(db_manager, session_id, output_dir)` — Read `get_findings(session_id)` (database_findings, filesystem_findings, scan_failures); write Excel with sheets "Database findings", "Filesystem findings", "Scan failures", "Recommendations", "Heatmap data"; call `_create_heatmap()` to save PNG; return Excel path.
+  - `generate_report(db_manager, session_id, output_dir)` — Read `get_findings(session_id)` (database_findings, filesystem_findings, scan_failures); write Excel with sheets "Database findings", "Filesystem findings", "Scan failures", "Recommendations", "Praise / existing controls" (if any), "Heatmap data"; call `_create_heatmap()` to save PNG; return Excel path.
   - `_create_heatmap(db_rows, fs_rows, output_dir, session_id)` — Build pivot and seaborn heatmap, save PNG.
+  - `_praise_rows(db_rows, fs_rows)` — Rows where column/file name or pattern_detected suggests existing protections (encrypted, hash, tokenized, masked, etc.); written to "Praise / existing controls" sheet.
   - `_recommendations_rows(db_rows, fs_rows)` — Build list of recommendation dicts from unique pattern_detected/norm_tag.
 
 ---

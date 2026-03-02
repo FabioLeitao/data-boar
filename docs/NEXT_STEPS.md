@@ -33,19 +33,14 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 
 ## 2. Recommended next steps (in order)
 
-### 2.1 Consolidate legacy code and tests
+### 2.1 Consolidate legacy code and tests — Done
 
-- **run.py** – Duplicate entry point (YAML, port 8080, own AuditEngine). Either remove and point users to `main.py`, or make it a thin wrapper that calls `config.loader` + `AuditEngine` and reuses `api.routes.app`.
-- **api/app.py** – Second FastAPI app (`POST /scan_database`). Unify with `api/routes.py` (e.g. move route into routes and remove app.py) or document as legacy and deprecate.
-- **scanners/** – `db_scanner.py`, `data_scanner.py`, `scanner_factory.py`, `report_generator.py`, `db_connector.py` reference `src.*` or old patterns. Either delete if unused or refactor to use `core.engine` + `connectors` + `report.generator` so there is a single scan/report path.
-- **database/** – `connectors.py`, `scanner.py` used by old `main.py` flow. Current entry is `main.py` → `config.loader` → `core.engine` → `connectors.sql_connector`. Deprecate or remove `database/` if nothing else imports it.
-- **file_scan/text_extractor.py** – Old detector. Replaced by `core.detector` + `connectors.filesystem_connector`. Remove or keep only as optional helper and document.
-- **db/databasse.py** – Typo in name; alternate SQLite/audit models. Single source of truth is `core.database`. Remove or refactor to use `core.database` only.
-- **report/sqlite_reporter.py** – Writes to `auditoria_dados.sqlite` with different schema. Single report path is `report.generator` + `core.database`. Remove or wire to LocalDBManager and same schema.
-- **logging_custom/logger.py** – Superseded by `utils.logger`. Remove or make it import/alias `utils.logger`.
-- **Tests** – `tests/test_audit.py`, `test_database.py`, `test_data_scanner.py`, `test_logic.py` likely import old modules. Update to use `config.loader`, `core.engine`, `core.database`, `connectors`, and run against the unified flow; add at least one CLI and one API smoke test.
-
-**Deliverable:** Single entry (`main.py`), single engine, single report path; tests green and aligned with new topology.
+- **run.py** – Thin wrapper (config.loader + AuditEngine + api.routes.app, port 8088); docstring says prefer `main.py`.
+- **api/app.py** – Re-exports app from `api.routes` (single FastAPI app).
+- **scanners/** – Deprecation README added; use `core.engine` + `connectors` + `report.generator`.
+- **database/** – Deprecation README added; use `core.database` and `connectors`.
+- **file_scan/**, **db/**, **report/sqlite_reporter.py**, **logging_custom/** – Legacy notes in place; tests use `config.loader`, `core.*`, `connectors`.
+- **Tests** – Use `core.scanner`, `core.detector`, `config.loader`, `core.database`, `core.connector_registry`; no legacy imports.
 
 ---
 
@@ -58,22 +53,15 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 
 ---
 
-### 2.3 Report “praise” for existing protections
+### 2.3 Report “praise” for existing protections — Done
 
-- Original request: “Possible praise if there are clearly evidenced indications that data protection actions (pseudonymization, encryption, strong credentials) have already been applied.”
-- **Next step:** In `report/generator.py`, add a “Praise / existing controls” section or sheet: e.g. when a finding has a norm_tag or pattern that suggests already protected (e.g. “encrypted”, “hash”, “tokenized” in column name or pattern_detected), add a positive line in the report. Can be a small heuristic (keyword in column name or in a new optional tag from the detector).
-
-**Deliverable:** Report sheet or section that calls out possible existing protections.
+- **Implemented:** `report/generator.py` adds sheet “Praise / existing controls” when any finding has column name or pattern_detected containing protection keywords (encrypted, hash, tokenized, masked, pseudonym, anon, redact, hmac, cipher). Rows list target, source, column/file, pattern, and indication.
 
 ---
 
-### 2.4 Dependencies and security
+### 2.4 Dependencies and security — Done
 
-- Run `uv pip compile` (or equivalent) and refresh pins in `pyproject.toml` for critical libs (e.g. cryptography, requests, fastapi, sqlalchemy, pyyaml).
-- Regenerate or sync `requirements.txt` from pyproject.toml (e.g. `uv pip compile -o requirements.txt` or documented manual sync).
-- Document in README: “Check dependencies for known CVEs (e.g. `uv pip audit` or safety).”
-
-**Deliverable:** Updated pins, requirements.txt in sync, one-line CVE/audit note in README.
+- **Done:** README has “Dependencies and security” with `uv pip compile pyproject.toml -o requirements.txt` and `uv pip audit`. `requirements.txt` regenerated from pyproject.toml.
 
 ---
 
@@ -120,20 +108,20 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 | connectors/filesystem_connector.py | Permission, recursive, extensions, SQLite-as-DB (2.6) | Done |
 | connectors/mongodb_connector.py | Optional | Done |
 | connectors/redis_connector.py | Optional | Done |
-| report/generator.py | Single Excel + heatmap | Done; add praise (2.3) |
+| report/generator.py | Single Excel + heatmap + Praise sheet | Done (2.3) |
 | api/routes.py | All routes | Done |
 | main.py | CLI + API | Done |
 | utils/logger.py | Unified logger | Done |
 | README.md | Install, config, DBs, files | Done; keep updated (2.7) |
 | TOPOLOGY.md | Full topology | Done; keep updated (2.7) |
 | config.yaml | Unified shape | Done |
-| run.py | Legacy | Consolidate or remove (2.1) |
-| api/app.py | Legacy | Unify with routes (2.1) |
-| scanners/* | Legacy | Remove or refactor (2.1) |
-| database/* | Legacy | Deprecate/remove (2.1) |
-| file_scan/*, db/*, report/sqlite_reporter.py | Legacy | Remove or align (2.1) |
-| logging_custom/* | Legacy | Remove or alias (2.1) |
-| tests/* | Update | Use new flow (2.1) |
+| run.py | Thin wrapper | Done (2.1) |
+| api/app.py | Re-export routes | Done (2.1) |
+| scanners/* | Deprecated | README (2.1) |
+| database/* | Deprecated | README (2.1) |
+| file_scan/*, db/*, report/sqlite_reporter.py | Legacy | Notes in place (2.1) |
+| logging_custom/* | Alias utils.logger | Done (2.1) |
+| tests/* | Use core/config/connectors | Done (2.1) |
 
 ---
 
