@@ -147,11 +147,20 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         minor_full_scan_limit = max(1, int(minor_full_scan_limit))
     except (TypeError, ValueError):
         minor_full_scan_limit = 100
+    agg_min = detection_cfg.get("aggregated_min_categories", 2)
+    try:
+        agg_min = max(1, int(agg_min))
+    except (TypeError, ValueError):
+        agg_min = 2
+    quasi = detection_cfg.get("quasi_identifier_mapping")
     out["detection"] = {
         "minor_age_threshold": minor_age_int,
         "minor_full_scan": bool(detection_cfg.get("minor_full_scan", False)),
         "minor_full_scan_limit": minor_full_scan_limit,
         "minor_cross_reference": bool(detection_cfg.get("minor_cross_reference", True)),
+        "aggregated_identification_enabled": bool(detection_cfg.get("aggregated_identification_enabled", True)),
+        "aggregated_min_categories": agg_min,
+        "quasi_identifier_mapping": list(quasi) if isinstance(quasi, list) else [],
     }
 
     # Parallel/sequential
