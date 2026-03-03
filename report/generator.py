@@ -461,7 +461,10 @@ def generate_report(
                 "Data / Pattern": "DOB_POSSIBLE_MINOR (high confidence – cross-ref)",
                 "Base legal": "LGPD Art. 14 (dados de crianças/adolescentes); GDPR Art. 8 (consentimento em serviços da sociedade da informação)",
                 "Risco": "Mesma tabela/arquivo contém data de nascimento sugerindo menor e dados identificadores ou de saúde; tratar como alta prioridade para DPO.",
-                "Recomendação": "Confirmar base legal e consentimento; restringir acesso e retenção; priorizar anonimização ou pseudonimização.",
+                "Recomendação": (
+                    "Caso especial – dados de menores: confirmar base legal e consentimento (titular ou responsável, conforme a idade e a lei aplicável); "
+                    "restringir acesso e retenção ao estritamente necessário; priorizar anonimização ou pseudonimização."
+                ),
                 "Prioridade": "CRÍTICA",
                 "Relevante para": "DPO, Compliance, Área jurídica, Segurança da Informação",
             })

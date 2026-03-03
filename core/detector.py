@@ -362,7 +362,7 @@ class SensitivityDetector:
             if not self._dl_classifier.is_ready:
                 self._dl_classifier = None
 
-        # Minor detection: threshold from config (default 18); full_scan/cross_reference reserved for future use
+        # Minor detection: threshold from config (default 18); other options (e.g. full_scan, cross_reference) are used by connectors/report
         det = detection_config or {}
         try:
             self._minor_age_threshold = int(det.get("minor_age_threshold", 18))
