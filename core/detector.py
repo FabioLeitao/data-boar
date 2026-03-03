@@ -332,6 +332,7 @@ class SensitivityDetector:
         ml_terms_inline: list[dict[str, Any]] | list[tuple[str, int]] | None = None,
         dl_patterns_path: str | None = None,
         dl_terms_inline: list[dict[str, Any]] | list[tuple[str, int]] | None = None,
+        detection_config: dict[str, Any] | None = None,
     ):
         self.patterns = dict(DEFAULT_PATTERNS)
         over = _load_regex_overrides(regex_overrides_path)
@@ -361,8 +362,12 @@ class SensitivityDetector:
             if not self._dl_classifier.is_ready:
                 self._dl_classifier = None
 
-        # Minor detection threshold: when not provided, default to 18
-        self._minor_age_threshold = 18
+        # Minor detection: threshold from config (default 18); full_scan/cross_reference reserved for future use
+        det = detection_config or {}
+        try:
+            self._minor_age_threshold = int(det.get("minor_age_threshold", 18))
+        except (TypeError, ValueError):
+            self._minor_age_threshold = 18
 
     def analyze(self, column_name: str, sample_text: str) -> tuple[str, str, str, int]:
         """
