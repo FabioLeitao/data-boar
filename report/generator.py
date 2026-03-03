@@ -3,8 +3,9 @@ Single report generator: reads database_findings, filesystem_findings, scan_fail
 for a session; produces Excel with sheets "Report info" (session + about), "Database findings", etc.,
 and heatmap image (sensitivity/risk) with about footer. Returns path to Excel file.
 """
+from collections import defaultdict
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 import pandas as pd
 
@@ -63,6 +64,75 @@ def _create_heatmap(db_rows: list[dict], fs_rows: list[dict], output_dir: str, s
 
 # Keywords that suggest existing data protection (column name or pattern_detected)
 _PRAISE_KEYWORDS = ("encrypted", "hash", "hashed", "tokenized", "token", "masked", "mask", "pseudonym", "anon", "redact", "hmac", "cipher")
+
+# Patterns/names that suggest identifier or health (for minor cross-reference: same table has DOB/minor + name/doc/health)
+_IDENTIFIER_OR_HEALTH_PATTERNS = ("LGPD_CPF", "CCPA_SSN", "EMAIL", "CPF", "SSN", "RG")
+_IDENTIFIER_OR_HEALTH_COLUMN_TOKENS = (
+    "nome", "name", "cpf", "rg", "ssn", "health", "saude", "cid", "prontuario", "diagnostic",
+    "identidade", "identity", "documento", "document", "nascimento", "birth",
+)
+
+
+def _row_suggests_identifier_or_health(row: dict) -> bool:
+    """True if finding suggests name, official doc (CPF/RG/SSN), or health data (for cross-reference with possible minor)."""
+    pat = (row.get("pattern_detected") or "").upper()
+    col = (row.get("column_name") or row.get("file_name") or "").lower()
+    for p in _IDENTIFIER_OR_HEALTH_PATTERNS:
+        if p in pat:
+            return True
+    for t in _IDENTIFIER_OR_HEALTH_COLUMN_TOKENS:
+        if t in col:
+            return True
+    return False
+
+
+def _minor_cross_reference_confidence(
+    db_rows: list[dict],
+    fs_rows: list[dict],
+) -> tuple[set[tuple], set[tuple]]:
+    """
+    When DOB_POSSIBLE_MINOR appears in the same table (or same file) as identifier/health findings,
+    return sets of keys for which to show 'high (cross-ref)' minor confidence.
+    Returns (db_keys, fs_keys). DB key = (target_name, schema_name, table_name, column_name); FS key = (target_name, path, file_name).
+    """
+    db_high = set()
+    fs_high = set()
+    # Database: group by (target_name, schema_name, table_name)
+    db_by_table: dict[tuple, list[dict]] = defaultdict(list)
+    for r in db_rows:
+        key = (r.get("target_name", ""), r.get("schema_name", ""), r.get("table_name", ""))
+        db_by_table[key].append(r)
+    for (_t, _s, _tb), rows in db_by_table.items():
+        has_minor = any("DOB_POSSIBLE_MINOR" in (r.get("pattern_detected") or "") for r in rows)
+        has_id_or_health = any(_row_suggests_identifier_or_health(r) for r in rows)
+        if has_minor and has_id_or_health:
+            for r in rows:
+                if "DOB_POSSIBLE_MINOR" in (r.get("pattern_detected") or ""):
+                    db_high.add((r.get("target_name", ""), r.get("schema_name", ""), r.get("table_name", ""), r.get("column_name", "")))
+    # Filesystem: group by (target_name, path)
+    fs_by_path: dict[tuple, list[dict]] = defaultdict(list)
+    for r in fs_rows:
+        key = (r.get("target_name", ""), r.get("path", ""))
+        fs_by_path[key].append(r)
+    for (_t, _p), path_rows in fs_by_path.items():
+        has_minor = any("DOB_POSSIBLE_MINOR" in (r.get("pattern_detected") or "") for r in path_rows)
+        has_id_or_health = any(_row_suggests_identifier_or_health(r) for r in path_rows)
+        if has_minor and has_id_or_health:
+            for r in path_rows:
+                if "DOB_POSSIBLE_MINOR" in (r.get("pattern_detected") or ""):
+                    fs_high.add((r.get("target_name", ""), r.get("path", ""), r.get("file_name", "")))
+    return db_high, fs_high
+
+
+def _apply_minor_confidence_column(
+    rows: list[dict],
+    high_confidence_keys: set[tuple],
+    key_getter: Callable[[dict], tuple],
+) -> None:
+    """Mutate each row to add 'Minor confidence' = 'high (cross-ref)' for keys in high_confidence_keys, else ''."""
+    for r in rows:
+        k = key_getter(r)
+        r["Minor confidence"] = "high (cross-ref)" if k in high_confidence_keys else ""
 
 
 def _praise_rows(db_rows: list[dict], fs_rows: list[dict]) -> list[dict]:
@@ -348,6 +418,25 @@ def generate_report(
             for t, count in sorted(target_counts.items(), key=lambda x: -x[1])[:top_n]:
                 exec_rows.append({"Metric": "Top targets by finding count", "Category": t, "Count": count})
             pd.DataFrame(exec_rows).to_excel(writer, sheet_name="Executive summary", index=False)
+        # Optional: minor cross-reference – add "Minor confidence" column when same table/file has DOB_POSSIBLE_MINOR + identifier/health
+        detection_cfg = (config or {}).get("detection") or {}
+        db_high_keys: set[tuple] = set()
+        fs_high_keys: set[tuple] = set()
+        if detection_cfg.get("minor_cross_reference", True):
+            db_high_keys, fs_high_keys = _minor_cross_reference_confidence(db_rows_for_sheets, fs_rows_for_sheets)
+            _apply_minor_confidence_column(
+                db_rows_for_sheets,
+                db_high_keys,
+                lambda r: (r.get("target_name", ""), r.get("schema_name", ""), r.get("table_name", ""), r.get("column_name", "")),
+            )
+            _apply_minor_confidence_column(
+                fs_rows_for_sheets,
+                fs_high_keys,
+                lambda r: (r.get("target_name", ""), r.get("path", ""), r.get("file_name", "")),
+            )
+        else:
+            for r in db_rows_for_sheets + fs_rows_for_sheets:
+                r["Minor confidence"] = ""
         if db_rows_for_sheets:
             pd.DataFrame(db_rows_for_sheets).to_excel(writer, sheet_name="Database findings", index=False)
         if fs_rows_for_sheets:
@@ -367,6 +456,15 @@ def generate_report(
             pd.DataFrame(enriched_failures).to_excel(writer, sheet_name="Scan failures", index=False)
         overrides = report_cfg.get("recommendation_overrides", [])
         recs = _recommendations_rows(db_rows_for_sheets, fs_rows_for_sheets, recommendation_overrides=overrides if overrides else None)
+        if db_high_keys or fs_high_keys:
+            recs.insert(0, {
+                "Data / Pattern": "DOB_POSSIBLE_MINOR (high confidence – cross-ref)",
+                "Base legal": "LGPD Art. 14 (dados de crianças/adolescentes); GDPR Art. 8 (consentimento em serviços da sociedade da informação)",
+                "Risco": "Mesma tabela/arquivo contém data de nascimento sugerindo menor e dados identificadores ou de saúde; tratar como alta prioridade para DPO.",
+                "Recomendação": "Confirmar base legal e consentimento; restringir acesso e retenção; priorizar anonimização ou pseudonimização.",
+                "Prioridade": "CRÍTICA",
+                "Relevante para": "DPO, Compliance, Área jurídica, Segurança da Informação",
+            })
         pd.DataFrame(recs).to_excel(writer, sheet_name="Recommendations", index=False)
         praise = _praise_rows(db_rows_for_sheets, fs_rows_for_sheets)
         if praise:
