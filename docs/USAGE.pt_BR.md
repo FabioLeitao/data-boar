@@ -236,8 +236,11 @@ Esse endpoint procura, entre os arquivos `audit_YYYYMMDD.log` disponíveis (do m
   - `sqlite_path` – caminho do banco SQLite com resultados.
   - `scan` – `max_workers` para paralelismo.
   - `api.workers` – número de workers uvicorn (padrão 1; 2+ para mais requisições concorrentes).
+  - Opcionais: `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection` (termos ML/DL inline), `learned_patterns` (export de termos classificados).
 
 Para detalhes de todos os campos e exemplos completos, consulte `README.md` e `docs/USAGE.md` (inglês), que são as referências canônicas.
 
 **Produção atrás de proxy reverso (nginx, Traefik, Caddy):** A aplicação se comporta corretamente atrás de NAT, load balancer ou proxy reverso. Quando o TLS for terminado no proxy, defina **X-Forwarded-Proto: https** para que os cabeçalhos de segurança (ex.: HSTS) funcionem. Veja [SECURITY.md](../SECURITY.md) para os cabeçalhos HTTP de segurança.
+
+**Documentação relacionada:** [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md) (termos de treino ML/DL – português; [inglês](sensitivity-detection.md)). Para adicionar um novo conector de fonte de dados (banco, API, share), veja [ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md) (em português) ou [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md) (em inglês).
 

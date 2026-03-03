@@ -18,7 +18,7 @@ except ImportError:
 def load_config(path: str | Path) -> dict[str, Any]:
     """
     Load configuration from a YAML or JSON file.
-    Supports unified schema: targets[], file_scan, report, api, ml_patterns_file, regex_overrides_file.
+    Supports unified schema: targets[], file_scan, report, api, sqlite_path, scan, ml_patterns_file, dl_patterns_file, regex_overrides_file, sensitivity_detection, learned_patterns.
     """
     path = Path(path)
     if not path.exists():
