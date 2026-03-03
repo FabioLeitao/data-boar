@@ -231,8 +231,8 @@ Esse endpoint procura, entre os arquivos `audit_YYYYMMDD.log` disponíveis (do m
 - A aplicação utiliza um único arquivo de configuração (YAML/JSON) com as chaves principais:
   - `targets` – alvos a escanear (bancos, diretórios, APIs, compartilhamentos).
   - `file_scan` – extensões, recursividade, `scan_sqlite_as_db`, `sample_limit`.
-  - `report` – `output_dir` para relatórios/heatmaps.
-  - `api` – porta da API.
+  - `report` – `output_dir` para relatórios/heatmaps; opcionalmente `recommendation_overrides` (lista de mapeamentos por `norm_tag` para Base legal, Risco, Recomendação, Prioridade, Relevante para). Exemplo completo em [USAGE.md](USAGE.md) (seção Configuration).
+  - `api` – porta da API; opcionalmente `require_api_key`, `api_key` ou `api_key_from_env` para exigir chave de API (cabeçalho X-API-Key ou Authorization: Bearer); GET /health permanece público. Ver [SECURITY.md](../SECURITY.md).
   - `sqlite_path` – caminho do banco SQLite com resultados.
   - `scan` – `max_workers` para paralelismo.
   - `api.workers` – número de workers uvicorn (padrão 1; 2+ para mais requisições concorrentes).
