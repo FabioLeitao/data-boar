@@ -58,11 +58,13 @@ class SQLConnector:
         scanner: Any,
         db_manager: Any,
         sample_limit: int = 5,
+        detection_config: dict[str, Any] | None = None,
     ):
         self.config = target_config
         self.scanner = scanner
         self.db_manager = db_manager
         self.sample_limit = sample_limit
+        self.detection_config = detection_config or {}
         self.engine = None
         self._connection = None
 
@@ -115,27 +117,28 @@ class SQLConnector:
                 })
         return result
 
-    def sample(self, schema: str, table: str, column_name: str) -> str:
-        """Fetch up to sample_limit values from column; return concatenated string for detection (not stored)."""
+    def sample(self, schema: str, table: str, column_name: str, limit: int | None = None) -> str:
+        """Fetch up to limit (or sample_limit) values from column; return concatenated string for detection (not stored)."""
+        use_limit = limit if limit is not None else self.sample_limit
         dialect = self.engine.dialect.name if self.engine else ""
         # Escape identifier per dialect (simple: avoid injection by using column/table from discover)
         safe_col = column_name.replace('"', '""')
         safe_table = table.replace('"', '""')
         try:
             if dialect == "sqlite":
-                q = text(f'SELECT "{safe_col}" FROM "{safe_table}" LIMIT {self.sample_limit}')
+                q = text(f'SELECT "{safe_col}" FROM "{safe_table}" LIMIT {use_limit}')
             elif dialect == "mysql":
                 t = f'`{schema}`.`{safe_table}`' if schema else f'`{safe_table}`'
-                q = text(f'SELECT `{safe_col}` FROM {t} LIMIT {self.sample_limit}')
+                q = text(f'SELECT `{safe_col}` FROM {t} LIMIT {use_limit}')
             elif dialect == "oracle":
                 # Oracle: quoted identifiers; use ROWNUM for limit (no LIMIT)
                 t = f'"{schema}"."{safe_table}"' if schema else f'"{safe_table}"'
                 q = text(
                     f'SELECT "{safe_col}" FROM {t} WHERE ROWNUM <= :lim'
-                ).bindparams(lim=self.sample_limit)
+                ).bindparams(lim=use_limit)
             else:
                 t = f'"{schema}"."{safe_table}"' if schema else f'"{safe_table}"'
-                q = text(f'SELECT "{safe_col}" FROM {t} LIMIT {self.sample_limit}')
+                q = text(f'SELECT "{safe_col}" FROM {t} LIMIT {use_limit}')
             rows = self._connection.execute(q).fetchall()
             parts = [str(r[0])[:200] for r in rows if r[0] is not None]
             return " ".join(parts)
@@ -165,6 +168,19 @@ class SQLConnector:
                     res = self.scanner.scan_column(cname, sample)
                     if res["sensitivity_level"] == "LOW":
                         continue
+                    # Optional full-scan: when DOB suggests possible minor and config enables it, re-sample with higher limit and re-detect
+                    norm_tag = res.get("norm_tag", "")
+                    if (
+                        "DOB_POSSIBLE_MINOR" in (res.get("pattern_detected") or "")
+                        and self.detection_config.get("minor_full_scan")
+                    ):
+                        full_scan_limit = self.detection_config.get("minor_full_scan_limit", 100)
+                        full_sample = self.sample(schema, table, cname, limit=full_scan_limit)
+                        full_res = self.scanner.scan_column(cname, full_sample)
+                        if "DOB_POSSIBLE_MINOR" in (full_res.get("pattern_detected") or ""):
+                            res = full_res
+                            suffix = " (full-scan confirmed)"
+                            norm_tag = (norm_tag or "").rstrip() + suffix if norm_tag else suffix.lstrip()
                     self.db_manager.save_finding(
                         source_type="database",
                         target_name=target_name,
@@ -176,7 +192,7 @@ class SQLConnector:
                         data_type=ctype,
                         sensitivity_level=res["sensitivity_level"],
                         pattern_detected=res["pattern_detected"],
-                        norm_tag=res.get("norm_tag", ""),
+                        norm_tag=norm_tag,
                         ml_confidence=res.get("ml_confidence", 0),
                     )
                     try:

@@ -142,9 +142,15 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         minor_age_int = int(minor_age)
     except (TypeError, ValueError):
         minor_age_int = 18
+    minor_full_scan_limit = detection_cfg.get("minor_full_scan_limit", 100)
+    try:
+        minor_full_scan_limit = max(1, int(minor_full_scan_limit))
+    except (TypeError, ValueError):
+        minor_full_scan_limit = 100
     out["detection"] = {
         "minor_age_threshold": minor_age_int,
         "minor_full_scan": bool(detection_cfg.get("minor_full_scan", False)),
+        "minor_full_scan_limit": minor_full_scan_limit,
         "minor_cross_reference": bool(detection_cfg.get("minor_cross_reference", True)),
     }
 
