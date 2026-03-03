@@ -72,15 +72,36 @@ docker login ghcr.io   # Use a GitHub Personal Access Token with read:packages, 
 docker push ghcr.io/fabioleitao/python3-lgpd-crawler:latest
 ```
 
-### Option B – Docker Hub
+### Option B – Docker Hub (e.g. fabioleitao)
 
 ```bash
-docker build -t YOUR_DOCKERHUB_USER/python3-lgpd-crawler:latest .
+# From repo root
+docker build -t fabioleitao/python3-lgpd-crawler:latest .
 docker login
-docker push YOUR_DOCKERHUB_USER/python3-lgpd-crawler:latest
+# Username: fabioleitao (or your Docker Hub username)
+# Password: your Docker Hub password or Access Token
+docker push fabioleitao/python3-lgpd-crawler:latest
 ```
 
-Then in `deploy/docker-compose.yml` set `image:` to your pushed image (e.g. `ghcr.io/fabioleitao/...` or `YOUR_DOCKERHUB_USER/...`).
+To use a version tag as well (e.g. `1.0.9`):
+
+```bash
+docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.0.9
+docker push fabioleitao/python3-lgpd-crawler:1.0.9
+```
+
+Then in `deploy/docker-compose.yml` set `image:` to your pushed image (e.g. `fabioleitao/python3-lgpd-crawler:latest` or `ghcr.io/fabioleitao/...`).
+
+**Releasing to Docker Hub (fabioleitao):** From repo root, run the test suite (`pytest` or `uv run pytest`), then build, log in with your Docker Hub credentials, and push:
+
+```bash
+pytest                    # or: uv run pytest  (must pass with no warnings)
+docker build -t fabioleitao/python3-lgpd-crawler:latest .
+docker login              # username: fabioleitao, password: your token
+docker push fabioleitao/python3-lgpd-crawler:latest
+```
+
+Optional: tag and push a version (e.g. `1.0.9`): `docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.0.9` then `docker push fabioleitao/python3-lgpd-crawler:1.0.9`. See also `DOCKER_SETUP.md`.
 
 ## 2. Prepare config
 
@@ -90,6 +111,8 @@ The app expects **config at `/data/config.yaml`** inside the container. Use the 
 - `report.output_dir: /data`
 - `sqlite_path: /data/audit_results.db`
 - `api.port: 8088`
+
+**Sensitivity detection (ML/DL):** You can configure training terms for pattern and sensitivity detection via `ml_patterns_file`, `dl_patterns_file`, or inline `sensitivity_detection.ml_terms` / `sensitivity_detection.dl_terms` in config. Mount your terms file(s) under `/data` (e.g. `/data/ml_terms.yaml`) and set the paths in config. See `docs/sensitivity-detection.md` and `deploy/config.example.yaml` for examples. The image includes regex + ML (TF-IDF + RandomForest); optional DL (sentence embeddings) requires installing the `.[dl]` extra when building a custom image.
 
 Copy `deploy/config.example.yaml` and edit, then either:
 
@@ -306,7 +329,7 @@ To run a single audit from the CLI in the cluster, use a **Job** that overrides 
 | Default (API + frontend) | Run image with no command override: `docker run`, Compose, Swarm, or Kubernetes |
 | CLI one-shot | Override command: `docker run ... --entrypoint python IMAGE main.py --config /data/config.yaml` |
 | Build image | `docker build -t python3-lgpd-crawler:latest .` |
-| Push to registry | `docker tag ... YOUR_REGISTRY/python3-lgpd-crawler:latest` then `docker push ...` |
+| Push to registry | `docker tag ... fabioleitao/python3-lgpd-crawler:latest` then `docker login` and `docker push fabioleitao/python3-lgpd-crawler:latest` |
 | **Single container** | `docker run -d -p 8088:8088 -v ./data:/data python3-lgpd-crawler:latest` (section 3) |
 | **Docker Compose** | `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d` — prepare `./data/config.yaml` first (section 4) |
 | **Docker Swarm** | `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit` (section 5) |

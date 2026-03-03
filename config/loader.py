@@ -103,9 +103,17 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
     if "workers" not in out["api"]:
         out["api"]["workers"] = 1  # 1 = minimal footprint; 2+ for concurrent API traffic
 
-    # Optional external pattern files
+    # Optional external pattern files (ML/DL training terms: list of { text, label } with label "sensitive"|1 or "non_sensitive"|0)
     out["ml_patterns_file"] = data.get("ml_patterns_file") or ""
     out["regex_overrides_file"] = data.get("regex_overrides_file") or ""
+    out["dl_patterns_file"] = data.get("dl_patterns_file") or ""
+
+    # Inline sensitivity-detection terms (override or supplement file-based terms when provided)
+    sens = data.get("sensitivity_detection") or {}
+    out["sensitivity_detection"] = {
+        "ml_terms": sens.get("ml_terms") or [],
+        "dl_terms": sens.get("dl_terms") or [],
+    }
 
     # Parallel/sequential
     out["scan"] = data.get("scan", {})
