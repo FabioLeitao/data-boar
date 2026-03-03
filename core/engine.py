@@ -3,8 +3,27 @@ AuditEngine: orchestrates targets from config via connector registry; uses Local
 Supports sequential or parallel (max_workers) scan; start_audit(), generate_final_reports(session_id).
 Exposes db_manager, is_running, get_current_findings_count() for API.
 """
+import hashlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
+
+
+def _compute_config_scope_hash(config: dict[str, Any]) -> str:
+    """
+    Compute a non-reversible SHA-256 hash of the scan scope (target names, types, file_scan.extensions only).
+    Used for audit evidence of what was in scope; no secrets or credentials are included.
+    """
+    parts: list[str] = []
+    for t in config.get("targets", []):
+        name = (t.get("name") or "").strip()
+        typ = (t.get("type") or "").strip()
+        if name or typ:
+            parts.append(f"{name}:{typ}")
+    exts = config.get("file_scan", {}).get("extensions", [])
+    if exts:
+        parts.append("extensions:" + ",".join(sorted(str(e) for e in exts)))
+    blob = "\n".join(sorted(parts)).encode("utf-8")
+    return hashlib.sha256(blob).hexdigest()
 
 # Import connectors so they register themselves
 import connectors.sql_connector  # noqa: F401
@@ -91,10 +110,12 @@ class AuditEngine:
         """
         session_id = new_session_id()
         self.db_manager.set_current_session_id(session_id)
+        scope_hash = _compute_config_scope_hash(self.config)
         self.db_manager.create_session_record(
             session_id,
             tenant_name=tenant_name,
             technician_name=technician_name,
+            config_scope_hash=scope_hash,
         )
         self._run_audit_targets()
         return session_id
@@ -171,7 +192,7 @@ class AuditEngine:
         if not sid:
             return None
         out_dir = self.config.get("report", {}).get("output_dir", ".")
-        path = generate_report(self.db_manager, sid, output_dir=out_dir)
+        path = generate_report(self.db_manager, sid, output_dir=out_dir, config=self.config)
         if path:
             self._last_report_path = path
         # Optional: write learned patterns for merging into ml_patterns_file (2.2)

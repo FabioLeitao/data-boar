@@ -238,6 +238,30 @@ async def cache_control_middleware(request: Request, call_next):
     return response
 
 
+@app.middleware("http")
+async def optional_api_key_middleware(request: Request, call_next):
+    """
+    When api.require_api_key is true and api.api_key is set, require X-API-Key or Authorization: Bearer.
+    /health is always allowed (no key) so load balancers get 200. Returns 401 if key missing or wrong.
+    """
+    if request.url.path == "/health":
+        return await call_next(request)
+    cfg = _get_config()
+    api_cfg = cfg.get("api") or {}
+    if not api_cfg.get("require_api_key") or not api_cfg.get("api_key"):
+        return await call_next(request)
+    expected = api_cfg.get("api_key") or ""
+    provided = (request.headers.get("x-api-key") or "").strip()
+    if not provided and request.headers.get("authorization"):
+        auth = request.headers.get("authorization", "").strip()
+        if auth.lower().startswith("bearer "):
+            provided = auth[7:].strip()
+    if not provided or provided != expected:
+        from fastapi.responses import JSONResponse
+        return JSONResponse(status_code=401, content={"detail": "Missing or invalid API key"})
+    return await call_next(request)
+
+
 app.mount("/static", StaticFiles(directory=str(_api_dir / "static")), name="static")
 
 
