@@ -95,6 +95,18 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
     out["report"] = data.get("report", {})
     if "output_dir" not in out["report"]:
         out["report"]["output_dir"] = "."
+    # Optional: list of { norm_tag_pattern, base_legal, risk, recommendation, priority, relevant_for } for recommendations
+    overrides = out["report"].get("recommendation_overrides")
+    out["report"]["recommendation_overrides"] = list(overrides) if isinstance(overrides, list) else []
+    if "include_executive_summary" not in out["report"]:
+        out["report"]["include_executive_summary"] = False
+    else:
+        out["report"]["include_executive_summary"] = bool(out["report"]["include_executive_summary"])
+    if "min_sensitivity" not in out["report"]:
+        out["report"]["min_sensitivity"] = "LOW"
+    else:
+        v = (out["report"].get("min_sensitivity") or "LOW").upper()
+        out["report"]["min_sensitivity"] = v if v in ("HIGH", "MEDIUM", "LOW") else "LOW"
 
     # API
     out["api"] = data.get("api", {})
@@ -102,6 +114,14 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         out["api"]["port"] = 8088
     if "workers" not in out["api"]:
         out["api"]["workers"] = 1  # 1 = minimal footprint; 2+ for concurrent API traffic
+    # Optional API key (enterprise): when require_api_key is true, API checks X-API-Key or Authorization: Bearer
+    out["api"]["require_api_key"] = bool(out["api"].get("require_api_key", False))
+    out["api"]["api_key"] = (out["api"].get("api_key") or "").strip() or None
+    api_key_env = (out["api"].get("api_key_from_env") or "").strip()
+    if api_key_env and not out["api"]["api_key"]:
+        import os
+        out["api"]["api_key"] = (os.environ.get(api_key_env) or "").strip() or None
+    out["api"]["api_key_from_env"] = api_key_env or None
 
     # Optional external pattern files (ML/DL training terms: list of { text, label } with label "sensitive"|1 or "non_sensitive"|0)
     out["ml_patterns_file"] = data.get("ml_patterns_file") or ""

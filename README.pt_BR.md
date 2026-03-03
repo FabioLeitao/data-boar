@@ -195,6 +195,10 @@ Prepare `/data/config.yaml` a partir de `deploy/config.example.yaml` (veja [depl
 
 Passos completos em **[deploy/DEPLOY.md](deploy/DEPLOY.md)**. A aplicação se comporta corretamente atrás de NAT, load balancer ou proxy reverso (nginx, Traefik, Caddy); defina **X-Forwarded-Proto: https** quando o TLS for terminado no proxy. Cabeçalhos de segurança HTTP (incl. HSTS quando em HTTPS) são aplicados por padrão; veja [SECURITY.md](SECURITY.md).
 
+## Frameworks de conformidade e extensibilidade
+
+A aplicação referencia explicitamente **LGPD**, **GDPR**, **CCPA**, **HIPAA** e **GLBA** nos padrões embutidos e nas abas de relatório. É possível estender o suporte a outras normas (ex.: UK GDPR, PIPEDA, APPI, POPIA) sem alterar código: defina **`norm_tag`** nos [overrides de regex](docs/sensitivity-detection.pt_BR.md) ou em conectores customizados com qualquer rótulo de framework e use **`report.recommendation_overrides`** no config para personalizar o texto das recomendações. Detalhes em **[docs/compliance-frameworks.pt_BR.md](docs/compliance-frameworks.pt_BR.md)**.
+
 ## Dependências e sincronização (pyproject.toml e requirements.txt)
 
 - O arquivo **`pyproject.toml`** é a fonte de verdade das dependências.  

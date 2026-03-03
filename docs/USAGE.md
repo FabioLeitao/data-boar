@@ -90,7 +90,7 @@ A pre-built image is available on Docker Hub: `fabioleitao/python3-lgpd-crawler:
 - **OpenAPI docs (interactive):**  
   - Swagger UI: `http://localhost:8088/docs`  
   - ReDoc: `http://localhost:8088/redoc`
-- **No built-in authentication:** The API does not implement auth. Secure it at the reverse proxy or network level if exposed.
+- **Authentication:** By default the API does not require authentication; secure it at the reverse proxy or network level if exposed. You can optionally enable a shared API key: set `api.require_api_key: true` and `api.api_key` (or `api.api_key_from_env: "VAR"`) in config; then send **X-API-Key** or **Authorization: Bearer &lt;key&gt;** on each request (GET /health remains public). See [SECURITY.md](../SECURITY.md#optional-api-key-enterprise) and the Configuration section below.
 
 ### Web dashboard
 
@@ -527,10 +527,28 @@ file_scan:
 
 report:
   output_dir: .    # directory for Excel and heatmap PNG
+  # Optional: custom recommendation text per norm/framework (for UK GDPR, PIPEDA, APPI, etc.)
+  recommendation_overrides:
+    - norm_tag_pattern: "UK GDPR"
+      base_legal: "UK GDPR Art. 4(1)"
+      risk: "Identification of data subject."
+      recommendation: "Apply UK GDPR safeguards and DPA registration if required."
+      priority: "ALTA"
+      relevant_for: "DPO, UK Representative"
+    - norm_tag_pattern: "PIPEDA"
+      base_legal: "PIPEDA s. 2 (personal information)"
+      risk: "Personal information as defined under Canadian law."
+      recommendation: "Review PIPEDA consent and limitation purposes."
+      priority: "MÉDIA"
+      relevant_for: "DPO, Privacy Officer"
 
 api:
   port: 8088
   workers: 1       # uvicorn workers; 1 = minimal, 2+ for concurrent API traffic
+  # Optional: require API key for all endpoints except GET /health (X-API-Key or Authorization: Bearer)
+  # require_api_key: true
+  # api_key: "your-secret-key"              # or use api_key_from_env to read from environment
+  # api_key_from_env: "AUDIT_API_KEY"
 
 sqlite_path: audit_results.db
 scan:

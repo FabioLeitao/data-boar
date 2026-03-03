@@ -184,6 +184,17 @@ dl_patterns_file: config/sensitivity_terms.yaml
 
 ---
 
+## Sensitive categories (health, religion, political, etc.)
+
+To detect **additional sensitive personal data** (LGPD Art. 5 II, 11; GDPR Art. 9)—such as CID/ICD (diagnosis codes), gender, religion, political affiliation, PEP, race/skin color, union affiliation, genetic/biometric data, sex life, health/disability—add training terms for those categories to your ML/DL term list.
+
+- **Plan and table of categories:** [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](PLAN_SENSITIVE_CATEGORIES_ML_DL.md)
+- **Ready-to-use example file:** [sensitivity_terms_sensitive_categories.example.yaml](sensitivity_terms_sensitive_categories.example.yaml)
+
+Copy that file (or merge its entries) into your `ml_patterns_file` / `dl_patterns_file`, or into `sensitivity_detection.ml_terms` / `sensitivity_detection.dl_terms`. You can use `report.recommendation_overrides` so findings in these categories get the right Base legal, Risk, and Priority in the report (see the plan for examples).
+
+---
+
 ## Custom regex patterns (detecting new personal/sensitive values)
 
 The detector matches **regex patterns** against the combined text (column name + sample content). Built-in patterns cover CPF, CNPJ, email, phone, SSN, credit card, and dates. To make the application pay attention to **new possibly personal or sensitive values** (e.g. RG, license plate, health plan number, other country IDs), you add **custom patterns** via a file and point the config to it.
@@ -208,7 +219,7 @@ The file must contain a **list of objects**, each with:
 |-------|----------|-------------|
 | `name` | Yes | Short identifier for the pattern (e.g. `RG_BR`, `PLATE_BR`). Appears in reports as `pattern_detected`. |
 | `pattern` | Yes | Regular expression (Python `re` syntax). Matched against column name + sample text. Use raw strings; prefer `\b` for word boundaries to avoid partial matches. |
-| `norm_tag` | No | Label for compliance/reporting (e.g. `LGPD Art. 5`, `Custom`). Default: `"Custom"`. |
+| `norm_tag` | No | Label for compliance/reporting (e.g. `LGPD Art. 5`, `Custom`). Default: `"Custom"`. You can set this to any framework label (e.g. `"UK GDPR"`, `"PIPEDA s. 2"`, `"APPI"`, `"POPIA"`) so findings appear under that norm in reports and recommendations; see [Compliance frameworks and extensibility](compliance-frameworks.md). |
 
 You can use a root-level list or a key `patterns` or `regex` containing the list. You can copy from [regex_overrides.example.yaml](regex_overrides.example.yaml) and edit.
 

@@ -22,6 +22,17 @@ except ImportError:
     _PLOT_AVAILABLE = False
 
 
+_SENSITY_RANK = {"HIGH": 3, "MEDIUM": 2, "LOW": 1}
+
+
+def _filter_by_min_sensitivity(rows: list[dict], min_sensitivity: str) -> list[dict]:
+    """Keep only rows with sensitivity_level >= min_sensitivity (HIGH > MEDIUM > LOW)."""
+    if not min_sensitivity or (min_sensitivity or "").upper() == "LOW":
+        return rows
+    min_rank = _SENSITY_RANK.get((min_sensitivity or "").upper(), 1)
+    return [r for r in rows if _SENSITY_RANK.get((r.get("sensitivity_level") or "").upper(), 1) >= min_rank]
+
+
 def _create_heatmap(db_rows: list[dict], fs_rows: list[dict], output_dir: str, session_id: str) -> str | None:
     """Build sensitivity/risk heatmap from DB + filesystem findings; save PNG with about footer. Return path or None."""
     if not _PLOT_AVAILABLE:
@@ -77,12 +88,19 @@ def _praise_rows(db_rows: list[dict], fs_rows: list[dict]) -> list[dict]:
     return rows
 
 
-def _recommendations_rows(db_rows: list[dict], fs_rows: list[dict]) -> list[dict]:
+def _recommendations_rows(
+    db_rows: list[dict],
+    fs_rows: list[dict],
+    recommendation_overrides: list[dict] | None = None,
+) -> list[dict]:
     """
     Build recommendations from unique pattern_detected and norm_tag.
     Each row explains what kind of personal/sensitive data was inferred, which legal norm might apply,
     why it matters (risk description), and what action DPO / Security / Compliance teams should consider.
+    If recommendation_overrides is provided, entries are matched by norm_tag (substring or exact);
+    keys: norm_tag_pattern, base_legal, risk, recommendation, priority, relevant_for.
     """
+    overrides = recommendation_overrides or []
     seen = set()
     recs = []
     for r in db_rows + fs_rows:
@@ -92,6 +110,25 @@ def _recommendations_rows(db_rows: list[dict], fs_rows: list[dict]) -> list[dict
         if key in seen or not pat:
             continue
         seen.add(key)
+        # Match override: norm_tag_pattern matches if it is a substring of norm or norm is a substring of it
+        override_row = None
+        for o in overrides:
+            pattern_str = (o.get("norm_tag_pattern") or "").strip()
+            if not pattern_str:
+                continue
+            if pattern_str in norm or norm in pattern_str:
+                override_row = {
+                    "Data / Pattern": pat,
+                    "Base legal": o.get("base_legal", norm or "-"),
+                    "Risco": o.get("risk", "-"),
+                    "Recomendação": o.get("recommendation", "-"),
+                    "Prioridade": o.get("priority", "MÉDIA"),
+                    "Relevante para": o.get("relevant_for", "DPO, Segurança da Informação"),
+                }
+                break
+        if override_row:
+            recs.append(override_row)
+            continue
         if "CPF" in pat or "SSN" in pat or "LGPD" in norm:
             recs.append({
                 "Data / Pattern": pat,
@@ -207,11 +244,17 @@ def _trends_rows(
     return rows
 
 
-def generate_report(db_manager: Any, session_id: str, output_dir: str = ".") -> str | None:
+def generate_report(
+    db_manager: Any,
+    session_id: str,
+    output_dir: str = ".",
+    config: dict | None = None,
+) -> str | None:
     """
     Read session from db_manager (database_findings, filesystem_findings, scan_failures);
     write Excel and heatmap. Return path to Excel file or None.
     Includes "Report info" (session + tenant), "Trends - Session comparison" when previous run exists.
+    Optional config: if provided, report.recommendation_overrides and other report options are applied.
     """
     db_rows, fs_rows, fail_rows = db_manager.get_findings(session_id)
     if not db_rows and not fs_rows and not fail_rows:
@@ -219,15 +262,26 @@ def generate_report(db_manager: Any, session_id: str, output_dir: str = ".") -> 
     current_db = len(db_rows)
     current_fs = len(fs_rows)
     current_fail = len(fail_rows)
+    # Optional filter: only include findings with sensitivity >= report.min_sensitivity (for findings sheets, recommendations, heatmap)
+    report_cfg = (config or {}).get("report", {}) if isinstance((config or {}).get("report"), dict) else {}
+    min_sens = (report_cfg.get("min_sensitivity") or "LOW").upper()
+    if min_sens != "LOW":
+        db_rows_for_sheets = _filter_by_min_sensitivity(db_rows, min_sens)
+        fs_rows_for_sheets = _filter_by_min_sensitivity(fs_rows, min_sens)
+    else:
+        db_rows_for_sheets = db_rows
+        fs_rows_for_sheets = fs_rows
     # Session metadata for trends and report info sheet
     current_started_at = None
     tenant_name = None
     technician_name = None
+    config_scope_hash = None
     for s in (db_manager.list_sessions() or []):
         if s.get("session_id") == session_id:
             current_started_at = s.get("started_at")
             tenant_name = s.get("tenant_name")
             technician_name = s.get("technician_name")
+            config_scope_hash = s.get("config_scope_hash")
             break
     about = get_about_info()
     out_path = Path(output_dir) / f"Relatorio_Auditoria_{session_id[:16]}.xlsx"
@@ -238,17 +292,43 @@ def generate_report(db_manager: Any, session_id: str, output_dir: str = ".") -> 
             {"Field": "Started at", "Value": current_started_at or "—"},
             {"Field": "Tenant / Customer", "Value": tenant_name or "—"},
             {"Field": "Technician / Operator", "Value": technician_name or "—"},
+        ]
+        if config_scope_hash:
+            report_info.append({"Field": "Config scope hash", "Value": config_scope_hash})
+        report_info.extend([
             {"Field": "Application", "Value": about["name"]},
             {"Field": "Version", "Value": about["version"]},
             {"Field": "Author", "Value": about["author"]},
             {"Field": "License", "Value": about["license"]},
             {"Field": "Copyright", "Value": about["copyright"]},
-        ]
+        ])
         pd.DataFrame(report_info).to_excel(writer, sheet_name="Report info", index=False)
-        if db_rows:
-            pd.DataFrame(db_rows).to_excel(writer, sheet_name="Database findings", index=False)
-        if fs_rows:
-            pd.DataFrame(fs_rows).to_excel(writer, sheet_name="Filesystem findings", index=False)
+        # Optional Executive summary: counts by sensitivity, by norm_tag, top targets
+        include_exec = report_cfg.get("include_executive_summary", False)
+        if include_exec and (db_rows_for_sheets or fs_rows_for_sheets):
+            exec_rows: list[dict] = []
+            all_findings = db_rows_for_sheets + fs_rows_for_sheets
+            for level in ("HIGH", "MEDIUM", "LOW"):
+                count = sum(1 for r in all_findings if (r.get("sensitivity_level") or "").upper() == level)
+                exec_rows.append({"Metric": f"Findings by sensitivity", "Category": level, "Count": count})
+            norm_counts: dict[str, int] = {}
+            for r in all_findings:
+                nt = (r.get("norm_tag") or "").strip() or "(no norm_tag)"
+                norm_counts[nt] = norm_counts.get(nt, 0) + 1
+            for nt, count in sorted(norm_counts.items(), key=lambda x: -x[1]):
+                exec_rows.append({"Metric": "Findings by Framework / Norm", "Category": nt, "Count": count})
+            target_counts: dict[str, int] = {}
+            for r in all_findings:
+                t = (r.get("target_name") or "").strip() or "(unknown)"
+                target_counts[t] = target_counts.get(t, 0) + 1
+            top_n = 10
+            for t, count in sorted(target_counts.items(), key=lambda x: -x[1])[:top_n]:
+                exec_rows.append({"Metric": "Top targets by finding count", "Category": t, "Count": count})
+            pd.DataFrame(exec_rows).to_excel(writer, sheet_name="Executive summary", index=False)
+        if db_rows_for_sheets:
+            pd.DataFrame(db_rows_for_sheets).to_excel(writer, sheet_name="Database findings", index=False)
+        if fs_rows_for_sheets:
+            pd.DataFrame(fs_rows_for_sheets).to_excel(writer, sheet_name="Filesystem findings", index=False)
         if fail_rows:
             enriched_failures: list[dict] = []
             for r in fail_rows:
@@ -262,9 +342,10 @@ def generate_report(db_manager: Any, session_id: str, output_dir: str = ".") -> 
                     }
                 )
             pd.DataFrame(enriched_failures).to_excel(writer, sheet_name="Scan failures", index=False)
-        recs = _recommendations_rows(db_rows, fs_rows)
+        overrides = report_cfg.get("recommendation_overrides", [])
+        recs = _recommendations_rows(db_rows_for_sheets, fs_rows_for_sheets, recommendation_overrides=overrides if overrides else None)
         pd.DataFrame(recs).to_excel(writer, sheet_name="Recommendations", index=False)
-        praise = _praise_rows(db_rows, fs_rows)
+        praise = _praise_rows(db_rows_for_sheets, fs_rows_for_sheets)
         if praise:
             pd.DataFrame(praise).to_excel(writer, sheet_name="Praise / existing controls", index=False)
         # Trends: compare with previous run for DPO and security team
@@ -274,9 +355,9 @@ def generate_report(db_manager: Any, session_id: str, output_dir: str = ".") -> 
         )
         pd.DataFrame(trends).to_excel(writer, sheet_name="Trends - Session comparison", index=False)
         # Summary heatmap data as sheet
-        rows = [{"target": r.get("target_name"), "sensitivity": r.get("sensitivity_level")} for r in db_rows + fs_rows]
+        rows = [{"target": r.get("target_name"), "sensitivity": r.get("sensitivity_level")} for r in db_rows_for_sheets + fs_rows_for_sheets]
         if rows:
             summary = pd.DataFrame(rows).groupby(["target", "sensitivity"]).size().unstack(fill_value=0)
             summary.to_excel(writer, sheet_name="Heatmap data")
-    _create_heatmap(db_rows, fs_rows, output_dir, session_id)
+    _create_heatmap(db_rows_for_sheets, fs_rows_for_sheets, output_dir, session_id)
     return str(out_path)
