@@ -178,7 +178,11 @@ class AuditEngine:
         elif t in ("powerbi", "dataverse", "powerapps"):
             connector = connector_class(target, self.scanner, self.db_manager, sample_limit=sample_limit)
         else:
-            connector = connector_class(target, self.scanner, self.db_manager)
+            # Database targets (postgresql, mysql, sqlite, mssql, oracle, etc.): pass detection config for optional minor full-scan
+            connector = connector_class(
+                target, self.scanner, self.db_manager,
+                detection_config=self.config.get("detection"),
+            )
         try:
             connector.run()
         except Exception as e:
