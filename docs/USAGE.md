@@ -295,7 +295,17 @@ CLI uses the path you pass with `--config` (e.g. `config.yaml`). For the **web s
 ### Config file location and shape
 
 - **Location:** Any path; typical names: `config.yaml`, `config/config.json`. Legacy `config/config.json` with `databases` and `file_scan.directories` is normalized automatically.
-- **Root keys:** `targets`, `file_scan`, `report`, `api`, `sqlite_path`, `scan`, optional `ml_patterns_file`, `regex_overrides_file`, `learned_patterns`.
+- **Root keys:** `targets`, `file_scan`, `report`, `api`, `sqlite_path`, `scan`, optional `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection`, `learned_patterns`.
+
+### Sensitivity detection: ML and DL training terms
+
+You can set the **training words for ML and DL** in the main config (inline) or in separate YAML/JSON files. The pipeline is **hybrid**: regex → ML (TF-IDF + RandomForest) → optional DL (sentence embeddings + classifier). ML/DL terms use the same format: a list of `{ text, label }` with `label` = `sensitive` or `non_sensitive`.
+
+- **Files:** `ml_patterns_file`, `dl_patterns_file` – paths to YAML/JSON with a list of `{ text, label }`.
+- **Inline:** `sensitivity_detection.ml_terms`, `sensitivity_detection.dl_terms` – same structure; when non-empty they override the corresponding file.
+- **DL backend:** Optional; install with `uv pip install -e ".[dl]"`. When installed and DL terms are provided, confidence is combined with ML for better semantic detection.
+
+**Full description and examples:** [sensitivity-detection.md](sensitivity-detection.md).
 
 ### Targets: databases
 

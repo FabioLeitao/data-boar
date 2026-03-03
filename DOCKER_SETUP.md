@@ -2,7 +2,7 @@
 
 Run these steps in a terminal where **Docker** is available (e.g. PowerShell or CMD after starting Docker Desktop).
 
-**Pre-built image:** The application is also published on Docker Hub as `fabioleitao/python3-lgpd-crawler:latest` ([hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)). You can `docker pull` and run that image instead of building from source (see README and `deploy/DEPLOY.md`).
+**Pre-built image:** The application is published on Docker Hub as `fabioleitao/python3-lgpd-crawler:latest` ([hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)). You can `docker pull` and run that image instead of building from source (see README and `deploy/DEPLOY.md`). The image includes the latest features (hybrid regex + ML + optional DL sensitivity detection; configurable ML/DL training terms via `ml_patterns_file`, `dl_patterns_file`, or `sensitivity_detection` in config — see `docs/sensitivity-detection.md`).
 
 **Upgrading your local image:** To refresh Docker Desktop with the current version from the repository, pull the image and restart your container(s):
 
@@ -64,28 +64,35 @@ Default: web API + frontend. CLI remains available via `--entrypoint` override (
 
 ---
 
-## 3. Tag and push to Docker Hub
+## 3. Tag and push to Docker Hub (fabioleitao)
 
-Replace `YOUR_DOCKERHUB_USER` with your Docker Hub username.
+Use your Docker Hub credentials (username `fabioleitao` and password or Access Token).
 
 ```powershell
 # Tag for Docker Hub
-docker tag python3-lgpd-crawler:latest YOUR_DOCKERHUB_USER/python3-lgpd-crawler:latest
+docker tag python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:latest
 
 # Log in (use your Docker Hub username and Access Token as password)
 docker login
-# Username: YOUR_DOCKERHUB_USER
-# Password: <paste your Access Token>
+# Username: fabioleitao
+# Password: <your password or Access Token>
 
 # Push
-docker push YOUR_DOCKERHUB_USER/python3-lgpd-crawler:latest
+docker push fabioleitao/python3-lgpd-crawler:latest
 ```
 
-Or non-interactive login with token:
+Optional: push a version tag (e.g. 1.0.9):
 
 ```powershell
-echo YOUR_ACCESS_TOKEN | docker login -u YOUR_DOCKERHUB_USER --password-stdin
-docker push YOUR_DOCKERHUB_USER/python3-lgpd-crawler:latest
+docker tag python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.0.9
+docker push fabioleitao/python3-lgpd-crawler:1.0.9
+```
+
+Non-interactive login with token:
+
+```powershell
+echo YOUR_ACCESS_TOKEN | docker login -u fabioleitao --password-stdin
+docker push fabioleitao/python3-lgpd-crawler:latest
 ```
 
 ---

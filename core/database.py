@@ -8,6 +8,7 @@ from typing import Any
 
 from sqlalchemy import Column, DateTime, Integer, String, Text, create_engine, text
 from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.pool import NullPool
 
 Base = declarative_base()
 
@@ -126,7 +127,8 @@ class LocalDBManager:
     """Single SQLite DB for all audit results; session id set externally (core.session)."""
 
     def __init__(self, db_path: str = "audit_results.db"):
-        self.engine = create_engine(f"sqlite:///{db_path}")
+        # NullPool so each connection is closed when returned (avoids ResourceWarning on Python 3.13+)
+        self.engine = create_engine(f"sqlite:///{db_path}", poolclass=NullPool)
         Base.metadata.create_all(self.engine)
         self._ensure_tenant_column()
         self._ensure_technician_column()
