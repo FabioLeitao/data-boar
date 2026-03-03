@@ -184,6 +184,17 @@ dl_patterns_file: config/sensitivity_terms.yaml
 
 ---
 
+## Categorias sensíveis (saúde, religião, política, etc.)
+
+Para detectar **dados pessoais sensíveis adicionais** (LGPD Art. 5 II, 11; GDPR Art. 9)—como CID/ICD (códigos de diagnóstico), gênero, religião, filiação política, PEP, raça/cor da pele, filiação sindical, dados genéticos/biométricos, vida sexual, saúde/deficiência—adicione termos de treino dessas categorias à sua lista de termos ML/DL.
+
+- **Plano e tabela de categorias:** [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](PLAN_SENSITIVE_CATEGORIES_ML_DL.md)
+- **Arquivo de exemplo pronto para uso:** [sensitivity_terms_sensitive_categories.example.yaml](sensitivity_terms_sensitive_categories.example.yaml)
+
+Copie esse arquivo (ou mescle suas entradas) em `ml_patterns_file` / `dl_patterns_file`, ou em `sensitivity_detection.ml_terms` / `sensitivity_detection.dl_terms`. Você pode usar `report.recommendation_overrides` para que achados nessas categorias tenham a Base legal, Risco e Prioridade corretos no relatório (veja o plano para exemplos).
+
+---
+
 ## Padrões regex customizados (detectar novos dados pessoais/sensíveis)
 
 O detector aplica **padrões regex** ao texto combinado (nome da coluna + amostra do conteúdo). Os padrões embutidos cobrem CPF, CNPJ, e-mail, telefone, SSN, cartão de crédito e datas. Para que a aplicação se atente a **novos valores possivelmente pessoais ou sensíveis** (ex.: RG, placa de veículo, número de plano de saúde, outros IDs por país), você adiciona **padrões customizados** via um arquivo e aponta o config para ele.
@@ -208,7 +219,7 @@ O arquivo deve conter uma **lista de objetos**, cada um com:
 |-------|-------------|-----------|
 | `name` | Sim | Identificador curto do padrão (ex.: `RG_BR`, `PLATE_BR`). Aparece nos relatórios como `pattern_detected`. |
 | `pattern` | Sim | Expressão regular (sintaxe Python `re`). É aplicada ao nome da coluna + amostra. Use strings cruas; prefira `\b` para limites de palavra. |
-| `norm_tag` | Não | Rótulo para conformidade/relatório (ex.: `LGPD Art. 5`, `Custom`). Padrão: `"Custom"`. |
+| `norm_tag` | Não | Rótulo para conformidade/relatório (ex.: `LGPD Art. 5`, `Custom`). Padrão: `"Custom"`. Você pode definir qualquer rótulo de framework (ex.: "UK GDPR", "PIPEDA s. 2", "APPI", "POPIA") para os achados aparecerem sob essa norma nos relatórios e recomendações; veja [Frameworks de conformidade e extensibilidade](compliance-frameworks.pt_BR.md). |
 
 Você pode usar uma lista na raiz ou uma chave `patterns` ou `regex` com a lista. Você pode copiar de [regex_overrides.example.yaml](regex_overrides.example.yaml) e editar.
 
