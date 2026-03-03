@@ -81,12 +81,14 @@ class AuditEngine:
         self.db_path = db_path or config.get("sqlite_path", "audit_results.db")
         self.db_manager = LocalDBManager(self.db_path)
         sens = config.get("sensitivity_detection") or {}
+        detection = config.get("detection") or {}
         self.scanner = DataScanner(
             regex_overrides_path=config.get("regex_overrides_file") or None,
             ml_patterns_path=config.get("ml_patterns_file") or None,
             ml_terms_inline=sens.get("ml_terms") or None,
             dl_patterns_path=config.get("dl_patterns_file") or None,
             dl_terms_inline=sens.get("dl_terms") or None,
+            detection_config=detection,
         )
         self._is_running = False
         self._last_report_path: str | None = None
