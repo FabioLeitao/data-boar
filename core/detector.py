@@ -1,10 +1,17 @@
 """
-Unified sensitivity detector: regex (from config or built-in) + ML (terms from external config).
-Returns (sensitivity, pattern_detected, norm_tag, confidence); no storage of sample content.
+Unified sensitivity detector: regex (from config or built-in) + ML (TF-IDF + RandomForest)
++ optional DL (sentence embeddings + classifier). Returns (sensitivity, pattern_detected, norm_tag, confidence);
+no storage of sample content.
+
+Pipeline:
+1. Regex: built-in + optional overrides from config.
+2. ML: training terms from ml_patterns_file or sensitivity_detection.ml_terms (inline).
+3. DL (hybrid): when available, training terms from dl_patterns_file or sensitivity_detection.dl_terms;
+   confidence is combined with ML (e.g. max(ml_confidence, dl_confidence)).
 
 To reduce false positives on song lyrics and music tablature/chord sheets:
 - Content heuristics detect lyrics (verse/chorus keywords, short lines) and tabs (digit/pipe lines).
-- In that context, weak patterns (DATE_DMY, PHONE_BR) are downgraded to MEDIUM; ML confidence
+- In that context, weak patterns (DATE_DMY, PHONE_BR) are downgraded to MEDIUM; ML/DL confidence
   is penalized so borderline cases stay MEDIUM/LOW. Strong PII (CPF, EMAIL, CREDIT_CARD, SSN)
   still reports HIGH.
 """
@@ -12,6 +19,8 @@ from pathlib import Path
 from typing import Any
 
 import re
+
+from core.dl_backend import DLClassifier, is_available as dl_available
 
 # Optional ML deps (numpy/pandas/sklearn) - fail gracefully if not installed
 try:
@@ -154,16 +163,66 @@ def _load_ml_patterns(path: str | None) -> list[tuple[str, int]]:
     return out
 
 
+def _ml_terms_from_inline_or_file(
+    inline: list[dict[str, Any]] | list[tuple[str, int]] | None,
+    path: str | None,
+) -> list[tuple[str, int]]:
+    """ML training terms: prefer inline when non-empty; else file; else DEFAULT_ML_TERMS."""
+    if inline:
+        out = []
+        for t in inline:
+            if isinstance(t, dict):
+                text = (t.get("text") or "").strip().lower()
+                label = 1 if t.get("label", "sensitive") in ("sensitive", 1, "1") else 0
+                if text:
+                    out.append((text, label))
+            elif isinstance(t, (list, tuple)) and len(t) >= 2:
+                text = str(t[0]).strip().lower()
+                label = 1 if t[1] in (1, "1", "sensitive") else 0
+                if text:
+                    out.append((text, label))
+        if out:
+            return out
+    return _load_ml_patterns(path) or DEFAULT_ML_TERMS
+
+
+def _load_dl_terms(
+    path: str | None,
+    inline: list[dict[str, Any]] | list[tuple[str, int]] | None,
+) -> list[tuple[str, int]]:
+    """DL training terms: prefer inline (list of {text, label}); else load from path (same format as ML)."""
+    if inline:
+        out = []
+        for t in inline:
+            if isinstance(t, dict):
+                text = (t.get("text") or "").strip().lower()
+                label = 1 if t.get("label", "sensitive") in ("sensitive", 1, "1") else 0
+                if text:
+                    out.append((text, label))
+            elif isinstance(t, (list, tuple)) and len(t) >= 2:
+                text = str(t[0]).strip().lower()
+                label = 1 if t[1] in (1, "1", "sensitive") else 0
+                if text:
+                    out.append((text, label))
+        if out:
+            return out
+    return _load_ml_patterns(path)
+
+
 class SensitivityDetector:
     """
-    Hybrid detector: regex first, then ML on column name + sample context.
+    Hybrid detector: regex first, then ML (TF-IDF + RandomForest), then optional DL (sentence embeddings + classifier).
     analyze(column_name, sample_text) -> (sensitivity_level, pattern_detected, norm_tag, confidence).
+    ML/DL training terms can come from config files (ml_patterns_file, dl_patterns_file) or inline (sensitivity_detection.ml_terms / dl_terms).
     """
 
     def __init__(
         self,
         regex_overrides_path: str | None = None,
         ml_patterns_path: str | None = None,
+        ml_terms_inline: list[dict[str, Any]] | list[tuple[str, int]] | None = None,
+        dl_patterns_path: str | None = None,
+        dl_terms_inline: list[dict[str, Any]] | list[tuple[str, int]] | None = None,
     ):
         self.patterns = dict(DEFAULT_PATTERNS)
         over = _load_regex_overrides(regex_overrides_path)
@@ -171,19 +230,27 @@ class SensitivityDetector:
             self.patterns[k] = v
         self._compiled = {name: re.compile(pat) for name, (pat, _) in self.patterns.items()}
 
+        # ML terms: inline overrides file; file overrides default
+        ml_terms = _ml_terms_from_inline_or_file(ml_terms_inline, ml_patterns_path)
         self._ml_available = False
         self._vectorizer = None
         self._model = None
-        if _ML_AVAILABLE:
-            terms = _load_ml_patterns(ml_patterns_path) or DEFAULT_ML_TERMS
-            if terms:
-                texts = [t[0] for t in terms]
-                labels = [t[1] for t in terms]
-                self._vectorizer = TfidfVectorizer(ngram_range=(1, 2), min_df=1)
-                X = self._vectorizer.fit_transform(texts)
-                self._model = RandomForestClassifier(n_estimators=100)
-                self._model.fit(X, labels)
-                self._ml_available = True
+        if _ML_AVAILABLE and ml_terms:
+            texts = [t[0] for t in ml_terms]
+            labels = [t[1] for t in ml_terms]
+            self._vectorizer = TfidfVectorizer(ngram_range=(1, 2), min_df=1)
+            X = self._vectorizer.fit_transform(texts)
+            self._model = RandomForestClassifier(n_estimators=100)
+            self._model.fit(X, labels)
+            self._ml_available = True
+
+        # DL terms: inline or from dl_patterns_path (same file format as ML)
+        dl_terms = _load_dl_terms(dl_patterns_path, dl_terms_inline)
+        self._dl_classifier: DLClassifier | None = None
+        if dl_terms and dl_available():
+            self._dl_classifier = DLClassifier(dl_terms)
+            if not self._dl_classifier.is_ready:
+                self._dl_classifier = None
 
     def analyze(self, column_name: str, sample_text: str) -> tuple[str, str, str, int]:
         """
@@ -210,25 +277,33 @@ class SensitivityDetector:
             except Exception:
                 pass
 
+        # Hybrid DL step: when available, combine with ML (take max to avoid missing semantic matches)
+        dl_confidence = 0
+        if self._dl_classifier and self._dl_classifier.is_ready:
+            prob = self._dl_classifier.predict_proba(combined)
+            if prob is not None:
+                dl_confidence = int(round(prob * 100))
+        combined_confidence = max(ml_confidence, dl_confidence)
+
         if entertainment_context:
-            ml_confidence = max(0, ml_confidence - 25)
+            combined_confidence = max(0, combined_confidence - 25)
             if found_patterns:
                 matched_names = {p[0] for p in found_patterns}
                 only_weak = matched_names <= WEAK_PATTERNS_IN_ENTERTAINMENT
                 if only_weak:
                     names = ", ".join(p[0] for p in found_patterns)
                     norms = ", ".join(p[1] for p in found_patterns)
-                    return "MEDIUM", names + " (lyrics/tabs context)", norms, min(ml_confidence, 55)
+                    return "MEDIUM", names + " (lyrics/tabs context)", norms, min(combined_confidence, 55)
                 names = ", ".join(p[0] for p in found_patterns)
                 norms = ", ".join(p[1] for p in found_patterns)
-                return "HIGH", names, norms, max(ml_confidence, 70)
+                return "HIGH", names, norms, max(combined_confidence, 70)
         else:
             if found_patterns:
                 names = ", ".join(p[0] for p in found_patterns)
                 norms = ", ".join(p[1] for p in found_patterns)
-                return "HIGH", names, norms, max(ml_confidence, 80)
-        if ml_confidence >= 70:
-            return "HIGH", "ML_DETECTED", "LGPD/GDPR/CCPA context", ml_confidence
-        if ml_confidence >= 40:
-            return "MEDIUM", "ML_POTENTIAL", "Potential personal data", ml_confidence
-        return "LOW", "GENERAL", "Non-personal", ml_confidence
+                return "HIGH", names, norms, max(combined_confidence, 80)
+        if combined_confidence >= 70:
+            return "HIGH", "ML_DETECTED", "LGPD/GDPR/CCPA context", combined_confidence
+        if combined_confidence >= 40:
+            return "MEDIUM", "ML_POTENTIAL", "Potential personal data", combined_confidence
+        return "LOW", "GENERAL", "Non-personal", combined_confidence

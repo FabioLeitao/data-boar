@@ -17,6 +17,7 @@ Referrer-Policy, Permissions-Policy, and Strict-Transport-Security (only when se
 import os
 import re
 import time
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 import yaml
@@ -150,7 +151,20 @@ def _get_engine():
 
 
 from core.about import get_about_info
-app = FastAPI(title="LGPD/GDPR/CCPA Audit API", version=get_about_info()["version"])
+@asynccontextmanager
+async def _lifespan(app: FastAPI):
+    """Load config and create AuditEngine on startup (replaces deprecated on_event)."""
+    _get_config()
+    _get_engine()
+    yield
+    # shutdown: nothing to tear down
+
+
+app = FastAPI(
+    title="LGPD/GDPR/CCPA Audit API",
+    version=get_about_info()["version"],
+    lifespan=_lifespan,
+)
 
 
 def _list_sessions_cached() -> list[dict]:
@@ -231,12 +245,6 @@ app.mount("/static", StaticFiles(directory=str(_api_dir / "static")), name="stat
 async def health():
     """Liveness/readiness probe for Docker, Swarm and Kubernetes."""
     return {"status": "ok"}
-
-
-@app.on_event("startup")
-async def startup_event():
-    _get_config()
-    _get_engine()
 
 
 @app.get("/help", response_class=HTMLResponse)
