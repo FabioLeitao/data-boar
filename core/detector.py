@@ -209,6 +209,115 @@ def _load_dl_terms(
     return _load_ml_patterns(path)
 
 
+def _detect_possible_minor(column_name: str, sample_text: str, minor_age_threshold: int) -> bool:
+    """
+    Heuristic detection of possible minor data based on column name (including PT-BR variants/acronyms)
+    and sample values (dates of birth or numeric ages).
+    """
+    col = (column_name or "").lower()
+    sample = sample_text or ""
+
+    # DOB-like column name tokens (EN + PT-BR, including acronyms)
+    dob_tokens = (
+        "date of birth",
+        "birth date",
+        "birthdate",
+        "data de nascimento",
+        "data nascimento",
+        "data de nasc",
+        "nascimento",
+        "dob",
+        "ddn",
+        "dn",
+        "nasc",
+        "dtn",
+    )
+    # Age-like column name tokens (EN + PT-BR, including acronyms)
+    age_tokens = (
+        "age",
+        "person age",
+        "idade",
+        "idade_atual",
+        "idade_pessoa",
+        "faixa etaria",
+        "faixa etária",
+        "idd",
+    )
+
+    is_dob_like = any(tok in col for tok in dob_tokens)
+    is_age_like = any(tok in col for tok in age_tokens)
+    if not is_dob_like and not is_age_like:
+        return False
+
+    from datetime import date
+
+    # Helper: compute age from year, month, day (rough, but enough for < threshold vs >= threshold)
+    def _age_from_ymd(y: int, m: int, d: int) -> int | None:
+        try:
+            today = date.today()
+            dob = date(y, m, d)
+            years = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+            return years
+        except Exception:
+            return None
+
+    # If age-like and we see numeric ages, use them directly
+    if is_age_like:
+        for match in re.findall(r"\b\d{1,3}\b", sample):
+            try:
+                val = int(match)
+            except ValueError:
+                continue
+            if 0 <= val < minor_age_threshold:
+                return True
+
+    # If DOB-like, try parsing common date formats in the sample text
+    if is_dob_like:
+        # DMY (e.g. 15/03/2010 or 1/5/12)
+        for m in re.findall(r"\b(\d{1,2})/(\d{1,2})/(\d{2,4})\b", sample):
+            d_s, m_s, y_s = m
+            try:
+                d_i = int(d_s)
+                m_i = int(m_s)
+                y_i = int(y_s)
+            except ValueError:
+                continue
+            if y_i < 100:
+                # Simple century heuristic: 00–30 => 2000–2030, else 1900–1999
+                y_i = 2000 + y_i if y_i <= 30 else 1900 + y_i
+            years = _age_from_ymd(y_i, m_i, d_i)
+            if years is not None and 0 <= years < minor_age_threshold:
+                return True
+
+        # YMD (e.g. 2010-03-15 or 2010/03/15)
+        for m in re.findall(r"\b(\d{4})[-/](\d{1,2})[-/](\d{1,2})\b", sample):
+            y_s, m_s, d_s = m
+            try:
+                y_i = int(y_s)
+                m_i = int(m_s)
+                d_i = int(d_s)
+            except ValueError:
+                continue
+            years = _age_from_ymd(y_i, m_i, d_i)
+            if years is not None and 0 <= years < minor_age_threshold:
+                return True
+
+        # MDY (e.g. 03-15-2010)
+        for m in re.findall(r"\b(\d{1,2})[-](\d{1,2})[-](\d{4})\b", sample):
+            m_s, d_s, y_s = m
+            try:
+                m_i = int(m_s)
+                d_i = int(d_s)
+                y_i = int(y_s)
+            except ValueError:
+                continue
+            years = _age_from_ymd(y_i, m_i, d_i)
+            if years is not None and 0 <= years < minor_age_threshold:
+                return True
+
+    return False
+
+
 class SensitivityDetector:
     """
     Hybrid detector: regex first, then ML (TF-IDF + RandomForest), then optional DL (sentence embeddings + classifier).
@@ -252,6 +361,9 @@ class SensitivityDetector:
             if not self._dl_classifier.is_ready:
                 self._dl_classifier = None
 
+        # Minor detection threshold: when not provided, default to 18
+        self._minor_age_threshold = 18
+
     def analyze(self, column_name: str, sample_text: str) -> tuple[str, str, str, int]:
         """
         Returns (sensitivity_level, pattern_detected, norm_tag, ml_confidence 0-100).
@@ -261,6 +373,9 @@ class SensitivityDetector:
         combined = f"{column_name} {sample_text}"
         sample_only = sample_text or ""
         entertainment_context = _looks_like_lyrics(sample_only) or _looks_like_music_tab(sample_only)
+
+        # Heuristic: possible minor data based on DOB/age (EN + PT-BR)
+        possible_minor = _detect_possible_minor(column_name, sample_only, self._minor_age_threshold)
 
         found_patterns: list[tuple[str, str]] = []
         for name, (_, norm_tag) in self.patterns.items():
@@ -290,18 +405,27 @@ class SensitivityDetector:
             if found_patterns:
                 matched_names = {p[0] for p in found_patterns}
                 only_weak = matched_names <= WEAK_PATTERNS_IN_ENTERTAINMENT
-                if only_weak:
+                if only_weak and not possible_minor:
                     names = ", ".join(p[0] for p in found_patterns)
                     norms = ", ".join(p[1] for p in found_patterns)
                     return "MEDIUM", names + " (lyrics/tabs context)", norms, min(combined_confidence, 55)
                 names = ", ".join(p[0] for p in found_patterns)
                 norms = ", ".join(p[1] for p in found_patterns)
+                if possible_minor:
+                    names = f"DOB_POSSIBLE_MINOR, {names}"
+                    norms = "LGPD Art. 14 – possible minor data; GDPR Art. 8" + (", " + norms if norms else "")
                 return "HIGH", names, norms, max(combined_confidence, 70)
         else:
             if found_patterns:
                 names = ", ".join(p[0] for p in found_patterns)
                 norms = ", ".join(p[1] for p in found_patterns)
+                if possible_minor:
+                    names = f"DOB_POSSIBLE_MINOR, {names}"
+                    norms = "LGPD Art. 14 – possible minor data; GDPR Art. 8" + (", " + norms if norms else "")
                 return "HIGH", names, norms, max(combined_confidence, 80)
+        if possible_minor:
+            # Minor indication even without strong ML/regex confidence → treat as HIGH with dedicated norm_tag.
+            return "HIGH", "DOB_POSSIBLE_MINOR", "LGPD Art. 14 – possible minor data; GDPR Art. 8", max(combined_confidence, 80)
         if combined_confidence >= 70:
             return "HIGH", "ML_DETECTED", "LGPD/GDPR/CCPA context", combined_confidence
         if combined_confidence >= 40:
