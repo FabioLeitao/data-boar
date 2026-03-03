@@ -550,11 +550,12 @@ api:
   # api_key: "your-secret-key"              # or use api_key_from_env to read from environment
   # api_key_from_env: "AUDIT_API_KEY"
 
-# Optional: possible minor data detection (LGPD Art. 14, GDPR Art. 8). See docs/PLAN_MINOR_DATA_DETECTION.md.
+# Optional: possible minor data detection (LGPD Art. 14, GDPR Art. 8). See docs/PLAN_MINOR_DATA_DETECTION.md and docs/minor-detection.md.
 # detection:
-#   minor_age_threshold: 18    # age below this flags DOB/age columns as possible minor (default 18)
-#   minor_full_scan: false    # reserved
-#   minor_cross_reference: true   # reserved
+#   minor_age_threshold: 18        # age below this flags DOB/age columns as possible minor (default 18)
+#   minor_full_scan: false         # when true (databases only), re-sample columns that look like DOB/age for minors using minor_full_scan_limit
+#   minor_full_scan_limit: 100     # max rows for the full-scan pass (databases only; ignored when minor_full_scan is false)
+#   minor_cross_reference: true    # when true, report cross-references DOB_POSSIBLE_MINOR with identifier/health in same table/path and adds "Minor confidence"
 
 sqlite_path: audit_results.db
 scan:

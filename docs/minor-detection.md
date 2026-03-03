@@ -22,8 +22,9 @@ The **minor/adult age threshold** is set in your **main config file** (e.g. `con
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `detection.minor_age_threshold` | integer | **18** | Age below this value (inclusive) is treated as possible minor. Use e.g. 21 if your policy treats people under 21 as minors. |
-| `detection.minor_full_scan` | boolean | false | Reserved for future use (full-scan of column when minor suggested). |
-| `detection.minor_cross_reference` | boolean | true | Reserved for future use (cross-reference with name/doc/health in same row). |
+| `detection.minor_full_scan` | boolean | **false** | When **true**, for **database** targets only: if a column sample suggests possible minor (DOB_POSSIBLE_MINOR), the connector re-samples that column with a larger limit (`minor_full_scan_limit`) and re-runs detection. If the finding is still possible minor, it is saved (optionally with norm_tag “(full-scan confirmed)”). **Optional; default off** to avoid extra load on large tables. |
+| `detection.minor_full_scan_limit` | integer | **100** | Maximum number of values to fetch when `minor_full_scan` is true. Ignored when `minor_full_scan` is false. |
+| `detection.minor_cross_reference` | boolean | **true** | When true, the report generator cross-references possible-minor findings with other findings in the **same table** (database) or **same path** (filesystem). If the same table/path also has identifier or health-like data (e.g. name, CPF/RG/SSN, health), possible-minor rows are marked with **Minor confidence** = **“high (cross-ref)”** and a dedicated high-confidence recommendation is added. |
 
 If the **`detection`** section is **omitted**, the threshold defaults to **18** and the application behaves as before (no errors). Adding the section allows you to adjust the threshold without breaking existing runs.
 
@@ -78,8 +79,9 @@ report:
 
 detection:
   minor_age_threshold: 18
-  minor_full_scan: false
-  minor_cross_reference: true
+  minor_full_scan: false      # optional: re-sample column with minor_full_scan_limit when DOB suggests minor (default off)
+  minor_full_scan_limit: 100  # max rows for full-scan pass (database only)
+  minor_cross_reference: true # add "Minor confidence" column and high-confidence recommendation when same table/path has identifier/health
 
 sqlite_path: audit_results.db
 scan:
@@ -103,15 +105,28 @@ If a column name does **not** suggest DOB or age, a value like `17` or a date in
 
 ---
 
+## Cross-reference and “Minor confidence” column
+
+When **`detection.minor_cross_reference`** is **true** (default), the report generator groups findings by **table** (database) or **path** (filesystem). For each group, if there is at least one finding with **DOB_POSSIBLE_MINOR** and at least one finding that looks like **identifier or health** data (e.g. name, CPF/RG/SSN, health-related column or pattern), then every possible-minor finding in that group is marked with **Minor confidence** = **“high (cross-ref)”** in the **Database findings** and **Filesystem findings** sheets. When that happens, an extra **recommendation row** is added at the top of the **Recommendations** sheet: “DOB_POSSIBLE_MINOR (high confidence – cross-ref)”, explaining that the same table/file contains DOB suggesting minor and identifier/health data, and should be treated as high priority for the DPO. Set **`minor_cross_reference: false`** to disable this behaviour and leave the Minor confidence column empty.
+
+---
+
+## Full scan (optional, database only)
+
+When **`detection.minor_full_scan`** is **true**, **database** connectors (PostgreSQL, MySQL, SQLite, etc.) behave as follows: after the usual small sample of a column is scanned, if the result indicates **DOB_POSSIBLE_MINOR**, the connector fetches up to **`minor_full_scan_limit`** values (default **100**) from that same column and runs detection again. If the finding is still possible minor, the finding is saved; the **norm_tag** may include “(full-scan confirmed)” to indicate that a larger sample was used. This is **optional** and **default off** to avoid performance impact on large tables. Filesystem and other target types do not perform this second pass.
+
+---
+
 ## Report and recommendations
 
 Findings flagged as possible minor get:
 
 - **Sensitivity:** HIGH  
 - **Pattern:** `DOB_POSSIBLE_MINOR` (possibly combined with other patterns)  
-- **Norm tag:** LGPD Art. 14 – possible minor data; GDPR Art. 8  
+- **Norm tag:** LGPD Art. 14 – possible minor data; GDPR Art. 8 (and “(full-scan confirmed)” when full-scan was used)  
+- **Minor confidence:** “high (cross-ref)” when cross-reference found identifier/health in the same table/path; otherwise empty  
 
-In the Excel report, the **Recommendations** sheet includes a dedicated row for possible minor data with **highest priority** (CRÍTICA) and differential treatment text (consent, storage, use, sharing, parental responsibility). That row is listed **first** in the Recommendations sheet. See [PLAN_MINOR_DATA_DETECTION.md](PLAN_MINOR_DATA_DETECTION.md) and the report generator for the exact wording.
+In the Excel report, the **Recommendations** sheet includes a dedicated row for possible minor data with **highest priority** (CRÍTICA) and differential treatment text (consent, storage, use, sharing, parental responsibility). That row is listed **first** in the Recommendations sheet. When cross-reference identifies high-confidence cases, an additional row “DOB_POSSIBLE_MINOR (high confidence – cross-ref)” appears at the top. See [PLAN_MINOR_DATA_DETECTION.md](PLAN_MINOR_DATA_DETECTION.md) and the report generator for the exact wording.
 
 ---
 

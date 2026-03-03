@@ -20,9 +20,9 @@ This document lists **incomplete goals** from active plans and the **recommended
 | 4 | **Phase 6 – Docs:** Update SECURITY.md to mention optional API key; document key in USAGE (EN and PT-BR) | ✅ Done | Key in env; do not log |
 | 5 | **Validate Phase 6:** Run `pytest -W error`; call API with/without key when `require_api_key` true | ✅ Done | 42 tests pass |
 | 6 | **Final:** Run full `pytest -W error`; optional docker build and smoke test | ✅ Done | 42 tests pass |
-| 7 | **Publish:** Validate documentation reflects current state; bump minor version if needed; republish Docker image to hub; keep EN and PT-BR docs in sync | ✅ Done | Version 1.1.0; docs validated; Docker build/push remains manual (see deploy/DEPLOY.md) |
+| 7 | **Publish:** Validate documentation reflects current state; bump minor version if needed; republish Docker image to hub; keep EN and PT-BR docs in sync | ✅ Done | Version 1.1.1; docs validated; Docker build/push remains manual (see deploy/DEPLOY.md) |
 
-**Current state of the application (for later reference):** Phases 0–5 (baseline, docs/frameworks, recommendation overrides, executive summary, min_sensitivity, config_scope_hash) and Phase 6 (optional API key) are implemented and tested. App version **1.1.0**; config supports `api.require_api_key`, `api.api_key`, `api.api_key_from_env`; API middleware enforces X-API-Key or Bearer when required; GET /health is always public; SECURITY.md and USAGE (EN/PT-BR) document the option. Docker image tag/push is manual (see deploy/DEPLOY.md).
+**Current state of the application (for later reference):** Phases 0–5 (baseline, docs/frameworks, recommendation overrides, executive summary, min_sensitivity, config_scope_hash) and Phase 6 (optional API key) are implemented and tested. App version **1.1.1**; config supports `api.require_api_key`, `api.api_key`, `api.api_key_from_env`; API middleware enforces X-API-Key or Bearer when required; GET /health is always public; SECURITY.md and USAGE (EN/PT-BR) document the option. Docker image tag/push is manual (see deploy/DEPLOY.md).
 
 ---
 
@@ -38,12 +38,12 @@ Goal: Detect when data may relate to minors (e.g. age from DOB), treat as highes
 | 2 | Detector: DOB/age parsing + age < threshold → possible_minor; keep HIGH/MED/LOW for others | ✅ Done |
 | 3 | Schema: optional column possible_minor or encode via pattern/norm_tag; migration | ✅ Done (encode via pattern/norm_tag) |
 | 4 | Scanner: pass possible_minor from detector into saved findings | ✅ Done |
-| 5 | Cross-reference: DOB/minor with name, CPF/RG/SSN, health in same row; confidence | ⬜ Pending |
-| 6 | Full scan (optional): when DOB suggests minor + config, full-scan column and adjacent | ⬜ Pending |
+| 5 | Cross-reference: DOB/minor with name, CPF/RG/SSN, health in same row; confidence | ✅ Done |
+| 6 | Full scan (optional): when DOB suggests minor + config, full-scan column and adjacent | ✅ Done |
 | 7 | Report: highest-priority recommendation/section for possible minors (LGPD 14, GDPR 8) | ✅ Done |
 | 8 | Config: minor_age_threshold, minor_full_scan, minor_cross_reference in loader; wire loader → engine → scanner → detector | ✅ Done |
 | 9 | Tests: age inference, possible_minor, report, config wiring; no regression | ✅ Done |
-| 10 | Docs: sensitivity & compliance (EN/PT-BR) for minor detection | ⬜ Pending |
+| 10 | Docs: sensitivity & compliance (EN/PT-BR) for minor detection | ✅ Done |
 
 ---
 
