@@ -124,6 +124,25 @@ class DataWipeLog(Base):
     reason = Column(Text, nullable=False)
 
 
+class AggregatedIdentificationRisk(Base):
+    """
+    One record per (session, target, table-or-file) where multiple quasi-identifier
+    categories (gender, job_position, health, address, phone, etc.) were found together,
+    indicating possible identification or re-identification risk (LGPD Art. 5, GDPR Recital 26).
+    """
+    __tablename__ = "aggregated_identification_risk"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    session_id = Column(String(64), nullable=False, index=True)
+    target_name = Column(String(100))
+    source_type = Column(String(20))  # database | filesystem
+    table_or_file = Column(String(512))  # schema.table or file name
+    columns_involved = Column(Text)  # comma-separated column/file names
+    categories = Column(Text)  # comma-separated category names
+    explanation = Column(Text)
+    sensitivity_level = Column(String(20))
+    created_at = Column(DateTime, default=_utc_now)
+
+
 class LocalDBManager:
     """Single SQLite DB for all audit results; session id set externally (core.session)."""
 
@@ -131,6 +150,7 @@ class LocalDBManager:
         # NullPool so each connection is closed when returned (avoids ResourceWarning on Python 3.13+)
         self.engine = create_engine(f"sqlite:///{db_path}", poolclass=NullPool)
         Base.metadata.create_all(self.engine)
+        self._ensure_aggregated_table()
         self._ensure_tenant_column()
         self._ensure_technician_column()
         self._ensure_config_scope_hash_column()
@@ -160,6 +180,10 @@ class LocalDBManager:
             if r.fetchone() is None:
                 conn.execute(text("ALTER TABLE scan_sessions ADD COLUMN config_scope_hash VARCHAR(64)"))
                 conn.commit()
+
+    def _ensure_aggregated_table(self) -> None:
+        """Create aggregated_identification_risk table if it does not exist."""
+        AggregatedIdentificationRisk.__table__.create(self.engine, checkfirst=True)
 
     def set_current_session_id(self, session_id: str) -> None:
         self._current_session_id = session_id
@@ -233,6 +257,50 @@ class LocalDBManager:
             return ([db_to_dict(r) for r in db_rows], [db_to_dict(r) for r in fs_rows], [db_to_dict(r) for r in fail_rows])
         finally:
             session.close()
+
+    def save_aggregated_identification_risks(
+        self,
+        session_id: str,
+        records: list[dict[str, Any]],
+    ) -> None:
+        """Replace aggregated identification risk rows for this session with the given records."""
+        sess = self._session_factory()
+        try:
+            sess.query(AggregatedIdentificationRisk).filter(
+                AggregatedIdentificationRisk.session_id == session_id,
+            ).delete(synchronize_session=False)
+            for rec in records:
+                row = AggregatedIdentificationRisk(
+                    session_id=session_id,
+                    target_name=rec.get("target_name"),
+                    source_type=rec.get("source_type"),
+                    table_or_file=rec.get("table_or_file"),
+                    columns_involved=rec.get("columns_involved"),
+                    categories=rec.get("categories"),
+                    explanation=rec.get("explanation"),
+                    sensitivity_level=rec.get("sensitivity_level"),
+                )
+                sess.add(row)
+            sess.commit()
+        except Exception:
+            sess.rollback()
+            raise
+        finally:
+            sess.close()
+
+    def get_aggregated_identification_risks(self, session_id: str | None = None) -> list[dict]:
+        """Return aggregated identification risk rows for session_id or current session."""
+        sid = session_id or self._current_session_id
+        if not sid:
+            return []
+        sess = self._session_factory()
+        try:
+            rows = sess.query(AggregatedIdentificationRisk).filter(
+                AggregatedIdentificationRisk.session_id == sid,
+            ).all()
+            return [{c.key: getattr(r, c.key) for c in AggregatedIdentificationRisk.__table__.columns} for r in rows]
+        finally:
+            sess.close()
 
     def list_sessions(self) -> list[dict]:
         """List all scan sessions with summary (session_id, started_at, status, counts including scan_failures)."""
@@ -376,6 +444,7 @@ class LocalDBManager:
             # Delete findings and failures for all sessions
             session.query(DatabaseFinding).delete(synchronize_session=False)
             session.query(FilesystemFinding).delete(synchronize_session=False)
+            session.query(AggregatedIdentificationRisk).delete(synchronize_session=False)
             session.query(ScanFailure).delete(synchronize_session=False)
             # Delete all scan session rows
             session.query(ScanSession).delete(synchronize_session=False)

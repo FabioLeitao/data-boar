@@ -59,21 +59,30 @@ Cross information from **multiple data sources or columns** (e.g. gender, job po
 
 ---
 
+## Design decisions (implemented)
+
+- **Scope:** Per-table (database) and per-file (filesystem). Group DB findings by (session_id, target_name, schema_name, table_name); FS findings by (session_id, target_name, path, file_name). Cross-target linkage is out of scope for this phase.
+- **Storage:** Option B – dedicated table `aggregated_identification_risk` with session_id, target_name, source_type, table_or_file, columns_involved (text), categories (text), explanation (text), sensitivity_level. Created via SQLAlchemy and `Base.metadata.create_all`; no separate migration script.
+- **Categories:** gender, job_position, health, address, phone, other. Mapping from column names and pattern_detected via config (`quasi_identifier_mapping`) plus built-in defaults (e.g. gender/sex/cargo/department/health/address/phone/telefone and patterns PHONE_BR, EMAIL, etc.).
+- **When aggregation runs:** At report generation time: report generator loads findings, runs aggregation when `detection.aggregated_identification_enabled` is true, writes results to the aggregated table, then adds the “Cross-referenced data – possible identification” sheet and recommendation row from those results.
+
+---
+
 ## Sequential to-dos
 
 Execute in order; each step should be tested and non-regressing before the next.
 
 | # | To-do | Status |
 |---|--------|--------|
-| 1 | **Design & doc:** Finalize quasi-identifier categories, aggregation scope (per-table/per-file first), and storage (new table vs synthetic finding); document in this file. | ⬜ Pending |
-| 2 | **Category mapping:** Implement mapping from column_name and pattern_detected to categories (gender, job_position, health, address, phone, etc.); config + built-in defaults. | ⬜ Pending |
-| 3 | **Schema (optional):** Add table or structure for “aggregated identification risk” (session_id, target, table/file, columns_involved, categories, explanation) or reuse findings with a dedicated pattern/norm_tag. | ⬜ Pending |
-| 4 | **Post-scan aggregation:** After scan, for each (session, target, table) or (session, target, file), collect categories; if count >= threshold or sensitive combination, create aggregated record and store. | ⬜ Pending |
-| 5 | **Report – sheet/section:** Add sheet or section “Cross-referenced data – possible identification” listing each case with target, table/file, columns/categories, and explanation (cross-reference from multiple sources). | ⬜ Pending |
-| 6 | **Report – recommendation:** Add recommendation row for aggregated identification (or use recommendation_overrides for norm_tag) with priority and text explaining the multi-source condition for DPO/compliance. | ⬜ Pending |
-| 7 | **Config:** Add detection.aggregated_identification_enabled, aggregated_min_categories, quasi_identifier_mapping in config loader. | ⬜ Pending |
-| 8 | **Tests:** Unit tests for category mapping, aggregation rule, and report output; full test suite passes. | ⬜ Pending |
-| 9 | **Docs:** Update sensitivity-detection and compliance docs (EN and PT-BR) to describe aggregated/cross-referenced identification and the special case for DPO/compliance. | ⬜ Pending |
+| 1 | **Design & doc:** Finalize quasi-identifier categories, aggregation scope (per-table/per-file first), and storage (new table vs synthetic finding); document in this file. | ✅ Done |
+| 2 | **Category mapping:** Implement mapping from column_name and pattern_detected to categories (gender, job_position, health, address, phone, etc.); config + built-in defaults. | ✅ Done |
+| 3 | **Schema (optional):** Add table or structure for “aggregated identification risk” (session_id, target, table/file, columns_involved, categories, explanation) or reuse findings with a dedicated pattern/norm_tag. | ✅ Done |
+| 4 | **Post-scan aggregation:** After scan, for each (session, target, table) or (session, target, file), collect categories; if count >= threshold or sensitive combination, create aggregated record and store. | ✅ Done |
+| 5 | **Report – sheet/section:** Add sheet or section “Cross-referenced data – possible identification” listing each case with target, table/file, columns/categories, and explanation (cross-reference from multiple sources). | ✅ Done |
+| 6 | **Report – recommendation:** Add recommendation row for aggregated identification (or use recommendation_overrides for norm_tag) with priority and text explaining the multi-source condition for DPO/compliance. | ✅ Done |
+| 7 | **Config:** Add detection.aggregated_identification_enabled, aggregated_min_categories, quasi_identifier_mapping in config loader. | ✅ Done |
+| 8 | **Tests:** Unit tests for category mapping, aggregation rule, and report output; full test suite passes. | ✅ Done |
+| 9 | **Docs:** Update sensitivity-detection and compliance docs (EN and PT-BR) to describe aggregated/cross-referenced identification and the special case for DPO/compliance. | ✅ Done |
 
 ---
 
