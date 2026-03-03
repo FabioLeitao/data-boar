@@ -34,15 +34,15 @@ Goal: Detect when data may relate to minors (e.g. age from DOB), treat as highes
 
 | # | To-do | Status |
 |---|--------|--------|
-| 1 | Design & doc: finalize approach (age inference, flag vs level, cross-ref, full-scan); minimal schema impact | ⬜ Pending |
-| 2 | Detector: DOB/age parsing + age < threshold → possible_minor; keep HIGH/MED/LOW for others | ⬜ Pending |
-| 3 | Schema: optional column possible_minor or encode via pattern/norm_tag; migration | ⬜ Pending |
-| 4 | Scanner: pass possible_minor from detector into saved findings | ⬜ Pending |
+| 1 | Design & doc: finalize approach (age inference, flag vs level, cross-ref, full-scan); minimal schema impact | ✅ Done |
+| 2 | Detector: DOB/age parsing + age < threshold → possible_minor; keep HIGH/MED/LOW for others | ✅ Done |
+| 3 | Schema: optional column possible_minor or encode via pattern/norm_tag; migration | ✅ Done (encode via pattern/norm_tag) |
+| 4 | Scanner: pass possible_minor from detector into saved findings | ✅ Done |
 | 5 | Cross-reference: DOB/minor with name, CPF/RG/SSN, health in same row; confidence | ⬜ Pending |
 | 6 | Full scan (optional): when DOB suggests minor + config, full-scan column and adjacent | ⬜ Pending |
-| 7 | Report: highest-priority recommendation/section for possible minors (LGPD 14, GDPR 8) | ⬜ Pending |
-| 8 | Config: minor_age_threshold, minor_full_scan, minor_cross_reference in loader | ⬜ Pending |
-| 9 | Tests: age inference, possible_minor, report; no regression | ⬜ Pending |
+| 7 | Report: highest-priority recommendation/section for possible minors (LGPD 14, GDPR 8) | ✅ Done |
+| 8 | Config: minor_age_threshold, minor_full_scan, minor_cross_reference in loader; wire loader → engine → scanner → detector | ✅ Done |
+| 9 | Tests: age inference, possible_minor, report, config wiring; no regression | ✅ Done |
 | 10 | Docs: sensitivity & compliance (EN/PT-BR) for minor detection | ⬜ Pending |
 
 ---

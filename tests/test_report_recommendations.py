@@ -177,6 +177,55 @@ def test_min_sensitivity_filters_low_from_findings_sheets(tmp_path):
         mgr.dispose()
 
 
+def test_possible_minor_recommendation_row_and_priority(tmp_path):
+    """When a finding has DOB_POSSIBLE_MINOR, Recommendations sheet has a dedicated CRÍTICA row with differential treatment (LGPD 14, GDPR 8, consent, storage/usage/share). Minor rec is surfaced first."""
+    db_path = str(tmp_path / "audit_minor.db")
+    out_dir = str(tmp_path / "out_minor")
+    Path(out_dir).mkdir(parents=True, exist_ok=True)
+    mgr = LocalDBManager(db_path)
+    try:
+        mgr.set_current_session_id("s-minor")
+        mgr.create_session_record("s-minor")
+        mgr.save_finding(
+            "database",
+            target_name="T1",
+            column_name="idade",
+            sensitivity_level="HIGH",
+            pattern_detected="DOB_POSSIBLE_MINOR",
+            norm_tag="LGPD Art. 14 – possible minor data; GDPR Art. 8",
+            ml_confidence=85,
+        )
+        mgr.save_finding(
+            "database",
+            target_name="T1",
+            column_name="cpf",
+            sensitivity_level="HIGH",
+            pattern_detected="LGPD_CPF",
+            norm_tag="LGPD Art. 5",
+            ml_confidence=90,
+        )
+        mgr.finish_session("s-minor")
+        path = generate_report(mgr, "s-minor", output_dir=out_dir, config=None)
+        assert path is not None
+        import pandas as pd
+        with pd.ExcelFile(path) as xl:
+            df = pd.read_excel(xl, sheet_name="Recommendations")
+        minor_rows = df[df["Data / Pattern"].astype(str).str.contains("DOB_POSSIBLE_MINOR", na=False)]
+        assert len(minor_rows) >= 1
+        row = minor_rows.iloc[0]
+        assert "CRÍTICA" in str(row["Prioridade"])
+        assert "LGPD Art. 14" in str(row["Base legal"]) or "Art. 14" in str(row["Base legal"])
+        rec_text = str(row["Recomendação"])
+        assert "consentimento" in rec_text.lower() or "consent" in rec_text.lower()
+        assert "armazenamento" in rec_text.lower() or "storage" in rec_text.lower() or "retenção" in rec_text.lower()
+        assert "menor" in rec_text.lower() or "minor" in rec_text.lower() or "criança" in rec_text.lower()
+        # Possible-minor recommendation should appear first (we sort minor recs to top)
+        first_row = df.iloc[0]
+        assert "DOB_POSSIBLE_MINOR" in str(first_row["Data / Pattern"])
+    finally:
+        mgr.dispose()
+
+
 def test_config_scope_hash_stored_and_in_report_info(tmp_path):
     """Session can store config_scope_hash; report Report info sheet includes it when present."""
     db_path = str(tmp_path / "audit_hash.db")
