@@ -305,7 +305,7 @@ You can set the **training words for ML and DL** in the main config (inline) or 
 - **Inline:** `sensitivity_detection.ml_terms`, `sensitivity_detection.dl_terms` – same structure; when non-empty they override the corresponding file.
 - **DL backend:** Optional; install with `uv pip install -e ".[dl]"`. When installed and DL terms are provided, confidence is combined with ML for better semantic detection.
 
-**Full description and examples:** [sensitivity-detection.md](sensitivity-detection.md).
+**Full description and examples:** [sensitivity-detection.md](sensitivity-detection.md) (English) · [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md) (Português – Brasil).
 
 ### Targets: databases
 
@@ -559,3 +559,5 @@ scan:
 - **Download last report:** `GET /report`
 - **Download report by session:** `GET /reports/{session_id}`
 - **Interactive API docs:** `http://<host>:<port>/docs`
+
+**Related documentation:** [sensitivity-detection.md](sensitivity-detection.md) (ML/DL training terms; [pt-BR](sensitivity-detection.pt_BR.md)). To add a new data-source connector (database, API, share), see [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md).

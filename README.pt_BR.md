@@ -9,14 +9,14 @@ Aplicação para auditoria de dados pessoais e sensíveis em bancos de dados e s
 
 - **Múltiplos alvos:** configure, em um único arquivo YAML/JSON, vários bancos de dados, diretórios de arquivos, APIs HTTP, compartilhamentos remotos (SharePoint, WebDAV, SMB/CIFS, NFS), **Power BI** e **Power Apps (Dataverse)**.
 - **Bancos SQL:** PostgreSQL, MySQL, MariaDB, SQLite, SQL Server, Oracle, Snowflake (extras opcionais via `pyproject.toml`).
-- **Detecção de sensibilidade:** combina regex configurável com classificador de ML (TF‑IDF + RandomForest) aplicado a nomes de colunas e amostras de conteúdo. Nenhum dado bruto é salvo – apenas local, padrão detectado, nível de sensibilidade, norma, etc.
+- **Detecção de sensibilidade:** combina regex configurável com ML (TF‑IDF + RandomForest) e opcionalmente DL (embeddings + classificador) em nomes de colunas e amostras de conteúdo. Nenhum dado bruto é salvo – apenas local, padrão detectado, nível de sensibilidade, norma, etc. Termos de treino ML/DL podem ser definidos no config; guia completo: [docs/sensitivity-detection.pt_BR.md](docs/sensitivity-detection.pt_BR.md) (português) · [docs/sensitivity-detection.md](docs/sensitivity-detection.md) (inglês).
 - **Heurísticas para reduzir falsos positivos:** letras de música e cifras de violão são detectadas e tratadas de forma especial para reduzir falsos positivos (datas/números em letras/cifras não viram HIGH sozinhos).
 - **SQLite único:** todas as sessões de varredura são gravadas em `audit_results.db`, com tabelas separadas para achados de banco de dados, achados de filesystem e falhas de varredura. Cada sessão tem `session_id`, `started_at`, `finished_at`, `status`, `tenant_name` (cliente/tenant) e `technician_name` (técnico/operador).
 - **Relatórios:** para cada sessão, é gerado um arquivo Excel com abas:
   - **Report info** (Session ID, Started at, Tenant/Customer, Technician/Operator, Application, Version, Author, License, Copyright)
   - Database findings, Filesystem findings, Scan failures, Recommendations, Praise / existing controls, Trends – Session comparison, Heatmap data
 - Um arquivo **heatmap_\<session_prefix\>.png** é gerado com o mapa de calor de sensibilidade/risco (inclui rodapé com aplicação, autor e licença).
-- **CLI e API REST:** modo de execução única via linha de comando ou modo servidor (FastAPI) com dashboard web (Help, About com autor e licença), endpoints para varreduras e relatórios. A aplicação funciona atrás de NAT, load balancer ou proxy reverso (nginx, Traefik, Caddy); defina **X-Forwarded-Proto: https** quando o TLS for terminado no proxy.
+- **CLI e API REST:** modo de execução única via linha de comando ou modo servidor (FastAPI) com dashboard web (Help, About com autor e licença), endpoints para varreduras, relatórios, heatmap, logs e `PATCH /sessions/{session_id}` para metadados de tenant/técnico. A aplicação funciona atrás de NAT, load balancer ou proxy reverso (nginx, Traefik, Caddy); defina **X-Forwarded-Proto: https** quando o TLS for terminado no proxy.
 
 ## Requisitos e preparação do ambiente
 
@@ -213,4 +213,6 @@ Para detalhes mais avançados (conectores opcionais, REST APIs, Power BI, Datave
 - `README.md` (inglês, completo)
 - `docs/USAGE.md` (inglês, foco em uso)
 - `docs/USAGE.pt_BR.md` (português – uso da API e configuração)
+- **Adicionar novo conector:** [docs/ADDING_CONNECTORS.pt_BR.md](docs/ADDING_CONNECTORS.pt_BR.md) (português) · [docs/ADDING_CONNECTORS.md](docs/ADDING_CONNECTORS.md) (inglês)
+- **Detecção de sensibilidade (ML/DL):** [docs/sensitivity-detection.pt_BR.md](docs/sensitivity-detection.pt_BR.md) (português) · [docs/sensitivity-detection.md](docs/sensitivity-detection.md) (inglês)
 
