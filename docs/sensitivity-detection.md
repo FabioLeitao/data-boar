@@ -8,6 +8,8 @@ The application uses a **hybrid** pipeline to classify column names and sampled 
 
 You can **set the training words for both ML and DL** in the main config file (inline) or in separate YAML/JSON files.
 
+**Português (Brasil):** [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md)
+
 ---
 
 ## Config keys
@@ -182,11 +184,104 @@ dl_patterns_file: config/sensitivity_terms.yaml
 
 ---
 
+## Custom regex patterns (detecting new personal/sensitive values)
+
+The detector matches **regex patterns** against the combined text (column name + sample content). Built-in patterns cover CPF, CNPJ, email, phone, SSN, credit card, and dates. To make the application pay attention to **new possibly personal or sensitive values** (e.g. RG, license plate, health plan number, other country IDs), you add **custom patterns** via a file and point the config to it.
+
+### Where to configure
+
+In your main config file (`config.yaml` or JSON), set the key **`regex_overrides_file`** to the path of a YAML or JSON file that lists your patterns. The path can be absolute or relative to the process working directory. The application loads this file at startup and **merges** your patterns with the built-in ones (your names override built-in ones if they match).
+
+```yaml
+# config.yaml
+regex_overrides_file: config/regex_overrides.yaml
+# ... rest of config (targets, file_scan, report, etc.)
+```
+
+If `regex_overrides_file` is omitted or the file is missing, only the built-in patterns are used.
+
+### File format
+
+The file must contain a **list of objects**, each with:
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | Yes | Short identifier for the pattern (e.g. `RG_BR`, `PLATE_BR`). Appears in reports as `pattern_detected`. |
+| `pattern` | Yes | Regular expression (Python `re` syntax). Matched against column name + sample text. Use raw strings; prefer `\b` for word boundaries to avoid partial matches. |
+| `norm_tag` | No | Label for compliance/reporting (e.g. `LGPD Art. 5`, `Custom`). Default: `"Custom"`. |
+
+You can use a root-level list or a key `patterns` or `regex` containing the list.
+
+**YAML example:**
+
+```yaml
+# config/regex_overrides.yaml
+- name: "RG_BR"
+  pattern: "\b\d{1,2}\.?\d{3}\.?\d{3}-?[0-9Xx]\b"
+  norm_tag: "LGPD Art. 5"
+
+- name: "PLATE_BR"
+  pattern: "\b[A-Z]{3}-?\d{4}\b"
+  norm_tag: "Personal data context"
+
+- name: "HEALTH_PLAN_ID"
+  pattern: "\b\d{6,14}\b"
+  norm_tag: "Health/insurance context"
+```
+
+**JSON example:**
+
+```json
+[
+  { "name": "RG_BR", "pattern": "\\b\\d{1,2}\\.?\\d{3}\\.?\\d{3}-?[0-9Xx]\\b", "norm_tag": "LGPD Art. 5" },
+  { "name": "PLATE_BR", "pattern": "\\b[A-Z]{3}-?\\d{4}\\b", "norm_tag": "Personal data context" }
+]
+```
+
+### Built-in patterns (reference)
+
+The application already includes these patterns; you do not need to redefine them unless you want to change the regex or norm tag.
+
+| Name | Description | Norm tag |
+|------|-------------|----------|
+| `LGPD_CPF` | Brazilian CPF (11 digits, optional dots/dash) | LGPD Art. 5 |
+| `LGPD_CNPJ` | Brazilian CNPJ (14 digits, optional formatting) | LGPD Art. 5 |
+| `EMAIL` | Email address | GDPR Art. 4(1) |
+| `CREDIT_CARD` | 16-digit card (optional spaces/dashes) | PCI/GLBA |
+| `PHONE_BR` | Brazilian phone (optional +55, area code) | LGPD Art. 5 |
+| `CCPA_SSN` | US SSN (XXX-XX-XXXX) | CCPA |
+| `DATE_DMY` | Date d/m/y (e.g. 31/12/2024) | Personal data context |
+
+### Examples of useful additional patterns
+
+- **RG (Brazil):** format varies by state; a common form is digits with optional dots and a trailing digit or X:  
+  `\b\d{1,2}\.?\d{3}\.?\d{3}-?[0-9Xx]\b`
+- **Brazilian vehicle plate (old):** `AAA-9999`:  
+  `\b[A-Z]{3}-?\d{4}\b`
+- **Brazilian vehicle plate (Mercosul):** `AAA9A99`:  
+  `\b[A-Z]{3}\d[A-Z]\d{2}\b`
+- **Generic numeric ID (e.g. health plan):** be careful with length to avoid too many false positives; e.g. 8–14 digits:  
+  `\b\d{8,14}\b` (use only if context is appropriate; consider combining with ML/DL).
+- **US phone:** `(XXX) XXX-XXXX` or `XXX-XXX-XXXX`:  
+  `\b\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b`
+- **Postal code (Brazil):** `99999-999`:  
+  `\b\d{5}-?\d{3}\b`
+
+When a custom pattern matches the column name or sample text, the finding is reported with **HIGH** sensitivity (or MEDIUM in lyrics/tabs context for weak patterns), with `pattern_detected` set to your `name` and `norm_tag` in the report.
+
+### Summary
+
+- **Configure:** Set `regex_overrides_file` in the main config to the path of your YAML/JSON file.
+- **Format:** List of `{ name, pattern, norm_tag }`; `norm_tag` optional (default `"Custom"`).
+- **Effect:** Your patterns are merged with built-in ones; any match in (column name + sample) is flagged. Use precise patterns and word boundaries to reduce false positives.
+- **ML/DL:** For context (e.g. “this column name suggests PII”), use [ML/DL training terms](sensitivity-detection.md#config-keys) in addition to regex.
+
+---
+
 ## Summary
 
 - **ML terms:** From `sensitivity_detection.ml_terms` (inline) or `ml_patterns_file`. Used by the TF-IDF + RandomForest classifier.
 - **DL terms:** From `sensitivity_detection.dl_terms` (inline) or `dl_patterns_file`. Used by the optional sentence-embedding + classifier when `.[dl]` is installed.
 - **Same format:** Both use a list of `{ text, label }` with `label` = `sensitive` or `non_sensitive` (or `1` / `0`).
 - **Inline overrides file:** When `ml_terms` or `dl_terms` are non-empty in config, they are used instead of loading from the corresponding file.
-
-For regex overrides (custom patterns for value matching), see `regex_overrides_file` in the main configuration and [USAGE.md](USAGE.md).
+- **Regex patterns:** Use `regex_overrides_file` in the main config to add or override patterns for value-based detection (see [Custom regex patterns](#custom-regex-patterns-detecting-new-personalsensitive-values) above).
