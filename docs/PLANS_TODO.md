@@ -4,11 +4,13 @@ This document lists **incomplete goals** from active plans and the **recommended
 
 ---
 
-## Plan: Corporate compliance improvements
+## Plan: Corporate compliance improvements ✅ **Complete**
 
 **Source:** `.cursor/plans/corporate_compliance_improvements_plan_b209453a.plan.md`
 
-### Remaining to-dos (in order)
+**Progress:** All to-dos below are complete. This plan is **closed** for implementation; use this section only for reference to the current state of the application.
+
+### To-dos (all complete)
 
 | # | To-do | Status | Notes |
 |---|--------|--------|--------|
@@ -20,7 +22,7 @@ This document lists **incomplete goals** from active plans and the **recommended
 | 6 | **Final:** Run full `pytest -W error`; optional docker build and smoke test | ✅ Done | 42 tests pass |
 | 7 | **Publish:** Validate documentation reflects current state; bump minor version if needed; republish Docker image to hub; keep EN and PT-BR docs in sync | ✅ Done | Version 1.1.0; docs validated; Docker build/push remains manual (see deploy/DEPLOY.md) |
 
-**Done (reference):** Phases 0–5 (baseline, docs/frameworks, recommendation overrides, executive summary, min_sensitivity, config_scope_hash) are already implemented and tested.
+**Current state of the application (for later reference):** Phases 0–5 (baseline, docs/frameworks, recommendation overrides, executive summary, min_sensitivity, config_scope_hash) and Phase 6 (optional API key) are implemented and tested. App version **1.1.0**; config supports `api.require_api_key`, `api.api_key`, `api.api_key_from_env`; API middleware enforces X-API-Key or Bearer when required; GET /health is always public; SECURITY.md and USAGE (EN/PT-BR) document the option. Docker image tag/push is manual (see deploy/DEPLOY.md).
 
 ---
 
