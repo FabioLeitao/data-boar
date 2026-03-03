@@ -210,7 +210,7 @@ The file must contain a **list of objects**, each with:
 | `pattern` | Yes | Regular expression (Python `re` syntax). Matched against column name + sample text. Use raw strings; prefer `\b` for word boundaries to avoid partial matches. |
 | `norm_tag` | No | Label for compliance/reporting (e.g. `LGPD Art. 5`, `Custom`). Default: `"Custom"`. |
 
-You can use a root-level list or a key `patterns` or `regex` containing the list.
+You can use a root-level list or a key `patterns` or `regex` containing the list. You can copy from [regex_overrides.example.yaml](regex_overrides.example.yaml) and edit.
 
 **YAML example:**
 
@@ -274,7 +274,7 @@ When a custom pattern matches the column name or sample text, the finding is rep
 - **Configure:** Set `regex_overrides_file` in the main config to the path of your YAML/JSON file.
 - **Format:** List of `{ name, pattern, norm_tag }`; `norm_tag` optional (default `"Custom"`).
 - **Effect:** Your patterns are merged with built-in ones; any match in (column name + sample) is flagged. Use precise patterns and word boundaries to reduce false positives.
-- **ML/DL:** For context (e.g. “this column name suggests PII”), use [ML/DL training terms](sensitivity-detection.md#config-keys) in addition to regex.
+- **ML/DL:** For context (e.g. “this column name suggests PII”), use [ML/DL training terms](#config-keys) in addition to regex.
 
 ---
 
