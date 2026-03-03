@@ -307,6 +307,10 @@ You can set the **training words for ML and DL** in the main config (inline) or 
 
 **Full description and examples:** [sensitivity-detection.md](sensitivity-detection.md) (English) · [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md) (Português – Brasil).
 
+### Custom regex patterns (new personal/sensitive values)
+
+To detect **new possibly personal or sensitive values** (e.g. RG, vehicle plate, health plan ID), add custom regex patterns. In the main config set **`regex_overrides_file`** to the path of a YAML or JSON file with a list of `{ name, pattern, norm_tag }`. The detector matches each pattern against the column name and sample text; any match is reported with HIGH sensitivity. Your file adds to or overrides built-in patterns (CPF, CNPJ, email, phone, SSN, credit card, dates). **Format and examples:** [sensitivity-detection.md](sensitivity-detection.md#custom-regex-patterns-detecting-new-personalsensitive-values) (EN) · [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md#padrões-regex-customizados-detectar-novos-dados-pessoaissensíveis) (pt-BR).
+
 ### Targets: databases
 
 Each target is an object in `targets` with at least `name` and `type`. For SQL databases use `type: database` and the appropriate `driver`.

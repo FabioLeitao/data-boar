@@ -238,6 +238,8 @@ Esse endpoint procura, entre os arquivos `audit_YYYYMMDD.log` disponíveis (do m
   - `api.workers` – número de workers uvicorn (padrão 1; 2+ para mais requisições concorrentes).
   - Opcionais: `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection` (termos ML/DL inline), `learned_patterns` (export de termos classificados).
 
+**Padrões regex customizados:** Para a aplicação se atentar a **novos valores possivelmente pessoais ou sensíveis** (ex.: RG, placa, número de plano de saúde), defina **`regex_overrides_file`** no config com o caminho de um arquivo YAML/JSON contendo uma lista de `{ name, pattern, norm_tag }`. O detector aplica cada padrão ao nome da coluna e ao texto amostrado; qualquer match é reportado com sensibilidade HIGH (ou MEDIUM em contexto de letras/cifras). Formato e exemplos (RG, placa, CEP, telefone EUA, etc.): [sensitivity-detection.pt_BR.md#padrões-regex-customizados-detectar-novos-dados-pessoaissensíveis](sensitivity-detection.pt_BR.md#padrões-regex-customizados-detectar-novos-dados-pessoaissensíveis) (pt-BR) · [sensitivity-detection.md#custom-regex-patterns-detecting-new-personalsensitive-values](sensitivity-detection.md#custom-regex-patterns-detecting-new-personalsensitive-values) (EN).
+
 Para detalhes de todos os campos e exemplos completos, consulte `README.md` e `docs/USAGE.md` (inglês), que são as referências canônicas.
 
 **Produção atrás de proxy reverso (nginx, Traefik, Caddy):** A aplicação se comporta corretamente atrás de NAT, load balancer ou proxy reverso. Quando o TLS for terminado no proxy, defina **X-Forwarded-Proto: https** para que os cabeçalhos de segurança (ex.: HSTS) funcionem. Veja [SECURITY.md](../SECURITY.md) para os cabeçalhos HTTP de segurança.
