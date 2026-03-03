@@ -284,4 +284,4 @@ When a custom pattern matches the column name or sample text, the finding is rep
 - **DL terms:** From `sensitivity_detection.dl_terms` (inline) or `dl_patterns_file`. Used by the optional sentence-embedding + classifier when `.[dl]` is installed.
 - **Same format:** Both use a list of `{ text, label }` with `label` = `sensitive` or `non_sensitive` (or `1` / `0`).
 - **Inline overrides file:** When `ml_terms` or `dl_terms` are non-empty in config, they are used instead of loading from the corresponding file.
-- **Regex patterns:** Use `regex_overrides_file` in the main config to add or override patterns for value-based detection (see [Custom regex patterns](sensitivity-detection.md#custom-regex-patterns-detecting-new-personalsensitive-values) above).
+- **Regex patterns:** Use `regex_overrides_file` in the main config to add or override patterns for value-based detection (see [Custom regex patterns](#custom-regex-patterns-detecting-new-personalsensitive-values) above).
