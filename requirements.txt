@@ -15,7 +15,7 @@ anyio==4.12.1
     #   starlette
 asyncio==4.0.0
     # via python3-lgpd-crawler (pyproject.toml)
-beautifulsoup4==4.13.5
+beautifulsoup4==4.14.3
     # via extract-msg
 blinker==1.9.0
     # via
