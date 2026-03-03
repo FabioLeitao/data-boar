@@ -22,8 +22,9 @@ O **limite de idade menor/maior de idade** é definido no **arquivo de configura
 | Chave | Tipo | Padrão | Descrição |
 |-------|------|--------|-----------|
 | `detection.minor_age_threshold` | inteiro | **18** | Idade abaixo deste valor (inclusive) é tratada como possível menor. Use ex.: 21 se sua política tratar pessoas com menos de 21 anos como menores. |
-| `detection.minor_full_scan` | booleano | false | Reservado para uso futuro (varredura completa da coluna quando houver indicação de menor). |
-| `detection.minor_cross_reference` | booleano | true | Reservado para uso futuro (cruzamento com nome/doc/saúde na mesma linha). |
+| `detection.minor_full_scan` | booleano | **false** | Quando **true**, apenas para **bancos de dados**: se a amostra da coluna sugerir possível menor (DOB_POSSIBLE_MINOR), o conector reamostra essa coluna com um limite maior (`minor_full_scan_limit`) e roda a detecção de novo. Se o achado continuar como possível menor, ele é salvo (opcionalmente com norm_tag “(full-scan confirmed)”). **Opcional; padrão desligado** para não sobrecarregar tabelas grandes. |
+| `detection.minor_full_scan_limit` | inteiro | **100** | Número máximo de valores a buscar quando `minor_full_scan` é true. Ignorado quando `minor_full_scan` é false. |
+| `detection.minor_cross_reference` | booleano | **true** | Quando true, o gerador de relatório cruza achados de possível menor com outros achados na **mesma tabela** (banco) ou **mesmo caminho** (sistema de arquivos). Se a mesma tabela/caminho tiver dado identificador ou de saúde (ex.: nome, CPF/RG/SSN, saúde), as linhas de possível menor recebem **Minor confidence** = **“high (cross-ref)”** e uma recomendação específica de alta confiança é adicionada. |
 
 Se a seção **`detection`** for **omitida**, o limite permanece **18** e a aplicação se comporta como antes (sem erros). Incluir a seção permite ajustar o limite sem quebrar execuções existentes.
 
@@ -80,8 +81,9 @@ report:
 # Opcional: possível dado de menor (LGPD Art. 14, GDPR Art. 8)
 detection:
   minor_age_threshold: 18   # padrão; altere para 21 (ou outro) se necessário
-  minor_full_scan: false    # reservado
-  minor_cross_reference: true   # reservado
+  minor_full_scan: false    # opcional: reamostrar coluna com minor_full_scan_limit quando DOB sugerir menor (padrão off)
+  minor_full_scan_limit: 100  # máx. linhas na passada de full-scan (apenas banco)
+  minor_cross_reference: true # coluna Minor confidence e recomendação de alta confiança quando mesma tabela/path tem identificador/saúde
 
 sqlite_path: audit_results.db
 scan:
@@ -105,15 +107,28 @@ Se o nome da coluna **não** sugerir DOB ou idade, um valor como `17` ou uma dat
 
 ---
 
+## Cruzamento e coluna “Minor confidence”
+
+Quando **`detection.minor_cross_reference`** está **true** (padrão), o gerador de relatório agrupa achados por **tabela** (banco) ou **caminho** (sistema de arquivos). Em cada grupo, se houver pelo menos um achado com **DOB_POSSIBLE_MINOR** e pelo menos um achado que pareça **identificador ou de saúde** (ex.: nome, CPF/RG/SSN, coluna ou padrão de saúde), todos os achados de possível menor desse grupo recebem **Minor confidence** = **“high (cross-ref)”** nas abas **Database findings** e **Filesystem findings**. Nesse caso, uma **linha extra de recomendação** é adicionada no topo da aba **Recommendations**: “DOB_POSSIBLE_MINOR (high confidence – cross-ref)”, explicando que a mesma tabela/arquivo contém DOB sugerindo menor e dado identificador/saúde, e deve ser tratado com alta prioridade pelo DPO. Defina **`minor_cross_reference: false`** para desativar e deixar a coluna Minor confidence vazia.
+
+---
+
+## Varredura completa (opcional, apenas banco de dados)
+
+Quando **`detection.minor_full_scan`** está **true**, os conectores de **banco de dados** (PostgreSQL, MySQL, SQLite, etc.) passam a fazer o seguinte: após a amostra pequena usual da coluna ser escaneada, se o resultado indicar **DOB_POSSIBLE_MINOR**, o conector busca até **`minor_full_scan_limit`** valores (padrão **100**) dessa mesma coluna e roda a detecção novamente. Se o achado continuar como possível menor, ele é salvo; o **norm_tag** pode incluir “(full-scan confirmed)” para indicar que uma amostra maior foi usada. Isso é **opcional** e **desligado por padrão** para não impactar desempenho em tabelas grandes. Sistema de arquivos e outros tipos de alvo não fazem essa segunda passada.
+
+---
+
 ## Relatório e recomendações
 
 Achados sinalizados como possível menor recebem:
 
 - **Sensibilidade:** HIGH  
 - **Padrão:** `DOB_POSSIBLE_MINOR` (possivelmente combinado com outros padrões)  
-- **Norm tag:** LGPD Art. 14 – possível dado de menor; GDPR Art. 8  
+- **Norm tag:** LGPD Art. 14 – possível dado de menor; GDPR Art. 8 (e “(full-scan confirmed)” quando a varredura completa foi usada)  
+- **Minor confidence:** “high (cross-ref)” quando o cruzamento encontrou identificador/saúde na mesma tabela/caminho; caso contrário vazio  
 
-No relatório Excel, a aba **Recommendations** inclui uma linha dedicada a possível dado de menor com **prioridade máxima** (CRÍTICA) e texto de tratamento diferenciado (consentimento, armazenamento, uso, compartilhamento, responsabilidade dos pais). Essa linha aparece **em primeiro** na aba de Recomendações. Consulte [PLAN_MINOR_DATA_DETECTION.md](PLAN_MINOR_DATA_DETECTION.md) e o gerador de relatório para o texto exato.
+No relatório Excel, a aba **Recommendations** inclui uma linha dedicada a possível dado de menor com **prioridade máxima** (CRÍTICA) e texto de tratamento diferenciado (consentimento, armazenamento, uso, compartilhamento, responsabilidade dos pais). Essa linha aparece **em primeiro** na aba de Recomendações. Quando o cruzamento identifica casos de alta confiança, uma linha adicional “DOB_POSSIBLE_MINOR (high confidence – cross-ref)” aparece no topo. Consulte [PLAN_MINOR_DATA_DETECTION.md](PLAN_MINOR_DATA_DETECTION.md) e o gerador de relatório para o texto exato.
 
 ---
 
