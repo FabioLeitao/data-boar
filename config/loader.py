@@ -135,6 +135,19 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         "dl_terms": sens.get("dl_terms") or [],
     }
 
+    # Detection options (e.g. possible minor data)
+    detection_cfg = data.get("detection") or {}
+    minor_age = detection_cfg.get("minor_age_threshold", 18)
+    try:
+        minor_age_int = int(minor_age)
+    except (TypeError, ValueError):
+        minor_age_int = 18
+    out["detection"] = {
+        "minor_age_threshold": minor_age_int,
+        "minor_full_scan": bool(detection_cfg.get("minor_full_scan", False)),
+        "minor_cross_reference": bool(detection_cfg.get("minor_cross_reference", True)),
+    }
+
     # Parallel/sequential
     out["scan"] = data.get("scan", {})
     if "max_workers" not in out["scan"]:
