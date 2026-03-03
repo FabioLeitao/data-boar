@@ -12,6 +12,8 @@ You can **set the training words for both ML and DL** in the main config file (i
 
 **Minor data detection:** The application can flag possible data of minors (DOB/age columns) and apply differential treatment in reports (LGPD Art. 14, GDPR Art. 8). The age threshold (default 18) is configurable in the external config file. See [minor-detection.md](minor-detection.md) for configuration and fine-tuning.
 
+**Aggregated / cross-referenced identification risk:** When multiple quasi-identifier categories (e.g. gender, job position, health, address, phone) appear in the **same table or file**, the report generator flags this as a **special case** for DPO and compliance (LGPD Art. 5, GDPR Recital 26 – identifiability from a combination of data). The Excel report includes a sheet **"Cross-ref data – ident. risk"** listing each case (target, table/file, columns involved, categories, explanation) and a high-priority recommendation. This is optional and configurable via `detection.aggregated_identification_enabled`, `aggregated_min_categories`, and `quasi_identifier_mapping`. See [PLAN_AGGREGATED_IDENTIFICATION.md](PLAN_AGGREGATED_IDENTIFICATION.md) for design and config details.
+
 ---
 
 ## Config keys
