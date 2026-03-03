@@ -10,6 +10,8 @@ You can **set the training words for both ML and DL** in the main config file (i
 
 **Português (Brasil):** [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md)
 
+**Minor data detection:** The application can flag possible data of minors (DOB/age columns) and apply differential treatment in reports (LGPD Art. 14, GDPR Art. 8). The age threshold (default 18) is configurable in the external config file. See [minor-detection.md](minor-detection.md) for configuration and fine-tuning.
+
 ---
 
 ## Config keys

@@ -4,9 +4,13 @@ Covers EN and PT-BR column names, acronyms (DOB, DDN, NASC, idade), date formats
 and numeric age; ensures DOB_POSSIBLE_MINOR and LGPD Art. 14 / GDPR Art. 8 appear when appropriate
 and are not set for adults or non-DOB/age columns.
 """
+import tempfile
 import unittest
+from pathlib import Path
 
+from config.loader import load_config
 from core.detector import SensitivityDetector, _detect_possible_minor
+from core.engine import AuditEngine
 from core.scanner import DataScanner
 
 
@@ -107,6 +111,39 @@ class TestMinorDetectionConfigWiring(unittest.TestCase):
         level, pattern, norm, _ = detector.analyze("age", "24")
         self.assertEqual(level, "HIGH")
         self.assertIn("DOB_POSSIBLE_MINOR", pattern)
+
+
+class TestMinorThresholdFromExternalConfigFile(unittest.TestCase):
+    """Threshold is configurable via external config file (YAML); default 18 when section missing."""
+
+    def test_threshold_from_config_file_applied_to_engine(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            config_path = tmp_path / "config_minor.yaml"
+            config_path.write_text(
+                "targets: []\n"
+                "report:\n  output_dir: .\n"
+                "sqlite_path: audit_minor_test.db\n"
+                "detection:\n  minor_age_threshold: 21\n",
+                encoding="utf-8",
+            )
+            config = load_config(config_path)
+            self.assertEqual(config.get("detection", {}).get("minor_age_threshold"), 21)
+            engine = AuditEngine(config, db_path=str(tmp_path / "audit_minor_test.db"))
+            self.assertEqual(engine.scanner.detector._minor_age_threshold, 21)
+
+    def test_default_threshold_18_when_detection_section_missing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            config_path = tmp_path / "config_no_detection.yaml"
+            config_path.write_text(
+                "targets: []\nreport:\n  output_dir: .\nsqlite_path: audit_default.db\n",
+                encoding="utf-8",
+            )
+            config = load_config(config_path)
+            self.assertEqual(config.get("detection", {}).get("minor_age_threshold"), 18)
+            engine = AuditEngine(config, db_path=str(tmp_path / "audit_default.db"))
+            self.assertEqual(engine.scanner.detector._minor_age_threshold, 18)
 
 
 class TestMinorDetectionDoesNotBreakExisting(unittest.TestCase):
