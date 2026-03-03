@@ -129,6 +129,23 @@ def _recommendations_rows(
         if override_row:
             recs.append(override_row)
             continue
+        # Possible data of minors (LGPD Art. 14, GDPR Art. 8) – highest priority, differential treatment
+        if "DOB_POSSIBLE_MINOR" in pat or ("LGPD Art. 14" in norm and ("menor" in norm.lower() or "minor" in norm.lower())):
+            recs.append({
+                "Data / Pattern": pat,
+                "Base legal": norm or "LGPD Art. 14 (dados de crianças/adolescentes); GDPR Art. 8 (consentimento em serviços da sociedade da informação)",
+                "Risco": "Dados que podem se referir a menores de idade: tratamento sujeito a bases legais específicas, consentimento do titular ou dos pais/responsáveis e restrições de armazenamento, uso e compartilhamento.",
+                "Recomendação": (
+                    "Caso especial – dados de menores: (1) Garantir base legal e consentimento válido (titular ou responsável, conforme a idade e a lei aplicável). "
+                    "(2) Restringir armazenamento ao estritamente necessário; evitar retenção além do prazo. "
+                    "(3) Limitar uso e compartilhamento ao que for autorizado; não compartilhar com terceiros sem base legal e consentimento. "
+                    "(4) Revisar políticas de privacidade e termos para tratamento de dados de crianças/adolescentes (LGPD Art. 14; GDPR Art. 8). "
+                    "(5) Priorizar anonimização ou pseudonimização quando possível; controle de acesso rigoroso."
+                ),
+                "Prioridade": "CRÍTICA",
+                "Relevante para": "DPO, Compliance, Área jurídica, Segurança da Informação",
+            })
+            continue
         if "CPF" in pat or "SSN" in pat or "LGPD" in norm:
             recs.append({
                 "Data / Pattern": pat,
@@ -174,6 +191,12 @@ def _recommendations_rows(
             "Prioridade": "INFO",
             "Relevante para": "DPO, Segurança da Informação",
         })
+    # Surface possible-minor recommendations first (highest priority for DPO/compliance)
+    def _is_minor_rec(row: dict) -> bool:
+        pat = (row.get("Data / Pattern") or "").strip()
+        base = (row.get("Base legal") or "").lower()
+        return "DOB_POSSIBLE_MINOR" in pat or ("art. 14" in base and ("menor" in base or "minor" in base or "child" in base))
+    recs.sort(key=lambda r: (0 if _is_minor_rec(r) else 1, r.get("Data / Pattern", "")))
     return recs
 
 
