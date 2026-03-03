@@ -10,6 +10,7 @@ from typing import Any, Callable
 import pandas as pd
 
 from core.about import get_about_info
+from core.aggregated_identification import run_aggregation
 from core.database import failure_hint
 
 # Optional matplotlib/seaborn for heatmap
@@ -352,6 +353,10 @@ def generate_report(
     db_rows, fs_rows, fail_rows = db_manager.get_findings(session_id)
     if not db_rows and not fs_rows and not fail_rows:
         return None
+    # Run aggregated identification (quasi-identifier categories) and persist for this session
+    if (config or {}).get("detection", {}).get("aggregated_identification_enabled", True):
+        agg_records = run_aggregation(db_rows, fs_rows, session_id, config)
+        db_manager.save_aggregated_identification_risks(session_id, agg_records)
     current_db = len(db_rows)
     current_fs = len(fs_rows)
     current_fail = len(fail_rows)
@@ -441,6 +446,20 @@ def generate_report(
             pd.DataFrame(db_rows_for_sheets).to_excel(writer, sheet_name="Database findings", index=False)
         if fs_rows_for_sheets:
             pd.DataFrame(fs_rows_for_sheets).to_excel(writer, sheet_name="Filesystem findings", index=False)
+        agg_rows = db_manager.get_aggregated_identification_risks(session_id)
+        if agg_rows:
+            sheet_data = [
+                {
+                    "Target": r.get("target_name", ""),
+                    "Source": r.get("source_type", ""),
+                    "Table / File": r.get("table_or_file", ""),
+                    "Columns involved": r.get("columns_involved", ""),
+                    "Categories": r.get("categories", ""),
+                    "Explanation": r.get("explanation", ""),
+                }
+                for r in agg_rows
+            ]
+            pd.DataFrame(sheet_data).to_excel(writer, sheet_name="Cross-ref data – ident. risk", index=False)
         if fail_rows:
             enriched_failures: list[dict] = []
             for r in fail_rows:
@@ -456,6 +475,15 @@ def generate_report(
             pd.DataFrame(enriched_failures).to_excel(writer, sheet_name="Scan failures", index=False)
         overrides = report_cfg.get("recommendation_overrides", [])
         recs = _recommendations_rows(db_rows_for_sheets, fs_rows_for_sheets, recommendation_overrides=overrides if overrides else None)
+        if agg_rows:
+            recs.insert(0, {
+                "Data / Pattern": "AGGREGATED_IDENTIFICATION",
+                "Base legal": "LGPD Art. 5 (dado pessoal); GDPR Recital 26 (identifiability – combination of data may identify individuals)",
+                "Risco": "Dados de múltiplas colunas ou fontes (ex.: gênero, cargo, saúde, endereço, telefone) na mesma tabela/arquivo podem permitir identificação ou reidentificação de pessoas. Tratar como caso especial para DPO e compliance.",
+                "Recomendação": "Avaliar controles de acesso e limitação de finalidade; considerar anonimização ou pseudonimização; documentar base legal para o tratamento combinado (LGPD Art. 5; GDPR Recital 26).",
+                "Prioridade": "ALTA",
+                "Relevante para": "DPO, Compliance, Segurança da Informação",
+            })
         if db_high_keys or fs_high_keys:
             recs.insert(0, {
                 "Data / Pattern": "DOB_POSSIBLE_MINOR (high confidence – cross-ref)",
