@@ -1,5 +1,5 @@
 """
-Unified scanner that uses core.detector only. No duplicate regex/ML.
+Unified scanner that uses core.detector only (regex + ML + optional DL).
 Interface: scan_column(label, sample) and scan_file_content(content, path) returning
 structured result for LocalDBManager.save_finding.
 """
@@ -16,10 +16,16 @@ class DataScanner:
         self,
         regex_overrides_path: str | None = None,
         ml_patterns_path: str | None = None,
+        ml_terms_inline: list | None = None,
+        dl_patterns_path: str | None = None,
+        dl_terms_inline: list | None = None,
     ):
         self.detector = SensitivityDetector(
             regex_overrides_path=regex_overrides_path,
             ml_patterns_path=ml_patterns_path,
+            ml_terms_inline=ml_terms_inline,
+            dl_patterns_path=dl_patterns_path,
+            dl_terms_inline=dl_terms_inline,
         )
 
     def scan_column(self, column_name: str, sample_content: str) -> dict[str, Any]:
