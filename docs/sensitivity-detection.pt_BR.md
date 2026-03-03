@@ -184,6 +184,100 @@ dl_patterns_file: config/sensitivity_terms.yaml
 
 ---
 
+## Padrões regex customizados (detectar novos dados pessoais/sensíveis)
+
+O detector aplica **padrões regex** ao texto combinado (nome da coluna + amostra do conteúdo). Os padrões embutidos cobrem CPF, CNPJ, e-mail, telefone, SSN, cartão de crédito e datas. Para que a aplicação se atente a **novos valores possivelmente pessoais ou sensíveis** (ex.: RG, placa de veículo, número de plano de saúde, outros IDs por país), você adiciona **padrões customizados** via um arquivo e aponta o config para ele.
+
+### Onde configurar
+
+No arquivo de config principal (`config.yaml` ou JSON), defina a chave **`regex_overrides_file`** com o caminho de um arquivo YAML ou JSON que lista seus padrões. O caminho pode ser absoluto ou relativo ao diretório de trabalho do processo. A aplicação carrega esse arquivo na inicialização e **mescla** seus padrões aos embutidos (nomes iguais aos embutidos são sobrescritos pelos seus).
+
+```yaml
+# config.yaml
+regex_overrides_file: config/regex_overrides.yaml
+# ... resto do config (targets, file_scan, report, etc.)
+```
+
+Se `regex_overrides_file` for omitido ou o arquivo não existir, apenas os padrões embutidos são usados.
+
+### Formato do arquivo
+
+O arquivo deve conter uma **lista de objetos**, cada um com:
+
+| Campo | Obrigatório | Descrição |
+|-------|-------------|-----------|
+| `name` | Sim | Identificador curto do padrão (ex.: `RG_BR`, `PLATE_BR`). Aparece nos relatórios como `pattern_detected`. |
+| `pattern` | Sim | Expressão regular (sintaxe Python `re`). É aplicada ao nome da coluna + amostra. Use strings cruas; prefira `\b` para limites de palavra. |
+| `norm_tag` | Não | Rótulo para conformidade/relatório (ex.: `LGPD Art. 5`, `Custom`). Padrão: `"Custom"`. |
+
+Você pode usar uma lista na raiz ou uma chave `patterns` ou `regex` com a lista. Você pode copiar de [regex_overrides.example.yaml](regex_overrides.example.yaml) e editar.
+
+**Exemplo YAML:**
+
+```yaml
+# config/regex_overrides.yaml
+- name: "RG_BR"
+  pattern: "\b\d{1,2}\.?\d{3}\.?\d{3}-?[0-9Xx]\b"
+  norm_tag: "LGPD Art. 5"
+
+- name: "PLATE_BR"
+  pattern: "\b[A-Z]{3}-?\d{4}\b"
+  norm_tag: "Personal data context"
+
+- name: "HEALTH_PLAN_ID"
+  pattern: "\b\d{6,14}\b"
+  norm_tag: "Health/insurance context"
+```
+
+**Exemplo JSON:**
+
+```json
+[
+  { "name": "RG_BR", "pattern": "\\b\\d{1,2}\\.?\\d{3}\\.?\\d{3}-?[0-9Xx]\\b", "norm_tag": "LGPD Art. 5" },
+  { "name": "PLATE_BR", "pattern": "\\b[A-Z]{3}-?\\d{4}\\b", "norm_tag": "Personal data context" }
+]
+```
+
+### Padrões embutidos (referência)
+
+A aplicação já inclui estes padrões; não é preciso redefini-los a menos que queira alterar o regex ou o norm tag.
+
+| Nome | Descrição | Norm tag |
+|------|-----------|----------|
+| `LGPD_CPF` | CPF brasileiro (11 dígitos, opcional pontos/traço) | LGPD Art. 5 |
+| `LGPD_CNPJ` | CNPJ brasileiro (14 dígitos, formatação opcional) | LGPD Art. 5 |
+| `EMAIL` | Endereço de e-mail | GDPR Art. 4(1) |
+| `CREDIT_CARD` | Cartão 16 dígitos (espaços/traços opcionais) | PCI/GLBA |
+| `PHONE_BR` | Telefone BR (+55, DDD opcional) | LGPD Art. 5 |
+| `CCPA_SSN` | SSN EUA (XXX-XX-XXXX) | CCPA |
+| `DATE_DMY` | Data d/m/a (ex.: 31/12/2024) | Personal data context |
+
+### Exemplos de padrões adicionais úteis
+
+- **RG (Brasil):** formato varia por estado; uma forma comum é dígitos com pontos opcionais e dígito ou X no final:  
+  `\b\d{1,2}\.?\d{3}\.?\d{3}-?[0-9Xx]\b`
+- **Placa de veículo Brasil (antiga):** `AAA-9999`:  
+  `\b[A-Z]{3}-?\d{4}\b`
+- **Placa Mercosul:** `AAA9A99`:  
+  `\b[A-Z]{3}\d[A-Z]\d{2}\b`
+- **ID numérico genérico (ex. plano de saúde):** cuidado com o tamanho para evitar falsos positivos; ex. 8–14 dígitos:  
+  `\b\d{8,14}\b` (use só quando o contexto for adequado; combine com ML/DL se possível).
+- **Telefone EUA:** `(XXX) XXX-XXXX` ou `XXX-XXX-XXXX`:  
+  `\b\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b`
+- **CEP (Brasil):** `99999-999`:  
+  `\b\d{5}-?\d{3}\b`
+
+Quando um padrão customizado der match no nome da coluna ou no texto amostrado, o achado é reportado com sensibilidade **HIGH** (ou MEDIUM em contexto de letras/cifras para padrões fracos), com `pattern_detected` igual ao seu `name` e `norm_tag` no relatório.
+
+### Resumo
+
+- **Configurar:** Defina `regex_overrides_file` no config principal com o caminho do seu arquivo YAML/JSON.
+- **Formato:** Lista de `{ name, pattern, norm_tag }`; `norm_tag` opcional (padrão `"Custom"`).
+- **Efeito:** Seus padrões são mesclados aos embutidos; qualquer match em (nome da coluna + amostra) é sinalizado. Use padrões precisos e limites de palavra para reduzir falsos positivos.
+- **ML/DL:** Para contexto (ex.: “este nome de coluna sugere PII”), use os [termos de treino ML/DL](#config-keys) além do regex.
+
+---
+
 ## Resumo
 
 - **Termos ML:** De `sensitivity_detection.ml_terms` (inline) ou `ml_patterns_file`. Usados pelo classificador TF-IDF + RandomForest.
@@ -191,4 +285,4 @@ dl_patterns_file: config/sensitivity_terms.yaml
 - **Mesmo formato:** Ambos usam uma lista de `{ text, label }` com `label` = `sensitive` ou `non_sensitive` (ou `1` / `0`).
 - **Inline sobrescreve arquivo:** Quando `ml_terms` ou `dl_terms` estão preenchidos no config, eles são usados no lugar do carregamento do arquivo correspondente.
 
-Para overrides de regex (padrões customizados para valor), veja `regex_overrides_file` na configuração principal e [USAGE.md](USAGE.md) / [USAGE.pt_BR.md](USAGE.pt_BR.md).
+**Padrões regex:** Use `regex_overrides_file` no config principal para adicionar ou sobrescrever padrões de detecção por valor (veja [Padrões regex customizados](#padrões-regex-customizados-detectar-novos-dados-pessoaissensíveis) acima).
