@@ -10,6 +10,8 @@ Você pode **definir as palavras de treino para ML e DL** no arquivo de config p
 
 **English:** [sensitivity-detection.md](sensitivity-detection.md)
 
+**Detecção de dados de menores:** A aplicação pode sinalizar possíveis dados de menores (colunas de DOB/idade) e aplicar tratamento diferenciado nos relatórios (LGPD Art. 14, GDPR Art. 8). O limite de idade (padrão 18) é configurável no arquivo de config externo. Consulte [minor-detection.pt_BR.md](minor-detection.pt_BR.md) para configuração e ajuste fino.
+
 ---
 
 ## Chaves de config
