@@ -97,21 +97,43 @@ The detector should use a **single internal list** of normalized tokens (full na
 
 ---
 
+## Config wiring (to-do 8)
+
+The optional `detection` section in the main config file is normalized by `config/loader.py` and passed through to the detector:
+
+- **Loader** (`config/loader.py`): Normalizes `detection.minor_age_threshold` (default 18), `detection.minor_full_scan` (default false), `detection.minor_cross_reference` (default true). Keys are under `config["detection"]`.
+- **Engine** (`core/engine.py`): Reads `config.get("detection")` and passes it as `detection_config` to `DataScanner`.
+- **Scanner** (`core/scanner.py`): Accepts optional `detection_config` and forwards it to `SensitivityDetector`.
+- **Detector** (`core/detector.py`): Accepts optional `detection_config` in `__init__`; sets `_minor_age_threshold` from `detection_config.get("minor_age_threshold", 18)`. The options `minor_full_scan` and `minor_cross_reference` are reserved for future use (cross-reference and full-scan features).
+
+**Example config:**
+
+```yaml
+detection:
+  minor_age_threshold: 18   # age below this triggers possible_minor (default 18)
+  minor_full_scan: false    # reserved for future use
+  minor_cross_reference: true  # reserved for future use
+```
+
+When no `detection` section is present or `minor_age_threshold` is missing, the detector uses 18. Tests that instantiate `DataScanner()` or `SensitivityDetector()` without `detection_config` keep this default.
+
+---
+
 ## Sequential to-dos
 
 Execute in order; each step should be tested and non-regressing before the next.
 
 | # | To-do | Status |
 |---|--------|--------|
-| 1 | **Design & doc:** Finalize approach (age inference, flag vs new level, cross-ref, full-scan scope) and document in this file; ensure schema/API impact is minimal (optional column or flag). | ⬜ Pending |
-| 2 | **Detector – DOB/age:** Add date parsing (DOB) and age calculation (stdlib); when age &lt; threshold, set internal flag or level for “possible minor”. Do not change existing HIGH/MEDIUM/LOW for non-minor findings. | ⬜ Pending |
-| 3 | **Schema (optional):** Add optional column `possible_minor` (or `minor_data_indicator`) to database_findings and filesystem_findings with migration; or encode via norm_tag/pattern_detected (e.g. pattern “DOB_POSSIBLE_MINOR”). | ⬜ Pending |
-| 4 | **Scanner/connector:** Pass “possible minor” from detector into saved findings (store flag or special pattern/norm_tag). | ⬜ Pending |
+| 1 | **Design & doc:** Finalize approach (age inference, flag vs new level, cross-ref, full-scan scope) and document in this file; ensure schema/API impact is minimal (optional column or flag). | ✅ Done |
+| 2 | **Detector – DOB/age:** Add date parsing (DOB) and age calculation (stdlib); when age &lt; threshold, set internal flag or level for “possible minor”. Do not change existing HIGH/MEDIUM/LOW for non-minor findings. | ✅ Done |
+| 3 | **Schema (optional):** Add optional column `possible_minor` (or `minor_data_indicator`) to database_findings and filesystem_findings with migration; or encode via norm_tag/pattern_detected (e.g. pattern “DOB_POSSIBLE_MINOR”). | ✅ Done (encode via pattern_detected/norm_tag) |
+| 4 | **Scanner/connector:** Pass “possible minor” from detector into saved findings (store flag or special pattern/norm_tag). | ✅ Done |
 | 5 | **Cross-reference:** When a finding is DOB/possible_minor, correlate with other columns in same table/row (name, CPF/RG/SSN, health-related). Optionally set “confirmed” or “high_confidence” minor indicator. May require scanner to supply row context or a post-processing step. | ⬜ Pending |
 | 6 | **Full scan (optional):** When DOB suggests minor and config enables it, trigger full scan of that column and related columns (engine/connector). Document as optional; default off. | ⬜ Pending |
-| 7 | **Report:** Add recommendation row or section for “Possible data of minors” with highest priority and differential treatment (LGPD Art. 14, GDPR Art. 8, consent, etc.). Ensure possible-minor findings are listed and clearly prioritized above other findings. | ⬜ Pending |
-| 8 | **Config:** Add optional `detection.minor_age_threshold`, `detection.minor_full_scan`, `detection.minor_cross_reference` in config loader (defaults: 18, false, true). | ⬜ Pending |
-| 9 | **Tests:** Unit tests for age inference, for possible_minor flag, for report prioritization; full test suite passes with no regression. | ⬜ Pending |
+| 7 | **Report:** Add recommendation row or section for “Possible data of minors” with highest priority and differential treatment (LGPD Art. 14, GDPR Art. 8, consent, etc.). Ensure possible-minor findings are listed and clearly prioritized above other findings. | ✅ Done |
+| 8 | **Config:** Add optional `detection.minor_age_threshold`, `detection.minor_full_scan`, `detection.minor_cross_reference` in config loader (defaults: 18, false, true). Wire config from loader → engine → scanner → detector so threshold is applied. | ✅ Done |
+| 9 | **Tests:** Unit tests for age inference, for possible_minor flag, for report prioritization; full test suite passes with no regression. | ✅ Done |
 | 10 | **Docs:** Update sensitivity-detection and compliance docs (EN and PT-BR) to describe possible-minor detection and differential treatment. | ⬜ Pending |
 
 ---

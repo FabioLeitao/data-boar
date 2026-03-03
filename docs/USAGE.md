@@ -550,6 +550,12 @@ api:
   # api_key: "your-secret-key"              # or use api_key_from_env to read from environment
   # api_key_from_env: "AUDIT_API_KEY"
 
+# Optional: possible minor data detection (LGPD Art. 14, GDPR Art. 8). See docs/PLAN_MINOR_DATA_DETECTION.md.
+# detection:
+#   minor_age_threshold: 18    # age below this flags DOB/age columns as possible minor (default 18)
+#   minor_full_scan: false    # reserved
+#   minor_cross_reference: true   # reserved
+
 sqlite_path: audit_results.db
 scan:
   max_workers: 1   # 1 = sequential; >1 = parallel targets (I/O-bound)

@@ -88,6 +88,27 @@ class TestMinorDetectionViaScanner(unittest.TestCase):
         self.assertNotIn("DOB_POSSIBLE_MINOR", result.get("pattern_detected", ""))
 
 
+class TestMinorDetectionConfigWiring(unittest.TestCase):
+    """Config detection.minor_age_threshold is passed to the detector and affects minor detection."""
+
+    def test_custom_threshold_via_scanner_marks_20_as_minor_when_threshold_21(self):
+        scanner = DataScanner(detection_config={"minor_age_threshold": 21})
+        result = scanner.scan_column("idade", "20")
+        self.assertEqual(result["sensitivity_level"], "HIGH")
+        self.assertIn("DOB_POSSIBLE_MINOR", result["pattern_detected"])
+
+    def test_default_threshold_does_not_mark_20_as_minor(self):
+        scanner = DataScanner()
+        result = scanner.scan_column("idade", "20")
+        self.assertNotIn("DOB_POSSIBLE_MINOR", result.get("pattern_detected", ""))
+
+    def test_custom_threshold_passed_to_detector(self):
+        detector = SensitivityDetector(detection_config={"minor_age_threshold": 25})
+        level, pattern, norm, _ = detector.analyze("age", "24")
+        self.assertEqual(level, "HIGH")
+        self.assertIn("DOB_POSSIBLE_MINOR", pattern)
+
+
 class TestMinorDetectionDoesNotBreakExisting(unittest.TestCase):
     """Ensure minor detection is additive: existing behaviour for non-minor data unchanged."""
 
