@@ -18,7 +18,7 @@ This document lists **incomplete goals** from active plans and the **recommended
 | 4 | **Phase 6 – Docs:** Update SECURITY.md to mention optional API key; document key in USAGE (EN and PT-BR) | ✅ Done | Key in env; do not log |
 | 5 | **Validate Phase 6:** Run `pytest -W error`; call API with/without key when `require_api_key` true | ✅ Done | 42 tests pass |
 | 6 | **Final:** Run full `pytest -W error`; optional docker build and smoke test | ✅ Done | 42 tests pass |
-| 7 | **Publish:** Validate documentation reflects current state; bump minor version if needed; republish Docker image to hub; keep EN and PT-BR docs in sync | ⬜ Pending | Manual: version, build, push, doc review |
+| 7 | **Publish:** Validate documentation reflects current state; bump minor version if needed; republish Docker image to hub; keep EN and PT-BR docs in sync | ✅ Done | Version 1.1.0; docs validated; Docker build/push remains manual (see deploy/DEPLOY.md) |
 
 **Done (reference):** Phases 0–5 (baseline, docs/frameworks, recommendation overrides, executive summary, min_sensitivity, config_scope_hash) are already implemented and tested.
 
