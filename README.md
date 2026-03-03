@@ -489,6 +489,10 @@ Prepare `/data/config.yaml` from `deploy/config.example.yaml` (see [deploy/DEPLO
 
 Full steps (build, push, single container, Compose, Swarm, Kubernetes): **[deploy/DEPLOY.md](deploy/DEPLOY.md)**.
 
+## Compliance frameworks and extensibility
+
+The application explicitly references **LGPD**, **GDPR**, **CCPA**, **HIPAA**, and **GLBA** in built-in patterns and report labels. You can extend support to other regulations (e.g. UK GDPR, PIPEDA, APPI, POPIA) without code changes: set **`norm_tag`** in [regex overrides](docs/sensitivity-detection.md#custom-regex-patterns-detecting-new-personalsensitive-values) or custom connectors to any framework label, and use **`report.recommendation_overrides`** in config to tailor recommendation text. See **[docs/compliance-frameworks.md](docs/compliance-frameworks.md)** for details.
+
 ## Security and compliance
 
 - No raw sampled content is persisted; only metadata (location, pattern, sensitivity, norm tag).

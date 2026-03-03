@@ -31,6 +31,7 @@ class ScanSession(Base):
     status = Column(String(20), default="running")  # running, completed, failed
     tenant_name = Column(String(255), nullable=True)  # optional customer/tenant for this scan
     technician_name = Column(String(255), nullable=True)  # optional technician/operator for this scan
+    config_scope_hash = Column(String(64), nullable=True)  # optional SHA-256 of scan scope (targets, types, extensions) for audit evidence
 
 
 class DatabaseFinding(Base):
@@ -132,6 +133,7 @@ class LocalDBManager:
         Base.metadata.create_all(self.engine)
         self._ensure_tenant_column()
         self._ensure_technician_column()
+        self._ensure_config_scope_hash_column()
         self._session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
         self._current_session_id: str | None = None
 
@@ -149,6 +151,14 @@ class LocalDBManager:
             r = conn.execute(text("SELECT 1 FROM pragma_table_info('scan_sessions') WHERE name='technician_name'"))
             if r.fetchone() is None:
                 conn.execute(text("ALTER TABLE scan_sessions ADD COLUMN technician_name VARCHAR(255)"))
+                conn.commit()
+
+    def _ensure_config_scope_hash_column(self) -> None:
+        """Add config_scope_hash column to scan_sessions if missing (migration for existing DBs)."""
+        with self.engine.connect() as conn:
+            r = conn.execute(text("SELECT 1 FROM pragma_table_info('scan_sessions') WHERE name='config_scope_hash'"))
+            if r.fetchone() is None:
+                conn.execute(text("ALTER TABLE scan_sessions ADD COLUMN config_scope_hash VARCHAR(64)"))
                 conn.commit()
 
     def set_current_session_id(self, session_id: str) -> None:
@@ -241,6 +251,7 @@ class LocalDBManager:
                     "status": s.status,
                     "tenant_name": getattr(s, "tenant_name", None),
                     "technician_name": getattr(s, "technician_name", None),
+                    "config_scope_hash": getattr(s, "config_scope_hash", None),
                     "database_findings": db_count,
                     "filesystem_findings": fs_count,
                     "scan_failures": fail_count,
@@ -265,8 +276,9 @@ class LocalDBManager:
         session_id: str,
         tenant_name: str | None = None,
         technician_name: str | None = None,
+        config_scope_hash: str | None = None,
     ) -> None:
-        """Create a scan_sessions row. Optional tenant_name and technician_name metadata."""
+        """Create a scan_sessions row. Optional tenant_name, technician_name, and config_scope_hash metadata."""
         session = self._session_factory()
         try:
             session.add(
@@ -275,9 +287,24 @@ class LocalDBManager:
                     status="running",
                     tenant_name=(tenant_name or None),
                     technician_name=(technician_name or None),
+                    config_scope_hash=(config_scope_hash or None),
                 )
             )
             session.commit()
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+
+    def update_session_config_scope_hash(self, session_id: str, config_scope_hash: str | None) -> None:
+        """Set or clear config_scope_hash for an existing session."""
+        session = self._session_factory()
+        try:
+            rec = session.query(ScanSession).filter(ScanSession.session_id == session_id).first()
+            if rec and hasattr(rec, "config_scope_hash"):
+                rec.config_scope_hash = config_scope_hash or None
+                session.commit()
         except Exception:
             session.rollback()
             raise
