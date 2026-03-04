@@ -25,6 +25,34 @@ def test_normalize_config_legacy_databases():
     assert db_target["database"] == "d"
 
 
+def test_normalize_config_detection_aggregated_identification():
+    """Config loader normalizes detection.aggregated_identification_enabled, aggregated_min_categories, quasi_identifier_mapping."""
+    out = normalize_config({
+        "targets": [],
+        "detection": {
+            "aggregated_identification_enabled": False,
+            "aggregated_min_categories": 3,
+            "quasi_identifier_mapping": [
+                {"column_pattern": "cargo", "category": "job_position"},
+                {"pattern_detected": "PHONE_BR", "category": "phone"},
+            ],
+        },
+    })
+    det = out.get("detection", {})
+    assert det.get("aggregated_identification_enabled") is False
+    assert det.get("aggregated_min_categories") == 3
+    assert len(det.get("quasi_identifier_mapping", [])) == 2
+    assert det["quasi_identifier_mapping"][0]["category"] == "job_position"
+    assert det["quasi_identifier_mapping"][1]["category"] == "phone"
+
+    # Defaults when detection section is missing or empty
+    out2 = normalize_config({"targets": []})
+    det2 = out2.get("detection", {})
+    assert det2.get("aggregated_identification_enabled") is True
+    assert det2.get("aggregated_min_categories") == 2
+    assert det2.get("quasi_identifier_mapping") == []
+
+
 def test_local_db_manager(tmp_path):
     db_path = str(tmp_path / "test_audit.db")
     mgr = LocalDBManager(db_path)

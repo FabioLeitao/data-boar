@@ -76,6 +76,39 @@ patterns:
 
 ---
 
+## Identificação agregada: configuração e exemplos
+
+Quando a **identificação agregada** está habilitada, o gerador de relatório agrupa achados por tabela (banco) ou arquivo (sistema de arquivos) e sinaliza casos em que **várias categorias de quasi-identificadores** (ex.: gênero, cargo, saúde, endereço, telefone) aparecem juntas, o que pode permitir reidentificação (LGPD Art. 5, GDPR Recital 26). O relatório Excel ganha a aba **"Cross-ref data – ident. risk"** e uma recomendação de alta prioridade.
+
+| Chave | Tipo | Padrão | Descrição |
+|-------|------|--------|-----------|
+| `detection.aggregated_identification_enabled` | boolean | **true** | Defina como `false` para desativar a agregação e a aba Cross-ref. |
+| `detection.aggregated_min_categories` | inteiro | **2** | Número mínimo de categorias distintas de quasi-identificadores em uma tabela/arquivo para sinalizar (ex.: 3 para mais rigor). |
+| `detection.quasi_identifier_mapping` | lista | **[]** | Lista opcional de `{ column_pattern, category }` ou `{ pattern_detected, category }` para mapear colunas/padrões para `gender`, `job_position`, `health`, `address`, `phone`, `other`. Já existem mapeamentos padrão para nomes comuns (ex.: gender, sex, cargo, department, health, address, phone). |
+
+**Exemplo: habilitar com mapeamento customizado e mínimo de 3 categorias**
+
+```yaml
+# config.yaml
+targets: []
+report:
+  output_dir: ./reports
+detection:
+  aggregated_identification_enabled: true
+  aggregated_min_categories: 3
+  quasi_identifier_mapping:
+    - { column_pattern: "cargo", category: job_position }
+    - { column_pattern: "departamento", category: job_position }
+    - { pattern_detected: "PHONE_BR", category: phone }
+    - { pattern_detected: "EMAIL", category: other }
+```
+
+**Como usar:** Execute um scan (CLI: `python main.py --config config.yaml` ou API: iniciar scan pelo dashboard). Em seguida gere o relatório (CLI: o relatório é gerado ao final do scan; API: baixe pela sessão). Se alguma tabela ou arquivo tiver pelo menos `aggregated_min_categories` categorias presentes, o relatório incluirá a aba **"Cross-ref data – ident. risk"** e uma linha de recomendação **AGGREGATED_IDENTIFICATION**.
+
+**Para desativar:** Defina `detection.aggregated_identification_enabled: false` no config; a aba Cross-ref e a recomendação agregada não serão geradas.
+
+---
+
 ## Termos inline no config principal
 
 Você pode definir os termos de treino ML e DL diretamente no seu `config.yaml` (ou JSON) principal, na seção `sensitivity_detection`, sem arquivos separados.
