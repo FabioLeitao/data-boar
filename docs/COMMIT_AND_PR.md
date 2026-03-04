@@ -64,5 +64,5 @@ From the repo root (PowerShell):
 
 ## Notes
 
-- The script skips `audit_results.db` (local scan DB); it is listed in `.gitignore` and should not be committed.
+- The script **respects `.gitignore`**: it uses `git check-ignore` so only non-ignored paths are ever staged or committed (e.g. `audit_results.db`, `*.db-journal`, `.env.local`, reports/heatmaps, `__pycache__`, etc. are never included).
 - The agent does **not** have access to your credentials; it runs `git` and `gh` in your environment, so your SSH and `gh auth` are used.
