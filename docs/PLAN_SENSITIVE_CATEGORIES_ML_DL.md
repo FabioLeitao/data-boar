@@ -122,9 +122,9 @@ report:
 | 1 | **Example file:** Create `sensitivity_terms_sensitive_categories.example.yaml` with terms for CID/ICD, gender, religion, political, PEP, race, union, genetic, biometric, sex life, health/disability (EN and PT-BR oriented). | ✅ Done |
 | 2 | **Documentation:** In `sensitivity-detection.md` (EN), add a section "Sensitive categories (health, religion, political, etc.)" with link to this plan and to the example file; list categories and example terms in a table. | ✅ Done |
 | 3 | **Documentation PT-BR:** In `sensitivity-detection.pt_BR.md`, add the same section in Portuguese with link to the example file and plan. | ✅ Done |
-| 4 | **Built-in defaults (optional):** Consider adding a subset of these terms to `DEFAULT_ML_TERMS` in `core/detector.py` so out-of-the-box detection includes e.g. religion, political, gender, biometric, genetic. Keep additive and documented. | ⬜ Pending |
-| 5 | **Recommendation overrides example:** Add an example in USAGE or in this plan for `recommendation_overrides` covering health, religion, political, PEP, race, union, genetic, biometric, sex life (Base legal, Risk, Recommendation, Priority). | ⬜ Pending |
-| 6 | **Tests:** Add a test that, when ML terms include e.g. "religion" and "political affiliation", columns/samples containing those terms are classified as sensitive (HIGH or appropriate level); existing tests still pass. | ⬜ Pending |
+| 4 | **Built-in defaults (optional):** Consider adding a subset of these terms to `DEFAULT_ML_TERMS` in `core/detector.py` so out-of-the-box detection includes e.g. religion, political, gender, biometric, genetic. Keep additive and documented. | ✅ Done |
+| 5 | **Recommendation overrides example:** Add an example in USAGE or in this plan for `recommendation_overrides` covering health, religion, political, PEP, race, union, genetic, biometric, sex life (Base legal, Risk, Recommendation, Priority). | ✅ Done |
+| 6 | **Tests:** Add a test that, when ML terms include e.g. "religion" and "political affiliation", columns/samples containing those terms are classified as sensitive (HIGH or appropriate level); existing tests still pass. | ✅ Done |
 
 ---
 
