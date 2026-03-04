@@ -83,11 +83,11 @@ docker login
 docker push fabioleitao/python3-lgpd-crawler:latest
 ```
 
-To use a version tag as well (e.g. `1.2.0`):
+To use a version tag as well (e.g. `1.3.0`):
 
 ```bash
-docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.2.0
-docker push fabioleitao/python3-lgpd-crawler:1.2.0
+docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.3.0
+docker push fabioleitao/python3-lgpd-crawler:1.3.0
 ```
 
 Then in `deploy/docker-compose.yml` set `image:` to your pushed image (e.g. `fabioleitao/python3-lgpd-crawler:latest` or `ghcr.io/fabioleitao/...`).
