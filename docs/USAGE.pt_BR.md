@@ -231,7 +231,7 @@ Esse endpoint procura, entre os arquivos `audit_YYYYMMDD.log` disponíveis (do m
 - A aplicação utiliza um único arquivo de configuração (YAML/JSON) com as chaves principais:
   - `targets` – alvos a escanear (bancos, diretórios, APIs, compartilhamentos).
   - `file_scan` – extensões, recursividade, `scan_sqlite_as_db`, `sample_limit`.
-  - `report` – `output_dir` para relatórios/heatmaps; opcionalmente `recommendation_overrides` (lista de mapeamentos por `norm_tag` para Base legal, Risco, Recomendação, Prioridade, Relevante para). Exemplo completo em [USAGE.md](USAGE.md) (seção Configuration).
+  - `report` – `output_dir` para relatórios/heatmaps; opcionalmente `recommendation_overrides` (lista de mapeamentos por `norm_tag` para Base legal, Risco, Recomendação, Prioridade, Relevante para). Exemplo completo em [USAGE.md](USAGE.md) (seção 4, Global options); exemplo para categorias sensíveis (saúde, religião, política, PEP, raça, sindicato, genético, biométrico, vida sexual) em [USAGE.md#recommendation_overrides](USAGE.md) e abaixo em pt-BR (ver também [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](PLAN_SENSITIVE_CATEGORIES_ML_DL.md)).
   - `api` – porta da API; opcionalmente `require_api_key`, `api_key` ou `api_key_from_env` para exigir chave de API (cabeçalho X-API-Key ou Authorization: Bearer); GET /health permanece público. Ver [SECURITY.md](../SECURITY.md).
   - `sqlite_path` – caminho do banco SQLite com resultados.
   - `scan` – `max_workers` para paralelismo.
@@ -239,6 +239,8 @@ Esse endpoint procura, entre os arquivos `audit_YYYYMMDD.log` disponíveis (do m
   - Opcionais: `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection` (termos ML/DL inline), `learned_patterns` (export de termos classificados).
 
 **Padrões regex customizados:** Para a aplicação se atentar a **novos valores possivelmente pessoais ou sensíveis** (ex.: RG, placa, número de plano de saúde), defina **`regex_overrides_file`** no config com o caminho de um arquivo YAML/JSON contendo uma lista de `{ name, pattern, norm_tag }`. O detector aplica cada padrão ao nome da coluna e ao texto amostrado; qualquer match é reportado com sensibilidade HIGH (ou MEDIUM em contexto de letras/cifras). Formato e exemplos (RG, placa, CEP, telefone EUA, etc.): [sensitivity-detection.pt_BR.md#padrões-regex-customizados-detectar-novos-dados-pessoaissensíveis](sensitivity-detection.pt_BR.md#padrões-regex-customizados-detectar-novos-dados-pessoaissensíveis) (pt-BR) · [sensitivity-detection.md#custom-regex-patterns-detecting-new-personalsensitive-values](sensitivity-detection.md#custom-regex-patterns-detecting-new-personalsensitive-values) (EN).
+
+**Exemplo `recommendation_overrides` para categorias sensíveis (LGPD Art. 5 II, 11; GDPR Art. 9):** Você pode adicionar entradas para que achados de saúde, religião, política, PEP, raça, sindicato, genético, biométrico e vida sexual tenham Base legal, Risco e Prioridade corretos na aba Recomendações. Exemplo (inglês): [USAGE.md](USAGE.md). Em pt-BR, use os mesmos `norm_tag_pattern` (ex.: `health`, `religious`, `political`, `PEP`, `race`, `union`, `genetic`, `biometric`, `sex life`) e preencha `base_legal`, `risk`, `recommendation`, `priority`, `relevant_for` conforme sua política. Ver [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](PLAN_SENSITIVE_CATEGORIES_ML_DL.md) e [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md).
 
 Para detalhes de todos os campos e exemplos completos, consulte `README.md` e `docs/USAGE.md` (inglês), que são as referências canônicas.
 
