@@ -1,8 +1,10 @@
 # Consolidated plans – sequential to-dos
 
-This document lists **incomplete goals** from active plans and the **recommended sequential to-dos** to achieve them. All steps are intended to be **non-destructive**, **non-regression**, and **non-performance impacting**; each step should be **tested** and **safe** before marking done.
+This document is the **single source of truth** for the project’s plan status and remains in **`docs/`** at all times. It lists **incomplete goals** from active plans and the **recommended sequential to-dos** to achieve them. Completed plan documents (design and to-do details) are archived in **`docs/completed/`** for reference; links below point to those files.
 
-**Plan status:** Corporate compliance improvements ✅ Complete · Minor data detection ✅ Complete · Aggregated identification ✅ Complete · Sensitive categories ML/DL ✅ Complete · Rate limiting & concurrency ✅ Complete · Web hardening & security ⬜ Planned
+All steps are intended to be **non-destructive**, **non-regression**, and **non-performance impacting**; each step should be **tested** and **safe** before marking done.
+
+**Plan status:** Corporate compliance improvements ✅ Complete · Minor data detection ✅ Complete · Aggregated identification ✅ Complete · Sensitive categories ML/DL ✅ Complete · Rate limiting & concurrency ✅ Complete · Web hardening & security ✅ Complete
 
 ---
 
@@ -30,7 +32,7 @@ This document lists **incomplete goals** from active plans and the **recommended
 
 ## Plan: Detection and differential treatment of possible minor data ✅ **Complete**
 
-**Source:** [docs/PLAN_MINOR_DATA_DETECTION.md](PLAN_MINOR_DATA_DETECTION.md)
+**Source:** [docs/completed/PLAN_MINOR_DATA_DETECTION.md](completed/PLAN_MINOR_DATA_DETECTION.md)
 
 **Progress:** All to-dos below are complete. This plan is **closed** for implementation; use this section only for reference to the current state of the application.
 
@@ -53,7 +55,7 @@ Goal: Detect when data may relate to minors (e.g. age from DOB), treat as highes
 
 ## Plan: Cross-referenced / aggregated data – identification risk ✅ **Complete**
 
-**Source:** [docs/PLAN_AGGREGATED_IDENTIFICATION.md](PLAN_AGGREGATED_IDENTIFICATION.md)
+**Source:** [docs/completed/PLAN_AGGREGATED_IDENTIFICATION.md](completed/PLAN_AGGREGATED_IDENTIFICATION.md)
 
 **Progress:** All to-dos below are complete. This plan is **closed** for implementation; use this section only for reference to the current state of the application.
 
@@ -75,7 +77,7 @@ Goal: Cross information from multiple sources/columns (gender, job position, hea
 
 ## Plan: Sensitive categories ML/DL (CID, gender, religion, political, PEP, race, union, genetic, biometric, sex life) ✅ **Complete**
 
-**Source:** [docs/PLAN_SENSITIVE_CATEGORIES_ML_DL.md](PLAN_SENSITIVE_CATEGORIES_ML_DL.md)
+**Source:** [docs/completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md](completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md)
 
 **Progress:** All to-dos below are complete. This plan is **closed** for implementation; use this section only for reference to the current state of the application.
 
@@ -94,7 +96,7 @@ Goal: Configure with examples so ML/DL can detect other sensitive personal data 
 
 ## Plan: Rate limiting and concurrency safeguards ✅ **Complete**
 
-**Source:** [docs/PLAN_RATE_LIMIT_SCANS.md](PLAN_RATE_LIMIT_SCANS.md)
+**Source:** [docs/completed/PLAN_RATE_LIMIT_SCANS.md](completed/PLAN_RATE_LIMIT_SCANS.md)
 
 **Progress:** All to-dos below are complete. This plan is **closed** for implementation; use this section only for reference to the current state of the application.
 
@@ -114,7 +116,7 @@ Goal: Add configurable rate limiting and concurrency safeguards so the LGPD audi
 
 ## Plan: Web hardening and security improvements
 
-**Source:** [docs/PLAN_WEB_HARDENING_SECURITY.md](PLAN_WEB_HARDENING_SECURITY.md)
+**Source:** [docs/completed/PLAN_WEB_HARDENING_SECURITY.md](completed/PLAN_WEB_HARDENING_SECURITY.md)
 
 Goal: Harden the web surface of the LGPD crawler (CSP, headers, and deploy guidance) without regressing current behaviour, keeping docs and man pages in sync and tests green.
 
@@ -122,9 +124,9 @@ Goal: Harden the web surface of the LGPD crawler (CSP, headers, and deploy guida
 |---|--------|--------|
 | 1 | Refine CSP and security headers in `api/routes.py` (partial lockdown profile, optional stricter mode) and move dashboard JS into `/static/dashboard.js` to reduce inline code. | ✅ Done |
 | 2 | Confirm and, if needed, adjust Help page JS so it works under the refined CSP. | ✅ Done |
-| 3 | Extend `deploy/DEPLOY.md` with Docker and Kubernetes hardening guidance (securityContext, NetworkPolicy, PDB, resource tuning) as **optional** examples. | ⬜ Pending |
-| 4 | Update `SECURITY.md` with a short section covering CSP, security headers, and the new hardening examples. | ⬜ Pending |
-| 5 | Update docs (`docs/USAGE.md`, `docs/USAGE.pt_BR.md`) to mention CSP behaviour and how to enable stricter profiles, and update man(1)/(5) plus `help.html` to stay in sync. | ⬜ Pending |
+| 3 | Extend `deploy/DEPLOY.md` with Docker and Kubernetes hardening guidance (securityContext, NetworkPolicy, PDB, resource tuning) as **optional** examples. | ✅ Done |
+| 4 | Update `SECURITY.md` with a short section covering CSP, security headers, and the new hardening examples. | ✅ Done |
+| 5 | Update docs (`docs/USAGE.md`, `docs/USAGE.pt_BR.md`) to mention CSP behaviour and how to enable stricter profiles, and update man(1)/(5) plus `help.html` to stay in sync. | ✅ Done |
 | 6 | Add/adjust tests (e.g. `tests/test_rate_limit_api.py`-style) to assert CSP header presence and default semantics, and re-run the full test suite (`uv run pytest tests/ -v -W error`). | ✅ Done |
 
 ---
