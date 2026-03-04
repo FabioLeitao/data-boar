@@ -27,6 +27,14 @@ except ImportError:
 _SENSITY_RANK = {"HIGH": 3, "MEDIUM": 2, "LOW": 1}
 
 
+def _excel_safe_sheet_title(title: str) -> str:
+    """Return an Excel-safe worksheet title (max 31 chars, no []:*?/\\)."""
+    invalid = set("[]:*?/\\")
+    cleaned = "".join("-" if c in invalid else c for c in (title or "Sheet"))
+    cleaned = cleaned.strip() or "Sheet"
+    return cleaned[:31]
+
+
 def _filter_by_min_sensitivity(rows: list[dict], min_sensitivity: str) -> list[dict]:
     """Keep only rows with sensitivity_level >= min_sensitivity (HIGH > MEDIUM > LOW)."""
     if not min_sensitivity or (min_sensitivity or "").upper() == "LOW":
@@ -499,7 +507,11 @@ def generate_report(
         pd.DataFrame(recs).to_excel(writer, sheet_name="Recommendations", index=False)
         praise = _praise_rows(db_rows_for_sheets, fs_rows_for_sheets)
         if praise:
-            pd.DataFrame(praise).to_excel(writer, sheet_name="Praise / existing controls", index=False)
+            pd.DataFrame(praise).to_excel(
+                writer,
+                sheet_name=_excel_safe_sheet_title("Praise / existing controls"),
+                index=False,
+            )
         # Trends: compare with previous run for DPO and security team
         trends = _trends_rows(
             db_manager, session_id,
