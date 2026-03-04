@@ -73,6 +73,16 @@ The API does not implement authentication by default; secure the app at the reve
 - In config, set `api.require_api_key: true` and either `api.api_key` (literal) or `api.api_key_from_env: "VAR"` (read key from environment). When enabled, every request except **GET /health** must include either the **X-API-Key** header or **Authorization: Bearer &lt;key&gt;**; otherwise the API returns **401**. The **/health** endpoint is never protected so load balancers and orchestrators can still get 200.
 - **Good practice:** Use a strong, random key and store it in an environment variable (e.g. `api_key_from_env: "AUDIT_API_KEY"`). Do not log the key or commit it to version control. This is a simple gate only; for full authentication and authorization, continue to use the reverse proxy or an identity provider.
 
+## Deployment hardening and reverse proxy
+
+Security headers (including CSP) are implemented in **`api/routes.py`** (middleware applied to web and API responses). To harden container and cluster deployments:
+
+- **Docker and Kubernetes:** See **`deploy/DEPLOY.md`**, section **“Security and hardening (optional)”**, for:
+  - Running as non-root, resource limits, and healthchecks.
+  - Optional Kubernetes examples: **securityContext** (runAsNonRoot, readOnlyRootFilesystem, drop capabilities), **NetworkPolicy** (`deploy/kubernetes/network-policy.example.yaml`), and **PodDisruptionBudget** (`deploy/kubernetes/pdb.example.yaml`).
+
+When the API or dashboard is **exposed to the internet or untrusted networks**, run it behind a **reverse proxy** with **TLS**, proper **authentication/authorization**, and consider a **WAF** (web application firewall). The app’s API key and rate limiting (see `docs/USAGE.md`) complement but do not replace proxy-level security.
+
 ## Reporting a vulnerability
 
 If you believe you have found a security vulnerability in this project:
