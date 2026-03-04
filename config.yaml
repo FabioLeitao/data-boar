@@ -59,6 +59,11 @@ targets:
   #   pass: secure_password
   #   database: customers_db
 
+  - name: "Documentos_CIFRAS"
+    type: filesystem
+    path: "/home/user/Documents/cifras/"
+    recursive: true
+
   - name: "Documentos_LGPD"
     type: filesystem
     path: "/home/user/Documents/LGPD/"
