@@ -444,9 +444,10 @@ For systems that use the traditional
 interface, a manual page is provided at
 `docs/lgpd_crawler.1`.
 It mirrors the main CLI and API behaviour described in this README (name, synopsis, options, environment, examples).
-To install it system\-wide on a typical Linux/BSD host:
+To install it system-wide on a typical Linux/BSD host (create the target directory first so the copy does not fail if it is missing):
 
 ```bash
+sudo mkdir -p /usr/local/share/man/man1/
 sudo cp docs/lgpd_crawler.1 /usr/local/share/man/man1/
 sudo mandb    # or: sudo makewhatis   # depends on distro
 ```
