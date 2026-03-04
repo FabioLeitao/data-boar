@@ -83,11 +83,11 @@ docker login
 docker push fabioleitao/python3-lgpd-crawler:latest
 ```
 
-To use a version tag as well (e.g. `1.1.1`):
+To use a version tag as well (e.g. `1.2.0`):
 
 ```bash
-docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.1.1
-docker push fabioleitao/python3-lgpd-crawler:1.1.1
+docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.2.0
+docker push fabioleitao/python3-lgpd-crawler:1.2.0
 ```
 
 Then in `deploy/docker-compose.yml` set `image:` to your pushed image (e.g. `fabioleitao/python3-lgpd-crawler:latest` or `ghcr.io/fabioleitao/...`).
@@ -101,7 +101,7 @@ docker login              # username: fabioleitao, password: your token
 docker push fabioleitao/python3-lgpd-crawler:latest
 ```
 
-Optional: tag and push a version (e.g. `1.1.1`): `docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.1.1` then `docker push fabioleitao/python3-lgpd-crawler:1.1.1`. See also `DOCKER_SETUP.md`.
+Optional: tag and push a version (e.g. `1.2.0`): `docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.2.0` then `docker push fabioleitao/python3-lgpd-crawler:1.2.0`. See also `DOCKER_SETUP.md`.
 
 ## 2. Prepare config
 
