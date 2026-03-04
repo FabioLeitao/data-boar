@@ -192,6 +192,38 @@ class LocalDBManager:
     def current_session_id(self) -> str:
         return self._current_session_id or ""
 
+    # --- Helpers for rate limiting and session state ---
+
+    def get_running_sessions_count(self) -> int:
+        """Return the number of sessions currently marked as running."""
+        session = self._session_factory()
+        try:
+            return session.query(ScanSession).filter(ScanSession.status == "running").count()
+        finally:
+            session.close()
+
+    def get_last_session(self) -> dict | None:
+        """
+        Return the most recent session by started_at (or None).
+        Dict contains session_id, started_at (datetime) and status.
+        """
+        session = self._session_factory()
+        try:
+            s = (
+                session.query(ScanSession)
+                .order_by(ScanSession.started_at.desc())
+                .first()
+            )
+            if not s:
+                return None
+            return {
+                "session_id": s.session_id,
+                "started_at": s.started_at,
+                "status": s.status,
+            }
+        finally:
+            session.close()
+
     def save_finding(self, source_type: str, **kwargs: Any) -> None:
         sid = self._current_session_id
         if not sid:

@@ -18,6 +18,7 @@ import os
 import re
 import time
 from contextlib import asynccontextmanager
+from datetime import datetime, timezone
 from pathlib import Path
 
 import yaml
@@ -188,6 +189,69 @@ def _invalidate_sessions_cache() -> None:
     _sessions_cache = None
 
 
+def _check_rate_limit(source: str) -> None:
+    """
+    Enforce basic rate limiting for scan-triggering endpoints.
+    Uses normalized config (rate_limit block) plus session metadata from SQLite.
+    Raises HTTPException(429) when limits are exceeded.
+    """
+    cfg = _get_config()
+    rl = (cfg.get("rate_limit") or {})
+    if not rl.get("enabled"):
+        return
+    engine = _get_engine()
+    dbm = engine.db_manager
+
+    max_concurrent = int(rl.get("max_concurrent_scans", 1))
+    min_interval = int(rl.get("min_interval_seconds", 0))
+    grace = int(rl.get("grace_for_running_status", 0))
+
+    # 1) Concurrent scans (global)
+    running = dbm.get_running_sessions_count()
+    if running >= max_concurrent:
+        # Too many running sessions at once
+        raise HTTPException(
+            status_code=429,
+            detail={
+                "error": "rate_limited",
+                "reason": "Too many scans running at the same time. Wait for existing scans to finish before starting a new one.",
+                "max_concurrent_scans": max_concurrent,
+                "running_scans": running,
+                "source": source,
+            },
+        )
+
+    # 2) Minimum time between scan starts
+    if min_interval > 0:
+        last = dbm.get_last_session()
+        if last and last.get("started_at"):
+            started_at = last["started_at"]
+            # Normalise to timezone-aware UTC to avoid naive/aware comparison errors
+            if started_at.tzinfo is None:
+                started_at = started_at.replace(tzinfo=timezone.utc)
+            now = datetime.now(timezone.utc)
+            # Basic safeguard: ignore clocks far in the future
+            if started_at <= now:
+                delta = (now - started_at).total_seconds()
+                # Optionally treat very recent sessions as busy even if status is not \"running\"
+                effective_min = float(min_interval)
+                if grace > 0 and float(grace) > effective_min:
+                    effective_min = float(grace)
+                if delta < effective_min:
+                    retry_after = max(0, int(effective_min - delta))
+                    raise HTTPException(
+                        status_code=429,
+                        detail={
+                            "error": "rate_limited",
+                            "reason": "Scans are being started too frequently. Wait before starting another scan.",
+                            "min_interval_seconds": int(effective_min),
+                            "seconds_since_last_scan": int(delta),
+                            "retry_after_seconds": retry_after,
+                            "source": source,
+                        },
+                    )
+
+
 def _is_secure_request(request: Request) -> bool:
     """True if request was made over HTTPS (direct or via trusted proxy X-Forwarded-Proto)."""
     proto = request.headers.get("x-forwarded-proto", "").strip().lower()
@@ -201,7 +265,7 @@ async def security_headers_middleware(request: Request, call_next):
     """
     Add current best-practice security headers to all responses.
     HSTS is set only when the request is over HTTPS to avoid locking out HTTP users.
-    CSP allows 'self', CDN (Chart.js), and unsafe-inline for existing dashboard inline scripts/styles.
+    CSP allows 'self' and the Chart.js CDN for scripts, plus 'unsafe-inline' for existing inline styles.
     """
     response = await call_next(request)
     response.headers.setdefault("X-Content-Type-Options", "nosniff")
@@ -212,10 +276,10 @@ async def security_headers_middleware(request: Request, call_next):
         "camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=(), usb=(), "
         "magnetometer=(), gyroscope=(), accelerometer=()",
     )
-    # CSP: allow self, Chart.js CDN, and inline scripts/styles used by dashboard (no negative impact on main goals)
+    # CSP: allow self and Chart.js CDN for scripts; allow inline styles used by templates.
     response.headers.setdefault(
         "Content-Security-Policy",
-        "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; "
+        "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; "
         "img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; "
         "base-uri 'self'; object-src 'none'",
     )
@@ -412,6 +476,8 @@ async def start_scan(background_tasks: BackgroundTasks, body: ScanStartBody | No
     engine = _get_engine()
     if engine.is_running:
         raise HTTPException(status_code=409, detail="Audit already in progress.")
+    # Global rate limiting (DB-backed) to avoid accidental DoS from repeated scans
+    _check_rate_limit(source="scan")
     from core.session import new_session_id
     session_id = new_session_id()
     tenant = (body.tenant if body else None) or None
@@ -612,6 +678,8 @@ async def scan_database(config: DatabaseConfig, background_tasks: BackgroundTask
     engine = _get_engine()
     if engine.is_running:
         raise HTTPException(status_code=409, detail="Audit already in progress.")
+    # Apply same rate limiting as for full scans
+    _check_rate_limit(source="scan_database")
     target = {
         "name": config.name,
         "type": "database",
