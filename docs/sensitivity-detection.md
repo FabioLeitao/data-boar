@@ -76,6 +76,39 @@ patterns:
 
 ---
 
+## Aggregated identification: configuration and examples
+
+When **aggregated identification** is enabled, the report generator groups findings by table (database) or file (filesystem) and flags cases where **multiple quasi-identifier categories** (e.g. gender, job position, health, address, phone) appear together, which can support re-identification (LGPD Art. 5, GDPR Recital 26). The Excel report gets a sheet **"Cross-ref data – ident. risk"** and a high-priority recommendation.
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `detection.aggregated_identification_enabled` | boolean | **true** | Set to `false` to disable aggregation and the Cross-ref sheet. |
+| `detection.aggregated_min_categories` | integer | **2** | Minimum number of distinct quasi-identifier categories in a table/file to flag (e.g. 3 for stricter). |
+| `detection.quasi_identifier_mapping` | list | **[]** | Optional list of `{ column_pattern, category }` or `{ pattern_detected, category }` to map columns/patterns to `gender`, `job_position`, `health`, `address`, `phone`, `other`. Built-in defaults already map common names (e.g. gender, sex, cargo, department, health, address, phone). |
+
+**Example: enable with custom mapping and minimum 3 categories**
+
+```yaml
+# config.yaml
+targets: []
+report:
+  output_dir: ./reports
+detection:
+  aggregated_identification_enabled: true
+  aggregated_min_categories: 3
+  quasi_identifier_mapping:
+    - { column_pattern: "cargo", category: job_position }
+    - { column_pattern: "departamento", category: job_position }
+    - { pattern_detected: "PHONE_BR", category: phone }
+    - { pattern_detected: "EMAIL", category: other }
+```
+
+**How to operate:** Run a scan (CLI: `python main.py --config config.yaml` or API: start scan from the dashboard). Then generate the report (CLI: report is produced when the scan finishes; API: download from the session). If any table or file has at least `aggregated_min_categories` categories present, the report will include the **"Cross-ref data – ident. risk"** sheet and an **AGGREGATED_IDENTIFICATION** recommendation row.
+
+**To disable:** Set `detection.aggregated_identification_enabled: false` in your config; the Cross-ref sheet and aggregated recommendation will not be generated.
+
+---
+
 ## Inline terms in main config
 
 You can define ML and DL training terms directly in your main `config.yaml` (or JSON) under `sensitivity_detection`, without separate files.
