@@ -1,0 +1,463 @@
+.\" lgpd_crawler.5 - file formats and configuration for python3-lgpd-crawler
+.TH LGPD_CRAWLER 5 "March 2026" "python3-lgpd-crawler 1.3.1" "File Formats"
+.SH NAME
+lgpd_crawler config \- configuration and pattern file formats for the LGPD audit application
+.
+.SH WHY TWO MAN PAGES (SECTION 1 AND 5)
+On Linux, BSD and most Unix-like systems, the
+.B man
+command uses numbered
+.I sections
+to group manual pages by topic.
+Section
+.B 1
+describes
+.I executable programs and shell commands
+(e.g. how to run the program and its options).
+Section
+.B 5
+describes
+.I file formats and conventions
+(e.g. configuration files and their syntax).
+.
+.P
+This project provides two man pages with the same name in different sections:
+.TP
+.B "man 1 lgpd_crawler"
+(or
+.BR "man lgpd_crawler" )
+Shows the
+.I command
+and its options (config path, \-\-web, \-\-port, \-\-tenant, \-\-technician, API usage, curl examples).
+Use this when you want to know how to run the application.
+.TP
+.B "man 5 lgpd_crawler"
+Shows the
+.I configuration and optional file formats
+(main config topology, regex/ML/DL pattern files, examples).
+Use this when you want to understand or edit config files and pattern definitions.
+.
+.P
+If you type only
+.B "man lgpd_crawler"
+the system usually shows section 1 first (the command).
+To open the config/file-format page explicitly, use
+.BR "man 5 lgpd_crawler" .
+.
+.SH OVERVIEW
+The application uses one main configuration file (YAML or JSON) and can optionally reference external files to
+.I override
+or
+.I expand
+regex patterns and to
+.I train
+the ML and DL classifiers.
+This page describes the topology of those files and their formats, with examples compatible with the current application capabilities.
+.
+.SH TOPOLOGY
+.IP \(bu 2
+.B Main config file
+(default
+.IR config.yaml ):
+defines targets (databases, filesystems, APIs, shares), file_scan, report, api, sqlite_path, scan, and optional paths to the files below.
+.IP \(bu 2
+.B regex_overrides_file
+(optional): path to a YAML/JSON file listing custom
+.I regex
+patterns; merged with built-in patterns and matched against (column name + sample text).
+.IP \(bu 2
+.B ml_patterns_file
+(optional): path to a YAML/JSON file with
+.I ML
+training terms (text + label: sensitive / non_sensitive).
+Used by the TF-IDF + RandomForest classifier when no inline terms are provided.
+.IP \(bu 2
+.B dl_patterns_file
+(optional): path to a YAML/JSON file with
+.I DL
+training terms (same format as ML).
+Used by the optional sentence-embedding classifier when the DL extra is installed.
+.IP \(bu 2
+.B sensitivity_detection
+(optional): inline section in the main config with
+.I ml_terms
+and/or
+.I dl_terms
+lists; when non-empty they override loading from
+.B ml_patterns_file
+/
+.BR dl_patterns_file .
+.IP \(bu 2
+.B learned_patterns
+(optional): section in the main config that enables writing
+.I learned
+terms (classified as sensitive during a run) to an output file, which you can later merge into
+.B ml_patterns_file
+to improve future scans.
+.
+.P
+All paths in the main config can be absolute or relative to the process working directory.
+.
+.SH MAIN CONFIGURATION FILE
+The main file (e.g.
+.IR config.yaml )
+is YAML or JSON.
+Top-level keys:
+.
+.TP
+.B targets
+List of scan targets.
+Each item has at least
+.I name
+and
+.I type
+(database, filesystem, api, sharepoint, webdav, smb, nfs, powerbi, dataverse, etc.), plus type-specific keys (driver, host, port, user, pass, database for DB; path, recursive for filesystem; etc.).
+.TP
+.B file_scan
+.I extensions
+(list, e.g. [.txt, .csv, .pdf]), 
+.I recursive
+(bool),
+.I scan_sqlite_as_db
+(bool),
+.I sample_limit
+(integer).
+.TP
+.B report
+.I output_dir
+(path);
+optionally
+.I recommendation_overrides
+(list of norm_tag_pattern, base_legal, risk, recommendation, priority, relevant_for) to customise the Recommendations sheet per category.
+.TP
+.B api
+.I port
+(integer);
+optionally
+.I require_api_key
+(bool),
+.I api_key
+(string) or
+.I api_key_from_env
+(env var name).
+.TP
+.B sqlite_path
+Path to the SQLite database (e.g.
+.IR audit_results.db ).
+.TP
+.B scan
+.I max_workers
+(integer, parallelism).
+.TP
+.B detection
+(optional) Minor data and aggregated identification:
+.I minor_age_threshold
+(default 18),
+.I minor_cross_reference
+(bool),
+.I minor_full_scan
+(bool),
+.I aggregated_identification_enabled
+(bool),
+.I aggregated_min_categories
+(integer),
+.I quasi_identifier_mapping
+(list).
+.TP
+.B ml_patterns_file
+Path to ML terms file (used if
+.B sensitivity_detection.ml_terms
+is not set).
+.TP
+.B dl_patterns_file
+Path to DL terms file (used if
+.B sensitivity_detection.dl_terms
+is not set).
+.TP
+.B regex_overrides_file
+Path to custom regex patterns file.
+.TP
+.B sensitivity_detection
+(optional) Inline
+.I ml_terms
+and/or
+.I dl_terms
+(list of { text, label }).
+.TP
+.B learned_patterns
+(optional)
+.I enabled
+(bool),
+.I output_file
+(path),
+.I min_sensitivity
+(HIGH/MEDIUM),
+.I min_confidence
+(integer),
+.I require_pattern
+(bool),
+.I append
+(bool),
+.I exclude_if_in_ml_patterns
+(bool).
+.
+.P
+Example main config (excerpt):
+.RS
+.nf
+\fBtargets:\fR
+  \- name: "Produção_Postgres"
+    type: database
+    driver: postgresql+psycopg2
+    host: 10.0.0.50
+    port: 5432
+    user: audit_user
+    pass: secure_password
+    database: customers_db
+  \- name: "Documentos_LGPD"
+    type: filesystem
+    path: /home/user/Documents/LGPD
+    recursive: true
+
+\fBfile_scan:\fR
+  extensions: [.txt, .csv, .pdf, .docx, .xlsx]
+  recursive: true
+  scan_sqlite_as_db: true
+  sample_limit: 5
+
+\fBreport:\fR
+  output_dir: .
+  recommendation_overrides:
+    \- norm_tag_pattern: "health"
+      base_legal: "LGPD Art. 5 II, 11; GDPR Art. 9"
+      risk: "Health or medical condition data."
+      recommendation: "Ensure legal basis and consent."
+      priority: "CRÍTICA"
+      relevant_for: "DPO, Compliance"
+
+\fBapi:\fR
+  port: 8088
+
+\fBsqlite_path:\fR audit_results.db
+\fBscan:\fR
+  max_workers: 1
+
+\fBml_patterns_file:\fR config/ml_patterns.yaml
+\fBregex_overrides_file:\fR config/regex_overrides.yaml
+.fi
+.RE
+.
+.SH REGEX OVERRIDES FILE
+Used to add or override regex patterns for value-based detection.
+Set
+.B regex_overrides_file
+in the main config to the path of a YAML or JSON file.
+.
+.P
+Format: a list of objects, each with:
+.TP
+.B name
+(required) Short identifier (e.g. RG_BR, PLATE_BR). Shown in reports as
+.IR pattern_detected .
+.TP
+.B pattern
+(required) Regular expression (Python
+.B re
+syntax). Matched against (column name + sample text). Use word boundaries (e.g. \e\eb) to reduce false positives.
+.TP
+.B norm_tag
+(optional) Label for compliance/reporting (e.g. "LGPD Art. 5", "Custom"). Default "Custom".
+.
+.P
+You can use a root-level list or a key
+.B patterns
+or
+.B regex
+containing the list.
+.
+.P
+Example (YAML):
+.RS
+.nf
+\- name: "RG_BR"
+  pattern: "\e\eb\e\ed{1,2}\e\.?\e\ed{3}\e\.?\e\ed{3}-?[0-9Xx]\e\eb"
+  norm_tag: "LGPD Art. 5"
+
+\- name: "PLATE_BR_OLD"
+  pattern: "\e\eb[A-Z]{3}-?\e\ed{4}\e\eb"
+  norm_tag: "Personal data context"
+
+\- name: "CEP_BR"
+  pattern: "\e\eb\e\ed{5}-?\e\ed{3}\e\eb"
+  norm_tag: "LGPD Art. 5"
+.fi
+.RE
+.
+.P
+Built-in patterns (no need to redefine unless overriding): LGPD_CPF, LGPD_CNPJ, EMAIL, CREDIT_CARD, PHONE_BR, CCPA_SSN, DATE_DMY.
+.
+.SH ML AND DL PATTERNS FILES
+Both
+.B ml_patterns_file
+and
+.B dl_patterns_file
+use the same format.
+They list training terms for the ML classifier (TF-IDF + RandomForest) and, when installed, the DL classifier (sentence embeddings).
+.
+.P
+Format: a list of objects, each with:
+.TP
+.B text
+(required) A phrase or token (e.g. "cpf", "religious affiliation", "health condition").
+.TP
+.B label
+(required) Either
+.B sensitive
+(or
+.BR 1 )
+or
+.B non_sensitive
+(or
+.BR 0 ).
+.
+.P
+The file can be a root-level list or an object with key
+.B patterns
+or
+.B terms
+containing the list.
+When
+.B sensitivity_detection.ml_terms
+or
+.B sensitivity_detection.dl_terms
+is set in the main config (non-empty), that list is used instead of loading from the corresponding file.
+.
+.P
+Example (YAML) for ML/DL terms:
+.RS
+.nf
+\- text: "cpf"
+  label: sensitive
+\- text: "email"
+  label: sensitive
+\- text: "data de nascimento"
+  label: sensitive
+\- text: "religious affiliation"
+  label: sensitive
+\- text: "political affiliation"
+  label: sensitive
+\- text: "item_count"
+  label: non_sensitive
+\- text: "config_file"
+  label: non_sensitive
+.fi
+.RE
+.
+.P
+Inline example in main config:
+.RS
+.nf
+\fBsensitivity_detection:\fR
+  ml_terms:
+    \- { text: "cid", label: sensitive }
+    \- { text: "religion", label: sensitive }
+    \- { text: "gender", label: sensitive }
+    \- { text: "system_log", label: non_sensitive }
+  dl_terms:
+    \- { text: "religious affiliation", label: sensitive }
+    \- { text: "genetic data", label: sensitive }
+.fi
+.RE
+.
+.P
+See
+.I docs/sensitivity_terms_sensitive_categories.example.yaml
+and
+.I docs/PLAN_SENSITIVE_CATEGORIES_ML_DL.md
+for a full set of sensitive-category terms (health, religion, political, PEP, race, union, genetic, biometric, sex life).
+.
+.SH LEARNED PATTERNS (OUTPUT)
+When
+.B learned_patterns.enabled
+is true, the application writes terms that were classified as sensitive during the scan to
+.BR learned_patterns.output_file .
+You can merge these into your
+.B ml_patterns_file
+for the next run to improve detection.
+.
+.P
+Config example:
+.RS
+.nf
+learned_patterns:
+  enabled: true
+  output_file: learned_patterns.yaml
+  min_sensitivity: HIGH
+  min_confidence: 70
+  min_term_length: 3
+  require_pattern: true
+  append: true
+  exclude_if_in_ml_patterns: true
+.fi
+.RE
+.
+.P
+The output file has the same list format as ML/DL terms (text + label: sensitive).
+Merge entries into
+.B ml_patterns_file
+manually or with a script; then the next run will use the expanded set.
+.
+.SH FILES (SUMMARY)
+.TP
+.I config.yaml
+Main configuration (targets, file_scan, report, api, sqlite_path, scan, optional detection and file paths).
+.TP
+.I config/regex_overrides.yaml
+Example path for custom regex patterns (name, pattern, norm_tag).
+.TP
+.I config/ml_patterns.yaml
+Example path for ML training terms (text, label).
+.TP
+.I config/dl_patterns.yaml
+Example path for DL training terms (same format; can point to the same file as ML).
+.TP
+.I learned_patterns.yaml
+Example output path when learned_patterns.enabled is true.
+.
+.SH INSTALLATION OF THIS MAN PAGE
+Section 5 pages are installed in
+.IR man5 .
+Ensure the directory exists, copy the file, then update the man index:
+.PP
+.RS
+.nf
+sudo mkdir \-p /usr/local/share/man/man5/
+sudo cp docs/lgpd_crawler.5 /usr/local/share/man/man5/
+sudo mandb
+.fi
+.RE
+.PP
+On some BSD systems use
+.B "sudo makewhatis"
+instead of
+.BR mandb .
+.PP
+After installation, view this page with:
+.RS
+.B man 5 lgpd_crawler
+.RE
+.PP
+To view the command and options (section 1) use
+.B "man lgpd_crawler"
+or
+.BR "man 1 lgpd_crawler" .
+.
+.SH SEE ALSO
+.BR lgpd_crawler (1)
+(command, options, API, curl examples),
+.IR README.md ,
+.IR docs/USAGE.md ,
+.IR docs/sensitivity-detection.md ,
+.IR docs/sensitivity_terms_sensitive_categories.example.yaml ,
+.IR docs/regex_overrides.example.yaml ,
+.IR deploy/DEPLOY.md .

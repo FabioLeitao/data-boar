@@ -1,5 +1,5 @@
 .\" lgpd_crawler.1 - man page for python3-lgpd-crawler
-.TH LGPD_CRAWLER 1 "March 2026" "python3-lgpd-crawler 1.3.0" "User Commands"
+.TH LGPD_CRAWLER 1 "March 2026" "python3-lgpd-crawler 1.3.1" "User Commands"
 .SH NAME
 lgpd_crawler \- audit databases and filesystems for personal and sensitive data
 .
@@ -400,7 +400,22 @@ After installation, view the page with:
 .B man lgpd_crawler
 .RE
 .
+.SH TWO MAN PAGES (SECTION 1 AND 5)
+This manual is in section
+.B 1
+(commands).
+A second manual in section
+.B 5
+describes
+.I configuration and file formats
+(config file topology, regex/ML/DL pattern files, examples).
+View it with
+.BR "man 5 lgpd_crawler" .
+On Unix/Linux/BSD, section 1 is for programs and commands; section 5 is for file formats and conventions.
+.
 .SH SEE ALSO
+.BR lgpd_crawler (5)
+(configuration and pattern file formats),
 .BR python (1),
 .BR curl (1).
 .P

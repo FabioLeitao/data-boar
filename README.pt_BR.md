@@ -9,14 +9,14 @@ Aplicação para auditoria de dados pessoais e sensíveis em bancos de dados e s
 
 - **Múltiplos alvos:** configure, em um único arquivo YAML/JSON, vários bancos de dados, diretórios de arquivos, APIs HTTP, compartilhamentos remotos (SharePoint, WebDAV, SMB/CIFS, NFS), **Power BI** e **Power Apps (Dataverse)**.
 - **Bancos SQL:** PostgreSQL, MySQL, MariaDB, SQLite, SQL Server, Oracle, Snowflake (extras opcionais via `pyproject.toml`).
-- **Detecção de sensibilidade:** combina regex configurável com ML (TF‑IDF + RandomForest) e opcionalmente DL (embeddings + classificador) em nomes de colunas e amostras de conteúdo. Nenhum dado bruto é salvo – apenas local, padrão detectado, nível de sensibilidade, norma, etc. Termos de treino ML/DL podem ser definidos no config; guia completo: [docs/sensitivity-detection.pt_BR.md](docs/sensitivity-detection.pt_BR.md) (português) · [docs/sensitivity-detection.md](docs/sensitivity-detection.md) (inglês).
+- **Detecção de sensibilidade:** combina regex configurável com ML (TF‑IDF + RandomForest) e opcionalmente DL (embeddings + classificador) em nomes de colunas e amostras de conteúdo. Já reconhece de fábrica PII (CPF, e-mail, telefone, etc.) e **categorias sensíveis** (saúde, religião, filiação política, gênero, biométrico, genético, raça, sindicato, PEP, vida sexual). Nenhum dado bruto é salvo. Termos de treino ML/DL podem ser definidos no config (inline ou via arquivos); guia completo: [docs/sensitivity-detection.pt_BR.md](docs/sensitivity-detection.pt_BR.md) (português) · [docs/sensitivity-detection.md](docs/sensitivity-detection.md) (inglês).
 - **Heurísticas para reduzir falsos positivos:** letras de música e cifras de violão são detectadas e tratadas de forma especial para reduzir falsos positivos (datas/números em letras/cifras não viram HIGH sozinhos).
 - **SQLite único:** todas as sessões de varredura são gravadas em `audit_results.db`, com tabelas separadas para achados de banco de dados, achados de filesystem e falhas de varredura. Cada sessão tem `session_id`, `started_at`, `finished_at`, `status`, `tenant_name` (cliente/tenant) e `technician_name` (técnico/operador).
 - **Relatórios:** para cada sessão, é gerado um arquivo Excel com abas:
   - **Report info** (Session ID, Started at, Tenant/Customer, Technician/Operator, Application, Version, Author, License, Copyright)
   - Database findings, Filesystem findings, Scan failures, Recommendations, Praise / existing controls, Trends – Session comparison, Heatmap data
 - Um arquivo **heatmap_\<session_prefix\>.png** é gerado com o mapa de calor de sensibilidade/risco (inclui rodapé com aplicação, autor e licença).
-- **CLI e API REST:** modo de execução única via linha de comando ou modo servidor (FastAPI) com dashboard web (Help, About com autor e licença), endpoints para varreduras, relatórios, heatmap, logs e `PATCH /sessions/{session_id}` para metadados de tenant/técnico. A aplicação funciona atrás de NAT, load balancer ou proxy reverso (nginx, Traefik, Caddy); defina **X-Forwarded-Proto: https** quando o TLS for terminado no proxy.
+- **CLI e API REST:** modo de execução única via linha de comando ou modo servidor (FastAPI) com dashboard web (Help, About com autor e licença), endpoints para varreduras, relatórios, heatmap, logs e `PATCH /sessions/{session_id}` para metadados de tenant/técnico. Opcionalmente é possível exigir **chave de API** (X-API-Key ou Authorization: Bearer) para todos os endpoints exceto GET /health. A aplicação funciona atrás de NAT, load balancer ou proxy reverso (nginx, Traefik, Caddy); defina **X-Forwarded-Proto: https** quando o TLS for terminado no proxy.
 
 ## Requisitos e preparação do ambiente
 
@@ -164,6 +164,36 @@ Baixar o último heatmap PNG:
 ```bash
 curl -o heatmap.png http://localhost:8088/heatmap
 ```
+
+## Páginas de manual (man)
+
+Em sistemas que usam a interface tradicional
+`man`
+, há duas páginas de manual:
+
+- **Seção 1 (comando):** `docs/lgpd_crawler.1` – descreve o programa, suas opções, a API web e exemplos com curl. Visualize com `man lgpd_crawler` ou `man 1 lgpd_crawler`.
+- **Seção 5 (formatos de arquivo):** `docs/lgpd_crawler.5` – descreve a topologia do config principal e dos arquivos opcionais (regex overrides, arquivos de termos ML/DL, learned patterns), com exemplos. Visualize com `man 5 lgpd_crawler`.
+
+No Linux/BSD, a seção 1 é para programas e comandos; a seção 5 é para formatos de arquivo e convenções de configuração. Instalar ambas permite usar `man lgpd_crawler` para saber como executar a aplicação e `man 5 lgpd_crawler` para saber como configurá-la e definir padrões.
+
+**Instalar ambas as páginas** (crie os diretórios de destino antes para que o `cp` não falhe se não existirem):
+
+```bash
+sudo mkdir -p /usr/local/share/man/man1/
+sudo mkdir -p /usr/local/share/man/man5/
+sudo cp docs/lgpd_crawler.1 /usr/local/share/man/man1/
+sudo cp docs/lgpd_crawler.5 /usr/local/share/man/man5/
+sudo mandb    # ou: sudo makewhatis   # conforme a distro
+```
+
+Depois:
+
+```bash
+man lgpd_crawler     # comando e opções (seção 1)
+man 5 lgpd_crawler   # config e formatos de arquivo (seção 5)
+```
+
+Ao adicionar novas opções de CLI ou capacidades da API, atualize `docs/lgpd_crawler.1`; ao alterar chaves de config ou formatos de arquivos de padrão, atualize `docs/lgpd_crawler.5` e este README para que as man pages continuem refletindo o comportamento atual. Para **bumps de versão** (convenção major.minor.build e onde atualizar o número da versão), veja [docs/VERSIONING.pt_BR.md](docs/VERSIONING.pt_BR.md) ([inglês](docs/VERSIONING.md)).
 
 ## Deploy com Docker
 
