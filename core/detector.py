@@ -45,12 +45,21 @@ DEFAULT_PATTERNS = {
     "DATE_DMY": (r"\b\d{1,2}/\d{1,2}/\d{2,4}\b", "Personal data context"),
 }
 
-# Default ML training terms (sensitive=1, non_sensitive=0)
+# Default ML training terms (sensitive=1, non_sensitive=0).
+# Includes LGPD/GDPR-relevant PII plus a subset of sensitive categories (health, religion, political,
+# gender, biometric, genetic, race, union, PEP, sex life) for out-of-the-box detection.
+# See docs/PLAN_SENSITIVE_CATEGORIES_ML_DL.md and docs/sensitivity_terms_sensitive_categories.example.yaml
+# for the full list; override via ml_patterns_file or sensitivity_detection.ml_terms to customize.
 DEFAULT_ML_TERMS = [
     ("cpf", 1), ("email", 1), ("credit card", 1), ("password", 1), ("senha", 1),
     ("health record", 1), ("saude", 1), ("data de nascimento", 1), ("birth date", 1),
     ("ethnic origin", 1), ("political opinion", 1), ("religion", 1), ("gender", 1),
     ("nome completo", 1), ("rg", 1), ("ssn", 1), ("salary", 1), ("salário", 1),
+    # Sensitive categories (LGPD Art. 5 II, 11; GDPR Art. 9) – additive subset for out-of-the-box
+    ("religious affiliation", 1), ("religiao", 1), ("political affiliation", 1), ("filiacao politica", 1),
+    ("biometric data", 1), ("genetic data", 1), ("union affiliation", 1), ("sindicato", 1),
+    ("politically exposed person", 1), ("PEP", 1), ("race", 1), ("skin color", 1), ("sexual orientation", 1),
+    ("disability", 1), ("deficiencia", 1), ("condicao de saude", 1), ("health condition", 1),
     ("system_log", 0), ("item_count", 0), ("config_file", 0), ("temp_data", 0),
     ("id_interno", 0), ("quantidade_estoque", 0),
     # Lyrics and music notation context → reduce false positives

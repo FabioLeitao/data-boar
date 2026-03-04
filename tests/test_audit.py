@@ -25,3 +25,19 @@ def test_low_sensitivity():
     # Non-personal context often yields LOW
     assert "sensitivity_level" in result
     assert "pattern_detected" in result
+
+
+def test_religion_classified_as_sensitive():
+    """With default ML terms (including 'religion'), columns/samples with religion are sensitive (HIGH or MEDIUM)."""
+    scanner = DataScanner()
+    result = scanner.scan_column("religion", "user religion catholic")
+    assert result["sensitivity_level"] in ("HIGH", "MEDIUM")
+    assert "pattern_detected" in result
+
+
+def test_political_affiliation_classified_as_sensitive():
+    """With default ML terms (including 'political affiliation'), columns/samples with that phrase are sensitive."""
+    scanner = DataScanner()
+    result = scanner.scan_column("political_affiliation", "political affiliation registered")
+    assert result["sensitivity_level"] in ("HIGH", "MEDIUM")
+    assert "pattern_detected" in result
