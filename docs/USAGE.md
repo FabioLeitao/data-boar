@@ -340,6 +340,13 @@ rate_limit:
 - The CLI uses the same logic only to print **warnings** (it never exits with 429). This lets you keep existing scripts working while seeing when your policies would reject extra scans if called via API or dashboard.
 - Settings can also be overridden with environment variables: `RATE_LIMIT_ENABLED`, `RATE_LIMIT_MAX_CONCURRENT_SCANS`, `RATE_LIMIT_MIN_INTERVAL_SECONDS`, `RATE_LIMIT_GRACE_FOR_RUNNING_STATUS`.
 
+### API and security (CSP, headers)
+
+The web API and dashboard send **security headers** on every response (see [SECURITY.md](../SECURITY.md)): X-Content-Type-Options, X-Frame-Options, **Content-Security-Policy (CSP)**, Referrer-Policy, Permissions-Policy, and HSTS when the request is considered HTTPS.
+
+- **CSP defaults:** Scripts and styles are allowed from the app origin (`'self'`). The dashboard loads Chart.js from the **jsDelivr CDN** (`https://cdn.jsdelivr.net`), which is allowed by default so the "Progress over time" chart works without extra config. A minimal amount of inline script is used for data passed to the chart; the rest of the dashboard logic lives in `/static/dashboard.js`.
+- **Stricter CSP:** To remove `'unsafe-inline'` (e.g. for a high-security profile), you can set a stricter CSP at the **reverse proxy** (override the app's header) or use an env/config toggle if the application adds one in a future version. With a stricter CSP, all script and style must be from allowed origins (e.g. `'self'` and the CDN); any remaining inline script in templates would need to be refactored into external files. See [SECURITY.md](../SECURITY.md) and **deploy/DEPLOY.md** (Security and hardening) for deployment hardening (Docker, Kubernetes, reverse proxy).
+
 ### Targets: databases
 
 Each target is an object in `targets` with at least `name` and `type`. For SQL databases use `type: database` and the appropriate `driver`.
@@ -570,7 +577,7 @@ report:
       recommendation: "Review PIPEDA consent and limitation purposes."
       priority: "MÉDIA"
       relevant_for: "DPO, Privacy Officer"
-    # Sensitive categories (LGPD Art. 5 II, 11; GDPR Art. 9) – see docs/PLAN_SENSITIVE_CATEGORIES_ML_DL.md
+    # Sensitive categories (LGPD Art. 5 II, 11; GDPR Art. 9) – see docs/completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md
     - norm_tag_pattern: "health"
       base_legal: "LGPD Art. 5 II, 11 – dado de saúde; GDPR Art. 9"
       risk: "Health or medical condition data; special treatment and legal basis required."
@@ -634,7 +641,7 @@ api:
   # api_key: "your-secret-key"              # or use api_key_from_env to read from environment
   # api_key_from_env: "AUDIT_API_KEY"
 
-# Optional: possible minor data detection (LGPD Art. 14, GDPR Art. 8). See docs/PLAN_MINOR_DATA_DETECTION.md and docs/minor-detection.md.
+# Optional: possible minor data detection (LGPD Art. 14, GDPR Art. 8). See docs/completed/PLAN_MINOR_DATA_DETECTION.md and docs/minor-detection.md.
 # detection:
 #   minor_age_threshold: 18        # age below this flags DOB/age columns as possible minor (default 18)
 #   minor_full_scan: false         # when true (databases only), re-sample columns that look like DOB/age for minors using minor_full_scan_limit
@@ -673,4 +680,4 @@ scan:
 - **Download report by session:** `GET /reports/{session_id}`
 - **Interactive API docs:** `http://<host>:<port>/docs`
 
-**Related documentation:** [sensitivity-detection.md](sensitivity-detection.md) (ML/DL training terms; [pt-BR](sensitivity-detection.pt_BR.md)). For `recommendation_overrides` covering sensitive categories (health, religion, political, PEP, race, union, genetic, biometric, sex life), see the example above (Global options) and [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](PLAN_SENSITIVE_CATEGORIES_ML_DL.md); [USAGE.pt_BR.md](USAGE.pt_BR.md) (pt-BR) has the same structure. To add a new data-source connector (database, API, share), see [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md).
+**Related documentation:** [sensitivity-detection.md](sensitivity-detection.md) (ML/DL training terms; [pt-BR](sensitivity-detection.pt_BR.md)). For `recommendation_overrides` covering sensitive categories (health, religion, political, PEP, race, union, genetic, biometric, sex life), see the example above (Global options) and [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md); [USAGE.pt_BR.md](USAGE.pt_BR.md) (pt-BR) has the same structure. To add a new data-source connector (database, API, share), see [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md).
