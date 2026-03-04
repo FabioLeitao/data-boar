@@ -223,7 +223,7 @@ dl_patterns_file: config/sensitivity_terms.yaml
 
 ## Categorias sensíveis (saúde, religião, política, etc.)
 
-Para detectar **dados pessoais sensíveis adicionais** (LGPD Art. 5 II, 11; GDPR Art. 9)—como CID/ICD (códigos de diagnóstico), gênero, religião, filiação política, PEP, raça/cor da pele, filiação sindical, dados genéticos/biométricos, vida sexual, saúde/deficiência—adicione termos de treino dessas categorias à sua lista de termos ML/DL.
+A aplicação já inclui um **subconjunto** dessas categorias nos termos ML de fábrica (DEFAULT_ML_TERMS em `core/detector.py`), de modo que a detecção imediata inclui, por exemplo, religião, filiação política, gênero, biométrico, genético, raça, sindicato, PEP e vida sexual. Para detectar **mais dados pessoais sensíveis** (LGPD Art. 5 II, 11; GDPR Art. 9)—como CID/ICD (códigos de diagnóstico), gênero, religião, filiação política, PEP, raça/cor da pele, filiação sindical, dados genéticos/biométricos, vida sexual, saúde/deficiência—adicione ou estenda termos de treino via `ml_patterns_file` / `dl_patterns_file` ou `sensitivity_detection.ml_terms` / `sensitivity_detection.dl_terms`.
 
 - **Plano e tabela de categorias:** [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](PLAN_SENSITIVE_CATEGORIES_ML_DL.md)
 - **Arquivo de exemplo pronto para uso:** [sensitivity_terms_sensitive_categories.example.yaml](sensitivity_terms_sensitive_categories.example.yaml)
