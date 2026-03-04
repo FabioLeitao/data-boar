@@ -193,7 +193,7 @@ man lgpd_crawler     # comando e opções (seção 1)
 man 5 lgpd_crawler   # config e formatos de arquivo (seção 5)
 ```
 
-Ao adicionar novas opções de CLI ou capacidades da API, atualize `docs/lgpd_crawler.1`; ao alterar chaves de config ou formatos de arquivos de padrão, atualize `docs/lgpd_crawler.5` e este README para que as man pages continuem refletindo o comportamento atual.
+Ao adicionar novas opções de CLI ou capacidades da API, atualize `docs/lgpd_crawler.1`; ao alterar chaves de config ou formatos de arquivos de padrão, atualize `docs/lgpd_crawler.5` e este README para que as man pages continuem refletindo o comportamento atual. Para **bumps de versão** (convenção major.minor.build e onde atualizar o número da versão), veja [docs/VERSIONING.pt_BR.md](docs/VERSIONING.pt_BR.md) ([inglês](docs/VERSIONING.md)).
 
 ## Deploy com Docker
 

@@ -465,7 +465,7 @@ man lgpd_crawler     # command and options (section 1)
 man 5 lgpd_crawler   # config and file formats (section 5)
 ```
 
-When adding new CLI options or API capabilities, update `docs/lgpd_crawler.1`; when adding or changing config keys or pattern file formats, update `docs/lgpd_crawler.5` and this README so the man pages continue to reflect the current behaviour.
+When adding new CLI options or API capabilities, update `docs/lgpd_crawler.1`; when adding or changing config keys or pattern file formats, update `docs/lgpd_crawler.5` and this README so the man pages continue to reflect the current behaviour. For **version bumps** (major.minor.build convention and where to update the version number), see [docs/VERSIONING.md](docs/VERSIONING.md).
 
 ## Deploy with Docker
 
