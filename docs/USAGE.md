@@ -295,7 +295,7 @@ CLI uses the path you pass with `--config` (e.g. `config.yaml`). For the **web s
 ### Config file location and shape
 
 - **Location:** Any path; typical names: `config.yaml`, `config/config.json`. Legacy `config/config.json` with `databases` and `file_scan.directories` is normalized automatically.
-- **Root keys:** `targets`, `file_scan`, `report`, `api`, `sqlite_path`, `scan`, optional `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection`, `learned_patterns`.
+- **Root keys:** `targets`, `file_scan`, `report`, `api`, `sqlite_path`, `scan`, **`rate_limit`**, optional `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection`, `learned_patterns`.
 
 ### Sensitivity detection: ML and DL training terms
 
@@ -310,6 +310,35 @@ You can set the **training words for ML and DL** in the main config (inline) or 
 ### Custom regex patterns (new personal/sensitive values)
 
 To detect **new possibly personal or sensitive values** (e.g. RG, vehicle plate, health plan ID), add custom regex patterns. In the main config set **`regex_overrides_file`** to the path of a YAML or JSON file with a list of `{ name, pattern, norm_tag }`. The detector matches each pattern against the column name and sample text; any match is reported with HIGH sensitivity. Your file adds to or overrides built-in patterns (CPF, CNPJ, email, phone, SSN, credit card, dates). **Format and examples:** [sensitivity-detection.md](sensitivity-detection.md#custom-regex-patterns-detecting-new-personalsensitive-values) (EN) · [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md#padrões-regex-customizados-detectar-novos-dados-pessoaissensíveis) (pt-BR).
+
+### Rate limiting and safe concurrency
+
+To avoid accidental DoS or overload when the tool is misused (for example, many scans in a row or too many workers), you can configure a dedicated `rate_limit` block:
+
+```yaml
+rate_limit:
+  enabled: true               # default true when block is present
+  max_concurrent_scans: 1     # maximum running scans at the same time (API)
+  min_interval_seconds: 0     # minimum seconds between scan starts
+  grace_for_running_status: 0 # optional extra grace when status still reports running
+```
+
+- When `rate_limit.enabled` is true, the API endpoints that start scans (`POST /scan`, `POST /start`, `POST /scan_database`) may return **HTTP 429** with a JSON body like:
+
+  ```json
+  {
+    "detail": {
+      "error": "rate_limited",
+      "reason": "too_many_running_scans",
+      "running_scans": 2,
+      "max_concurrent_scans": 1,
+      "source": "scan"
+    }
+  }
+  ```
+
+- The CLI uses the same logic only to print **warnings** (it never exits with 429). This lets you keep existing scripts working while seeing when your policies would reject extra scans if called via API or dashboard.
+- Settings can also be overridden with environment variables: `RATE_LIMIT_ENABLED`, `RATE_LIMIT_MAX_CONCURRENT_SCANS`, `RATE_LIMIT_MIN_INTERVAL_SECONDS`, `RATE_LIMIT_GRACE_FOR_RUNNING_STATUS`.
 
 ### Targets: databases
 

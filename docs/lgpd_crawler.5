@@ -59,7 +59,9 @@ This page describes the topology of those files and their formats, with examples
 .B Main config file
 (default
 .IR config.yaml ):
-defines targets (databases, filesystems, APIs, shares), file_scan, report, api, sqlite_path, scan, and optional paths to the files below.
+defines targets (databases, filesystems, APIs, shares), file_scan, report, api, sqlite_path, scan,
+.B rate_limit
+and optional paths to the files below.
 .IP \(bu 2
 .B regex_overrides_file
 (optional): path to a YAML/JSON file listing custom
@@ -148,6 +150,22 @@ Path to the SQLite database (e.g.
 .B scan
 .I max_workers
 (integer, parallelism).
+.TP
+.B rate_limit
+(optional) Global safeguards against accidental DoS or abuse:
+.I enabled
+(bool),
+.I max_concurrent_scans
+(integer, max running scans at the same time),
+.I min_interval_seconds
+(integer, minimum seconds between scan starts),
+.I grace_for_running_status
+(integer, optional extra tolerance when status still reports running).
+When enabled, API endpoints that start scans may return HTTP 429 with a structured JSON body containing
+.I error
+and
+.I reason
+fields (the CLI only prints warnings).
 .TP
 .B detection
 (optional) Minor data and aggregated identification:

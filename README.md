@@ -173,6 +173,20 @@ YAML/JSON list of `name`, `pattern`, optional `norm_tag`:
   norm_tag: "LGPD Art. 5"
 ```
 
+### Rate limiting and safety (optional)
+
+To prevent accidental overload (several scans in a row or too many in parallel when called via API/dashboard), you can enable a `rate_limit` block in the main config:
+
+```yaml
+rate_limit:
+  enabled: true
+  max_concurrent_scans: 1
+  min_interval_seconds: 0
+  grace_for_running_status: 0
+```
+
+When `enabled` is true, API endpoints that start scans (`POST /scan`, `/start`, `/scan_database`) may respond with **HTTP 429** and a JSON payload describing the reason (e.g. too many running scans or minimum interval not elapsed). The CLI only prints warnings using the same logic, so existing scripts keep working. See `docs/USAGE.md` and `docs/lgpd_crawler.5` for full configuration details and examples.
+
 ## Run
 
 **CLI (one-shot audit):**
