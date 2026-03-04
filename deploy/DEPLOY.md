@@ -83,11 +83,11 @@ docker login
 docker push fabioleitao/python3-lgpd-crawler:latest
 ```
 
-To use a version tag as well (e.g. `1.3.1`):
+To use a version tag as well (e.g. `1.4.0`):
 
 ```bash
-docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.3.1
-docker push fabioleitao/python3-lgpd-crawler:1.3.1
+docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.4.0
+docker push fabioleitao/python3-lgpd-crawler:1.4.0
 ```
 
 Then in `deploy/docker-compose.yml` set `image:` to your pushed image (e.g. `fabioleitao/python3-lgpd-crawler:latest` or `ghcr.io/fabioleitao/...`).
@@ -101,7 +101,7 @@ docker login              # username: fabioleitao, password: your token
 docker push fabioleitao/python3-lgpd-crawler:latest
 ```
 
-Optional: tag and push a version (e.g. `1.3.1`): `docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.3.1` then `docker push fabioleitao/python3-lgpd-crawler:1.3.1`. See also `DOCKER_SETUP.md`.
+Optional: tag and push a version (e.g. `1.4.0`): `docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.4.0` then `docker push fabioleitao/python3-lgpd-crawler:1.4.0`. See also `DOCKER_SETUP.md`.
 
 ## 2. Prepare config
 
@@ -137,6 +137,48 @@ In production the main bottlenecks are **network I/O** (database and API targets
 - **scan.max_workers:** Default **1** (sequential targets). Set **2–4** when you have many targets and want parallel scan threads; I/O (DB/FS) remains the bottleneck, so this improves throughput without requiring much more CPU.
 - **Storage for /data:** Use **fast storage** (SSD, local NVMe) for the volume that holds SQLite and report output; this reduces write latency and speeds up report generation and dashboard reads.
 - **Timeouts:** REST/API connectors use configurable timeouts (see `docs/USAGE.md`). Increase them in target config if your network or APIs are slow to avoid false timeouts.
+
+### Security and hardening (optional)
+
+The following are **optional** practices to harden deployments. They do not replace securing the app at the reverse proxy (TLS, auth, WAF). See also [SECURITY.md](../SECURITY.md).
+
+**Docker**
+
+- **Non-root:** The image already runs as user `appuser` (UID 1000). To enforce at runtime: `docker run --user 1000 ...` (or keep the Dockerfile `USER appuser`).
+- **Resource limits:** Use `--cpus` and `--memory` for plain Docker (e.g. `--memory 1g`). In Compose, set `deploy.resources.limits` (e.g. `cpus: '1'`, `memory: 1G`).
+- **Healthchecks:** The image can be used with Docker `HEALTHCHECK`; for API mode, probe `GET /health`. Compose and Kubernetes examples in this repo already use `/health` for liveness/readiness.
+- **DevSecOps:** Combine with API key (`api.require_api_key`), rate limiting (`rate_limit` in config), and CSP/security headers (see SECURITY.md). Run behind a reverse proxy with TLS and, when exposed externally, consider a WAF.
+
+**Kubernetes (optional examples)**
+
+You can tighten the Deployment with a **securityContext** and add a **NetworkPolicy** and **PodDisruptionBudget** for production. The base manifests in `deploy/kubernetes/` do not include these by default; below are optional snippets and example files.
+
+- **Deployment securityContext** (add under `spec.template.spec` in your Deployment):
+
+```yaml
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: lgpd-audit
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          # ... rest of container spec; ensure /data is a writable volumeMount so the app can write SQLite and reports
+```
+
+The image runs as UID 1000 (`appuser`). Use a writable volume for `/data` (e.g. PVC or emptyDir) so SQLite and report output work with `readOnlyRootFilesystem: true`.
+
+- **NetworkPolicy:** To restrict ingress to the API (e.g. only from an ingress controller or a specific namespace), use an example like `deploy/kubernetes/network-policy.example.yaml`. Apply it only if your cluster supports NetworkPolicy.
+
+- **PodDisruptionBudget (PDB):** When running multiple replicas, a PDB can ensure at least one replica remains during voluntary disruptions. See `deploy/kubernetes/pdb.example.yaml`. Apply only if you run more than one replica.
+
+- **Resource requests/limits:** The default Deployment already sets memory request/limit and CPU request; see "Resource and I/O tuning" above for guidance.
 
 ## 3. Run as a single container (docker run)
 
