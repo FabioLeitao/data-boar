@@ -1,4 +1,5 @@
-.TH LGPD_CRAWLER 1 "March 2026" "python3-lgpd-crawler" "User Commands"
+.\" lgpd_crawler.1 - man page for python3-lgpd-crawler
+.TH LGPD_CRAWLER 1 "March 2026" "python3-lgpd-crawler 1.3.0" "User Commands"
 .SH NAME
 lgpd_crawler \- audit databases and filesystems for personal and sensitive data
 .
@@ -16,6 +17,9 @@ lgpd_crawler \- audit databases and filesystems for personal and sensitive data
 .I PORT
 ]
 [
+.B \-\-reset\-data
+]
+[
 .B \-\-tenant
 .I NAME
 ]
@@ -25,7 +29,7 @@ lgpd_crawler \- audit databases and filesystems for personal and sensitive data
 ]
 .
 .P
-The actual entry point is usually:
+The actual entry point is:
 .br
 .RS 4
 .B python main.py
@@ -36,12 +40,27 @@ The actual entry point is usually:
 .
 .SH DESCRIPTION
 .B python3-lgpd-crawler
-is a data discovery tool designed to help organizations comply with LGPD, GDPR, CCPA and related regulations by scanning databases, filesystems and other data sources for personal and sensitive data.
-It uses configurable regular expressions and an ML classifier to identify potential PII, stores only metadata in a local SQLite database, and produces Excel reports and a sensitivity/risk heatmap PNG.
+is a data discovery tool that helps organizations comply with LGPD, GDPR, CCPA, HIPAA and related regulations by scanning configured data sources for personal and sensitive data.
 .
 .P
-The application can be run as a one\-shot CLI tool or as a long\-running web API with a simple dashboard.
-Each scan run is stored as a session with optional
+It discovers and maps potential PII and sensitive data using configurable
+.I regex
+patterns and an
+.I ML
+classifier (TF-IDF + RandomForest), with optional
+.I DL
+(sentence embeddings) for improved detection.
+Out-of-the-box it recognises common PII (CPF, email, phone, SSN, etc.) and sensitive categories (health, religion, political affiliation, gender, biometric, genetic, race, union, PEP, sex life).
+No raw sample content is stored; only metadata is written to a local SQLite database.
+The application produces Excel reports with multiple sheets (findings, recommendations, trends, report info) and a sensitivity/risk heatmap PNG.
+.
+.P
+Supported targets include: SQL databases (PostgreSQL, MySQL, MariaDB, SQLite, SQL Server, Oracle), local or mounted filesystems, optional Power BI workspaces, Power Apps (Dataverse), remote shares (SharePoint, WebDAV, SMB, NFS), and REST APIs.
+Optional features include: possible minor data detection (LGPD Art. 14, GDPR Art. 8), aggregated/cross-referenced identification risk (quasi-identifiers per table/file), and optional API key protection for the web API.
+.
+.P
+The application can be run as a one-shot CLI tool or as a long-running web API with a dashboard.
+Each scan is stored as a session with optional
 .I tenant/customer
 and
 .I technician/operator
@@ -58,7 +77,7 @@ Used both for one\-shot audits and to resolve API options when starting the web 
 .TP
 .B \-\-web
 Start the REST API server instead of running a one\-shot audit.
-When this flag is set the process does not run a scan automatically; scans are triggered via HTTP (for example with
+When this flag is set the process does not run a scan automatically; scans are triggered via the dashboard or HTTP (e.g.\&
 .BR curl (1)).
 .
 .TP
@@ -69,36 +88,79 @@ is set.
 Defaults to
 .IR 8088 .
 Ignored in one\-shot mode.
-The effective port may also be overridden by
+Can be overridden by
 .B api.port
 in the configuration file.
 .
 .TP
 .B \-\-reset\-data
-Dangerous maintenance operation that wipes all scan sessions, findings and failures from the SQLite database, deletes generated Excel reports and heatmap PNGs under
+Dangerous maintenance operation: wipes all scan sessions, findings and failures from the SQLite database, deletes generated Excel reports and heatmap PNGs under
 .I report.output_dir
-and records a single row in the
+and records a row in the
 .I data_wipe_log
-table with the time and reason of the wipe.
-When this flag is used, no scan is started; the process exits after the reset completes or fails.
+table.
+No scan is started; the process exits after the reset.
+See SECURITY.md before use in production.
 .
 .TP
 .BI "\-\-tenant " NAME
 Optional tenant or customer name for the scan in CLI (one\-shot) mode.
-This value is stored as
+Stored as
 .I tenant_name
-on the scan session, appears on the web dashboard and reports list, and is written to the
-.I "Report info"
-sheet in the Excel report.
+on the session and written to the "Report info" sheet and dashboard.
 .
 .TP
 .BI "\-\-technician " NAME
-Optional technician or operator name responsible for the scan in CLI (one\-shot) mode.
-This value is stored as
+Optional technician or operator name for the scan in CLI (one\-shot) mode.
+Stored as
 .I technician_name
-on the scan session, appears on the web dashboard and reports list, and is written to the
-.I "Report info"
-sheet in the Excel report.
+on the session and written to the "Report info" sheet and dashboard.
+.
+.SH CONFIGURATION
+The main config file (YAML or JSON) defines:
+.IP \(bu 2
+.B targets
+\- list of databases, filesystems, APIs, shares (name, type, connection or path).
+.IP \(bu 2
+.B file_scan
+\- extensions, recursive, scan_sqlite_as_db, sample_limit.
+.IP \(bu 2
+.B report
+\- output_dir; optionally
+.B recommendation_overrides
+(list of norm_tag_pattern with base_legal, risk, recommendation, priority, relevant_for) for custom recommendation text per category (e.g.\& health, religion, political).
+.IP \(bu 2
+.B api
+\- port; optionally require_api_key, api_key or api_key_from_env for API key protection (GET /health remains public).
+.IP \(bu 2
+.B sqlite_path
+\- path to the SQLite database (default:
+.IR audit_results.db ).
+.IP \(bu 2
+.B scan
+\- max_workers for parallelism.
+.IP \(bu 2
+Optional:
+.B detection
+(minor_age_threshold, minor_cross_reference, aggregated_identification_enabled, quasi_identifier_mapping),
+.B ml_patterns_file
+,
+.B dl_patterns_file
+,
+.B regex_overrides_file
+,
+.B sensitivity_detection.ml_terms
+/
+.B .dl_terms
+,
+.B learned_patterns
+.
+.P
+See
+.I docs/USAGE.md
+and
+.I docs/sensitivity-detection.md
+for the full schema and examples.
 .
 .SH ENVIRONMENT
 .TP
@@ -106,60 +168,91 @@ sheet in the Excel report.
 Path to the configuration file used by the web API.
 When the server is started with
 .B \-\-web
-and
+and no
 .B \-\-config
-is not provided, the application loads configuration from
+path is given, the application loads configuration from
 .B CONFIG_PATH
 if set, or from
 .IR config.yaml
 in the current working directory.
 .
+.TP
+.B AUDIT_API_KEY
+When
+.B api.api_key_from_env
+is set in config and
+.B api.require_api_key
+is true, the API key is read from this variable (alternative to
+.B api.api_key
+in the config file).
+.
 .SH FILES
 .TP
 .I config.yaml
-Default configuration file containing
-.B targets
-(databases, filesystems, APIs, shares), file scan options, report output directory and API settings.
+Default configuration file (targets, file_scan, report, api, sqlite_path, scan, optional detection and pattern files).
 .
 .TP
 .I audit_results.db
-Local SQLite database where scan sessions, findings and failures are stored.
-The path is controlled by
-.B sqlite_path
-in the configuration.
+SQLite database for sessions, findings and failures (path set by
+.BR sqlite_path ).
 .
 .TP
 .I Relatorio_Auditoria_*.xlsx
-Excel reports generated for each session, written under the directory specified by
+Excel reports per session, under
 .B report.output_dir
-in the configuration.
+(with sheets: Report info, Database findings, Filesystem findings, Scan failures, Recommendations, Trends, etc.).
 .
 .TP
 .I heatmap_*.png
-Sensitivity/risk heatmap images generated for each session, saved in the same directory as the Excel reports.
+Sensitivity/risk heatmap images per session, in the same directory as the Excel reports.
+.
+.SH WEB INTERFACE
+When the API is running (\fB\-\-web\fR), open in a browser:
+.
+.TP
+.B /
+Dashboard: scan status, "Start scan" button, tenant/technician inputs, recent sessions and download links, progress chart.
+.TP
+.B /reports
+List of all sessions with Download link per session (regenerates Excel report).
+.TP
+.B /config
+Edit configuration (YAML) in the browser; "Save configuration" writes to the config file used for the next scan.
+.TP
+.B /help
+Quickstart, config examples, sensitivity detection and recommendation_overrides, links to README and USAGE (EN/pt\-BR).
+.TP
+.B /about
+Application name, version, author, license.
+.TP
+.B /docs
+Interactive API documentation (OpenAPI/Swagger).
+.P
+The "Start scan" button triggers
+.B POST /scan
+(a full audit of all targets in the current config).
 .
 .SH EXAMPLES
-.SS One\-shot CLI scans
+.SS One\-shot CLI
 .TP
-Minimal scan using the default configuration:
+Minimal scan with default config:
 .RS
 .B python main.py \-\-config config.yaml
 .RE
 .
 .TP
-.TP
-Reset local history (dangerous) by wiping scan sessions, findings and generated reports:
-.RS
-.B python main.py \-\-config config.yaml \-\-reset\-data
-.RE
-.
-.TP
-Scan tagged with tenant and technician metadata:
+Scan with tenant and technician metadata:
 .RS
 .B python main.py \-\-config config.yaml \-\-tenant "Acme Corp" \-\-technician "Alice Colleague-V"
 .RE
 .
-.SS Running the web API
+.TP
+Wipe all sessions, findings and generated reports (dangerous):
+.RS
+.B python main.py \-\-config config.yaml \-\-reset\-data
+.RE
+.
+.SS Web API
 .TP
 Start the API on port 8088:
 .RS
@@ -167,9 +260,7 @@ Start the API on port 8088:
 .RE
 .
 .TP
-Set the configuration file via
-.B CONFIG_PATH
-and start the server:
+Use CONFIG_PATH and start the server:
 .RS
 .nf
 export CONFIG_PATH=/etc/lgpd\-audit/config.yaml
@@ -177,9 +268,9 @@ python main.py \-\-web \-\-port 8088
 .fi
 .RE
 .
-.SS Using the API with curl
+.SS curl \- API examples
 .TP
-Start a full audit with default metadata:
+Start a full audit:
 .RS
 .nf
 curl \-X POST http://localhost:8088/scan
@@ -187,12 +278,12 @@ curl \-X POST http://localhost:8088/scan
 .RE
 .
 .TP
-Start a full audit tagged with tenant and technician:
+Start a scan with tenant and technician:
 .RS
 .nf
 curl \-X POST http://localhost:8088/scan \\
   \-H "Content\-Type: application/json" \\
-  \-d '{ "tenant": "Acme Corp", "technician": "Alice Colleague-V" }'
+  \-d '{"tenant": "Acme Corp", "technician": "Alice Colleague-V"}'
 .fi
 .RE
 .
@@ -205,7 +296,23 @@ curl http://localhost:8088/status
 .RE
 .
 .TP
-Download the latest Excel report:
+Health check (liveness/readiness; always public even when API key is required):
+.RS
+.nf
+curl http://localhost:8088/health
+.fi
+.RE
+.
+.TP
+List sessions:
+.RS
+.nf
+curl http://localhost:8088/list
+.fi
+.RE
+.
+.TP
+Download latest Excel report:
 .RS
 .nf
 curl \-o report.xlsx http://localhost:8088/report
@@ -213,7 +320,7 @@ curl \-o report.xlsx http://localhost:8088/report
 .RE
 .
 .TP
-Download the latest heatmap PNG:
+Download latest heatmap PNG:
 .RS
 .nf
 curl \-o heatmap.png http://localhost:8088/heatmap
@@ -221,7 +328,7 @@ curl \-o heatmap.png http://localhost:8088/heatmap
 .RE
 .
 .TP
-Download the latest audit log file:
+Download latest audit log:
 .RS
 .nf
 curl \-o audit.log http://localhost:8088/logs
@@ -232,41 +339,77 @@ curl \-o audit.log http://localhost:8088/logs
 Download report and heatmap for a specific session:
 .RS
 .nf
-curl \-o report_20250301.xlsx \\
-  "http://localhost:8088/reports/a1b2c3d4\-20250301_143022"
-
-curl \-o heatmap_20250301.png \\
-  "http://localhost:8088/heatmap/a1b2c3d4\-20250301_143022"
+curl \-o report.xlsx "http://localhost:8088/reports/SESSION_ID"
+curl \-o heatmap.png "http://localhost:8088/heatmap/SESSION_ID"
 .fi
 .RE
 .
 .TP
-Download the audit log that contains a specific session id:
+Download audit log for a session:
 .RS
 .nf
-curl \-o audit_20250301.log \\
-  "http://localhost:8088/logs/a1b2c3d4\-20250301_143022"
+curl \-o audit.log "http://localhost:8088/logs/SESSION_ID"
 .fi
 .RE
 .
-.SH INSTALLATION
-To install this man page system\-wide on a typical Linux or BSD system:
+.TP
+Update tenant/customer for a session (PATCH):
+.RS
+.nf
+curl \-X PATCH "http://localhost:8088/sessions/SESSION_ID" \\
+  \-H "Content\-Type: application/json" \\
+  \-d '{"tenant": "New Tenant Name"}'
+.fi
+.RE
+.
+.TP
+When API key is required (X-API-Key or Bearer):
+.RS
+.nf
+curl \-X POST http://localhost:8088/scan \\
+  \-H "X-API-Key: your-secret-key"
+# or
+curl \-X POST http://localhost:8088/scan \\
+  \-H "Authorization: Bearer your-secret-key"
+.fi
+.RE
+.
+.SH INSTALLATION OF THIS MAN PAGE
+To install this man page system\-wide on a typical Linux or BSD system, ensure the target directory exists, then copy the file and update the man index:
 .PP
 .RS
 .nf
+sudo mkdir \-p /usr/local/share/man/man1/
 sudo cp docs/lgpd_crawler.1 /usr/local/share/man/man1/
-sudo mandb            # or "sudo makewhatis" on some BSD systems
+sudo mandb
 .fi
 .RE
-.
-After installation, you can view it with:
 .PP
+On some BSD systems use
+.B "sudo makewhatis"
+instead of
+.BR mandb .
+If the directory does not exist,
+.B "sudo mkdir -p"
+creates it so that
+.B "sudo cp"
+does not fail with "No such file or directory".
+.PP
+After installation, view the page with:
 .RS
 .B man lgpd_crawler
 .RE
 .
 .SH SEE ALSO
 .BR python (1),
-.BR curl (1),
-the project README and USAGE documentation in the source tree.
-
+.BR curl (1).
+.P
+Project documentation in the source tree:
+.IR README.md ,
+.IR docs/USAGE.md ,
+.IR docs/USAGE.pt_BR.md ,
+.IR docs/sensitivity-detection.md ,
+.IR docs/PLAN_SENSITIVE_CATEGORIES_ML_DL.md ,
+.IR deploy/DEPLOY.md
+(Docker and image on Docker Hub:
+.IR fabioleitao/python3-lgpd-crawler ).

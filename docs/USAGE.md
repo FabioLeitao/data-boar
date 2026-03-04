@@ -527,7 +527,7 @@ file_scan:
 
 report:
   output_dir: .    # directory for Excel and heatmap PNG
-  # Optional: custom recommendation text per norm/framework (for UK GDPR, PIPEDA, APPI, etc.)
+  # Optional: custom recommendation text per norm/framework (UK GDPR, PIPEDA, or sensitive categories)
   recommendation_overrides:
     - norm_tag_pattern: "UK GDPR"
       base_legal: "UK GDPR Art. 4(1)"
@@ -541,6 +541,61 @@ report:
       recommendation: "Review PIPEDA consent and limitation purposes."
       priority: "MÉDIA"
       relevant_for: "DPO, Privacy Officer"
+    # Sensitive categories (LGPD Art. 5 II, 11; GDPR Art. 9) – see docs/PLAN_SENSITIVE_CATEGORIES_ML_DL.md
+    - norm_tag_pattern: "health"
+      base_legal: "LGPD Art. 5 II, 11 – dado de saúde; GDPR Art. 9"
+      risk: "Health or medical condition data; special treatment and legal basis required."
+      recommendation: "Ensure legal basis and consent; restrict access; consider anonymisation."
+      priority: "CRÍTICA"
+      relevant_for: "DPO, Compliance, Health area"
+    - norm_tag_pattern: "religious"
+      base_legal: "LGPD Art. 5 II, 11 – convicção religiosa; GDPR Art. 9"
+      risk: "Sensitive data; discrimination and differential treatment."
+      recommendation: "Minimisation; explicit legal basis and consent; restricted access."
+      priority: "CRÍTICA"
+      relevant_for: "DPO, Compliance, HR"
+    - norm_tag_pattern: "political"
+      base_legal: "LGPD Art. 5 II, 11 – filiação política; GDPR Art. 9"
+      risk: "Political affiliation or opinion; sensitive under both regimes."
+      recommendation: "Minimise; explicit consent and purpose limitation; restrict access."
+      priority: "CRÍTICA"
+      relevant_for: "DPO, Compliance, Legal"
+    - norm_tag_pattern: "PEP"
+      base_legal: "LGPD Art. 5 II; GDPR Art. 9 – PEP lists and enhanced due diligence"
+      risk: "Politically exposed person data; enhanced scrutiny and retention limits."
+      recommendation: "Apply PEP policies; limit retention; document legal basis."
+      priority: "ALTA"
+      relevant_for: "DPO, Compliance, AML/KYC"
+    - norm_tag_pattern: "race"
+      base_legal: "LGPD Art. 5 II, 11 – raça/origem; GDPR Art. 9"
+      risk: "Race, skin color or ethnic origin; discrimination risk."
+      recommendation: "Minimise; explicit consent; restrict access and purpose."
+      priority: "CRÍTICA"
+      relevant_for: "DPO, Compliance, HR"
+    - norm_tag_pattern: "union"
+      base_legal: "LGPD Art. 5 II, 11 – filiação sindical; GDPR Art. 9"
+      risk: "Trade union membership; sensitive in both regimes."
+      recommendation: "Minimise; legal basis and consent; restricted access."
+      priority: "ALTA"
+      relevant_for: "DPO, Compliance, HR"
+    - norm_tag_pattern: "genetic"
+      base_legal: "LGPD Art. 5 II, 11 – dados genéticos; GDPR Art. 9"
+      risk: "Genetic data; special category; high re-identification risk."
+      recommendation: "Strict minimisation; explicit consent; consider separate storage and access controls."
+      priority: "CRÍTICA"
+      relevant_for: "DPO, Compliance, Health area"
+    - norm_tag_pattern: "biometric"
+      base_legal: "LGPD Art. 5 II, 11 – biometria; GDPR Art. 9"
+      risk: "Biometric data for identification; irreversible if compromised."
+      recommendation: "Purpose limitation; secure storage; legal basis and consent."
+      priority: "CRÍTICA"
+      relevant_for: "DPO, Compliance, Security"
+    - norm_tag_pattern: "sex life"
+      base_legal: "LGPD Art. 5 II, 11 – vida sexual; GDPR Art. 9"
+      risk: "Sex life or sexual orientation; highly sensitive."
+      recommendation: "Strict minimisation; explicit consent; highest access restrictions."
+      priority: "CRÍTICA"
+      relevant_for: "DPO, Compliance, Legal"
 
 api:
   port: 8088
@@ -589,4 +644,4 @@ scan:
 - **Download report by session:** `GET /reports/{session_id}`
 - **Interactive API docs:** `http://<host>:<port>/docs`
 
-**Related documentation:** [sensitivity-detection.md](sensitivity-detection.md) (ML/DL training terms; [pt-BR](sensitivity-detection.pt_BR.md)). To add a new data-source connector (database, API, share), see [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md).
+**Related documentation:** [sensitivity-detection.md](sensitivity-detection.md) (ML/DL training terms; [pt-BR](sensitivity-detection.pt_BR.md)). For `recommendation_overrides` covering sensitive categories (health, religion, political, PEP, race, union, genetic, biometric, sex life), see the example above (Global options) and [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](PLAN_SENSITIVE_CATEGORIES_ML_DL.md); [USAGE.pt_BR.md](USAGE.pt_BR.md) (pt-BR) has the same structure. To add a new data-source connector (database, API, share), see [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md).
