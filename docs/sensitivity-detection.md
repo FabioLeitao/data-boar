@@ -228,7 +228,7 @@ To detect **additional sensitive personal data** (LGPD Art. 5 II, 11; GDPR Art. 
 - **Plan and table of categories:** [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](PLAN_SENSITIVE_CATEGORIES_ML_DL.md)
 - **Ready-to-use example file:** [sensitivity_terms_sensitive_categories.example.yaml](sensitivity_terms_sensitive_categories.example.yaml)
 
-Copy that file (or merge its entries) into your `ml_patterns_file` / `dl_patterns_file`, or into `sensitivity_detection.ml_terms` / `sensitivity_detection.dl_terms`. You can use `report.recommendation_overrides` so findings in these categories get the right Base legal, Risk, and Priority in the report (see the plan for examples).
+Copy that file (or merge its entries) into your `ml_patterns_file` / `dl_patterns_file`, or into `sensitivity_detection.ml_terms` / `sensitivity_detection.dl_terms`. You can use `report.recommendation_overrides` so findings in these categories get the right Base legal, Risk, and Priority in the report. A full example (health, religion, political, PEP, race, union, genetic, biometric, sex life) is in [USAGE.md](USAGE.md) (Global options); [USAGE.pt_BR.md](USAGE.pt_BR.md) (Português).
 
 ---
 
