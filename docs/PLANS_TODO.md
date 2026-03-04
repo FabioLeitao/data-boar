@@ -2,7 +2,7 @@
 
 This document lists **incomplete goals** from active plans and the **recommended sequential to-dos** to achieve them. All steps are intended to be **non-destructive**, **non-regression**, and **non-performance impacting**; each step should be **tested** and **safe** before marking done.
 
-**Plan status:** Corporate compliance improvements ✅ Complete · Minor data detection ✅ Complete · Aggregated identification ✅ Complete · Sensitive categories ML/DL ⬜ 3 to-dos pending
+**Plan status:** Corporate compliance improvements ✅ Complete · Minor data detection ✅ Complete · Aggregated identification ✅ Complete · Sensitive categories ML/DL ✅ Complete
 
 ---
 
@@ -73,9 +73,11 @@ Goal: Cross information from multiple sources/columns (gender, job position, hea
 
 ---
 
-## Plan: Sensitive categories ML/DL (CID, gender, religion, political, PEP, race, union, genetic, biometric, sex life)
+## Plan: Sensitive categories ML/DL (CID, gender, religion, political, PEP, race, union, genetic, biometric, sex life) ✅ **Complete**
 
 **Source:** [docs/PLAN_SENSITIVE_CATEGORIES_ML_DL.md](PLAN_SENSITIVE_CATEGORIES_ML_DL.md)
+
+**Progress:** All to-dos below are complete. This plan is **closed** for implementation; use this section only for reference to the current state of the application.
 
 Goal: Configure with examples so ML/DL can detect other sensitive personal data (CID/ICD, gender, religion, political affiliation, PEP, race/skin color, union, genetic/biometric, sex life, health/disability). Provide ready-to-use term lists and documentation; optional built-in defaults and report overrides.
 
@@ -84,9 +86,9 @@ Goal: Configure with examples so ML/DL can detect other sensitive personal data 
 | 1 | **Example file:** Create `sensitivity_terms_sensitive_categories.example.yaml` with terms for all categories (EN and PT-BR oriented) | ✅ Done |
 | 2 | **Docs EN:** In `sensitivity-detection.md`, add section "Sensitive categories (health, religion, political, etc.)" with link to plan and example file | ✅ Done |
 | 3 | **Docs PT-BR:** In `sensitivity-detection.pt_BR.md`, add same section in Portuguese | ✅ Done |
-| 4 | **Built-in defaults (optional):** Consider adding a subset of these terms to `DEFAULT_ML_TERMS` in `core/detector.py` so out-of-the-box detection includes e.g. religion, political, gender, biometric, genetic | ⬜ Pending |
-| 5 | **Recommendation overrides example:** Add example in USAGE or in plan for `recommendation_overrides` covering health, religion, political, PEP, race, union, genetic, biometric, sex life | ⬜ Pending |
-| 6 | **Tests:** Add test that when ML terms include e.g. "religion" and "political affiliation", columns/samples with those terms are classified as sensitive; existing tests pass | ⬜ Pending |
+| 4 | **Built-in defaults (optional):** Consider adding a subset of these terms to `DEFAULT_ML_TERMS` in `core/detector.py` so out-of-the-box detection includes e.g. religion, political, gender, biometric, genetic | ✅ Done |
+| 5 | **Recommendation overrides example:** Add example in USAGE or in plan for `recommendation_overrides` covering health, religion, political, PEP, race, union, genetic, biometric, sex life | ✅ Done |
+| 6 | **Tests:** Add test that when ML terms include e.g. "religion" and "political affiliation", columns/samples with those terms are classified as sensitive; existing tests pass | ✅ Done |
 
 ---
 
