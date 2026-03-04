@@ -93,13 +93,29 @@ scan:
 </section>
 
 <section class="card">
+  <h2>Sensitivity detection and reporting</h2>
+  <p>
+    The app detects personal and sensitive data using <strong>regex</strong>, <strong>ML</strong> (TF-IDF + classifier), and optional <strong>DL</strong> (sentence embeddings). Out-of-the-box it recognises PII (CPF, email, phone, etc.) and <strong>sensitive categories</strong> (health, religion, political affiliation, gender, biometric, genetic, race, union, PEP, sex life). You can:
+  </p>
+  <ul>
+    <li>Add your own terms via <code>ml_patterns_file</code> or <code>sensitivity_detection.ml_terms</code> in config.</li>
+    <li>Use the example file <code>docs/sensitivity_terms_sensitive_categories.example.yaml</code> and set <code>ml_patterns_file</code> (or <code>dl_patterns_file</code>) to it.</li>
+    <li>Customise the Recommendations sheet with <code>report.recommendation_overrides</code>: map norm_tag patterns (e.g. <code>health</code>, <code>religious</code>, <code>political</code>) to Base legal, Risk, Priority, and “Relevante para”.</li>
+  </ul>
+  <p class="muted">
+    See <code>docs/sensitivity-detection.md</code> (EN) and <code>docs/sensitivity-detection.pt_BR.md</code> (pt-BR); <code>docs/PLAN_SENSITIVE_CATEGORIES_ML_DL.md</code> for design; <code>docs/USAGE.md</code> (EN) and <code>docs/USAGE.pt_BR.md</code> (pt-BR) for full <code>recommendation_overrides</code> examples.
+  </p>
+</section>
+
+<section class="card">
   <h2>More documentation</h2>
   <p>
     For full details, including optional connectors (Power BI, Dataverse, REST APIs, shares) and advanced tuning, see:
   </p>
   <ul>
-    <li><code>README.md</code> and <code>docs/USAGE.md</code> (English)</li>
-    <li><code>README.pt_BR.md</code> and <code>docs/USAGE.pt_BR.md</code> (Português – Brasil)</li>
+    <li><code>README.md</code> and <code>docs/USAGE.md</code> (English) · <code>docs/USAGE.pt_BR.md</code> (Português – Brasil)</li>
+    <li><code>docs/sensitivity-detection.md</code> (EN) · <code>docs/sensitivity-detection.pt_BR.md</code> (pt-BR) – ML/DL terms and config</li>
+    <li><code>docs/PLAN_SENSITIVE_CATEGORIES_ML_DL.md</code> – sensitive categories (health, religion, political, etc.)</li>
   </ul>
   <p class="muted">
     These files live in the project repository and should be kept in sync with the behaviour you see here.
