@@ -5,7 +5,7 @@
 #   .\scripts\commit-or-pr.ps1 -Action PR    -Title "Short description" -Body "Bullet1`nBullet2"
 #   .\scripts\commit-or-pr.ps1 -Action PR    -Branch "feature/my-pr" -Title "..." -Body "..."
 #   .\scripts\commit-or-pr.ps1 -Action PR    -IncludeFiles "README.md","api/routes.py" -Title "..." -Body "..."
-# Run from repo root. Excludes audit_results.db.
+# Run from repo root. Respects .gitignore: only non-ignored paths are staged (no audit_results.db, .env, etc.).
 # Preview: show what would be committed (files + proposed message); no commit.
 # -IncludeFiles: optional; only these paths are included (enables file selection). Comma-separated or array.
 # PR: fetch + rebase if behind origin (keeps workflow clean), then push and open PR in browser.
@@ -37,13 +37,18 @@ if ($IncludeFiles.Count -eq 1 -and $IncludeFiles[0] -match ',') {
     $IncludeFiles = $IncludeFiles[0] -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ }
 }
 
-# Changed + untracked files, excluding local DB and other ignored content
+# Changed + untracked files; only include paths not ignored by .gitignore
 $changed = @()
 $changed += git diff --name-only
 $changed += git diff --name-only --cached
 $changed += git ls-files --others --exclude-standard
 $changed = $changed | Sort-Object -Unique
-$toAdd = @($changed | Where-Object { $_ -and $_ -notmatch 'audit_results\.db$' })
+$toAdd = @()
+foreach ($p in $changed) {
+    if (-not $p) { continue }
+    git check-ignore -q $p 2>$null
+    if ($LASTEXITCODE -ne 0) { $toAdd += $p }
+}
 
 # Optional: restrict to selected files only (file selection)
 if ($IncludeFiles.Count -gt 0) {
@@ -52,7 +57,7 @@ if ($IncludeFiles.Count -gt 0) {
 
 # Preview and Commit require something to commit
 if (-not $toAdd.Count -and $Action -in 'Preview','Commit') {
-    Write-Host "No files to commit (or only audit_results.db)."
+    Write-Host "No files to commit (or all changes are ignored by .gitignore)."
     exit 0
 }
 
