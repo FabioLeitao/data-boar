@@ -154,8 +154,8 @@ Goal: Harden the web surface of the LGPD crawler (CSP, headers, and deploy guida
 
 1. Refine CSP and security headers in `api/routes.py` (partial lockdown profile, optional stricter mode) and move dashboard JS into `/static/dashboard.js` to reduce inline code. **Status:** ✅ Done.
 2. Confirm and, if needed, adjust Help page JS so it works under the refined CSP. **Status:** ✅ Done (no inline JS present; Help works with updated CSP).
-3. Extend `deploy/DEPLOY.md` with Docker and Kubernetes hardening guidance (securityContext, NetworkPolicy, PDB, resource tuning) as **optional** examples. **Status:** ⬜ Pending.
-4. Update `SECURITY.md` with a short section covering CSP, security headers, and the new hardening examples. **Status:** ⬜ Pending.
-5. Update docs (`docs/USAGE.md`, `docs/USAGE.pt_BR.md`) to mention CSP behaviour and how to enable stricter profiles, and update man(1)/(5) plus `help.html` to stay in sync. **Status:** ⬜ Pending.
+3. Extend `deploy/DEPLOY.md` with Docker and Kubernetes hardening guidance (securityContext, NetworkPolicy, PDB, resource tuning) as **optional** examples. **Status:** ✅ Done.
+4. Update `SECURITY.md` with a short section covering CSP, security headers, and the new hardening examples. **Status:** ✅ Done.
+5. Update docs (`docs/USAGE.md`, `docs/USAGE.pt_BR.md`) to mention CSP behaviour and how to enable stricter profiles, and update man(1)/(5) plus `help.html` to stay in sync. **Status:** ✅ Done.
 6. Add/adjust tests (e.g. `tests/test_rate_limit_api.py`-style) to assert CSP header presence and default semantics, and re-run the full test suite (`uv run pytest tests/ -v -W error`). **Status:** ✅ Done (see `tests/test_csp_headers.py`; full suite passes).
 
