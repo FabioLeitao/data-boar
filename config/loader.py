@@ -14,6 +14,8 @@ try:
 except ImportError:
     json = None
 
+import os
+
 
 def load_config(path: str | Path) -> dict[str, Any]:
     """
@@ -119,7 +121,6 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
     out["api"]["api_key"] = (out["api"].get("api_key") or "").strip() or None
     api_key_env = (out["api"].get("api_key_from_env") or "").strip()
     if api_key_env and not out["api"]["api_key"]:
-        import os
         out["api"]["api_key"] = (os.environ.get(api_key_env) or "").strip() or None
     out["api"]["api_key_from_env"] = api_key_env or None
 
@@ -163,10 +164,74 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         "quasi_identifier_mapping": list(quasi) if isinstance(quasi, list) else [],
     }
 
+    # Rate limiting / safety
+    rate_cfg = data.get("rate_limit") or {}
+    # Enabled default: True, but with conservative defaults so existing behaviour is effectively unchanged
+    enabled_default = True
+    enabled = rate_cfg.get("enabled", enabled_default)
+    env_enabled = os.environ.get("RATE_LIMIT_ENABLED")
+    if env_enabled is not None:
+        enabled = env_enabled.strip().lower() in ("1", "true", "yes", "on")
+
+    max_concurrent = rate_cfg.get("max_concurrent_scans", 1)
+    env_max = os.environ.get("RATE_LIMIT_MAX_CONCURRENT_SCANS")
+    if env_max is not None:
+        try:
+            max_concurrent = int(env_max)
+        except ValueError:
+            pass
+    try:
+        max_concurrent = max(1, int(max_concurrent))
+    except (TypeError, ValueError):
+        max_concurrent = 1
+
+    min_interval = rate_cfg.get("min_interval_seconds", 0)
+    env_min = os.environ.get("RATE_LIMIT_MIN_INTERVAL_SECONDS")
+    if env_min is not None:
+        try:
+            min_interval = int(env_min)
+        except ValueError:
+            pass
+    try:
+        min_interval = max(0, int(min_interval))
+    except (TypeError, ValueError):
+        min_interval = 0
+
+    grace = rate_cfg.get("grace_for_running_status", 0)
+    env_grace = os.environ.get("RATE_LIMIT_GRACE_FOR_RUNNING_STATUS")
+    if env_grace is not None:
+        try:
+            grace = int(env_grace)
+        except ValueError:
+            pass
+    try:
+        grace = max(0, int(grace))
+    except (TypeError, ValueError):
+        grace = 0
+
+    out["rate_limit"] = {
+        "enabled": bool(enabled),
+        "max_concurrent_scans": max_concurrent,
+        "min_interval_seconds": min_interval,
+        "grace_for_running_status": grace,
+    }
+
     # Parallel/sequential
     out["scan"] = data.get("scan", {})
     if "max_workers" not in out["scan"]:
         out["scan"]["max_workers"] = 1  # 1 = sequential; >1 = parallel
+    # Clamp max_workers to a safe range to avoid accidental huge parallelism
+    raw_max_workers = out["scan"].get("max_workers", 1)
+    try:
+        mw = int(raw_max_workers)
+    except (TypeError, ValueError):
+        mw = 1
+    if mw < 1:
+        mw = 1
+    # Hard upper cap to avoid runaway parallelism from misconfiguration
+    if mw > 32:
+        mw = 32
+    out["scan"]["max_workers"] = mw
 
     # SQLite path for audit results
     out["sqlite_path"] = data.get("sqlite_path", "audit_results.db")

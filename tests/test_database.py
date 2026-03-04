@@ -53,6 +53,28 @@ def test_normalize_config_detection_aggregated_identification():
     assert det2.get("quasi_identifier_mapping") == []
 
 
+def test_normalize_config_rate_limit_and_scan_max_workers(monkeypatch):
+    """Config loader normalizes rate_limit block and clamps scan.max_workers."""
+    # No env overrides
+    cfg = normalize_config({
+        "targets": [],
+        "scan": {"max_workers": 100},
+        "rate_limit": {
+            "enabled": True,
+            "max_concurrent_scans": 0,   # should be clamped to >= 1
+            "min_interval_seconds": -10, # should be clamped to >= 0
+            "grace_for_running_status": -5,  # should be clamped to >= 0
+        },
+    })
+    rl = cfg.get("rate_limit", {})
+    assert rl.get("enabled") is True
+    assert rl.get("max_concurrent_scans") >= 1
+    assert rl.get("min_interval_seconds") >= 0
+    assert rl.get("grace_for_running_status") >= 0
+    # max_workers capped to a safe upper bound
+    assert cfg.get("scan", {}).get("max_workers") <= 32
+
+
 def test_local_db_manager(tmp_path):
     db_path = str(tmp_path / "test_audit.db")
     mgr = LocalDBManager(db_path)
@@ -88,6 +110,39 @@ def test_get_previous_session(tmp_path):
         assert prev["session_id"] == "session-first"
         assert prev["database_findings"] == 1
         assert mgr.get_previous_session("session-first") is None
+    finally:
+        mgr.dispose()
+
+
+def test_running_sessions_count_and_last_session(tmp_path):
+    """LocalDBManager helpers for rate limiting: running count and last session metadata."""
+    db_path = str(tmp_path / "test_running.db")
+    mgr = LocalDBManager(db_path)
+    try:
+        # No sessions yet
+        assert mgr.get_running_sessions_count() == 0
+        assert mgr.get_last_session() is None
+
+        # First session: running
+        mgr.set_current_session_id("s1")
+        mgr.create_session_record("s1")
+        running_count = mgr.get_running_sessions_count()
+        assert running_count == 1
+        last = mgr.get_last_session()
+        assert last is not None
+        assert last["session_id"] == "s1"
+        assert last["status"] == "running"
+
+        # Mark as completed and add a newer running session
+        mgr.finish_session("s1")
+        mgr.set_current_session_id("s2")
+        mgr.create_session_record("s2")
+        running_count2 = mgr.get_running_sessions_count()
+        assert running_count2 == 1  # only s2 is running
+        last2 = mgr.get_last_session()
+        assert last2 is not None
+        assert last2["session_id"] == "s2"
+        assert last2["status"] == "running"
     finally:
         mgr.dispose()
 

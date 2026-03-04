@@ -141,6 +141,18 @@ The main config file (YAML or JSON) defines:
 \- max_workers for parallelism.
 .IP \(bu 2
 Optional:
+.B rate_limit
+\- global safety limits to avoid accidental overload: enabled, max_concurrent_scans, min_interval_seconds, grace_for_running_status. When enabled, API/dashboard scan-start endpoints may return HTTP 429 with a JSON body containing
+.I error
+and
+.I reason
+fields (the CLI only logs warnings and exit codes remain unchanged). See
+.I docs/USAGE.md
+and
+.I lgpd_crawler (5)
+for full configuration examples.
+.IP \(bu 2
+Optional:
 .B detection
 (minor_age_threshold, minor_cross_reference, aggregated_identification_enabled, quasi_identifier_mapping),
 .B ml_patterns_file
