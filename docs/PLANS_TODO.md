@@ -2,7 +2,7 @@
 
 This document lists **incomplete goals** from active plans and the **recommended sequential to-dos** to achieve them. All steps are intended to be **non-destructive**, **non-regression**, and **non-performance impacting**; each step should be **tested** and **safe** before marking done.
 
-**Plan status:** Corporate compliance improvements ✅ Complete · Minor data detection ✅ Complete · Aggregated identification ✅ Complete · Sensitive categories ML/DL ✅ Complete
+**Plan status:** Corporate compliance improvements ✅ Complete · Minor data detection ✅ Complete · Aggregated identification ✅ Complete · Sensitive categories ML/DL ✅ Complete · Rate limiting & concurrency ✅ Complete · Web hardening & security ⬜ Planned
 
 ---
 
@@ -89,6 +89,43 @@ Goal: Configure with examples so ML/DL can detect other sensitive personal data 
 | 4 | **Built-in defaults (optional):** Consider adding a subset of these terms to `DEFAULT_ML_TERMS` in `core/detector.py` so out-of-the-box detection includes e.g. religion, political, gender, biometric, genetic | ✅ Done |
 | 5 | **Recommendation overrides example:** Add example in USAGE or in plan for `recommendation_overrides` covering health, religion, political, PEP, race, union, genetic, biometric, sex life | ✅ Done |
 | 6 | **Tests:** Add test that when ML terms include e.g. "religion" and "political affiliation", columns/samples with those terms are classified as sensitive; existing tests pass | ✅ Done |
+
+---
+
+## Plan: Rate limiting and concurrency safeguards ✅ **Complete**
+
+**Source:** [docs/PLAN_RATE_LIMIT_SCANS.md](PLAN_RATE_LIMIT_SCANS.md)
+
+**Progress:** All to-dos below are complete. This plan is **closed** for implementation; use this section only for reference to the current state of the application.
+
+Goal: Add configurable rate limiting and concurrency safeguards so the LGPD audit scanner cannot accidentally DoS customer networks while keeping existing behaviour and docs in sync.
+
+| # | To-do | Status |
+|---|--------|--------|
+| 1 | Add `rate_limit` configuration support in `config/loader.py` (with env overrides) and document it. | ✅ Done |
+| 2 | Implement DB-level helpers to query running/last sessions for rate limiting. | ✅ Done |
+| 3 | Enforce rate limiting in `api/routes.py` for `/scan`, `/start`, `/scan_database` (no impact on read-only endpoints). | ✅ Done |
+| 4 | Decide and implement CLI interaction with rate limits (reject vs warn) and document the decision. | ✅ Done |
+| 5 | Add bounds and documentation for `scan.max_workers` to avoid extreme values when rate limiting is on. | ✅ Done |
+| 6 | Write unit tests for the new rate-limit behaviour and ensure all existing tests still pass. | ✅ Done |
+| 7 | Update README (EN/PT-BR), USAGE (EN/PT-BR), man pages (1 and 5), and `help.html` to describe rate limiting and keep docs in sync. | ✅ Done |
+
+---
+
+## Plan: Web hardening and security improvements
+
+**Source:** [docs/PLAN_WEB_HARDENING_SECURITY.md](PLAN_WEB_HARDENING_SECURITY.md)
+
+Goal: Harden the web surface of the LGPD crawler (CSP, headers, and deploy guidance) without regressing current behaviour, keeping docs and man pages in sync and tests green.
+
+| # | To-do | Status |
+|---|--------|--------|
+| 1 | Refine CSP and security headers in `api/routes.py` (partial lockdown profile, optional stricter mode) and move dashboard JS into `/static/dashboard.js` to reduce inline code. | ✅ Done |
+| 2 | Confirm and, if needed, adjust Help page JS so it works under the refined CSP. | ✅ Done |
+| 3 | Extend `deploy/DEPLOY.md` with Docker and Kubernetes hardening guidance (securityContext, NetworkPolicy, PDB, resource tuning) as **optional** examples. | ⬜ Pending |
+| 4 | Update `SECURITY.md` with a short section covering CSP, security headers, and the new hardening examples. | ⬜ Pending |
+| 5 | Update docs (`docs/USAGE.md`, `docs/USAGE.pt_BR.md`) to mention CSP behaviour and how to enable stricter profiles, and update man(1)/(5) plus `help.html` to stay in sync. | ⬜ Pending |
+| 6 | Add/adjust tests (e.g. `tests/test_rate_limit_api.py`-style) to assert CSP header presence and default semantics, and re-run the full test suite (`uv run pytest tests/ -v -W error`). | ✅ Done |
 
 ---
 
