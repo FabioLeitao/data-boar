@@ -1,5 +1,7 @@
 # Plan: Cross-referenced and aggregated data – identification risk
 
+**Português (Brasil):** [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md) (overview and configuration examples for this feature).
+
 ## Goal
 
 Cross information from **multiple data sources or columns** (e.g. gender, job position, health information, address, phone number) that, **in aggregate**, can lead to **identifying individuals**, even when no single column is direct PII. Treat such aggregated results as **personal and/or sensitive** when the combination makes sense, and inform the DPO, security, and compliance teams as a **special case**, explaining the **cross-reference from multiple sources** so they can assess re-identification and linkage risk.
@@ -83,6 +85,35 @@ Execute in order; each step should be tested and non-regressing before the next.
 | 7 | **Config:** Add detection.aggregated_identification_enabled, aggregated_min_categories, quasi_identifier_mapping in config loader. | ✅ Done |
 | 8 | **Tests:** Unit tests for category mapping, aggregation rule, and report output; full test suite passes. | ✅ Done |
 | 9 | **Docs:** Update sensitivity-detection and compliance docs (EN and PT-BR) to describe aggregated/cross-referenced identification and the special case for DPO/compliance. | ✅ Done |
+
+---
+
+## Configuration and usage (examples)
+
+All options live under **`detection`** in your main config file (e.g. `config.yaml`).
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `detection.aggregated_identification_enabled` | boolean | **true** | Turn aggregation and the "Cross-ref data – ident. risk" sheet on/off. |
+| `detection.aggregated_min_categories` | integer | **2** | Minimum number of quasi-identifier categories in a table/file to create an aggregated record. |
+| `detection.quasi_identifier_mapping` | list | **[]** | Optional mappings: `{ "column_pattern": "cargo", "category": "job_position" }` or `{ "pattern_detected": "PHONE_BR", "category": "phone" }`. Categories: `gender`, `job_position`, `health`, `address`, `phone`, `other`. |
+
+**Example: custom mapping and stricter threshold**
+
+```yaml
+detection:
+  aggregated_identification_enabled: true
+  aggregated_min_categories: 3
+  quasi_identifier_mapping:
+    - column_pattern: "cargo"
+      category: job_position
+    - column_pattern: "departamento"
+      category: job_position
+    - pattern_detected: "PHONE_BR"
+      category: phone
+```
+
+**How to run:** Use the same workflow as for any audit: run a scan (CLI or API), then generate/open the report. Aggregation runs **at report generation time**. If the scan found multiple columns in the same table (or file) that map to at least `aggregated_min_categories` categories, the report will include the sheet **"Cross-ref data – ident. risk"** and an **AGGREGATED_IDENTIFICATION** recommendation.
 
 ---
 
