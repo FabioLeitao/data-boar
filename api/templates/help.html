@@ -93,6 +93,24 @@ scan:
 </section>
 
 <section class="card">
+  <h2>Rate limiting &amp; safety</h2>
+  <p>
+    To avoid accidental overload (for example, many scans triggered in a row or too many sessions in parallel via the API/dashboard),
+    you can enable a <code>rate_limit</code> block in the main config:
+  </p>
+  <pre><code>rate_limit:
+  enabled: true
+  max_concurrent_scans: 1
+  min_interval_seconds: 0
+  grace_for_running_status: 0</code></pre>
+  <p class="muted">
+    When enabled, API endpoints that start scans may return HTTP 429 with a JSON body indicating why the request was rate-limited
+    (too many running scans, or minimum interval not elapsed). The CLI only prints warnings using the same rules.
+    See <code>docs/USAGE.md</code> (EN), <code>docs/USAGE.pt_BR.md</code> (pt-BR) and <code>docs/lgpd_crawler.5</code> for details.
+  </p>
+</section>
+
+<section class="card">
   <h2>Sensitivity detection and reporting</h2>
   <p>
     The app detects personal and sensitive data using <strong>regex</strong>, <strong>ML</strong> (TF-IDF + classifier), and optional <strong>DL</strong> (sentence embeddings). Out-of-the-box it recognises PII (CPF, email, phone, etc.) and <strong>sensitive categories</strong> (health, religion, political affiliation, gender, biometric, genetic, race, union, PEP, sex life). You can:

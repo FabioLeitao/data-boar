@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from config.loader import load_config
 from core.engine import AuditEngine
+from core.database import LocalDBManager
 
 
 def main() -> None:
@@ -161,6 +162,40 @@ def main() -> None:
         print("Existing Excel reports and heatmap PNGs under report.output_dir were deleted where possible.")
         print("An audit entry was recorded in the data_wipe_log table for transparency.")
         return
+
+    # Optional: warn when configured rate limits would block API scans for this config.
+    rate_cfg = config.get("rate_limit") or {}
+    if rate_cfg.get("enabled"):
+        db_path = config.get("sqlite_path", "audit_results.db")
+        dbm = LocalDBManager(db_path)
+        running = dbm.get_running_sessions_count()
+        last = dbm.get_last_session()
+        max_concurrent = int(rate_cfg.get("max_concurrent_scans", 1))
+        min_interval = int(rate_cfg.get("min_interval_seconds", 0))
+        warn_lines: list[str] = []
+        if running >= max_concurrent:
+            warn_lines.append(
+                f"rate_limit: there are already {running} running scan(s); "
+                f"max_concurrent_scans={max_concurrent}. API calls would be rate-limited in this state."
+            )
+        if min_interval > 0 and last and last.get("started_at"):
+            from datetime import datetime, timezone
+
+            now = datetime.now(timezone.utc)
+            started_at = last["started_at"]
+            if started_at <= now:
+                delta = (now - started_at).total_seconds()
+                if delta < float(min_interval):
+                    warn_lines.append(
+                        f"rate_limit: last scan started {int(delta)}s ago; "
+                        f"min_interval_seconds={min_interval}. Back-to-back API scans would be rejected "
+                        "until the interval elapses."
+                    )
+        if warn_lines:
+            print("[rate_limit] WARNING:")
+            for ln in warn_lines:
+                print("  - " + ln)
+            print("CLI will continue, but consider adjusting rate_limit settings if this is unexpected.")
 
     tenant = (args.tenant or "").strip() or None
     technician = (args.technician or "").strip() or None
