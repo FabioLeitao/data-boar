@@ -70,10 +70,10 @@ Uma imagem pré-construída está disponível no Docker Hub: `fabioleitao/python
 - **Dashboard:** `http://<host>:<port>/`
 - **Reports:** `http://<host>:<port>/reports`
 - **Configuration:** `http://<host>:<port>/config`
-- **Help:** `http://<host>:<port>/help` — início rápido e exemplos de config
+- **Help:** `http://<host>:<port>/help` — início rápido, exemplos de config, detecção de sensibilidade e `recommendation_overrides`, links para README e USAGE (EN/pt-BR)
 - **About:** `http://<host>:<port>/about` — aplicação, versão, autor e licença (conforme LICENSE)
-- **Swagger UI:** `http://<host>:<port>/docs`
-- **Health:** `http://<host>:<port>/health` — sonda para Docker/Kubernetes
+- **Swagger UI:** `http://<host>:<port>/docs` — documentação interativa da API (OpenAPI)
+- **Health:** `http://<host>:<port>/health` — sonda de liveness/readiness para Docker/Kubernetes (sempre público mesmo com API key exigida)
 
 ### O que o dashboard mostra
 
@@ -246,5 +246,5 @@ Para detalhes de todos os campos e exemplos completos, consulte `README.md` e `d
 
 **Produção atrás de proxy reverso (nginx, Traefik, Caddy):** A aplicação se comporta corretamente atrás de NAT, load balancer ou proxy reverso. Quando o TLS for terminado no proxy, defina **X-Forwarded-Proto: https** para que os cabeçalhos de segurança (ex.: HSTS) funcionem. Veja [SECURITY.md](../SECURITY.md) para os cabeçalhos HTTP de segurança.
 
-**Documentação relacionada:** [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md) (termos de treino ML/DL – português; [inglês](sensitivity-detection.md)). Para adicionar um novo conector de fonte de dados (banco, API, share), veja [ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md) (em português) ou [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md) (em inglês).
+**Documentação relacionada:** [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md) (termos de treino ML/DL – português; [inglês](sensitivity-detection.md)). Para `recommendation_overrides` cobrindo categorias sensíveis (saúde, religião, política, PEP, raça, sindicato, genético, biométrico, vida sexual), veja o exemplo acima (Notas sobre configuração) e [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](PLAN_SENSITIVE_CATEGORIES_ML_DL.md); [USAGE.md](USAGE.md) (inglês) traz a mesma estrutura. Em sistemas com `man`: `man lgpd_crawler` (comando e API) e `man 5 lgpd_crawler` (config e formatos de arquivo). Para adicionar um novo conector (banco, API, share), veja [ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md) (português) ou [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md) (inglês).
 
