@@ -126,6 +126,17 @@ scan:
 </section>
 
 <section class="card">
+  <h2>Security headers and hardening</h2>
+  <p>
+    The API and dashboard send <strong>security headers</strong> on every response (Content-Security-Policy, X-Frame-Options, Referrer-Policy, Permissions-Policy, HSTS when HTTPS). For deployment hardening (Docker, Kubernetes, non-root, NetworkPolicy, reverse proxy), see:
+  </p>
+  <ul>
+    <li><code>SECURITY.md</code> – HTTP security headers and optional API key</li>
+    <li><code>deploy/DEPLOY.md</code> – section “Security and hardening (optional)”</li>
+  </ul>
+</section>
+
+<section class="card">
   <h2>More documentation</h2>
   <p>
     For full details, including optional connectors (Power BI, Dataverse, REST APIs, shares) and advanced tuning, see:
