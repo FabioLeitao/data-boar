@@ -105,6 +105,20 @@ python main.py --web --port 8088
 
 Quando a API está rodando, se `--config` não for fornecido, o servidor lê o caminho da variável de ambiente `CONFIG_PATH` ou usa `config.yaml` no diretório atual.
 
+### Rate limiting e segurança
+
+Para evitar sobrecarga acidental (múltiplas varreduras disparadas em sequência ou sessões demais em paralelo via API/dashboard), é possível habilitar um bloco `rate_limit` no arquivo de configuração:
+
+```yaml
+rate_limit:
+  enabled: true
+  max_concurrent_scans: 1
+  min_interval_seconds: 0
+  grace_for_running_status: 0
+```
+
+Quando `enabled` for true, os endpoints de início de varredura (`POST /scan`, `/start`, `/scan_database`) podem responder **HTTP 429** com um JSON explicando o motivo (por exemplo, sessões demais em execução ou intervalo mínimo ainda não cumprido). A CLI apenas emite avisos com a mesma lógica, sem alterar o código de saída. Detalhes completos e exemplos estão em `docs/USAGE.md` (inglês), `docs/USAGE.pt_BR.md` (português) e na página de manual `docs/lgpd_crawler.5` (seção 5 – formatos de arquivo).
+
 ## Navegando pelo dashboard web
 
 Com a API em execução (`--web`), acesse no navegador:

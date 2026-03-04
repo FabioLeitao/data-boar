@@ -242,6 +242,35 @@ Esse endpoint procura, entre os arquivos `audit_YYYYMMDD.log` disponíveis (do m
 
 **Exemplo `recommendation_overrides` para categorias sensíveis (LGPD Art. 5 II, 11; GDPR Art. 9):** Você pode adicionar entradas para que achados de saúde, religião, política, PEP, raça, sindicato, genético, biométrico e vida sexual tenham Base legal, Risco e Prioridade corretos na aba Recomendações. Exemplo (inglês): [USAGE.md](USAGE.md). Em pt-BR, use os mesmos `norm_tag_pattern` (ex.: `health`, `religious`, `political`, `PEP`, `race`, `union`, `genetic`, `biometric`, `sex life`) e preencha `base_legal`, `risk`, `recommendation`, `priority`, `relevant_for` conforme sua política. Ver [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](PLAN_SENSITIVE_CATEGORIES_ML_DL.md) e [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md).
 
+### Rate limiting e segurança contra abuso
+
+Para evitar DoS acidental ou abuso (muitas varreduras em sequência ou sessões demais em paralelo), use o bloco `rate_limit` no config:
+
+```yaml
+rate_limit:
+  enabled: true               # quando presente, o padrão é true
+  max_concurrent_scans: 1     # máximo de varreduras em execução ao mesmo tempo (API)
+  min_interval_seconds: 0     # intervalo mínimo em segundos entre inícios de varredura
+  grace_for_running_status: 0 # opcional; tolerância extra quando o status ainda mostra running
+```
+
+- Quando `rate_limit.enabled` for true, os endpoints de início de varredura (`POST /scan`, `POST /start`, `POST /scan_database`) podem responder **HTTP 429** com JSON:
+
+  ```json
+  {
+    "detail": {
+      "error": "rate_limited",
+      "reason": "too_many_running_scans",
+      "running_scans": 2,
+      "max_concurrent_scans": 1,
+      "source": "scan"
+    }
+  }
+  ```
+
+- A CLI usa a mesma lógica apenas para imprimir **avisos** (não muda o código de saída), de forma a manter scripts existentes funcionando enquanto você enxerga quando sua política bloquearia chamadas via API/dashboard.
+- É possível sobrescrever os valores via variáveis de ambiente: `RATE_LIMIT_ENABLED`, `RATE_LIMIT_MAX_CONCURRENT_SCANS`, `RATE_LIMIT_MIN_INTERVAL_SECONDS`, `RATE_LIMIT_GRACE_FOR_RUNNING_STATUS`.
+
 Para detalhes de todos os campos e exemplos completos, consulte `README.md` e `docs/USAGE.md` (inglês), que são as referências canônicas.
 
 **Produção atrás de proxy reverso (nginx, Traefik, Caddy):** A aplicação se comporta corretamente atrás de NAT, load balancer ou proxy reverso. Quando o TLS for terminado no proxy, defina **X-Forwarded-Proto: https** para que os cabeçalhos de segurança (ex.: HSTS) funcionem. Veja [SECURITY.md](../SECURITY.md) para os cabeçalhos HTTP de segurança.
