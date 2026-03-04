@@ -437,28 +437,35 @@ To support a new data source (e.g. another database driver or API), see **[docs/
 - **Check for known CVEs:** Run `uv pip audit` (or `pip audit` if available) before deployment; fix or pin any vulnerable packages.
 - See also **Security and compliance** below.
 
-## Man page
+## Man pages
 
 For systems that use the traditional
 `man`
-interface, a manual page is provided at
-`docs/lgpd_crawler.1`.
-It mirrors the main CLI and API behaviour described in this README (name, synopsis, options, environment, examples).
-To install it system-wide on a typical Linux/BSD host (create the target directory first so the copy does not fail if it is missing):
+interface, two manual pages are provided:
+
+- **Section 1 (command):** `docs/lgpd_crawler.1` – describes the program, its options, the web API, and curl examples. View with `man lgpd_crawler` or `man 1 lgpd_crawler`.
+- **Section 5 (file formats):** `docs/lgpd_crawler.5` – describes the main config file topology and optional files (regex overrides, ML/DL pattern files, learned patterns), with examples. View with `man 5 lgpd_crawler`.
+
+On Linux/BSD, section 1 is for executable commands; section 5 is for configuration and file format conventions. Installing both lets users run `man lgpd_crawler` for how to run the app and `man 5 lgpd_crawler` for how to configure it and define patterns.
+
+**Install both pages** (create the target directories first so the copy does not fail if they are missing):
 
 ```bash
 sudo mkdir -p /usr/local/share/man/man1/
+sudo mkdir -p /usr/local/share/man/man5/
 sudo cp docs/lgpd_crawler.1 /usr/local/share/man/man1/
+sudo cp docs/lgpd_crawler.5 /usr/local/share/man/man5/
 sudo mandb    # or: sudo makewhatis   # depends on distro
 ```
 
-After that you can run:
+After that:
 
 ```bash
-man lgpd_crawler
+man lgpd_crawler     # command and options (section 1)
+man 5 lgpd_crawler   # config and file formats (section 5)
 ```
 
-When adding new CLI options or API capabilities, update both this README and `docs/lgpd_crawler.1` so that the man page continues to reflect the current behaviour.
+When adding new CLI options or API capabilities, update `docs/lgpd_crawler.1`; when adding or changing config keys or pattern file formats, update `docs/lgpd_crawler.5` and this README so the man pages continue to reflect the current behaviour. For **version bumps** (major.minor.build convention and where to update the version number), see [docs/VERSIONING.md](docs/VERSIONING.md).
 
 ## Deploy with Docker
 
