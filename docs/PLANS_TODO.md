@@ -2,6 +2,8 @@
 
 This document lists **incomplete goals** from active plans and the **recommended sequential to-dos** to achieve them. All steps are intended to be **non-destructive**, **non-regression**, and **non-performance impacting**; each step should be **tested** and **safe** before marking done.
 
+**Plan status:** Corporate compliance improvements ✅ Complete · Minor data detection ✅ Complete · Aggregated identification ✅ Complete · Sensitive categories ML/DL ⬜ 3 to-dos pending
+
 ---
 
 ## Plan: Corporate compliance improvements ✅ **Complete**
@@ -26,9 +28,11 @@ This document lists **incomplete goals** from active plans and the **recommended
 
 ---
 
-## Plan: Detection and differential treatment of possible minor data
+## Plan: Detection and differential treatment of possible minor data ✅ **Complete**
 
 **Source:** [docs/PLAN_MINOR_DATA_DETECTION.md](PLAN_MINOR_DATA_DETECTION.md)
+
+**Progress:** All to-dos below are complete. This plan is **closed** for implementation; use this section only for reference to the current state of the application.
 
 Goal: Detect when data may relate to minors (e.g. age from DOB), treat as highest sensitivity, cross-reference with name/official docs/health, optionally full-scan related columns, and surface in report with differential treatment (LGPD Art. 14, GDPR Art. 8).
 
@@ -47,23 +51,25 @@ Goal: Detect when data may relate to minors (e.g. age from DOB), treat as highes
 
 ---
 
-## Plan: Cross-referenced / aggregated data – identification risk
+## Plan: Cross-referenced / aggregated data – identification risk ✅ **Complete**
 
 **Source:** [docs/PLAN_AGGREGATED_IDENTIFICATION.md](PLAN_AGGREGATED_IDENTIFICATION.md)
+
+**Progress:** All to-dos below are complete. This plan is **closed** for implementation; use this section only for reference to the current state of the application.
 
 Goal: Cross information from multiple sources/columns (gender, job position, health, address, phone, etc.) that in **aggregate** can identify individuals; treat as personal/sensitive and report as a **special case** for DPO/compliance, explaining the cross-reference condition.
 
 | # | To-do | Status |
 |---|--------|--------|
-| 1 | Design & doc: quasi-identifier categories, aggregation scope (per-table/per-file), storage | ⬜ Pending |
-| 2 | Category mapping: column_name + pattern_detected → gender, job_position, health, address, phone (config + defaults) | ⬜ Pending |
-| 3 | Schema: table or structure for aggregated identification risk (or synthetic finding with explanation) | ⬜ Pending |
-| 4 | Post-scan aggregation: group by (session, target, table/file); if categories >= threshold, create aggregated record | ⬜ Pending |
-| 5 | Report: sheet/section “Cross-referenced data – possible identification” with target, table/file, columns, explanation | ⬜ Pending |
-| 6 | Report: recommendation row for aggregated case explaining multi-source condition for DPO/compliance | ⬜ Pending |
-| 7 | Config: aggregated_identification_enabled, aggregated_min_categories, quasi_identifier_mapping | ⬜ Pending |
-| 8 | Tests: category mapping, aggregation rule, report; no regression | ⬜ Pending |
-| 9 | Docs: sensitivity & compliance (EN/PT-BR) for aggregated identification | ⬜ Pending |
+| 1 | Design & doc: quasi-identifier categories, aggregation scope (per-table/per-file), storage | ✅ Done |
+| 2 | Category mapping: column_name + pattern_detected → gender, job_position, health, address, phone (config + defaults) | ✅ Done |
+| 3 | Schema: table or structure for aggregated identification risk (or synthetic finding with explanation) | ✅ Done |
+| 4 | Post-scan aggregation: group by (session, target, table/file); if categories >= threshold, create aggregated record | ✅ Done |
+| 5 | Report: sheet/section “Cross-referenced data – possible identification” with target, table/file, columns, explanation | ✅ Done |
+| 6 | Report: recommendation row for aggregated case explaining multi-source condition for DPO/compliance | ✅ Done |
+| 7 | Config: aggregated_identification_enabled, aggregated_min_categories, quasi_identifier_mapping | ✅ Done |
+| 8 | Tests: category mapping, aggregation rule, report; no regression | ✅ Done |
+| 9 | Docs: sensitivity & compliance (EN/PT-BR) for aggregated identification | ✅ Done |
 
 ---
 
