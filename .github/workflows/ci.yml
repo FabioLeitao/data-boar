@@ -1,5 +1,8 @@
 # CI: tests and dependency audit on push/PR.
 # Keeps main branch healthy and improves security via automated checks.
+#
+# Explicit permissions limit GITHUB_TOKEN (satisfies "Workflow does not contain permissions" check).
+# contents: read is the minimal scope needed for checkout and dependency install.
 name: CI
 
 permissions:
@@ -65,6 +68,8 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ secrets.SONAR_TOKEN != '' }}
     needs: [test]
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v6

@@ -2,6 +2,10 @@
 Single report generator: reads database_findings, filesystem_findings, scan_failures from LocalDBManager
 for a session; produces Excel with sheets "Report info" (session + about), "Database findings", etc.,
 and heatmap image (sensitivity/risk) with about footer. Returns path to Excel file.
+
+Structure: generate_report() delegates all sheet writing to _write_excel_sheets() and helpers
+(_build_report_info, _build_executive_summary_rows, etc.). Keep sheet logic in those helpers
+so branches stay in sync with main and merge conflicts are avoided (see CONTRIBUTING.md).
 """
 from collections import defaultdict
 from pathlib import Path
