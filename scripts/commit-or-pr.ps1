@@ -17,11 +17,7 @@ param(
 
     [string]$Title = "Update: security and docs",
 
-    [string]$Body = @"
-- Harden CSP and move dashboard JS to static file
-- Add rate limiting and CSP/header tests
-- Update docs and plan to-dos (EN/pt-BR, man, help)
-"@,
+    [string]$Body = "- Harden CSP and move dashboard JS to static file`n- Add rate limiting and CSP/header tests`n- Update docs and plan to-dos (EN/pt-BR, man, help)",
 
     [string]$Branch = "",
 
@@ -101,9 +97,15 @@ if (-not $toAdd.Count -and $Action -eq 'PR') {
             $remoteUrl = git remote get-url origin 2>$null
             if ($remoteUrl -match 'github\.com[:/]([^/]+)/([^/]+?)(?:\.git)?$') {
                 $defaultBranch = "main"
-                if (Get-Command gh -ErrorAction SilentlyContinue) { $ref = gh repo view --json defaultBranchRef -q ".defaultBranchRef.name" 2>$null; if ($ref) { $defaultBranch = $ref } }
-                else { $sym = git symbolic-ref refs/remotes/origin/HEAD 2>$null; if ($sym) { $defaultBranch = $sym -replace '^refs/remotes/origin/', '' } }
-                Start-Process "https://github.com/$($Matches[1])/$($Matches[2].TrimEnd('.git'))/compare/${defaultBranch}...${branchName}"
+                if (Get-Command gh -ErrorAction SilentlyContinue) {
+                    $ref = gh repo view --json defaultBranchRef -q ".defaultBranchRef.name" 2>$null
+                    if ($ref) { $defaultBranch = $ref }
+                } else {
+                    $sym = git symbolic-ref refs/remotes/origin/HEAD 2>$null
+                    if ($sym) { $defaultBranch = $sym -replace '^refs/remotes/origin/', '' }
+                }
+                $compareUrl = "https://github.com/$($Matches[1])/$($Matches[2].TrimEnd('.git'))/compare/$defaultBranch...$branchName"
+                Start-Process $compareUrl
             }
         }
         exit 0
@@ -118,7 +120,8 @@ if ($Action -eq 'Preview') {
     $toAdd | ForEach-Object { Write-Host "  $_" }
     Write-Host ""
     Write-Host "Summary (diff --stat):"
-    $untracked = @($toAdd | Where-Object { -not (git ls-files --error-unmatch $_ 2>$null) })
+    $untracked = $toAdd | Where-Object { -not (git ls-files --error-unmatch $_ 2>$null) }
+    $untracked = @($untracked)
     if ($untracked.Count -gt 0) {
         git add -N $untracked 2>$null
         git diff --cached --stat -- $untracked
@@ -140,21 +143,23 @@ if ($Action -eq 'Preview') {
 if ($Action -eq 'PR' -and $Branch) {
     $currentBranch = (git rev-parse --abbrev-ref HEAD)
     if ($currentBranch -ne $Branch) {
-        $exists = git rev-parse --verify "refs/heads/$Branch" 2>$null
+        # Check if branch exists (we only use $LASTEXITCODE; discard output)
+        $null = git rev-parse --verify "refs/heads/$Branch" 2>$null
         if ($LASTEXITCODE -eq 0) {
             git checkout $Branch
         } else {
             git checkout -b $Branch
         }
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-        Write-Host "Switched to branch '$Branch'."
+        Write-Host "Switched from '$currentBranch' to branch '$Branch'."
     }
 }
 
-foreach ($f in $toAdd) { git add $f }
+foreach ($f in $toAdd) { git add -- $f }
 git status -sb
 
-git commit -m $Title -m $Body
+# Use separate -m for title and body so both are passed as single arguments (no word-split)
+git commit -m "$Title" -m "$Body"
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Host "Committed: $Title"
 

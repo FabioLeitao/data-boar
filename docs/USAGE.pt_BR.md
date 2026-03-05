@@ -19,14 +19,14 @@ O ponto de entrada é `main.py`.
 
 ### Argumentos
 
-| Argumento      | Padrão       | Descrição                                                                                     |
-|----------------|-------------|-----------------------------------------------------------------------------------------------|
-| `--config`     | `config.yaml` | Caminho do arquivo de configuração (YAML ou JSON). Usado tanto em varredura única quanto para inicializar a API. |
-| `--web`        | *(flag)*    | Inicia o servidor FastAPI em vez de executar uma varredura única.                            |
-| `--port`       | `8088`      | Porta da API quando `--web` é usado. Ignorado em modo CLI.                                   |
-| `--reset-data` | *(flag)*    | Operação de manutenção perigosa: apaga todas as sessões/achados/falhas do SQLite, remove relatórios/heatmaps em `report.output_dir` e registra o wipe na tabela `data_wipe_log`. Não inicia varredura. |
-| `--tenant`     | *(vazio)*   | Nome do cliente/tenant na execução CLI; gravado na sessão e exibido em dashboard/relatórios. |
-| `--technician` | *(vazio)*   | Nome do técnico/operador na execução CLI; também gravado na sessão e relatórios.             |
+| Argumento      | Padrão        | Descrição                                                                                                                                                                                              |
+| ---            | ---           | ---                                                                                                                                                                                                    |
+| `--config`     | `config.yaml` | Caminho do arquivo de configuração (YAML ou JSON). Usado tanto em varredura única quanto para inicializar a API.                                                                                       |
+| `--web`        | *(flag)*      | Inicia o servidor FastAPI em vez de executar uma varredura única.                                                                                                                                      |
+| `--port`       | `8088`        | Porta da API quando `--web` é usado. Ignorado em modo CLI.                                                                                                                                             |
+| `--reset-data` | *(flag)*      | Operação de manutenção perigosa: apaga todas as sessões/achados/falhas do SQLite, remove relatórios/heatmaps em `report.output_dir` e registra o wipe na tabela `data_wipe_log`. Não inicia varredura. |
+| `--tenant`     | *(vazio)*     | Nome do cliente/tenant na execução CLI; gravado na sessão e exibido em dashboard/relatórios.                                                                                                           |
+| `--technician` | *(vazio)*     | Nome do técnico/operador na execução CLI; também gravado na sessão e relatórios.                                                                                                                       |
 
 ### Resultados
 
@@ -44,8 +44,8 @@ python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Sil
 - Cria uma nova sessão (UUID + timestamp) com metadados (`tenant_name`, `technician_name` opcionais).
 - Gera um relatório Excel e um heatmap PNG para essa sessão.
 - No console, você verá algo como:
-  - `Scan session: <session_id>`
-  - `Report written: <caminho_do_relatorio>`
+- `Scan session: <session_id>`
+- `Report written: <caminho_do_relatorio>`
 
 #### Servidor API (`--web`)
 
@@ -56,13 +56,13 @@ python main.py --config config.yaml --web --port 8088
 - Inicia o servidor FastAPI em `0.0.0.0:8088` (ou a porta passada em `--port`).
 - Nenhuma varredura é executada automaticamente; você controla tudo via HTTP (dashboard ou curl).
 - Configuração para a API:
-  - Se `--config` não for usado, a API lê de `CONFIG_PATH` ou `config.yaml` no diretório atual.
+- Se `--config` não for usado, a API lê de `CONFIG_PATH` ou `config.yaml` no diretório atual.
 
 ---
 
 ## 2. API web e dashboard
 
-**Opção: executar via Docker (sem clonar o Git)**  
+## Opção: executar via Docker (sem clonar o Git)
 Uma imagem pré-construída está disponível no Docker Hub: `fabioleitao/python3-lgpd-crawler:latest` ([hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)). Faça pull e execute com um config montado em `/data/config.yaml` (veja o README “Deploy com Docker” e `deploy/DEPLOY.md`). Você pode usar esse container em vez de instalar a partir do código.
 
 ### URLs principais
@@ -82,27 +82,27 @@ Uma imagem pré-construída está disponível no Docker Hub: `fabioleitao/python
 - Gráfico **“Progress over time”** com total de achados e score de risco (0–100) por sessão.
 - Campos de entrada para **cliente/tenant** e **técnico/operador**, usados ao clicar em “Start scan”.
 - Tabela de sessões recentes com:
-  - ID, data de início, tenant, técnico, achados DB/FS, falhas e link “Download” (gera o Excel dessa sessão).
+- ID, data de início, tenant, técnico, achados DB/FS, falhas e link “Download” (gera o Excel dessa sessão).
 
 ### Rotas de API (resumo)
 
-| Método | Endpoint                 | Finalidade                                                                                                   |
-|--------|--------------------------|--------------------------------------------------------------------------------------------------------------|
-| `POST` | `/scan` ou `/start`     | Inicia uma varredura completa em background; retorna `session_id`. Aceita `{ "tenant", "technician" }`.     |
-| `POST` | `/scan_database`        | Inicia varredura pontual de um único banco (body JSON). Pode incluir `tenant` e `technician`.               |
-| `GET`  | `/status`               | Retorna `running`, `current_session_id`, `findings_count`.                                                  |
-| `GET`  | `/report`               | Baixa o último relatório Excel gerado (ou gera a partir da sessão mais recente).                            |
-| `GET`  | `/heatmap`              | Baixa o último heatmap PNG gerado (sessão mais recente).                                                    |
-| `GET`  | `/logs`                 | Baixa o arquivo de log mais recente (`audit_YYYYMMDD.log`) com registros de conexões e achados.            |
-| `GET`  | `/list` ou `/reports`   | Lista sessões anteriores com data, status, contagens, `tenant_name` e `technician_name` (se definidos).     |
-| `GET`  | `/reports/{session_id}` | Gera (se necessário) e baixa o relatório Excel para a sessão indicada.                                      |
-| `GET`  | `/heatmap/{session_id}` | Gera (se necessário) e baixa o heatmap PNG para a sessão indicada.                                          |
-| `GET`  | `/logs/{session_id}`    | Baixa o primeiro arquivo de log que contiver o `session_id` informado (análise detalhada da sessão).        |
-| `PATCH`| `/sessions/{session_id}` | Atualiza/limpa o tenant de uma sessão existente (`{ "tenant": "..." }`).                                   |
-| `PATCH`| `/sessions/{session_id}/technician` | Atualiza/limpa o técnico de uma sessão existente (`{ "technician": "..." }`).                    |
-| `GET`  | `/about`       | Página About (HTML): aplicação, versão, autor, licença.                                           |
-| `GET`  | `/about/json`  | Informações de about em JSON (nome, versão, autor, licença, copyright).                           |
-| `GET`  | `/health`      | Sonda de liveness/readiness para Docker e Kubernetes.                                             |
+| Método  | Endpoint                            | Finalidade                                                                                              |
+| ---     | ---                                 | ---                                                                                                     |
+| `POST`  | `/scan` ou `/start`                 | Inicia uma varredura completa em background; retorna `session_id`. Aceita `{ "tenant", "technician" }`. |
+| `POST`  | `/scan_database`                    | Inicia varredura pontual de um único banco (body JSON). Pode incluir `tenant` e `technician`.           |
+| `GET`   | `/status`                           | Retorna `running`, `current_session_id`, `findings_count`.                                              |
+| `GET`   | `/report`                           | Baixa o último relatório Excel gerado (ou gera a partir da sessão mais recente).                        |
+| `GET`   | `/heatmap`                          | Baixa o último heatmap PNG gerado (sessão mais recente).                                                |
+| `GET`   | `/logs`                             | Baixa o arquivo de log mais recente (`audit_YYYYMMDD.log`) com registros de conexões e achados.         |
+| `GET`   | `/list` ou `/reports`               | Lista sessões anteriores com data, status, contagens, `tenant_name` e `technician_name` (se definidos). |
+| `GET`   | `/reports/{session_id}`             | Gera (se necessário) e baixa o relatório Excel para a sessão indicada.                                  |
+| `GET`   | `/heatmap/{session_id}`             | Gera (se necessário) e baixa o heatmap PNG para a sessão indicada.                                      |
+| `GET`   | `/logs/{session_id}`                | Baixa o primeiro arquivo de log que contiver o `session_id` informado (análise detalhada da sessão).    |
+| `PATCH` | `/sessions/{session_id}`            | Atualiza/limpa o tenant de uma sessão existente (`{ "tenant": "..." }`).                                |
+| `PATCH` | `/sessions/{session_id}/technician` | Atualiza/limpa o técnico de uma sessão existente (`{ "technician": "..." }`).                           |
+| `GET`   | `/about`                            | Página About (HTML): aplicação, versão, autor, licença.                                                 |
+| `GET`   | `/about/json`                       | Informações de about em JSON (nome, versão, autor, licença, copyright).                                 |
+| `GET`   | `/health`                           | Sonda de liveness/readiness para Docker e Kubernetes.                                                   |
 
 ---
 
@@ -229,14 +229,14 @@ Esse endpoint procura, entre os arquivos `audit_YYYYMMDD.log` disponíveis (do m
 ## 4. Notas sobre configuração
 
 - A aplicação utiliza um único arquivo de configuração (YAML/JSON) com as chaves principais:
-  - `targets` – alvos a escanear (bancos, diretórios, APIs, compartilhamentos).
-  - `file_scan` – extensões, recursividade, `scan_sqlite_as_db`, `sample_limit`.
-  - `report` – `output_dir` para relatórios/heatmaps; opcionalmente `recommendation_overrides` (lista de mapeamentos por `norm_tag` para Base legal, Risco, Recomendação, Prioridade, Relevante para). Exemplo completo em [USAGE.md](USAGE.md) (seção 4, Global options); exemplo para categorias sensíveis (saúde, religião, política, PEP, raça, sindicato, genético, biométrico, vida sexual) em [USAGE.md#recommendation_overrides](USAGE.md) e abaixo em pt-BR (ver também [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md)).
-  - `api` – porta da API; opcionalmente `require_api_key`, `api_key` ou `api_key_from_env` para exigir chave de API (cabeçalho X-API-Key ou Authorization: Bearer); GET /health permanece público. Ver [SECURITY.md](../SECURITY.md).
-  - `sqlite_path` – caminho do banco SQLite com resultados.
-  - `scan` – `max_workers` para paralelismo.
-  - `api.workers` – número de workers uvicorn (padrão 1; 2+ para mais requisições concorrentes).
-  - Opcionais: `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection` (termos ML/DL inline), `learned_patterns` (export de termos classificados).
+- `targets` – alvos a escanear (bancos, diretórios, APIs, compartilhamentos).
+- `file_scan` – extensões, recursividade, `scan_sqlite_as_db`, `sample_limit`.
+- `report` – `output_dir` para relatórios/heatmaps; opcionalmente `recommendation_overrides` (lista de mapeamentos por `norm_tag` para Base legal, Risco, Recomendação, Prioridade, Relevante para). Exemplo completo em [USAGE.md](USAGE.md) (seção 4, Global options); exemplo para categorias sensíveis (saúde, religião, política, PEP, raça, sindicato, genético, biométrico, vida sexual) em [USAGE.md#recommendation_overrides](USAGE.md) e abaixo em pt-BR (ver também [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md)).
+- `api` – porta da API; opcionalmente `require_api_key`, `api_key` ou `api_key_from_env` para exigir chave de API (cabeçalho X-API-Key ou Authorization: Bearer); GET /health permanece público. Ver [SECURITY.md](../SECURITY.md).
+- `sqlite_path` – caminho do banco SQLite com resultados.
+- `scan` – `max_workers` para paralelismo.
+- `api.workers` – número de workers uvicorn (padrão 1; 2+ para mais requisições concorrentes).
+- Opcionais: `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection` (termos ML/DL inline), `learned_patterns` (export de termos classificados).
 
 **Padrões regex customizados:** Para a aplicação se atentar a **novos valores possivelmente pessoais ou sensíveis** (ex.: RG, placa, número de plano de saúde), defina **`regex_overrides_file`** no config com o caminho de um arquivo YAML/JSON contendo uma lista de `{ name, pattern, norm_tag }`. O detector aplica cada padrão ao nome da coluna e ao texto amostrado; qualquer match é reportado com sensibilidade HIGH (ou MEDIUM em contexto de letras/cifras). Formato e exemplos (RG, placa, CEP, telefone EUA, etc.): [sensitivity-detection.pt_BR.md#padrões-regex-customizados-detectar-novos-dados-pessoaissensíveis](sensitivity-detection.pt_BR.md#padrões-regex-customizados-detectar-novos-dados-pessoaissensíveis) (pt-BR) · [sensitivity-detection.md#custom-regex-patterns-detecting-new-personalsensitive-values](sensitivity-detection.md#custom-regex-patterns-detecting-new-personalsensitive-values) (EN).
 
@@ -283,4 +283,3 @@ Para detalhes de todos os campos e exemplos completos, consulte `README.md` e `d
 **Produção atrás de proxy reverso (nginx, Traefik, Caddy):** A aplicação se comporta corretamente atrás de NAT, load balancer ou proxy reverso. Quando o TLS for terminado no proxy, defina **X-Forwarded-Proto: https** para que os cabeçalhos de segurança (ex.: HSTS) funcionem. Veja [SECURITY.md](../SECURITY.md) para os cabeçalhos HTTP de segurança.
 
 **Documentação relacionada:** [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md) (termos de treino ML/DL – português; [inglês](sensitivity-detection.md)). Para `recommendation_overrides` cobrindo categorias sensíveis (saúde, religião, política, PEP, raça, sindicato, genético, biométrico, vida sexual), veja o exemplo acima (Notas sobre configuração) e [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md); [USAGE.md](USAGE.md) (inglês) traz a mesma estrutura. Em sistemas com `man`: `man lgpd_crawler` (comando e API) e `man 5 lgpd_crawler` (config e formatos de arquivo). Para adicionar um novo conector (banco, API, share), veja [ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md) (português) ou [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md) (inglês).
-
