@@ -6,29 +6,29 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 
 ## 1. Status vs plan
 
-| Plan item | Status | Notes |
-|-----------|--------|------|
-| config/loader.py | Done | Unified YAML/JSON, normalized schema |
-| core/session.py | Done | UUID + timestamp |
-| core/database.py | Done | Single SQLite, 4 tables, LocalDBManager |
-| core/detector.py | Done | Regex + ML from config |
-| core/scanner.py | Done | Uses detector only |
-| core/connector_registry.py | Done | Registry + connector_for_target |
-| core/engine.py | Done | start_audit, generate_final_reports, parallel/sequential |
-| connectors/sql_connector.py | Done | Discover + sample, Oracle/MSSQL/MySQL/Postgres/etc. |
-| connectors/filesystem_connector.py | Done | Permission check, recursive, many extensions |
-| connectors/mongodb_connector.py | Done | Optional, pymongo |
-| connectors/redis_connector.py | Done | Optional, redis |
-| report/generator.py | Done | Excel + heatmap, DB/FS/failures/recommendations |
-| api/routes.py | Done | /scan, /start, /status, /report, /list, /reports/{id}; GET /, /reports, /config (dashboard) |
-| Web dashboard (frontend) | Done | GET / dashboard, GET /reports list, GET/POST /config editor; Jinja2 + static; no WebSocket (per plan) |
-| main.py | Done | --config, --web, --port 8088 |
-| utils/logger.py | Done | Unified logger, log_finding, notify_violation |
-| README.md | Done | Install, config, run, DBs, file types |
-| TOPOLOGY.md | Done | Module/class/function topology |
-| config.yaml | Done | Unified shape, DB targets (commented), file_scan |
-| pyproject.toml | Done | requires-python 3.12+, optional nosql/bigdata |
-| requirements.txt | In place | Keep in sync with pyproject.toml |
+| Plan item                          | Status   | Notes                                                                                                 |
+| ---                                | ---      | ---                                                                                                   |
+| config/loader.py                   | Done     | Unified YAML/JSON, normalized schema                                                                  |
+| core/session.py                    | Done     | UUID + timestamp                                                                                      |
+| core/database.py                   | Done     | Single SQLite, 4 tables, LocalDBManager                                                               |
+| core/detector.py                   | Done     | Regex + ML from config                                                                                |
+| core/scanner.py                    | Done     | Uses detector only                                                                                    |
+| core/connector_registry.py         | Done     | Registry + connector_for_target                                                                       |
+| core/engine.py                     | Done     | start_audit, generate_final_reports, parallel/sequential                                              |
+| connectors/sql_connector.py        | Done     | Discover + sample, Oracle/MSSQL/MySQL/Postgres/etc.                                                   |
+| connectors/filesystem_connector.py | Done     | Permission check, recursive, many extensions                                                          |
+| connectors/mongodb_connector.py    | Done     | Optional, pymongo                                                                                     |
+| connectors/redis_connector.py      | Done     | Optional, redis                                                                                       |
+| report/generator.py                | Done     | Excel + heatmap, DB/FS/failures/recommendations                                                       |
+| api/routes.py                      | Done     | /scan, /start, /status, /report, /list, /reports/{id}; GET /, /reports, /config (dashboard)           |
+| Web dashboard (frontend)           | Done     | GET / dashboard, GET /reports list, GET/POST /config editor; Jinja2 + static; no WebSocket (per plan) |
+| main.py                            | Done     | --config, --web, --port 8088                                                                          |
+| utils/logger.py                    | Done     | Unified logger, log_finding, notify_violation                                                         |
+| README.md                          | Done     | Install, config, run, DBs, file types                                                                 |
+| TOPOLOGY.md                        | Done     | Module/class/function topology                                                                        |
+| config.yaml                        | Done     | Unified shape, DB targets (commented), file_scan                                                      |
+| pyproject.toml                     | Done     | requires-python 3.12+, optional nosql/bigdata                                                         |
+| requirements.txt                   | In place | Keep in sync with pyproject.toml                                                                      |
 
 ---
 
@@ -68,9 +68,9 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 
 - **Implemented:** REST/API connector (`connectors/rest_connector.py`) with auth: basic, bearer (token or token_from_env), oauth2_client, custom headers. Targets `type: api` or `type: rest`; README documents auth table and YAML examples. (Legacy plan: “Snowflake, REST/SOAP, SharePoint, Datalake, Graylog/Grafana as optional connectors; document config and install.”
 - **Next step:** Add optional connector modules (e.g. `connectors/snowflake_connector.py`, `connectors/rest_connector.py`) behind optional deps (`bigdata`, `api`), or at least document in README:
-  - How to add a target (type, driver, URL/credentials).
-  - Which packages to install (e.g. snowflake-connector-python, httpx/requests).
-  - Example config snippets for Snowflake, a REST API, etc.
+- How to add a target (type, driver, URL/credentials).
+- Which packages to install (e.g. snowflake-connector-python, httpx/requests).
+- Example config snippets for Snowflake, a REST API, etc.
 
 **Deliverable:** Docs and, if desired, one or two optional connector stubs (e.g. Snowflake, generic REST).
 
@@ -94,46 +94,46 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 
 - **Per plan:** “No WebSocket/streaming UI; REST API and file download only.” The frontend is encoded accordingly: server-rendered HTML (Jinja2), no SPA, no separate build.
 - **Implemented:**
-  - **Dashboard (GET /):** Scan status (running/idle, current session, findings count), quantity/quality summary (DB findings, FS findings, failures, total for last run), “Start scan” button, recent sessions table with download links. Status polls every 2s while a scan is running.
-  - **Reports (GET /reports):** List of all sessions (session ID, started/finished, status, DB/FS/failures) with “Download” link per session (uses existing `GET /reports/{session_id}`).
-  - **Configuration (GET /config, POST /config):** Edit scan configuration (YAML) in browser; save writes to config file (CONFIG_PATH or config.yaml) and reloads in-memory config/engine for next scan.
+- **Dashboard (GET /):** Scan status (running/idle, current session, findings count), quantity/quality summary (DB findings, FS findings, failures, total for last run), “Start scan” button, recent sessions table with download links. Status polls every 2s while a scan is running.
+- **Reports (GET /reports):** List of all sessions (session ID, started/finished, status, DB/FS/failures) with “Download” link per session (uses existing `GET /reports/{session_id}`).
+- **Configuration (GET /config, POST /config):** Edit scan configuration (YAML) in browser; save writes to config file (CONFIG_PATH or config.yaml) and reloads in-memory config/engine for next scan.
 - **Artifacts:** `api/templates/` (base.html, dashboard.html, reports.html, config.html), `api/static/` (style.css, app.js), routes in `api/routes.py` (dashboard, config get/post, reports page, static mount). Documented in README and docs/USAGE.md.
 
 ---
 
 ## 3. File-level checklist (from plan)
 
-| Path | Action | Status |
-|------|--------|--------|
-| pyproject.toml | Optional deps, CVE-safe pins | Done; refresh pins (2.4) |
-| requirements.txt | Sync with pyproject | In place; formalize sync (2.4) |
-| config/loader.py | Unified load | Done |
-| core/session.py | UUID + timestamp | Done |
-| core/database.py | Single schema | Done |
-| core/detector.py | Regex + ML from config | Done |
-| core/scanner.py | Use detector only | Done |
-| core/connector_registry.py | Registry | Done |
-| core/engine.py | Full engine + reports | Done |
-| connectors/sql_connector.py | Discover + sample | Done |
-| connectors/filesystem_connector.py | Permission, recursive, extensions, SQLite-as-DB (2.6) | Done |
-| connectors/mongodb_connector.py | Optional | Done |
-| connectors/redis_connector.py | Optional | Done |
-| report/generator.py | Single Excel + heatmap + Praise sheet | Done (2.3) |
-| api/routes.py | All routes + dashboard, config, reports pages | Done |
-| api/templates/*.html | Dashboard, reports list, config editor (Jinja2) | Done (2.8) |
-| api/static/* | CSS, JS for dashboard | Done (2.8) |
-| main.py | CLI + API | Done |
-| utils/logger.py | Unified logger | Done |
-| README.md | Install, config, DBs, files | Done; keep updated (2.7) |
-| TOPOLOGY.md | Full topology | Done; keep updated (2.7) |
-| config.yaml | Unified shape | Done |
-| run.py | Thin wrapper | Done (2.1) |
-| api/app.py | Re-export routes | Done (2.1) |
-| scanners/* | Deprecated | README (2.1) |
-| database/* | Deprecated | README (2.1) |
-| file_scan/*, db/*, report/sqlite_reporter.py | Legacy | Notes in place (2.1) |
-| logging_custom/* | Alias utils.logger | Done (2.1) |
-| tests/* | Use core/config/connectors | Done (2.1) |
+| Path                                         | Action                                                | Status                         |
+| ---                                          | ---                                                   | ---                            |
+| pyproject.toml                               | Optional deps, CVE-safe pins                          | Done; refresh pins (2.4)       |
+| requirements.txt                             | Sync with pyproject                                   | In place; formalize sync (2.4) |
+| config/loader.py                             | Unified load                                          | Done                           |
+| core/session.py                              | UUID + timestamp                                      | Done                           |
+| core/database.py                             | Single schema                                         | Done                           |
+| core/detector.py                             | Regex + ML from config                                | Done                           |
+| core/scanner.py                              | Use detector only                                     | Done                           |
+| core/connector_registry.py                   | Registry                                              | Done                           |
+| core/engine.py                               | Full engine + reports                                 | Done                           |
+| connectors/sql_connector.py                  | Discover + sample                                     | Done                           |
+| connectors/filesystem_connector.py           | Permission, recursive, extensions, SQLite-as-DB (2.6) | Done                           |
+| connectors/mongodb_connector.py              | Optional                                              | Done                           |
+| connectors/redis_connector.py                | Optional                                              | Done                           |
+| report/generator.py                          | Single Excel + heatmap + Praise sheet                 | Done (2.3)                     |
+| api/routes.py                                | All routes + dashboard, config, reports pages         | Done                           |
+| api/templates/*.html                         | Dashboard, reports list, config editor (Jinja2)       | Done (2.8)                     |
+| api/static/*                                 | CSS, JS for dashboard                                 | Done (2.8)                     |
+| main.py                                      | CLI + API                                             | Done                           |
+| utils/logger.py                              | Unified logger                                        | Done                           |
+| README.md                                    | Install, config, DBs, files                           | Done; keep updated (2.7)       |
+| TOPOLOGY.md                                  | Full topology                                         | Done; keep updated (2.7)       |
+| config.yaml                                  | Unified shape                                         | Done                           |
+| run.py                                       | Thin wrapper                                          | Done (2.1)                     |
+| api/app.py                                   | Re-export routes                                      | Done (2.1)                     |
+| scanners/*                                   | Deprecated                                            | README (2.1)                   |
+| database/*                                   | Deprecated                                            | README (2.1)                   |
+| file_scan/*, db/*, report/sqlite_reporter.py | Legacy                                                | Notes in place (2.1)           |
+| logging_custom/*                             | Alias utils.logger                                    | Done (2.1)                     |
+| tests/*                                      | Use core/config/connectors                            | Done (2.1)                     |
 
 ---
 
@@ -149,10 +149,10 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 ## 5. Suggested order of work
 
 1. **2.1** – Consolidate legacy code and fix tests (removes confusion and prevents regressions).
-2. **2.4** – Dependencies and security (low risk, high value).
-3. **2.7** – TOPOLOGY + README after 2.1 and 2.4.
-4. **2.3** – Report “praise” (small, visible improvement).
-5. **2.2** – Learned patterns (optional, when ML tuning is a priority).
-6. **2.6** – SQLite-as-DB in file scan (optional, when .sqlite/.db scanning is required).
-7. **2.5** – Optional BigData/API connectors (when a specific integration is needed).
-8. **2.8** – Web dashboard (frontend): dashboard, reports list, config editor; server-rendered, REST + file download only — Done.
+1. **2.4** – Dependencies and security (low risk, high value).
+1. **2.7** – TOPOLOGY + README after 2.1 and 2.4.
+1. **2.3** – Report “praise” (small, visible improvement).
+1. **2.2** – Learned patterns (optional, when ML tuning is a priority).
+1. **2.6** – SQLite-as-DB in file scan (optional, when .sqlite/.db scanning is required).
+1. **2.5** – Optional BigData/API connectors (when a specific integration is needed).
+1. **2.8** – Web dashboard (frontend): dashboard, reports list, config editor; server-rendered, REST + file download only — Done.

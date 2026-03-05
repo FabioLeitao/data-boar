@@ -1,7 +1,5 @@
 """Tests for sensitivity detection using core.scanner.DataScanner and core.detector."""
-import pytest
 from core.scanner import DataScanner
-from core.detector import SensitivityDetector
 
 
 def test_cpf_detection():

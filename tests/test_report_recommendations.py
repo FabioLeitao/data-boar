@@ -1,5 +1,4 @@
 """Tests for report Recommendations sheet, recommendation_overrides, and Executive summary."""
-import pytest
 from pathlib import Path
 
 from core.database import LocalDBManager

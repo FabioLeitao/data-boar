@@ -27,9 +27,9 @@ Repeat this whenever you want to pick up a new version pushed to Docker Hub (e.g
 ### Option A – Docker Desktop built-in MCP (if available)
 
 1. Open **Docker Desktop** → **Settings** → **Features in development** (or **Beta**).
-2. Enable **MCP** / **MCP Toolkit** if present.
-3. Note the MCP endpoint (e.g. `npipe://...` on Windows).
-4. In **Cursor** → **Settings** → **MCP** → **Add server**:
+1. Enable **MCP** / **MCP Toolkit** if present.
+1. Note the MCP endpoint (e.g. `npipe://...` on Windows).
+1. In **Cursor** → **Settings** → **MCP** → **Add server**:
    - Name: `docker`
    - Command / URL: use the endpoint from Docker Desktop (or `docker-mcp` if it provides a CLI).
 
@@ -124,9 +124,9 @@ docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.ym
 
 ## 5. Access
 
-- **Dashboard:** http://localhost:8088/
-- **API docs:** http://localhost:8088/docs
-- **Health:** http://localhost:8088/health
+- **Dashboard:** <http://localhost:8088/>
+- **API docs:** <http://localhost:8088/docs>
+- **Health:** <http://localhost:8088/health>
 
 ---
 

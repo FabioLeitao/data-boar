@@ -2,6 +2,9 @@
 # Keeps main branch healthy and improves security via automated checks.
 name: CI
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [main, master]
@@ -29,7 +32,8 @@ jobs:
         run: uv sync
 
       - name: Run tests
-        run: uv run pytest -v
+        run: uv run pytest -v -W error
+        # addopts in pyproject.toml also set -W error; explicit in CI so tests pass without warnings.
 
   audit:
     name: Dependency audit
@@ -55,3 +59,34 @@ jobs:
 
       - name: Run pip audit
         run: uv run pip-audit
+
+  sonar:
+    name: SonarQube / SonarCloud
+    runs-on: ubuntu-latest
+    if: ${{ secrets.SONAR_TOKEN != '' }}
+    needs: [test]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: SonarQube / SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          # SonarQube Server only: set SONAR_HOST_URL in repo secrets
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}

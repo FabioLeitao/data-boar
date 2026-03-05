@@ -46,15 +46,21 @@ spec:
   template:
     spec:
       containers:
+
         - name: audit
+
           image: YOUR_IMAGE
           command: ["python"]
           args: ["main.py", "--config", "/data/config.yaml", "--tenant", "Acme", "--technician", "Ops"]
           volumeMounts:
+
             - name: data
+
               mountPath: /data
       volumes:
+
         - name: data
+
           configMap:
             name: lgpd-audit-config
       restartPolicy: Never
