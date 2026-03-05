@@ -3,8 +3,8 @@
 The application uses a **hybrid** pipeline to classify column names and sampled content as sensitive or not:
 
 1. **Regex** – Built-in patterns (CPF, CNPJ, email, phone, SSN, credit card, dates) plus optional overrides from a config file.
-2. **ML** – TF-IDF + RandomForest trained on a list of **(text, label)** terms (sensitive vs non-sensitive). Terms come from a file or from inline config.
-3. **DL (optional)** – Sentence embeddings + a small classifier trained on your terms. Used when the optional dependency `sentence-transformers` is installed and you provide DL terms (file or inline). Confidence is combined with ML (e.g. `max(ml_confidence, dl_confidence)`).
+1. **ML** – TF-IDF + RandomForest trained on a list of **(text, label)** terms (sensitive vs non-sensitive). Terms come from a file or from inline config.
+1. **DL (optional)** – Sentence embeddings + a small classifier trained on your terms. Used when the optional dependency `sentence-transformers` is installed and you provide DL terms (file or inline). Confidence is combined with ML (e.g. `max(ml_confidence, dl_confidence)`).
 
 You can **set the training words for both ML and DL** in the main config file (inline) or in separate YAML/JSON files.
 
@@ -18,13 +18,13 @@ You can **set the training words for both ML and DL** in the main config file (i
 
 ## Config keys
 
-| Key | Description |
-|-----|-------------|
-| `ml_patterns_file` | Path to a YAML/JSON file with ML training terms (list of `{ text, label }`). Used when `sensitivity_detection.ml_terms` is not set. |
-| `dl_patterns_file` | Path to a YAML/JSON file with DL training terms (same format). Used when `sensitivity_detection.dl_terms` is not set. |
-| `sensitivity_detection` | Optional section with inline terms (no separate file needed). |
-| `sensitivity_detection.ml_terms` | List of `{ text: string, label: "sensitive" \| "non_sensitive" }`. Overrides/supplements `ml_patterns_file` when non-empty. |
-| `sensitivity_detection.dl_terms` | List of `{ text: string, label: "sensitive" \| "non_sensitive" }`. Overrides/supplements `dl_patterns_file` when non-empty. |
+| Key                              | Description                                                                                                                         |                                                                              |
+| ---                              | ---                                                                                                                                 |                                                                              |
+| `ml_patterns_file`               | Path to a YAML/JSON file with ML training terms (list of `{ text, label }`). Used when `sensitivity_detection.ml_terms` is not set. |                                                                              |
+| `dl_patterns_file`               | Path to a YAML/JSON file with DL training terms (same format). Used when `sensitivity_detection.dl_terms` is not set.               |                                                                              |
+| `sensitivity_detection`          | Optional section with inline terms (no separate file needed).                                                                       |                                                                              |
+| `sensitivity_detection.ml_terms` | List of `{ text: string, label: "sensitive" \                                                                                       | "non_sensitive" }`. Overrides/supplements `ml_patterns_file` when non-empty. |
+| `sensitivity_detection.dl_terms` | List of `{ text: string, label: "sensitive" \                                                                                       | "non_sensitive" }`. Overrides/supplements `dl_patterns_file` when non-empty. |
 
 **Label values:** `sensitive` or `1` = sensitive (PII/personal data); `non_sensitive` or `0` = not sensitive.
 
@@ -34,21 +34,32 @@ You can **set the training words for both ML and DL** in the main config file (i
 
 Both `ml_patterns_file` and `dl_patterns_file` use the same structure. You can point both to the same file if you want ML and DL to use the same terms.
 
-**YAML example:**
+## YAML example:
 
 ```yaml
 # List of terms; each has "text" and "label"
 - text: "cpf"
+
   label: sensitive
+
 - text: "email"
+
   label: sensitive
+
 - text: "data de nascimento"
+
   label: sensitive
+
 - text: "senha"
+
   label: sensitive
+
 - text: "item_count"
+
   label: non_sensitive
+
 - text: "config_file"
+
   label: non_sensitive
 ```
 
@@ -56,15 +67,21 @@ Both `ml_patterns_file` and `dl_patterns_file` use the same structure. You can p
 
 ```yaml
 patterns:
-  - text: "cpf"
+
+- text: "cpf"
+
     label: sensitive
-  - text: "email"
+
+- text: "email"
+
     label: sensitive
-  - text: "system_log"
+
+- text: "system_log"
+
     label: non_sensitive
 ```
 
-**JSON example:**
+## JSON example:
 
 ```json
 [
@@ -80,13 +97,13 @@ patterns:
 
 When **aggregated identification** is enabled, the report generator groups findings by table (database) or file (filesystem) and flags cases where **multiple quasi-identifier categories** (e.g. gender, job position, health, address, phone) appear together, which can support re-identification (LGPD Art. 5, GDPR Recital 26). The Excel report gets a sheet **"Cross-ref data – ident. risk"** and a high-priority recommendation.
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| `detection.aggregated_identification_enabled` | boolean | **true** | Set to `false` to disable aggregation and the Cross-ref sheet. |
-| `detection.aggregated_min_categories` | integer | **2** | Minimum number of distinct quasi-identifier categories in a table/file to flag (e.g. 3 for stricter). |
-| `detection.quasi_identifier_mapping` | list | **[]** | Optional list of `{ column_pattern, category }` or `{ pattern_detected, category }` to map columns/patterns to `gender`, `job_position`, `health`, `address`, `phone`, `other`. Built-in defaults already map common names (e.g. gender, sex, cargo, department, health, address, phone). |
+| Key                                           | Type    | Default  | Description                                                                                                                                                                                                                                                                               |
+| ---                                           | ---     | ---      | ---                                                                                                                                                                                                                                                                                       |
+| `detection.aggregated_identification_enabled` | boolean | **true** | Set to `false` to disable aggregation and the Cross-ref sheet.                                                                                                                                                                                                                            |
+| `detection.aggregated_min_categories`         | integer | **2**    | Minimum number of distinct quasi-identifier categories in a table/file to flag (e.g. 3 for stricter).                                                                                                                                                                                     |
+| `detection.quasi_identifier_mapping`          | list    | **[]**   | Optional list of `{ column_pattern, category }` or `{ pattern_detected, category }` to map columns/patterns to `gender`, `job_position`, `health`, `address`, `phone`, `other`. Built-in defaults already map common names (e.g. gender, sex, cargo, department, health, address, phone). |
 
-**Example: enable with custom mapping and minimum 3 categories**
+## Example: enable with custom mapping and minimum 3 categories
 
 ```yaml
 # config.yaml
@@ -97,10 +114,12 @@ detection:
   aggregated_identification_enabled: true
   aggregated_min_categories: 3
   quasi_identifier_mapping:
+
     - { column_pattern: "cargo", category: job_position }
     - { column_pattern: "departamento", category: job_position }
     - { pattern_detected: "PHONE_BR", category: phone }
     - { pattern_detected: "EMAIL", category: other }
+
 ```
 
 **How to operate:** Run a scan (CLI: `python main.py --config config.yaml` or API: start scan from the dashboard). Then generate the report (CLI: report is produced when the scan finishes; API: download from the session). If any table or file has at least `aggregated_min_categories` categories present, the report will include the **"Cross-ref data – ident. risk"** sheet and an **AGGREGATED_IDENTIFICATION** recommendation row.
@@ -113,7 +132,7 @@ detection:
 
 You can define ML and DL training terms directly in your main `config.yaml` (or JSON) under `sensitivity_detection`, without separate files.
 
-**Example: inline ML and DL terms**
+## Example: inline ML and DL terms
 
 ```yaml
 # config.yaml
@@ -127,18 +146,22 @@ report:
 # Training terms for sensitivity (ML = TF-IDF + RandomForest; DL = sentence embeddings + classifier when .[dl] installed)
 sensitivity_detection:
   ml_terms:
+
     - { text: "cpf", label: sensitive }
     - { text: "email", label: sensitive }
     - { text: "senha", label: sensitive }
     - { text: "data de nascimento", label: sensitive }
     - { text: "item_count", label: non_sensitive }
     - { text: "system_log", label: non_sensitive }
+
   dl_terms:
+
     - { text: "customer name", label: sensitive }
     - { text: "health record", label: sensitive }
     - { text: "salary", label: sensitive }
     - { text: "internal id", label: non_sensitive }
     - { text: "cache key", label: non_sensitive }
+
 ```
 
 If you set **only** `ml_terms` (or only `dl_terms`), the other still uses its file or built-in defaults: ML falls back to `ml_patterns_file` or built-in terms when `ml_terms` is empty; DL is used only when `dl_terms` or `dl_patterns_file` is provided and the optional `sentence-transformers` package is installed.
@@ -182,33 +205,61 @@ This installs `sentence-transformers` (and its dependencies). If `.[dl]` is not 
 Create e.g. `config/sensitivity_terms.yaml` (or copy from [sensitivity_terms.example.yaml](sensitivity_terms.example.yaml)):
 
 ```yaml
+
 - text: "cpf"
+
   label: sensitive
+
 - text: "cnpj"
+
   label: sensitive
+
 - text: "email"
+
   label: sensitive
+
 - text: "telefone"
+
   label: sensitive
+
 - text: "data de nascimento"
+
   label: sensitive
+
 - text: "nome completo"
+
   label: sensitive
+
 - text: "senha"
+
   label: sensitive
+
 - text: "salário"
+
   label: sensitive
+
 - text: "health record"
+
   label: sensitive
+
 - text: "item_count"
+
   label: non_sensitive
+
 - text: "config_file"
+
   label: non_sensitive
+
 - text: "temp_data"
+
   label: non_sensitive
+
 - text: "lyrics"
+
   label: non_sensitive
+
 - text: "tablature"
+
   label: non_sensitive
 ```
 
@@ -252,32 +303,35 @@ If `regex_overrides_file` is omitted or the file is missing, only the built-in p
 
 The file must contain a **list of objects**, each with:
 
-| Field | Required | Description |
-|-------|----------|-------------|
-| `name` | Yes | Short identifier for the pattern (e.g. `RG_BR`, `PLATE_BR`). Appears in reports as `pattern_detected`. |
-| `pattern` | Yes | Regular expression (Python `re` syntax). Matched against column name + sample text. Use raw strings; prefer `\b` for word boundaries to avoid partial matches. |
-| `norm_tag` | No | Label for compliance/reporting (e.g. `LGPD Art. 5`, `Custom`). Default: `"Custom"`. You can set this to any framework label (e.g. `"UK GDPR"`, `"PIPEDA s. 2"`, `"APPI"`, `"POPIA"`) so findings appear under that norm in reports and recommendations; see [Compliance frameworks and extensibility](compliance-frameworks.md). |
+| Field      | Required | Description                                                                                                                                                                                                                                                                                                                      |
+| ---        | ---      | ---                                                                                                                                                                                                                                                                                                                              |
+| `name`     | Yes      | Short identifier for the pattern (e.g. `RG_BR`, `PLATE_BR`). Appears in reports as `pattern_detected`.                                                                                                                                                                                                                           |
+| `pattern`  | Yes      | Regular expression (Python `re` syntax). Matched against column name + sample text. Use raw strings; prefer `\b` for word boundaries to avoid partial matches.                                                                                                                                                                   |
+| `norm_tag` | No       | Label for compliance/reporting (e.g. `LGPD Art. 5`, `Custom`). Default: `"Custom"`. You can set this to any framework label (e.g. `"UK GDPR"`, `"PIPEDA s. 2"`, `"APPI"`, `"POPIA"`) so findings appear under that norm in reports and recommendations; see [Compliance frameworks and extensibility](compliance-frameworks.md). |
 
 You can use a root-level list or a key `patterns` or `regex` containing the list. You can copy from [regex_overrides.example.yaml](regex_overrides.example.yaml) and edit.
 
-**YAML example:**
+## YAML example (regex overrides)
 
 ```yaml
 # config/regex_overrides.yaml
 - name: "RG_BR"
+
   pattern: "\b\d{1,2}\.?\d{3}\.?\d{3}-?[0-9Xx]\b"
   norm_tag: "LGPD Art. 5"
 
 - name: "PLATE_BR"
+
   pattern: "\b[A-Z]{3}-?\d{4}\b"
   norm_tag: "Personal data context"
 
 - name: "HEALTH_PLAN_ID"
+
   pattern: "\b\d{6,14}\b"
   norm_tag: "Health/insurance context"
 ```
 
-**JSON example:**
+## JSON example (regex overrides)
 
 ```json
 [
@@ -290,29 +344,40 @@ You can use a root-level list or a key `patterns` or `regex` containing the list
 
 The application already includes these patterns; you do not need to redefine them unless you want to change the regex or norm tag.
 
-| Name | Description | Norm tag |
-|------|-------------|----------|
-| `LGPD_CPF` | Brazilian CPF (11 digits, optional dots/dash) | LGPD Art. 5 |
-| `LGPD_CNPJ` | Brazilian CNPJ (14 digits, optional formatting) | LGPD Art. 5 |
-| `EMAIL` | Email address | GDPR Art. 4(1) |
-| `CREDIT_CARD` | 16-digit card (optional spaces/dashes) | PCI/GLBA |
-| `PHONE_BR` | Brazilian phone (optional +55, area code) | LGPD Art. 5 |
-| `CCPA_SSN` | US SSN (XXX-XX-XXXX) | CCPA |
-| `DATE_DMY` | Date d/m/y (e.g. 31/12/2024) | Personal data context |
+| Name          | Description                                     | Norm tag              |
+| ---           | ---                                             | ---                   |
+| `LGPD_CPF`    | Brazilian CPF (11 digits, optional dots/dash)   | LGPD Art. 5           |
+| `LGPD_CNPJ`   | Brazilian CNPJ (14 digits, optional formatting) | LGPD Art. 5           |
+| `EMAIL`       | Email address                                   | GDPR Art. 4(1)        |
+| `CREDIT_CARD` | 16-digit card (optional spaces/dashes)          | PCI/GLBA              |
+| `PHONE_BR`    | Brazilian phone (optional +55, area code)       | LGPD Art. 5           |
+| `CCPA_SSN`    | US SSN (XXX-XX-XXXX)                            | CCPA                  |
+| `DATE_DMY`    | Date d/m/y (e.g. 31/12/2024)                    | Personal data context |
 
 ### Examples of useful additional patterns
 
-- **RG (Brazil):** format varies by state; a common form is digits with optional dots and a trailing digit or X:  
+- **RG (Brazil):** format varies by state; a common form is digits with optional dots and a trailing digit or X:
+
   `\b\d{1,2}\.?\d{3}\.?\d{3}-?[0-9Xx]\b`
-- **Brazilian vehicle plate (old):** `AAA-9999`:  
+
+- **Brazilian vehicle plate (old):** `AAA-9999`:
+
   `\b[A-Z]{3}-?\d{4}\b`
-- **Brazilian vehicle plate (Mercosul):** `AAA9A99`:  
+
+- **Brazilian vehicle plate (Mercosul):** `AAA9A99`:
+
   `\b[A-Z]{3}\d[A-Z]\d{2}\b`
-- **Generic numeric ID (e.g. health plan):** be careful with length to avoid too many false positives; e.g. 8–14 digits:  
+
+- **Generic numeric ID (e.g. health plan):** be careful with length to avoid too many false positives; e.g. 8–14 digits:
+
   `\b\d{8,14}\b` (use only if context is appropriate; consider combining with ML/DL).
-- **US phone:** `(XXX) XXX-XXXX` or `XXX-XXX-XXXX`:  
+
+- **US phone:** `(XXX) XXX-XXXX` or `XXX-XXX-XXXX`:
+
   `\b\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b`
-- **Postal code (Brazil):** `99999-999`:  
+
+- **Postal code (Brazil):** `99999-999`:
+
   `\b\d{5}-?\d{3}\b`
 
 When a custom pattern matches the column name or sample text, the finding is reported with **HIGH** sensitivity (or MEDIUM in lyrics/tabs context for weak patterns), with `pattern_detected` set to your `name` and `norm_tag` in the report.
@@ -326,7 +391,7 @@ When a custom pattern matches the column name or sample text, the finding is rep
 
 ---
 
-## Summary
+## Document summary
 
 - **ML terms:** From `sensitivity_detection.ml_terms` (inline) or `ml_patterns_file`. Used by the TF-IDF + RandomForest classifier.
 - **DL terms:** From `sensitivity_detection.dl_terms` (inline) or `dl_patterns_file`. Used by the optional sentence-embedding + classifier when `.[dl]` is installed.

@@ -5,26 +5,34 @@ Thank you for considering contributing. This document covers local setup, workfl
 ## Quick start (development)
 
 1. **Clone and enter the repo**
+
    ```bash
    git clone https://github.com/YOUR_ORG/python3-lgpd-crawler.git
    cd python3-lgpd-crawler
    ```
 
-2. **Use Python 3.12+**  
+1. **Use Python 3.12+**
+
    The project targets Python 3.12 and 3.13. See [SECURITY.md](SECURITY.md) for supported versions.
 
-3. **Install dependencies with uv (recommended)**
+1. **Install dependencies with uv (recommended)**
+
    ```bash
    uv sync
    ```
+
    Or with pip inside a virtualenv: `pip install -e .`
 
-4. **Run tests**
+1. **Run tests**
+
    ```bash
-   uv run pytest -v
+   uv run pytest -v -W error
    ```
 
-5. **Run the app**
+   All tests must pass with no errors or warnings. See [docs/TESTING.md](docs/TESTING.md) for what each test module covers and how to run subsets.
+
+1. **Run the app**
+
    ```bash
    uv run python main.py --config config.yaml
    uv run python main.py --config config.yaml --web --port 8088
@@ -34,7 +42,7 @@ Thank you for considering contributing. This document covers local setup, workfl
 
 - **Bugs and features:** Open an issue using the [Bug report](.github/ISSUE_TEMPLATE/bug_report.md) or [Feature request](.github/ISSUE_TEMPLATE/feature_request.md) templates.
 - **Security:** Do not post exploit details publicly. Use the [Security issue](.github/ISSUE_TEMPLATE/security.md) template (high-level only) or the process in [SECURITY.md](SECURITY.md).
-- **Pull requests:** Use the [PR template](.github/PULL_REQUEST_TEMPLATE.md). Ensure tests pass (`uv run pytest`) and that docs/README are updated when behaviour or setup changes.
+- **Pull requests:** Use the [PR template](.github/PULL_REQUEST_TEMPLATE.md). Ensure tests pass (`uv run pytest -v -W error`; see [docs/TESTING.md](docs/TESTING.md)) and that docs/README are updated when behaviour or setup changes.
 
 ## Code and docs
 
@@ -44,7 +52,7 @@ Thank you for considering contributing. This document covers local setup, workfl
 
 ## CI and dependency hygiene
 
-- **CI:** GitHub Actions run tests and `uv pip audit` on push/PR to `main` (or `master`). Keep the branch green.
+- **CI:** GitHub Actions run tests and `uv pip audit` on push/PR to `main` (or `master`). When SonarQube/SonarCloud is enabled (see [docs/TESTING.md](docs/TESTING.md)), address reported issues so the quality gate stays green.
 - **Dependencies:** Declare all runtime and dev dependencies in `pyproject.toml`. If you add or change deps, run `uv sync` and optionally `uv pip compile pyproject.toml -o requirements.txt` if the project still ships a `requirements.txt`.
 - **Dependabot:** Pip and GitHub Actions are kept up to date via Dependabot; review and merge dependency PRs when safe.
 

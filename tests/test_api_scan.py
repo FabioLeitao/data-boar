@@ -2,8 +2,6 @@
 Test that the web API POST /scan (Start scan) triggers a full audit using the config's targets.
 Ensures the dashboard Start scan button flow runs the audit engine with the current config.
 """
-import pytest
-from pathlib import Path
 
 from fastapi.testclient import TestClient
 

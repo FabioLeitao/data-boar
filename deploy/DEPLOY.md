@@ -142,14 +142,14 @@ In production the main bottlenecks are **network I/O** (database and API targets
 
 The following are **optional** practices to harden deployments. They do not replace securing the app at the reverse proxy (TLS, auth, WAF). See also [SECURITY.md](../SECURITY.md).
 
-**Docker**
+### Docker
 
 - **Non-root:** The image already runs as user `appuser` (UID 1000). To enforce at runtime: `docker run --user 1000 ...` (or keep the Dockerfile `USER appuser`).
 - **Resource limits:** Use `--cpus` and `--memory` for plain Docker (e.g. `--memory 1g`). In Compose, set `deploy.resources.limits` (e.g. `cpus: '1'`, `memory: 1G`).
 - **Healthchecks:** The image can be used with Docker `HEALTHCHECK`; for API mode, probe `GET /health`. Compose and Kubernetes examples in this repo already use `/health` for liveness/readiness.
 - **DevSecOps:** Combine with API key (`api.require_api_key`), rate limiting (`rate_limit` in config), and CSP/security headers (see SECURITY.md). Run behind a reverse proxy with TLS and, when exposed externally, consider a WAF.
 
-**Kubernetes (optional examples)**
+### Kubernetes (optional examples)
 
 You can tighten the Deployment with a **securityContext** and add a **NetworkPolicy** and **PodDisruptionBudget** for production. The base manifests in `deploy/kubernetes/` do not include these by default; below are optional snippets and example files.
 
@@ -162,13 +162,17 @@ You can tighten the Deployment with a **securityContext** and add a **NetworkPol
         seccompProfile:
           type: RuntimeDefault
       containers:
+
         - name: lgpd-audit
+
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
             capabilities:
               drop:
+
                 - ALL
+
           # ... rest of container spec; ensure /data is a writable volumeMount so the app can write SQLite and reports
 ```
 
@@ -198,7 +202,7 @@ docker run -d --name lgpd-audit \
   python3-lgpd-crawler:latest
 ```
 
-Access: http://localhost:8088/ (dashboard), http://localhost:8088/docs (API). To stop: `docker stop lgpd-audit && docker rm lgpd-audit`.
+Access: <http://localhost:8088/> (dashboard), <http://localhost:8088/docs> (API). To stop: `docker stop lgpd-audit && docker rm lgpd-audit`.
 
 ## 4. Run with Docker Compose
 
@@ -242,9 +246,9 @@ docker compose -f deploy/docker-compose.yml up -d
 
 ### 4.4 Access and manage
 
-- **Dashboard:** http://localhost:8088/
-- **API docs:** http://localhost:8088/docs
-- **Health:** http://localhost:8088/health
+- **Dashboard:** <http://localhost:8088/>
+- **API docs:** <http://localhost:8088/docs>
+- **Health:** <http://localhost:8088/health>
 
 ```bash
 # View logs
@@ -292,7 +296,9 @@ version: "3.8"
 services:
   lgpd-audit:
     volumes:
+
       - ./data:/data
+
 ```
 
 Then from repo root:
@@ -313,8 +319,9 @@ docker service logs lgpd-audit_lgpd-audit
 
 ### 5.4 Access
 
-- Dashboard: http://localhost:8088/
-- API: http://localhost:8088/docs  
+- Dashboard: <http://localhost:8088/>
+- API: <http://localhost:8088/docs>
+
 Port 8088 is exposed by the Compose file.
 
 ### 5.5 Remove the stack
@@ -350,9 +357,9 @@ This creates the Deployment, Service (ClusterIP on 8088), and ConfigMap. For ful
 
 Expose the service via NodePort, LoadBalancer, or Ingress to port 8088. Then:
 
-- **Dashboard:** http://\<external\>:8088/
-- **API docs:** http://\<external\>:8088/docs
-- **Health:** http://\<external\>:8088/health
+- **Dashboard:** <http://\<external\>:8088/>
+- **API docs:** <http://\<external\>:8088/docs>
+- **Health:** <http://\<external\>:8088/health>
 
 ### 6.4 CLI one-shot (Job)
 
@@ -361,21 +368,21 @@ To run a single audit from the CLI in the cluster, use a **Job** that overrides 
 ## 7. Using the public image (no local build)
 
 1. In `deploy/docker-compose.yml` set `image:` to your published image (e.g. `fabioleitao/python3-lgpd-crawler:latest`) and remove or comment out the `build:` block.
-2. Prepare `/data/config.yaml` as in section 2 (volume or bind mount).
-3. Run with **docker run** (section 3), **Docker Compose** (section 4), **Docker Swarm** (section 5), or **Kubernetes** (section 6) as above.
+1. Prepare `/data/config.yaml` as in section 2 (volume or bind mount).
+1. Run with **docker run** (section 3), **Docker Compose** (section 4), **Docker Swarm** (section 5), or **Kubernetes** (section 6) as above.
 
 ## Summary
 
-| Goal | Command / step |
-|------|-----------------|
-| Default (API + frontend) | Run image with no command override: `docker run`, Compose, Swarm, or Kubernetes |
-| CLI one-shot | Override command: `docker run ... --entrypoint python IMAGE main.py --config /data/config.yaml` |
-| Build image | `docker build -t python3-lgpd-crawler:latest .` |
-| Push to registry | `docker tag ... fabioleitao/python3-lgpd-crawler:latest` then `docker login` and `docker push fabioleitao/python3-lgpd-crawler:latest` |
-| **Single container** | `docker run -d -p 8088:8088 -v ./data:/data python3-lgpd-crawler:latest` (section 3) |
-| **Docker Compose** | `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d` — prepare `./data/config.yaml` first (section 4) |
-| **Docker Swarm** | `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit` (section 5) |
-| **Kubernetes** | `kubectl apply -f deploy/kubernetes/` — see `deploy/kubernetes/README.md` for image and config (section 6) |
+| Goal                     | Command / step                                                                                                                             |
+| ------                   | -----------------                                                                                                                          |
+| Default (API + frontend) | Run image with no command override: `docker run`, Compose, Swarm, or Kubernetes                                                            |
+| CLI one-shot             | Override command: `docker run ... --entrypoint python IMAGE main.py --config /data/config.yaml`                                            |
+| Build image              | `docker build -t python3-lgpd-crawler:latest .`                                                                                            |
+| Push to registry         | `docker tag ... fabioleitao/python3-lgpd-crawler:latest` then `docker login` and `docker push fabioleitao/python3-lgpd-crawler:latest`     |
+| **Single container**     | `docker run -d -p 8088:8088 -v ./data:/data python3-lgpd-crawler:latest` (section 3)                                                       |
+| **Docker Compose**       | `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d` — prepare `./data/config.yaml` first (section 4) |
+| **Docker Swarm**         | `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit` (section 5)                            |
+| **Kubernetes**           | `kubectl apply -f deploy/kubernetes/` — see `deploy/kubernetes/README.md` for image and config (section 6)                                 |
 
 You can use **Docker Compose** or **Kubernetes** as alternatives to Docker Swarm; same image and config layout apply. All paths and image names assume you are in the repo root or in `deploy/` as indicated.
 
@@ -385,4 +392,4 @@ The application runs correctly when placed behind **NAT**, a **load balancer**, 
 
 - **TLS at the proxy:** If HTTPS is terminated at the proxy (recommended), set **X-Forwarded-Proto: https** on requests to the app so that security headers (e.g. HSTS) and scheme detection work correctly. See [SECURITY.md](../SECURITY.md) for HTTP security headers.
 - **Client IP and host:** If you need the real client IP or original host in logs or logic, configure your proxy to send **X-Forwarded-For** and **X-Forwarded-Host**; the app can be extended to trust these when needed.
-- **Subpath:** If the app is served under a path prefix (e.g. `https://example.com/audit/`), configure the proxy to strip or rewrite the prefix so the app still sees paths starting at `/`; or use the proxy’s rewrite rules to map `/audit/` to the container root.
+- **Subpath:** If the app is served under a path prefix (e.g. <https://example.com/audit/>), configure the proxy to strip or rewrite the prefix so the app still sees paths starting at `/`; or use the proxy’s rewrite rules to map `/audit/` to the container root.
