@@ -3,7 +3,7 @@ Connector registry: map target type (postgresql, mysql, filesystem, etc.) to con
 Each connector implements: connect(), discover(), sample() where applicable, close(),
 and reports findings via a callback (save_finding/save_failure) passed by the engine.
 """
-from typing import Any, Callable, Type
+from typing import Any, Type
 
 # Registry: type string -> (connector_class, requires_config_keys)
 _REGISTRY: dict[str, tuple[Type[Any], list[str]]] = {}
@@ -24,6 +24,29 @@ def list_connector_types() -> list[str]:
     return list(_REGISTRY.keys())
 
 
+def _try_get_connector(connector_type: str) -> tuple[Type[Any], list[str]] | None:
+    """Return (connector_class, required_keys) for type, or None if not registered."""
+    try:
+        return get_connector(connector_type)
+    except KeyError:
+        return None
+
+
+def _resolve_database_connector(target: dict[str, Any]) -> tuple[Type[Any], list[str]] | None:
+    """Resolve SQL connector from target with type='database' and driver."""
+    driver = target.get("driver", "")
+    engine = driver.split("+")[0].lower() if driver else ""
+    if engine in _REGISTRY:
+        return get_connector(engine)
+    if driver and driver in _REGISTRY:
+        return get_connector(driver)
+    for alias in ("postgresql", "mysql", "sqlite", "mssql", "oracle"):
+        if alias in driver or driver in (alias, f"{alias}+psycopg2", f"{alias}+pymysql"):
+            if alias in _REGISTRY:
+                return get_connector(alias)
+    return None
+
+
 def connector_for_target(target: dict[str, Any]) -> tuple[Type[Any], list[str]] | None:
     """
     Resolve connector from target config. Target may have type='database' with driver='postgresql+psycopg2'.
@@ -33,31 +56,11 @@ def connector_for_target(target: dict[str, Any]) -> tuple[Type[Any], list[str]] 
     if t == "filesystem":
         return get_connector("filesystem")
     if t in ("api", "rest"):
-        try:
-            return get_connector("api")
-        except KeyError:
-            return None
+        return _try_get_connector("api")
     if t in ("sharepoint", "webdav", "smb", "cifs", "nfs"):
-        try:
-            return get_connector(t)
-        except KeyError:
-            return None
+        return _try_get_connector(t)
     if t in ("powerbi", "dataverse", "powerapps"):
-        try:
-            return get_connector(t)
-        except KeyError:
-            return None
+        return _try_get_connector(t)
     if t == "database":
-        driver = target.get("driver", "")
-        # Normalize: postgresql+psycopg2 -> postgresql, mysql+pymysql -> mysql
-        engine = driver.split("+")[0].lower() if driver else ""
-        if engine in _REGISTRY:
-            return get_connector(engine)
-        # Fallback: try driver as-is then common aliases
-        if driver and driver in _REGISTRY:
-            return get_connector(driver)
-        for alias in ("postgresql", "mysql", "sqlite", "mssql", "oracle"):
-            if alias in driver or driver in (alias, f"{alias}+psycopg2", f"{alias}+pymysql"):
-                if alias in _REGISTRY:
-                    return get_connector(alias)
+        return _resolve_database_connector(target)
     return None

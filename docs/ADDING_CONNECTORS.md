@@ -16,21 +16,21 @@ This guide explains how to add a new data-source connector to the LGPD audit sol
 So a connector must:
 
 1. Implement a class with **`run(self)`** that performs the scan.
-2. Use **`self.scanner`** (e.g. `scan_column(column_name, sample_text)`) for sensitivity detection.
-3. Report results via **`self.db_manager.save_finding(...)`** and failures via **`self.db_manager.save_failure(...)`**.
-4. Optionally implement **`connect()`** and **`close()`** for connection lifecycle; **`run()`** should call them (e.g. connect at start, close in a `finally` block).
+1. Use **`self.scanner`** (e.g. `scan_column(column_name, sample_text)`) for sensitivity detection.
+1. Report results via **`self.db_manager.save_finding(...)`** and failures via **`self.db_manager.save_failure(...)`**.
+1. Optionally implement **`connect()`** and **`close()`** for connection lifecycle; **`run()`** should call them (e.g. connect at start, close in a `finally` block).
 
 ---
 
 ## 2. Connector contract (summary)
 
-| Requirement | Description |
-|------------|-------------|
-| **Constructor** | `__init__(self, target_config, scanner, db_manager, **kwargs)`. For database/API connectors the engine only passes these three; for filesystem and share connectors it may also pass `extensions`, `scan_sqlite_as_db`, `sample_limit`. |
-| **`run()`** | Entry point. Connect, discover/sample, call `scanner.scan_column(name, sample)`, then `db_manager.save_finding(...)` or `save_failure(...)`. Close resources when done. |
-| **`connect()` / `close()`** | Optional but recommended. Use in `run()` so connections are released. |
-| **Findings** | Use `save_finding(source_type="database", ...)` for DB-like sources (schema, table, column) or `save_finding(source_type="filesystem", ...)` for file/API-like (path, file_name). |
-| **Failures** | Use `save_failure(target_name, reason, details)` on unreachable targets or errors. |
+| Requirement                 | Description                                                                                                                                                                                                                             |
+| ---                         | ---                                                                                                                                                                                                                                     |
+| **Constructor**             | `__init__(self, target_config, scanner, db_manager, **kwargs)`. For database/API connectors the engine only passes these three; for filesystem and share connectors it may also pass `extensions`, `scan_sqlite_as_db`, `sample_limit`. |
+| **`run()`**                 | Entry point. Connect, discover/sample, call `scanner.scan_column(name, sample)`, then `db_manager.save_finding(...)` or `save_failure(...)`. Close resources when done.                                                                 |
+| **`connect()` / `close()`** | Optional but recommended. Use in `run()` so connections are released.                                                                                                                                                                   |
+| **Findings**                | Use `save_finding(source_type="database", ...)` for DB-like sources (schema, table, column) or `save_finding(source_type="filesystem", ...)` for file/API-like (path, file_name).                                                       |
+| **Failures**                | Use `save_failure(target_name, reason, details)` on unreachable targets or errors.                                                                                                                                                      |
 
 ---
 
@@ -41,10 +41,10 @@ So a connector must:
 Add a new file under `connectors/`, e.g. `connectors/snowflake_connector.py`.
 
 - Implement a class (e.g. `SnowflakeConnector`) with:
-  - `__init__(self, target_config, scanner, db_manager, sample_limit=5)` (match the engine’s constructor call for database-like connectors).
-  - `connect()` – create client/engine from `target_config`.
-  - `close()` – dispose engine/close client.
-  - `run()` – call `connect()`, then discover/sample, run `scanner.scan_column(...)`, call `db_manager.save_finding(...)` or `save_failure(...)`, and in a `finally` block call `close()`.
+- `__init__(self, target_config, scanner, db_manager, sample_limit=5)` (match the engine’s constructor call for database-like connectors).
+- `connect()` – create client/engine from `target_config`.
+- `close()` – dispose engine/close client.
+- `run()` – call `connect()`, then discover/sample, run `scanner.scan_column(...)`, call `db_manager.save_finding(...)` or `save_failure(...)`, and in a `finally` block call `close()`.
 
 ### Step 2: Register the connector
 
@@ -133,13 +133,13 @@ In the README (or this doc), add:
 ## 4. Database vs filesystem/API findings
 
 - **Database-like sources** (tables and columns): use `save_finding(source_type="database", ...)` and pass at least:
-  - `target_name`, `server_ip` (or host), `schema_name`, `table_name`, `column_name`, `data_type`
-  - `sensitivity_level`, `pattern_detected`, `norm_tag`, `ml_confidence`
-  - Other DB fields are optional but useful for reports.
+- `target_name`, `server_ip` (or host), `schema_name`, `table_name`, `column_name`, `data_type`
+- `sensitivity_level`, `pattern_detected`, `norm_tag`, `ml_confidence`
+- Other DB fields are optional but useful for reports.
 
 - **File/API-like sources** (paths, endpoints, keys): use `save_finding(source_type="filesystem", ...)` and pass:
-  - `target_name`, `path`, `file_name` (e.g. endpoint + field), `data_type`
-  - `sensitivity_level`, `pattern_detected`, `norm_tag`, `ml_confidence`
+- `target_name`, `path`, `file_name` (e.g. endpoint + field), `data_type`
+- `sensitivity_level`, `pattern_detected`, `norm_tag`, `ml_confidence`
 
 The scanner returns a dict with at least `sensitivity_level`, `pattern_detected`, `norm_tag`, `ml_confidence`; pass those through to `save_finding`. Skip or do not report rows where `sensitivity_level == "LOW"` if you want to match existing behavior.
 
@@ -164,7 +164,6 @@ except ImportError:
     _SNOWFLAKE_AVAILABLE = False
     snowflake = None
 
-
 def _build_url(target: dict[str, Any]) -> str:
     account = target.get("account", "")
     user = target.get("user", "")
@@ -174,7 +173,6 @@ def _build_url(target: dict[str, Any]) -> str:
     warehouse = target.get("warehouse", "")
     # Build SQLAlchemy-style URL or use connector params; here simplified.
     return f"snowflake://{user}:{password}@{account}/{database}/{schema}?warehouse={warehouse}"
-
 
 class SnowflakeConnector:
     def __init__(self, target_config: dict[str, Any], scanner: Any, db_manager: Any, sample_limit: int = 5):
@@ -266,16 +264,17 @@ class SnowflakeConnector:
         finally:
             self.close()
 
-
 if _SNOWFLAKE_AVAILABLE:
     register("snowflake", SnowflakeConnector, ["name", "type", "account", "user", "database"])
 ```
 
-**Config example (`config.yaml`):**
+## Config example (`config.yaml`):
 
 ```yaml
 targets:
-  - name: "Warehouse_LGPD"
+
+- name: "Warehouse_LGPD"
+
     type: database
     driver: snowflake
     account: "xy12345.us-east-1"
@@ -318,15 +317,19 @@ Config example:
 
 ```yaml
 targets:
-  - name: "Internal API"
+
+- name: "Internal API"
+
     type: api
     base_url: "https://api.example.com"
     auth:
       type: bearer
       token_from_env: "API_TOKEN"
     paths:
+
       - "/users"
       - "/orders"
+
 ```
 
 ---

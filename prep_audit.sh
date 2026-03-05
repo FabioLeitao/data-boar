@@ -13,7 +13,7 @@ echo -e "${GREEN}### Iniciando configuração do ambiente de Auditoria ###${NC}"
 # Verificar se é root
 if [ "$EUID" -ne 0 ]; then
   echo -e "${RED}Por favor, execute como root ou usando sudo.${NC}"
-  exit
+  exit 1
 fi
 
 echo -e "${GREEN}1. Atualizando repositórios...${NC}"
@@ -35,15 +35,15 @@ if ! command -v sqlcmd &>/dev/null; then
   curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor >/usr/share/keyrings/microsoft-archive-keyring.gpg
   curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
   # Detectar versão para o repositório correto
-  DISTRO=$(lsb_release -is | tr '[:upper:]' '[:lower:]')
   CODENAME=$(lsb_release -cs)
-  echo "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/ubuntu/$(lsb_release -rs)/prod $CODENAME main" >/etc/apt/sources.list.d/mssql-release.list
+  REPO_VERSION=$(lsb_release -rs)
+  echo "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/ubuntu/${REPO_VERSION}/prod ${CODENAME} main" >/etc/apt/sources.list.d/mssql-release.list
   apt-get update
   ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
 else
   echo "Drivers MSSQL já detectados."
 fi
-n
+
 echo -e "${GREEN}5. Instalando dependências para Oracle e IBM DB2 (Bibliotecas de suporte)...${NC}"
 # Oracle Instant Client requer libaio1
 apt-get install -y libaio1
@@ -56,7 +56,8 @@ echo -e "${GREEN}7. Verificando instalação do gerenciador 'uv'...${NC}"
 if ! command -v uv &>/dev/null; then
   echo "Instalando o gerenciador uv..."
   curl -LsSf https://astral.sh/uv/install.sh | sh
-  source $HOME/.cargo/env
+  # shellcheck source=/dev/null
+  . "${HOME}/.cargo/env"
 else
   echo "Gerenciador uv já está instalado."
 fi

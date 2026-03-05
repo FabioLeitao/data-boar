@@ -16,21 +16,21 @@ Este guia explica como adicionar um novo conector de fonte de dados à solução
 Um conector deve:
 
 1. Implementar uma classe com **`run(self)`** que executa a varredura.
-2. Usar **`self.scanner`** (ex.: `scan_column(column_name, sample_text)`) para detecção de sensibilidade.
-3. Reportar resultados via **`self.db_manager.save_finding(...)`** e falhas via **`self.db_manager.save_failure(...)`**.
-4. Opcionalmente implementar **`connect()`** e **`close()`** para o ciclo de vida da conexão; **`run()`** deve chamá-los (ex.: conectar no início, fechar em um bloco `finally`).
+1. Usar **`self.scanner`** (ex.: `scan_column(column_name, sample_text)`) para detecção de sensibilidade.
+1. Reportar resultados via **`self.db_manager.save_finding(...)`** e falhas via **`self.db_manager.save_failure(...)`**.
+1. Opcionalmente implementar **`connect()`** e **`close()`** para o ciclo de vida da conexão; **`run()`** deve chamá-los (ex.: conectar no início, fechar em um bloco `finally`).
 
 ---
 
 ## 2. Contrato do conector (resumo)
 
-| Exigência | Descrição |
-|-----------|-----------|
-| **Construtor** | `__init__(self, target_config, scanner, db_manager, **kwargs)`. Para conectores de banco/API o engine só passa esses três; para filesystem e shares pode passar também `extensions`, `scan_sqlite_as_db`, `sample_limit`. |
-| **`run()`** | Ponto de entrada. Conectar, descobrir/amostrar, chamar `scanner.scan_column(name, sample)`, depois `db_manager.save_finding(...)` ou `save_failure(...)`. Fechar recursos ao terminar. |
-| **`connect()` / `close()`** | Opcional, mas recomendado. Usar em `run()` para liberar conexões. |
-| **Achados** | Usar `save_finding(source_type="database", ...)` para fontes tipo banco (schema, table, column) ou `save_finding(source_type="filesystem", ...)` para arquivo/API (path, file_name). |
-| **Falhas** | Usar `save_failure(target_name, reason, details)` quando o alvo for inacessível ou houver erro. |
+| Exigência                   | Descrição                                                                                                                                                                                                                 |
+| ---                         | ---                                                                                                                                                                                                                       |
+| **Construtor**              | `__init__(self, target_config, scanner, db_manager, **kwargs)`. Para conectores de banco/API o engine só passa esses três; para filesystem e shares pode passar também `extensions`, `scan_sqlite_as_db`, `sample_limit`. |
+| **`run()`**                 | Ponto de entrada. Conectar, descobrir/amostrar, chamar `scanner.scan_column(name, sample)`, depois `db_manager.save_finding(...)` ou `save_failure(...)`. Fechar recursos ao terminar.                                    |
+| **`connect()` / `close()`** | Opcional, mas recomendado. Usar em `run()` para liberar conexões.                                                                                                                                                         |
+| **Achados**                 | Usar `save_finding(source_type="database", ...)` para fontes tipo banco (schema, table, column) ou `save_finding(source_type="filesystem", ...)` para arquivo/API (path, file_name).                                      |
+| **Falhas**                  | Usar `save_failure(target_name, reason, details)` quando o alvo for inacessível ou houver erro.                                                                                                                           |
 
 ---
 
@@ -41,10 +41,10 @@ Um conector deve:
 Crie um novo arquivo em `connectors/`, por exemplo `connectors/snowflake_connector.py`.
 
 - Implemente uma classe (ex.: `SnowflakeConnector`) com:
-  - `__init__(self, target_config, scanner, db_manager, sample_limit=5)` (compatível com a chamada do engine para conectores tipo banco).
-  - `connect()` – criar client/engine a partir de `target_config`.
-  - `close()` – descartar engine/fechar client.
-  - `run()` – chamar `connect()`, descobrir/amostrar, chamar `scanner.scan_column(...)`, chamar `db_manager.save_finding(...)` ou `save_failure(...)`, e em um bloco `finally` chamar `close()`.
+- `__init__(self, target_config, scanner, db_manager, sample_limit=5)` (compatível com a chamada do engine para conectores tipo banco).
+- `connect()` – criar client/engine a partir de `target_config`.
+- `close()` – descartar engine/fechar client.
+- `run()` – chamar `connect()`, descobrir/amostrar, chamar `scanner.scan_column(...)`, chamar `db_manager.save_finding(...)` ou `save_failure(...)`, e em um bloco `finally` chamar `close()`.
 
 ### Passo 2: Registrar o conector
 
@@ -133,13 +133,13 @@ No README (ou neste doc), inclua:
 ## 4. Achados tipo database vs filesystem/API
 
 - **Fontes tipo banco** (tabelas e colunas): use `save_finding(source_type="database", ...)` e passe pelo menos:
-  - `target_name`, `server_ip` (ou host), `schema_name`, `table_name`, `column_name`, `data_type`
-  - `sensitivity_level`, `pattern_detected`, `norm_tag`, `ml_confidence`
-  - Outros campos de DB são opcionais mas úteis nos relatórios.
+- `target_name`, `server_ip` (ou host), `schema_name`, `table_name`, `column_name`, `data_type`
+- `sensitivity_level`, `pattern_detected`, `norm_tag`, `ml_confidence`
+- Outros campos de DB são opcionais mas úteis nos relatórios.
 
 - **Fontes tipo arquivo/API** (paths, endpoints, chaves): use `save_finding(source_type="filesystem", ...)` e passe:
-  - `target_name`, `path`, `file_name` (ex.: endpoint + campo), `data_type`
-  - `sensitivity_level`, `pattern_detected`, `norm_tag`, `ml_confidence`
+- `target_name`, `path`, `file_name` (ex.: endpoint + campo), `data_type`
+- `sensitivity_level`, `pattern_detected`, `norm_tag`, `ml_confidence`
 
 O scanner retorna um dict com pelo menos `sensitivity_level`, `pattern_detected`, `norm_tag`, `ml_confidence`; repasse-os para `save_finding`. Ignore ou não reporte linhas com `sensitivity_level == "LOW"` se quiser manter o comportamento atual.
 
@@ -164,7 +164,6 @@ except ImportError:
     _SNOWFLAKE_AVAILABLE = False
     snowflake = None
 
-
 def _build_url(target: dict[str, Any]) -> str:
     account = target.get("account", "")
     user = target.get("user", "")
@@ -174,7 +173,6 @@ def _build_url(target: dict[str, Any]) -> str:
     warehouse = target.get("warehouse", "")
     # Montar URL no estilo SQLAlchemy ou usar parâmetros do connector; aqui simplificado.
     return f"snowflake://{user}:{password}@{account}/{database}/{schema}?warehouse={warehouse}"
-
 
 class SnowflakeConnector:
     def __init__(self, target_config: dict[str, Any], scanner: Any, db_manager: Any, sample_limit: int = 5):
@@ -266,16 +264,17 @@ class SnowflakeConnector:
         finally:
             self.close()
 
-
 if _SNOWFLAKE_AVAILABLE:
     register("snowflake", SnowflakeConnector, ["name", "type", "account", "user", "database"])
 ```
 
-**Exemplo de config (`config.yaml`):**
+## Exemplo de config (`config.yaml`):
 
 ```yaml
 targets:
-  - name: "Warehouse_LGPD"
+
+- name: "Warehouse_LGPD"
+
     type: database
     driver: snowflake
     account: "xy12345.us-east-1"
@@ -318,15 +317,19 @@ Exemplo de config:
 
 ```yaml
 targets:
-  - name: "API interna"
+
+- name: "API interna"
+
     type: api
     base_url: "https://api.example.com"
     auth:
       type: bearer
       token_from_env: "API_TOKEN"
     paths:
+
       - "/users"
       - "/orders"
+
 ```
 
 ---
