@@ -1,6 +1,11 @@
 # CodeQL: security and quality analysis for Python (OWASP, injection, etc.).
 # Results appear under Security > Code scanning; configure rulesets for merge protection.
 # https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning
+#
+# Explicit permissions satisfy GitHub's "Workflow does not contain permissions" requirement:
+# - contents: read — checkout and read repo
+# - security-events: write — upload CodeQL results to Security tab
+# - actions: read — CodeQL action may need to read other actions
 name: CodeQL
 
 on:
