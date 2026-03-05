@@ -441,6 +441,10 @@ class SensitivityDetector:
             # Minor indication even without strong ML/regex confidence → treat as HIGH with dedicated norm_tag.
             return "HIGH", "DOB_POSSIBLE_MINOR", "LGPD Art. 14 – possible minor data; GDPR Art. 8", max(combined_confidence, 80)
         if combined_confidence >= 70:
+            if entertainment_context:
+                # ML-only confidence in entertainment context (lyrics/tabs) → cap at MEDIUM so that
+                # these cases surface for human review without overwhelming the report with HIGH.
+                return "MEDIUM", "ML_POTENTIAL_ENTERTAINMENT", "Potential personal data in entertainment context", combined_confidence
             return "HIGH", "ML_DETECTED", "LGPD/GDPR/CCPA context", combined_confidence
         if combined_confidence >= 40:
             return "MEDIUM", "ML_POTENTIAL", "Potential personal data", combined_confidence
