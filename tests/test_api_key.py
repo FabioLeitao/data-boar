@@ -2,8 +2,6 @@
 Tests for optional API key: when api.require_api_key is true, requests must provide
 X-API-Key or Authorization: Bearer <key>; /health is always allowed without key.
 """
-import pytest
-from pathlib import Path
 
 from fastapi.testclient import TestClient
 

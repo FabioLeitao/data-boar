@@ -2,7 +2,7 @@
 
 Application for auditing personal and sensitive data across databases and filesystems, aligned with **LGPD**, **GDPR**, **CCPA**, **HIPAA**, and **GLBA**. It discovers and maps possible PII/sensitive data via regex and ML, stores metadata (including optional **tenant/customer** and **technician/operator** tags per scan) in a local SQLite database, and produces Excel reports with heatmaps and recommendations.
 
-> **Documentation note:** This README and `docs/USAGE.md` are the canonical English references. When features or options change, update **both** languages to keep them in sync.  
+> **Documentation note:** This README and `docs/USAGE.md` are the canonical English references. When features or options change, update **both** languages to keep them in sync.
 > **Brazilian Portuguese (pt-BR):** [README.pt_BR.md](README.pt_BR.md) · [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md)
 
 ## Features
@@ -95,7 +95,9 @@ Use a single config file in **YAML** or **JSON**. The API loads it from `CONFIG_
 
 ```yaml
 targets:
-  - name: "Produção_Postgres"
+
+- name: "Produção_Postgres"
+
     type: database
     driver: postgresql+psycopg2
     host: 10.0.0.50
@@ -104,7 +106,8 @@ targets:
     pass: secure_password
     database: customers_db
 
-  - name: "Documentos_LGPD"
+- name: "Documentos_LGPD"
+
     type: filesystem
     path: /home/user/Documents/LGPD
     recursive: true
@@ -137,9 +140,13 @@ Legacy `config/config.json` with `databases` and `file_scan.directories` is norm
 YAML/JSON list of `text` + `label` (sensitive / non_sensitive) to train or extend the classifier:
 
 ```yaml
+
 - text: "cpf"
+
   label: sensitive
+
 - text: "system_log"
+
   label: non_sensitive
 ```
 
@@ -168,7 +175,9 @@ learned_patterns:
 YAML/JSON list of `name`, `pattern`, optional `norm_tag`:
 
 ```yaml
+
 - name: LGPD_CPF
+
   pattern: "\b\d{3}\.?\d{3}\.?\d{3}-?\d{2}\b"
   norm_tag: "LGPD Art. 5"
 ```
@@ -189,7 +198,7 @@ When `enabled` is true, API endpoints that start scans (`POST /scan`, `/start`, 
 
 ## Run
 
-**CLI (one-shot audit):**
+## CLI (one-shot audit):
 
 ```bash
 # Minimal run with default options
@@ -204,7 +213,7 @@ python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Sil
 # Report written to report.output_dir, e.g. Relatorio_Auditoria_<session_id>.xlsx
 ```
 
-**REST API (default port 8088):**
+## REST API (default port 8088):
 
 ```bash
 # Start API with default port 8088
@@ -217,51 +226,51 @@ python main.py --config config.yaml --web --port 9090
 uvicorn api.routes:app --host 0.0.0.0 --port 8088
 ```
 
-**CLI arguments (reference):**
+## CLI arguments (reference):
 
-| Argument | Mode | Description | Examples |
-|---------|------|-------------|----------|
-| `--config PATH` | CLI & API | Path to YAML/JSON config file. Defaults to `config.yaml` if omitted. | `--config config.yaml`, `--config configs/prod.yaml` |
-| `--web` | API only | Start the REST API instead of running a one-shot scan. | `--web` |
-| `--port N` | API only | Port for the REST API when `--web` is set. Defaults to `8088`. Ignored in one-shot CLI mode. | `--web --port 9090` |
-| `--reset-data` | CLI only (maintenance) | **Dangerous**: wipe all scan sessions, findings and failures from SQLite, delete generated reports/heatmaps under `report.output_dir`, and record the wipe event in `data_wipe_log` for auditability. Does not start a scan. | `--reset-data` |
-| `--tenant NAME` | CLI only (one-shot) | Optional customer / tenant name for this scan. Stored in `scan_sessions.tenant_name`, shown on dashboard and in the **Report info** sheet. | `--tenant "Acme Corp"` |
-| `--technician NAME` | CLI only (one-shot) | Optional technician / operator responsible for this scan. Stored in `scan_sessions.technician_name`, shown on dashboard and in the **Report info** sheet. | `--technician "Alice Silva"` |
+| Argument            | Mode                   | Description                                                                                                                                                                                                                  | Examples                                             |
+| ---------           | ------                 | -------------                                                                                                                                                                                                                | ----------                                           |
+| `--config PATH`     | CLI & API              | Path to YAML/JSON config file. Defaults to `config.yaml` if omitted.                                                                                                                                                         | `--config config.yaml`, `--config configs/prod.yaml` |
+| `--web`             | API only               | Start the REST API instead of running a one-shot scan.                                                                                                                                                                       | `--web`                                              |
+| `--port N`          | API only               | Port for the REST API when `--web` is set. Defaults to `8088`. Ignored in one-shot CLI mode.                                                                                                                                 | `--web --port 9090`                                  |
+| `--reset-data`      | CLI only (maintenance) | **Dangerous**: wipe all scan sessions, findings and failures from SQLite, delete generated reports/heatmaps under `report.output_dir`, and record the wipe event in `data_wipe_log` for auditability. Does not start a scan. | `--reset-data`                                       |
+| `--tenant NAME`     | CLI only (one-shot)    | Optional customer / tenant name for this scan. Stored in `scan_sessions.tenant_name`, shown on dashboard and in the **Report info** sheet.                                                                                   | `--tenant "Acme Corp"`                               |
+| `--technician NAME` | CLI only (one-shot)    | Optional technician / operator responsible for this scan. Stored in `scan_sessions.technician_name`, shown on dashboard and in the **Report info** sheet.                                                                    | `--technician "Alice Silva"`                         |
 
 When using the API (`--web`), the server loads config from **`CONFIG_PATH`** (environment variable) or `config.yaml` in the working directory if `--config` is not provided on the CLI.
 
 **Web dashboard:** With the server running, open `http://localhost:8088/` for a simple dashboard: scan status, quantity/quality of discovered data (DB/FS findings, failures), **progress graph over time** (total findings and a risk score per session), optional inputs for **tenant/customer** and **technician/operator** before starting a scan, recent sessions (including tenant/technician columns), and links to **Reports** (list and download) and **Configuration** (edit YAML in the browser).
 
-**API routes (summary):**
+## API routes (summary):
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/scan` or `/start` | Start full audit in background; returns `session_id`. Optional JSON body: `{ "tenant": "Acme Corp", "technician": "Alice" }` to tag the session. |
-| `POST` | `/scan_database` | One-off scan of one database (JSON body); returns `session_id` |
-| `GET` | `/status` | `running`, `current_session_id`, `findings_count` |
-| `GET` | `/report` | Download **last generated** Excel report |
-| `GET` | `/heatmap` | Download **last generated** heatmap PNG (sensitivity/risk heatmap for most recent session) |
-| `GET` | `/list` or `/reports` | List past sessions (to pick a report); includes `tenant_name`, `technician_name`, counts, and status. |
-| `GET` | `/reports/{session_id}` | Regenerate and download report for that session |
-| `GET` | `/heatmap/{session_id}` | Regenerate report (if needed) and download heatmap PNG for that session |
-| `PATCH` | `/sessions/{session_id}` | Set or clear tenant/customer name for an existing session. Body: `{ "tenant": "..." }`. |
-| `PATCH` | `/sessions/{session_id}/technician` | Set or clear technician/operator name for an existing session. Body: `{ "technician": "..." }`. |
+| Method   | Endpoint                            | Description                                                                                                                                      |
+| -------- | ----------                          | -------------                                                                                                                                    |
+| `POST`   | `/scan` or `/start`                 | Start full audit in background; returns `session_id`. Optional JSON body: `{ "tenant": "Acme Corp", "technician": "Alice" }` to tag the session. |
+| `POST`   | `/scan_database`                    | One-off scan of one database (JSON body); returns `session_id`                                                                                   |
+| `GET`    | `/status`                           | `running`, `current_session_id`, `findings_count`                                                                                                |
+| `GET`    | `/report`                           | Download **last generated** Excel report                                                                                                         |
+| `GET`    | `/heatmap`                          | Download **last generated** heatmap PNG (sensitivity/risk heatmap for most recent session)                                                       |
+| `GET`    | `/list` or `/reports`               | List past sessions (to pick a report); includes `tenant_name`, `technician_name`, counts, and status.                                            |
+| `GET`    | `/reports/{session_id}`             | Regenerate and download report for that session                                                                                                  |
+| `GET`    | `/heatmap/{session_id}`             | Regenerate report (if needed) and download heatmap PNG for that session                                                                          |
+| `PATCH`  | `/sessions/{session_id}`            | Set or clear tenant/customer name for an existing session. Body: `{ "tenant": "..." }`.                                                          |
+| `PATCH`  | `/sessions/{session_id}/technician` | Set or clear technician/operator name for an existing session. Body: `{ "technician": "..." }`.                                                  |
 
 For **deployment**, **using the web API** (with request/response examples), **configuration and credentials** (databases, filesystems, APIs with basic/bearer/OAuth2/custom auth, and shared content), and **downloading current and previous reports**, see **[docs/USAGE.md](docs/USAGE.md)**.
 
 ## Supported databases and drivers
 
-| Engine    | Driver (config)           | Note                    |
-|-----------|---------------------------|-------------------------|
-| PostgreSQL| `postgresql+psycopg2`     | psycopg2-binary         |
-| MySQL     | `mysql+pymysql`           | pymysql                 |
-| MariaDB   | `mysql+pymysql`           | same as MySQL           |
-| SQLite    | `sqlite`                  | database = path         |
-| SQL Server| `mssql+pyodbc`            | pyodbc                  |
-| Oracle (19+ RAC) | `oracle+oracledb` | oracledb (thin mode; no Oracle Client). Config `database` = service name (e.g. customers_db or ORCL). |
-| Snowflake | `snowflake`               | optional: `uv pip install -e ".[bigdata]"`; config uses `account`, `user`, `pass`, `database`, `schema`, `warehouse`, optional `role`. |
-| MongoDB   | `mongodb`                 | optional: pymongo       |
-| Redis     | `redis`                   | optional: redis         |
+| Engine           | Driver (config)             | Note                                                                                                                                   |
+| -----------      | --------------------------- | -------------------------                                                                                                              |
+| PostgreSQL       | `postgresql+psycopg2`       | psycopg2-binary                                                                                                                        |
+| MySQL            | `mysql+pymysql`             | pymysql                                                                                                                                |
+| MariaDB          | `mysql+pymysql`             | same as MySQL                                                                                                                          |
+| SQLite           | `sqlite`                    | database = path                                                                                                                        |
+| SQL Server       | `mssql+pyodbc`              | pyodbc                                                                                                                                 |
+| Oracle (19+ RAC) | `oracle+oracledb`           | oracledb (thin mode; no Oracle Client). Config `database` = service name (e.g. customers_db or ORCL).                                  |
+| Snowflake        | `snowflake`                 | optional: `uv pip install -e ".[bigdata]"`; config uses `account`, `user`, `pass`, `database`, `schema`, `warehouse`, optional `role`. |
+| MongoDB          | `mongodb`                   | optional: pymongo                                                                                                                      |
+| Redis            | `redis`                     | optional: redis                                                                                                                        |
 
 For MongoDB/Redis, add a target with `type: database` and `driver: mongodb` or `redis` (host, port, database/password as needed). Install optional deps: `uv pip install -e ".[nosql]"`. For Snowflake, add a target with `type: database` and `driver: snowflake` and install the `.[bigdata]` extra.
 
@@ -273,20 +282,22 @@ You can scan remote HTTP(S) APIs for personal or sensitive data by adding target
 
 ### Auth types
 
-| Type | Use case | Config |
-|------|----------|--------|
-| **basic** | Static username and password | `auth: { type: basic, username: "...", password: "..." }` |
-| **bearer** | Static or negotiated token (e.g. from Kerberos/AD, or API key) | `auth: { type: bearer, token: "..." }` or `token_from_env: "MY_TOKEN_VAR"` |
-| **oauth2_client** | OAuth2 client credentials (machine-to-machine) | `auth: { type: oauth2_client, token_url: "https://...", client_id: "...", client_secret: "..." }` (or `client_secret: "${ENV_VAR}"` to read from environment) |
-| **custom** | Custom headers (e.g. `Authorization: Negotiate ...`, API key header) | `auth: { type: custom, headers: { "Authorization": "Bearer ...", "X-API-Key": "..." } }` |
+| Type              | Use case                                                             | Config                                                                                                                                                        |
+| ------            | ----------                                                           | --------                                                                                                                                                      |
+| **basic**         | Static username and password                                         | `auth: { type: basic, username: "...", password: "..." }`                                                                                                     |
+| **bearer**        | Static or negotiated token (e.g. from Kerberos/AD, or API key)       | `auth: { type: bearer, token: "..." }` or `token_from_env: "MY_TOKEN_VAR"`                                                                                    |
+| **oauth2_client** | OAuth2 client credentials (machine-to-machine)                       | `auth: { type: oauth2_client, token_url: "https://...", client_id: "...", client_secret: "..." }` (or `client_secret: "${ENV_VAR}"` to read from environment) |
+| **custom**        | Custom headers (e.g. `Authorization: Negotiate ...`, API key header) | `auth: { type: custom, headers: { "Authorization": "Bearer ...", "X-API-Key": "..." } }`                                                                      |
 
 If you omit `auth` but set `user`/`username` and `pass`/`password` on the target, **basic** auth is used.
 
-**Example config (YAML):**
+## Example config (YAML):
 
 ```yaml
 targets:
-  - name: "Internal Users API"
+
+- name: "Internal Users API"
+
     type: api
     base_url: "https://api.example.com"
     paths: ["/users", "/profiles"]
@@ -296,7 +307,9 @@ targets:
       client_id: "audit-client"
       client_secret: "${API_OAUTH_SECRET}"
       scope: "read:users"
-  - name: "Legacy API (basic)"
+
+- name: "Legacy API (basic)"
+
     type: rest
     base_url: "https://legacy.example.com"
     paths: ["/v1/contacts"]
@@ -304,14 +317,18 @@ targets:
       type: basic
       username: "audit_user"
       password: "***"
-  - name: "API with bearer token (e.g. negotiated)"
+
+- name: "API with bearer token (e.g. negotiated)"
+
     type: api
     base_url: "https://api.example.com"
     paths: ["/data"]
     auth:
       type: bearer
       token_from_env: "NEGOTIATED_TOKEN"   # or use "token" for static value
-  - name: "API with custom header"
+
+- name: "API with custom header"
+
     type: api
     base_url: "https://api.example.com"
     paths: ["/export"]
@@ -336,11 +353,13 @@ You can scan **Power BI** (datasets and tables) and **Power Apps / Dataverse** (
 
 The connector lists datasets and tables (push datasets expose table schema; for others it samples via DAX), runs sensitivity detection on column names and sample values, and writes **Database findings** (schema = dataset name, table = table name, column = column).
 
-**Example config (YAML):**
+## Example config (YAML) — Power BI
 
 ```yaml
 targets:
-  - name: "Power BI Compliance"
+
+- name: "Power BI Compliance"
+
     type: powerbi
     tenant_id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     client_id: "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
@@ -357,11 +376,13 @@ targets:
 
 The connector lists entities (tables), their attributes, samples rows, runs sensitivity detection, and writes **Database findings** (schema = entity logical name, table = entity set, column = attribute).
 
-**Example config (YAML):**
+## Example config (YAML) — Dataverse
 
 ```yaml
 targets:
-  - name: "Dataverse HR"
+
+- name: "Dataverse HR"
+
     type: dataverse
     org_url: "https://myorg.crm.dynamics.com"
     tenant_id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
@@ -373,23 +394,24 @@ Use the same `file_scan.sample_limit` (default 5) to control how many rows are s
 
 ## SharePoint, WebDAV, SMB/CIFS, and NFS shares
 
-You can scan remote file shares by **FQDN or IP** with credentials in config. Install optional deps:  
-`uv pip install -e ".[shares]"`  
+You can scan remote file shares by **FQDN or IP** with credentials in config. Install optional deps:
+`uv pip install -e ".[shares]"`
 (installs `smbprotocol`, `webdavclient3`, `requests_ntlm`).
 
-| Type | Host / URL | Credentials | Notes |
-|------|------------|-------------|--------|
-| **sharepoint** | `site_url`: `https://host/sites/sitename` | `user`, `pass`; NTLM or basic | On-prem or URL; path = server-relative folder (e.g. `Shared Documents`) |
-| **webdav** | `base_url`: `https://host/path` | `user`, `pass` | Recursive list and download |
-| **smb** / **cifs** | `host`: FQDN or IP, `share`: share name, `path`: path inside share | `user`, `pass`, optional `domain` | Port 445 default |
-| **nfs** | `path`: **local mount point** (NFS must be mounted first) | — | `host` / `export_path` for reporting only |
+| Type               | Host / URL                                                         | Credentials                       | Notes                                                                   |
+| ------             | ------------                                                       | -------------                     | --------                                                                |
+| **sharepoint**     | `site_url`: `https://host/sites/sitename`                          | `user`, `pass`; NTLM or basic     | On-prem or URL; path = server-relative folder (e.g. `Shared Documents`) |
+| **webdav**         | `base_url`: `https://host/path`                                    | `user`, `pass`                    | Recursive list and download                                             |
+| **smb** / **cifs** | `host`: FQDN or IP, `share`: share name, `path`: path inside share | `user`, `pass`, optional `domain` | Port 445 default                                                        |
+| **nfs**            | `path`: **local mount point** (NFS must be mounted first)          | —                                 | `host` / `export_path` for reporting only                               |
 
-**Example config (YAML):**
+## Example config (YAML) — File shares
 
 ```yaml
 targets:
   # SMB/CIFS (Windows or Samba)
-  - name: "FileServer HR"
+- name: "FileServer HR"
+
     type: smb
     host: "fileserver.company.local"   # or 10.0.0.10
     share: "HR"
@@ -401,7 +423,8 @@ targets:
     recursive: true
 
   # WebDAV
-  - name: "WebDAV Storage"
+- name: "WebDAV Storage"
+
     type: webdav
     base_url: "https://webdav.company.com/dav"
     user: "audit"
@@ -411,7 +434,8 @@ targets:
     verify_ssl: true
 
   # SharePoint (on-prem or URL; NTLM or basic)
-  - name: "SharePoint HR"
+- name: "SharePoint HR"
+
     type: sharepoint
     site_url: "https://sharepoint.company.com/sites/hr"
     path: "Shared Documents"
@@ -419,7 +443,8 @@ targets:
     pass: "***"
 
   # NFS (path = local mount point; mount NFS first)
-  - name: "NFS Export"
+- name: "NFS Export"
+
     type: nfs
     host: "nfs.company.local"
     export_path: "/export/data"
@@ -522,7 +547,7 @@ The application explicitly references **LGPD**, **GDPR**, **CCPA**, **HIPAA**, a
 - Use recent, CVE-patched versions of the interpreter and dependencies (`uv sync` / `pip install -e .`).
 - Keep credentials in config files or environment; avoid committing secrets.
 - **Behind a reverse proxy (nginx, Traefik, Caddy):** Set `X-Forwarded-Proto: https` for TLS-terminated traffic so HSTS and scheme detection work correctly.
-- **Reporting vulnerabilities:** See [SECURITY.md](SECURITY.md). **Contributing:** See [CONTRIBUTING.md](CONTRIBUTING.md).
+- **Reporting vulnerabilities:** See [SECURITY.md](SECURITY.md). **Testing:** See [docs/TESTING.md](docs/TESTING.md). **Contributing:** See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
