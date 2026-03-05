@@ -2,6 +2,9 @@
 # Keeps main branch healthy and improves security via automated checks.
 name: CI
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [main, master]
