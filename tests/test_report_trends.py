@@ -1,5 +1,4 @@
 """Tests for report trends / session comparison sheet."""
-import pytest
 from pathlib import Path
 
 from core.database import LocalDBManager

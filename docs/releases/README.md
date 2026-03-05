@@ -7,12 +7,14 @@ Each release has a markdown file here (e.g. `1.3.1.md`) with the release notes.
 To publish **v1.3.1** (or the version you just bumped) as a GitHub release with the same version number and the prepared notes:
 
 1. **Create and push the tag** (if not already pushed with the commit):
+
    ```bash
    git tag v1.3.1
    git push origin v1.3.1
    ```
 
-2. **Create the release** using GitHub CLI:
+1. **Create the release** using GitHub CLI:
+
    ```bash
    gh release create v1.3.1 --notes-file docs/releases/1.3.1.md --title "1.3.1"
    ```
