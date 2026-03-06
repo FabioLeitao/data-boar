@@ -47,7 +47,7 @@ When you bump the version, update **all** of the following so the number is cons
 
 | Location               | What to change                                                                                                                                                    |
 | ---                    | ---                                                                                                                                                               |
-| **`deploy/DEPLOY.md`** | Update any **example** version tags in the Docker tag/push commands (e.g. `1.3.0` in the examples) to the new version so copy-paste commands use the correct tag. |
+| **`docs/deploy/DEPLOY.md`** | Update any **example** version tags in the Docker tag/push commands (e.g. `1.3.0` in the examples) to the new version so copy-paste commands use the correct tag. |
 
 ### 5. Documentation (EN and PT-BR)
 
@@ -80,6 +80,6 @@ After updating `pyproject.toml` (and optionally `core/about.py`), reinstall the 
 - **Bump major:** `X.Y.Z` → `(X+1).0.0`
 - **Bump minor:** `X.Y.Z` → `X.(Y+1).0`
 - **Bump build:** `X.Y.Z` → `X.Y.(Z+1)`
-- **Checklist:** pyproject.toml → core/about.py → docs/lgpd_crawler.1, lgpd_crawler.5 → deploy/DEPLOY.md → README (EN/PT-BR), USAGE (EN/PT-BR), PLANS_TODO → search repo for old version string.
+- **Checklist:** pyproject.toml → core/about.py → docs/lgpd_crawler.1, lgpd_crawler.5 → docs/deploy/DEPLOY.md → README (EN/PT-BR), USAGE (EN/PT-BR), PLANS_TODO → search repo for old version string.
 
 **Português (Brasil):** [VERSIONING.pt_BR.md](VERSIONING.pt_BR.md)

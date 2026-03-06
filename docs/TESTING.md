@@ -1,5 +1,7 @@
 # Testing
 
+**Português (Brasil):** [TESTING.pt_BR.md](TESTING.pt_BR.md)
+
 This document describes how to run the test suite and what each test module covers. All tests must pass with **no errors or warnings** (`-W error`). CI runs the same command on every push and pull request.
 
 ## Running tests

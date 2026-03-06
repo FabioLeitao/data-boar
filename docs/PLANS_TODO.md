@@ -1,5 +1,7 @@
 # Consolidated plans – sequential to-dos
 
+**Português (Brasil):** [PLANS_TODO.pt_BR.md](PLANS_TODO.pt_BR.md)
+
 This document is the **single source of truth** for the project’s plan status and remains in **`docs/`** at all times. It lists **incomplete goals** from active plans and the **recommended sequential to-dos** to achieve them. Completed plan documents (design and to-do details) are archived in **`docs/completed/`** for reference; links below point to those files.
 
 All steps are intended to be **non-destructive**, **non-regression**, and **non-performance impacting**; each step should be **tested** and **safe** before marking done.
@@ -45,9 +47,9 @@ Goal: Copyright-safe logo (web, favicon, optional report), integration in the ap
 | 4   | **Phase 6 – Docs:** Update SECURITY.md to mention optional API key; document key in USAGE (EN and PT-BR)                                                                                          | ✅ Done | Key in env; do not log                                                                 |
 | 5   | **Validate Phase 6:** Run `pytest -W error`; call API with/without key when `require_api_key` true                                                                                                | ✅ Done | 42 tests pass                                                                          |
 | 6   | **Final:** Run full `pytest -W error`; optional docker build and smoke test                                                                                                                       | ✅ Done | 42 tests pass                                                                          |
-| 7   | **Publish:** Validate documentation reflects current state; bump minor version if needed; republish Docker image to hub; keep EN and PT-BR docs in sync                                           | ✅ Done | Version 1.4.1; docs validated; Docker build/push manual (see deploy/DEPLOY.md) |
+| 7   | **Publish:** Validate documentation reflects current state; bump minor version if needed; republish Docker image to hub; keep EN and PT-BR docs in sync                                           | ✅ Done | Version 1.4.1; docs validated; Docker build/push manual (see docs/deploy/DEPLOY.md) |
 
-**Current state of the application (for later reference):** Phases 0–5 (baseline, docs/frameworks, recommendation overrides, executive summary, min_sensitivity, config_scope_hash) and Phase 6 (optional API key) are implemented and tested. App version **1.4.1**; config supports `api.require_api_key`, `api.api_key`, `api.api_key_from_env`; API middleware enforces X-API-Key or Bearer when required; GET /health is always public; SECURITY.md and USAGE (EN/PT-BR) document the option. Docker image tag/push is manual (see deploy/DEPLOY.md).
+**Current state of the application (for later reference):** Phases 0–5 (baseline, docs/frameworks, recommendation overrides, executive summary, min_sensitivity, config_scope_hash) and Phase 6 (optional API key) are implemented and tested. App version **1.4.1**; config supports `api.require_api_key`, `api.api_key`, `api.api_key_from_env`; API middleware enforces X-API-Key or Bearer when required; GET /health is always public; SECURITY.md and USAGE (EN/PT-BR) document the option. Docker image tag/push is manual (see docs/deploy/DEPLOY.md).
 
 ---
 
@@ -145,7 +147,7 @@ Goal: Harden the web surface of the LGPD crawler (CSP, headers, and deploy guida
 | --- | ---                                                                                                                                                                                    | ---    |
 | 1   | Refine CSP and security headers in `api/routes.py` (partial lockdown profile, optional stricter mode) and move dashboard JS into `/static/dashboard.js` to reduce inline code.         | ✅ Done |
 | 2   | Confirm and, if needed, adjust Help page JS so it works under the refined CSP.                                                                                                         | ✅ Done |
-| 3   | Extend `deploy/DEPLOY.md` with Docker and Kubernetes hardening guidance (securityContext, NetworkPolicy, PDB, resource tuning) as **optional** examples.                               | ✅ Done |
+| 3   | Extend `docs/deploy/DEPLOY.md` with Docker and Kubernetes hardening guidance (securityContext, NetworkPolicy, PDB, resource tuning) as **optional** examples.                               | ✅ Done |
 | 4   | Update `SECURITY.md` with a short section covering CSP, security headers, and the new hardening examples.                                                                              | ✅ Done |
 | 5   | Update docs (`docs/USAGE.md`, `docs/USAGE.pt_BR.md`) to mention CSP behaviour and how to enable stricter profiles, and update man(1)/(5) plus `help.html` to stay in sync.             | ✅ Done |
 | 6   | Add/adjust tests (e.g. `tests/test_rate_limit_api.py`-style) to assert CSP header presence and default semantics, and re-run the full test suite (`uv run pytest tests/ -v -W error`). | ✅ Done |

@@ -33,7 +33,7 @@ Goal: Harden the web surface of the LGPD crawler (CSP, headers, and deploy guida
    - Review and, if needed, tighten `Content-Security-Policy`, `Referrer-Policy`, and `Permissions-Policy` in `api/routes.py`.
    - Add a short section in SECURITY docs that explains each header and how to override/extend it at the reverse proxy.
 1. **Kubernetes and Docker hardening guidance**:
-   - Add/extend sections in `deploy/DEPLOY.md` for:
+   - Add/extend sections in `docs/deploy/DEPLOY.md` for:
      - Docker resource limits (CPU/memory), healthchecks (CLI vs API), and safe defaults.
      - Kubernetes examples (Deployment/StatefulSet) with **securityContext**, **read-only root filesystem**, dropping capabilities where possible, and a **NetworkPolicy** restricting access.
      - **PodDisruptionBudget** and recommendations for running more than one replica if scanning large environments.
@@ -87,7 +87,7 @@ Goal: Harden the web surface of the LGPD crawler (CSP, headers, and deploy guida
 
 ### 2. SecurityContext, network policies, and PDB guidance (Docker/K8s) – docs only
 
-2.1 **Docker hardening in `deploy/DEPLOY.md`**
+2.1 **Docker hardening in `docs/deploy/DEPLOY.md`**
 
 - Add a “Security and resource tuning” subsection that:
 - Recommends running the container as a **non-root user** (the Dockerfile already creates `appuser`; show `--user` example for `docker run` if helpful).
@@ -96,7 +96,7 @@ Goal: Harden the web surface of the LGPD crawler (CSP, headers, and deploy guida
 
 2.2 **Kubernetes hardening examples (mixed environments)**
 
-- Under `deploy/kubernetes/` (or in `deploy/DEPLOY.md` as inline YAML), add example snippets:
+- Under `deploy/kubernetes/` (or in `docs/deploy/DEPLOY.md` as inline YAML), add example snippets:
 - **Deployment** with `securityContext`:
     - `runAsNonRoot: true`, `runAsUser: 1000` (align with `appuser`), `readOnlyRootFilesystem: true` (if writable paths are correctly mounted).
     - Drop unnecessary Linux capabilities.
@@ -112,7 +112,7 @@ Goal: Harden the web surface of the LGPD crawler (CSP, headers, and deploy guida
 
 - Add a short section referencing:
 - CSP and security headers as in `api/routes.py`.
-- The Docker/K8s hardening examples in `deploy/DEPLOY.md`.
+- The Docker/K8s hardening examples in `docs/deploy/DEPLOY.md`.
 - Encouragement to run the app behind a reverse proxy with TLS, proper auth, and WAF when exposed externally.
 
 ### 3. Docs, man pages, and help page
@@ -129,7 +129,7 @@ Goal: Harden the web surface of the LGPD crawler (CSP, headers, and deploy guida
 - Under DESCRIPTION or a new “Security” subsection, mention:
     - Security headers (CSP, HSTS, Referrer-Policy, Permissions-Policy).
     - That CSP may be tightened via env/config and/or reverse proxy.
-    - Pointer to `SECURITY.md` and `deploy/DEPLOY.md`.
+    - Pointer to `SECURITY.md` and `docs/deploy/DEPLOY.md`.
 - `docs/lgpd_crawler.5`:
 - If we add a CSP/headers toggle in config, document it alongside `api` and `rate_limit` sections.
 
@@ -137,7 +137,7 @@ Goal: Harden the web surface of the LGPD crawler (CSP, headers, and deploy guida
 
 - Add a brief bullet in the Help page that:
 - Mentions security headers and CSP.
-- Points users to `SECURITY.md` and `deploy/DEPLOY.md` for hardening guidance.
+- Points users to `SECURITY.md` and `docs/deploy/DEPLOY.md` for hardening guidance.
 
 ### 4. Non-regression and testing strategy
 
@@ -154,7 +154,7 @@ Goal: Harden the web surface of the LGPD crawler (CSP, headers, and deploy guida
 
 1. Refine CSP and security headers in `api/routes.py` (partial lockdown profile, optional stricter mode) and move dashboard JS into `/static/dashboard.js` to reduce inline code. **Status:** ✅ Done.
 1. Confirm and, if needed, adjust Help page JS so it works under the refined CSP. **Status:** ✅ Done (no inline JS present; Help works with updated CSP).
-1. Extend `deploy/DEPLOY.md` with Docker and Kubernetes hardening guidance (securityContext, NetworkPolicy, PDB, resource tuning) as **optional** examples. **Status:** ✅ Done.
+1. Extend `docs/deploy/DEPLOY.md` with Docker and Kubernetes hardening guidance (securityContext, NetworkPolicy, PDB, resource tuning) as **optional** examples. **Status:** ✅ Done.
 1. Update `SECURITY.md` with a short section covering CSP, security headers, and the new hardening examples. **Status:** ✅ Done.
 1. Update docs (`docs/USAGE.md`, `docs/USAGE.pt_BR.md`) to mention CSP behaviour and how to enable stricter profiles, and update man(1)/(5) plus `help.html` to stay in sync. **Status:** ✅ Done.
 1. Add/adjust tests (e.g. `tests/test_rate_limit_api.py`-style) to assert CSP header presence and default semantics, and re-run the full test suite (`uv run pytest tests/ -v -W error`). **Status:** ✅ Done (see `tests/test_csp_headers.py`; full suite passes).

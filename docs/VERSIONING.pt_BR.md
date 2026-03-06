@@ -47,7 +47,7 @@ Ao dar bump na versão, atualize **todos** os itens abaixo para manter o número
 
 | Local                  | O que alterar                                                                                                                 |
 | ---                    | ---                                                                                                                           |
-| **`deploy/DEPLOY.md`** | Atualize os **exemplos** de tags de versão nos comandos de tag/push do Docker (ex.: `1.3.0` nos exemplos) para a nova versão. |
+| **`docs/deploy/DEPLOY.md`** | Atualize os **exemplos** de tags de versão nos comandos de tag/push do Docker (ex.: `1.3.0` nos exemplos) para a nova versão. |
 
 ### 5. Documentação (EN e PT-BR)
 
@@ -80,6 +80,6 @@ Depois de atualizar o `pyproject.toml` (e opcionalmente `core/about.py`), reinst
 - **Bump major:** `X.Y.Z` → `(X+1).0.0`
 - **Bump minor:** `X.Y.Z` → `X.(Y+1).0`
 - **Bump build:** `X.Y.Z` → `X.Y.(Z+1)`
-- **Checklist:** pyproject.toml → core/about.py → docs/lgpd_crawler.1, lgpd_crawler.5 → deploy/DEPLOY.md → README (EN/PT-BR), USAGE (EN/PT-BR), PLANS_TODO → buscar no repositório pela string da versão antiga.
+- **Checklist:** pyproject.toml → core/about.py → docs/lgpd_crawler.1, lgpd_crawler.5 → docs/deploy/DEPLOY.md → README (EN/PT-BR), USAGE (EN/PT-BR), PLANS_TODO → buscar no repositório pela string da versão antiga.
 
 **English:** [VERSIONING.md](VERSIONING.md)
