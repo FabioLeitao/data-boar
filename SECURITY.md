@@ -1,5 +1,7 @@
 # Security Policy
 
+**Português (Brasil):** [SECURITY.pt_BR.md](SECURITY.pt_BR.md)
+
 This document describes which versions of the application are supported, which dependency baseline is expected, and how to report security vulnerabilities to the maintainers.
 
 ## Supported versions
@@ -83,7 +85,7 @@ The API does not implement authentication by default; secure the app at the reve
 
 Security headers (including CSP) are implemented in **`api/routes.py`** (middleware applied to web and API responses). To harden container and cluster deployments:
 
-- **Docker and Kubernetes:** See **`deploy/DEPLOY.md`**, section **“Security and hardening (optional)”**, for:
+- **Docker and Kubernetes:** See **`docs/deploy/DEPLOY.md`**, section **“Security and hardening (optional)”**, for:
 - Running as non-root, resource limits, and healthchecks.
 - Optional Kubernetes examples: **securityContext** (runAsNonRoot, readOnlyRootFilesystem, drop capabilities), **NetworkPolicy** (`deploy/kubernetes/network-policy.example.yaml`), and **PodDisruptionBudget** (`deploy/kubernetes/pdb.example.yaml`).
 

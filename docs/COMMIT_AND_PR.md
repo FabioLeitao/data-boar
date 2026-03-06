@@ -1,5 +1,7 @@
 # Commit and PR workflow (Agent Review Panel–style)
 
+**Português (Brasil):** [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md)
+
 When you ask the agent to **preview**, **commit locally**, or **create a PR** with a short description and bullet points, it uses the same flow as the old Cursor “Agent Review Panel”: review changes, optionally select files, then choose commit or open PR in the browser with the form pre-filled. Before pushing, it **fetches** and **rebase-pulls** if the branch is behind the remote so your preferred workflow (linear history, no accidental overwrites) is preserved.
 
 ## What the agent does when you ask

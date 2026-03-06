@@ -1,5 +1,7 @@
 # Contributing to python3-lgpd-crawler
 
+**Português (Brasil):** [CONTRIBUTING.pt_BR.md](CONTRIBUTING.pt_BR.md)
+
 Thank you for considering contributing. This document covers local setup, workflow, and best practices so you can run the app, tests, and open changes safely.
 
 ## Quick start (development)
@@ -52,7 +54,7 @@ Thank you for considering contributing. This document covers local setup, workfl
 ## Code and docs
 
 - **Style:** The repo uses [EditorConfig](.editorconfig) (indent, charset, line endings). Keeping Python style consistent (e.g. with Ruff or Black) is encouraged.
-- **Docs:** Keep [README.md](README.md) and [docs/USAGE.md](docs/USAGE.md) in sync with behaviour; update [README.pt_BR.md](README.pt_BR.md) and [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md) for Portuguese.
+- **Docs:** Keep [README.md](README.md) and [docs/USAGE.md](docs/USAGE.md) in sync with behaviour; update [README.pt_BR.md](README.pt_BR.md) and [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md) for Portuguese. All user-facing docs should exist in **English (canonical)** and **Brazilian Portuguese**, with a language switcher at the top of each and cross-links that offer both languages where relevant (see [docs/README.md](docs/README.md) — Documentation policy).
 - **Secrets:** Never commit credentials or real PII. Use `.env` or `config.local.yaml` (both are in `.gitignore`) and redact in issues/PRs.
 
 ## CI and dependency hygiene
@@ -65,5 +67,12 @@ Thank you for considering contributing. This document covers local setup, workfl
 
 - Use a dedicated config file (e.g. via `CONFIG_PATH`) and never commit it. Run `uv pip audit` before deploying.
 - For public or multi-tenant use, put the API behind a reverse proxy (HTTPS, rate limiting, auth) as described in the README.
+
+## See also
+
+- **[docs/TESTING.md](docs/TESTING.md)** ([pt-BR](docs/TESTING.pt_BR.md)) — Test modules, CI, SonarQube.
+- **[docs/TOPOLOGY.md](docs/TOPOLOGY.md)** ([pt-BR](docs/TOPOLOGY.pt_BR.md)) — Application topology (modules, classes, data flow).
+- **[docs/COMMIT_AND_PR.md](docs/COMMIT_AND_PR.md)** ([pt-BR](docs/COMMIT_AND_PR.pt_BR.md)) — Commit and PR automation.
+- **[docs/compliance-frameworks.md](docs/compliance-frameworks.md)** ([pt-BR](docs/compliance-frameworks.pt_BR.md)) — Compliance labels and extensibility. Full doc index: [docs/README.md](docs/README.md).
 
 If you have questions, open a discussion or an issue. Thanks for contributing.

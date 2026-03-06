@@ -345,3 +345,5 @@ targets:
 - [ ] README ou este doc: comando de instalação, forma do target no config, exemplo YAML.
 
 Com isso, o novo conector passa a ser usado automaticamente para alvos correspondentes e aparece nos mesmos relatórios Excel e heatmap dos conectores existentes.
+
+**Ver também:** [TOPOLOGY.pt_BR.md](TOPOLOGY.pt_BR.md) ([EN](TOPOLOGY.md)) — topologia da aplicação (engine, registry, conectores); [TESTING.pt_BR.md](TESTING.pt_BR.md) ([EN](TESTING.md)); [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md) ([EN](COMMIT_AND_PR.md)); [compliance-frameworks.pt_BR.md](compliance-frameworks.pt_BR.md) ([EN](compliance-frameworks.md)). Índice da documentação: [README.md](README.md).
