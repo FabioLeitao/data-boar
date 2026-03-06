@@ -1,6 +1,10 @@
-# Next Steps – LGPD Audit Solution
+# Next Steps – LGPD Audit Solution (archived)
 
-Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_solution_full_implementation_4a673b9e.plan.md) and current codebase.
+**Português (Brasil):** [NEXT_STEPS.pt_BR.md](NEXT_STEPS.pt_BR.md)
+
+*This document is archived in [completed/](.) as the implementation-plan checklist; all items are Done. For current plan status and open to-dos, see [../PLANS_TODO.md](../PLANS_TODO.md).*
+
+Plan of next steps based on the [implementation plan](../../.cursor/plans/lgpd_audit_solution_full_implementation_4a673b9e.plan.md) and current codebase.
 
 ---
 
@@ -12,7 +16,7 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 | core/session.py                    | Done     | UUID + timestamp                                                                                      |
 | core/database.py                   | Done     | Single SQLite, 4 tables, LocalDBManager                                                               |
 | core/detector.py                   | Done     | Regex + ML from config                                                                                |
-| core/scanner.py                    | Done     | Uses detector only                                                                                    |
+| core/scanner.py                   | Done     | Uses detector only                                                                                    |
 | core/connector_registry.py         | Done     | Registry + connector_for_target                                                                       |
 | core/engine.py                     | Done     | start_audit, generate_final_reports, parallel/sequential                                              |
 | connectors/sql_connector.py        | Done     | Discover + sample, Oracle/MSSQL/MySQL/Postgres/etc.                                                   |
@@ -48,25 +52,25 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 ### 2.2 Learned patterns (optional) — Done
 
 - **Implemented:** Optional `learned_patterns` config; when report is generated, terms from HIGH (or MEDIUM) findings are collected (min_confidence, min_term_length, require_pattern, exclude_generic). Output YAML compatible with ml_patterns_file; README documents merge.
-- (e.g. column names that scored HIGH). Document in README: “Merge entries from `learned_patterns.yaml` into `ml_patterns_file` for the next run.”
+- (e.g. column names that scored HIGH). Document in README: "Merge entries from `learned_patterns.yaml` into `ml_patterns_file` for the next run."
 
 ---
 
-### 2.3 Report “praise” for existing protections — Done
+### 2.3 Report "praise" for existing protections — Done
 
-- **Implemented:** `report/generator.py` adds sheet “Praise / existing controls” when any finding has column name or pattern_detected containing protection keywords (encrypted, hash, tokenized, masked, pseudonym, anon, redact, hmac, cipher). Rows list target, source, column/file, pattern, and indication.
+- **Implemented:** `report/generator.py` adds sheet "Praise / existing controls" when any finding has column name or pattern_detected containing protection keywords (encrypted, hash, tokenized, masked, pseudonym, anon, redact, hmac, cipher). Rows list target, source, column/file, pattern, and indication.
 
 ---
 
 ### 2.4 Dependencies and security — Done
 
-- **Done:** README has “Dependencies and security” with `uv pip compile pyproject.toml -o requirements.txt` and `uv pip audit`. `requirements.txt` regenerated from pyproject.toml.
+- **Done:** README has "Dependencies and security" with `uv pip compile pyproject.toml -o requirements.txt` and `uv pip audit`. `requirements.txt` regenerated from pyproject.toml.
 
 ---
 
 ### 2.5 Optional connectors (BigData / APIs) — Done
 
-- **Implemented:** REST/API connector (`connectors/rest_connector.py`) with auth: basic, bearer (token or token_from_env), oauth2_client, custom headers. Targets `type: api` or `type: rest`; README documents auth table and YAML examples. (Legacy plan: “Snowflake, REST/SOAP, SharePoint, Datalake, Graylog/Grafana as optional connectors; document config and install.”
+- **Implemented:** REST/API connector (`connectors/rest_connector.py`) with auth: basic, bearer (token or token_from_env), oauth2_client, custom headers. Targets `type: api` or `type: rest`; README documents auth table and YAML examples. (Legacy plan: "Snowflake, REST/SOAP, SharePoint, Datalake, Graylog/Grafana as optional connectors; document config and install."
 - **Next step:** Add optional connector modules (e.g. `connectors/snowflake_connector.py`, `connectors/rest_connector.py`) behind optional deps (`bigdata`, `api`), or at least document in README:
 - How to add a target (type, driver, URL/credentials).
 - Which packages to install (e.g. snowflake-connector-python, httpx/requests).
@@ -78,9 +82,9 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 
 ### 2.6 SQLite / .db files in filesystem scan — Done
 
-- **Implemented:** When `file_scan.scan_sqlite_as_db` is true (default), files with extension `.sqlite`, `.sqlite3`, or `.db` are opened with SQLAlchemy; discover tables/columns, sample rows, run detector; results saved as filesystem_findings with `file_name` encoding `path.db | table.column`. Config: `file_scan.scan_sqlite_as_db`, `file_scan.sample_limit`. “from filesystem” vs “from database” but content is analyzed.
+- **Implemented:** When `file_scan.scan_sqlite_as_db` is true (default), files with extension `.sqlite`, `.sqlite3`, or `.db` are opened with SQLAlchemy; discover tables/columns, sample rows, run detector; results saved as filesystem_findings with `file_name` encoding `path.db | table.column`. Config: `file_scan.scan_sqlite_as_db`, `file_scan.sample_limit`. "from filesystem" vs "from database" but content is analyzed.
 
-**Deliverable:** Design (config flag or auto-detect) and implementation for “scan SQLite files as DBs” in the file connector.
+**Deliverable:** Design (config flag or auto-detect) and implementation for "scan SQLite files as DBs" in the file connector.
 
 ---
 
@@ -92,10 +96,10 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 
 ### 2.8 Web dashboard (frontend) — Done
 
-- **Per plan:** “No WebSocket/streaming UI; REST API and file download only.” The frontend is encoded accordingly: server-rendered HTML (Jinja2), no SPA, no separate build.
+- **Per plan:** "No WebSocket/streaming UI; REST API and file download only." The frontend is encoded accordingly: server-rendered HTML (Jinja2), no SPA, no separate build.
 - **Implemented:**
-- **Dashboard (GET /):** Scan status (running/idle, current session, findings count), quantity/quality summary (DB findings, FS findings, failures, total for last run), “Start scan” button, recent sessions table with download links. Status polls every 2s while a scan is running.
-- **Reports (GET /reports):** List of all sessions (session ID, started/finished, status, DB/FS/failures) with “Download” link per session (uses existing `GET /reports/{session_id}`).
+- **Dashboard (GET /):** Scan status (running/idle, current session, findings count), quantity/quality summary (DB findings, FS findings, failures, total for last run), "Start scan" button, recent sessions table with download links. Status polls every 2s while a scan is running.
+- **Reports (GET /reports):** List of all sessions (session ID, started/finished, status, DB/FS/failures) with "Download" link per session (uses existing `GET /reports/{session_id}`).
 - **Configuration (GET /config, POST /config):** Edit scan configuration (YAML) in browser; save writes to config file (CONFIG_PATH or config.yaml) and reloads in-memory config/engine for next scan.
 - **Artifacts:** `api/templates/` (base.html, dashboard.html, reports.html, config.html), `api/static/` (style.css, app.js), routes in `api/routes.py` (dashboard, config get/post, reports page, static mount). Documented in README and docs/USAGE.md.
 
@@ -151,7 +155,7 @@ Plan of next steps based on the [implementation plan](.cursor/plans/lgpd_audit_s
 1. **2.1** – Consolidate legacy code and fix tests (removes confusion and prevents regressions).
 1. **2.4** – Dependencies and security (low risk, high value).
 1. **2.7** – TOPOLOGY + README after 2.1 and 2.4.
-1. **2.3** – Report “praise” (small, visible improvement).
+1. **2.3** – Report "praise" (small, visible improvement).
 1. **2.2** – Learned patterns (optional, when ML tuning is a priority).
 1. **2.6** – SQLite-as-DB in file scan (optional, when .sqlite/.db scanning is required).
 1. **2.5** – Optional BigData/API connectors (when a specific integration is needed).
