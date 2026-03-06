@@ -1,8 +1,10 @@
 # Docker Setup: MCP, Build, Push, Deploy
 
+**Português (Brasil):** [DOCKER_SETUP.pt_BR.md](DOCKER_SETUP.pt_BR.md)
+
 Run these steps in a terminal where **Docker** is available (e.g. PowerShell or CMD after starting Docker Desktop).
 
-**Pre-built image:** The application is published on Docker Hub as `fabioleitao/python3-lgpd-crawler:latest` ([hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)). You can `docker pull` and run that image instead of building from source (see README and `deploy/DEPLOY.md`). The image includes the latest features (hybrid regex + ML + optional DL sensitivity detection; configurable ML/DL training terms via `ml_patterns_file`, `dl_patterns_file`, or `sensitivity_detection` in config — see `docs/sensitivity-detection.md`).
+**Pre-built image:** The application is published on Docker Hub as `fabioleitao/python3-lgpd-crawler:latest` ([hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)). You can `docker pull` and run that image instead of building from source (see [README](../README.md) and [deploy/DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md))). The image includes the latest features (hybrid regex + ML + optional DL sensitivity detection; configurable ML/DL training terms via `ml_patterns_file`, `dl_patterns_file`, or `sensitivity_detection` in config — see [sensitivity-detection.md](sensitivity-detection.md)).
 
 **Upgrading your local image:** To refresh Docker Desktop with the current version from the repository, pull the image and restart your container(s):
 
@@ -46,7 +48,7 @@ Then add the Docker MCP server in Cursor Settings → MCP using the path shown b
 
 ### Option C – Manual Docker MCP
 
-If you use a community Docker MCP (e.g. `cursor-docker-mcp`), add it in Cursor Settings → MCP with the server’s command/args.
+If you use a community Docker MCP (e.g. `cursor-docker-mcp`), add it in Cursor Settings → MCP with the server's command/args.
 
 ---
 
@@ -60,7 +62,7 @@ cd c:\Users\<username>\Documents\dev\python3-lgpd-crawler
 docker build -t python3-lgpd-crawler:latest .
 ```
 
-Default: web API + frontend. CLI remains available via `--entrypoint` override (see `deploy/DEPLOY.md`).
+Default: web API + frontend. CLI remains available via `--entrypoint` override (see [deploy/DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md))).
 
 ---
 
@@ -118,7 +120,7 @@ copy deploy\docker-compose.override.example.yml deploy\docker-compose.override.y
 docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d
 ```
 
-(Ensure `./data/config.yaml` exists; the override mounts `./data` at `/data`.) For **Docker Swarm** or **Kubernetes**, see **[deploy/DEPLOY.md](deploy/DEPLOY.md)**.
+(Ensure `./data/config.yaml` exists; the override mounts `./data` at `/data`.) For **Docker Swarm** or **Kubernetes**, see [deploy/DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md)).
 
 ---
 

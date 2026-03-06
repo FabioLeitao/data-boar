@@ -1,5 +1,7 @@
 # Application topology
 
+**Português (Brasil):** [TOPOLOGY.pt_BR.md](TOPOLOGY.pt_BR.md)
+
 Textual description of modules, classes, and main functions and how they connect.
 
 ---

@@ -229,7 +229,7 @@ docker pull fabioleitao/python3-lgpd-crawler:latest
 docker run -d -p 8088:8088 -v /caminho/para/seu/data:/data -e CONFIG_PATH=/data/config.yaml fabioleitao/python3-lgpd-crawler:latest
 ```
 
-Prepare `/data/config.yaml` a partir de `deploy/config.example.yaml` (veja [deploy/DEPLOY.md](deploy/DEPLOY.md)). Você pode optar por usar essa imagem como container em vez de clonar o código do Git e construir localmente.
+Prepare `/data/config.yaml` a partir de `deploy/config.example.yaml` (veja [docs/deploy/DEPLOY.pt_BR.md](docs/deploy/DEPLOY.pt_BR.md) ([EN](docs/deploy/DEPLOY.md))). Você pode optar por usar essa imagem como container em vez de clonar o código do Git e construir localmente.
 
 ### Construir a partir do código
 
@@ -239,7 +239,7 @@ Prepare `/data/config.yaml` a partir de `deploy/config.example.yaml` (veja [depl
 - **Swarm:** `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit`.
 - **Kubernetes:** `kubectl apply -f deploy/kubernetes/` (veja `deploy/kubernetes/README.md`).
 
-Passos completos em **[deploy/DEPLOY.md](deploy/DEPLOY.md)**. A aplicação se comporta corretamente atrás de NAT, load balancer ou proxy reverso (nginx, Traefik, Caddy); defina **X-Forwarded-Proto: https** quando o TLS for terminado no proxy. Cabeçalhos de segurança HTTP (incl. HSTS quando em HTTPS) são aplicados por padrão; veja [SECURITY.md](SECURITY.md).
+Passos completos em **[docs/deploy/DEPLOY.pt_BR.md](docs/deploy/DEPLOY.pt_BR.md)** ([EN](docs/deploy/DEPLOY.md)). Para MCP, build e push a partir do código: [docs/DOCKER_SETUP.pt_BR.md](docs/DOCKER_SETUP.pt_BR.md) ([EN](docs/DOCKER_SETUP.md)). A aplicação se comporta corretamente atrás de NAT, load balancer ou proxy reverso (nginx, Traefik, Caddy); defina **X-Forwarded-Proto: https** quando o TLS for terminado no proxy. Cabeçalhos de segurança HTTP (incl. HSTS quando em HTTPS) são aplicados por padrão; veja [SECURITY.md](SECURITY.md).
 
 ## Frameworks de conformidade e extensibilidade
 

@@ -1,5 +1,5 @@
 # LGPD/GDPR/CCPA audit app. Default: web API + frontend (dashboard, reports, config UI).
-# Override CMD to run CLI one-shot scan (see deploy/DEPLOY.md).
+# Override CMD to run CLI one-shot scan (see docs/deploy/DEPLOY.md).
 # Multi-stage build: compile in builder, run in minimal runtime (no gcc/-dev in final image).
 
 # -----------------------------------------------------------------------------

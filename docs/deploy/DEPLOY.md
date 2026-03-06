@@ -1,5 +1,7 @@
 # Deploy LGPD Audit (Docker, Compose, Swarm, Kubernetes)
 
+**Português:** [DEPLOY.pt_BR.md](DEPLOY.pt_BR.md)
+
 You can run the application with **plain Docker** (`docker run`), **Docker Compose**, **Docker Swarm**, or **Kubernetes** — choose the option that fits your environment. All options use the same image; default behaviour is web API + frontend on port 8088.
 
 ## Default: Web API and frontend
@@ -101,18 +103,18 @@ docker login              # username: fabioleitao, password: your token
 docker push fabioleitao/python3-lgpd-crawler:latest
 ```
 
-Optional: tag and push a version (e.g. `1.4.1`): `docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.4.1` then `docker push fabioleitao/python3-lgpd-crawler:1.4.1`. See also `DOCKER_SETUP.md`.
+Optional: tag and push a version (e.g. `1.4.1`): `docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.4.1` then `docker push fabioleitao/python3-lgpd-crawler:1.4.1`. See also [DOCKER_SETUP.md](../DOCKER_SETUP.md).
 
 ## 2. Prepare config
 
-The app expects **config at `/data/config.yaml`** inside the container. Use the same schema as in the repo (see `docs/USAGE.md`). Minimum for API-only:
+The app expects **config at `/data/config.yaml`** inside the container. Use the same schema as in the repo (see [USAGE.md](../USAGE.md)). Minimum for API-only:
 
 - `targets: []`
 - `report.output_dir: /data`
 - `sqlite_path: /data/audit_results.db`
 - `api.port: 8088`
 
-**Sensitivity detection (ML/DL):** You can configure training terms for pattern and sensitivity detection via `ml_patterns_file`, `dl_patterns_file`, or inline `sensitivity_detection.ml_terms` / `sensitivity_detection.dl_terms` in config. Mount your terms file(s) under `/data` (e.g. `/data/ml_terms.yaml`) and set the paths in config. See `docs/sensitivity-detection.md` and `deploy/config.example.yaml` for examples. The image includes regex + ML (TF-IDF + RandomForest); optional DL (sentence embeddings) requires installing the `.[dl]` extra when building a custom image.
+**Sensitivity detection (ML/DL):** You can configure training terms for pattern and sensitivity detection via `ml_patterns_file`, `dl_patterns_file`, or inline `sensitivity_detection.ml_terms` / `sensitivity_detection.dl_terms` in config. Mount your terms file(s) under `/data` (e.g. `/data/ml_terms.yaml`) and set the paths in config. See [sensitivity-detection.md](../sensitivity-detection.md) and `deploy/config.example.yaml` for examples. The image includes regex + ML (TF-IDF + RandomForest); optional DL (sentence embeddings) requires installing the `.[dl]` extra when building a custom image.
 
 Copy `deploy/config.example.yaml` and edit, then either:
 
@@ -136,18 +138,18 @@ In production the main bottlenecks are **network I/O** (database and API targets
 - **api.workers:** Default **1** keeps footprint minimal. Set **2** (or more) in config if you need to serve many concurrent API requests while scans run; each worker is a separate process.
 - **scan.max_workers:** Default **1** (sequential targets). Set **2–4** when you have many targets and want parallel scan threads; I/O (DB/FS) remains the bottleneck, so this improves throughput without requiring much more CPU.
 - **Storage for /data:** Use **fast storage** (SSD, local NVMe) for the volume that holds SQLite and report output; this reduces write latency and speeds up report generation and dashboard reads.
-- **Timeouts:** REST/API connectors use configurable timeouts (see `docs/USAGE.md`). Increase them in target config if your network or APIs are slow to avoid false timeouts.
+- **Timeouts:** REST/API connectors use configurable timeouts (see [USAGE.md](../USAGE.md)). Increase them in target config if your network or APIs are slow to avoid false timeouts.
 
 ### Security and hardening (optional)
 
-The following are **optional** practices to harden deployments. They do not replace securing the app at the reverse proxy (TLS, auth, WAF). See also [SECURITY.md](../SECURITY.md).
+The following are **optional** practices to harden deployments. They do not replace securing the app at the reverse proxy (TLS, auth, WAF). See also [SECURITY.md](../../SECURITY.md).
 
 ### Docker
 
 - **Non-root:** The image already runs as user `appuser` (UID 1000). To enforce at runtime: `docker run --user 1000 ...` (or keep the Dockerfile `USER appuser`).
 - **Resource limits:** Use `--cpus` and `--memory` for plain Docker (e.g. `--memory 1g`). In Compose, set `deploy.resources.limits` (e.g. `cpus: '1'`, `memory: 1G`).
 - **Healthchecks:** The image can be used with Docker `HEALTHCHECK`; for API mode, probe `GET /health`. Compose and Kubernetes examples in this repo already use `/health` for liveness/readiness.
-- **DevSecOps:** Combine with API key (`api.require_api_key`), rate limiting (`rate_limit` in config), and CSP/security headers (see SECURITY.md). Run behind a reverse proxy with TLS and, when exposed externally, consider a WAF.
+- **DevSecOps:** Combine with API key (`api.require_api_key`), rate limiting (`rate_limit` in config), and CSP/security headers (see [SECURITY.md](../../SECURITY.md)). Run behind a reverse proxy with TLS and, when exposed externally, consider a WAF.
 
 ### Kubernetes (optional examples)
 
@@ -307,7 +309,7 @@ Then from repo root:
 docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit
 ```
 
-If you don’t use an override, ensure the stack’s `lgpd-data` volume is populated with `config.yaml` (e.g. via a one-off container).
+If you don't use an override, ensure the stack's `lgpd-data` volume is populated with `config.yaml` (e.g. via a one-off container).
 
 ### 5.3 Check the service
 
@@ -374,13 +376,13 @@ To run a single audit from the CLI in the cluster, use a **Job** that overrides 
 ## Summary
 
 | Goal                     | Command / step                                                                                                                             |
-| ------                   | -----------------                                                                                                                          |
-| Default (API + frontend) | Run image with no command override: `docker run`, Compose, Swarm, or Kubernetes                                                            |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Default (API + frontend)  | Run image with no command override: `docker run`, Compose, Swarm, or Kubernetes                                                            |
 | CLI one-shot             | Override command: `docker run ... --entrypoint python IMAGE main.py --config /data/config.yaml`                                            |
 | Build image              | `docker build -t python3-lgpd-crawler:latest .`                                                                                            |
 | Push to registry         | `docker tag ... fabioleitao/python3-lgpd-crawler:latest` then `docker login` and `docker push fabioleitao/python3-lgpd-crawler:latest`     |
 | **Single container**     | `docker run -d -p 8088:8088 -v ./data:/data python3-lgpd-crawler:latest` (section 3)                                                       |
-| **Docker Compose**       | `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d` — prepare `./data/config.yaml` first (section 4) |
+| **Docker Compose**       | `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d` — prepare `./data/config.yaml` first (section 4)  |
 | **Docker Swarm**         | `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit` (section 5)                            |
 | **Kubernetes**           | `kubectl apply -f deploy/kubernetes/` — see `deploy/kubernetes/README.md` for image and config (section 6)                                 |
 
@@ -390,6 +392,6 @@ You can use **Docker Compose** or **Kubernetes** as alternatives to Docker Swarm
 
 The application runs correctly when placed behind **NAT**, a **load balancer**, or a **reverse proxy** (nginx, Traefik, Caddy, or similar). No code or config change is required for basic operation.
 
-- **TLS at the proxy:** If HTTPS is terminated at the proxy (recommended), set **X-Forwarded-Proto: https** on requests to the app so that security headers (e.g. HSTS) and scheme detection work correctly. See [SECURITY.md](../SECURITY.md) for HTTP security headers.
+- **TLS at the proxy:** If HTTPS is terminated at the proxy (recommended), set **X-Forwarded-Proto: https** on requests to the app so that security headers (e.g. HSTS) and scheme detection work correctly. See [SECURITY.md](../../SECURITY.md) for HTTP security headers.
 - **Client IP and host:** If you need the real client IP or original host in logs or logic, configure your proxy to send **X-Forwarded-For** and **X-Forwarded-Host**; the app can be extended to trust these when needed.
-- **Subpath:** If the app is served under a path prefix (e.g. <https://example.com/audit/>), configure the proxy to strip or rewrite the prefix so the app still sees paths starting at `/`; or use the proxy’s rewrite rules to map `/audit/` to the container root.
+- **Subpath:** If the app is served under a path prefix (e.g. <https://example.com/audit/>), configure the proxy to strip or rewrite the prefix so the app still sees paths starting at `/`; or use the proxy's rewrite rules to map `/audit/` to the container root.
