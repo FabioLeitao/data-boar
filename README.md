@@ -487,13 +487,15 @@ interface, two manual pages are provided:
 
 On Linux/BSD, section 1 is for executable commands; section 5 is for configuration and file format conventions. Installing both lets users run `man lgpd_crawler` for how to run the app and `man 5 lgpd_crawler` for how to configure it and define patterns.
 
-**Install both pages** (create the target directories first so the copy does not fail if they are missing):
+**Install both pages** (create the target directories first so the copy does not fail if they are missing). Right after creating the directories, run `chmod 755` on them so that all users can access the man pages; depending on your default umask, new directories may otherwise be 750 and only root could traverse them. After copying, run `chmod 644` on the installed files so that all users can read the pages (copied files may otherwise be 640).
 
 ```bash
 sudo mkdir -p /usr/local/share/man/man1/
 sudo mkdir -p /usr/local/share/man/man5/
+sudo chmod 755 /usr/local/share/man/man1/ /usr/local/share/man/man5/
 sudo cp docs/lgpd_crawler.1 /usr/local/share/man/man1/
 sudo cp docs/lgpd_crawler.5 /usr/local/share/man/man5/
+sudo chmod 644 /usr/local/share/man/man1/lgpd_crawler.1 /usr/local/share/man/man5/lgpd_crawler.5
 sudo mandb    # or: sudo makewhatis   # depends on distro
 ```
 

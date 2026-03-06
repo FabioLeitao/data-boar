@@ -455,10 +455,18 @@ Ensure the directory exists, copy the file, then update the man index:
 .RS
 .nf
 sudo mkdir \-p /usr/local/share/man/man5/
+sudo chmod 755 /usr/local/share/man/man5/
 sudo cp docs/lgpd_crawler.5 /usr/local/share/man/man5/
+sudo chmod 644 /usr/local/share/man/man5/lgpd_crawler.5
 sudo mandb
 .fi
 .RE
+.PP
+The
+.B chmod 755
+on the directory ensures all users can traverse it (new directories may be 750 with a restrictive umask). The
+.B chmod 644
+on the file ensures all users can read the page (the copy might otherwise be 640).
 .PP
 On some BSD systems use
 .B "sudo makewhatis"

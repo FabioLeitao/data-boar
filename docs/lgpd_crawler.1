@@ -401,10 +401,18 @@ To install this man page system\-wide on a typical Linux or BSD system, ensure t
 .RS
 .nf
 sudo mkdir \-p /usr/local/share/man/man1/
+sudo chmod 755 /usr/local/share/man/man1/
 sudo cp docs/lgpd_crawler.1 /usr/local/share/man/man1/
+sudo chmod 644 /usr/local/share/man/man1/lgpd_crawler.1
 sudo mandb
 .fi
 .RE
+.PP
+The
+.B chmod 755
+on the directory ensures all users can traverse it (new directories may be 750 with a restrictive umask). The
+.B chmod 644
+on the file ensures all users can read the page (the copy might otherwise be 640).
 .PP
 On some BSD systems use
 .B "sudo makewhatis"
