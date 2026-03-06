@@ -526,7 +526,7 @@ docker pull fabioleitao/python3-lgpd-crawler:latest
 docker run -d -p 8088:8088 -v /path/to/your/data:/data -e CONFIG_PATH=/data/config.yaml fabioleitao/python3-lgpd-crawler:latest
 ```
 
-Prepare `/data/config.yaml` from `deploy/config.example.yaml` (see [deploy/DEPLOY.md](deploy/DEPLOY.md)). You can decide to use this image as an instanced container instead of pulling the code from Git and building locally.
+Prepare `/data/config.yaml` from `deploy/config.example.yaml` (see [docs/deploy/DEPLOY.md](docs/deploy/DEPLOY.md) ([pt-BR](docs/deploy/DEPLOY.pt_BR.md))). You can decide to use this image as an instanced container instead of pulling the code from Git and building locally.
 
 ### Build from source
 
@@ -536,7 +536,7 @@ Prepare `/data/config.yaml` from `deploy/config.example.yaml` (see [deploy/DEPLO
 - **Swarm:** `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit`.
 - **Kubernetes:** `kubectl apply -f deploy/kubernetes/` (see `deploy/kubernetes/README.md`).
 
-Full steps (build, push, single container, Compose, Swarm, Kubernetes): **[deploy/DEPLOY.md](deploy/DEPLOY.md)**.
+Full steps (build, push, single container, Compose, Swarm, Kubernetes): **[docs/deploy/DEPLOY.md](docs/deploy/DEPLOY.md)** ([pt-BR](docs/deploy/DEPLOY.pt_BR.md)). For MCP, build and push from source: [docs/DOCKER_SETUP.md](docs/DOCKER_SETUP.md) ([pt-BR](docs/DOCKER_SETUP.pt_BR.md)).
 
 ## Compliance frameworks and extensibility
 

@@ -3,7 +3,7 @@ $Title = "Release 1.4.1: version bump, Docker image, SonarQube and docs alignmen
 $Body = @"
 Build 1.4.1: quality and docs alignment, Docker image published.
 
-- Bump version to 1.4.1 (pyproject.toml, core/about.py, man pages, deploy/DEPLOY.md, PLANS_TODO)
+- Bump version to 1.4.1 (pyproject.toml, core/about.py, man pages, docs/deploy/DEPLOY.md, PLANS_TODO)
 - Application and documentation aligned: operation, config, access (EN and pt-BR in sync)
 - All 138 tests pass with no errors or warnings
 - Docker image built and pushed: fabioleitao/python3-lgpd-crawler:latest and :1.4.1
