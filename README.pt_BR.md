@@ -190,13 +190,15 @@ Em sistemas que usam a interface tradicional
 
 No Linux/BSD, a seção 1 é para programas e comandos; a seção 5 é para formatos de arquivo e convenções de configuração. Instalar ambas permite usar `man lgpd_crawler` para saber como executar a aplicação e `man 5 lgpd_crawler` para saber como configurá-la e definir padrões.
 
-**Instalar ambas as páginas** (crie os diretórios de destino antes para que o `cp` não falhe se não existirem):
+**Instalar ambas as páginas** (crie os diretórios de destino antes para que o `cp` não falhe se não existirem). Logo após criar os diretórios, execute `chmod 755` neles para que todos os usuários possam acessar as páginas de manual; dependendo do umask padrão, diretórios novos podem ficar 750 e apenas root conseguiria acessá-los. Após copiar, execute `chmod 644` nos arquivos instalados para que todos possam lê-los (os arquivos copiados podem ficar 640).
 
 ```bash
 sudo mkdir -p /usr/local/share/man/man1/
 sudo mkdir -p /usr/local/share/man/man5/
+sudo chmod 755 /usr/local/share/man/man1/ /usr/local/share/man/man5/
 sudo cp docs/lgpd_crawler.1 /usr/local/share/man/man1/
 sudo cp docs/lgpd_crawler.5 /usr/local/share/man/man5/
+sudo chmod 644 /usr/local/share/man/man1/lgpd_crawler.1 /usr/local/share/man/man5/lgpd_crawler.5
 sudo mandb    # ou: sudo makewhatis   # conforme a distro
 ```
 
