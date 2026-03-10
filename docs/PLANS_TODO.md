@@ -6,7 +6,15 @@ This document is the **single source of truth** for the project’s plan status 
 
 All steps are intended to be **non-destructive**, **non-regression**, and **non-performance impacting**; each step should be **tested** and **safe** before marking done.
 
-**Plan status:** Corporate compliance improvements ✅ Complete · Minor data detection ✅ Complete · Aggregated identification ✅ Complete · Sensitive categories ML/DL ✅ Complete · Rate limiting & concurrency ✅ Complete · Web hardening & security ✅ Complete · Logo and naming ⬜ In progress
+**Plan status:** Corporate compliance improvements ✅ Complete · Minor data detection ✅ Complete · Aggregated identification ✅ Complete · Sensitive categories ML/DL ✅ Complete · Rate limiting & concurrency ✅ Complete · Web hardening & security ✅ Complete · Logo and naming ⬜ In progress · **Dashboard i18n (multi-language web UI)** ⬜ Under consideration
+
+---
+
+## Plan: Dashboard i18n (multi-language web UI) ⬜ **Under consideration**
+
+**Source:** [docs/PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md)
+
+**Status:** No approach decided yet. The plan document sets out **options and recommendations** (path-prefix vs query/cookie, JSON vs gettext, complexity). **There is no to-do list here until we choose an approach;** after that, concrete steps will be added to this section and to the plan file.
 
 ---
 
