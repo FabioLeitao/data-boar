@@ -6,7 +6,15 @@ Este documento é a **fonte única de verdade** para o status dos planos do proj
 
 Todas as etapas devem ser **não destrutivas**, **sem regressão** e **sem impacto de performance**; cada etapa deve ser **testada** e **segura** antes de ser marcada como feita.
 
-**Status dos planos:** Melhorias de conformidade corporativa ✅ Completo · Detecção de dados de menores ✅ Completo · Identificação agregada ✅ Completo · Categorias sensíveis ML/DL ✅ Completo · Rate limiting e concorrência ✅ Completo · Endurecimento e segurança web ✅ Completo · Logo e naming ⬜ Em progresso
+**Status dos planos:** Melhorias de conformidade corporativa ✅ Completo · Detecção de dados de menores ✅ Completo · Identificação agregada ✅ Completo · Categorias sensíveis ML/DL ✅ Completo · Rate limiting e concorrência ✅ Completo · Endurecimento e segurança web ✅ Completo · Logo e naming ⬜ Em progresso · **Dashboard i18n (interface web multilíngue)** ⬜ Em consideração
+
+---
+
+## Plano: Dashboard i18n (interface web multilíngue) ⬜ **Em consideração**
+
+**Fonte:** [docs/PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md)
+
+**Status:** Ainda não há abordagem definida. O plano descreve **opções e recomendações** (path-prefix vs query/cookie, JSON vs gettext, complexidade). **Não há lista de to-dos aqui até que a abordagem seja escolhida;** depois disso, os passos concretos serão adicionados a esta seção e ao arquivo do plano.
 
 ---
 
