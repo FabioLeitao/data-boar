@@ -1,6 +1,6 @@
 # Dashboard i18n and multi-language web UI
 
-**Status:** Under consideration (no approach decided yet)  
+**Status:** Under consideration (no approach decided yet)
 **Synced with:** [docs/PLANS_TODO.md](PLANS_TODO.md) (central plan status)
 
 Goal: allow users to use the web dashboard (and related pages) in **Brazilian Portuguese** and, in the future, other languages — with a clear way to switch language (e.g. footer link, optional flag) and without breaking existing behaviour or tests.
@@ -23,19 +23,19 @@ No i18n/l10n exists in the web UI today.
 
 ### 1. How to represent locale in the UI (routing)
 
-| Option | Description | Pros | Cons |
-|--------|-------------|------|------|
-| **Path prefix** (e.g. `/en/`, `/pt-br/`) | HTML pages live under `/{locale}/`; API stays at current paths. | Bookmarkable per language; clear URL = language; adding a new language is a new prefix + locale file. | All internal links and redirects must include locale; route registration changes. |
-| **Query or cookie** (e.g. `?lang=pt-BR` or cookie) | Same URLs; locale from query param or cookie; templates/JS read it. | Fewer route changes; same URLs for all languages. | Not bookmarkable per language unless you force `?lang=` everywhere; less obvious for “add another language”. |
+| Option                                             | Description                                                         | Pros                                                                                                  | Cons                                                                                                         |
+| --------                                           | -------------                                                       | ------                                                                                                | ------                                                                                                       |
+| **Path prefix** (e.g. `/en/`, `/pt-br/`)           | HTML pages live under `/{locale}/`; API stays at current paths.     | Bookmarkable per language; clear URL = language; adding a new language is a new prefix + locale file. | All internal links and redirects must include locale; route registration changes.                            |
+| **Query or cookie** (e.g. `?lang=pt-BR` or cookie) | Same URLs; locale from query param or cookie; templates/JS read it. | Fewer route changes; same URLs for all languages.                                                     | Not bookmarkable per language unless you force `?lang=` everywhere; less obvious for “add another language”. |
 
 **Recommendation (to decide):** Path prefix is usually better for clarity and adding languages later; query/cookie is simpler to implement initially but messier for multiple locales.
 
 ### 2. How to store and apply translations
 
-| Option | Description | Pros | Cons |
-|--------|-------------|------|------|
-| **JSON locale files** (e.g. `api/locales/en.json`, `pt_BR.json`) + template helper `t(key)` + inject subset for JS | One JSON per language; templates and JS use the same keys. | No gettext toolColleague-Nn; easy to add a language (new file + route prefix); keys can be injected into the page for JS. | All strings must be keyed; you maintain the JSON files. |
-| **gettext (.po/.mo)** | Standard gettext with extract/compile. | Familiar, scalable for large apps, good tooling. | Requires extract/compile workflow; JS needs a separate approach; more setup. |
+| Option                                                                                                             | Description                                                | Pros                                                                                                               | Cons                                                                         |
+| --------                                                                                                           | -------------                                              | ------                                                                                                             | ------                                                                       |
+| **JSON locale files** (e.g. `api/locales/en.json`, `pt_BR.json`) + template helper `t(key)` + inject subset for JS | One JSON per language; templates and JS use the same keys. | No gettext toolColleague-Nn; easy to add a language (new file + route prefix); keys can be injected into the page for JS. | All strings must be keyed; you maintain the JSON files.                      |
+| **gettext (.po/.mo)**                                                                                              | Standard gettext with extract/compile.                     | Familiar, scalable for large apps, good tooling.                                                                   | Requires extract/compile workflow; JS needs a separate approach; more setup. |
 
 **Recommendation (to decide):** JSON + `t(key)` is a good fit for the current size and keeps adding a language to “new JSON + prefix”; gettext is better if you expect many languages and heavy reuse.
 
@@ -64,6 +64,6 @@ Once you have chosen:
 then:
 
 1. Add a **concrete to-do list** to this plan (and to [PLANS_TODO.md](PLANS_TODO.md)) for the chosen approach.
-2. Implement step by step, with tests and docs updated as in other plans.
+1. Implement step by step, with tests and docs updated as in other plans.
 
 Until then, this plan remains **under consideration** with no committed to-dos.

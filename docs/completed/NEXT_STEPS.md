@@ -16,7 +16,7 @@ Plan of next steps based on the [implementation plan](../../.cursor/plans/lgpd_a
 | core/session.py                    | Done     | UUID + timestamp                                                                                      |
 | core/database.py                   | Done     | Single SQLite, 4 tables, LocalDBManager                                                               |
 | core/detector.py                   | Done     | Regex + ML from config                                                                                |
-| core/scanner.py                   | Done     | Uses detector only                                                                                    |
+| core/scanner.py                    | Done     | Uses detector only                                                                                    |
 | core/connector_registry.py         | Done     | Registry + connector_for_target                                                                       |
 | core/engine.py                     | Done     | start_audit, generate_final_reports, parallel/sequential                                              |
 | connectors/sql_connector.py        | Done     | Discover + sample, Oracle/MSSQL/MySQL/Postgres/etc.                                                   |

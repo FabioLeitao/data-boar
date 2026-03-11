@@ -6,7 +6,6 @@ The application helps DPO, security, and compliance teams discover and map perso
 
 ---
 
-
 ## Explicitly referenced today
 
 The built-in regex patterns and report labels refer to these frameworks (with example `norm_tag` values):
