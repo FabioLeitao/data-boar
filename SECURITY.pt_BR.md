@@ -58,8 +58,12 @@ Bibliotecas cliente adicionais podem ser necessárias dependendo de quais conect
 ## Resistência a vulnerabilidades comuns
 
 - **Injeção SQL:** Nomes de tabelas e colunas usados em SQL dinâmico (conectores) vêm do inspetor do banco (discover), não de entrada do usuário. Identificadores são escapados por dialeto: aspas duplas para SQLite/Postgres/Oracle (`"` → `""`), backtick para MySQL (`` ` `` → ` `` `). O banco de auditoria local (SQLite) usa apenas ORM do SQLAlchemy e consultas parametrizadas; `session_id` e outros valores fornecidos pelo usuário nunca são concatenados em SQL bruto. Veja **`tests/test_security.py`** para testes de regressão.
-- **Path traversal:** O `session_id` nos caminhos da API é validado com um padrão estrito (alfanumérico e sublinhado, 12–64 caracteres) antes do uso em caminhos de arquivo ou buscas; valores inválidos retornam HTTP 400. Veja **`api/routes.py`** `_validate_session_id` e **`tests/test_routes_responses.py`**.
+- **Path traversal:** O `session_id` nos caminhos da API é validado com um padrão estrito (alfanumérico e sublinhado, 12–64 caracteres) antes do uso em caminhos de arquivo ou buscas; valores inválidos retornam HTTP 400. Veja **`api/routes.py`** `_validate_session_id` e **`tests/test_security.py`**.
+- **Injeção de credenciais em URLs de conexão:** Usuário e senha são codificados para URL ao montar as URLs de conexão com bancos (conector SQL, conector MongoDB), de modo que caracteres especiais (`@`, `:`, `/`, `#`) em credenciais não quebrem o parsing da URL nem sejam interpretados como host/caminho. Veja **`connectors/sql_connector.py`** `_quote_userinfo` / `_build_url`, **`connectors/mongodb_connector.py`** `connect()`, e **`tests/test_security.py`** (ex.: `test_sql_connector_build_url_encodes_password_special_chars`, `test_mongodb_connector_uri_encodes_password_special_chars`).
 - **Config e serialização:** O config YAML é carregado com `yaml.safe_load` (sem deserialização de objetos Python arbitrários). Veja **`tests/test_security.py`** para um teste que rejeita tags YAML inseguras.
+- **Exposição do endpoint de config:** Quando `api.require_api_key` é true, GET `/config` retorna 401 sem uma chave de API válida, de modo que o config bruto (que pode conter segredos) não fique exposto. Veja **`tests/test_security.py`** `test_config_endpoint_requires_api_key_when_required`.
+
+Para um **resumo orientado ao técnico** (o que observar, testes de regressão, recomendações), veja **`docs/security.md`** (EN) e **`docs/security.pt_BR.md`** (pt-BR).
 
 ## Cabeçalhos HTTP de segurança (web e API)
 
@@ -86,8 +90,8 @@ A API não implementa autenticação por padrão; proteja o app no proxy reverso
 Os cabeçalhos de segurança (incluindo CSP) são implementados em **`api/routes.py`** (middleware aplicado às respostas web e da API). Para endurecer implantações em container e cluster:
 
 - **Docker e Kubernetes:** Veja **`docs/deploy/DEPLOY.md`** ([pt-BR](docs/deploy/DEPLOY.pt_BR.md)), seção **“Security and hardening (optional)”**, para:
-  - Executar como não-root, limites de recursos e healthchecks.
-  - Exemplos opcionais Kubernetes: **securityContext** (runAsNonRoot, readOnlyRootFilesystem, drop capabilities), **NetworkPolicy** (`deploy/kubernetes/network-policy.example.yaml`) e **PodDisruptionBudget** (`deploy/kubernetes/pdb.example.yaml`).
+- Executar como não-root, limites de recursos e healthchecks.
+- Exemplos opcionais Kubernetes: **securityContext** (runAsNonRoot, readOnlyRootFilesystem, drop capabilities), **NetworkPolicy** (`deploy/kubernetes/network-policy.example.yaml`) e **PodDisruptionBudget** (`deploy/kubernetes/pdb.example.yaml`).
 
 Quando a API ou o dashboard for **exposto à internet ou a redes não confiáveis**, execute-o atrás de um **proxy reverso** com **TLS**, **autenticação/autorização** adequadas e considere um **WAF** (web application firewall). A chave de API e o rate limiting do app (veja [docs/USAGE.md](docs/USAGE.md) ([pt-BR](docs/USAGE.pt_BR.md))) complementam, mas não substituem, a segurança no nível do proxy.
 

@@ -1,5 +1,5 @@
 .\" lgpd_crawler.5 - file formats and configuration for python3-lgpd-crawler
-.TH LGPD_CRAWLER 5 "March 2026" "python3-lgpd-crawler 1.4.1" "File Formats"
+.TH LGPD_CRAWLER 5 "March 2026" "python3-lgpd-crawler 1.4.3" "File Formats"
 .SH NAME
 lgpd_crawler config \- configuration and pattern file formats for the LGPD audit application
 .
@@ -99,6 +99,19 @@ to improve future scans.
 .
 .P
 All paths in the main config can be absolute or relative to the process working directory.
+.
+.SH SECURITY AND CREDENTIALS
+Database and MongoDB connection strings are built with URL-encoded user and password, so credentials containing @, :, / or # are handled correctly; no extra escaping is required in the config file.
+When
+.I api.require_api_key
+is true, the Configuration page (GET /config) is protected and returns 401 without a valid X-API-Key or Bearer token.
+Technicians: restrict config file permissions and enable
+.I api.require_api_key
+when the API is exposed to untrusted networks; see
+.I SECURITY.md
+and
+.I docs/security.md
+for fixes, regression tests, and full recommendations.
 .
 .SH MAIN CONFIGURATION FILE
 The main file (e.g.
