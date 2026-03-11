@@ -10,29 +10,29 @@ Plano dos próximos passos com base no [plano de implementação](../../.cursor/
 
 ## 1. Status vs plano
 
-| Item do plano                          | Status   | Notas                                                                                                 |
-| ---                                    | ---      | ---                                                                                                   |
-| config/loader.py                       | Feito    | YAML/JSON unificado, esquema normalizado                                                              |
-| core/session.py                        | Feito    | UUID + timestamp                                                                                      |
-| core/database.py                       | Feito    | SQLite único, 4 tabelas, LocalDBManager                                                               |
-| core/detector.py                       | Feito    | Regex + ML a partir do config                                                                         |
-| core/scanner.py                        | Feito    | Usa apenas o detector                                                                                 |
-| core/connector_registry.py             | Feito    | Registry + connector_for_target                                                                       |
-| core/engine.py                         | Feito    | start_audit, generate_final_reports, paralelo/sequencial                                              |
-| connectors/sql_connector.py            | Feito    | Discover + sample, Oracle/MSSQL/MySQL/Postgres/etc.                                                   |
-| connectors/filesystem_connector.py    | Feito    | Verificação de permissão, recursivo, muitas extensões                                                 |
-| connectors/mongodb_connector.py       | Feito    | Opcional, pymongo                                                                                     |
-| connectors/redis_connector.py          | Feito    | Opcional, redis                                                                                       |
-| report/generator.py                    | Feito    | Excel + heatmap, DB/FS/falhas/recomendações                                                           |
-| api/routes.py                          | Feito    | /scan, /start, /status, /report, /list, /reports/{id}; GET /, /reports, /config (dashboard)           |
-| Web dashboard (frontend)               | Feito    | GET / dashboard, GET /reports list, GET/POST /config editor; Jinja2 + static; sem WebSocket (conforme plano) |
-| main.py                                | Feito    | --config, --web, --port 8088                                                                          |
-| utils/logger.py                        | Feito    | Logger unificado, log_finding, notify_violation                                                       |
-| README.md                              | Feito    | Instalação, config, execução, DBs, tipos de arquivo                                                    |
-| TOPOLOGY.md                            | Feito    | Topologia de módulos/classes/funções                                                                   |
-| config.yaml                            | Feito    | Forma unificada, targets DB (comentados), file_scan                                                   |
-| pyproject.toml                         | Feito    | requires-python 3.12+, opcional nosql/bigdata                                                         |
-| requirements.txt                       | Em uso   | Manter em sincronia com pyproject.toml                                                                |
+| Item do plano                      | Status | Notas                                                                                                        |
+| ---                                | ---    | ---                                                                                                          |
+| config/loader.py                   | Feito  | YAML/JSON unificado, esquema normalizado                                                                     |
+| core/session.py                    | Feito  | UUID + timestamp                                                                                             |
+| core/database.py                   | Feito  | SQLite único, 4 tabelas, LocalDBManager                                                                      |
+| core/detector.py                   | Feito  | Regex + ML a partir do config                                                                                |
+| core/scanner.py                    | Feito  | Usa apenas o detector                                                                                        |
+| core/connector_registry.py         | Feito  | Registry + connector_for_target                                                                              |
+| core/engine.py                     | Feito  | start_audit, generate_final_reports, paralelo/sequencial                                                     |
+| connectors/sql_connector.py        | Feito  | Discover + sample, Oracle/MSSQL/MySQL/Postgres/etc.                                                          |
+| connectors/filesystem_connector.py | Feito  | Verificação de permissão, recursivo, muitas extensões                                                        |
+| connectors/mongodb_connector.py    | Feito  | Opcional, pymongo                                                                                            |
+| connectors/redis_connector.py      | Feito  | Opcional, redis                                                                                              |
+| report/generator.py                | Feito  | Excel + heatmap, DB/FS/falhas/recomendações                                                                  |
+| api/routes.py                      | Feito  | /scan, /start, /status, /report, /list, /reports/{id}; GET /, /reports, /config (dashboard)                  |
+| Web dashboard (frontend)           | Feito  | GET / dashboard, GET /reports list, GET/POST /config editor; Jinja2 + static; sem WebSocket (conforme plano) |
+| main.py                            | Feito  | --config, --web, --port 8088                                                                                 |
+| utils/logger.py                    | Feito  | Logger unificado, log_finding, notify_violation                                                              |
+| README.md                          | Feito  | Instalação, config, execução, DBs, tipos de arquivo                                                          |
+| TOPOLOGY.md                        | Feito  | Topologia de módulos/classes/funções                                                                         |
+| config.yaml                        | Feito  | Forma unificada, targets DB (comentados), file_scan                                                          |
+| pyproject.toml                     | Feito  | requires-python 3.12+, opcional nosql/bigdata                                                                |
+| requirements.txt                   | Em uso | Manter em sincronia com pyproject.toml                                                                       |
 
 ---
 

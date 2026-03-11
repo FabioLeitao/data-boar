@@ -45,8 +45,8 @@ When you bump the version, update **all** of the following so the number is cons
 
 ### 4. Deploy and Docker
 
-| Location               | What to change                                                                                                                                                    |
-| ---                    | ---                                                                                                                                                               |
+| Location                    | What to change                                                                                                                                                    |
+| ---                         | ---                                                                                                                                                               |
 | **`docs/deploy/DEPLOY.md`** | Update any **example** version tags in the Docker tag/push commands (e.g. `1.3.0` in the examples) to the new version so copy-paste commands use the correct tag. |
 
 ### 5. Documentation (EN and PT-BR)

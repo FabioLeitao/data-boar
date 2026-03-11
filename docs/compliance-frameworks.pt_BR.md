@@ -8,12 +8,12 @@ A aplicação auxilia times de DPO, segurança e compliance a descobrir e mapear
 
 Os padrões regex embutidos e rótulos do relatório referem-se a estes frameworks (com valores de exemplo de `norm_tag`):
 
-| Framework | Escopo                                      | Exemplo norm_tag (nos relatórios) |
-| --------- | ------------------------------------------- | --------------------------------- |
-| **LGPD**  | Brasil – Lei Geral de Proteção de Dados     | `LGPD Art. 5`                     |
-| **GDPR**  | UE – General Data Protection Regulation     | `GDPR Art. 4(1)`                  |
-| **CCPA**  | Califórnia – Consumer Privacy Act           | `CCPA`                            |
-| **HIPAA** | EUA – Dados de saúde                        | Contexto saúde/seguros            |
+| Framework | Escopo                                      | Exemplo norm_tag (nos relatórios)   |
+| --------- | ------------------------------------------- | ---------------------------------   |
+| **LGPD**  | Brasil – Lei Geral de Proteção de Dados     | `LGPD Art. 5`                       |
+| **GDPR**  | UE – General Data Protection Regulation     | `GDPR Art. 4(1)`                    |
+| **CCPA**  | Califórnia – Consumer Privacy Act           | `CCPA`                              |
+| **HIPAA** | EUA – Dados de saúde                        | Contexto saúde/seguros              |
 | **GLBA**  | EUA – Serviços financeiros                  | `PCI/GLBA` (ex.: cartão de crédito) |
 
 Os achados são armazenados com **`norm_tag`** e **`pattern_detected`** em formato livre; o relatório Excel os utiliza na aba **Recomendações** (Base legal, Risco, Recomendação, Prioridade, Relevante para).
