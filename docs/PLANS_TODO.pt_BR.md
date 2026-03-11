@@ -26,16 +26,16 @@ Todas as etapas devem ser **não destrutivas**, **sem regressão** e **sem impac
 
 Objetivo: Logo livre de problemas de direitos autorais (web, favicon, opcional no relatório), integração na aplicação e recomendações de naming (ex.: compliance_crawler). O usuário decide quais opções aplicar.
 
-| #   | To-do                                                                                                                             | Status    | Notas                                    |
-| --- | ---                                                                                                                               | ---       | ---                                      |
-| 1   | Decidir conceito de logo (A–D) e cores; produzir logo mestre (SVG) e exportar PNG web (32/64 px) e favicon (ICO ou 16/32 PNG)      | ⬜ Pendente | Livre de direitos, escala para 16 px   |
-| 2   | Colocar assets em `api/static/`: favicon.ico (e/ou favicon-32.png), logo.svg, logo-64.png                                         | ⬜ Pendente | Opcional: logo-report-48.png para Excel  |
-| 3   | Adicionar link(s) de favicon em `api/templates/base.html` (`<link rel="icon">`)                                                   | ⬜ Pendente | Ícone do navegador/aba                   |
-| 4   | (Opcional) Adicionar logo à página About e opcionalmente ao cabeçalho do Dashboard/Reports                                       | ⬜ Pendente | about.html, dashboard.html, reports.html |
-| 5   | Verificar disponibilidade do nome escolhido (ex.: compliance_crawler) no PyPI e na web                                            | ⬜ Pendente | Evitar conflitos com produtos existentes |
+| #   | To-do                                                                                                                                  | Status     | Notas                                     |
+| --- | ---                                                                                                                                    | ---        | ---                                       |
+| 1   | Decidir conceito de logo (A–D) e cores; produzir logo mestre (SVG) e exportar PNG web (32/64 px) e favicon (ICO ou 16/32 PNG)          | ⬜ Pendente | Livre de direitos, escala para 16 px      |
+| 2   | Colocar assets em `api/static/`: favicon.ico (e/ou favicon-32.png), logo.svg, logo-64.png                                              | ⬜ Pendente | Opcional: logo-report-48.png para Excel   |
+| 3   | Adicionar link(s) de favicon em `api/templates/base.html` (`<link rel="icon">`)                                                        | ⬜ Pendente | Ícone do navegador/aba                    |
+| 4   | (Opcional) Adicionar logo à página About e opcionalmente ao cabeçalho do Dashboard/Reports                                             | ⬜ Pendente | about.html, dashboard.html, reports.html  |
+| 5   | Verificar disponibilidade do nome escolhido (ex.: compliance_crawler) no PyPI e na web                                                 | ⬜ Pendente | Evitar conflitos com produtos existentes  |
 | 6   | Decidir nome de exibição e/ou renomear pacote; se mudar, atualizar `core/about.py` e/ou `pyproject.toml` e docs conforme VERSIONING.md | ⬜ Pendente | Só nome de exibição = sem renomear pacote |
-| 7   | (Opcional) Inserir logo na planilha Report info do Excel via `report/generator.py`                                               | ⬜ Pendente | Imagem openpyxl em célula fixa           |
-| 8   | (Opcional) Adicionar logo ao rodapé do PNG do heatmap em `_create_heatmap`                                                        | ⬜ Pendente | Imagem pequena via matplotlib            |
+| 7   | (Opcional) Inserir logo na planilha Report info do Excel via `report/generator.py`                                                     | ⬜ Pendente | Imagem openpyxl em célula fixa            |
+| 8   | (Opcional) Adicionar logo ao rodapé do PNG do heatmap em `_create_heatmap`                                                             | ⬜ Pendente | Imagem pequena via matplotlib             |
 
 ---
 

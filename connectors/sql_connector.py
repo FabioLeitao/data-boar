@@ -4,6 +4,7 @@ run detector, save_finding. Supports PostgreSQL, MySQL, MariaDB, SQLite, MSSQL, 
 """
 from collections.abc import Set
 from typing import Any
+from urllib.parse import quote
 
 from sqlalchemy import create_engine, inspect, text
 
@@ -77,8 +78,15 @@ def _discover_fallback_no_schemas(inspector: Any) -> list[dict[str, Any]]:
     return out
 
 
+def _quote_userinfo(value: str) -> str:
+    """URL-encode user or password for use in connection URL userinfo. Prevents special chars (@, :, /, #) from breaking URL parsing."""
+    if not value:
+        return ""
+    return quote(str(value), safe="")
+
+
 def _build_url(target: dict[str, Any]) -> str:
-    """Build SQLAlchemy URL from target config."""
+    """Build SQLAlchemy URL from target config. User and password are URL-encoded to avoid injection or misparsing when they contain @, :, /, #."""
     driver = (target.get("driver") or "postgresql").split("+")[0].lower()
     drivername = DRIVER_MAP.get(driver, f"{driver}")
     # Allow full URL override
@@ -86,8 +94,8 @@ def _build_url(target: dict[str, Any]) -> str:
         return target["url"]
     if driver == "sqlite":
         return f"sqlite:///{target.get('database', 'audit.db')}"
-    user = target.get("user", "")
-    password = target.get("pass", target.get("password", ""))
+    user = _quote_userinfo(target.get("user", ""))
+    password = _quote_userinfo(target.get("pass", target.get("password", "")))
     host = target.get("host", "localhost")
     port = target.get("port", 5432)
     database = target.get("database", "")

@@ -85,11 +85,11 @@ docker login
 docker push fabioleitao/python3-lgpd-crawler:latest
 ```
 
-To use a version tag as well (e.g. `1.4.1`):
+To use a version tag as well (e.g. `1.4.3`):
 
 ```bash
-docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.4.1
-docker push fabioleitao/python3-lgpd-crawler:1.4.1
+docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.4.3
+docker push fabioleitao/python3-lgpd-crawler:1.4.3
 ```
 
 Then in `deploy/docker-compose.yml` set `image:` to your pushed image (e.g. `fabioleitao/python3-lgpd-crawler:latest` or `ghcr.io/fabioleitao/...`).
@@ -103,7 +103,7 @@ docker login              # username: fabioleitao, password: your token
 docker push fabioleitao/python3-lgpd-crawler:latest
 ```
 
-Optional: tag and push a version (e.g. `1.4.1`): `docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.4.1` then `docker push fabioleitao/python3-lgpd-crawler:1.4.1`. See also [DOCKER_SETUP.md](../DOCKER_SETUP.md).
+Optional: tag and push a version (e.g. `1.4.3`): `docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.4.3` then `docker push fabioleitao/python3-lgpd-crawler:1.4.3`. See also [DOCKER_SETUP.md](../DOCKER_SETUP.md).
 
 ## 2. Prepare config
 
@@ -377,12 +377,12 @@ To run a single audit from the CLI in the cluster, use a **Job** that overrides 
 
 | Goal                     | Command / step                                                                                                                             |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| Default (API + frontend)  | Run image with no command override: `docker run`, Compose, Swarm, or Kubernetes                                                            |
+| Default (API + frontend) | Run image with no command override: `docker run`, Compose, Swarm, or Kubernetes                                                            |
 | CLI one-shot             | Override command: `docker run ... --entrypoint python IMAGE main.py --config /data/config.yaml`                                            |
 | Build image              | `docker build -t python3-lgpd-crawler:latest .`                                                                                            |
 | Push to registry         | `docker tag ... fabioleitao/python3-lgpd-crawler:latest` then `docker login` and `docker push fabioleitao/python3-lgpd-crawler:latest`     |
 | **Single container**     | `docker run -d -p 8088:8088 -v ./data:/data python3-lgpd-crawler:latest` (section 3)                                                       |
-| **Docker Compose**       | `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d` — prepare `./data/config.yaml` first (section 4)  |
+| **Docker Compose**       | `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d` — prepare `./data/config.yaml` first (section 4) |
 | **Docker Swarm**         | `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit` (section 5)                            |
 | **Kubernetes**           | `kubectl apply -f deploy/kubernetes/` — see `deploy/kubernetes/README.md` for image and config (section 6)                                 |
 
