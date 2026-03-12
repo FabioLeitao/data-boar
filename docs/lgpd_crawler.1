@@ -1,5 +1,5 @@
 .\" lgpd_crawler.1 - man page for python3-lgpd-crawler
-.TH LGPD_CRAWLER 1 "March 2026" "python3-lgpd-crawler 1.4.1" "User Commands"
+.TH LGPD_CRAWLER 1 "March 2026" "python3-lgpd-crawler 1.4.3" "User Commands"
 .SH NAME
 lgpd_crawler \- audit databases and filesystems for personal and sensitive data
 .
@@ -69,11 +69,23 @@ tags for attribution.
 .SH SECURITY
 The web API sends security headers on all responses: X-Content-Type-Options, X-Frame-Options,
 Content-Security-Policy (CSP), Referrer-Policy, Permissions-Policy, and HSTS when the request is HTTPS.
-CSP can be tightened via environment/config or at the reverse proxy; see
+CSP can be tightened via environment/config or at the reverse proxy.
+.P
+Database and MongoDB connection URLs encode user and password (e.g. special characters like @, :, /, # are percent-encoded) so credentials do not break URL parsing; no extra configuration is required.
+When
+.I api.require_api_key
+is true, GET /config returns 401 without a valid API key, protecting the config file (which may contain credentials) from unauthenticated access.
+.P
+Technicians: protect the Configuration page when the API is exposed to untrusted networks by enabling
+.I api.require_api_key
+and using a strong key; run behind a reverse proxy with TLS for production.
+See
 .I SECURITY.md
 and
+.I docs/security.md
+(EN), and
 .I docs/deploy/DEPLOY.md
-(Security and hardening) for details and deployment guidance.
+(Security and hardening) for details.
 .
 .SH OPTIONS
 .TP

@@ -76,7 +76,7 @@ docker login
 docker push fabioleitao/python3-lgpd-crawler:latest
 ```
 
-Para usar uma tag de versão (ex.: `1.4.1`): `docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.4.1` e `docker push ...`. Veja também [DOCKER_SETUP.md](../DOCKER_SETUP.md).
+Para usar uma tag de versão (ex.: `1.4.3`): `docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.4.3` e `docker push ...`. Veja também [DOCKER_SETUP.md](../DOCKER_SETUP.md).
 
 ## 2. Preparar o config
 
@@ -148,16 +148,16 @@ Em `deploy/docker-compose.yml` defina `image: fabioleitao/python3-lgpd-crawler:l
 
 ## Resumo
 
-| Objetivo              | Comando / passo                                                                 |
-| --------------------- | ------------------------------------------------------------------------------- |
-| Padrão (API + front)  | Executar imagem sem sobrescrever comando                                        |
-| CLI one-shot         | `docker run ... --entrypoint python IMAGE main.py --config /data/config.yaml`   |
-| Build                | `docker build -t python3-lgpd-crawler:latest .`                                 |
-| Push                 | `docker tag ... fabioleitao/python3-lgpd-crawler:latest` e `docker push ...`    |
-| **Container único**  | `docker run -d -p 8088:8088 -v ./data:/data python3-lgpd-crawler:latest`        |
-| **Compose**          | `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d` |
-| **Swarm**            | `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit` |
-| **Kubernetes**       | `kubectl apply -f deploy/kubernetes/`                                           |
+| Objetivo              | Comando / passo                                                                                     |
+| --------------------- | -------------------------------------------------------------------------------                     |
+| Padrão (API + front)  | Executar imagem sem sobrescrever comando                                                            |
+| CLI one-shot          | `docker run ... --entrypoint python IMAGE main.py --config /data/config.yaml`                       |
+| Build                 | `docker build -t python3-lgpd-crawler:latest .`                                                     |
+| Push                  | `docker tag ... fabioleitao/python3-lgpd-crawler:latest` e `docker push ...`                        |
+| **Container único**   | `docker run -d -p 8088:8088 -v ./data:/data python3-lgpd-crawler:latest`                            |
+| **Compose**           | `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d`           |
+| **Swarm**             | `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit` |
+| **Kubernetes**        | `kubectl apply -f deploy/kubernetes/`                                                               |
 
 ## Atrás de NAT, load balancer ou proxy reverso
 

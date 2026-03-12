@@ -1,14 +1,19 @@
 """
-Security tests: SQL injection resistance, path traversal, and safe handling of untrusted input.
+Security tests: SQL injection resistance, path traversal, credential encoding, and safe handling of untrusted input.
+
+Regression tests for critical/high severity issues so they are not reintroduced:
 
 - SQL injection: identifier escaping (quote/backtick) ensures table/column names from discover()
-  never execute as multiple statements; session_id and other user-supplied values are only
-  used via parameterized ORM or validated (session_id pattern).
+  never execute as multiple statements.
 - Path traversal: session_id is validated (api/routes) before use in paths; invalid format returns 400.
+- Credential injection in URLs: user and password are URL-encoded when building connection URLs so that
+  special characters (@, :, /, #) do not break parsing or allow injection (sql_connector, mongodb_connector).
 - Config/serialization: YAML config uses safe_load; no code execution from config content.
+- Config endpoint: when require_api_key is true, /config requires valid API key (no raw secret exposure).
 """
 
 import sqlite3
+from urllib.parse import unquote, urlparse
 
 import pytest
 
@@ -114,3 +119,118 @@ def test_config_save_uses_safe_load():
     payload = "!!python/object/apply:os.system ['echo pwned']"
     with pytest.raises(yaml.YAMLError):
         yaml.safe_load(payload)
+
+
+def test_config_loader_uses_safe_load_not_load(tmp_path):
+    """load_config must use safe_load for YAML so malicious config cannot execute code."""
+    import yaml
+
+    malicious = tmp_path / "bad.yaml"
+    malicious.write_text("!!python/object/apply:os.system ['echo pwned']", encoding="utf-8")
+    from config.loader import load_config
+
+    with pytest.raises(yaml.YAMLError):
+        load_config(malicious)
+
+
+# --- Credential encoding in connection URLs (prevent misparsing / injection) ---
+
+
+def test_sql_connector_build_url_encodes_password_special_chars():
+    """
+    _build_url must URL-encode user and password so that @, :, /, # in credentials
+    do not break URL parsing or allow injection into host/path.
+    """
+    from connectors.sql_connector import _build_url
+
+    target = {
+        "driver": "postgresql+psycopg2",
+        "host": "db.example.com",
+        "port": 5432,
+        "user": "u",
+        "password": "p@ss:word/with#hash",
+        "database": "mydb",
+    }
+    url = _build_url(target)
+    parsed = urlparse(url)
+    assert parsed.username is not None
+    assert parsed.password is not None
+    assert unquote(parsed.password) == "p@ss:word/with#hash"
+    assert unquote(parsed.username) == "u"
+    # Raw @ must not appear in userinfo (would be interpreted as userinfo@host boundary)
+    netloc = parsed.netloc
+    userinfo = netloc.rsplit("@", 1)[0] if "@" in netloc else ""
+    assert "@" not in userinfo.replace("%40", "")
+
+
+def test_sql_connector_build_url_encodes_user_with_at():
+    """User containing @ must be encoded so it does not get interpreted as user@host boundary."""
+    from connectors.sql_connector import _build_url
+
+    target = {
+        "driver": "postgresql+psycopg2",
+        "host": "host",
+        "port": 5432,
+        "user": "user@realm",
+        "password": "secret",
+        "database": "db",
+    }
+    url = _build_url(target)
+    parsed = urlparse(url)
+    assert unquote(parsed.username) == "user@realm"
+    assert unquote(parsed.password) == "secret"
+
+
+def test_mongodb_connector_uri_encodes_password_special_chars():
+    """MongoDB connector must build URI with URL-encoded user/password so special chars do not break parsing."""
+    from unittest.mock import MagicMock, patch
+
+    config = {
+        "name": "test",
+        "host": "localhost",
+        "port": 27017,
+        "database": "testdb",
+        "user": "admin",
+        "password": "p@ss:word",
+    }
+    from connectors.mongodb_connector import MongoDBConnector
+    connector = MongoDBConnector(config, MagicMock(), MagicMock())
+    # Patch MongoClient so we don't need pymongo installed and we can assert the URI passed
+    with patch("connectors.mongodb_connector.MongoClient") as mongo_mock:
+        with patch("connectors.mongodb_connector._MONGO_AVAILABLE", True):
+            connector.connect()
+    mongo_mock.assert_called_once()
+    (uri,) = mongo_mock.call_args[0]
+    parsed = urlparse(uri)
+    assert unquote(parsed.password) == "p@ss:word"
+    assert unquote(parsed.username) == "admin"
+
+
+# --- Config endpoint protected when API key required ---
+
+
+def test_config_endpoint_requires_api_key_when_required(tmp_path):
+    """When api.require_api_key is true, GET /config must return 401 without valid API key."""
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        f"targets: []\nreport:\n  output_dir: {tmp_path}\napi:\n  port: 8088\n  require_api_key: true\n  api_key: secret123\nsqlite_path: {tmp_path}/audit.db\n",
+        encoding="utf-8",
+    )
+    import api.routes as routes
+    orig_path = routes._config_path
+    orig_cfg = routes._config
+    orig_engine = routes._audit_engine
+    try:
+        routes._config_path = str(config_path)
+        routes._config = None
+        routes._audit_engine = None
+        from fastapi.testclient import TestClient
+        client = TestClient(routes.app)
+        resp = client.get("/config")
+        assert resp.status_code == 401
+        resp_with_key = client.get("/config", headers={"X-API-Key": "secret123"})
+        assert resp_with_key.status_code == 200
+    finally:
+        routes._config_path = orig_path
+        routes._config = orig_cfg
+        routes._audit_engine = orig_engine
