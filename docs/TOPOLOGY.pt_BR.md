@@ -63,10 +63,10 @@ Descrição textual dos módulos, classes e funções principais e como eles se 
 ## Fluxo de dados (resumo)
 
 1. **Config** → config/loader → dict normalizado.
-2. **Engine** → cria LocalDBManager, DataScanner; para cada target, connector_for_target → connector.run(). Para filesystem, repassa scan_sqlite_as_db e sample_limit.
-3. **Conectores** → connect, discover (e sample para DB); para filesystem, arquivos .sqlite/.db opcionalmente abertos como SQLite; outros usam _read_text_sample e scanner.
-4. **Report** → report/generator lê SQLite, escreve Excel + heatmap.
-5. **API** → rotas usam o mesmo AuditEngine; /scan inicia _run_audit_targets em background; /report e /reports/{id} chamam generate_final_reports.
+1. **Engine** → cria LocalDBManager, DataScanner; para cada target, connector_for_target → connector.run(). Para filesystem, repassa scan_sqlite_as_db e sample_limit.
+1. **Conectores** → connect, discover (e sample para DB); para filesystem, arquivos .sqlite/.db opcionalmente abertos como SQLite; outros usam _read_text_sample e scanner.
+1. **Report** → report/generator lê SQLite, escreve Excel + heatmap.
+1. **API** → rotas usam o mesmo AuditEngine; /scan inicia _run_audit_targets em background; /report e /reports/{id} chamam generate_final_reports.
 
 ---
 

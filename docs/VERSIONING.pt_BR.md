@@ -45,8 +45,8 @@ Ao dar bump na versão, atualize **todos** os itens abaixo para manter o número
 
 ### 4. Deploy e Docker
 
-| Local                  | O que alterar                                                                                                                 |
-| ---                    | ---                                                                                                                           |
+| Local                       | O que alterar                                                                                                                 |
+| ---                         | ---                                                                                                                           |
 | **`docs/deploy/DEPLOY.md`** | Atualize os **exemplos** de tags de versão nos comandos de tag/push do Docker (ex.: `1.3.0` nos exemplos) para a nova versão. |
 
 ### 5. Documentação (EN e PT-BR)
