@@ -21,7 +21,7 @@ blinker==1.9.0
     # via
     #   python3-lgpd-crawler (pyproject.toml)
     #   flask
-certifi==2025.11.12
+certifi==2026.2.25
     # via
     #   python3-lgpd-crawler (pyproject.toml)
     #   httpcore
