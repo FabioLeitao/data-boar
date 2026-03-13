@@ -1,9 +1,10 @@
 """Tests for config loader and database layer (no live DB required)."""
+import os
 import pytest
 from pathlib import Path
 
 from config.loader import load_config, normalize_config
-from core.database import LocalDBManager, ScanSession, DatabaseFinding, DataWipeLog
+from core.database import LocalDBManager, DataWipeLog
 
 
 def test_normalize_config_empty():
@@ -14,8 +15,9 @@ def test_normalize_config_empty():
 
 
 def test_normalize_config_legacy_databases():
+    # Use placeholder for password field; test only verifies normalization (no real credentials).
     out = normalize_config({
-        "databases": [{"name": "x", "host": "h", "port": 5432, "user": "u", "password": "p", "database": "d"}],
+        "databases": [{"name": "x", "host": "h", "port": 5432, "user": "u", "password": os.environ.get("TEST_DB_PASSWORD", "test-placeholder"), "database": "d"}],
         "file_scan": {"directories": [], "extensions": [".txt"]},
     })
     assert len(out["targets"]) >= 1
@@ -82,7 +84,7 @@ def test_local_db_manager(tmp_path):
         mgr.set_current_session_id("test-session-123")
         mgr.create_session_record("test-session-123")
         mgr.save_finding("database", target_name="T", server_ip="127.0.0.1", schema_name="s", table_name="t", column_name="c", data_type="VARCHAR", sensitivity_level="HIGH", pattern_detected="CPF", norm_tag="LGPD", ml_confidence=90)
-        db_findings, fs_findings, failures = mgr.get_findings("test-session-123")
+        db_findings, _, _ = mgr.get_findings("test-session-123")
         assert len(db_findings) == 1
         assert db_findings[0]["column_name"] == "c"
         mgr.finish_session("test-session-123")
@@ -164,7 +166,7 @@ def test_wipe_all_data_logs_and_clears(tmp_path):
 
         # Sanity check: we have sessions and findings
         assert mgr.list_sessions()
-        db_rows, fs_rows, fail_rows = mgr.get_findings("s1")
+        db_rows, _, _ = mgr.get_findings("s1")
         assert db_rows
 
         # Wipe everything and ensure sessions/findings are gone but a wipe log exists

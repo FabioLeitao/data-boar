@@ -1,5 +1,7 @@
 # Contributor Covenant Code of Conduct
 
+**Português (Brasil):** [CODE_OF_CONDUCT.pt_BR.md](CODE_OF_CONDUCT.pt_BR.md)
+
 ## Our Pledge
 
 In the interest of fostering an open and welcoming environment, we as
@@ -23,12 +25,17 @@ include:
 Examples of unacceptable behavior by participants include:
 
 * The use of sexualized language or imagery and unwelcome sexual attention or
+
  advances
+
 * Trolling, insulting/derogatory comments, and personal or political attacks
 * Public or private harassment
 * Publishing others' private information, such as a physical or electronic
+
  address, without explicit permission
+
 * Other conduct which could reasonably be considered inappropriate in a
+
  professional setting
 
 ## Our Responsibilities
@@ -68,9 +75,9 @@ members of the project's leadership.
 ## Attribution
 
 This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4,
-available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.html
+available at <https://www.contributor-covenant.org/version/1/4/code-of-conduct.html>
 
-[homepage]: https://www.contributor-covenant.org
+[homepage]: <https://www.contributor-covenant.org>
 
 For answers to common questions about this code of conduct, see
-https://www.contributor-covenant.org/faq
+<https://www.contributor-covenant.org/faq>
