@@ -2,7 +2,9 @@
 SQL connector: connect via SQLAlchemy, discover schemas/tables/columns, sample rows (no raw storage),
 run detector, save_finding. Supports PostgreSQL, MySQL, MariaDB, SQLite, MSSQL, Oracle via driver.
 """
-from typing import Any, Callable
+from collections.abc import Set
+from typing import Any
+from urllib.parse import quote
 
 from sqlalchemy import create_engine, inspect, text
 
@@ -26,9 +28,65 @@ ORACLE_SYSTEM_SCHEMAS = frozenset({
     "GSMCATUSER", "GSMUSER", "MDDATA", "REMOTE_SCHEDULER_AGENT", "DBSFWUSER",
 })
 
+_DEFAULT_SKIP_SCHEMAS = {"information_schema", "sys", "pg_catalog", "performance_schema"}
+
+
+def _get_skip_schemas(dialect: str) -> Set[str]:
+    """Return the set of schema names to skip when discovering (dialect-specific)."""
+    return ORACLE_SYSTEM_SCHEMAS if dialect == "oracle" else _DEFAULT_SKIP_SCHEMAS
+
+
+def _should_skip_schema(schema: str | None, dialect: str, skip_schemas: Set[str]) -> bool:
+    """True if schema should be skipped (empty or in skip_schemas)."""
+    if not schema:
+        return True
+    key = schema.upper() if dialect == "oracle" else schema
+    return key in skip_schemas
+
+
+def _tables_from_schema(inspector: Any, schema: str) -> list[dict[str, Any]]:
+    """Return list of {schema, table, columns} for the given schema; empty list on error."""
+    out = []
+    try:
+        for table in inspector.get_table_names(schema=schema):
+            columns = inspector.get_columns(table, schema=schema)
+            out.append({
+                "schema": schema or "",
+                "table": table,
+                "columns": [{"name": c["name"], "type": str(c["type"])} for c in columns],
+            })
+    except Exception:
+        pass
+    return out
+
+
+def _discover_fallback_no_schemas(inspector: Any) -> list[dict[str, Any]]:
+    """When no schemas (e.g. SQLite), get tables without schema."""
+    out = []
+    if not hasattr(inspector, "get_table_names"):
+        return out
+    try:
+        for table in inspector.get_table_names():
+            columns = inspector.get_columns(table)
+            out.append({
+                "schema": "",
+                "table": table,
+                "columns": [{"name": c["name"], "type": str(c["type"])} for c in columns],
+            })
+    except Exception:
+        pass
+    return out
+
+
+def _quote_userinfo(value: str) -> str:
+    """URL-encode user or password for use in connection URL userinfo. Prevents special chars (@, :, /, #) from breaking URL parsing."""
+    if not value:
+        return ""
+    return quote(str(value), safe="")
+
 
 def _build_url(target: dict[str, Any]) -> str:
-    """Build SQLAlchemy URL from target config."""
+    """Build SQLAlchemy URL from target config. User and password are URL-encoded to avoid injection or misparsing when they contain @, :, /, #."""
     driver = (target.get("driver") or "postgresql").split("+")[0].lower()
     drivername = DRIVER_MAP.get(driver, f"{driver}")
     # Allow full URL override
@@ -36,8 +94,8 @@ def _build_url(target: dict[str, Any]) -> str:
         return target["url"]
     if driver == "sqlite":
         return f"sqlite:///{target.get('database', 'audit.db')}"
-    user = target.get("user", "")
-    password = target.get("pass", target.get("password", ""))
+    user = _quote_userinfo(target.get("user", ""))
+    password = _quote_userinfo(target.get("pass", target.get("password", "")))
     host = target.get("host", "localhost")
     port = target.get("port", 5432)
     database = target.get("database", "")
@@ -87,57 +145,90 @@ class SQLConnector:
     def discover(self) -> list[dict[str, Any]]:
         """Return list of {schema, table, columns: [{name, type}]}. For Oracle, skips system schemas."""
         inspector = inspect(self.engine)
-        result = []
         dialect = self.engine.dialect.name if self.engine else ""
-        schemas = inspector.get_schema_names()
-        skip_schemas = {"information_schema", "sys", "pg_catalog", "performance_schema"}
-        if dialect == "oracle":
-            skip_schemas = ORACLE_SYSTEM_SCHEMAS
-        for schema in schemas:
-            if schema and (schema.upper() if dialect == "oracle" else schema) in skip_schemas:
+        skip_schemas = _get_skip_schemas(dialect)
+        result = []
+        for schema in inspector.get_schema_names():
+            if _should_skip_schema(schema, dialect, skip_schemas):
                 continue
-            try:
-                for table in inspector.get_table_names(schema=schema):
-                    columns = inspector.get_columns(table, schema=schema)
-                    result.append({
-                        "schema": schema or "",
-                        "table": table,
-                        "columns": [{"name": c["name"], "type": str(c["type"])} for c in columns],
-                    })
-            except Exception:
-                continue
-        # If no schemas (e.g. SQLite), get_table_names() without schema
-        if not result and hasattr(inspector, "get_table_names"):
-            for table in inspector.get_table_names():
-                columns = inspector.get_columns(table)
-                result.append({
-                    "schema": "",
-                    "table": table,
-                    "columns": [{"name": c["name"], "type": str(c["type"])} for c in columns],
-                })
+            result.extend(_tables_from_schema(inspector, schema))
+        if not result:
+            result = _discover_fallback_no_schemas(inspector)
         return result
+
+    def _process_one_finding(
+        self,
+        target_name: str,
+        server_ip: str,
+        engine_name: str,
+        schema: str,
+        table: str,
+        cname: str,
+        ctype: str,
+    ) -> None:
+        """Sample column, run detection, optionally full-scan for minor; save finding and log."""
+        sample = self.sample(schema, table, cname)
+        res = self.scanner.scan_column(cname, sample)
+        if res["sensitivity_level"] == "LOW":
+            return
+        norm_tag = res.get("norm_tag", "")
+        if (
+            "DOB_POSSIBLE_MINOR" in (res.get("pattern_detected") or "")
+            and self.detection_config.get("minor_full_scan")
+        ):
+            full_scan_limit = self.detection_config.get("minor_full_scan_limit", 100)
+            full_sample = self.sample(schema, table, cname, limit=full_scan_limit)
+            full_res = self.scanner.scan_column(cname, full_sample)
+            if "DOB_POSSIBLE_MINOR" in (full_res.get("pattern_detected") or ""):
+                res = full_res
+                suffix = " (full-scan confirmed)"
+                norm_tag = (norm_tag or "").rstrip() + suffix if norm_tag else suffix.lstrip()
+        self.db_manager.save_finding(
+            source_type="database",
+            target_name=target_name,
+            server_ip=server_ip,
+            engine_details=engine_name,
+            schema_name=schema,
+            table_name=table,
+            column_name=cname,
+            data_type=ctype,
+            sensitivity_level=res["sensitivity_level"],
+            pattern_detected=res["pattern_detected"],
+            norm_tag=norm_tag,
+            ml_confidence=res.get("ml_confidence", 0),
+        )
+        try:
+            from utils.logger import log_finding
+            log_finding("database", target_name, f"{schema}.{table}.{cname}", res["sensitivity_level"], res["pattern_detected"])
+        except Exception:
+            pass
 
     def sample(self, schema: str, table: str, column_name: str, limit: int | None = None) -> str:
         """Fetch up to limit (or sample_limit) values from column; return concatenated string for detection (not stored)."""
         use_limit = limit if limit is not None else self.sample_limit
         dialect = self.engine.dialect.name if self.engine else ""
-        # Escape identifier per dialect (simple: avoid injection by using column/table from discover)
+        # Escape identifier per dialect to prevent SQL injection (identifiers come from discover(), not user input).
+        # Double-quote for SQLite/Postgres/Oracle; backtick for MySQL.
         safe_col = column_name.replace('"', '""')
         safe_table = table.replace('"', '""')
+        safe_schema = (schema or "").replace('"', '""')
         try:
             if dialect == "sqlite":
                 q = text(f'SELECT "{safe_col}" FROM "{safe_table}" LIMIT {use_limit}')
             elif dialect == "mysql":
-                t = f'`{schema}`.`{safe_table}`' if schema else f'`{safe_table}`'
-                q = text(f'SELECT `{safe_col}` FROM {t} LIMIT {use_limit}')
+                # MySQL uses backticks; escape backtick inside identifiers to prevent injection.
+                def _bk(s: str) -> str:
+                    return s.replace("`", "``")
+                t = f'`{_bk(safe_schema)}`.`{_bk(safe_table)}`' if schema else f'`{_bk(safe_table)}`'
+                q = text(f'SELECT `{_bk(safe_col)}` FROM {t} LIMIT {use_limit}')
             elif dialect == "oracle":
                 # Oracle: quoted identifiers; use ROWNUM for limit (no LIMIT)
-                t = f'"{schema}"."{safe_table}"' if schema else f'"{safe_table}"'
+                t = f'"{safe_schema}"."{safe_table}"' if schema else f'"{safe_table}"'
                 q = text(
                     f'SELECT "{safe_col}" FROM {t} WHERE ROWNUM <= :lim'
                 ).bindparams(lim=use_limit)
             else:
-                t = f'"{schema}"."{safe_table}"' if schema else f'"{safe_table}"'
+                t = f'"{safe_schema}"."{safe_table}"' if schema else f'"{safe_table}"'
                 q = text(f'SELECT "{safe_col}" FROM {t} LIMIT {use_limit}')
             rows = self._connection.execute(q).fetchall()
             parts = [str(r[0])[:200] for r in rows if r[0] is not None]
@@ -162,44 +253,10 @@ class SQLConnector:
                 schema = item["schema"]
                 table = item["table"]
                 for col in item["columns"]:
-                    cname = col["name"]
-                    ctype = col["type"]
-                    sample = self.sample(schema, table, cname)
-                    res = self.scanner.scan_column(cname, sample)
-                    if res["sensitivity_level"] == "LOW":
-                        continue
-                    # Optional full-scan: when DOB suggests possible minor and config enables it, re-sample with higher limit and re-detect
-                    norm_tag = res.get("norm_tag", "")
-                    if (
-                        "DOB_POSSIBLE_MINOR" in (res.get("pattern_detected") or "")
-                        and self.detection_config.get("minor_full_scan")
-                    ):
-                        full_scan_limit = self.detection_config.get("minor_full_scan_limit", 100)
-                        full_sample = self.sample(schema, table, cname, limit=full_scan_limit)
-                        full_res = self.scanner.scan_column(cname, full_sample)
-                        if "DOB_POSSIBLE_MINOR" in (full_res.get("pattern_detected") or ""):
-                            res = full_res
-                            suffix = " (full-scan confirmed)"
-                            norm_tag = (norm_tag or "").rstrip() + suffix if norm_tag else suffix.lstrip()
-                    self.db_manager.save_finding(
-                        source_type="database",
-                        target_name=target_name,
-                        server_ip=server_ip,
-                        engine_details=engine_name,
-                        schema_name=schema,
-                        table_name=table,
-                        column_name=cname,
-                        data_type=ctype,
-                        sensitivity_level=res["sensitivity_level"],
-                        pattern_detected=res["pattern_detected"],
-                        norm_tag=norm_tag,
-                        ml_confidence=res.get("ml_confidence", 0),
+                    self._process_one_finding(
+                        target_name, server_ip, engine_name,
+                        schema, table, col["name"], col["type"],
                     )
-                    try:
-                        from utils.logger import log_finding
-                        log_finding("database", target_name, f"{schema}.{table}.{cname}", res["sensitivity_level"], res["pattern_detected"])
-                    except Exception:
-                        pass
         except Exception as e:
             self.db_manager.save_failure(target_name, "error", str(e))
         finally:

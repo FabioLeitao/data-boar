@@ -1,13 +1,16 @@
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
-import joblib
-import os
 
 class MLSensitivityScanner:
     def __init__(self):
         self.vectorizer = TfidfVectorizer(ngram_range=(1, 2), min_df=1)
-        self.model = RandomForestClassifier(n_estimators=100)
+        self.model = RandomForestClassifier(
+            n_estimators=100,
+            random_state=42,
+            min_samples_leaf=1,
+            max_features="sqrt",
+        )
         self.is_trained = False
         self._load_or_train_initial_model()
 
@@ -24,14 +27,15 @@ class MLSensitivityScanner:
             'label': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0] 
         }
         df = pd.DataFrame(data)
-        X = self.vectorizer.fit_transform(df['text'])
-        self.model.fit(X, df['label'])
+        x = self.vectorizer.fit_transform(df['text'])
+        self.model.fit(x, df['label'])
         self.is_trained = True
 
     def predict_sensitivity(self, text):
         """Retorna a probabilidade de um campo ser sensível (0.0 a 1.0)."""
-        if not text: return 0.0
-        X_input = self.vectorizer.transform([str(text).lower()])
+        if not text:
+            return 0.0
+        x_input = self.vectorizer.transform([str(text).lower()])
         # Retorna a probabilidade da classe 1 (Sensível)
-        prob = self.model.predict_proba(X_input)[0][1]
+        prob = self.model.predict_proba(x_input)[0][1]
         return prob

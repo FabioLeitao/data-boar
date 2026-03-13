@@ -1,0 +1,224 @@
+#!/usr/bin/env python3
+"""
+Fix SonarQube markdown issues in project .md files (refactor only; no file removal).
+
+Rules addressed:
+- MD007: Unordered list indentation → 0 (remove 2-space indent before list marker)
+- MD009: Trailing spaces → 0 or 2 (remove odd trailing spaces)
+- MD012: Multiple consecutive blank lines → 1
+- MD029: Ordered list prefix → 1/1/1 (all items use "1.")
+- MD032: Blank lines around lists
+- MD036: Emphasis used as heading → ## heading
+- MD047: File ends with single newline
+- MD060: Table column style "aligned" (pad cells so pipes align with header)
+
+Excludes: .cursor, .git, node_modules, .venv, etc. (same as test_markdown_lint).
+"""
+
+from __future__ import annotations
+
+import re
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+EXCLUDE_DIRS = frozenset({".cursor", ".git", "node_modules", "__pycache__", ".venv", "venv", ".tox", "build", "dist"})
+
+
+def collect_md_files() -> list[Path]:
+    out: list[Path] = []
+    for path in REPO_ROOT.rglob("*.md"):
+        try:
+            rel = path.relative_to(REPO_ROOT)
+        except ValueError:
+            continue
+        if any(part in EXCLUDE_DIRS for part in rel.parts):
+            continue
+        out.append(path)
+    return sorted(out)
+
+
+def fix_md009(line: str) -> str:
+    """Trailing spaces: Expected 0 or 2; remove all (Sonar: 0 or 2 for line break)."""
+    return line.rstrip()
+
+
+def fix_md012(text: str) -> str:
+    """Multiple consecutive blank lines → single blank."""
+    return re.sub(r"\n{3,}", "\n\n", text)
+
+
+def fix_md047(text: str) -> str:
+    """Files should end with a single newline character."""
+    text = text.rstrip("\n")
+    return text + "\n"
+
+
+def fix_md007_line(line: str) -> str:
+    """Unordered list indentation: Expected 0; remove leading 2 spaces before - or * (top-level only)."""
+    if re.match(r"^  [-*] ", line):
+        return line[2:]
+    return line
+
+
+def fix_md029_line(line: str) -> str:
+    """Ordered list prefix: use 1. for every item (style 1/1/1)."""
+    m = re.match(r"^(\s*)(\d+)\.(\s+)(.*)$", line)
+    if not m:
+        return line
+    return f"{m.group(1)}1.{m.group(3)}{m.group(4)}"
+
+
+def _is_list_line(stripped: str) -> bool:
+    return bool(re.match(r"^[-*]\s", stripped) or re.match(r"^\d+\.\s", stripped))
+
+
+def fix_md032(lines: list[str]) -> list[str]:
+    """Lists should be surrounded by blank lines. Insert blank before/after list blocks."""
+    if not lines:
+        return lines
+    out: list[str] = []
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        is_list = _is_list_line(stripped)
+        # Blank before list: current is list, last line in out is non-blank and not list/heading
+        if is_list and out:
+            last = out[-1].strip()
+            if last and not _is_list_line(last) and not last.startswith("#"):
+                out.append("")
+        out.append(line)
+        # Blank after list: current is list, next line exists and is non-blank and not list
+        if is_list and i + 1 < len(lines):
+            next_stripped = lines[i + 1].strip()
+            if next_stripped and not _is_list_line(next_stripped):
+                out.append("")
+    return out
+
+
+def fix_md036_line(line: str) -> str:
+    """Emphasis used instead of heading: **Bold** or *Italic* alone → ## Bold / ## Italic."""
+    s = line.strip()
+    if not s or len(s) > 100:
+        return line
+    # Standalone emphasis: **text** or *text* (single line, no other content)
+    m = re.match(r"^(\*{1,2})([^*]+)\1\s*$", s)
+    if m:
+        return "## " + m.group(2).strip()
+    return line
+
+
+def parse_table_rows(lines: list[str], start: int) -> tuple[list[list[str]], int]:
+    """Parse consecutive table rows (|...|). Return (rows as list of cells, end index)."""
+    rows: list[list[str]] = []
+    i = start
+    while i < len(lines):
+        line = lines[i]
+        stripped = line.strip()
+        if not stripped.startswith("|") or not stripped.endswith("|"):
+            break
+        cells = [c.strip() for c in stripped.split("|")[1:-1]]
+        rows.append(cells)
+        i += 1
+    return rows, i
+
+
+def format_table_aligned(rows: list[list[str]]) -> list[str]:
+    """Format table with aligned columns (MD060): pad cells so pipes align with header."""
+    if not rows:
+        return []
+    num_cols = max(len(r) for r in rows)
+    for r in rows:
+        while len(r) < num_cols:
+            r.append("")
+    widths = [0] * num_cols
+    for r in rows:
+        for c, cell in enumerate(r):
+            if c < num_cols:
+                widths[c] = max(widths[c], len(cell))
+    out_lines: list[str] = []
+    for r in rows:
+        padded = [c.ljust(widths[i]) for i, c in enumerate(r)]
+        out_lines.append("| " + " | ".join(padded) + " |")
+    return out_lines
+
+
+def fix_md060_tables(text: str) -> str:
+    """Format tables to aligned column style (pipes align with header)."""
+    lines = text.splitlines()
+    out: list[str] = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        stripped = line.strip()
+        if stripped.startswith("|") and stripped.endswith("|"):
+            rows, j = parse_table_rows(lines, i)
+            if rows:
+                formatted = format_table_aligned(rows)
+                out.extend(formatted)
+                i = j
+                continue
+        out.append(line)
+        i += 1
+    return "\n".join(out)
+
+
+def process_file(path: Path) -> bool:
+    """Apply all fixes; return True if file was changed."""
+    raw = path.read_text(encoding="utf-8", errors="replace")
+    original = raw
+
+    # MD012 first (so we work on normalized blanks)
+    raw = fix_md012(raw)
+
+    # Line-by-line fixes
+    result_lines: list[str] = []
+    in_table = False
+    table_start = 0
+    i = 0
+    lines = raw.splitlines()
+    while i < len(lines):
+        line = lines[i]
+        # MD009
+        line = fix_md009(line)
+        # MD007 (unordered list indent)
+        line = fix_md007_line(line)
+        # MD029 (ordered list 1/1/1)
+        line = fix_md029_line(line)
+        # MD036 (emphasis as heading) - only for lines that look like standalone emphasis
+        if re.match(r"^\s*\*+.+\*+\s*$", line) and not line.strip().startswith("#"):
+            line = fix_md036_line(line)
+        result_lines.append(line)
+        i += 1
+
+    # MD032: blanks around lists (operate on result_lines)
+    result_lines = fix_md032(result_lines)
+
+    text = "\n".join(result_lines)
+    # MD060: tables (re-parse and reformat)
+    text = fix_md060_tables(text)
+    # MD012 again (collapse any double blanks from MD032)
+    text = fix_md012(text)
+    # MD047
+    text = fix_md047(text)
+
+    if text != original:
+        path.write_text(text, encoding="utf-8", newline="\n")
+        return True
+    return False
+
+
+def main() -> None:
+    md_files = collect_md_files()
+    changed: list[Path] = []
+    for path in md_files:
+        if process_file(path):
+            changed.append(path)
+    for p in changed:
+        print(p.relative_to(REPO_ROOT))
+    if changed:
+        print(f"\nUpdated {len(changed)} file(s).")
+    else:
+        print("No files needed changes.")
+
+
+if __name__ == "__main__":
+    main()

@@ -11,7 +11,7 @@ A aplicação pode detectar quando os dados coletados podem se referir a **menor
 - **Nomes de colunas** que sugerem data de nascimento ou idade, em **inglês e português brasileiro**, incluindo siglas (ex.: DOB, DDN, NASC, idade, age).
 - **Valores amostrados**: idades numéricas (ex.: `17`) ou datas que, interpretadas como data de nascimento, impliquem idade abaixo do **limite** configurável (padrão **18**). Esses achados são sinalizados como **possível dado de menor** (`DOB_POSSIBLE_MINOR`) e recebem uma recomendação de alta prioridade no relatório.
 
-Consulte [PLAN_MINOR_DATA_DETECTION.md](PLAN_MINOR_DATA_DETECTION.md) para o desenho completo e a lista de nomes/formatos de coluna.
+Consulte [PLAN_MINOR_DATA_DETECTION.md](completed/PLAN_MINOR_DATA_DETECTION.md) para o desenho completo e a lista de nomes/formatos de coluna.
 
 ---
 
@@ -19,12 +19,12 @@ Consulte [PLAN_MINOR_DATA_DETECTION.md](PLAN_MINOR_DATA_DETECTION.md) para o des
 
 O **limite de idade menor/maior de idade** é definido no **arquivo de configuração principal** (ex.: `config.yaml` ou o arquivo indicado por `CONFIG_PATH`). Não é necessário alterar código.
 
-| Chave | Tipo | Padrão | Descrição |
-|-------|------|--------|-----------|
-| `detection.minor_age_threshold` | inteiro | **18** | Idade abaixo deste valor (inclusive) é tratada como possível menor. Use ex.: 21 se sua política tratar pessoas com menos de 21 anos como menores. |
-| `detection.minor_full_scan` | booleano | **false** | Quando **true**, apenas para **bancos de dados**: se a amostra da coluna sugerir possível menor (DOB_POSSIBLE_MINOR), o conector reamostra essa coluna com um limite maior (`minor_full_scan_limit`) e roda a detecção de novo. Se o achado continuar como possível menor, ele é salvo (opcionalmente com norm_tag “(full-scan confirmed)”). **Opcional; padrão desligado** para não sobrecarregar tabelas grandes. |
-| `detection.minor_full_scan_limit` | inteiro | **100** | Número máximo de valores a buscar quando `minor_full_scan` é true. Ignorado quando `minor_full_scan` é false. |
-| `detection.minor_cross_reference` | booleano | **true** | Quando true, o gerador de relatório cruza achados de possível menor com outros achados na **mesma tabela** (banco) ou **mesmo caminho** (sistema de arquivos). Se a mesma tabela/caminho tiver dado identificador ou de saúde (ex.: nome, CPF/RG/SSN, saúde), as linhas de possível menor recebem **Minor confidence** = **“high (cross-ref)”** e uma recomendação específica de alta confiança é adicionada. |
+| Chave                             | Tipo     | Padrão    | Descrição                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ---                               | ---      | ---       | ---                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `detection.minor_age_threshold`   | inteiro  | **18**    | Idade abaixo deste valor (inclusive) é tratada como possível menor. Use ex.: 21 se sua política tratar pessoas com menos de 21 anos como menores.                                                                                                                                                                                                                                                                   |
+| `detection.minor_full_scan`       | booleano | **false** | Quando **true**, apenas para **bancos de dados**: se a amostra da coluna sugerir possível menor (DOB_POSSIBLE_MINOR), o conector reamostra essa coluna com um limite maior (`minor_full_scan_limit`) e roda a detecção de novo. Se o achado continuar como possível menor, ele é salvo (opcionalmente com norm_tag “(full-scan confirmed)”). **Opcional; padrão desligado** para não sobrecarregar tabelas grandes. |
+| `detection.minor_full_scan_limit` | inteiro  | **100**   | Número máximo de valores a buscar quando `minor_full_scan` é true. Ignorado quando `minor_full_scan` é false.                                                                                                                                                                                                                                                                                                       |
+| `detection.minor_cross_reference` | booleano | **true**  | Quando true, o gerador de relatório cruza achados de possível menor com outros achados na **mesma tabela** (banco) ou **mesmo caminho** (sistema de arquivos). Se a mesma tabela/caminho tiver dado identificador ou de saúde (ex.: nome, CPF/RG/SSN, saúde), as linhas de possível menor recebem **Minor confidence** = **“high (cross-ref)”** e uma recomendação específica de alta confiança é adicionada.       |
 
 Se a seção **`detection`** for **omitida**, o limite permanece **18** e a aplicação se comporta como antes (sem erros). Incluir a seção permite ajustar o limite sem quebrar execuções existentes.
 
@@ -66,7 +66,9 @@ detection:
 
 ```yaml
 targets:
-  - name: meu-banco
+
+- name: meu-banco
+
     type: database
     host: localhost
     database: app_db
@@ -96,10 +98,10 @@ scan:
 
 O detector procura nomes de coluna (e conteúdo amostrado) que indiquem **DOB ou idade**. Nomes reconhecidos incluem:
 
-| Conceito | Inglês | Português brasileiro | Siglas |
-|----------|--------|----------------------|--------|
-| Data de nascimento | date of birth, birth date, birthdate | data de nascimento, nascimento, data de nasc. | DOB, DDN, DN, NASC, DTN |
-| Idade | age, person age | idade, idade_atual, idade_pessoa, faixa etária | AGE, IDD |
+| Conceito           | Inglês                               | Português brasileiro                           | Siglas                  |
+| ---                | ---                                  | ---                                            | ---                     |
+| Data de nascimento | date of birth, birth date, birthdate | data de nascimento, nascimento, data de nasc.  | DOB, DDN, DN, NASC, DTN |
+| Idade              | age, person age                      | idade, idade_atual, idade_pessoa, faixa etária | AGE, IDD                |
 
 **Formatos de data** no texto amostrado: `dd/mm/yyyy`, `yyyy-mm-dd`, `mm/dd/yyyy` (e variantes comuns). **Idade numérica**: inteiros na amostra (ex.: 0–120) quando o nome da coluna sugere idade.
 
@@ -123,17 +125,17 @@ Quando **`detection.minor_full_scan`** está **true**, os conectores de **banco 
 
 Achados sinalizados como possível menor recebem:
 
-- **Sensibilidade:** HIGH  
-- **Padrão:** `DOB_POSSIBLE_MINOR` (possivelmente combinado com outros padrões)  
-- **Norm tag:** LGPD Art. 14 – possível dado de menor; GDPR Art. 8 (e “(full-scan confirmed)” quando a varredura completa foi usada)  
-- **Minor confidence:** “high (cross-ref)” quando o cruzamento encontrou identificador/saúde na mesma tabela/caminho; caso contrário vazio  
+- **Sensibilidade:** HIGH
+- **Padrão:** `DOB_POSSIBLE_MINOR` (possivelmente combinado com outros padrões)
+- **Norm tag:** LGPD Art. 14 – possível dado de menor; GDPR Art. 8 (e “(full-scan confirmed)” quando a varredura completa foi usada)
+- **Minor confidence:** “high (cross-ref)” quando o cruzamento encontrou identificador/saúde na mesma tabela/caminho; caso contrário vazio
 
-No relatório Excel, a aba **Recommendations** inclui uma linha dedicada a possível dado de menor com **prioridade máxima** (CRÍTICA) e texto de tratamento diferenciado (consentimento, armazenamento, uso, compartilhamento, responsabilidade dos pais). Essa linha aparece **em primeiro** na aba de Recomendações. Quando o cruzamento identifica casos de alta confiança, uma linha adicional “DOB_POSSIBLE_MINOR (high confidence – cross-ref)” aparece no topo. Consulte [PLAN_MINOR_DATA_DETECTION.md](PLAN_MINOR_DATA_DETECTION.md) e o gerador de relatório para o texto exato.
+No relatório Excel, a aba **Recommendations** inclui uma linha dedicada a possível dado de menor com **prioridade máxima** (CRÍTICA) e texto de tratamento diferenciado (consentimento, armazenamento, uso, compartilhamento, responsabilidade dos pais). Essa linha aparece **em primeiro** na aba de Recomendações. Quando o cruzamento identifica casos de alta confiança, uma linha adicional “DOB_POSSIBLE_MINOR (high confidence – cross-ref)” aparece no topo. Consulte [PLAN_MINOR_DATA_DETECTION.md](completed/PLAN_MINOR_DATA_DETECTION.md) e o gerador de relatório para o texto exato.
 
 ---
 
 ## Documentação relacionada
 
-- [PLAN_MINOR_DATA_DETECTION.md](PLAN_MINOR_DATA_DETECTION.md) – Plano, desenho e status dos to-dos.  
-- [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md) – Detecção de sensibilidade ML/DL e regex.  
+- [PLAN_MINOR_DATA_DETECTION.md](completed/PLAN_MINOR_DATA_DETECTION.md) – Plano, desenho e status dos to-dos.
+- [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md) – Detecção de sensibilidade ML/DL e regex.
 - [USAGE.pt_BR.md](USAGE.pt_BR.md) – Configuração geral e uso da API.

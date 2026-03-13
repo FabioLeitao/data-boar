@@ -7,7 +7,7 @@ These manifests run the **image default**: web API and frontend on port 8088. No
 - **Image:** Edit `deployment.yaml` and set `containers[0].image` to your image (e.g. `YOUR_DOCKERHUB_USER/python3-lgpd-crawler:latest` or `ghcr.io/fabioleitao/python3-lgpd-crawler:latest`).
 - **Config:** The provided ConfigMap supplies a minimal `config.yaml`. Replace or extend it for production (e.g. Secret or external config). Config is mounted at `/data/config.yaml`.
 - **Persistence:** The deployment uses `emptyDir` for `/data`, so SQLite and reports do not survive pod restart. For production, use a PersistentVolumeClaim and replace the `data` volume in `deployment.yaml`.
-- **Resources:** The deployment sets memory request/limit and a small CPU request; CPU limit is unset so I/O-bound workload and report-generation bursts are not throttled. See **deploy/DEPLOY.md** (§ Resource and I/O tuning) for production guidance.
+- **Resources:** The deployment sets memory request/limit and a small CPU request; CPU limit is unset so I/O-bound workload and report-generation bursts are not throttled. See [docs/deploy/DEPLOY.md](../../docs/deploy/DEPLOY.md) ([pt-BR](../../docs/deploy/DEPLOY.pt_BR.md)) (§ Resource and I/O tuning) for production guidance.
 
 ## Apply
 
@@ -46,15 +46,21 @@ spec:
   template:
     spec:
       containers:
+
         - name: audit
+
           image: YOUR_IMAGE
           command: ["python"]
           args: ["main.py", "--config", "/data/config.yaml", "--tenant", "Acme", "--technician", "Ops"]
           volumeMounts:
+
             - name: data
+
               mountPath: /data
       volumes:
+
         - name: data
+
           configMap:
             name: lgpd-audit-config
       restartPolicy: Never

@@ -1,6 +1,6 @@
 [project]
 name = "python3-lgpd-crawler"
-version = "1.3.1"
+version = "1.5.0"
 description = "App de sondagem, apreciação e mapeamento dos dados pessoais e/ou sensíveis para busca de violações de compliance de acordo com as recomendações do LGPD (adaptável mediante dicionário de regras)"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -93,3 +93,12 @@ dl = ["sentence-transformers>=3.0.0"]
 [tool.pytest.ini_options]
 # Fail on any warning (DeprecationWarning, ResourceWarning, etc.) so the suite stays clean
 addopts = "-v -W error"
+
+[tool.ruff.lint.per-file-ignores]
+# Connectors must register before we import connector_for_target; optional deps in try/except
+"core/engine.py" = ["E402"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.4",
+]

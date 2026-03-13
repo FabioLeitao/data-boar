@@ -10,8 +10,9 @@ A clear description of what the bug is.
 
 ## To reproduce
 Steps to reproduce:
+
 1. ...
-2. ...
+1. ...
 
 ## Expected behaviour
 What you expected to happen.

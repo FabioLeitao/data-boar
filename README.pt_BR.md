@@ -1,8 +1,10 @@
-# python3-lgpd-crawler (Português – Brasil)
+# Data Boar (Português – Brasil)
 
-Aplicação para auditoria de dados pessoais e sensíveis em bancos de dados e sistemas de arquivos, alinhada a **LGPD**, **GDPR**, **CCPA**, **HIPAA** e **GLBA**. Ela descobre e mapeia possíveis dados pessoais/sensíveis via **regex** e **ML**, armazena apenas **metadados** em um banco SQLite local (incluindo tags opcionais de **cliente/tenant** e **técnico/operador** por varredura) e gera relatórios em Excel e um **heatmap** de sensibilidade/risco em PNG.
+Data Boar é uma aplicação para auditoria de dados pessoais e sensíveis em bancos de dados e sistemas de arquivos, alinhada a **LGPD**, **GDPR**, **CCPA**, **HIPAA** e **GLBA**. Ela descobre e mapeia possíveis dados pessoais/sensíveis via **regex** e **ML**, armazena apenas **metadados** em um banco SQLite local (incluindo tags opcionais de **cliente/tenant** e **técnico/operador** por varredura) e gera relatórios em Excel e um **heatmap** de sensibilidade/risco em PNG. O nome do pacote Python permanece **python3-lgpd-crawler** para compatibilidade. O mascote de **javali** (boar) reforça a ideia de um crawler “farejando” e procurando dados em várias fontes (bancos, arquivos, APIs, dashboards, compartilhamentos) para fins de conformidade.
 
-> **Manutenção da documentação:** sempre que um novo recurso ou opção de linha de comando for adicionado, atualize **este arquivo** e o `README.md` em inglês, bem como os arquivos `docs/USAGE.md` e `docs/USAGE.pt_BR.md`, para manter as versões sincronizadas.  
+> **Release atual:** 1.4.3 (veja [docs/releases/1.4.3.md](docs/releases/1.4.3.md) e a página de [Releases no GitHub](https://github.com/FabioLeitao/data-boar/releases/tag/v1.4.3)).
+
+> **Manutenção da documentação:** sempre que um novo recurso ou opção de linha de comando for adicionado, atualize **este arquivo** e o `README.md` em inglês, bem como os arquivos `docs/USAGE.md` e `docs/USAGE.pt_BR.md`, para manter as versões sincronizadas.
 > **English:** [README.md](README.md) · [docs/USAGE.md](docs/USAGE.md)
 
 ## Funcionalidades principais
@@ -13,8 +15,8 @@ Aplicação para auditoria de dados pessoais e sensíveis em bancos de dados e s
 - **Heurísticas para reduzir falsos positivos:** letras de música e cifras de violão são detectadas e tratadas de forma especial para reduzir falsos positivos (datas/números em letras/cifras não viram HIGH sozinhos).
 - **SQLite único:** todas as sessões de varredura são gravadas em `audit_results.db`, com tabelas separadas para achados de banco de dados, achados de filesystem e falhas de varredura. Cada sessão tem `session_id`, `started_at`, `finished_at`, `status`, `tenant_name` (cliente/tenant) e `technician_name` (técnico/operador).
 - **Relatórios:** para cada sessão, é gerado um arquivo Excel com abas:
-  - **Report info** (Session ID, Started at, Tenant/Customer, Technician/Operator, Application, Version, Author, License, Copyright)
-  - Database findings, Filesystem findings, Scan failures, Recommendations, Praise / existing controls, Trends – Session comparison, Heatmap data
+- **Report info** (Session ID, Started at, Tenant/Customer, Technician/Operator, Application, Version, Author, License, Copyright)
+- Database findings, Filesystem findings, Scan failures, Recommendations, Praise / existing controls, Trends – Session comparison, Heatmap data
 - Um arquivo **heatmap_\<session_prefix\>.png** é gerado com o mapa de calor de sensibilidade/risco (inclui rodapé com aplicação, autor e licença).
 - **CLI e API REST:** modo de execução única via linha de comando ou modo servidor (FastAPI) com dashboard web (Help, About com autor e licença), endpoints para varreduras, relatórios, heatmap, logs e `PATCH /sessions/{session_id}` para metadados de tenant/técnico. Opcionalmente é possível exigir **chave de API** (X-API-Key ou Authorization: Bearer) para todos os endpoints exceto GET /health. A aplicação funciona atrás de NAT, load balancer ou proxy reverso (nginx, Traefik, Caddy); defina **X-Forwarded-Proto: https** quando o TLS for terminado no proxy.
 
@@ -94,14 +96,14 @@ python main.py --web --port 8088
 
 #### Argumentos da CLI (resumo)
 
-| Argumento         | Modo         | Descrição                                                                                         |
-|-------------------|--------------|---------------------------------------------------------------------------------------------------|
-| `--config PATH`   | CLI & API    | Caminho do arquivo de configuração YAML/JSON (padrão `config.yaml`).                            |
-| `--web`           | API          | Inicia o servidor FastAPI em vez de executar uma varredura única.                               |
-| `--port N`        | API          | Porta da API (padrão 8088). Ignorada em modo CLI.                                                |
-| `--reset-data`    | CLI          | **Perigoso**: apaga todas as sessões/achados/falhas do SQLite, remove relatórios/heatmaps em `report.output_dir` e grava um registro na tabela `data_wipe_log`. Não executa varredura. |
-| `--tenant NAME`   | CLI          | Nome do cliente/tenant para a sessão; exibido no dashboard, relatórios e aba “Report info”.     |
-| `--technician NAME` | CLI        | Nome do técnico/operador responsável pela sessão; também exibido no dashboard e relatórios.     |
+| Argumento           | Modo           | Descrição                                                                                                                                                                              |
+| ------------------- | -------------- | ---------------------------------------------------------------------------------------------------                                                                                    |
+| `--config PATH`     | CLI & API      | Caminho do arquivo de configuração YAML/JSON (padrão `config.yaml`).                                                                                                                   |
+| `--web`             | API            | Inicia o servidor FastAPI em vez de executar uma varredura única.                                                                                                                      |
+| `--port N`          | API            | Porta da API (padrão 8088). Ignorada em modo CLI.                                                                                                                                      |
+| `--reset-data`      | CLI            | **Perigoso**: apaga todas as sessões/achados/falhas do SQLite, remove relatórios/heatmaps em `report.output_dir` e grava um registro na tabela `data_wipe_log`. Não executa varredura. |
+| `--tenant NAME`     | CLI            | Nome do cliente/tenant para a sessão; exibido no dashboard, relatórios e aba “Report info”.                                                                                            |
+| `--technician NAME` | CLI            | Nome do técnico/operador responsável pela sessão; também exibido no dashboard e relatórios.                                                                                            |
 
 Quando a API está rodando, se `--config` não for fornecido, o servidor lê o caminho da variável de ambiente `CONFIG_PATH` ou usa `config.yaml` no diretório atual.
 
@@ -124,38 +126,38 @@ Quando `enabled` for true, os endpoints de início de varredura (`POST /scan`, `
 Com a API em execução (`--web`), acesse no navegador:
 
 - **Dashboard:** `http://<host>:<port>/`
-  - Mostra estado da varredura (Running/Idle), sessão atual, contagem de achados.
-  - Bloco de “Data discovery (last run)” com contagens de achados em bancos, filesystem e falhas.
-  - Gráfico **“Progress over time”** (total de achados + score de risco 0–100 por sessão).
-  - Botão **"Start scan"**: dispara varredura completa de **todos os alvos** da configuração atual (mesmo que o CLI com esse config).
-  - Campos opcionais para **cliente/tenant** e **técnico/operador** antes de iniciar uma nova varredura.
-  - Tabela de sessões recentes com ID, data, tenant, técnico, achados e link para download.
+- Mostra estado da varredura (Running/Idle), sessão atual, contagem de achados.
+- Bloco de “Data discovery (last run)” com contagens de achados em bancos, filesystem e falhas.
+- Gráfico **“Progress over time”** (total de achados + score de risco 0–100 por sessão).
+- Botão **"Start scan"**: dispara varredura completa de **todos os alvos** da configuração atual (mesmo que o CLI com esse config).
+- Campos opcionais para **cliente/tenant** e **técnico/operador** antes de iniciar uma nova varredura.
+- Tabela de sessões recentes com ID, data, tenant, técnico, achados e link para download.
 
 - **Reports:** `http://<host>:<port>/reports`
-  - Lista todas as sessões com ID, datas, status, tenant, técnico, contagens e botão “Download” por linha.
+- Lista todas as sessões com ID, datas, status, tenant, técnico, contagens e botão “Download” por linha.
 
 - **Configuration:** `http://<host>:<port>/config`
-  - Editor de YAML da configuração; ao salvar, o arquivo apontado por `CONFIG_PATH` ou `config.yaml` é atualizado.
+- Editor de YAML da configuração; ao salvar, o arquivo apontado por `CONFIG_PATH` ou `config.yaml` é atualizado.
 - **Help:** `http://<host>:<port>/help` — início rápido, exemplos de config e links para README/USAGE.
 - **About:** `http://<host>:<port>/about` — nome da aplicação, versão, autor e licença (conforme LICENSE do repositório).
 
 ## API (rotas principais)
 
-| Método | Endpoint                 | Descrição                                                                                       |
-|--------|--------------------------|-------------------------------------------------------------------------------------------------|
-| `POST` | `/scan` ou `/start`     | Inicia uma varredura completa em background; retorna `session_id`. Aceita body `{ tenant, technician }`. |
-| `POST` | `/scan_database`        | Varredura pontual de um único banco (JSON com host/porta/user/pass/driver/etc.).               |
-| `GET`  | `/status`               | Retorna `running`, `current_session_id`, `findings_count`.                                     |
-| `GET`  | `/report`               | Baixa o último relatório Excel gerado (ou gera a partir da última sessão se necessário).       |
-| `GET`  | `/heatmap`              | Baixa o último heatmap PNG gerado.                                                             |
-| `GET`  | `/list` ou `/reports`   | Lista sessões anteriores com tenant/technician, contagens e status.                            |
-| `GET`  | `/reports/{session_id}` | Gera (se preciso) e baixa o relatório Excel dessa sessão.                                      |
-| `GET`  | `/heatmap/{session_id}` | Gera (se preciso) e baixa o heatmap PNG dessa sessão.                                          |
-| `PATCH`| `/sessions/{session_id}`            | Ajusta/limpa o `tenant` de uma sessão existente.                                  |
-| `PATCH`| `/sessions/{session_id}/technician`| Ajusta/limpa o `technician` de uma sessão existente.                              |
-| `GET`  | `/about`       | Página About (HTML): aplicação, versão, autor, licença.                           |
-| `GET`  | `/about/json`  | Informações de about em JSON (nome, versão, autor, licença).                       |
-| `GET`  | `/health`      | Sonda de liveness/readiness para Docker e Kubernetes.                              |
+| Método   | Endpoint                            | Descrição                                                                                                |
+| -------- | --------------------------          | -------------------------------------------------------------------------------------------------        |
+| `POST`   | `/scan` ou `/start`                 | Inicia uma varredura completa em background; retorna `session_id`. Aceita body `{ tenant, technician }`. |
+| `POST`   | `/scan_database`                    | Varredura pontual de um único banco (JSON com host/porta/user/pass/driver/etc.).                         |
+| `GET`    | `/status`                           | Retorna `running`, `current_session_id`, `findings_count`.                                               |
+| `GET`    | `/report`                           | Baixa o último relatório Excel gerado (ou gera a partir da última sessão se necessário).                 |
+| `GET`    | `/heatmap`                          | Baixa o último heatmap PNG gerado.                                                                       |
+| `GET`    | `/list` ou `/reports`               | Lista sessões anteriores com tenant/technician, contagens e status.                                      |
+| `GET`    | `/reports/{session_id}`             | Gera (se preciso) e baixa o relatório Excel dessa sessão.                                                |
+| `GET`    | `/heatmap/{session_id}`             | Gera (se preciso) e baixa o heatmap PNG dessa sessão.                                                    |
+| `PATCH`  | `/sessions/{session_id}`            | Ajusta/limpa o `tenant` de uma sessão existente.                                                         |
+| `PATCH`  | `/sessions/{session_id}/technician` | Ajusta/limpa o `technician` de uma sessão existente.                                                     |
+| `GET`    | `/about`                            | Página About (HTML): aplicação, versão, autor, licença.                                                  |
+| `GET`    | `/about/json`                       | Informações de about em JSON (nome, versão, autor, licença).                                             |
+| `GET`    | `/health`                           | Sonda de liveness/readiness para Docker e Kubernetes.                                                    |
 
 ## Exemplos com curl
 
@@ -190,13 +192,15 @@ Em sistemas que usam a interface tradicional
 
 No Linux/BSD, a seção 1 é para programas e comandos; a seção 5 é para formatos de arquivo e convenções de configuração. Instalar ambas permite usar `man lgpd_crawler` para saber como executar a aplicação e `man 5 lgpd_crawler` para saber como configurá-la e definir padrões.
 
-**Instalar ambas as páginas** (crie os diretórios de destino antes para que o `cp` não falhe se não existirem):
+**Instalar ambas as páginas** (crie os diretórios de destino antes para que o `cp` não falhe se não existirem). Logo após criar os diretórios, execute `chmod 755` neles para que todos os usuários possam acessar as páginas de manual; dependendo do umask padrão, diretórios novos podem ficar 750 e apenas root conseguiria acessá-los. Após copiar, execute `chmod 644` nos arquivos instalados para que todos possam lê-los (os arquivos copiados podem ficar 640).
 
 ```bash
 sudo mkdir -p /usr/local/share/man/man1/
 sudo mkdir -p /usr/local/share/man/man5/
+sudo chmod 755 /usr/local/share/man/man1/ /usr/local/share/man/man5/
 sudo cp docs/lgpd_crawler.1 /usr/local/share/man/man1/
 sudo cp docs/lgpd_crawler.5 /usr/local/share/man/man5/
+sudo chmod 644 /usr/local/share/man/man1/lgpd_crawler.1 /usr/local/share/man/man5/lgpd_crawler.5
 sudo mandb    # ou: sudo makewhatis   # conforme a distro
 ```
 
@@ -227,7 +231,7 @@ docker pull fabioleitao/python3-lgpd-crawler:latest
 docker run -d -p 8088:8088 -v /caminho/para/seu/data:/data -e CONFIG_PATH=/data/config.yaml fabioleitao/python3-lgpd-crawler:latest
 ```
 
-Prepare `/data/config.yaml` a partir de `deploy/config.example.yaml` (veja [deploy/DEPLOY.md](deploy/DEPLOY.md)). Você pode optar por usar essa imagem como container em vez de clonar o código do Git e construir localmente.
+Prepare `/data/config.yaml` a partir de `deploy/config.example.yaml` (veja [docs/deploy/DEPLOY.pt_BR.md](docs/deploy/DEPLOY.pt_BR.md) ([EN](docs/deploy/DEPLOY.md))). Você pode optar por usar essa imagem como container em vez de clonar o código do Git e construir localmente.
 
 ### Construir a partir do código
 
@@ -237,7 +241,7 @@ Prepare `/data/config.yaml` a partir de `deploy/config.example.yaml` (veja [depl
 - **Swarm:** `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit`.
 - **Kubernetes:** `kubectl apply -f deploy/kubernetes/` (veja `deploy/kubernetes/README.md`).
 
-Passos completos em **[deploy/DEPLOY.md](deploy/DEPLOY.md)**. A aplicação se comporta corretamente atrás de NAT, load balancer ou proxy reverso (nginx, Traefik, Caddy); defina **X-Forwarded-Proto: https** quando o TLS for terminado no proxy. Cabeçalhos de segurança HTTP (incl. HSTS quando em HTTPS) são aplicados por padrão; veja [SECURITY.md](SECURITY.md).
+Passos completos em **[docs/deploy/DEPLOY.pt_BR.md](docs/deploy/DEPLOY.pt_BR.md)** ([EN](docs/deploy/DEPLOY.md)). Para MCP, build e push a partir do código: [docs/DOCKER_SETUP.pt_BR.md](docs/DOCKER_SETUP.pt_BR.md) ([EN](docs/DOCKER_SETUP.md)). A aplicação se comporta corretamente atrás de NAT, load balancer ou proxy reverso (nginx, Traefik, Caddy); defina **X-Forwarded-Proto: https** quando o TLS for terminado no proxy. Cabeçalhos de segurança HTTP (incl. HSTS quando em HTTPS) são aplicados por padrão; veja [SECURITY.md](SECURITY.md).
 
 ## Frameworks de conformidade e extensibilidade
 
@@ -245,7 +249,7 @@ A aplicação referencia explicitamente **LGPD**, **GDPR**, **CCPA**, **HIPAA** 
 
 ## Dependências e sincronização (pyproject.toml e requirements.txt)
 
-- O arquivo **`pyproject.toml`** é a fonte de verdade das dependências.  
+- O arquivo **`pyproject.toml`** é a fonte de verdade das dependências.
 - Quando precisar de um `requirements.txt` (por exemplo para ambientes legados):
 
 ```bash
@@ -263,4 +267,3 @@ Para detalhes mais avançados (conectores opcionais, REST APIs, Power BI, Datave
 - `docs/USAGE.pt_BR.md` (português – uso da API e configuração)
 - **Adicionar novo conector:** [docs/ADDING_CONNECTORS.pt_BR.md](docs/ADDING_CONNECTORS.pt_BR.md) (português) · [docs/ADDING_CONNECTORS.md](docs/ADDING_CONNECTORS.md) (inglês)
 - **Detecção de sensibilidade (ML/DL):** [docs/sensitivity-detection.pt_BR.md](docs/sensitivity-detection.pt_BR.md) (português) · [docs/sensitivity-detection.md](docs/sensitivity-detection.md) (inglês)
-
