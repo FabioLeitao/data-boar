@@ -28,7 +28,7 @@ Goal: Copyright-safe logo (web, favicon, optional report), integration in the ap
 
 | #   | To-do                                                                                                                             | Status    | Notes                                    |
 | --- | ---                                                                                                                               | ---       | ---                                      |
-| 1   | Decide logo concept (A–D) and colors; produce master logo (SVG) and export web PNG (32/64 px) and favicon (ICO or 16/32 PNG)      | ⬜ Pending | Copyright-safe, scales to 16 px          |
+| 1   | Decide logo concept (A–D) and colors; produce master logo (SVG) and export web PNG (32/64 px) and favicon (ICO or 16/32 PNG)      | ⬜ Pending | Concept C (abstract \"C\") chosen; master SVG at `api/static/logo.svg`; PNG/ICO export pending |
 | 2   | Place assets in `api/static/`: favicon.ico (and/or favicon-32.png), logo.svg, logo-64.png                                         | ⬜ Pending | Optional: logo-report-48.png for Excel   |
 | 3   | Add favicon link(s) in `api/templates/base.html` (`<link rel="icon">`)                                                            | ⬜ Pending | Browser/tab icon                         |
 | 4   | (Optional) Add logo to About page and optionally Dashboard/Reports header                                                         | ⬜ Pending | about.html, dashboard.html, reports.html |
