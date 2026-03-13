@@ -1,5 +1,5 @@
-.\" lgpd_crawler.5 - file formats and configuration for python3-lgpd-crawler
-.TH LGPD_CRAWLER 5 "March 2026" "python3-lgpd-crawler 1.3.1" "File Formats"
+.\" lgpd_crawler.5 - file formats and configuration for Data Boar (python3-lgpd-crawler engine)
+.TH LGPD_CRAWLER 5 "March 2026" "Data Boar 1.5.0" "File Formats"
 .SH NAME
 lgpd_crawler config \- configuration and pattern file formats for the LGPD audit application
 .
@@ -100,6 +100,19 @@ to improve future scans.
 .P
 All paths in the main config can be absolute or relative to the process working directory.
 .
+.SH SECURITY AND CREDENTIALS
+Database and MongoDB connection strings are built with URL-encoded user and password, so credentials containing @, :, / or # are handled correctly; no extra escaping is required in the config file.
+When
+.I api.require_api_key
+is true, the Configuration page (GET /config) is protected and returns 401 without a valid X-API-Key or Bearer token.
+Technicians: restrict config file permissions and enable
+.I api.require_api_key
+when the API is exposed to untrusted networks; see
+.I SECURITY.md
+and
+.I docs/security.md
+for fixes, regression tests, and full recommendations.
+.
 .SH MAIN CONFIGURATION FILE
 The main file (e.g.
 .IR config.yaml )
@@ -142,6 +155,11 @@ optionally
 (string) or
 .I api_key_from_env
 (env var name).
+The web API also sends security headers (CSP, HSTS, Referrer-Policy, Permissions-Policy); see
+.I SECURITY.md
+and
+.I docs/deploy/DEPLOY.md
+for hardening and stricter CSP.
 .TP
 .B sqlite_path
 Path to the SQLite database (e.g.
@@ -450,10 +468,18 @@ Ensure the directory exists, copy the file, then update the man index:
 .RS
 .nf
 sudo mkdir \-p /usr/local/share/man/man5/
+sudo chmod 755 /usr/local/share/man/man5/
 sudo cp docs/lgpd_crawler.5 /usr/local/share/man/man5/
+sudo chmod 644 /usr/local/share/man/man5/lgpd_crawler.5
 sudo mandb
 .fi
 .RE
+.PP
+The
+.B chmod 755
+on the directory ensures all users can traverse it (new directories may be 750 with a restrictive umask). The
+.B chmod 644
+on the file ensures all users can read the page (the copy might otherwise be 640).
 .PP
 On some BSD systems use
 .B "sudo makewhatis"
@@ -478,4 +504,4 @@ or
 .IR docs/sensitivity-detection.md ,
 .IR docs/sensitivity_terms_sensitive_categories.example.yaml ,
 .IR docs/regex_overrides.example.yaml ,
-.IR deploy/DEPLOY.md .
+.IR docs/deploy/DEPLOY.md .

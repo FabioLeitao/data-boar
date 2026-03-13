@@ -1,0 +1,30 @@
+---
+description: Documentation must exist in English (canonical) and Brazilian Portuguese, with language switchers and natural cross-links. Use when creating or editing .md files in docs/, README, CONTRIBUTING, or any doc that references deploy, testing, topology, compliance, etc.
+globs: ["**/*.md", "docs/**/*.md", "README*.md", "CONTRIBUTING.md"]
+alwaysApply: false
+---
+
+# Documentation policy (EN + pt-BR)
+
+- **English (EN)** is the **canonical** source: it reflects the true capabilities, features, arguments, config, and behaviour of the application. Update the English doc first when behaviour or options change.
+- **Brazilian Portuguese (pt-BR)** must be **kept in sync** with the English version. Each pt-BR file is a translation of its English counterpart (same structure and coverage).
+
+## Language switcher (required)
+
+Every doc that has a translation must have at the **top** (right after the title) a link to the other language:
+
+- **In EN files:** `**Português (Brasil):** [Filename.pt_BR.md](Filename.pt_BR.md)` (or path-relative, e.g. `[deploy/DEPLOY.pt_BR.md](deploy/DEPLOY.pt_BR.md)` from `docs/`)
+- **In pt-BR files:** `**English:** [Filename.md](Filename.md)` (or path-relative)
+
+## Discoverability and cross-links
+
+When a doc mentions a topic that has its own dedicated doc, **link to that doc**. If that doc exists in both languages, provide **both links** so the user can switch easily:
+
+- Example (from an EN doc): `[DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md))`
+- Example (from a pt-BR doc): `[DEPLOY.pt_BR.md](deploy/DEPLOY.pt_BR.md) ([EN](deploy/DEPLOY.md))`
+
+Typical cross-link targets: deploy (Docker, Kubernetes), testing, topology, commit/PR, compliance frameworks, sensitivity detection, adding connectors, usage. The main index is **docs/README.md**.
+
+## Reference
+
+The full policy and doc index are in **docs/README.md** (section "Documentation policy").

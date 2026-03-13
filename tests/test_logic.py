@@ -62,6 +62,21 @@ class TestAuditLogic(unittest.TestCase):
         self.assertEqual(result["sensitivity_level"], "HIGH")
         self.assertIn("CPF", result.get("pattern_detected", ""))
 
+    def test_ml_only_in_lyrics_capped_at_medium(self):
+        """ML-only confidence in lyrics context should not be HIGH to reduce false positives."""
+        ml_terms = [
+            {"text": "super_sensitive_keyword", "label": "sensitive"},
+            {"text": "lyrics", "label": "non_sensitive"},
+        ]
+        scanner = DataScanner(ml_terms_inline=ml_terms)
+        lyrics = """Verse 1
+        This is my super_sensitive_keyword
+        Chorus
+        La la la la la"""
+        result = scanner.scan_column("lyrics", lyrics)
+        self.assertIn(result["sensitivity_level"], ("LOW", "MEDIUM"))
+        self.assertNotEqual(result["sensitivity_level"], "HIGH")
+
 
 if __name__ == "__main__":
     unittest.main()

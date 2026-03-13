@@ -4,6 +4,7 @@ Register as type 'mongodb'. Install: pip install pymongo
 Config target: type: database, driver: mongodb, host, port, database (and optional user/pass).
 """
 from typing import Any
+from urllib.parse import quote
 
 try:
     from pymongo import MongoClient
@@ -34,7 +35,10 @@ class MongoDBConnector:
         password = self.config.get("pass") or self.config.get("password")
         database = self.config.get("database", "test")
         if user and password:
-            uri = f"mongodb://{user}:{password}@{host}:{port}/{database}"
+            # URL-encode credentials so @, :, /, # in password do not break URI parsing
+            user_enc = quote(str(user), safe="")
+            password_enc = quote(str(password), safe="")
+            uri = f"mongodb://{user_enc}:{password_enc}@{host}:{port}/{database}"
         else:
             uri = f"mongodb://{host}:{port}"
         self._client = MongoClient(uri)
