@@ -6,25 +6,24 @@ This guide covers **command-line arguments and outcomes**, **deploying and using
 
 ---
 
-
 ## 1. Command-line interface (CLI)
 
 The main entry point is `main.py`. Prefer it over `run.py`.
 
 ### Arguments
 
-| Argument | Default | Description |
-|----------|---------|-------------|
-| `--config` | `config.yaml` | Path to the configuration file (YAML or JSON). Used for both one-shot audit and to resolve `api.port` when starting the web server. |
-| `--web` | *(flag)* | Start the REST API server instead of running a one-shot audit. |
-| `--port` | `8088` | Port for the API when `--web` is set. Can be overridden by `api.port` in config. Ignored in one-shot mode. |
-| `--reset-data` | *(flag)* | Dangerous maintenance operation: wipe all scan sessions, findings and failures from SQLite, delete generated reports/heatmaps under `report.output_dir`, and record the wipe in `data_wipe_log`. Does not start a scan. |
-| `--tenant` | *(none)* | Optional customer/tenant name for the scan in CLI mode. Stored on the session and surfaced on dashboard and reports. |
-| `--technician` | *(none)* | Optional technician/operator responsible for the scan in CLI mode. Stored on the session and surfaced on dashboard and reports. |
+| Argument       | Default       | Description                                                                                                                                                                                                             |
+| ---            | ---           | ---                                                                                                                                                                                                                     |
+| `--config`     | `config.yaml` | Path to the configuration file (YAML or JSON). Used for both one-shot audit and to resolve `api.port` when starting the web server.                                                                                     |
+| `--web`        | *(flag)*      | Start the REST API server instead of running a one-shot audit.                                                                                                                                                          |
+| `--port`       | `8088`        | Port for the API when `--web` is set. Can be overridden by `api.port` in config. Ignored in one-shot mode.                                                                                                              |
+| `--reset-data` | *(flag)*      | Dangerous maintenance operation: wipe all scan sessions, findings and failures from SQLite, delete generated reports/heatmaps under `report.output_dir`, and record the wipe in `data_wipe_log`. Does not start a scan. |
+| `--tenant`     | *(none)*      | Optional customer/tenant name for the scan in CLI mode. Stored on the session and surfaced on dashboard and reports.                                                                                                    |
+| `--technician` | *(none)*      | Optional technician/operator responsible for the scan in CLI mode. Stored on the session and surfaced on dashboard and reports.                                                                                         |
 
 ### Outcomes
 
-**One-shot audit (no `--web`):**
+## One-shot audit (no `--web`):
 
 ```bash
 # Minimal run
@@ -39,7 +38,7 @@ python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Col
 - **Output:** Console prints `Scan session: <session_id>` and `Report written: <path>` (or "No findings to report.").
 - Report path is under `report.output_dir` from config (default: current directory). File name: `Relatorio_Auditoria_<session_id>.xlsx` (and `heatmap_<session_id>.png`).
 
-**REST API server (`--web`):**
+## REST API server (`--web`):
 
 ```bash
 python main.py --config config.yaml --web --port 8088
@@ -61,14 +60,16 @@ python main.py --config config.yaml --web --port 8088
 
 ### Deploying the server
 
-**Option: run from Docker (no Git clone)**  
-A pre-built image is available on Docker Hub: `fabioleitao/python3-lgpd-crawler:latest` ([hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)). Pull it and run with a mounted config at `/data/config.yaml` (see README “Deploy with Docker” and `deploy/DEPLOY.md`). You can use this instanced container instead of installing from source.
+## Option: run from Docker (no Git clone)
+A pre-built image is available on Docker Hub: `fabioleitao/python3-lgpd-crawler:latest` ([hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)). Pull it and run with a mounted config at `/data/config.yaml` (see README “Deploy with Docker” and [docs/deploy/DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md))). You can use this instanced container instead of installing from source.
 
 1. **Install** the application and optional dependencies (e.g. `.[nosql]`, `.[shares]`) as in the README.
-2. **Prepare** a config file (e.g. `config.yaml`) with `targets`, `file_scan`, `report`, and optionally `api.port`.
-3. **Set config path** (optional):  
+1. **Prepare** a config file (e.g. `config.yaml`) with `targets`, `file_scan`, `report`, and optionally `api.port`.
+1. **Set config path** (optional):
+
    `CONFIG_PATH=/etc/lgpd-audit/config.yaml` (or your path) so the API loads that file regardless of working directory.
-4. **Run the server:**
+
+1. **Run the server:**
 
    ```bash
    python main.py --config config.yaml --web --port 8088
@@ -80,52 +81,54 @@ A pre-built image is available on Docker Hub: `fabioleitao/python3-lgpd-crawler:
    uvicorn api.routes:app --host 0.0.0.0 --port 8088
    ```
 
-5. **Binding:** Default `0.0.0.0` means the server accepts connections from any interface. Restrict by using `--host 127.0.0.1` if only local access is needed.
-6. **Production:** Run behind a reverse proxy (nginx, Traefik, Caddy, or similar), use a process manager (systemd, supervisord), or a container; ensure `CONFIG_PATH` and `report.output_dir` are set appropriately and that the process can write to the output directory and the SQLite path. The application behaves correctly behind NAT, load balancers, and reverse proxies: when TLS is terminated at the proxy, set **X-Forwarded-Proto: https** so security headers (e.g. HSTS) and scheme detection work. See [SECURITY.md](../SECURITY.md) for HTTP security headers.
+1. **Binding:** Default `0.0.0.0` means the server accepts connections from any interface. Restrict by using `--host 127.0.0.1` if only local access is needed.
+1. **Production:** Run behind a reverse proxy (nginx, Traefik, Caddy, or similar), use a process manager (systemd, supervisord), or a container; ensure `CONFIG_PATH` and `report.output_dir` are set appropriately and that the process can write to the output directory and the SQLite path. The application behaves correctly behind NAT, load balancers, and reverse proxies: when TLS is terminated at the proxy, set **X-Forwarded-Proto: https** so security headers (e.g. HSTS) and scheme detection work. See [SECURITY.md](../SECURITY.md) for HTTP security headers.
 
 ### Base URL and accessing the API
 
-- **Base URL:** `http://<host>:<port>/`  
+- **Base URL:** `http://<host>:<port>/`
+
   Example: `http://localhost:8088/` or `http://your-server:8088/`
-- **OpenAPI docs (interactive):**  
-  - Swagger UI: `http://localhost:8088/docs`  
-  - ReDoc: `http://localhost:8088/redoc`
+
+- **OpenAPI docs (interactive):**
+- Swagger UI: `http://localhost:8088/docs`
+- ReDoc: `http://localhost:8088/redoc`
 - **Authentication:** By default the API does not require authentication; secure it at the reverse proxy or network level if exposed. You can optionally enable a shared API key: set `api.require_api_key: true` and `api.api_key` (or `api.api_key_from_env: "VAR"`) in config; then send **X-API-Key** or **Authorization: Bearer &lt;key&gt;** on each request (GET /health remains public). See [SECURITY.md](../SECURITY.md#optional-api-key-enterprise) and the Configuration section below.
 
 ### Web dashboard
 
 When the API server is running, a **simple web dashboard** is available in the browser:
 
-| Page | URL | Description |
-|------|-----|--------------|
-| **Dashboard** | `http://<host>:<port>/` | Scan status (running/idle, current session, findings count), quantity/quality summary (DB findings, FS findings, failures, total), **“Progress over time” chart** (total findings + risk score per session), form inputs for **tenant/customer** and **technician/operator** before starting a scan, and a “Start scan” button. Recent sessions table shows session ID, started date, tenant, technician, findings, failures, and a download link. |
-| **Reports** | `http://<host>:<port>/reports` | List of all scan sessions (session ID, started/finished, status, tenant, technician, DB/FS/failures counts) with a “Download” link per session (regenerates and downloads the Excel report). |
-| **Configuration** | `http://<host>:<port>/config` | Edit the scan configuration (YAML) in the browser. “Save configuration” writes to the config file (see `CONFIG_PATH` or `config.yaml`). Changes apply to the next scan. |
+| Page              | URL                            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ---               | ---                            | ---                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **Dashboard**     | `http://<host>:<port>/`        | Scan status (running/idle, current session, findings count), quantity/quality summary (DB findings, FS findings, failures, total), **“Progress over time” chart** (total findings + risk score per session), form inputs for **tenant/customer** and **technician/operator** before starting a scan, and a “Start scan” button. Recent sessions table shows session ID, started date, tenant, technician, findings, failures, and a download link. |
+| **Reports**       | `http://<host>:<port>/reports` | List of all scan sessions (session ID, started/finished, status, tenant, technician, DB/FS/failures counts) with a “Download” link per session (regenerates and downloads the Excel report).                                                                                                                                                                                                                                                       |
+| **Configuration** | `http://<host>:<port>/config`  | Edit the scan configuration (YAML) in the browser. “Save configuration” writes to the config file (see `CONFIG_PATH` or `config.yaml`). Changes apply to the next scan.                                                                                                                                                                                                                                                                            |
 
-| **Help** | `http://<host>:<port>/help` | Quickstart, config examples, and links to README/USAGE. |
+| **Help**  | `http://<host>:<port>/help`  | Quickstart, config examples, and links to README/USAGE.                      |
 | **About** | `http://<host>:<port>/about` | Application name, version, author, and license (same as repository LICENSE). |
 
 The **Start scan** button sends `POST /scan` and triggers a **full audit of all targets** in the current configuration (the same databases, filesystems, APIs, and options defined in your config file). Saving the Configuration page updates the config used for the next scan. The dashboard uses the same API under the hood (`/status`, `/scan`, `/list`, `/reports/{session_id}`). Status polls automatically when a scan is running. No separate frontend build (Python + Jinja2 + minimal CSS/JS).
 
 ### API endpoints (summary)
 
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| `POST` | `/scan` or `/start` | Start a full audit in the background. Returns `session_id`. Optional JSON body: `{ "tenant": "Acme Corp", "technician": "Alice" }` to tag the session. |
-| `POST` | `/scan_database` | One-off scan of a single database (body: name, host, port, user, password, database, driver, optional tenant/technician). Returns `session_id`. |
-| `GET`  | `/status` | Current run state: `running`, `current_session_id`, `findings_count`. |
-| `GET`  | `/report` | Download the **last generated** Excel report (or generate from last session if none). |
-| `GET`  | `/heatmap` | Download the **last generated** heatmap PNG (sensitivity/risk heatmap for the most recent session). |
-| `GET`  | `/logs` | Download the most recent `audit_YYYYMMDD.log` file with connection/finding entries. |
-| `GET`  | `/list` or `/reports` | List past sessions (for choosing which report to download). Each entry includes tenant/technician when set. |
-| `GET`  | `/reports/{session_id}` | **Regenerate** and download the Excel report for that session. |
-| `GET`  | `/heatmap/{session_id}` | **Regenerate** the report (if needed) and download the heatmap PNG for that session. |
-| `GET`  | `/logs/{session_id}` | Download the first audit log file that contains that `session_id`, for session-level trace analysis. |
-| `PATCH` | `/sessions/{session_id}` | Set or clear tenant/customer name for an existing session. Body: `{ "tenant": "..." }`. |
-| `PATCH` | `/sessions/{session_id}/technician` | Set or clear technician/operator name for an existing session. Body: `{ "technician": "..." }`. |
-| `GET`  | `/about` | About page (HTML): application name, version, author, license. |
-| `GET`  | `/about/json` | Machine-readable about info (name, version, author, license, copyright). |
-| `GET`  | `/health` | Liveness/readiness for Docker and Kubernetes. |
+| Method  | Endpoint                            | Purpose                                                                                                                                                |
+| ---     | ---                                 | ---                                                                                                                                                    |
+| `POST`  | `/scan` or `/start`                 | Start a full audit in the background. Returns `session_id`. Optional JSON body: `{ "tenant": "Acme Corp", "technician": "Alice" }` to tag the session. |
+| `POST`  | `/scan_database`                    | One-off scan of a single database (body: name, host, port, user, password, database, driver, optional tenant/technician). Returns `session_id`.        |
+| `GET`   | `/status`                           | Current run state: `running`, `current_session_id`, `findings_count`.                                                                                  |
+| `GET`   | `/report`                           | Download the **last generated** Excel report (or generate from last session if none).                                                                  |
+| `GET`   | `/heatmap`                          | Download the **last generated** heatmap PNG (sensitivity/risk heatmap for the most recent session).                                                    |
+| `GET`   | `/logs`                             | Download the most recent `audit_YYYYMMDD.log` file with connection/finding entries.                                                                    |
+| `GET`   | `/list` or `/reports`               | List past sessions (for choosing which report to download). Each entry includes tenant/technician when set.                                            |
+| `GET`   | `/reports/{session_id}`             | **Regenerate** and download the Excel report for that session.                                                                                         |
+| `GET`   | `/heatmap/{session_id}`             | **Regenerate** the report (if needed) and download the heatmap PNG for that session.                                                                   |
+| `GET`   | `/logs/{session_id}`                | Download the first audit log file that contains that `session_id`, for session-level trace analysis.                                                   |
+| `PATCH` | `/sessions/{session_id}`            | Set or clear tenant/customer name for an existing session. Body: `{ "tenant": "..." }`.                                                                |
+| `PATCH` | `/sessions/{session_id}/technician` | Set or clear technician/operator name for an existing session. Body: `{ "technician": "..." }`.                                                        |
+| `GET`   | `/about`                            | About page (HTML): application name, version, author, license.                                                                                         |
+| `GET`   | `/about/json`                       | Machine-readable about info (name, version, author, license, copyright).                                                                               |
+| `GET`   | `/health`                           | Liveness/readiness for Docker and Kubernetes.                                                                                                          |
 
 ---
 
@@ -143,7 +146,7 @@ curl -X POST http://localhost:8088/scan \
   -d '{ "tenant": "Acme Corp", "technician": "Alice Colleague-V" }'
 ```
 
-**Response (200):**
+## Response (200):
 
 ```json
 {
@@ -160,7 +163,7 @@ curl -X POST http://localhost:8088/scan \
 curl http://localhost:8088/status
 ```
 
-**Response (200):**
+## Response (200) — GET /status
 
 ```json
 {
@@ -198,7 +201,7 @@ curl -X POST http://localhost:8088/scan_database \
 curl http://localhost:8088/list
 ```
 
-**Response (200):**
+## Response (200) — GET /list
 
 ```json
 {
@@ -274,12 +277,12 @@ curl -o audit_20250301.log "http://localhost:8088/logs/a1b2c3d4-20250301_143022"
 - Scans available `audit_YYYYMMDD.log` files (newest first) and returns the first one whose content contains that `session_id`.
 - If no such log file is found, you get **404** with `{"detail": "No log file contains session_id ..."`}.
 
-**Typical workflow:**
+## Typical workflow:
 
 1. `POST /scan` → get `session_id`.
-2. Poll `GET /status` until `running` is `false`.
-3. Download last report: `GET /report` → save as Excel.
-4. Or list sessions: `GET /list`, then download a specific one: `GET /reports/<session_id>`.
+1. Poll `GET /status` until `running` is `false`.
+1. Download last report: `GET /report` → save as Excel.
+1. Or list sessions: `GET /list`, then download a specific one: `GET /reports/<session_id>`.
 
 ---
 
@@ -340,13 +343,22 @@ rate_limit:
 - The CLI uses the same logic only to print **warnings** (it never exits with 429). This lets you keep existing scripts working while seeing when your policies would reject extra scans if called via API or dashboard.
 - Settings can also be overridden with environment variables: `RATE_LIMIT_ENABLED`, `RATE_LIMIT_MAX_CONCURRENT_SCANS`, `RATE_LIMIT_MIN_INTERVAL_SECONDS`, `RATE_LIMIT_GRACE_FOR_RUNNING_STATUS`.
 
+### API and security (CSP, headers)
+
+The web API and dashboard send **security headers** on every response (see [SECURITY.md](../SECURITY.md)): X-Content-Type-Options, X-Frame-Options, **Content-Security-Policy (CSP)**, Referrer-Policy, Permissions-Policy, and HSTS when the request is considered HTTPS.
+
+- **CSP defaults:** Scripts and styles are allowed from the app origin (`'self'`). The dashboard loads Chart.js from the **jsDelivr CDN** (`https://cdn.jsdelivr.net`), which is allowed by default so the "Progress over time" chart works without extra config. A minimal amount of inline script is used for data passed to the chart; the rest of the dashboard logic lives in `/static/dashboard.js`.
+- **Stricter CSP:** To remove `'unsafe-inline'` (e.g. for a high-security profile), you can set a stricter CSP at the **reverse proxy** (override the app's header) or use an env/config toggle if the application adds one in a future version. With a stricter CSP, all script and style must be from allowed origins (e.g. `'self'` and the CDN); any remaining inline script in templates would need to be refactored into external files. See [SECURITY.md](../SECURITY.md) and [docs/deploy/DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md)) (Security and hardening) for deployment hardening (Docker, Kubernetes, reverse proxy).
+
 ### Targets: databases
 
 Each target is an object in `targets` with at least `name` and `type`. For SQL databases use `type: database` and the appropriate `driver`.
 
 ```yaml
 targets:
-  - name: "Produção_Postgres"
+
+- name: "Produção_Postgres"
+
     type: database
     driver: postgresql+psycopg2
     host: 10.0.0.50
@@ -358,11 +370,13 @@ targets:
 
 Credentials: `user`, `pass` (or `password`). Optional: `url` to pass a full SQLAlchemy URL instead of host/port/user/database.
 
-**Snowflake (optional, .[bigdata]):**
+## Snowflake (optional, .[bigdata]):
 
 ```yaml
 targets:
-  - name: "Warehouse_LGPD"
+
+- name: "Warehouse_LGPD"
+
     type: database
     driver: snowflake
     account: "xy12345.us-east-1"
@@ -385,7 +399,9 @@ The Snowflake connector uses the same pattern as other SQL engines: discover tab
 ### Targets: filesystem
 
 ```yaml
-  - name: "Documentos_LGPD"
+
+- name: "Documentos_LGPD"
+
     type: filesystem
     path: /home/user/Documents/LGPD
     recursive: true
@@ -397,10 +413,12 @@ No credentials. Uses `file_scan` settings (extensions, recursive, scan_sqlite_as
 
 Use `type: api` or `type: rest`. Required: `name`, `base_url` (or `url`). Optional: `paths` or `endpoints`, `discover_url`, `timeout`, `headers`, and an `auth` block.
 
-**Basic auth:**
+## Basic auth:
 
 ```yaml
-  - name: "Legacy API"
+
+- name: "Legacy API"
+
     type: api
     base_url: "https://api.example.com"
     paths: ["/users", "/contacts"]
@@ -410,10 +428,12 @@ Use `type: api` or `type: rest`. Required: `name`, `base_url` (or `url`). Option
       password: "your_password"
 ```
 
-**Bearer token (static or from environment):**
+## Bearer token (static or from environment):
 
 ```yaml
-  - name: "API with bearer"
+
+- name: "API with bearer"
+
     type: api
     base_url: "https://api.example.com"
     paths: ["/data"]
@@ -422,10 +442,12 @@ Use `type: api` or `type: rest`. Required: `name`, `base_url` (or `url`). Option
       token: "eyJhbGc..."   # or use token_from_env: "API_TOKEN" to read from env
 ```
 
-**OAuth2 client credentials (machine-to-machine):**
+## OAuth2 client credentials (machine-to-machine):
 
 ```yaml
-  - name: "Internal Users API"
+
+- name: "Internal Users API"
+
     type: api
     base_url: "https://api.example.com"
     paths: ["/users", "/profiles"]
@@ -439,10 +461,12 @@ Use `type: api` or `type: rest`. Required: `name`, `base_url` (or `url`). Option
 
 Set the env var (e.g. `API_OAUTH_SECRET`) in the environment where the app runs.
 
-**Custom headers (e.g. API key or Negotiate):**
+## Custom headers (e.g. API key or Negotiate):
 
 ```yaml
-  - name: "API with custom header"
+
+- name: "API with custom header"
+
     type: api
     base_url: "https://api.example.com"
     paths: ["/export"]
@@ -459,14 +483,16 @@ If you omit `auth` but set `user`/`username` and `pass`/`password` on the target
 
 **Power BI** and **Dataverse (Power Apps)** use Azure AD OAuth2 client credentials. No extra package is required (httpx is already a dependency).
 
-**Power BI (`type: powerbi`):**
+## Power BI (`type: powerbi`):
 
 - Required: `name`, `tenant_id`, `client_id`, `client_secret` (or under `auth:`).
 - Optional: `workspace_ids` or `group_ids` (list of workspace GUIDs) to limit scan; omit to use “My workspace” and all workspaces.
 - Azure AD app must have Power BI permission `Dataset.Read.All` or `Dataset.ReadWrite.All`. If using a service principal, enable “Allow service principals to use Power BI APIs” in the Power BI admin portal.
 
 ```yaml
-  - name: "Power BI Compliance"
+
+- name: "Power BI Compliance"
+
     type: powerbi
     tenant_id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     client_id: "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
@@ -474,13 +500,15 @@ If you omit `auth` but set `user`/`username` and `pass`/`password` on the target
     # workspace_ids: ["group-guid-1"]
 ```
 
-**Dataverse / Power Apps (`type: dataverse` or `type: powerapps`):**
+## Dataverse / Power Apps (`type: dataverse` or `type: powerapps`):
 
 - Required: `name`, `org_url` (or `environment_url`, e.g. `https://myorg.crm.dynamics.com`), `tenant_id`, `client_id`, `client_secret` (or under `auth:`).
 - Azure AD app needs application permission to Dataverse (admin consent). Scope is derived from `org_url`.
 
 ```yaml
-  - name: "Dataverse HR"
+
+- name: "Dataverse HR"
+
     type: dataverse
     org_url: "https://myorg.crm.dynamics.com"
     tenant_id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
@@ -494,10 +522,12 @@ Findings from Power BI and Dataverse appear in the **Database findings** sheet. 
 
 Install optional deps: `uv pip install -e ".[shares]"`.
 
-**SMB/CIFS:**
+## SMB/CIFS:
 
 ```yaml
-  - name: "FileServer HR"
+
+- name: "FileServer HR"
+
     type: smb
     host: "fileserver.company.local"
     share: "HR"
@@ -509,10 +539,12 @@ Install optional deps: `uv pip install -e ".[shares]"`.
     recursive: true
 ```
 
-**WebDAV:**
+## WebDAV:
 
 ```yaml
-  - name: "WebDAV Storage"
+
+- name: "WebDAV Storage"
+
     type: webdav
     base_url: "https://webdav.company.com/dav"
     user: "audit"
@@ -522,10 +554,12 @@ Install optional deps: `uv pip install -e ".[shares]"`.
     verify_ssl: true
 ```
 
-**SharePoint:**
+## SharePoint:
 
 ```yaml
-  - name: "SharePoint HR"
+
+- name: "SharePoint HR"
+
     type: sharepoint
     site_url: "https://sharepoint.company.com/sites/hr"
     path: "Shared Documents"
@@ -533,10 +567,12 @@ Install optional deps: `uv pip install -e ".[shares]"`.
     pass: "***"
 ```
 
-**NFS (path = local mount point; mount NFS before scanning):**
+## NFS (path = local mount point; mount NFS before scanning):
 
 ```yaml
-  - name: "NFS Export"
+
+- name: "NFS Export"
+
     type: nfs
     host: "nfs.company.local"
     export_path: "/export/data"
@@ -558,68 +594,89 @@ report:
   output_dir: .    # directory for Excel and heatmap PNG
   # Optional: custom recommendation text per norm/framework (UK GDPR, PIPEDA, or sensitive categories)
   recommendation_overrides:
+
     - norm_tag_pattern: "UK GDPR"
+
       base_legal: "UK GDPR Art. 4(1)"
       risk: "Identification of data subject."
       recommendation: "Apply UK GDPR safeguards and DPA registration if required."
       priority: "ALTA"
       relevant_for: "DPO, UK Representative"
+
     - norm_tag_pattern: "PIPEDA"
+
       base_legal: "PIPEDA s. 2 (personal information)"
       risk: "Personal information as defined under Canadian law."
       recommendation: "Review PIPEDA consent and limitation purposes."
       priority: "MÉDIA"
       relevant_for: "DPO, Privacy Officer"
-    # Sensitive categories (LGPD Art. 5 II, 11; GDPR Art. 9) – see docs/PLAN_SENSITIVE_CATEGORIES_ML_DL.md
+    # Sensitive categories (LGPD Art. 5 II, 11; GDPR Art. 9) – see docs/completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md
     - norm_tag_pattern: "health"
+
       base_legal: "LGPD Art. 5 II, 11 – dado de saúde; GDPR Art. 9"
       risk: "Health or medical condition data; special treatment and legal basis required."
       recommendation: "Ensure legal basis and consent; restrict access; consider anonymisation."
       priority: "CRÍTICA"
       relevant_for: "DPO, Compliance, Health area"
+
     - norm_tag_pattern: "religious"
+
       base_legal: "LGPD Art. 5 II, 11 – convicção religiosa; GDPR Art. 9"
       risk: "Sensitive data; discrimination and differential treatment."
       recommendation: "Minimisation; explicit legal basis and consent; restricted access."
       priority: "CRÍTICA"
       relevant_for: "DPO, Compliance, HR"
+
     - norm_tag_pattern: "political"
+
       base_legal: "LGPD Art. 5 II, 11 – filiação política; GDPR Art. 9"
       risk: "Political affiliation or opinion; sensitive under both regimes."
       recommendation: "Minimise; explicit consent and purpose limitation; restrict access."
       priority: "CRÍTICA"
       relevant_for: "DPO, Compliance, Legal"
+
     - norm_tag_pattern: "PEP"
+
       base_legal: "LGPD Art. 5 II; GDPR Art. 9 – PEP lists and enhanced due diligence"
       risk: "Politically exposed person data; enhanced scrutiny and retention limits."
       recommendation: "Apply PEP policies; limit retention; document legal basis."
       priority: "ALTA"
       relevant_for: "DPO, Compliance, AML/KYC"
+
     - norm_tag_pattern: "race"
+
       base_legal: "LGPD Art. 5 II, 11 – raça/origem; GDPR Art. 9"
       risk: "Race, skin color or ethnic origin; discrimination risk."
       recommendation: "Minimise; explicit consent; restrict access and purpose."
       priority: "CRÍTICA"
       relevant_for: "DPO, Compliance, HR"
+
     - norm_tag_pattern: "union"
+
       base_legal: "LGPD Art. 5 II, 11 – filiação sindical; GDPR Art. 9"
       risk: "Trade union membership; sensitive in both regimes."
       recommendation: "Minimise; legal basis and consent; restricted access."
       priority: "ALTA"
       relevant_for: "DPO, Compliance, HR"
+
     - norm_tag_pattern: "genetic"
+
       base_legal: "LGPD Art. 5 II, 11 – dados genéticos; GDPR Art. 9"
       risk: "Genetic data; special category; high re-identification risk."
       recommendation: "Strict minimisation; explicit consent; consider separate storage and access controls."
       priority: "CRÍTICA"
       relevant_for: "DPO, Compliance, Health area"
+
     - norm_tag_pattern: "biometric"
+
       base_legal: "LGPD Art. 5 II, 11 – biometria; GDPR Art. 9"
       risk: "Biometric data for identification; irreversible if compromised."
       recommendation: "Purpose limitation; secure storage; legal basis and consent."
       priority: "CRÍTICA"
       relevant_for: "DPO, Compliance, Security"
+
     - norm_tag_pattern: "sex life"
+
       base_legal: "LGPD Art. 5 II, 11 – vida sexual; GDPR Art. 9"
       risk: "Sex life or sexual orientation; highly sensitive."
       recommendation: "Strict minimisation; explicit consent; highest access restrictions."
@@ -634,7 +691,7 @@ api:
   # api_key: "your-secret-key"              # or use api_key_from_env to read from environment
   # api_key_from_env: "AUDIT_API_KEY"
 
-# Optional: possible minor data detection (LGPD Art. 14, GDPR Art. 8). See docs/PLAN_MINOR_DATA_DETECTION.md and docs/minor-detection.md.
+# Optional: possible minor data detection (LGPD Art. 14, GDPR Art. 8). See docs/completed/PLAN_MINOR_DATA_DETECTION.md and docs/minor-detection.md.
 # detection:
 #   minor_age_threshold: 18        # age below this flags DOB/age columns as possible minor (default 18)
 #   minor_full_scan: false         # when true (databases only), re-sample columns that look like DOB/age for minors using minor_full_scan_limit
@@ -650,11 +707,11 @@ scan:
 
 ## 5. Downloading reports (summary)
 
-| Goal | How |
-|------|-----|
-| **Last generated report** | `GET /report` → save response as `.xlsx`. |
-| **Report for a specific past session** | `GET /list` to get `session_id`s, then `GET /reports/<session_id>` → save as `.xlsx`. |
-| **One-shot run (CLI)** | After `python main.py --config config.yaml`, the report path is printed; file is under `report.output_dir` as `Relatorio_Auditoria_<session_id>.xlsx`. |
+| Goal                                   | How                                                                                                                                                    |
+| ---                                    | ---                                                                                                                                                    |
+| **Last generated report**              | `GET /report` → save response as `.xlsx`.                                                                                                              |
+| **Report for a specific past session** | `GET /list` to get `session_id`s, then `GET /reports/<session_id>` → save as `.xlsx`.                                                                  |
+| **One-shot run (CLI)**                 | After `python main.py --config config.yaml`, the report path is printed; file is under `report.output_dir` as `Relatorio_Auditoria_<session_id>.xlsx`. |
 
 - Reports are generated on demand for a given session (from SQLite findings). The heatmap PNG is written next to the Excel file when the report is generated.
 - No built-in retention policy; reports are files on disk. Clean up or archive them as needed.
@@ -673,4 +730,4 @@ scan:
 - **Download report by session:** `GET /reports/{session_id}`
 - **Interactive API docs:** `http://<host>:<port>/docs`
 
-**Related documentation:** [sensitivity-detection.md](sensitivity-detection.md) (ML/DL training terms; [pt-BR](sensitivity-detection.pt_BR.md)). For `recommendation_overrides` covering sensitive categories (health, religion, political, PEP, race, union, genetic, biometric, sex life), see the example above (Global options) and [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](PLAN_SENSITIVE_CATEGORIES_ML_DL.md); [USAGE.pt_BR.md](USAGE.pt_BR.md) (pt-BR) has the same structure. To add a new data-source connector (database, API, share), see [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md).
+**Related documentation:** [sensitivity-detection.md](sensitivity-detection.md) (ML/DL training terms; [pt-BR](sensitivity-detection.pt_BR.md)). For `recommendation_overrides` covering sensitive categories (health, religion, political, PEP, race, union, genetic, biometric, sex life), see the example above (Global options) and [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md); [USAGE.pt_BR.md](USAGE.pt_BR.md) (pt-BR) has the same structure. To add a new data-source connector (database, API, share), see [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md) ([pt-BR](ADDING_CONNECTORS.pt_BR.md)). Further: [TESTING](TESTING.md) ([pt-BR](TESTING.pt_BR.md)), [TOPOLOGY](TOPOLOGY.md) ([pt-BR](TOPOLOGY.pt_BR.md)), [COMMIT_AND_PR](COMMIT_AND_PR.md) ([pt-BR](COMMIT_AND_PR.pt_BR.md)), [compliance-frameworks](compliance-frameworks.md) ([pt-BR](compliance-frameworks.pt_BR.md)); full index in [README](README.md).
