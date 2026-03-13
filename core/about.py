@@ -14,11 +14,11 @@ def get_about_info() -> dict:
         from importlib.metadata import version
         ver = version("python3-lgpd-crawler")
     except Exception:
-        ver = "1.4.3"
+        ver = "1.5.0"
     return {
-        "name": "python3-lgpd-crawler",
+        "name": "Data Boar",
         "version": ver,
-        "description": "Application for auditing personal and sensitive data across databases and filesystems, aligned with LGPD, GDPR, CCPA, HIPAA, and GLBA.",
+        "description": "Data Boar audits personal and sensitive data across databases and filesystems, aligned with LGPD, GDPR, CCPA, HIPAA, and GLBA. It is powered by the python3-lgpd-crawler engine.",
         "author": "Fabio Leitao",
         "license": "BSD 3-Clause License",
         "license_url": "https://opensource.org/licenses/BSD-3-Clause",
