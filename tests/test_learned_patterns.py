@@ -1,5 +1,4 @@
 """Tests for core.learned_patterns: collect_learned_entries and write_learned_patterns."""
-import pytest
 from core.learned_patterns import collect_learned_entries, write_learned_patterns
 
 

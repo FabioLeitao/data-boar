@@ -1,0 +1,147 @@
+"""
+Tests that encode SonarQube-style quality rules across Python code so regressions are caught.
+
+- S1192 / literal duplication: constants used instead of repeated string literals (routes, report).
+- Regex / S5856: session_id pattern uses \\w with re.ASCII.
+- S8415: HTTP status codes 400, 404, 429 documented in OpenAPI (validated in test_routes_responses).
+- S3776 cognitive complexity: refactored helpers exist in connector_registry and sql_connector.
+- No bare except (S5706): key modules do not use bare 'except:'.
+"""
+
+import ast
+import re
+from pathlib import Path
+
+
+def _project_root() -> Path:
+    return Path(__file__).resolve().parent.parent
+
+
+# --- Routes: constants and session pattern (S1192, S5856) ---
+
+
+def test_routes_uses_session_id_pattern_with_ascii():
+    """Session ID validation uses \\w with re.ASCII (concise regex, ASCII-only)."""
+    import api.routes as routes
+
+    pattern = getattr(routes, "_SESSION_ID_PATTERN", None)
+    assert pattern is not None, "api.routes must define _SESSION_ID_PATTERN"
+    assert pattern.flags & re.ASCII, "_SESSION_ID_PATTERN must use re.ASCII so \\w is [a-zA-Z0-9_]"
+    assert pattern.fullmatch("a1b2c3d4e5f6_20250101")
+    assert not pattern.fullmatch("aaaaaaaaaaa-b")
+
+
+def test_routes_defines_template_config_constant():
+    """Config template name is a constant to avoid string literal duplication (S1192)."""
+    import api.routes as routes
+
+    name = getattr(routes, "_TEMPLATE_CONFIG", None)
+    assert name is not None, "api.routes must define _TEMPLATE_CONFIG"
+    assert name == "config.html"
+
+
+def test_routes_defines_documented_response_constants():
+    """Response codes 429, 404, 400 are declared via constants for OpenAPI (S8415)."""
+    import api.routes as routes
+
+    assert hasattr(routes, "_RATE_LIMIT_429") and 429 in getattr(routes, "_RATE_LIMIT_429", {})
+    assert hasattr(routes, "_NOT_FOUND_404") and 404 in getattr(routes, "_NOT_FOUND_404", {})
+    assert hasattr(routes, "_SESSION_RESPONSES")
+    session_resp = getattr(routes, "_SESSION_RESPONSES", {})
+    assert 400 in session_resp and 404 in session_resp
+
+
+# --- Report generator: column/sheet name constants (S1192) ---
+
+
+def test_report_generator_defines_recommendation_constants():
+    """Report generator uses constants for recommendation sheet columns (S1192)."""
+    from report import generator
+
+    expected = ("_REC_DATA_PATTERN", "_REC_BASE_LEGAL", "_REC_RISCO", "_REC_RECOMENDACAO", "_REC_PRIORIDADE")
+    for name in expected:
+        assert hasattr(generator, name), f"report.generator must define {name}"
+
+
+def test_report_generator_defines_trend_constants():
+    """Report generator uses constants for trends sheet (S1192)."""
+    from report import generator
+
+    expected = ("_TREND_THIS_RUN_COUNT", "_TREND_PREV_RUN_COUNT", "_SHEET_DB_FINDINGS", "_SHEET_FS_FINDINGS")
+    for name in expected:
+        assert hasattr(generator, name), f"report.generator must define {name}"
+
+
+# --- Connector registry: refactored helpers (S3776 complexity) ---
+
+
+def test_connector_registry_has_complexity_refactor_helpers():
+    """connector_for_target complexity was reduced via _try_get_connector and _resolve_database_connector."""
+    from core import connector_registry
+
+    assert hasattr(connector_registry, "_try_get_connector")
+    assert callable(getattr(connector_registry, "_try_get_connector"))
+    assert hasattr(connector_registry, "_resolve_database_connector")
+    assert callable(getattr(connector_registry, "_resolve_database_connector"))
+
+
+# --- SQL connector: refactored helpers (S3776 complexity) ---
+
+
+def test_sql_connector_has_discover_helpers():
+    """SQLConnector.discover complexity reduced via _get_skip_schemas, _should_skip_schema, _tables_from_schema, _discover_fallback_no_schemas."""
+    from connectors import sql_connector
+
+    for name in ("_get_skip_schemas", "_should_skip_schema", "_tables_from_schema", "_discover_fallback_no_schemas"):
+        assert hasattr(sql_connector, name), f"connectors.sql_connector must define {name}"
+        assert callable(getattr(sql_connector, name))
+
+
+def test_sql_connector_has_process_one_finding():
+    """SQLConnector.run complexity reduced via _process_one_finding."""
+    from connectors.sql_connector import SQLConnector
+
+    assert hasattr(SQLConnector, "_process_one_finding")
+    assert callable(getattr(SQLConnector, "_process_one_finding"))
+
+
+# --- No bare except (S5706): key modules ---
+
+
+def _has_bare_except(tree: ast.AST) -> list[tuple[int, str]]:
+    """Return list of (lineno, handler_repr) for bare except: clauses."""
+    result = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ExceptHandler):
+            if node.type is None and node.name is None:
+                result.append((node.lineno, "except:"))
+            elif node.type is None:
+                result.append((node.lineno, "except ... :"))
+    return result
+
+
+def test_api_routes_no_bare_except():
+    """api.routes must not use bare 'except:' (S5706)."""
+    path = _project_root() / "api" / "routes.py"
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    bare = _has_bare_except(tree)
+    assert not bare, f"api/routes.py has bare except at line(s) {[b[0] for b in bare]}"
+
+
+def test_core_engine_no_bare_except():
+    """core.engine must not use bare 'except:' (S5706)."""
+    path = _project_root() / "core" / "engine.py"
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    bare = _has_bare_except(tree)
+    assert not bare, f"core/engine.py has bare except at line(s) {[b[0] for b in bare]}"
+
+
+def test_config_loader_no_bare_except():
+    """config.loader must not use bare 'except:' (S5706)."""
+    path = _project_root() / "config" / "loader.py"
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    bare = _has_bare_except(tree)
+    assert not bare, f"config/loader.py has bare except at line(s) {[b[0] for b in bare]}"

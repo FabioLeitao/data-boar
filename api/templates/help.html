@@ -126,6 +126,26 @@ scan:
 </section>
 
 <section class="card">
+  <h2>Security headers and hardening</h2>
+  <p>
+    The API and dashboard send <strong>security headers</strong> on every response (Content-Security-Policy, X-Frame-Options, Referrer-Policy, Permissions-Policy, HSTS when HTTPS). For deployment hardening (Docker, Kubernetes, non-root, NetworkPolicy, reverse proxy), see:
+  </p>
+  <ul>
+    <li><code>SECURITY.md</code> – HTTP security headers and optional API key</li>
+    <li><code>docs/deploy/DEPLOY.md</code> – section “Security and hardening (optional)”</li>
+  </ul>
+  <h3>What to keep an eye out for (technicians)</h3>
+  <ul>
+    <li><strong>Passwords with special characters:</strong> Database and MongoDB passwords containing <code>@</code>, <code>:</code>, <code>/</code> or <code>#</code> are supported; the app encodes them in connection URLs automatically.</li>
+    <li><strong>Protecting the Configuration page:</strong> The config file may contain credentials. If the API is exposed to untrusted users or networks, set <code>api.require_api_key: true</code> and use a strong API key so only authenticated requests can access <code>/config</code>.</li>
+    <li><strong>Deployment:</strong> Run behind a reverse proxy with TLS when the dashboard or API is exposed to the internet; use the optional API key and rate limiting as an extra layer.</li>
+  </ul>
+  <p class="muted">
+    For a full list of security fixes, regression tests, and recommendations, see <code>docs/security.md</code> (EN) and <code>docs/security.pt_BR.md</code> (pt-BR).
+  </p>
+</section>
+
+<section class="card">
   <h2>More documentation</h2>
   <p>
     For full details, including optional connectors (Power BI, Dataverse, REST APIs, shares) and advanced tuning, see:
