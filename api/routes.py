@@ -151,7 +151,7 @@ def _get_config():
 def _get_engine():
     global _audit_engine
     if _audit_engine is None:
-from core.engine import AuditEngine
+        from core.engine import AuditEngine
         _audit_engine = AuditEngine(_get_config())
     return _audit_engine
 
