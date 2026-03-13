@@ -90,7 +90,7 @@ jobs:
         run: uv sync
 
       - name: SonarQube / SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v7
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           # SonarQube Server only: set SONAR_HOST_URL in repo secrets
