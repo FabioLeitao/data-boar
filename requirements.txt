@@ -201,7 +201,7 @@ pluggy==1.6.0
     #   pytest
 psycopg2-binary==2.9.11
     # via python3-lgpd-crawler (pyproject.toml)
-pycparser==2.23
+pycparser==3.0
     # via
     #   python3-lgpd-crawler (pyproject.toml)
     #   cffi
