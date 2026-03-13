@@ -1,6 +1,8 @@
-# python3-lgpd-crawler (Português – Brasil)
+# Data Boar (Português – Brasil)
 
-Aplicação para auditoria de dados pessoais e sensíveis em bancos de dados e sistemas de arquivos, alinhada a **LGPD**, **GDPR**, **CCPA**, **HIPAA** e **GLBA**. Ela descobre e mapeia possíveis dados pessoais/sensíveis via **regex** e **ML**, armazena apenas **metadados** em um banco SQLite local (incluindo tags opcionais de **cliente/tenant** e **técnico/operador** por varredura) e gera relatórios em Excel e um **heatmap** de sensibilidade/risco em PNG.
+Data Boar é uma aplicação para auditoria de dados pessoais e sensíveis em bancos de dados e sistemas de arquivos, alinhada a **LGPD**, **GDPR**, **CCPA**, **HIPAA** e **GLBA**. Ela descobre e mapeia possíveis dados pessoais/sensíveis via **regex** e **ML**, armazena apenas **metadados** em um banco SQLite local (incluindo tags opcionais de **cliente/tenant** e **técnico/operador** por varredura) e gera relatórios em Excel e um **heatmap** de sensibilidade/risco em PNG. O nome do pacote Python permanece **python3-lgpd-crawler** para compatibilidade. O mascote de **javali** (boar) reforça a ideia de um crawler “farejando” e procurando dados em várias fontes (bancos, arquivos, APIs, dashboards, compartilhamentos) para fins de conformidade.
+
+> **Release atual:** 1.4.3 (veja [docs/releases/1.4.3.md](docs/releases/1.4.3.md) e a página de [Releases no GitHub](https://github.com/FabioLeitao/data-boar/releases/tag/v1.4.3)).
 
 > **Manutenção da documentação:** sempre que um novo recurso ou opção de linha de comando for adicionado, atualize **este arquivo** e o `README.md` em inglês, bem como os arquivos `docs/USAGE.md` e `docs/USAGE.pt_BR.md`, para manter as versões sincronizadas.
 > **English:** [README.md](README.md) · [docs/USAGE.md](docs/USAGE.md)
