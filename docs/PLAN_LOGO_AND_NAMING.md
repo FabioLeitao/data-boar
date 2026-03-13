@@ -13,7 +13,7 @@ Mark items done here and in [PLANS_TODO.md](PLANS_TODO.md) when actually complet
 
 | #   | To-do                                                                                                                                              | Status    | Notes                                                    |
 | --- | ---                                                                                                                                                | ---       | ---                                                      |
-| 1   | Decide logo concept (A–D) and colors; produce master logo (SVG) and export web PNG (32/64 px) and favicon (ICO or 16/32 PNG)                       | ⬜ Pending | Copyright-safe, scales to 16 px                          |
+| 1   | Decide logo concept (A–D) and colors; produce master logo (SVG) and export web PNG (32/64 px) and favicon (ICO or 16/32 PNG)                       | ⬜ Pending | Concept C (abstract \"C\") chosen; master SVG at `api/static/logo.svg`; PNG/ICO export pending |
 | 2   | Place assets in `api/static/`: favicon.ico (and/or favicon-32.png), logo.svg, logo-64.png                                                          | ⬜ Pending | Optional: logo-report-48.png for Excel                   |
 | 3   | Add favicon link(s) in `api/templates/base.html` (`<link rel="icon">`)                                                                             | ⬜ Pending | Browser/tab icon                                         |
 | 4   | (Optional) Add logo to About page and optionally Dashboard/Reports header                                                                          | ⬜ Pending | `api/templates/about.html`, dashboard.html, reports.html |
@@ -47,6 +47,8 @@ Mark items done here and in [PLANS_TODO.md](PLANS_TODO.md) when actually complet
 - **Option D – Document + search:** Document/page with a small search or "scan" element (e.g. rays or a simple radar). Emphasizes "scanning documents/data."
 
 **Copyright safety:** Design from scratch (no copying existing logos). Use simple shapes, limited palette (e.g. one brand color + dark gray/black, or two colors). No stock-art or third-party assets unless explicitly licensed for commercial use and logo use. Prefer **SVG** as the master so the same asset scales to favicon and report.
+
+**Current candidates:** Refined variants (no bleed, cream/notepad paper, database-like teal, radar/laser/crawler scan cues) are in **[api/static/logo-candidates/](../api/static/logo-candidates/)**. See that folder’s README for v0 (original) plus v1–v4; choose one to promote to `api/static/logo.svg` and export PNG/favicon.
 
 ## Deliverables to produce (outside this repo):
 
@@ -91,7 +93,7 @@ Once the assets exist, wire them in as follows (no rule silencing or behavior ch
 
 ## 3. Application name change: options and availability
 
-Current name: **python3-lgpd-crawler** (package and UI). Broader alternatives that still reflect "crawler + compliance/audit":
+Current runtime package name: **python3-lgpd-crawler**. The current **display/branding name** in the UI and docs is **Data Boar – powered by python3-lgpd-crawler**, chosen to reflect a hungry boar mascot “rooting” through heterogeneous data sources (SQL/NoSQL, files, shares, APIs, dashboards) for compliance-relevant data.
 
 | Candidate name              | Pros                                              | Cons                                                                 | Availability note                                                                                                              |
 | ---                         | ---                                               | ---                                                                  | ---                                                                                                                            |
@@ -101,7 +103,7 @@ Current name: **python3-lgpd-crawler** (package and UI). Broader alternatives th
 | **data_compliance_audit**   | Emphasizes audit and compliance                   | No "crawler"; less aligned with current naming                       | Check PyPI and GitHub.                                                                                                         |
 | **lgpd_compliance_crawler** | Keeps LGPD, adds "compliance"                     | Still Brazil-heavy in the name                                       | Good if you want to keep LGPD prominent.                                                                                       |
 
-**Recommendation:** **compliance_crawler** (or **python3-compliance-crawler** for the package) is a strong candidate: it's broader than "lgpd", keeps "crawler", and fits the current feature set. Before committing:
+Past candidates included names like **compliance_crawler** or **privacy_crawler**; at this stage the **display name** was set to **Data Boar** while keeping the Python package/import name as `python3-lgpd-crawler` for compatibility. If you later decide to rename the package itself (e.g. to `python3-data-boar`), follow the checklist below. Before committing to any package rename:
 
 1. **PyPI:** Search for `compliance_crawler`, `compliance-crawler`, `python3-compliance-crawler` to see if the name is taken or very similar.
 1. **Web / GitHub:** Search "Compliance Crawler" and "compliance_crawler" to avoid conflicting with an existing product or trademark.

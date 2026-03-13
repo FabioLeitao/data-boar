@@ -1,6 +1,8 @@
-# python3-lgpd-crawler
+# Data Boar
 
-Application for auditing personal and sensitive data across databases and filesystems, aligned with **LGPD**, **GDPR**, **CCPA**, **HIPAA**, and **GLBA**. It discovers and maps possible PII/sensitive data via regex and ML, stores metadata (including optional **tenant/customer** and **technician/operator** tags per scan) in a local SQLite database, and produces Excel reports with heatmaps and recommendations.
+Data Boar is an application for auditing personal and sensitive data across databases and filesystems, aligned with **LGPD**, **GDPR**, **CCPA**, **HIPAA**, and **GLBA**. It discovers and maps possible PII/sensitive data via regex and ML, stores metadata (including optional **tenant/customer** and **technician/operator** tags per scan) in a local SQLite database, and produces Excel reports with heatmaps and recommendations. The runtime engine and Python package name remain **python3-lgpd-crawler** for compatibility. The **boar** mascot and name emphasize a hungry crawler “rooting” through heterogeneous data sources (databases, files, APIs, dashboards, shares) for compliance-relevant signals.
+
+> **Current release:** 1.4.3 (see [docs/releases/1.4.3.md](docs/releases/1.4.3.md) and the [GitHub Releases page](https://github.com/FabioLeitao/data-boar/releases/tag/v1.4.3)).
 
 > **Documentation note:** This README and `docs/USAGE.md` are the canonical English references. When features or options change, update **both** languages to keep them in sync.
 > **Brazilian Portuguese (pt-BR):** [README.pt_BR.md](README.pt_BR.md) · [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md)
