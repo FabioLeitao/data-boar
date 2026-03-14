@@ -60,8 +60,8 @@ Thank you for considering contributing. This document covers local setup, workfl
 ## CI and dependency hygiene
 
 - **CI:** GitHub Actions run tests and `uv pip audit` on push/PR to `main` (or `master`). When SonarQube/SonarCloud is enabled (see [docs/TESTING.md](docs/TESTING.md)), address reported issues so the quality gate stays green.
-- **Dependencies:** Declare all runtime and dev dependencies in `pyproject.toml`. If you add or change deps, run `uv sync` and optionally `uv pip compile pyproject.toml -o requirements.txt` if the project still ships a `requirements.txt`.
-- **Dependabot:** Pip and GitHub Actions are kept up to date via Dependabot; review and merge dependency PRs when safe.
+- **Dependencies:** The source of truth for libraries is **`pyproject.toml`** (uv toolchain); pip and **`requirements.txt`** are derivative. Declare all runtime and dev dependencies in **`pyproject.toml`**. When you add or change deps, run `uv sync` and regenerate the lockfile with `uv pip compile pyproject.toml -o requirements.txt`. Do not edit `requirements.txt` by hand for version changes.
+- **Dependabot / automation:** When applying a dependency update (e.g. from a Dependabot PR), update **`pyproject.toml`** first (bump the minimum version for that package), then run `uv pip compile pyproject.toml -o requirements.txt` and commit both files. Merge dependency PRs only after CI (tests and audit) pass.
 
 ## Deployment and production
 
@@ -73,6 +73,8 @@ Thank you for considering contributing. This document covers local setup, workfl
 - **[docs/TESTING.md](docs/TESTING.md)** ([pt-BR](docs/TESTING.pt_BR.md)) — Test modules, CI, SonarQube.
 - **[docs/TOPOLOGY.md](docs/TOPOLOGY.md)** ([pt-BR](docs/TOPOLOGY.pt_BR.md)) — Application topology (modules, classes, data flow).
 - **[docs/COMMIT_AND_PR.md](docs/COMMIT_AND_PR.md)** ([pt-BR](docs/COMMIT_AND_PR.pt_BR.md)) — Commit and PR automation.
-- **[docs/compliance-frameworks.md](docs/compliance-frameworks.md)** ([pt-BR](docs/compliance-frameworks.pt_BR.md)) — Compliance labels and extensibility. Full doc index: [docs/README.md](docs/README.md).
+- **[docs/compliance-frameworks.md](docs/compliance-frameworks.md)** ([pt-BR](docs/compliance-frameworks.pt_BR.md)) — Compliance labels and extensibility.
+- **[docs/COPYRIGHT_AND_TRADEMARK.md](docs/COPYRIGHT_AND_TRADEMARK.md)** ([pt-BR](docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md)) — Copyright and trademark (making it official, registries). [NOTICE](NOTICE) for project notice.
+- Full doc index: [docs/README.md](docs/README.md) ([pt-BR](docs/README.pt_BR.md)).
 
 If you have questions, open a discussion or an issue. Thanks for contributing.

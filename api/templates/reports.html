@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% block title %}Reports — LGPD Audit{% endblock %}
+{% block title %}Reports — Data Boar{% endblock %}
 {% block content %}
-<h1>Reports</h1>
+<h1><img src="/static/mascot/data_boar_mascote_color.svg" alt="" width="40" height="40" style="vertical-align: middle; margin-right: 0.35em;">Reports</h1>
 <p>Download Excel reports (and heatmap) for each scan session. “Download” regenerates the report for that session.</p>
 <p class="sort-row">Order by date: {% if sort == "date_desc" %}<strong>Newest first</strong>{% else %}<a href="/reports?sort=date_desc">Newest first</a>{% endif %} · {% if sort == "date_asc" %}<strong>Oldest first</strong>{% else %}<a href="/reports?sort=date_asc">Oldest first</a>{% endif %}</p>
 <table class="table">
@@ -41,6 +41,6 @@
 
 <section class="card about-report" aria-label="Application and report attribution" style="margin-top: 1.5rem;">
   <h2>About this application</h2>
-  <p class="muted"><strong>{{ about.name }}</strong> v{{ about.version }} · Author: {{ about.author }} · {{ about.license }} · {{ about.copyright }}. Downloaded Excel reports and heatmap images include this information in the spreadsheet and on the image. See <a href="/about">About</a> for full details.</p>
+  <p class="muted"><img src="/static/mascot/data_boar_mascote_color.svg" alt="" width="32" height="32" style="vertical-align: middle; margin-right: 0.25em;"><strong>{{ about.name }}</strong> v{{ about.version }} · Author: {{ about.author }} · {{ about.license }} · {{ about.copyright }}. Downloaded Excel reports and heatmap images include this information in the spreadsheet and on the image. See <a href="/about">About</a> for full details.</p>
 </section>
 {% endblock %}

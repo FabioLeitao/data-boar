@@ -2,7 +2,7 @@
 
 **Português (Brasil):** [SECURITY.pt_BR.md](SECURITY.pt_BR.md)
 
-This document describes which versions of the application are supported, which dependency baseline is expected, and how to report security vulnerabilities to the maintainers.
+This document describes which versions of the application are supported, which dependency baseline is expected, and how to report security vulnerabilities to the maintainers. For copyright and license: [NOTICE](NOTICE); for making copyright and trademark official: [docs/COPYRIGHT_AND_TRADEMARK.md](docs/COPYRIGHT_AND_TRADEMARK.md) ([pt-BR](docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md)).
 
 ## Supported versions
 
@@ -12,7 +12,7 @@ This document describes which versions of the application are supported, which d
 
 ## Dependencies and environment
 
-Dependencies are declared in **`pyproject.toml`** and managed primarily via **uv**:
+**`pyproject.toml`** is the source of truth for the **uv** toolchain; **pip** and **`requirements.txt`** are derivative (requirements.txt is generated from pyproject.toml for pip-based or legacy environments). Dependencies are declared in **`pyproject.toml`** and managed primarily via **uv**:
 
 - To install in a fresh environment:
 
@@ -41,7 +41,7 @@ Additional client libraries may be required depending on which connectors you us
 
 ## Keeping dependencies up to date
 
-- Dependencies in **`pyproject.toml`** use minimum versions (`>=`) so security patches are allowed; **Dependabot** (see `.github/dependabot.yml`) opens weekly PRs for pip and GitHub Actions. Prefer merging those PRs after CI (tests and audit) pass.
+- Dependencies in **`pyproject.toml`** use minimum versions (`>=`) so security patches are allowed; **Dependabot** (see `.github/dependabot.yml`) opens weekly PRs for pip and GitHub Actions. When applying a pip dependency update (from Dependabot or elsewhere), update **`pyproject.toml`** first (raise the minimum version for that package), then run `uv pip compile pyproject.toml -o requirements.txt` and commit both files; do not merge a change that only edits `requirements.txt`. Prefer merging dependency PRs after CI (tests and audit) pass.
 
 - Locally, install and run a dependency audit:
 
@@ -53,7 +53,7 @@ Additional client libraries may be required depending on which connectors you us
 
   CI runs the same audit on every push/PR.
 
-- When you change dependencies in `pyproject.toml`, regenerate `requirements.txt` using the command above so both files stay in sync.
+- Whenever you change dependencies (including when applying Dependabot or automation recommendations), edit **`pyproject.toml`** first, then regenerate `requirements.txt` with `uv pip compile pyproject.toml -o requirements.txt` so both files stay in sync.
 
 ## Resistance to common vulnerabilities
 
