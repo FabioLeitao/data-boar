@@ -23,7 +23,7 @@ The main entry point is `main.py`. Prefer it over `run.py`.
 
 ### Outcomes
 
-## One-shot audit (no `--web`):
+## One-shot audit (no `--web`)
 
 ```bash
 # Minimal run
@@ -38,7 +38,7 @@ python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Col
 - **Output:** Console prints `Scan session: <session_id>` and `Report written: <path>` (or "No findings to report.").
 - Report path is under `report.output_dir` from config (default: current directory). File name: `Relatorio_Auditoria_<session_id>.xlsx` (and `heatmap_<session_id>.png`).
 
-## REST API server (`--web`):
+## REST API server (`--web`)
 
 ```bash
 python main.py --config config.yaml --web --port 8088
@@ -146,7 +146,7 @@ curl -X POST http://localhost:8088/scan \
   -d '{ "tenant": "Acme Corp", "technician": "Alice Colleague-V" }'
 ```
 
-## Response (200):
+## Response (200)
 
 ```json
 {
@@ -277,7 +277,7 @@ curl -o audit_20250301.log "http://localhost:8088/logs/a1b2c3d4-20250301_143022"
 - Scans available `audit_YYYYMMDD.log` files (newest first) and returns the first one whose content contains that `session_id`.
 - If no such log file is found, you get **404** with `{"detail": "No log file contains session_id ..."`}.
 
-## Typical workflow:
+## Typical workflow
 
 1. `POST /scan` → get `session_id`.
 1. Poll `GET /status` until `running` is `false`.
@@ -370,7 +370,7 @@ targets:
 
 Credentials: `user`, `pass` (or `password`). Optional: `url` to pass a full SQLAlchemy URL instead of host/port/user/database.
 
-## Snowflake (optional, .[bigdata]):
+## Snowflake (optional, .[bigdata])
 
 ```yaml
 targets:
@@ -413,7 +413,7 @@ No credentials. Uses `file_scan` settings (extensions, recursive, scan_sqlite_as
 
 Use `type: api` or `type: rest`. Required: `name`, `base_url` (or `url`). Optional: `paths` or `endpoints`, `discover_url`, `timeout`, `headers`, and an `auth` block.
 
-## Basic auth:
+## Basic auth
 
 ```yaml
 
@@ -428,7 +428,7 @@ Use `type: api` or `type: rest`. Required: `name`, `base_url` (or `url`). Option
       password: "your_password"
 ```
 
-## Bearer token (static or from environment):
+## Bearer token (static or from environment)
 
 ```yaml
 
@@ -442,7 +442,7 @@ Use `type: api` or `type: rest`. Required: `name`, `base_url` (or `url`). Option
       token: "eyJhbGc..."   # or use token_from_env: "API_TOKEN" to read from env
 ```
 
-## OAuth2 client credentials (machine-to-machine):
+## OAuth2 client credentials (machine-to-machine)
 
 ```yaml
 
@@ -461,7 +461,7 @@ Use `type: api` or `type: rest`. Required: `name`, `base_url` (or `url`). Option
 
 Set the env var (e.g. `API_OAUTH_SECRET`) in the environment where the app runs.
 
-## Custom headers (e.g. API key or Negotiate):
+## Custom headers (e.g. API key or Negotiate)
 
 ```yaml
 
@@ -483,7 +483,7 @@ If you omit `auth` but set `user`/`username` and `pass`/`password` on the target
 
 **Power BI** and **Dataverse (Power Apps)** use Azure AD OAuth2 client credentials. No extra package is required (httpx is already a dependency).
 
-## Power BI (`type: powerbi`):
+## Power BI (`type: powerbi`)
 
 - Required: `name`, `tenant_id`, `client_id`, `client_secret` (or under `auth:`).
 - Optional: `workspace_ids` or `group_ids` (list of workspace GUIDs) to limit scan; omit to use “My workspace” and all workspaces.
@@ -500,7 +500,7 @@ If you omit `auth` but set `user`/`username` and `pass`/`password` on the target
     # workspace_ids: ["group-guid-1"]
 ```
 
-## Dataverse / Power Apps (`type: dataverse` or `type: powerapps`):
+## Dataverse / Power Apps (`type: dataverse` or `type: powerapps`)
 
 - Required: `name`, `org_url` (or `environment_url`, e.g. `<https://myorg.crm.dynamics.co>m`), `tenant_id`, `client_id`, `client_secret` (or under `auth:`).
 - Azure AD app needs application permission to Dataverse (admin consent). Scope is derived from `org_url`.
@@ -522,7 +522,7 @@ Findings from Power BI and Dataverse appear in the **Database findings** sheet. 
 
 Install optional deps: `uv pip install -e ".[shares]"`.
 
-## SMB/CIFS:
+## SMB/CIFS
 
 ```yaml
 
@@ -539,7 +539,7 @@ Install optional deps: `uv pip install -e ".[shares]"`.
     recursive: true
 ```
 
-## WebDAV:
+## WebDAV
 
 ```yaml
 
@@ -554,7 +554,7 @@ Install optional deps: `uv pip install -e ".[shares]"`.
     verify_ssl: true
 ```
 
-## SharePoint:
+## SharePoint
 
 ```yaml
 
@@ -567,7 +567,7 @@ Install optional deps: `uv pip install -e ".[shares]"`.
     pass: "***"
 ```
 
-## NFS (path = local mount point; mount NFS before scanning):
+## NFS (path = local mount point; mount NFS before scanning)
 
 ```yaml
 

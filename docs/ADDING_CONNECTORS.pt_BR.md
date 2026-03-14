@@ -268,7 +268,7 @@ if _SNOWFLAKE_AVAILABLE:
     register("snowflake", SnowflakeConnector, ["name", "type", "account", "user", "database"])
 ```
 
-## Exemplo de config (`config.yaml`):
+## Exemplo de config (`config.yaml`)
 
 ```yaml
 targets:
@@ -346,4 +346,4 @@ targets:
 
 Com isso, o novo conector passa a ser usado automaticamente para alvos correspondentes e aparece nos mesmos relatórios Excel e heatmap dos conectores existentes.
 
-**Ver também:** [TOPOLOGY.pt_BR.md](TOPOLOGY.pt_BR.md) ([EN](TOPOLOGY.md)) — topologia da aplicação (engine, registry, conectores); [TESTING.pt_BR.md](TESTING.pt_BR.md) ([EN](TESTING.md)); [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md) ([EN](COMMIT_AND_PR.md)); [compliance-frameworks.pt_BR.md](compliance-frameworks.pt_BR.md) ([EN](compliance-frameworks.md)). Índice da documentação: [README.md](README.md).
+**Ver também:** Índice da documentação (todos os tópicos, ambos os idiomas): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md). [TOPOLOGY.pt_BR.md](TOPOLOGY.pt_BR.md) ([EN](TOPOLOGY.md)) — topologia da aplicação; [TECH_GUIDE.md](TECH_GUIDE.md) · [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md); [TESTING.pt_BR.md](TESTING.pt_BR.md) ([EN](TESTING.md)); [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md) ([EN](COMMIT_AND_PR.md)); [compliance-frameworks.pt_BR.md](compliance-frameworks.pt_BR.md) ([EN](compliance-frameworks.md)).

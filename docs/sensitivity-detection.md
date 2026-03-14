@@ -34,7 +34,7 @@ You can **set the training words for both ML and DL** in the main config file (i
 
 Both `ml_patterns_file` and `dl_patterns_file` use the same structure. You can point both to the same file if you want ML and DL to use the same terms.
 
-## YAML example:
+## YAML example
 
 ```yaml
 # List of terms; each has "text" and "label"
@@ -81,7 +81,7 @@ patterns:
     label: non_sensitive
 ```
 
-## JSON example:
+## JSON example
 
 ```json
 [
@@ -398,3 +398,5 @@ When a custom pattern matches the column name or sample text, the finding is rep
 - **Same format:** Both use a list of `{ text, label }` with `label` = `sensitive` or `non_sensitive` (or `1` / `0`).
 - **Inline overrides file:** When `ml_terms` or `dl_terms` are non-empty in config, they are used instead of loading from the corresponding file.
 - **Regex patterns:** Use `regex_overrides_file` in the main config to add or override patterns for value-based detection (see [Custom regex patterns](#custom-regex-patterns-detecting-new-personalsensitive-values) above).
+
+**Documentation index** (all topics, both languages): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
