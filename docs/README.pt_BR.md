@@ -17,12 +17,14 @@ Esta pasta centraliza a **documentação da aplicação**. A raiz do repositóri
 
 Estes permanecem na raiz do repositório para o GitHub e a automação:
 
-| Documento        | English                                     | Português (pt-BR)                                       |
-| ---------------- | ----------------------------                | ------------------------------------                    |
-| Readme           | [README.md](../README.md)                   | [README.pt_BR.md](../README.pt_BR.md)                   |
-| Security         | [SECURITY.md](../SECURITY.md)               | [SECURITY.pt_BR.md](../SECURITY.pt_BR.md)               |
-| Contributing     | [CONTRIBUTING.md](../CONTRIBUTING.md)       | [CONTRIBUTING.pt_BR.md](../CONTRIBUTING.pt_BR.md)       |
-| Code of conduct  | [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md) | [CODE_OF_CONDUCT.pt_BR.md](../CODE_OF_CONDUCT.pt_BR.md) |
+| Documento          | English                                     | Português (pt-BR)                                       |
+| ------------------ | ----------------------------                | ------------------------------------                    |
+| Readme             | [README.md](../README.md)                   | [README.pt_BR.md](../README.pt_BR.md)                   |
+| License            | [LICENSE](../LICENSE)                       | —                                                        |
+| Notice (copyright) | [NOTICE](../NOTICE)                         | —                                                        |
+| Security           | [SECURITY.md](../SECURITY.md)               | [SECURITY.pt_BR.md](../SECURITY.pt_BR.md)               |
+| Contributing       | [CONTRIBUTING.md](../CONTRIBUTING.md)       | [CONTRIBUTING.pt_BR.md](../CONTRIBUTING.pt_BR.md)       |
+| Code of conduct    | [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md) | [CODE_OF_CONDUCT.pt_BR.md](../CODE_OF_CONDUCT.pt_BR.md) |
 
 ## Uso e configuração
 
@@ -47,14 +49,15 @@ Os artefatos de deploy (Compose, Kubernetes, exemplos de config) ficam na pasta 
 
 ## Interno e referência
 
-| Tópico           | English                              | Português (pt-BR)                                |
-| ---------------- | -----------------------------        | ------------------------------------             |
-| Testes           | [TESTING.md](TESTING.md)             | [TESTING.pt_BR.md](TESTING.pt_BR.md)             |
-| Topologia        | [TOPOLOGY.md](TOPOLOGY.md)           | [TOPOLOGY.pt_BR.md](TOPOLOGY.pt_BR.md)           |
-| Commit e PR      | [COMMIT_AND_PR.md](COMMIT_AND_PR.md) | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md) |
+| Tópico                 | English                                      | Português (pt-BR)                                |
+| ---------------------- | ------------------------------------         | ------------------------------------             |
+| Testes                 | [TESTING.md](TESTING.md)                     | [TESTING.pt_BR.md](TESTING.pt_BR.md)             |
+| Topologia              | [TOPOLOGY.md](TOPOLOGY.md)                   | [TOPOLOGY.pt_BR.md](TOPOLOGY.pt_BR.md)           |
+| Commit e PR            | [COMMIT_AND_PR.md](COMMIT_AND_PR.md)         | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md) |
+| Direitos autorais e marca | [COPYRIGHT_AND_TRADEMARK.md](COPYRIGHT_AND_TRADEMARK.md) | [COPYRIGHT_AND_TRADEMARK.pt_BR.md](COPYRIGHT_AND_TRADEMARK.pt_BR.md) |
 
 - [PLANS_TODO.md](PLANS_TODO.md) ([pt-BR](PLANS_TODO.pt_BR.md)) — Status dos planos e estado atual da aplicação (fonte única de verdade para os to-dos dos planos abertos).
-- [releases/](releases/) — Notas de release (ex.: 1.4.1, 1.4.0).
+- [releases/](releases/) — Notas de release (ex.: 1.5.0, 1.4.3, 1.4.0).
 - [completed/](completed/) — Planos concluídos arquivados e o checklist de implementação ([NEXT_STEPS.md](completed/NEXT_STEPS.md) ([pt-BR](completed/NEXT_STEPS.pt_BR.md)), todos os itens Feitos.
 
 Man pages: `docs/lgpd_crawler.1` (comando), `docs/lgpd_crawler.5` (config e formatos de arquivo). Instale e visualize com `man lgpd_crawler` e `man 5 lgpd_crawler` (veja o README na raiz).
