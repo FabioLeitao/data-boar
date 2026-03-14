@@ -390,3 +390,5 @@ The application runs correctly when placed behind **NAT**, a **load balancer**, 
 - **TLS at the proxy:** If HTTPS is terminated at the proxy (recommended), set **X-Forwarded-Proto: https** on requests to the app so that security headers (e.g. HSTS) and scheme detection work correctly. See [SECURITY.md](../../SECURITY.md) for HTTP security headers.
 - **Client IP and host:** If you need the real client IP or original host in logs or logic, configure your proxy to send **X-Forwarded-For** and **X-Forwarded-Host**; the app can be extended to trust these when needed.
 - **Subpath:** If the app is served under a path prefix (e.g. <https://example.com/audit/>), configure the proxy to strip or rewrite the prefix so the app still sees paths starting at `/`; or use the proxy's rewrite rules to map `/audit/` to the container root.
+
+**Documentation index** (all topics, both languages): [../README.md](../README.md) · [../README.pt_BR.md](../README.pt_BR.md). **Technical guide:** [../TECH_GUIDE.md](../TECH_GUIDE.md) · [../TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md).
