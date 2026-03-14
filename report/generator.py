@@ -3,6 +3,11 @@ Single report generator: reads database_findings, filesystem_findings, scan_fail
 for a session; produces Excel with sheets "Report info" (session + about), "Database findings", etc.,
 and heatmap image (sensitivity/risk) with about footer. Returns path to Excel file.
 
+Branding: if api/static/mascot/data_boar_mascote_color_full.png exists, a small mascot is embedded
+in the Report info sheet (cell D1, 48×48 px) and in the heatmap PNG (lower-right corner, 8% size).
+The heatmap PNG is also embedded in the "Heatmap data" sheet (below the table, no overlap), scaled
+to fit letter/A4 when printed (fit to one page).
+
 Structure: generate_report() delegates all sheet writing to _write_excel_sheets() and helpers
 (_build_report_info, _build_executive_summary_rows, etc.). Keep sheet logic in those helpers
 so branches stay in sync with main and merge conflicts are avoided (see CONTRIBUTING.md).
@@ -12,10 +17,23 @@ from pathlib import Path
 from typing import Any, Callable
 
 import pandas as pd
+from openpyxl.drawing.image import Image as OpenpyxlImage
+from openpyxl.worksheet.properties import PageSetupProperties
 
 from core.about import get_about_info
 from core.aggregated_identification import run_aggregation
 from core.database import failure_hint
+
+# Mascot path for report branding (Excel Report info sheet and heatmap PNG)
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+_MASCOT_PNG = _REPO_ROOT / "api" / "static" / "mascot" / "data_boar_mascote_color_full.png"
+
+
+def _mascot_path() -> Path | None:
+    """Return path to mascot PNG for report branding, or None if not found."""
+    if _MASCOT_PNG.exists():
+        return _MASCOT_PNG
+    return None
 
 # Optional matplotlib/seaborn for heatmap
 try:
@@ -69,6 +87,19 @@ def _create_heatmap(db_rows: list[dict], fs_rows: list[dict], output_dir: str, s
     plt.tight_layout()
     plt.subplots_adjust(bottom=0.12)
     plt.figtext(0.5, 0.02, footer, ha="center", fontsize=7, style="italic")
+    # Small mascot branding in lower-right corner (minimal, professional)
+    mascot = _mascot_path()
+    if mascot:
+        try:
+            from matplotlib.image import imread
+            from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+            img = imread(mascot)
+            ax = plt.gca()
+            ax_inset = inset_axes(ax, width="8%", height="8%", loc="lower right", borderpad=0.35)
+            ax_inset.imshow(img)
+            ax_inset.axis("off")
+        except Exception:
+            pass
     out_path = Path(output_dir) / f"heatmap_{session_id[:12]}.png"
     plt.savefig(out_path, bbox_inches="tight")
     plt.close()
@@ -100,6 +131,13 @@ _TREND_THIS_RUN_COUNT = "This run (count)"
 _TREND_THIS_RUN_DATE = "This run (date)"
 _TREND_PREV_RUN_COUNT = "Previous run (count)"
 _TREND_PREV_RUN_DATE = "Previous run (date)"
+_TREND_PREV_1_COUNT = "Prev run 1 (count)"
+_TREND_PREV_1_DATE = "Prev run 1 (date)"
+_TREND_PREV_2_COUNT = "Prev run 2 (count)"
+_TREND_PREV_2_DATE = "Prev run 2 (date)"
+_TREND_PREV_3_COUNT = "Prev run 3 (count)"
+_TREND_PREV_3_DATE = "Prev run 3 (date)"
+_MAX_PREV_RUNS = 3
 _METRIC_TOTAL_FINDINGS = "Total findings (DB + filesystem)"
 _METRIC_TOTAL_FINDINGS_LABEL = "Total findings"
 _METRIC_DB_FINDINGS = "Database findings"
@@ -109,6 +147,8 @@ _METRIC_SCAN_FAILURES_LABEL = "Scan failures"
 _SHEET_DB_FINDINGS = "Database findings"
 _SHEET_FS_FINDINGS = "Filesystem findings"
 _SHEET_SCAN_FAILURES = "Scan failures"
+_SHEET_REPORT_INFO = "Report info"
+_SHEET_HEATMAP_DATA = "Heatmap data"
 
 
 def _change_note(curr: int, prev_val: int | None, metric_label: str) -> str:
@@ -123,23 +163,71 @@ def _change_note(curr: int, prev_val: int | None, metric_label: str) -> str:
     return "No change from previous run."
 
 
+def _change_note_aggregate(
+    current_count: int,
+    prev_values: list[int],
+    metric_label: str,
+) -> str:
+    """
+    Build an insightful note across up to 3 previous runs: first run, improvement, increase, or trend summary.
+    Keeps the note helpful for DPO and security team (similar to single-run note where applicable).
+    """
+    if not prev_values:
+        return "First run or no previous session to compare."
+    prev_1 = prev_values[0]
+    delta_1 = current_count - prev_1
+    n = len(prev_values)
+
+    if n == 1:
+        return _change_note(current_count, prev_1, metric_label)
+
+    # Two or three previous runs: summarize trend
+    if delta_1 < 0:
+        # Improvement vs most recent
+        if all(current_count <= v for v in prev_values):
+            return f"Improvement over last {n} runs: {metric_label} reduced or stable (sustained trend)."
+        return f"Improvement: {metric_label} reduced by {abs(delta_1)} vs previous run; compare with earlier runs above."
+    if delta_1 > 0:
+        increases = sum(1 for v in prev_values if current_count > v)
+        if increases >= 2:
+            return f"Increase in {increases} of last {n} runs – review sheet for details; may require DPO action."
+        return f"New or increased: {metric_label} up by {delta_1} vs previous run – review sheet for details; may require DPO action."
+    # No change vs previous
+    if all(current_count == v for v in prev_values):
+        return f"No change over last {n} runs; trend stable."
+    return "No change from previous run."
+
+
 def _one_trend_row(
     metric_display: str,
     current_count: int,
     current_started_at: str | None,
-    prev_val: int | None,
-    prev_started_at: str | None,
+    prev_runs: list[dict],
+    get_prev_value: Callable[[dict], int],
     note_label: str,
 ) -> dict:
-    """Build a single row for the Trends sheet (this run vs previous run)."""
+    """Build a single row for the Trends sheet (this run vs up to 3 previous runs)."""
+    prev_values = [get_prev_value(p) for p in prev_runs]
+    prev_1_val = prev_values[0] if prev_values else None
+    prev_1_date = prev_runs[0].get("started_at") if prev_runs else None
+    # Pad to _MAX_PREV_RUNS for consistent columns
+    counts: list[int | str] = [prev_values[i] if i < len(prev_values) else "-" for i in range(_MAX_PREV_RUNS)]
+    dates: list[str] = [
+        (prev_runs[i].get("started_at") or "-") if i < len(prev_runs) else "-"
+        for i in range(_MAX_PREV_RUNS)
+    ]
     return {
         "Metric": metric_display,
         _TREND_THIS_RUN_COUNT: current_count,
         _TREND_THIS_RUN_DATE: current_started_at or "-",
-        _TREND_PREV_RUN_COUNT: prev_val if prev_val is not None else "-",
-        _TREND_PREV_RUN_DATE: prev_started_at or "-",
-        "Change": (current_count - prev_val) if prev_val is not None else "-",
-        "Note": _change_note(current_count, prev_val, note_label),
+        _TREND_PREV_1_COUNT: counts[0],
+        _TREND_PREV_1_DATE: dates[0],
+        _TREND_PREV_2_COUNT: counts[1],
+        _TREND_PREV_2_DATE: dates[1],
+        _TREND_PREV_3_COUNT: counts[2],
+        _TREND_PREV_3_DATE: dates[2],
+        "Change": (current_count - prev_1_val) if prev_1_val is not None else "-",
+        "Note": _change_note_aggregate(current_count, prev_values, note_label),
     }
 
 
@@ -369,30 +457,39 @@ def _trends_rows(
     current_started_at: str | None,
 ) -> list[dict]:
     """
-    Build rows for "Trends - Session comparison": compare this run with the previous run
+    Build rows for "Trends - Session comparison": compare this run with up to 3 previous runs
     to show improvements (fewer findings) or new or increased findings for DPO and security team.
+    Columns include Prev run 1/2/3 (count and date) for better aggregate trend view; Note stays insightful.
     """
-    prev = db_manager.get_previous_session(session_id) if hasattr(db_manager, "get_previous_session") else None
-    prev_started_at = prev.get("started_at") if prev else None
+    prev_runs: list[dict] = []
+    if hasattr(db_manager, "get_previous_sessions"):
+        prev_runs = db_manager.get_previous_sessions(session_id, limit=_MAX_PREV_RUNS)
+    elif hasattr(db_manager, "get_previous_session"):
+        prev = db_manager.get_previous_session(session_id)
+        if prev:
+            prev_runs = [prev]
+
     total_current = current_db + current_fs
-    total_prev = (prev["database_findings"] + prev["filesystem_findings"]) if prev else None
+
+    def total_findings(s: dict) -> int:
+        return (s.get("database_findings") or 0) + (s.get("filesystem_findings") or 0)
 
     rows: list[dict] = []
     rows.append(_one_trend_row(
         _METRIC_TOTAL_FINDINGS, total_current, current_started_at,
-        total_prev, prev_started_at, _METRIC_TOTAL_FINDINGS_LABEL,
+        prev_runs, total_findings, _METRIC_TOTAL_FINDINGS_LABEL,
     ))
     rows.append(_one_trend_row(
         _METRIC_DB_FINDINGS, current_db, current_started_at,
-        prev.get("database_findings") if prev else None, prev_started_at, _METRIC_DB_FINDINGS,
+        prev_runs, lambda s: s.get("database_findings") or 0, _METRIC_DB_FINDINGS,
     ))
     rows.append(_one_trend_row(
         _METRIC_FS_FINDINGS, current_fs, current_started_at,
-        prev.get("filesystem_findings") if prev else None, prev_started_at, _METRIC_FS_FINDINGS,
+        prev_runs, lambda s: s.get("filesystem_findings") or 0, _METRIC_FS_FINDINGS,
     ))
     rows.append(_one_trend_row(
         _METRIC_SCAN_FAILURES, current_fail, current_started_at,
-        prev.get("scan_failures") if prev else None, prev_started_at, _METRIC_SCAN_FAILURES_LABEL,
+        prev_runs, lambda s: s.get("scan_failures") or 0, _METRIC_SCAN_FAILURES_LABEL,
     ))
     return rows
 
@@ -499,9 +596,21 @@ def _write_excel_sheets(
     current_fail: int,
     current_started_at: str | None,
     report_info: list[dict],
+    heatmap_path: str | None = None,
 ) -> None:
     """Write all Excel sheets (Report info, Executive summary, findings, recommendations, trends, heatmap data)."""
-    pd.DataFrame(report_info).to_excel(writer, sheet_name="Report info", index=False)
+    pd.DataFrame(report_info).to_excel(writer, sheet_name=_SHEET_REPORT_INFO, index=False)
+    # Small mascot branding in top-right of Report info (D1), minimal; table stays in A:B
+    mascot = _mascot_path()
+    if mascot:
+        try:
+            ws = writer.sheets[_SHEET_REPORT_INFO]
+            img = OpenpyxlImage(str(mascot))
+            img.width = 48
+            img.height = 48
+            ws.add_image(img, "D1")
+        except Exception:
+            pass
     if report_cfg.get("include_executive_summary", False) and (db_rows_for_sheets or fs_rows_for_sheets):
         pd.DataFrame(_build_executive_summary_rows(db_rows_for_sheets, fs_rows_for_sheets)).to_excel(
             writer, sheet_name="Executive summary", index=False
@@ -559,7 +668,24 @@ def _write_excel_sheets(
     heatmap_rows = [{"target": r.get("target_name"), "sensitivity": r.get("sensitivity_level")} for r in db_rows_for_sheets + fs_rows_for_sheets]
     if heatmap_rows:
         summary = pd.DataFrame(heatmap_rows).groupby(["target", "sensitivity"]).size().unstack(fill_value=0)
-        summary.to_excel(writer, sheet_name="Heatmap data")
+        summary.to_excel(writer, sheet_name=_SHEET_HEATMAP_DATA)
+        # Embed heatmap image below the table (no overlap); scale to fit letter/A4 when printed
+        if heatmap_path and Path(heatmap_path).exists():
+            try:
+                ws = writer.sheets[_SHEET_HEATMAP_DATA]
+                n_data_rows = len(summary) + 1  # header + data
+                image_anchor_row = n_data_rows + 2  # gap of 2 rows below table
+                img = OpenpyxlImage(str(heatmap_path))
+                # Size for ~5"×3" at 96dpi so sheet (table + image) fits one page
+                img.width = 480
+                img.height = 288
+                ws.add_image(img, f"A{image_anchor_row}")
+                # Fit sheet to one page when printed (letter/A4)
+                ws.sheet_properties.pageSetUpPr = PageSetupProperties(fitToPage=True)
+                ws.page_setup.fitToWidth = 1
+                ws.page_setup.fitToHeight = 1
+            except Exception:
+                pass
 
 
 def _build_report_info(session_id: str, meta: dict, about: dict) -> list[dict]:
@@ -609,11 +735,13 @@ def generate_report(
     about = get_about_info()
     report_info = _build_report_info(session_id, meta, about)
     out_path = Path(output_dir) / f"Relatorio_Auditoria_{session_id[:16]}.xlsx"
+    # Create heatmap PNG first so we can embed it in the Heatmap data sheet
+    heatmap_path = _create_heatmap(db_rows_for_sheets, fs_rows_for_sheets, output_dir, session_id)
     with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
         _write_excel_sheets(
             writer, session_id, report_cfg, db_rows_for_sheets, fs_rows_for_sheets,
             config, fail_rows, db_manager, current_db, current_fs, current_fail,
             current_started_at, report_info,
+            heatmap_path=heatmap_path,
         )
-    _create_heatmap(db_rows_for_sheets, fs_rows_for_sheets, output_dir, session_id)
     return str(out_path)
