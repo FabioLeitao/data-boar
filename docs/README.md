@@ -58,8 +58,8 @@ Deploy assets (Compose, Kubernetes, config examples) remain in the [deploy/](../
 | Commit and PR   | [COMMIT_AND_PR.md](COMMIT_AND_PR.md) | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md) |
 | Copyright and trademark | [COPYRIGHT_AND_TRADEMARK.md](COPYRIGHT_AND_TRADEMARK.md) | [COPYRIGHT_AND_TRADEMARK.pt_BR.md](COPYRIGHT_AND_TRADEMARK.pt_BR.md) |
 
-- [PLANS_TODO.md](PLANS_TODO.md) ([pt-BR](PLANS_TODO.pt_BR.md)) — Plan status and current app state (single source of truth for open-plan to-dos).
+- [PLANS_TODO.md](PLANS_TODO.md) — Plan status and current app state (single source of truth for open-plan to-dos). *Plan files are EN-only for history; operator docs are EN + pt-BR.*
 - [releases/](releases/) — Release notes (e.g. 1.5.0, 1.4.3, 1.4.0).
-- [completed/](completed/) — Archived completed plans and the implementation checklist ([NEXT_STEPS.md](completed/NEXT_STEPS.md) ([pt-BR](completed/NEXT_STEPS.pt_BR.md)), all items Done.
+- [completed/](completed/) — Archived completed plans and the implementation checklist ([NEXT_STEPS.md](completed/NEXT_STEPS.md)), all items Done.
 
 Man pages: `docs/lgpd_crawler.1` (command), `docs/lgpd_crawler.5` (config and file formats). Install with symlinks so both names work; view with `man data_boar` or `man lgpd_crawler`, and `man 5 data_boar` or `man 5 lgpd_crawler` (see root README).
