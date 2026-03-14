@@ -30,3 +30,5 @@ Findings are stored with a free-form **`norm_tag`** and **`pattern_detected`**; 
 - **Custom connectors:** New data sources can emit findings with any `norm_tag`; reporting and recommendations will use config overrides when provided, otherwise the built-in fallbacks.
 
 No change to detector logic or thresholds is required; extensibility is via config and optional override files.
+
+**Documentation index** (all topics, both languages): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
