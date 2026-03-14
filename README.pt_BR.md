@@ -1,9 +1,10 @@
 # Data Boar (Português – Brasil)
 
+![Data Boar mascot](api/static/mascot/data_boar_mascote_color.svg)
+
 Data Boar é uma aplicação para auditoria de dados pessoais e sensíveis em bancos de dados e sistemas de arquivos, alinhada a **LGPD**, **GDPR**, **CCPA**, **HIPAA** e **GLBA**. Ela descobre e mapeia possíveis dados pessoais/sensíveis via **regex** e **ML**, armazena apenas **metadados** em um banco SQLite local (incluindo tags opcionais de **cliente/tenant** e **técnico/operador** por varredura) e gera relatórios em Excel e um **heatmap** de sensibilidade/risco em PNG. O nome do pacote Python permanece **python3-lgpd-crawler** para compatibilidade. O mascote de **javali** (boar) reforça a ideia de um crawler “farejando” e procurando dados em várias fontes (bancos, arquivos, APIs, dashboards, compartilhamentos) para fins de conformidade.
 
-> **Release atual:** 1.4.3 (veja [docs/releases/1.4.3.md](docs/releases/1.4.3.md) e a página de [Releases no GitHub](https://github.com/FabioLeitao/data-boar/releases/tag/v1.4.3)).
-
+> **Release atual:** 1.5.1 (veja [docs/releases/1.5.0.md](docs/releases/1.5.0.md) e a página de [Releases no GitHub](https://github.com/FabioLeitao/data-boar/releases)).
 > **Manutenção da documentação:** sempre que um novo recurso ou opção de linha de comando for adicionado, atualize **este arquivo** e o `README.md` em inglês, bem como os arquivos `docs/USAGE.md` e `docs/USAGE.pt_BR.md`, para manter as versões sincronizadas.
 > **English:** [README.md](README.md) · [docs/USAGE.md](docs/USAGE.md)
 
@@ -15,8 +16,8 @@ Data Boar é uma aplicação para auditoria de dados pessoais e sensíveis em ba
 - **Heurísticas para reduzir falsos positivos:** letras de música e cifras de violão são detectadas e tratadas de forma especial para reduzir falsos positivos (datas/números em letras/cifras não viram HIGH sozinhos).
 - **SQLite único:** todas as sessões de varredura são gravadas em `audit_results.db`, com tabelas separadas para achados de banco de dados, achados de filesystem e falhas de varredura. Cada sessão tem `session_id`, `started_at`, `finished_at`, `status`, `tenant_name` (cliente/tenant) e `technician_name` (técnico/operador).
 - **Relatórios:** para cada sessão, é gerado um arquivo Excel com abas:
-- **Report info** (Session ID, Started at, Tenant/Customer, Technician/Operator, Application, Version, Author, License, Copyright)
-- Database findings, Filesystem findings, Scan failures, Recommendations, Praise / existing controls, Trends – Session comparison, Heatmap data
+- **Report info** (Session ID, Started at, Tenant/Customer, Technician/Operator, Application, Version, Author, License, Copyright; mascote opcional)
+- Database findings, Filesystem findings, Scan failures, Recommendations, Praise / existing controls, **Trends – Session comparison** (esta execução vs até 3 anteriores; notas agregadas), **Heatmap data** (tabela + imagem do heatmap embutida, ajuste a uma página ao imprimir)
 - Um arquivo **heatmap_\<session_prefix\>.png** é gerado com o mapa de calor de sensibilidade/risco (inclui rodapé com aplicação, autor e licença).
 - **CLI e API REST:** modo de execução única via linha de comando ou modo servidor (FastAPI) com dashboard web (Help, About com autor e licença), endpoints para varreduras, relatórios, heatmap, logs e `PATCH /sessions/{session_id}` para metadados de tenant/técnico. Opcionalmente é possível exigir **chave de API** (X-API-Key ou Authorization: Bearer) para todos os endpoints exceto GET /health. A aplicação funciona atrás de NAT, load balancer ou proxy reverso (nginx, Traefik, Caddy); defina **X-Forwarded-Proto: https** quando o TLS for terminado no proxy.
 
@@ -187,10 +188,10 @@ Em sistemas que usam a interface tradicional
 `man`
 , há duas páginas de manual:
 
-- **Seção 1 (comando):** `docs/lgpd_crawler.1` – descreve o programa, suas opções, a API web e exemplos com curl. Visualize com `man lgpd_crawler` ou `man 1 lgpd_crawler`.
-- **Seção 5 (formatos de arquivo):** `docs/lgpd_crawler.5` – descreve a topologia do config principal e dos arquivos opcionais (regex overrides, arquivos de termos ML/DL, learned patterns), com exemplos. Visualize com `man 5 lgpd_crawler`.
+- **Seção 1 (comando):** `docs/lgpd_crawler.1` – descreve o programa, suas opções, a API web e exemplos com curl. Visualize com `man data_boar` ou `man lgpd_crawler` (ou `man 1 data_boar`, `man 1 lgpd_crawler`).
+- **Seção 5 (formatos de arquivo):** `docs/lgpd_crawler.5` – descreve a topologia do config principal e dos arquivos opcionais (regex overrides, arquivos de termos ML/DL, learned patterns), com exemplos. Visualize com `man 5 data_boar` ou `man 5 lgpd_crawler`.
 
-No Linux/BSD, a seção 1 é para programas e comandos; a seção 5 é para formatos de arquivo e convenções de configuração. Instalar ambas permite usar `man lgpd_crawler` para saber como executar a aplicação e `man 5 lgpd_crawler` para saber como configurá-la e definir padrões.
+No Linux/BSD, a seção 1 é para programas e comandos; a seção 5 é para formatos de arquivo e convenções de configuração. Instale ambas as páginas e crie os symlinks (veja abaixo) para que **data_boar** e **lgpd_crawler** funcionem: `man data_boar` / `man lgpd_crawler` para o comando, `man 5 data_boar` / `man 5 lgpd_crawler` para config e formatos de arquivo.
 
 **Instalar ambas as páginas** (crie os diretórios de destino antes para que o `cp` não falhe se não existirem). Logo após criar os diretórios, execute `chmod 755` neles para que todos os usuários possam acessar as páginas de manual; dependendo do umask padrão, diretórios novos podem ficar 750 e apenas root conseguiria acessá-los. Após copiar, execute `chmod 644` nos arquivos instalados para que todos possam lê-los (os arquivos copiados podem ficar 640).
 
@@ -201,17 +202,19 @@ sudo chmod 755 /usr/local/share/man/man1/ /usr/local/share/man/man5/
 sudo cp docs/lgpd_crawler.1 /usr/local/share/man/man1/
 sudo cp docs/lgpd_crawler.5 /usr/local/share/man/man5/
 sudo chmod 644 /usr/local/share/man/man1/lgpd_crawler.1 /usr/local/share/man/man5/lgpd_crawler.5
+sudo ln -sf lgpd_crawler.1 /usr/local/share/man/man1/data_boar.1
+sudo ln -sf lgpd_crawler.5 /usr/local/share/man/man5/data_boar.5
 sudo mandb    # ou: sudo makewhatis   # conforme a distro
 ```
 
-Depois:
+Os symlinks fazem com que **data_boar** e **lgpd_crawler** apontem para as mesmas páginas. Depois:
 
 ```bash
-man lgpd_crawler     # comando e opções (seção 1)
-man 5 lgpd_crawler   # config e formatos de arquivo (seção 5)
+man data_boar        # ou: man lgpd_crawler     # comando e opções (seção 1)
+man 5 data_boar      # ou: man 5 lgpd_crawler   # config e formatos de arquivo (seção 5)
 ```
 
-Ao adicionar novas opções de CLI ou capacidades da API, atualize `docs/lgpd_crawler.1`; ao alterar chaves de config ou formatos de arquivos de padrão, atualize `docs/lgpd_crawler.5` e este README para que as man pages continuem refletindo o comportamento atual. Para **bumps de versão** (convenção major.minor.build e onde atualizar o número da versão), veja [docs/VERSIONING.pt_BR.md](docs/VERSIONING.pt_BR.md) ([inglês](docs/VERSIONING.md)).
+Ao adicionar novas opções de CLI ou capacidades da API, atualize `docs/lgpd_crawler.1`; ao alterar chaves de config ou formatos de arquivos de padrão, atualize `docs/lgpd_crawler.5` e este README para que as man pages continuem refletindo o comportamento atual. Os mesmos arquivos são visualizados como `man data_boar` e `man lgpd_crawler` (seções 1 e 5) via symlinks na instalação. Para **bumps de versão** (convenção major.minor.build e onde atualizar o número da versão), veja [docs/VERSIONING.pt_BR.md](docs/VERSIONING.pt_BR.md) ([inglês](docs/VERSIONING.md)).
 
 ## Deploy com Docker
 
@@ -219,16 +222,16 @@ Você pode executar a API como **container único** (`docker run`), com **Docker
 
 ### Imagem pré-construída (Docker Hub)
 
-Uma imagem Docker está disponível no **Docker Hub**, permitindo executar a aplicação sem clonar o repositório:
+Imagens Docker estão disponíveis no **Docker Hub**, permitindo executar a aplicação sem clonar o repositório:
 
-- **Repositório:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)
-- **Nome da imagem:** `fabioleitao/python3-lgpd-crawler:latest` (tag `latest`; outras tags de versão podem ser publicadas)
+- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` e `fabioleitao/data_boar:1.5.1`
+- **Legado:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler) — `fabioleitao/python3-lgpd-crawler:latest` (a mesma imagem pode ser publicada nos dois nomes)
 
 Exemplo: executar a API web com um diretório local de configuração:
 
 ```bash
-docker pull fabioleitao/python3-lgpd-crawler:latest
-docker run -d -p 8088:8088 -v /caminho/para/seu/data:/data -e CONFIG_PATH=/data/config.yaml fabioleitao/python3-lgpd-crawler:latest
+docker pull fabioleitao/data_boar:latest
+docker run -d -p 8088:8088 -v /caminho/para/seu/data:/data -e CONFIG_PATH=/data/config.yaml fabioleitao/data_boar:latest
 ```
 
 Prepare `/data/config.yaml` a partir de `deploy/config.example.yaml` (veja [docs/deploy/DEPLOY.pt_BR.md](docs/deploy/DEPLOY.pt_BR.md) ([EN](docs/deploy/DEPLOY.md))). Você pode optar por usar essa imagem como container em vez de clonar o código do Git e construir localmente.
@@ -249,14 +252,17 @@ A aplicação referencia explicitamente **LGPD**, **GDPR**, **CCPA**, **HIPAA** 
 
 ## Dependências e sincronização (pyproject.toml e requirements.txt)
 
-- O arquivo **`pyproject.toml`** é a fonte de verdade das dependências.
-- Quando precisar de um `requirements.txt` (por exemplo para ambientes legados):
+- **Fonte de verdade:** Para a toolchain **uv**, o **`pyproject.toml`** é a única fonte de verdade das bibliotecas; **pip** e **`requirements.txt`** são derivados (o requirements.txt é gerado a partir do pyproject.toml para ambientes que usam pip). As dependências são declaradas em **`pyproject.toml`**; o **`requirements.txt`** não deve ser editado à mão para alterações de versão. Ao adicionar, remover ou alterar uma dependência, edite apenas **`pyproject.toml`** e depois regenere o `requirements.txt`.
+- **Regenerar requirements.txt após qualquer alteração de dependência:**
 
 ```bash
+# Na raiz do projeto: gerar requirements.txt a partir de pyproject.toml com uv
 uv pip compile pyproject.toml -o requirements.txt
 ```
 
 Isso gera um `requirements.txt` travado e consistente com o que `uv sync` instala.
+
+- **Dependabot / automação:** Se um PR (ex.: do Dependabot) sugerir atualizar apenas o `requirements.txt`, aplique a alteração na **fonte de verdade** primeiro: atualize a versão mínima correspondente em **`pyproject.toml`** (ex.: `fonttools>=4.62.1`), execute `uv pip compile pyproject.toml -o requirements.txt` e faça commit dos dois arquivos. Não faça merge de uma atualização de dependência que edite só o `requirements.txt`.
 
 ---
 
@@ -267,3 +273,7 @@ Para detalhes mais avançados (conectores opcionais, REST APIs, Power BI, Datave
 - `docs/USAGE.pt_BR.md` (português – uso da API e configuração)
 - **Adicionar novo conector:** [docs/ADDING_CONNECTORS.pt_BR.md](docs/ADDING_CONNECTORS.pt_BR.md) (português) · [docs/ADDING_CONNECTORS.md](docs/ADDING_CONNECTORS.md) (inglês)
 - **Detecção de sensibilidade (ML/DL):** [docs/sensitivity-detection.pt_BR.md](docs/sensitivity-detection.pt_BR.md) (português) · [docs/sensitivity-detection.md](docs/sensitivity-detection.md) (inglês)
+
+## Licença e direitos autorais
+
+Veja [LICENSE](LICENSE). Aviso de projeto e direitos autorais: [NOTICE](NOTICE). Para tornar direitos autorais e marca oficial (registro, registros): [docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md](docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md) (português) · [docs/COPYRIGHT_AND_TRADEMARK.md](docs/COPYRIGHT_AND_TRADEMARK.md) (inglês).

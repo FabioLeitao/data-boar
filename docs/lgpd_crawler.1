@@ -1,10 +1,11 @@
 .\" lgpd_crawler.1 - man page for Data Boar (python3-lgpd-crawler engine)
-.TH LGPD_CRAWLER 1 "March 2026" "Data Boar 1.5.0" "User Commands"
+.\" View as: man data_boar, man lgpd_crawler, man 1 data_boar, man 1 lgpd_crawler
+.TH DATA_BOAR 1 "March 2026" "Data Boar 1.5.1" "User Commands"
 .SH NAME
-lgpd_crawler \- audit databases and filesystems for personal and sensitive data
+data_boar, lgpd_crawler \- audit databases and filesystems for personal and sensitive data (Data Boar)
 .
 .SH SYNOPSIS
-.B lgpd_crawler
+.B data_boar
 [
 .B \-\-config
 .I FILE
@@ -28,6 +29,9 @@ lgpd_crawler \- audit databases and filesystems for personal and sensitive data
 .I NAME
 ]
 .
+.P
+.B lgpd_crawler
+is accepted as an alias; both names refer to the same application.
 .P
 The actual entry point is:
 .br
@@ -170,7 +174,9 @@ and
 fields (the CLI only logs warnings and exit codes remain unchanged). See
 .I docs/USAGE.md
 and
-.I lgpd_crawler (5)
+.I data_boar (5)
+(or
+.I lgpd_crawler (5))
 for full configuration examples.
 .IP \(bu 2
 Optional:
@@ -408,29 +414,46 @@ curl \-X POST http://localhost:8088/scan \\
 .RE
 .
 .SH INSTALLATION OF THIS MAN PAGE
-To install this man page system\-wide on a typical Linux or BSD system, ensure the target directory exists, then copy the file and update the man index:
+To install this man page system\-wide on a typical Linux or BSD system, ensure the target directories exist, copy both section 1 and 5 pages, create symlinks so that both
+.B data_boar
+and
+.B lgpd_crawler
+work, then update the man index:
 .PP
 .RS
 .nf
-sudo mkdir \-p /usr/local/share/man/man1/
-sudo chmod 755 /usr/local/share/man/man1/
+sudo mkdir \-p /usr/local/share/man/man1/ /usr/local/share/man/man5/
+sudo chmod 755 /usr/local/share/man/man1/ /usr/local/share/man/man5/
 sudo cp docs/lgpd_crawler.1 /usr/local/share/man/man1/
-sudo chmod 644 /usr/local/share/man/man1/lgpd_crawler.1
+sudo cp docs/lgpd_crawler.5 /usr/local/share/man/man5/
+sudo chmod 644 /usr/local/share/man/man1/lgpd_crawler.1 /usr/local/share/man/man5/lgpd_crawler.5
+sudo ln \-sf lgpd_crawler.1 /usr/local/share/man/man1/data_boar.1
+sudo ln \-sf lgpd_crawler.5 /usr/local/share/man/man5/data_boar.5
 sudo mandb
 .fi
 .RE
 .PP
+The symlinks make
+.B "man data_boar"
+and
+.B "man 5 data_boar"
+show the same pages as
+.B "man lgpd_crawler"
+and
+.B "man 5 lgpd_crawler"
+(backward compatibility).
+.PP
 The
 .B chmod 755
-on the directory ensures all users can traverse it (new directories may be 750 with a restrictive umask). The
+on the directories ensures all users can traverse them (new directories may be 750 with a restrictive umask). The
 .B chmod 644
-on the file ensures all users can read the page (the copy might otherwise be 640).
+on the files ensures all users can read the pages (the copies might otherwise be 640).
 .PP
 On some BSD systems use
 .B "sudo makewhatis"
 instead of
 .BR mandb .
-If the directory does not exist,
+If a directory does not exist,
 .B "sudo mkdir -p"
 creates it so that
 .B "sudo cp"
@@ -438,7 +461,14 @@ does not fail with "No such file or directory".
 .PP
 After installation, view the page with:
 .RS
+.B man data_boar
+or
 .B man lgpd_crawler
+(section 1), and
+.B "man 5 data_boar"
+or
+.B "man 5 lgpd_crawler"
+(section 5).
 .RE
 .
 .SH TWO MAN PAGES (SECTION 1 AND 5)
@@ -451,10 +481,13 @@ describes
 .I configuration and file formats
 (config file topology, regex/ML/DL pattern files, examples).
 View it with
+.BR "man 5 data_boar"
+or
 .BR "man 5 lgpd_crawler" .
 On Unix/Linux/BSD, section 1 is for programs and commands; section 5 is for file formats and conventions.
 .
 .SH SEE ALSO
+.BR data_boar (5),
 .BR lgpd_crawler (5)
 (configuration and pattern file formats),
 .BR python (1),

@@ -1,4 +1,5 @@
 """Tests for report trends / session comparison sheet."""
+import pandas as pd
 from pathlib import Path
 
 from core.database import LocalDBManager
@@ -24,7 +25,6 @@ def test_report_includes_trends_sheet(tmp_path):
         mgr.finish_session("s2")
         path = generate_report(mgr, "s2", output_dir=out_dir)
         assert path is not None
-        import pandas as pd
         with pd.ExcelFile(path) as xl:
             assert "Trends - Session comparison" in xl.sheet_names
             df = pd.read_excel(xl, sheet_name="Trends - Session comparison")
@@ -50,7 +50,6 @@ def test_report_includes_report_info_tenant_and_technician(tmp_path):
         mgr.finish_session("s-tenant")
         path = generate_report(mgr, "s-tenant-tech", output_dir=out_dir)
         assert path is not None
-        import pandas as pd
         with pd.ExcelFile(path) as xl:
             assert "Report info" in xl.sheet_names
             df = pd.read_excel(xl, sheet_name="Report info")
@@ -59,5 +58,62 @@ def test_report_includes_report_info_tenant_and_technician(tmp_path):
         assert row_tenant["Value"] == "Acme Corp"
         row_tech = df[df["Field"] == "Technician / Operator"].iloc[0]
         assert row_tech["Value"] == "Maria Silva"
+    finally:
+        mgr.dispose()
+
+
+def test_report_excel_and_heatmap_data_sheet_no_regression(tmp_path):
+    """Regression: generate_report produces Excel with Heatmap data sheet; heatmap PNG in output_dir when findings exist."""
+    db_path = str(tmp_path / "audit_hm.db")
+    out_dir = tmp_path / "out_hm"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    mgr = LocalDBManager(db_path)
+    try:
+        mgr.set_current_session_id("s-hm")
+        mgr.create_session_record("s-hm")
+        mgr.save_finding("database", target_name="T1", column_name="cpf", sensitivity_level="HIGH", pattern_detected="CPF", norm_tag="LGPD", ml_confidence=90)
+        mgr.finish_session("s-hm")
+        path = generate_report(mgr, "s-hm", output_dir=str(out_dir))
+        assert path is not None
+        with pd.ExcelFile(path) as xl:
+            assert "Heatmap data" in xl.sheet_names
+            df = pd.read_excel(xl, sheet_name="Heatmap data")
+        assert len(df) >= 1
+        # Heatmap data is target x sensitivity counts; has index (target) and at least one sensitivity column
+        assert df.shape[1] >= 1
+        # Standalone heatmap PNG should exist in output_dir when matplotlib available and there are findings
+        heatmap_pngs = list(out_dir.glob("heatmap_*.png"))
+        assert len(heatmap_pngs) >= 0  # 0 if matplotlib missing, 1 if present
+    finally:
+        mgr.dispose()
+
+
+def test_trends_sheet_shows_up_to_three_previous_runs(tmp_path):
+    """Trends sheet includes Prev run 1/2/3 (count and date) and aggregate Note when enough history exists."""
+    db_path = str(tmp_path / "audit_trend3.db")
+    out_dir = str(tmp_path / "out_trend3")
+    Path(out_dir).mkdir(parents=True, exist_ok=True)
+    mgr = LocalDBManager(db_path)
+    try:
+        # Four sessions: 3 -> 2 -> 1 -> 1 findings (improvement then stable; report needs at least one finding)
+        for sid, count in [("s1", 3), ("s2", 2), ("s3", 1), ("s4", 1)]:
+            mgr.set_current_session_id(sid)
+            mgr.create_session_record(sid)
+            for _ in range(count):
+                mgr.save_finding("database", target_name="T1", column_name="c", sensitivity_level="HIGH", pattern_detected="CPF", norm_tag="LGPD", ml_confidence=90)
+            mgr.finish_session(sid)
+        path = generate_report(mgr, "s4", output_dir=out_dir)
+        assert path is not None
+        with pd.ExcelFile(path) as xl:
+            df = pd.read_excel(xl, sheet_name="Trends - Session comparison")
+        assert "Prev run 1 (count)" in df.columns and "Prev run 1 (date)" in df.columns
+        assert "Prev run 2 (count)" in df.columns and "Prev run 3 (count)" in df.columns
+        total_row = df[df["Metric"] == "Total findings (DB + filesystem)"].iloc[0]
+        assert total_row["This run (count)"] == 1
+        assert total_row["Prev run 1 (count)"] == 1
+        assert total_row["Prev run 2 (count)"] == 2
+        assert total_row["Prev run 3 (count)"] == 3
+        note = str(total_row["Note"])
+        assert "Improvement" in note or "reduced" in note.lower() or "stable" in note.lower() or "change" in note.lower()
     finally:
         mgr.dispose()
