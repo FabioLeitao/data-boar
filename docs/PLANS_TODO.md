@@ -6,7 +6,17 @@ This document is the **single source of truth** for the project’s plan status 
 
 All steps are intended to be **non-destructive**, **non-regression**, and **non-performance impacting**; each step should be **tested** and **safe** before marking done.
 
-**Plan status:** Corporate compliance improvements ✅ Complete · Minor data detection ✅ Complete · Aggregated identification ✅ Complete · Sensitive categories ML/DL ✅ Complete · Rate limiting & concurrency ✅ Complete · Web hardening & security ✅ Complete · Logo and naming ✅ Complete · **Dashboard i18n (multi-language web UI)** ⬜ Under consideration · **Compressed files (optional scan inside archives)** ⬜ Not started
+**Plan status:** Corporate compliance improvements ✅ Complete · Minor data detection ✅ Complete · Aggregated identification ✅ Complete · Sensitive categories ML/DL ✅ Complete · Rate limiting & concurrency ✅ Complete · Web hardening & security ✅ Complete · Logo and naming ✅ Complete · **Security hardening (vulnerabilities, dependencies, best practices)** ⬜ Not started · **Dashboard i18n (multi-language web UI)** ⬜ Under consideration · **Compressed files (optional scan inside archives)** ⬜ Not started
+
+---
+
+## Plan: Security hardening and vulnerability closure ⬜ **Not started**
+
+**Source:** [docs/PLAN_SECURITY_HARDENING.md](PLAN_SECURITY_HARDENING.md)
+
+**Goal:** Close security gaps (input validation, request size, logging), prevent abuse and data extraction (rate limit and API key docs, report access), keep dependencies secure (pip-audit, Dependabot, minimum versions), and follow best practices (TLS, headers, deploy hardening). All steps non-regressive; each step tested before marking done.
+
+**Progress:** See the plan file for the full to-do table (input validation, dependencies, API hardening, TLS/headers, deployment, testing, documentation). Mark steps done here and in the plan file when completed.
 
 ---
 
