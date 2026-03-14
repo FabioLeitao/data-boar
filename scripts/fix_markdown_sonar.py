@@ -15,6 +15,10 @@ Rules addressed:
 - MD060: Table column style "aligned" (pad cells so pipes align with header)
 
 Excludes: .cursor, .git, node_modules, .venv, etc. (same as test_markdown_lint).
+
+Code quality (SonarQube): avoid S6326 (prefer simple string checks over regex where possible),
+S3776 (keep functions simple; extract helpers to reduce cognitive complexity), S1481 (remove
+unused variables).
 """
 
 from __future__ import annotations
@@ -57,7 +61,7 @@ def fix_md047(text: str) -> str:
 
 def fix_md007_line(line: str) -> str:
     """Unordered list indentation: Expected 0; remove leading 2 spaces before - or * (top-level only)."""
-    if re.match(r"^  [-*] ", line):
+    if line.startswith("  - ") or line.startswith("  * "):
         return line[2:]
     return line
 
@@ -71,7 +75,24 @@ def fix_md029_line(line: str) -> str:
 
 
 def _is_list_line(stripped: str) -> bool:
-    return bool(re.match(r"^[-*]\s", stripped) or re.match(r"^\d+\.\s", stripped))
+    """True if line looks like a list item (unordered - * or ordered 1. )."""
+    return bool(re.match(r"^([-*]\s|\d+\.\s)", stripped))
+
+
+def _needs_blank_before_list(out: list[str], is_list: bool) -> bool:
+    """True if we should insert a blank line before the current list block."""
+    if not is_list or not out:
+        return False
+    last = out[-1].strip()
+    return bool(last and not _is_list_line(last) and not last.startswith("#"))
+
+
+def _needs_blank_after_list(lines: list[str], i: int, is_list: bool) -> bool:
+    """True if we should insert a blank line after the current list block."""
+    if not is_list or i + 1 >= len(lines):
+        return False
+    next_stripped = lines[i + 1].strip()
+    return bool(next_stripped and not _is_list_line(next_stripped))
 
 
 def fix_md032(lines: list[str]) -> list[str]:
@@ -82,17 +103,11 @@ def fix_md032(lines: list[str]) -> list[str]:
     for i, line in enumerate(lines):
         stripped = line.strip()
         is_list = _is_list_line(stripped)
-        # Blank before list: current is list, last line in out is non-blank and not list/heading
-        if is_list and out:
-            last = out[-1].strip()
-            if last and not _is_list_line(last) and not last.startswith("#"):
-                out.append("")
+        if _needs_blank_before_list(out, is_list):
+            out.append("")
         out.append(line)
-        # Blank after list: current is list, next line exists and is non-blank and not list
-        if is_list and i + 1 < len(lines):
-            next_stripped = lines[i + 1].strip()
-            if next_stripped and not _is_list_line(next_stripped):
-                out.append("")
+        if _needs_blank_after_list(lines, i, is_list):
+            out.append("")
     return out
 
 
@@ -167,6 +182,11 @@ def fix_md060_tables(text: str) -> str:
 _FENCE_RE = re.compile(r"^\s*(`{3,}|~{3,})")
 
 
+def _blank_needed_after_fence(lines: list[str], after_index: int) -> bool:
+    """True if the next line after after_index is non-blank (need blank after closing fence)."""
+    return after_index + 1 < len(lines) and lines[after_index + 1].strip() != ""
+
+
 def fix_md031(lines: list[str]) -> list[str]:
     """Ensure blank line before opening fence and after closing fence."""
     if not lines:
@@ -177,18 +197,14 @@ def fix_md031(lines: list[str]) -> list[str]:
         stripped = line.strip()
         is_fence = bool(_FENCE_RE.match(stripped))
         if is_fence:
-            if not in_fence:
-                # Opening fence: ensure blank before
-                if out and out[-1].strip() != "":
-                    out.append("")
-            else:
-                # Closing fence: we'll add blank after this line if next is non-blank
-                pass
-        out.append(line)
-        if is_fence:
-            in_fence = not in_fence
-            if not in_fence and i + 1 < len(lines) and lines[i + 1].strip() != "":
+            if not in_fence and out and out[-1].strip() != "":
                 out.append("")
+            out.append(line)
+            in_fence = not in_fence
+            if not in_fence and _blank_needed_after_fence(lines, i):
+                out.append("")
+            continue
+        out.append(line)
     return out
 
 
@@ -232,8 +248,6 @@ def process_file(path: Path) -> bool:
 
     # Line-by-line fixes
     result_lines: list[str] = []
-    in_table = False
-    table_start = 0
     i = 0
     lines = raw.splitlines()
     while i < len(lines):
