@@ -1,5 +1,7 @@
 # Version convention and bump checklist
 
+**Português (Brasil):** [VERSIONING.pt_BR.md](VERSIONING.pt_BR.md)
+
 This project uses a **major.minor.build** version scheme:
 
 - **major** – first number (e.g. breaking changes or major release)

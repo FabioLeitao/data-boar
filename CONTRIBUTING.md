@@ -54,7 +54,7 @@ Thank you for considering contributing. This document covers local setup, workfl
 ## Code and docs
 
 - **Style:** The repo uses [EditorConfig](.editorconfig) (indent, charset, line endings). Keeping Python style consistent (e.g. with Ruff or Black) is encouraged.
-- **Docs:** Keep [README.md](README.md) and [docs/USAGE.md](docs/USAGE.md) in sync with behaviour; update [README.pt_BR.md](README.pt_BR.md) and [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md) for Portuguese. All user-facing docs should exist in **English (canonical)** and **Brazilian Portuguese**, with a language switcher at the top of each and cross-links that offer both languages where relevant (see [docs/README.md](docs/README.md) — Documentation policy).
+- **Docs:** Keep [README.md](README.md) and [docs/USAGE.md](docs/USAGE.md) in sync with behaviour; update [README.pt_BR.md](README.pt_BR.md) and [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md) for Portuguese. All **new** user-facing documentation must exist in **English (canonical)** and **Brazilian Portuguese**; **plan files** may be English-only. When you change docs to reflect application updates, **sync the other language** (EN first, then pt-BR). Use a language switcher at the top of each doc and cross-links that offer both languages (see [docs/README.md](docs/README.md) — Documentation policy).
 - **Secrets:** Never commit credentials or real PII. Use `.env` or `config.local.yaml` (both are in `.gitignore`) and redact in issues/PRs.
 
 ## CI and dependency hygiene

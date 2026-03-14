@@ -490,10 +490,10 @@ For systems that use the traditional
 `man`
 interface, two manual pages are provided:
 
-- **Section 1 (command):** `docs/lgpd_crawler.1` – describes the program, its options, the web API, and curl examples. View with `man lgpd_crawler` or `man 1 lgpd_crawler`.
-- **Section 5 (file formats):** `docs/lgpd_crawler.5` – describes the main config file topology and optional files (regex overrides, ML/DL pattern files, learned patterns), with examples. View with `man 5 lgpd_crawler`.
+- **Section 1 (command):** `docs/lgpd_crawler.1` – describes the program, its options, the web API, and curl examples. View with `man data_boar` or `man lgpd_crawler` (or `man 1 data_boar`, `man 1 lgpd_crawler`).
+- **Section 5 (file formats):** `docs/lgpd_crawler.5` – describes the main config file topology and optional files (regex overrides, ML/DL pattern files, learned patterns), with examples. View with `man 5 data_boar` or `man 5 lgpd_crawler`.
 
-On Linux/BSD, section 1 is for executable commands; section 5 is for configuration and file format conventions. Installing both lets users run `man lgpd_crawler` for how to run the app and `man 5 lgpd_crawler` for how to configure it and define patterns.
+On Linux/BSD, section 1 is for executable commands; section 5 is for configuration and file format conventions. Install both pages and add symlinks (see below) so that both **data_boar** and **lgpd_crawler** work: `man data_boar` / `man lgpd_crawler` for the command, `man 5 data_boar` / `man 5 lgpd_crawler` for config and file formats.
 
 **Install both pages** (create the target directories first so the copy does not fail if they are missing). Right after creating the directories, run `chmod 755` on them so that all users can access the man pages; depending on your default umask, new directories may otherwise be 750 and only root could traverse them. After copying, run `chmod 644` on the installed files so that all users can read the pages (copied files may otherwise be 640).
 
@@ -504,17 +504,19 @@ sudo chmod 755 /usr/local/share/man/man1/ /usr/local/share/man/man5/
 sudo cp docs/lgpd_crawler.1 /usr/local/share/man/man1/
 sudo cp docs/lgpd_crawler.5 /usr/local/share/man/man5/
 sudo chmod 644 /usr/local/share/man/man1/lgpd_crawler.1 /usr/local/share/man/man5/lgpd_crawler.5
+sudo ln -sf lgpd_crawler.1 /usr/local/share/man/man1/data_boar.1
+sudo ln -sf lgpd_crawler.5 /usr/local/share/man/man5/data_boar.5
 sudo mandb    # or: sudo makewhatis   # depends on distro
 ```
 
-After that:
+The symlinks make both **data_boar** and **lgpd_crawler** resolve to the same pages. After that:
 
 ```bash
-man lgpd_crawler     # command and options (section 1)
-man 5 lgpd_crawler   # config and file formats (section 5)
+man data_boar        # or: man lgpd_crawler     # command and options (section 1)
+man 5 data_boar      # or: man 5 lgpd_crawler   # config and file formats (section 5)
 ```
 
-When adding new CLI options or API capabilities, update `docs/lgpd_crawler.1`; when adding or changing config keys or pattern file formats, update `docs/lgpd_crawler.5` and this README so the man pages continue to reflect the current behaviour. For **version bumps** (major.minor.build convention and where to update the version number), see [docs/VERSIONING.md](docs/VERSIONING.md).
+When adding new CLI options or API capabilities, update `docs/lgpd_crawler.1`; when adding or changing config keys or pattern file formats, update `docs/lgpd_crawler.5` and this README so the man pages continue to reflect the current behaviour. The same files are viewed as both `man data_boar` and `man lgpd_crawler` (section 1 and 5) via symlinks at install time. For **version bumps** (major.minor.build convention and where to update the version number), see [docs/VERSIONING.md](docs/VERSIONING.md).
 
 ## Deploy with Docker
 
@@ -561,6 +563,6 @@ The application explicitly references **LGPD**, **GDPR**, **CCPA**, **HIPAA**, a
 - **Behind a reverse proxy (nginx, Traefik, Caddy):** Set `X-Forwarded-Proto: https` for TLS-terminated traffic so HSTS and scheme detection work correctly.
 - **Reporting vulnerabilities:** See [SECURITY.md](SECURITY.md). **Testing:** See [docs/TESTING.md](docs/TESTING.md). **Contributing:** See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## License
+## License and copyright
 
-See [LICENSE](LICENSE).
+See [LICENSE](LICENSE). Project and copyright notice: [NOTICE](NOTICE). For making copyright and trademark official (registration, registries): [docs/COPYRIGHT_AND_TRADEMARK.md](docs/COPYRIGHT_AND_TRADEMARK.md) ([pt-BR](docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md)).
