@@ -6,7 +6,7 @@ This document is the **single source of truth** for the project’s plan status 
 
 All steps are intended to be **non-destructive**, **non-regression**, and **non-performance impacting**; each step should be **tested** and **safe** before marking done.
 
-**Plan status:** Corporate compliance improvements ✅ Complete · Minor data detection ✅ Complete · Aggregated identification ✅ Complete · Sensitive categories ML/DL ✅ Complete · Rate limiting & concurrency ✅ Complete · Web hardening & security ✅ Complete · Logo and naming ⬜ In progress · **Dashboard i18n (multi-language web UI)** ⬜ Under consideration · **Compressed files (optional scan inside archives)** ⬜ Not started
+**Plan status:** Corporate compliance improvements ✅ Complete · Minor data detection ✅ Complete · Aggregated identification ✅ Complete · Sensitive categories ML/DL ✅ Complete · Rate limiting & concurrency ✅ Complete · Web hardening & security ✅ Complete · Logo and naming ✅ Complete · **Dashboard i18n (multi-language web UI)** ⬜ Under consideration · **Compressed files (optional scan inside archives)** ⬜ Not started
 
 ---
 
@@ -18,19 +18,19 @@ All steps are intended to be **non-destructive**, **non-regression**, and **non-
 
 **Progress:** Mark each to-do done here and in the plan file when actually completed.
 
-| #   | To-do                                                                                                            | Status     |           |
-| --- | ---------------------------------------------------------------------                                            | ---------  |           |
-| 1   | Config: file_scan.scan_compressed (default false), optional max_inner_size / compressed_extensions               | ⬜ Pending  |           |
-| 2   | CLI: --scan-compressed flag; override config for that run                                                        | ⬜ Pending  |           |
-| 3   | Archive detection: magic bytes for zip, gz, 7z, tar, bz2, xz                                                     | ⬜ Pending  |           |
-| 4   | Open-archive helper: zipfile, tarfile, py7zr (optional); iterate members, yield content                          | ⬜ Pending  |           |
-| 5   | FilesystemConnector: when scan_compressed true, open archives and scan inner members; save_finding with archive\|inner path | ⬜ Pending |           |
-| 6   | Optional extra [compressed] with py7zr; graceful skip when .7z and py7zr missing                                 | ⬜ Pending  |           |
-| 7   | Engine: pass scan_compressed to connectors; API run-time override                                                | ⬜ Pending  |           |
-| 8   | API ScanStartBody.scan_compressed; dashboard checkbox                                                            | ⬜ Pending  |           |
-| 9   | Share connectors: scan inside archives when option on (or v1 filesystem only)                                    | ⬜ Pending  |           |
-| 10  | Tests: magic, option off/on, findings from inside zip; no regression                                             | ⬜ Pending  |           |
-| 11  | Docs: USAGE, TECH_GUIDE, man pages, help, README (EN + pt-BR)                                                    | ⬜ Pending  |           |
+| #   | To-do                                                                                                            | Status     |           |  |
+| --- | ---------------------------------------------------------------------                                            | ---------  |           |  |
+| 1   | Config: file_scan.scan_compressed (default false), optional max_inner_size / compressed_extensions               | ⬜ Pending  |           |  |
+| 2   | CLI: --scan-compressed flag; override config for that run                                                        | ⬜ Pending  |           |  |
+| 3   | Archive detection: magic bytes for zip, gz, 7z, tar, bz2, xz                                                     | ⬜ Pending  |           |  |
+| 4   | Open-archive helper: zipfile, tarfile, py7zr (optional); iterate members, yield content                          | ⬜ Pending  |           |  |
+| 5   | FilesystemConnector: when scan_compressed true, open archives and scan inner members; save_finding with archive\ | inner path | ⬜ Pending |  |
+| 6   | Optional extra [compressed] with py7zr; graceful skip when .7z and py7zr missing                                 | ⬜ Pending  |           |  |
+| 7   | Engine: pass scan_compressed to connectors; API run-time override                                                | ⬜ Pending  |           |  |
+| 8   | API ScanStartBody.scan_compressed; dashboard checkbox                                                            | ⬜ Pending  |           |  |
+| 9   | Share connectors: scan inside archives when option on (or v1 filesystem only)                                    | ⬜ Pending  |           |  |
+| 10  | Tests: magic, option off/on, findings from inside zip; no regression                                             | ⬜ Pending  |           |  |
+| 11  | Docs: USAGE, TECH_GUIDE, man pages, help, README (EN + pt-BR)                                                    | ⬜ Pending  |           |  |
 
 ---
 
@@ -42,9 +42,9 @@ All steps are intended to be **non-destructive**, **non-regression**, and **non-
 
 ---
 
-## Plan: Logo and naming recommendations ⬜ **In progress**
+## Plan: Logo and naming recommendations ✅ **Complete**
 
-**Source:** [docs/PLAN_LOGO_AND_NAMING.md](PLAN_LOGO_AND_NAMING.md)
+**Source:** [docs/completed/PLAN_LOGO_AND_NAMING.md](completed/PLAN_LOGO_AND_NAMING.md)
 
 **Progress:** Mark each to-do done here and in the plan file when actually completed.
 
