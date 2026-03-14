@@ -1,5 +1,7 @@
 # Convenção de versão e checklist de bump
 
+**English:** [VERSIONING.md](VERSIONING.md)
+
 Este projeto usa o esquema **major.minor.build** (maior.menor.build):
 
 - **major** – primeiro número (ex.: mudanças incompatíveis ou release maior)

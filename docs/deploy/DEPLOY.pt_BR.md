@@ -41,17 +41,17 @@ O relatório é escrito em `report.output_dir` do config (ex.: `/data`). **Não*
 
 Você pode executar a aplicação **sem clonar o repositório** usando a imagem publicada no Docker Hub:
 
-- **Repositório:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)
-- **Imagem:** `fabioleitao/python3-lgpd-crawler:latest`
+- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** e **`fabioleitao/data_boar:1.5.1`**
+- **Legado:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler) — `fabioleitao/python3-lgpd-crawler:latest`
 
 Exemplo:
 
 ```bash
-docker pull fabioleitao/python3-lgpd-crawler:latest
-docker run -d -p 8088:8088 -v "$(pwd)/data:/data" -e CONFIG_PATH=/data/config.yaml fabioleitao/python3-lgpd-crawler:latest
+docker pull fabioleitao/data_boar:latest
+docker run -d -p 8088:8088 -v "$(pwd)/data:/data" -e CONFIG_PATH=/data/config.yaml fabioleitao/data_boar:latest
 ```
 
-Garanta que `/data/config.yaml` exista (ex.: copie de `deploy/config.example.yaml` no repositório). Para atualizar quando novas versões forem publicadas: `docker pull fabioleitao/python3-lgpd-crawler:latest` e reinicie o container ou stack.
+Garanta que `/data/config.yaml` exista (ex.: copie de `deploy/config.example.yaml` no repositório). Para atualizar quando novas versões forem publicadas: `docker pull fabioleitao/data_boar:latest` e reinicie o container ou stack.
 
 ## Imagem (build a partir do código)
 
@@ -68,15 +68,16 @@ docker login ghcr.io
 docker push ghcr.io/fabioleitao/python3-lgpd-crawler:latest
 ```
 
-### Opção B – Docker Hub
+### Opção B – Docker Hub (imagem branded Data Boar)
 
 ```bash
-docker build -t fabioleitao/python3-lgpd-crawler:latest .
+docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.5.1 .
 docker login
-docker push fabioleitao/python3-lgpd-crawler:latest
+docker push fabioleitao/data_boar:latest
+docker push fabioleitao/data_boar:1.5.1
 ```
 
-Para usar uma tag de versão (ex.: `1.4.3`): `docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.4.3` e `docker push ...`. Veja também [DOCKER_SETUP.md](../DOCKER_SETUP.md).
+Opcional: publicar a mesma imagem com o nome legado: `docker tag fabioleitao/data_boar:latest fabioleitao/python3-lgpd-crawler:latest` e `docker push ...`. Veja também [DOCKER_SETUP.md](../DOCKER_SETUP.md).
 
 ## 2. Preparar o config
 

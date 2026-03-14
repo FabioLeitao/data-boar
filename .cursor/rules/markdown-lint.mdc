@@ -1,0 +1,27 @@
+---
+description: When creating or editing any .md file, run the markdown lint test and apply the SonarQube fix script so MD060 (table style), MD009, MD012, and other rules pass. Use for changes to README, docs, or any markdown.
+globs: ["**/*.md"]
+alwaysApply: false
+---
+
+# Markdown lint (SonarQube / markdownlint)
+
+After **creating or editing** any `.md` file in this project:
+
+1. **Fix style automatically** (tables, trailing spaces, blanks, list style, trailing newline):
+   ```bash
+   uv run python scripts/fix_markdown_sonar.py
+   ```
+   This applies MD007, MD009, MD012, MD029, **MD031** (blanks around fenced code blocks), MD032, **MD034** (wrap bare URLs), MD036, MD047, and **MD060** (aligned table column style) across all project `.md` files.
+
+2. **Run the markdown lint test** to ensure no violations:
+   ```bash
+   uv run pytest tests/test_markdown_lint.py -v -W error
+   ```
+
+If the test fails, fix the reported violations (or run the fix script again if it didn’t cover the file). Do not commit markdown changes without the lint test passing.
+
+## Reference
+
+- **TESTING.md** – section “Markdown lint” (MD009, MD012, MD024, MD036, MD051, MD060, MD031, MD034, table style).
+- **scripts/fix_markdown_sonar.py** – normalizes tables to aligned style and other Sonar rules.

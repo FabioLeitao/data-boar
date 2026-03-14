@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}About — LGPD Audit{% endblock %}
+{% block title %}About — Data Boar{% endblock %}
 {% block content %}
 <h1>About</h1>
 
 <section class="card">
   <h2>Application</h2>
-  <p><strong>{{ about.name }}</strong> — {{ about.description }}</p>
+  <p><img src="/static/mascot/data_boar_mascote_color.svg" alt="Data Boar" width="64" height="64" style="vertical-align: middle; margin-right: 0.5em;"><strong>{{ about.name }}</strong> — {{ about.description }}</p>
   <p><span class="muted">Version:</span> {{ about.version }}</p>
 </section>
 

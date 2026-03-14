@@ -1,6 +1,6 @@
 # Consolidated plans – sequential to-dos
 
-**Português (Brasil):** [PLANS_TODO.pt_BR.md](PLANS_TODO.pt_BR.md)
+Plan files are kept in **English only** for history and progress tracking. Operator-facing documentation (how to use, config, deploy, etc.) exists in both EN and pt-BR; see [README.md](README.md) ([pt-BR](README.pt_BR.md)).
 
 This document is the **single source of truth** for the project’s plan status and remains in **`docs/`** at all times. It lists **incomplete goals** from active plans and the **recommended sequential to-dos** to achieve them. Completed plan documents (design and to-do details) are archived in **`docs/completed/`** for reference; links below point to those files.
 
@@ -26,16 +26,16 @@ All steps are intended to be **non-destructive**, **non-regression**, and **non-
 
 Goal: Copyright-safe logo (web, favicon, optional report), integration in the app, and naming recommendations (e.g. compliance_crawler). User decides which options to apply.
 
-| #   | To-do                                                                                                                             | Status    | Notes                                    |
-| --- | ---                                                                                                                               | ---       | ---                                      |
-| 1   | Decide logo concept (A–D) and colors; produce master logo (SVG) and export web PNG (32/64 px) and favicon (ICO or 16/32 PNG)      | ⬜ Pending | Concept C (abstract \"C\") chosen; master SVG at `api/static/logo.svg`; PNG/ICO export pending |
-| 2   | Place assets in `api/static/`: favicon.ico (and/or favicon-32.png), logo.svg, logo-64.png                                         | ⬜ Pending | Optional: logo-report-48.png for Excel   |
-| 3   | Add favicon link(s) in `api/templates/base.html` (`<link rel="icon">`)                                                            | ⬜ Pending | Browser/tab icon                         |
-| 4   | (Optional) Add logo to About page and optionally Dashboard/Reports header                                                         | ⬜ Pending | about.html, dashboard.html, reports.html |
-| 5   | Check PyPI and web for chosen name (e.g. compliance_crawler) availability                                                         | ⬜ Pending | Avoid clashes with existing products     |
-| 6   | Decide display name and/or package rename; if changing, update `core/about.py` and/or `pyproject.toml` and docs per VERSIONING.md | ⬜ Pending | Display name only = no package rename    |
-| 7   | (Optional) Embed logo in Excel Report info sheet via `report/generator.py`                                                        | ⬜ Pending | openpyxl image at fixed cell             |
-| 8   | (Optional) Add logo to heatmap PNG footer in `_create_heatmap`                                                                    | ⬜ Pending | Small image via matplotlib               |
+| #   | To-do                                                                                                                             | Status    | Notes                                                                                                       |
+| --- | ---                                                                                                                               | ---       | ---                                                                                                         |
+| 1   | Decide logo concept (A–D) and colors; produce master logo (SVG) and export web PNG (32/64 px) and favicon (ICO or 16/32 PNG)      | ✅ Done    | **Data Boar mascot** as logo; master SVG + PNG in `api/static/mascot/`; favicon derived (build_favicon.py). |
+| 2   | Place assets in `api/static/`: favicon.ico (and/or favicon-32.png), logo.svg, logo-64.png                                         | ✅ Done    | Mascot in `api/static/mascot/`; favicon.ico from script; former logo.svg retired.                           |
+| 3   | Add favicon link(s) in `api/templates/base.html` (`<link rel="icon">`)                                                            | ✅ Done    | base.html uses mascot as favicon.                                                                           |
+| 4   | (Optional) Add logo to About page and optionally Dashboard/Reports header                                                         | ✅ Done    | About, Dashboard, Reports, Config, Help: mascot in header + attribution.                                    |
+| 5   | Check PyPI and web for chosen name (e.g. compliance_crawler) availability                                                         | ⬜ Pending | Avoid clashes with existing products                                                                        |
+| 6   | Decide display name and/or package rename; if changing, update `core/about.py` and/or `pyproject.toml` and docs per VERSIONING.md | ✅ Done    | Display name **Data Boar**; package remains `python3-lgpd-crawler`.                                         |
+| 7   | (Optional) Embed logo in Excel Report info sheet via `report/generator.py`                                                        | ✅ Done    | Small mascot (48×48) in Report info at D1.                                                                  |
+| 8   | (Optional) Add logo to heatmap PNG footer in `_create_heatmap`                                                                    | ✅ Done    | Small mascot in lower-right inset (8% size).                                                                |
 
 ---
 
@@ -47,17 +47,17 @@ Goal: Copyright-safe logo (web, favicon, optional report), integration in the ap
 
 ### To-dos (all complete)
 
-| #   | To-do                                                                                                                                                                                             | Status | Notes                                                                               |
-| --- | ---                                                                                                                                                                                               | ---    | ---                                                                                 |
-| 1   | **Phase 6 – Config:** Normalize `api.require_api_key`, `api.api_key`, `api.api_key_from_env` in `config/loader.py`                                                                                | ✅ Done | Optional API key for enterprise                                                     |
-| 2   | **Phase 6 – API:** Add middleware/dependency in `api/routes.py` to check `X-API-Key` or `Authorization: Bearer <key>` when `require_api_key` is true; 401 if wrong/missing; **exclude `/health`** | ✅ Done | Load balancers keep 200 on /health                                                  |
-| 3   | **Phase 6 – Tests:** New test: with `require_api_key: true` and valid key → 200; wrong/missing key → 401; `/health` without key → 200                                                             | ✅ Done | Existing API test still passes when option off                                      |
-| 4   | **Phase 6 – Docs:** Update SECURITY.md to mention optional API key; document key in USAGE (EN and PT-BR)                                                                                          | ✅ Done | Key in env; do not log                                                              |
-| 5   | **Validate Phase 6:** Run `pytest -W error`; call API with/without key when `require_api_key` true                                                                                                | ✅ Done | 42 tests pass                                                                       |
-| 6   | **Final:** Run full `pytest -W error`; optional docker build and smoke test                                                                                                                       | ✅ Done | 42 tests pass                                                                       |
-| 7   | **Publish:** Validate documentation reflects current state; bump minor version if needed; republish Docker image to hub; keep EN and PT-BR docs in sync                                           | ✅ Done | Version 1.4.3; docs validated; Docker build/push manual (see docs/deploy/DEPLOY.md) |
+| #   | To-do                                                                                                                                                                                             | Status | Notes                                                                                          |
+| --- | ---                                                                                                                                                                                               | ---    | ---                                                                                            |
+| 1   | **Phase 6 – Config:** Normalize `api.require_api_key`, `api.api_key`, `api.api_key_from_env` in `config/loader.py`                                                                                | ✅ Done | Optional API key for enterprise                                                                |
+| 2   | **Phase 6 – API:** Add middleware/dependency in `api/routes.py` to check `X-API-Key` or `Authorization: Bearer <key>` when `require_api_key` is true; 401 if wrong/missing; **exclude `/health`** | ✅ Done | Load balancers keep 200 on /health                                                             |
+| 3   | **Phase 6 – Tests:** New test: with `require_api_key: true` and valid key → 200; wrong/missing key → 401; `/health` without key → 200                                                             | ✅ Done | Existing API test still passes when option off                                                 |
+| 4   | **Phase 6 – Docs:** Update SECURITY.md to mention optional API key; document key in USAGE (EN and PT-BR)                                                                                          | ✅ Done | Key in env; do not log                                                                         |
+| 5   | **Validate Phase 6:** Run `pytest -W error`; call API with/without key when `require_api_key` true                                                                                                | ✅ Done | 42 tests pass                                                                                  |
+| 6   | **Final:** Run full `pytest -W error`; optional docker build and smoke test                                                                                                                       | ✅ Done | 42 tests pass                                                                                  |
+| 7   | **Publish:** Validate documentation reflects current state; bump minor version if needed; republish Docker image to hub; keep EN and PT-BR docs in sync                                           | ✅ Done | Version 1.5.1; docs validated; branded image fabioleitao/data_boar (see docs/deploy/DEPLOY.md) |
 
-**Current state of the application (for later reference):** Phases 0–5 (baseline, docs/frameworks, recommendation overrides, executive summary, min_sensitivity, config_scope_hash) and Phase 6 (optional API key) are implemented and tested. App version **1.4.3**; config supports `api.require_api_key`, `api.api_key`, `api.api_key_from_env`; API middleware enforces X-API-Key or Bearer when required; GET /health is always public; SECURITY.md and USAGE (EN/PT-BR) document the option. Docker image tag/push is manual (see docs/deploy/DEPLOY.md).
+**Current state of the application (for later reference):** Phases 0–5 (baseline, docs/frameworks, recommendation overrides, executive summary, min_sensitivity, config_scope_hash) and Phase 6 (optional API key) are implemented and tested. App version **1.5.1**; display name **Data Boar** (mascot branding, favicon, report/heatmap branding); Trends sheet shows up to 3 previous runs; heatmap PNG embedded in Excel Heatmap data sheet; config supports `api.require_api_key`, `api.api_key`, `api.api_key_from_env`; API middleware enforces X-API-Key or Bearer when required; GET /health is always public; SECURITY.md and USAGE (EN/PT-BR) document the option. Branded Docker image: fabioleitao/data_boar:latest and :1.5.1 (see docs/deploy/DEPLOY.md).
 
 ---
 

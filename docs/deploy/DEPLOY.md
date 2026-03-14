@@ -42,19 +42,19 @@ The report is written under `report.output_dir` in config (e.g. `/data`); copy i
 
 You can run the application **without cloning the repository** by using the published image on Docker Hub:
 
-- **Repository:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)
-- **Image:** `fabioleitao/python3-lgpd-crawler:latest` (tag `latest`; other version tags may be published)
+- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** and **`fabioleitao/data_boar:1.5.1`**
+- **Legacy:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler) — `fabioleitao/python3-lgpd-crawler:latest` (same image may be published under both names)
 
 Example:
 
 ```bash
-docker pull fabioleitao/python3-lgpd-crawler:latest
-docker run -d -p 8088:8088 -v "$(pwd)/data:/data" -e CONFIG_PATH=/data/config.yaml fabioleitao/python3-lgpd-crawler:latest
+docker pull fabioleitao/data_boar:latest
+docker run -d -p 8088:8088 -v "$(pwd)/data:/data" -e CONFIG_PATH=/data/config.yaml fabioleitao/data_boar:latest
 ```
 
 Ensure `/data/config.yaml` exists (e.g. copy from `deploy/config.example.yaml` in the repo or create a minimal config). This lets users choose to run an instanced container from Docker Hub instead of building from Git.
 
-**Upgrading when new versions are pushed:** To refresh your local image so it matches the current version on Docker Hub, run `docker pull fabioleitao/python3-lgpd-crawler:latest`, then restart your container or stack (e.g. `docker stop`/`docker rm` and `docker run` again, or `docker compose pull` and `docker compose up -d`). Do this whenever you want to pick up the latest image from the repository.
+**Upgrading when new versions are pushed:** To refresh your local image so it matches the current version on Docker Hub, run `docker pull fabioleitao/data_boar:latest`, then restart your container or stack (e.g. `docker stop`/`docker rm` and `docker run` again, or `docker compose pull` and `docker compose up -d`). Do this whenever you want to pick up the latest image from the repository.
 
 ## Image (build from source)
 
@@ -78,32 +78,27 @@ docker push ghcr.io/fabioleitao/python3-lgpd-crawler:latest
 
 ```bash
 # From repo root
-docker build -t fabioleitao/python3-lgpd-crawler:latest .
+docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.5.1 .
 docker login
 # Username: fabioleitao (or your Docker Hub username)
 # Password: your Docker Hub password or Access Token
-docker push fabioleitao/python3-lgpd-crawler:latest
+docker push fabioleitao/data_boar:latest
+docker push fabioleitao/data_boar:1.5.1
 ```
 
-To use a version tag as well (e.g. `1.4.3`):
+Then in `deploy/docker-compose.yml` set `image:` to your pushed image (e.g. `fabioleitao/data_boar:latest` or `ghcr.io/fabioleitao/...`).
+
+**Releasing to Docker Hub (fabioleitao):** From repo root, run the test suite (`uv run pytest -v -W error`), then build, log in with your Docker Hub credentials, and push the branded image:
 
 ```bash
-docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.4.3
-docker push fabioleitao/python3-lgpd-crawler:1.4.3
-```
-
-Then in `deploy/docker-compose.yml` set `image:` to your pushed image (e.g. `fabioleitao/python3-lgpd-crawler:latest` or `ghcr.io/fabioleitao/...`).
-
-**Releasing to Docker Hub (fabioleitao):** From repo root, run the test suite (`pytest` or `uv run pytest`), then build, log in with your Docker Hub credentials, and push:
-
-```bash
-pytest                    # or: uv run pytest  (must pass with no warnings)
-docker build -t fabioleitao/python3-lgpd-crawler:latest .
+uv run pytest -v -W error
+docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.5.1 .
 docker login              # username: fabioleitao, password: your token
-docker push fabioleitao/python3-lgpd-crawler:latest
+docker push fabioleitao/data_boar:latest
+docker push fabioleitao/data_boar:1.5.1
 ```
 
-Optional: tag and push a version (e.g. `1.4.3`): `docker tag fabioleitao/python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.4.3` then `docker push fabioleitao/python3-lgpd-crawler:1.4.3`. See also [DOCKER_SETUP.md](../DOCKER_SETUP.md).
+Optional: push the same image under the legacy name for compatibility: `docker tag fabioleitao/data_boar:latest fabioleitao/python3-lgpd-crawler:latest` then `docker push fabioleitao/python3-lgpd-crawler:latest`. See also [DOCKER_SETUP.md](../DOCKER_SETUP.md).
 
 ## 2. Prepare config
 
@@ -262,7 +257,7 @@ docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.ym
 
 ### 4.5 Using the pre-built image (no local build)
 
-In `deploy/docker-compose.yml` set `image: fabioleitao/python3-lgpd-crawler:latest` (or your registry) and remove or comment out the `build:` block. Then run the same `docker compose ... up -d` commands.
+In `deploy/docker-compose.yml` set `image: fabioleitao/data_boar:latest` (or your registry) and remove or comment out the `build:` block. Then run the same `docker compose ... up -d` commands.
 
 ## 5. Deploy with Docker Swarm
 
@@ -339,7 +334,7 @@ Kubernetes is an alternative to Docker Swarm for running the app in a cluster. T
 ### 6.1 Prerequisites
 
 - **kubectl** and access to a cluster.
-- **Image:** Set the image in `deploy/kubernetes/deployment.yaml` (e.g. `fabioleitao/python3-lgpd-crawler:latest` or your registry).
+- **Image:** Set the image in `deploy/kubernetes/deployment.yaml` (e.g. `fabioleitao/data_boar:latest` or your registry).
 - **Config:** The included ConfigMap provides a minimal `config.yaml`. Replace or extend it for production (see `deploy/kubernetes/README.md`).
 
 ### 6.2 Apply the manifests
@@ -348,7 +343,7 @@ From the **repository root**:
 
 ```bash
 # Optional: set image via env (or edit deploy/kubernetes/deployment.yaml)
-export IMAGE=fabioleitao/python3-lgpd-crawler:latest
+export IMAGE=fabioleitao/data_boar:latest
 
 kubectl apply -f deploy/kubernetes/
 ```
@@ -369,7 +364,7 @@ To run a single audit from the CLI in the cluster, use a **Job** that overrides 
 
 ## 7. Using the public image (no local build)
 
-1. In `deploy/docker-compose.yml` set `image:` to your published image (e.g. `fabioleitao/python3-lgpd-crawler:latest`) and remove or comment out the `build:` block.
+1. In `deploy/docker-compose.yml` set `image:` to your published image (e.g. `fabioleitao/data_boar:latest`) and remove or comment out the `build:` block.
 1. Prepare `/data/config.yaml` as in section 2 (volume or bind mount).
 1. Run with **docker run** (section 3), **Docker Compose** (section 4), **Docker Swarm** (section 5), or **Kubernetes** (section 6) as above.
 
@@ -380,7 +375,7 @@ To run a single audit from the CLI in the cluster, use a **Job** that overrides 
 | Default (API + frontend) | Run image with no command override: `docker run`, Compose, Swarm, or Kubernetes                                                            |
 | CLI one-shot             | Override command: `docker run ... --entrypoint python IMAGE main.py --config /data/config.yaml`                                            |
 | Build image              | `docker build -t python3-lgpd-crawler:latest .`                                                                                            |
-| Push to registry         | `docker tag ... fabioleitao/python3-lgpd-crawler:latest` then `docker login` and `docker push fabioleitao/python3-lgpd-crawler:latest`     |
+| Push to registry         | `docker tag ... fabioleitao/data_boar:latest` then `docker login` and `docker push fabioleitao/data_boar:latest`                           |
 | **Single container**     | `docker run -d -p 8088:8088 -v ./data:/data python3-lgpd-crawler:latest` (section 3)                                                       |
 | **Docker Compose**       | `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d` — prepare `./data/config.yaml` first (section 4) |
 | **Docker Swarm**         | `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit` (section 5)                            |
