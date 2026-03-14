@@ -38,9 +38,12 @@ Na raiz do repositório (PowerShell):
 
 # Criar PR em um branch novo ou existente
 .\scripts\commit-or-pr.ps1 -Action PR -Branch "feature/minha-alteracao" -Title "Título" -Body "Tópicos..."
+
+# Criar PR e rodar a suíte de testes antes do push (não faz push se os testes falharem)
+.\scripts\commit-or-pr.ps1 -Action PR -Title "Título" -Body "Tópicos..." -RunTests
 ```
 
-- **Push** usa seu remote e chaves SSH normais do Git.
+- **Push** usa seu remote e chaves SSH normais do Git. O PR **sempre envia o branch atual para origin** para que o repositório central (data-boar) tenha o progresso e histórico completos.
 - **Navegador:** Com `gh` instalado e autenticado, o formulário de PR abre com título e descrição preenchidos; basta confirmar e clicar em “Create pull request”.
 
 ## Qual repositório usar (apenas data-boar)
