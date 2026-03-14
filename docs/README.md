@@ -8,6 +8,8 @@ This folder centralizes **application documentation**. Repository root keeps the
 
 - **English (EN)** is the **canonical** source: it represents the true capabilities, features, arguments, config, and behaviour of the application. When behaviour or options change, update the English doc first.
 - **Brazilian Portuguese (pt-BR)** must be **kept in sync** with the English version. Each pt-BR file is a translation of its English counterpart (same structure and coverage).
+- **New documentation:** Any **new** documentation file (user-facing guides, reference, legal/copyright, deploy, testing, etc.) must exist in **both English and Brazilian Portuguese**. Exception: **plan files** (e.g. under `docs/`, `docs/completed/`, or `.cursor/plans/`) may be **English-only** to keep track of history and progress; when a plan drives changes to the application, update the **other docs** (README, USAGE, etc.) in **both languages** so they reflect the new behaviour.
+- **When you update docs** to reflect application changes, **sync the other language** too: edit the EN doc first, then update the corresponding pt-BR file so structure and coverage stay aligned.
 - **Language switcher:** Every documentation file that has a translation must have at the **top** (right after the title or in the first line) a clear link to the other language, e.g.
 - In EN files: `**Português (Brasil):** [Filename.pt_BR.md](Filename.pt_BR.md)`
 - In pt-BR files: `**English:** [Filename.md](Filename.md)`
@@ -60,4 +62,4 @@ Deploy assets (Compose, Kubernetes, config examples) remain in the [deploy/](../
 - [releases/](releases/) — Release notes (e.g. 1.5.0, 1.4.3, 1.4.0).
 - [completed/](completed/) — Archived completed plans and the implementation checklist ([NEXT_STEPS.md](completed/NEXT_STEPS.md) ([pt-BR](completed/NEXT_STEPS.pt_BR.md)), all items Done.
 
-Man pages: `docs/lgpd_crawler.1` (command), `docs/lgpd_crawler.5` (config and file formats). Install and view with `man lgpd_crawler` and `man 5 lgpd_crawler` (see root README).
+Man pages: `docs/lgpd_crawler.1` (command), `docs/lgpd_crawler.5` (config and file formats). Install with symlinks so both names work; view with `man data_boar` or `man lgpd_crawler`, and `man 5 data_boar` or `man 5 lgpd_crawler` (see root README).

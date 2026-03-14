@@ -67,7 +67,7 @@ Mark items done here and in [PLANS_TODO.md](PLANS_TODO.md) when actually complet
 
 **Copyright safety:** Design from scratch (no copying existing logos). Use simple shapes, limited palette (e.g. one brand color + dark gray/black, or two colors). No stock-art or third-party assets unless explicitly licensed for commercial use and logo use. Prefer **SVG** as the master so the same asset scales to favicon and report.
 
-**Current branding:** Data Boar mascot in [api/static/mascot/](../api/static/mascot/) (no longer the abstract C). The mascot is **copyright-safe**: original artwork for this project, documented in [api/static/mascot/README.md](../api/static/mascot/README.md#copyright-and-license) and covered by the repository BSD 3-Clause License. Optional reference: [api/static/logo-candidates/](../api/static/logo-candidates/) holds earlier Concept C variants; those are not used in the app.
+**Current branding:** Data Boar mascot in [api/static/mascot/](../api/static/mascot/) (no longer the abstract C). The mascot is **copyright-safe**: original artwork for this project, documented in [api/static/mascot/README.md](../api/static/mascot/README.md#copyright-and-license) and covered by the repository BSD 3-Clause License. For making copyright and trademark official (registration, registries): [COPYRIGHT_AND_TRADEMARK.md](COPYRIGHT_AND_TRADEMARK.md) ([pt-BR](COPYRIGHT_AND_TRADEMARK.pt_BR.md)). Optional reference: [api/static/logo-candidates/](../api/static/logo-candidates/) holds earlier Concept C variants; those are not used in the app.
 
 ## Deliverables to produce (outside this repo):
 
