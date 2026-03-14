@@ -70,6 +70,7 @@ Para usar a lista de issues do SonarQube de forma automatizada: execute `uv run 
 
 ## Ver também
 
+- **Índice da documentação** (todos os tópicos, ambos os idiomas): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
 - [CONTRIBUTING.md](../CONTRIBUTING.md) — Configuração local e fluxo; execute os testes antes de abrir um PR.
 - [SECURITY.md](../SECURITY.md) — Versões suportadas e auditoria de dependências.
-- [docs/USAGE.md](USAGE.md) e [docs/USAGE.pt_BR.md](USAGE.pt_BR.md) — Comportamento da API e config coberto pelos testes.
+- [docs/USAGE.md](USAGE.md) · [docs/USAGE.pt_BR.md](USAGE.pt_BR.md) — Comportamento da API e config coberto pelos testes.
