@@ -10,12 +10,12 @@ Run these steps in a terminal where **Docker** is available (e.g. PowerShell or 
 
 ```powershell
 docker pull fabioleitao/python3-lgpd-crawler:latest
-# If you run a single container:
+# If you run a single container
 docker stop lgpd-audit
 docker rm lgpd-audit
 docker run -d --name lgpd-audit -p 8088:8088 -v "${PWD}/data:/data" -e CONFIG_PATH=/data/config.yaml fabioleitao/python3-lgpd-crawler:latest
 
-# If you use Compose:
+# If you use Compose
 docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml pull
 docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d
 ```

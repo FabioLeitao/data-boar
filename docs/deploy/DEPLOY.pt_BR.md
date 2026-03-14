@@ -41,7 +41,7 @@ O relatório é escrito em `report.output_dir` do config (ex.: `/data`). **Não*
 
 Você pode executar a aplicação **sem clonar o repositório** usando a imagem publicada no Docker Hub:
 
-- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** e **`fabioleitao/data_boar:1.5.1`**
+- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** e **`fabioleitao/data_boar:1.5.2`**
 - **Legado:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler) — `fabioleitao/python3-lgpd-crawler:latest`
 
 Exemplo:
@@ -71,10 +71,10 @@ docker push ghcr.io/fabioleitao/python3-lgpd-crawler:latest
 ### Opção B – Docker Hub (imagem branded Data Boar)
 
 ```bash
-docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.5.1 .
+docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.5.2 .
 docker login
 docker push fabioleitao/data_boar:latest
-docker push fabioleitao/data_boar:1.5.1
+docker push fabioleitao/data_boar:1.5.2
 ```
 
 Opcional: publicar a mesma imagem com o nome legado: `docker tag fabioleitao/data_boar:latest fabioleitao/python3-lgpd-crawler:latest` e `docker push ...`. Veja também [DOCKER_SETUP.md](../DOCKER_SETUP.md).
@@ -163,3 +163,5 @@ Em `deploy/docker-compose.yml` defina `image: fabioleitao/python3-lgpd-crawler:l
 ## Atrás de NAT, load balancer ou proxy reverso
 
 A aplicação funciona corretamente atrás de **NAT**, **load balancer** ou **proxy reverso** (nginx, Traefik, Caddy). Se HTTPS for terminado no proxy, defina **X-Forwarded-Proto: https** nas requisições. Veja [SECURITY.md](../../SECURITY.md) para cabeçalhos de segurança HTTP.
+
+**Índice da documentação** (todos os tópicos, ambos os idiomas): [../README.md](../README.md) · [../README.pt_BR.md](../README.pt_BR.md). **Guia técnico:** [../TECH_GUIDE.md](../TECH_GUIDE.md) · [../TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md).

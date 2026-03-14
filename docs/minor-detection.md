@@ -134,6 +134,7 @@ In the Excel report, the **Recommendations** sheet includes a dedicated row for 
 
 ## Related documentation
 
+- **Documentation index** (all topics, both languages): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
 - [PLAN_MINOR_DATA_DETECTION.md](completed/PLAN_MINOR_DATA_DETECTION.md) – Plan, design, and to-do status.
-- [sensitivity-detection.md](sensitivity-detection.md) – ML/DL and regex sensitivity detection.
-- [USAGE.md](USAGE.md) – General configuration and API usage.
+- [sensitivity-detection.md](sensitivity-detection.md) ([pt-BR](sensitivity-detection.pt_BR.md)) – ML/DL and regex sensitivity detection.
+- [USAGE.md](USAGE.md) ([pt-BR](USAGE.pt_BR.md)) – General configuration and API usage.

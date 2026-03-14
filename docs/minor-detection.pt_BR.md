@@ -136,6 +136,7 @@ No relatório Excel, a aba **Recommendations** inclui uma linha dedicada a poss�
 
 ## Documentação relacionada
 
+- **Índice da documentação** (todos os tópicos, ambos os idiomas): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
 - [PLAN_MINOR_DATA_DETECTION.md](completed/PLAN_MINOR_DATA_DETECTION.md) – Plano, desenho e status dos to-dos.
-- [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md) – Detecção de sensibilidade ML/DL e regex.
-- [USAGE.pt_BR.md](USAGE.pt_BR.md) – Configuração geral e uso da API.
+- [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md) ([EN](sensitivity-detection.md)) – Detecção de sensibilidade ML/DL e regex.
+- [USAGE.pt_BR.md](USAGE.pt_BR.md) ([EN](USAGE.md)) – Configuração geral e uso da API.
