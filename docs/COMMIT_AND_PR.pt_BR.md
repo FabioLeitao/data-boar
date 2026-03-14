@@ -52,3 +52,5 @@ Na raiz do repositório (PowerShell):
 
 - O script **respeita `.gitignore`**: usa `git check-ignore` para que apenas caminhos não ignorados sejam colocados em stage ou commitados (ex.: `audit_results.db`, relatórios, `__pycache__` nunca são incluídos).
 - O agente **não** tem acesso às suas credenciais; ele executa `git` e `gh` no seu ambiente, então seu SSH e `gh auth` são usados.
+
+**Índice da documentação** (todos os tópicos, ambos os idiomas): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
