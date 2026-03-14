@@ -8,7 +8,9 @@
 # Run from repo root. Respects .gitignore: only non-ignored paths are staged (no audit_results.db, .env, etc.).
 # Preview: show what would be committed (files + proposed message); no commit.
 # -IncludeFiles: optional; only these paths are included (enables file selection). Comma-separated or array.
-# PR: fetch + rebase if behind origin (keeps workflow clean), then push and open PR in browser.
+# PR: fetch + rebase if behind origin (keeps workflow clean), then push to origin and open PR in browser.
+# PR always pushes the current branch to origin so the central repo (data-boar) reflects full progress and history.
+# -RunTests: when creating a PR, run the test suite before pushing; exit without pushing if tests fail.
 
 param(
     [Parameter(Mandatory=$true)]
@@ -21,7 +23,9 @@ param(
 
     [string]$Branch = "",
 
-    [string[]]$IncludeFiles = @()
+    [string[]]$IncludeFiles = @(),
+
+    [switch]$RunTests = $false
 )
 
 $ErrorActionPreference = "Stop"
@@ -57,7 +61,7 @@ if (-not $toAdd.Count -and $Action -in 'Preview','Commit') {
     exit 0
 }
 
-# PR with nothing to commit: push any existing local commits and open PR
+# PR with nothing to commit: push any existing local commits and open PR (central repo gets full history).
 if (-not $toAdd.Count -and $Action -eq 'PR') {
     $branchName = (git rev-parse --abbrev-ref HEAD)
     $ahead = 0
@@ -65,6 +69,11 @@ if (-not $toAdd.Count -and $Action -eq 'PR') {
     if ($LASTEXITCODE -eq 0 -and $countOut) { $ahead = [int]$countOut }
     else { $ahead = 1 }
     if ($ahead -gt 0) {
+        if ($RunTests) {
+            Write-Host "Running tests before push (-RunTests)..."
+            & python -m pytest tests/ -v --tb=short -q 2>&1
+            if ($LASTEXITCODE -ne 0) { Write-Host "Tests failed. Fix failures before pushing. No push performed." -ForegroundColor Red; exit 1 }
+        }
         Write-Host "No new changes to commit; pushing $ahead existing local commit(s) and opening PR..."
         git fetch origin 2>$null
         $behind = git rev-list --count "HEAD..origin/$branchName" 2>$null
@@ -166,6 +175,11 @@ Write-Host "Committed: $Title"
 
 if ($Action -eq 'PR') {
     $branchName = (git rev-parse --abbrev-ref HEAD)
+    if ($RunTests) {
+        Write-Host "Running tests before push (-RunTests)..."
+        & python -m pytest tests/ -v --tb=short -q 2>&1
+        if ($LASTEXITCODE -ne 0) { Write-Host "Tests failed. Fix failures before pushing. No push performed." -ForegroundColor Red; exit 1 }
+    }
     git fetch origin 2>$null
     $behind = git rev-list --count "HEAD..origin/$branchName" 2>$null
     if ($LASTEXITCODE -eq 0 -and $behind -and [int]$behind -gt 0) {
