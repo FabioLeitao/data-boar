@@ -8,11 +8,11 @@ This document is **informational only** and does not constitute legal advice. Fo
 
 ## What GitHub + our documentation does and doesn’t do
 
-| What we have (LICENSE, NOTICE, mascot README, about/copyright in app) | Enough to… | Not enough to… |
-|----------------------------------------------------------------------|-----------|-----------------|
-| **Copyright** | Assert and document ownership of code and mascot; set license terms (BSD). Standard for open source. | Replace optional copyright *registration* if you want a formal certificate and (in some countries) stronger damages. |
-| **Trademark / branding** | Show first use and that we claim “Data Boar” and the mascot; support unregistered (e.g. common-law) rights where they exist. | Give you *registered* trademark protection. For that you must apply to the trademark office(s) (e.g. INPI, USPTO, EUIPO). |
-| **Ideas** | N/A — copyright protects *expression* (code, art, text), not abstract ideas. | Protect the *idea* of a compliance crawler; patents (if applicable) require a separate filing. |
+| What we have (LICENSE, NOTICE, mascot README, about/copyright in app)  | Enough to…                                                                                                                   | Not enough to…                                                                                                            |
+| ---------------------------------------------------------------------- | -----------                                                                                                                  | -----------------                                                                                                         |
+| **Copyright**                                                          | Assert and document ownership of code and mascot; set license terms (BSD). Standard for open source.                         | Replace optional copyright *registration* if you want a formal certificate and (in some countries) stronger damages.      |
+| **Trademark / branding**                                               | Show first use and that we claim “Data Boar” and the mascot; support unregistered (e.g. common-law) rights where they exist. | Give you *registered* trademark protection. For that you must apply to the trademark office(s) (e.g. INPI, USPTO, EUIPO). |
+| **Ideas**                                                              | N/A — copyright protects *expression* (code, art, text), not abstract ideas.                                                 | Protect the *idea* of a compliance crawler; patents (if applicable) require a separate filing.                            |
 
 So: **documentation in the repo is enough to protect the *work* (code and mascot) under copyright and to make our terms clear.** It is **not enough by itself to fully protect the *brand* (name/logo)** as a trademark; for that, consider registering the mark in the jurisdictions where you operate or care about.
 
@@ -23,9 +23,9 @@ So: **documentation in the repo is enough to protect the *work* (code and mascot
 **Yes.** The project documents copyright in several places:
 
 - **LICENSE** (root): “Copyright (c) 2025, FabioLeitao” and the BSD 3-Clause terms.
-- **NOTICE** (root): Single place that states the copyright holder, that the work (code, docs, mascot) is under BSD 3-Clause, and points to LICENSE and to `api/static/mascot/README.md` for the mascot.
+- **NOTICE** (root): Single place that states the copyright holder, that the work (code, docs, mascot) is under BSD 3-Clause, and points to LICENSE and to [docs/mascot.md](mascot.md) for the mascot.
 - **core/about.py**: Application exposes “Copyright (c) 2025, Fabio Leitao” in the API, About page, and reports.
-- **api/static/mascot/README.md**: States that the mascot assets are original artwork for the project and covered by the repository BSD 3-Clause License.
+- **[docs/mascot.md](mascot.md)**: States that the mascot assets are original artwork for the project and covered by the repository BSD 3-Clause License.
 
 That is sufficient for **asserting** copyright and for **license compliance** (e.g. redistributors keeping the notice). It does not by itself “register” copyright or create a trademark.
 
@@ -35,9 +35,9 @@ That is sufficient for **asserting** copyright and for **license compliance** (e
 
 - **Copyright arises automatically** in most countries when you fix an original work (code, art, text) in a tangible form. You do **not** need to register to “have” copyright.
 - **Registration is optional** in many places but can help:
-  - **Evidence:** Registration gives a public record and a registration date, useful in disputes.
-  - **Damages:** In some jurisdictions (e.g. United States), registration (especially before infringement) can allow statutory damages and attorney’s fees in court.
-  - **Customs / enforcement:** Some countries use a copyright register for border or enforcement measures.
+- **Evidence:** Registration gives a public record and a registration date, useful in disputes.
+- **Damages:** In some jurisdictions (e.g. United States), registration (especially before infringement) can allow statutory damages and attorney’s fees in court.
+- **Customs / enforcement:** Some countries use a copyright register for border or enforcement measures.
 
 So: you already **have** copyright by creating and publishing the work; **making it official** in the legal sense usually means **optional registration** in a national (or regional) copyright office where you want stronger evidence or remedies.
 
@@ -52,6 +52,7 @@ If you want to **register** copyright:
 - **Other countries:** Most have a national copyright office or culture ministry that offers voluntary registration or deposit. A local IP lawyer can point you to the right body.
 
 You can register:
+
 - The **software** (as a whole or by version),
 - The **mascot/logo artwork** (as a visual work),
 - Or both, depending on your goals and budget.
@@ -60,11 +61,11 @@ You can register:
 
 ## 4. Trademark vs copyright
 
-| | Copyright | Trademark |
-|---|-----------|-----------|
-| **Protects** | The *work* (code, artwork, text) | The *brand* (name, logo) as used in commerce to distinguish your goods/services |
-| **Automatic?** | Yes (in most countries) | Unregistered “common law” rights in some places (e.g. US) by use; stronger and clearer with registration |
-| **Register?** | Optional (for evidence and remedies) | Recommended if you use the name/logo in commerce and want exclusivity and enforceability |
+|                | Copyright                            | Trademark                                                                                                |
+| ---            | -----------                          | -----------                                                                                              |
+| **Protects**   | The *work* (code, artwork, text)     | The *brand* (name, logo) as used in commerce to distinguish your goods/services                          |
+| **Automatic?** | Yes (in most countries)              | Unregistered “common law” rights in some places (e.g. US) by use; stronger and clearer with registration |
+| **Register?**  | Optional (for evidence and remedies) | Recommended if you use the name/logo in commerce and want exclusivity and enforceability                 |
 
 So: **copyright** already protects your code and mascot as creative works. To **protect “Data Boar” and the mascot as a brand** (so others do not use the same or similar name/logo for the same type of software), you would look at **trademark** registration, not copyright.
 
@@ -75,26 +76,31 @@ So: **copyright** already protects your code and mascot as creative works. To **
 - **Yes.** You can use “Data Boar” (and the mascot) as a **trademark** as soon as you use them in commerce to identify your product (e.g. the app, reports, website). That use can give you **common-law** rights in jurisdictions that recognize them (e.g. US).
 - To get **stronger, clearer rights** and a public record, you **register** the mark with the relevant office(s).
 
-**How to register a trademark (high level):**
+## How to register a trademark (high level):
 
-1. **Choose jurisdiction(s)**  
+1. **Choose jurisdiction(s)**
+
    Typically where you offer the product or where you care most about protection (e.g. Brazil, United States, EU).
 
-2. **Search**  
+1. **Search**
+
    Check that “Data Boar” (and, if applicable, the logo) are not already registered or used for the same or similar software/services in that jurisdiction. You can search:
+
    - **Brazil:** [INPI – Busca de Marcas](https://www.gov.br/inpi/pt-br/servicos/marcas)
    - **United States:** [USPTO TESS](https://www.uspto.gov/trademarks/search)
    - **EU:** [EUIPO eSearch](https://euipo.europa.eu/eSearch/)
 
-3. **File an application**  
+1. **File an application**
    - **Brazil:** INPI – [registro de marcas](https://www.gov.br/inpi/pt-br/servicos/marcas). You specify the sign (word “Data Boar”, and/or logo), the class(es) of goods/services (e.g. software), and pay the fee.
    - **United States:** [USPTO TEAS](https://www.uspto.gov/trademarks/file) – same idea: sign, class(es), fee, and basis (use in commerce or intent to use).
    - **EU:** [EUIPO](https://euipo.europa.eu/) for an EU trade mark (EUTM).
 
-4. **Prosecution**  
+1. **Prosecution**
+
    The office examines the application (distinctiveness, conflict with prior marks). You may need to respond to objections. If accepted, the mark is published; after any opposition period, it is registered.
 
-5. **Maintain and use**  
+1. **Maintain and use**
+
    Pay renewal fees and keep using the mark in commerce so it does not become generic or be cancelled for non-use.
 
 **Recommendation:** Use an **IP lawyer or agent** in each country where you register. They can run proper searches, choose classes, draft the application, and handle office actions. Costs and timelines vary by country.
@@ -103,12 +109,12 @@ So: **copyright** already protects your code and mascot as creative works. To **
 
 ## 6. Summary
 
-| Question | Short answer |
-|----------|--------------|
-| Do we document copyright? | **Yes:** LICENSE, NOTICE, about info, mascot README. |
-| How to make copyright “official”? | Copyright already exists; **optional registration** at a national copyright office (e.g. US Copyright Office, Brazil’s EDA/INPI for software) for evidence and stronger remedies. |
-| Is there a register we need to apply to? | **Copyright:** optional. **Trademark:** if you want to protect “Data Boar” / mascot as a brand, apply to the **trademark** office(s) (e.g. INPI in Brazil, USPTO in the US, EUIPO in the EU). |
-| Can we create a trademark? How? | **Yes.** Use the name/logo in commerce (you may already have common-law rights). To get a **registered** trademark: search for conflicts, file an application with the relevant office(s), pay fees, and maintain the registration. Use an IP professional for registration. |
+| Question                                 | Short answer                                                                                                                                                                                                                                                                 |
+| ----------                               | --------------                                                                                                                                                                                                                                                               |
+| Do we document copyright?                | **Yes:** LICENSE, NOTICE, about info, mascot README.                                                                                                                                                                                                                         |
+| How to make copyright “official”?        | Copyright already exists; **optional registration** at a national copyright office (e.g. US Copyright Office, Brazil’s EDA/INPI for software) for evidence and stronger remedies.                                                                                            |
+| Is there a register we need to apply to? | **Copyright:** optional. **Trademark:** if you want to protect “Data Boar” / mascot as a brand, apply to the **trademark** office(s) (e.g. INPI in Brazil, USPTO in the US, EUIPO in the EU).                                                                                |
+| Can we create a trademark? How?          | **Yes.** Use the name/logo in commerce (you may already have common-law rights). To get a **registered** trademark: search for conflicts, file an application with the relevant office(s), pay fees, and maintain the registration. Use an IP professional for registration. |
 
 For concrete steps in your country, consult a lawyer or the relevant government IP/copyright and trademark websites (e.g. [gov.br/INPI](https://www.gov.br/inpi), [copyright.gov](https://www.copyright.gov), [uspto.gov](https://www.uspto.gov)).
 
