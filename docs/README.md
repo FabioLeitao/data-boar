@@ -20,6 +20,8 @@ These stay at repo root for GitHub and automation:
 | Document         | English                                     | Português (pt-BR)                                       |
 | ---------------- | ----------------------------                | ------------------------------------                    |
 | Readme           | [README.md](../README.md)                   | [README.pt_BR.md](../README.pt_BR.md)                   |
+| License          | [LICENSE](../LICENSE)                       | —                                                        |
+| Notice (copyright) | [NOTICE](../NOTICE)                       | —                                                        |
 | Security         | [SECURITY.md](../SECURITY.md)               | [SECURITY.pt_BR.md](../SECURITY.pt_BR.md)               |
 | Contributing     | [CONTRIBUTING.md](../CONTRIBUTING.md)       | [CONTRIBUTING.pt_BR.md](../CONTRIBUTING.pt_BR.md)       |
 | Code of conduct  | [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md) | [CODE_OF_CONDUCT.pt_BR.md](../CODE_OF_CONDUCT.pt_BR.md) |
@@ -52,9 +54,10 @@ Deploy assets (Compose, Kubernetes, config examples) remain in the [deploy/](../
 | Testing         | [TESTING.md](TESTING.md)             | [TESTING.pt_BR.md](TESTING.pt_BR.md)             |
 | Topology        | [TOPOLOGY.md](TOPOLOGY.md)           | [TOPOLOGY.pt_BR.md](TOPOLOGY.pt_BR.md)           |
 | Commit and PR   | [COMMIT_AND_PR.md](COMMIT_AND_PR.md) | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md) |
+| Copyright and trademark | [COPYRIGHT_AND_TRADEMARK.md](COPYRIGHT_AND_TRADEMARK.md) | [COPYRIGHT_AND_TRADEMARK.pt_BR.md](COPYRIGHT_AND_TRADEMARK.pt_BR.md) |
 
 - [PLANS_TODO.md](PLANS_TODO.md) ([pt-BR](PLANS_TODO.pt_BR.md)) — Plan status and current app state (single source of truth for open-plan to-dos).
-- [releases/](releases/) — Release notes (e.g. 1.4.1, 1.4.0).
+- [releases/](releases/) — Release notes (e.g. 1.5.0, 1.4.3, 1.4.0).
 - [completed/](completed/) — Archived completed plans and the implementation checklist ([NEXT_STEPS.md](completed/NEXT_STEPS.md) ([pt-BR](completed/NEXT_STEPS.pt_BR.md)), all items Done.
 
 Man pages: `docs/lgpd_crawler.1` (command), `docs/lgpd_crawler.5` (config and file formats). Install and view with `man lgpd_crawler` and `man 5 lgpd_crawler` (see root README).

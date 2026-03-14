@@ -60,8 +60,8 @@ Obrigado por considerar contribuir. Este documento cobre a configuração local,
 ## CI e higiene de dependências
 
 - **CI:** O GitHub Actions executa testes e `uv pip audit` em push/PR para `main` (ou `master`). Quando o SonarQube/SonarCloud estiver habilitado (veja [docs/TESTING.md](docs/TESTING.md) ([pt-BR](docs/TESTING.pt_BR.md))), trate os problemas reportados para que o quality gate permaneça verde.
-- **Dependências:** Declare todas as dependências de runtime e de desenvolvimento em `pyproject.toml`. Se adicionar ou alterar dependências, execute `uv sync` e opcionalmente `uv pip compile pyproject.toml -o requirements.txt` se o projeto ainda distribuir um `requirements.txt`.
-- **Dependabot:** Pip e GitHub Actions são mantidos atualizados pelo Dependabot; revise e faça merge dos PRs de dependência quando for seguro.
+- **Dependências:** A fonte de verdade das bibliotecas é o **`pyproject.toml`** (toolColleague-Nn uv); pip e **`requirements.txt`** são derivados. Declare todas as dependências de runtime e de desenvolvimento em **`pyproject.toml`**. Ao adicionar ou alterar dependências, execute `uv sync` e regenere o lockfile com `uv pip compile pyproject.toml -o requirements.txt`. Não edite o `requirements.txt` à mão para mudanças de versão.
+- **Dependabot / automação:** Ao aplicar uma atualização de dependência (ex.: de um PR do Dependabot), atualize primeiro o **`pyproject.toml`** (suba a versão mínima do pacote), execute `uv pip compile pyproject.toml -o requirements.txt` e faça commit dos dois arquivos. Faça merge dos PRs de dependência somente após o CI (testes e auditoria) passar.
 
 ## Implantação e produção
 
@@ -73,6 +73,8 @@ Obrigado por considerar contribuir. Este documento cobre a configuração local,
 - **[docs/TESTING.md](docs/TESTING.md)** ([pt-BR](docs/TESTING.pt_BR.md)) — Módulos de teste, CI, SonarQube.
 - **[docs/TOPOLOGY.md](docs/TOPOLOGY.md)** ([pt-BR](docs/TOPOLOGY.pt_BR.md)) — Topologia da aplicação (módulos, classes, fluxo de dados).
 - **[docs/COMMIT_AND_PR.md](docs/COMMIT_AND_PR.md)** ([pt-BR](docs/COMMIT_AND_PR.pt_BR.md)) — Automação de commit e PR.
-- **[docs/compliance-frameworks.md](docs/compliance-frameworks.md)** ([pt-BR](docs/compliance-frameworks.pt_BR.md)) — Rótulos de conformidade e extensibilidade. Índice completo: [docs/README.md](docs/README.md).
+- **[docs/compliance-frameworks.md](docs/compliance-frameworks.md)** ([pt-BR](docs/compliance-frameworks.pt_BR.md)) — Rótulos de conformidade e extensibilidade.
+- **[docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md](docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md)** ([EN](docs/COPYRIGHT_AND_TRADEMARK.md)) — Direitos autorais e marca (tornar oficial, registros). [NOTICE](NOTICE) para o aviso do projeto.
+- Índice completo da documentação: [docs/README.pt_BR.md](docs/README.pt_BR.md) ([EN](docs/README.md)).
 
 Se tiver dúvidas, abra uma discussão ou uma issue. Obrigado por contribuir.

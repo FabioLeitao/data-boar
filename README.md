@@ -1,8 +1,10 @@
 # Data Boar
 
+![Data Boar mascot](api/static/mascot/data_boar_mascote_color.svg)
+
 Data Boar is an application for auditing personal and sensitive data across databases and filesystems, aligned with **LGPD**, **GDPR**, **CCPA**, **HIPAA**, and **GLBA**. It discovers and maps possible PII/sensitive data via regex and ML, stores metadata (including optional **tenant/customer** and **technician/operator** tags per scan) in a local SQLite database, and produces Excel reports with heatmaps and recommendations. The runtime engine and Python package name remain **python3-lgpd-crawler** for compatibility. The **boar** mascot and name emphasize a hungry crawler “rooting” through heterogeneous data sources (databases, files, APIs, dashboards, shares) for compliance-relevant signals.
 
-> **Current release:** 1.4.3 (see [docs/releases/1.4.3.md](docs/releases/1.4.3.md) and the [GitHub Releases page](https://github.com/FabioLeitao/data-boar/releases/tag/v1.4.3)).
+> **Current release:** 1.5.0 (see [docs/releases/1.5.0.md](docs/releases/1.5.0.md) and the [GitHub Releases page](https://github.com/FabioLeitao/data-boar/releases)).
 
 > **Documentation note:** This README and `docs/USAGE.md` are the canonical English references. When features or options change, update **both** languages to keep them in sync.
 > **Brazilian Portuguese (pt-BR):** [README.pt_BR.md](README.pt_BR.md) · [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md)
@@ -18,7 +20,7 @@ Data Boar is an application for auditing personal and sensitive data across data
 - **Filesystem**: Recursive scan of local (or mounted) directories; permission check before reading. Supports many extensions: text (`.txt`, `.csv`, `.json`, `.xml`, `.html`, `.md`, `.yml`, `.log`, `.ini`, `.sql`, `.rtf`, etc.), documents (`.pdf`, `.doc`, `.docx`, `.odt`, `.ods`, `.odp`, `.xls`, `.xlsx`, `.xlsm`, `.ppt`, `.pptx`), email (`.eml`, `.msg`), and data (`.sqlite`, `.db`). **SQLite files** (`.sqlite`, `.sqlite3`, `.db`) found on disk are opened and scanned as databases (discover tables/columns, sample and detect); set `file_scan.scan_sqlite_as_db: false` to skip. Set `file_scan.extensions` to a list of suffixes, or `"*"` / `"all"` for all supported types.
 - **Sensitivity detection**: Regex (configurable) + **ML** (TF-IDF + RandomForest) + optional **DL** (sentence embeddings + classifier) on column names and sampled content; no raw data is stored. You can set **ML and DL training terms** in the config (inline or via `ml_patterns_file` / `dl_patterns_file`). See [docs/sensitivity-detection.md](docs/sensitivity-detection.md) (English) or [docs/sensitivity-detection.pt_BR.md](docs/sensitivity-detection.pt_BR.md) (Português – Brasil) for examples. **Lyrics and music tablature** are detected via heuristics so that date-like or digit sequences in song lyrics and guitar tabs are downgraded to MEDIUM/LOW to reduce false positives; strong PII (CPF, email, etc.) still reports HIGH.
 - **Single SQLite**: All findings and failures per session (UUID + timestamp); metadata per scan includes optional **tenant_name** (customer/tenant) and **technician_name** (operator responsible). Separate tables for database findings, filesystem findings, and scan failures.
-- **Reporting**: Excel with sheets **"Report info"** (Session ID, Started at, Tenant/Customer, Technician/Operator, Application, Version, Author, License, Copyright), "Database findings", "Filesystem findings", "Scan failures", "Recommendations", "Praise / existing controls" (indications of encryption/hashing/tokenization), **"Trends - Session comparison"** (vs previous run), and sensitivity/risk heatmap (PNG). The heatmap image and dashboard/reports pages include the same application and author attribution.
+- **Reporting**: Excel with sheets **"Report info"** (Session ID, Started at, Tenant/Customer, Technician/Operator, Application, Version, Author, License, Copyright), "Database findings", "Filesystem findings", "Scan failures", "Recommendations", "Praise / existing controls" (indications of encryption/hashing/tokenization), **"Trends - Session comparison"** (this run vs up to 3 previous runs; aggregate notes), **"Heatmap data"** (table plus embedded heatmap image, fit-to-one-page when printed), and a standalone sensitivity/risk heatmap PNG. Report info and heatmap include optional Data Boar mascot branding; dashboard/reports pages show application and author attribution.
 - **CLI and REST API**: Run one-shot audit from command line or start API (default port 8088) for `/scan`, `/start`, `/scan_database`, `/status`, `/report`, `/heatmap`, `/list`, `/reports/{session_id}`, `/logs`, `/about`, and `PATCH /sessions/{session_id}` for tenant/technician metadata. Both modes allow tagging scans with optional **tenant/customer** and **technician/operator** information. The web dashboard includes **Help**, **About** (author and license), and security headers (see SECURITY.md). The application works behind NAT, load balancers, and reverse proxies (nginx, Traefik, Caddy); set `X-Forwarded-Proto: https` when TLS is terminated at the proxy.
 
 ## Requirements and environment preparation
@@ -466,14 +468,18 @@ To support a new data source (e.g. another database driver or API), see **[docs/
 
 ## Dependencies and security
 
-- **Sync locked deps:** From project root, treat `pyproject.toml` as the **single source of truth** and regenerate `requirements.txt` whenever dependencies change:
+- **Source of truth:** For the **uv** toolColleague-Nn, **`pyproject.toml`** is the single source of truth for libraries; **pip** and **`requirements.txt`** are derivative (requirements.txt is generated from pyproject.toml for environments that use pip). Dependencies are declared in **`pyproject.toml`**; **`requirements.txt`** must not be edited by hand for version bumps. When you add, remove, or change a dependency, edit **`pyproject.toml`** only, then regenerate `requirements.txt`.
+
+- **Regenerate requirements.txt after any dependency change:**
 
   ```bash
-  # Generate requirements.txt from pyproject.toml using uv
+  # From project root: generate requirements.txt from pyproject.toml using uv
   uv pip compile pyproject.toml -o requirements.txt
   ```
 
-  This keeps `requirements.txt` aligned with the versions and extras defined in `pyproject.toml` so environments that still rely on `pip install -r requirements.txt` behave identically to `uv sync`.
+  This keeps `requirements.txt` aligned with the versions and extras defined in `pyproject.toml` so environments that use `pip install -r requirements.txt` behave identically to `uv sync`.
+
+- **Dependabot / automation:** If a PR (e.g. from Dependabot) suggests updating only `requirements.txt`, apply the change to the **source of truth** first: update the corresponding minimum version in **`pyproject.toml`** (e.g. `fonttools>=4.62.1`), then run `uv pip compile pyproject.toml -o requirements.txt` and commit both files. Do not merge a dependency update that only edits `requirements.txt`.
 
 - **Check for known CVEs:** Run `uv pip audit` (or `pip audit` if available) before deployment; fix or pin any vulnerable packages.
 - See also **Security and compliance** below.
@@ -516,16 +522,18 @@ You can run the API as a **single container** (`docker run`), with **Docker Comp
 
 ### Pre-built image (Docker Hub)
 
-A Docker image is available on **Docker Hub** so you can run the application without cloning the repository:
+Docker images are available on **Docker Hub** so you can run the application without cloning the repository:
 
-- **Repository:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)
-- **Image name:** `fabioleitao/python3-lgpd-crawler:latest` (version tag `latest`; other tags may be published for specific releases). The image includes regex + ML + optional DL sensitivity detection; you can set ML/DL training terms in config (see `docs/sensitivity-detection.md` and `deploy/config.example.yaml`).
+- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` and `fabioleitao/data_boar:1.5.0`
+- **Legacy:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler) — `fabioleitao/python3-lgpd-crawler:latest` (same image may be published under both names)
+
+The image includes regex + ML + optional DL sensitivity detection; you can set ML/DL training terms in config (see `docs/sensitivity-detection.md` and `deploy/config.example.yaml`).
 
 Example: run the web API with a local config directory:
 
 ```bash
-docker pull fabioleitao/python3-lgpd-crawler:latest
-docker run -d -p 8088:8088 -v /path/to/your/data:/data -e CONFIG_PATH=/data/config.yaml fabioleitao/python3-lgpd-crawler:latest
+docker pull fabioleitao/data_boar:latest
+docker run -d -p 8088:8088 -v /path/to/your/data:/data -e CONFIG_PATH=/data/config.yaml fabioleitao/data_boar:latest
 ```
 
 Prepare `/data/config.yaml` from `deploy/config.example.yaml` (see [docs/deploy/DEPLOY.md](docs/deploy/DEPLOY.md) ([pt-BR](docs/deploy/DEPLOY.pt_BR.md))). You can decide to use this image as an instanced container instead of pulling the code from Git and building locally.

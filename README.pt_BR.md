@@ -1,8 +1,10 @@
 # Data Boar (Português – Brasil)
 
+![Data Boar mascot](api/static/mascot/data_boar_mascote_color.svg)
+
 Data Boar é uma aplicação para auditoria de dados pessoais e sensíveis em bancos de dados e sistemas de arquivos, alinhada a **LGPD**, **GDPR**, **CCPA**, **HIPAA** e **GLBA**. Ela descobre e mapeia possíveis dados pessoais/sensíveis via **regex** e **ML**, armazena apenas **metadados** em um banco SQLite local (incluindo tags opcionais de **cliente/tenant** e **técnico/operador** por varredura) e gera relatórios em Excel e um **heatmap** de sensibilidade/risco em PNG. O nome do pacote Python permanece **python3-lgpd-crawler** para compatibilidade. O mascote de **javali** (boar) reforça a ideia de um crawler “farejando” e procurando dados em várias fontes (bancos, arquivos, APIs, dashboards, compartilhamentos) para fins de conformidade.
 
-> **Release atual:** 1.4.3 (veja [docs/releases/1.4.3.md](docs/releases/1.4.3.md) e a página de [Releases no GitHub](https://github.com/FabioLeitao/data-boar/releases/tag/v1.4.3)).
+> **Release atual:** 1.5.0 (veja [docs/releases/1.5.0.md](docs/releases/1.5.0.md) e a página de [Releases no GitHub](https://github.com/FabioLeitao/data-boar/releases)).
 
 > **Manutenção da documentação:** sempre que um novo recurso ou opção de linha de comando for adicionado, atualize **este arquivo** e o `README.md` em inglês, bem como os arquivos `docs/USAGE.md` e `docs/USAGE.pt_BR.md`, para manter as versões sincronizadas.
 > **English:** [README.md](README.md) · [docs/USAGE.md](docs/USAGE.md)
@@ -15,8 +17,8 @@ Data Boar é uma aplicação para auditoria de dados pessoais e sensíveis em ba
 - **Heurísticas para reduzir falsos positivos:** letras de música e cifras de violão são detectadas e tratadas de forma especial para reduzir falsos positivos (datas/números em letras/cifras não viram HIGH sozinhos).
 - **SQLite único:** todas as sessões de varredura são gravadas em `audit_results.db`, com tabelas separadas para achados de banco de dados, achados de filesystem e falhas de varredura. Cada sessão tem `session_id`, `started_at`, `finished_at`, `status`, `tenant_name` (cliente/tenant) e `technician_name` (técnico/operador).
 - **Relatórios:** para cada sessão, é gerado um arquivo Excel com abas:
-- **Report info** (Session ID, Started at, Tenant/Customer, Technician/Operator, Application, Version, Author, License, Copyright)
-- Database findings, Filesystem findings, Scan failures, Recommendations, Praise / existing controls, Trends – Session comparison, Heatmap data
+- **Report info** (Session ID, Started at, Tenant/Customer, Technician/Operator, Application, Version, Author, License, Copyright; mascote opcional)
+- Database findings, Filesystem findings, Scan failures, Recommendations, Praise / existing controls, **Trends – Session comparison** (esta execução vs até 3 anteriores; notas agregadas), **Heatmap data** (tabela + imagem do heatmap embutida, ajuste a uma página ao imprimir)
 - Um arquivo **heatmap_\<session_prefix\>.png** é gerado com o mapa de calor de sensibilidade/risco (inclui rodapé com aplicação, autor e licença).
 - **CLI e API REST:** modo de execução única via linha de comando ou modo servidor (FastAPI) com dashboard web (Help, About com autor e licença), endpoints para varreduras, relatórios, heatmap, logs e `PATCH /sessions/{session_id}` para metadados de tenant/técnico. Opcionalmente é possível exigir **chave de API** (X-API-Key ou Authorization: Bearer) para todos os endpoints exceto GET /health. A aplicação funciona atrás de NAT, load balancer ou proxy reverso (nginx, Traefik, Caddy); defina **X-Forwarded-Proto: https** quando o TLS for terminado no proxy.
 
@@ -219,16 +221,16 @@ Você pode executar a API como **container único** (`docker run`), com **Docker
 
 ### Imagem pré-construída (Docker Hub)
 
-Uma imagem Docker está disponível no **Docker Hub**, permitindo executar a aplicação sem clonar o repositório:
+Imagens Docker estão disponíveis no **Docker Hub**, permitindo executar a aplicação sem clonar o repositório:
 
-- **Repositório:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)
-- **Nome da imagem:** `fabioleitao/python3-lgpd-crawler:latest` (tag `latest`; outras tags de versão podem ser publicadas)
+- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` e `fabioleitao/data_boar:1.5.0`
+- **Legado:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler) — `fabioleitao/python3-lgpd-crawler:latest` (a mesma imagem pode ser publicada nos dois nomes)
 
 Exemplo: executar a API web com um diretório local de configuração:
 
 ```bash
-docker pull fabioleitao/python3-lgpd-crawler:latest
-docker run -d -p 8088:8088 -v /caminho/para/seu/data:/data -e CONFIG_PATH=/data/config.yaml fabioleitao/python3-lgpd-crawler:latest
+docker pull fabioleitao/data_boar:latest
+docker run -d -p 8088:8088 -v /caminho/para/seu/data:/data -e CONFIG_PATH=/data/config.yaml fabioleitao/data_boar:latest
 ```
 
 Prepare `/data/config.yaml` a partir de `deploy/config.example.yaml` (veja [docs/deploy/DEPLOY.pt_BR.md](docs/deploy/DEPLOY.pt_BR.md) ([EN](docs/deploy/DEPLOY.md))). Você pode optar por usar essa imagem como container em vez de clonar o código do Git e construir localmente.
@@ -249,14 +251,16 @@ A aplicação referencia explicitamente **LGPD**, **GDPR**, **CCPA**, **HIPAA** 
 
 ## Dependências e sincronização (pyproject.toml e requirements.txt)
 
-- O arquivo **`pyproject.toml`** é a fonte de verdade das dependências.
-- Quando precisar de um `requirements.txt` (por exemplo para ambientes legados):
+- **Fonte de verdade:** Para a toolColleague-Nn **uv**, o **`pyproject.toml`** é a única fonte de verdade das bibliotecas; **pip** e **`requirements.txt`** são derivados (o requirements.txt é gerado a partir do pyproject.toml para ambientes que usam pip). As dependências são declaradas em **`pyproject.toml`**; o **`requirements.txt`** não deve ser editado à mão para alterações de versão. Ao adicionar, remover ou alterar uma dependência, edite apenas **`pyproject.toml`** e depois regenere o `requirements.txt`.
+- **Regenerar requirements.txt após qualquer alteração de dependência:**
 
 ```bash
+# Na raiz do projeto: gerar requirements.txt a partir de pyproject.toml com uv
 uv pip compile pyproject.toml -o requirements.txt
 ```
 
 Isso gera um `requirements.txt` travado e consistente com o que `uv sync` instala.
+- **Dependabot / automação:** Se um PR (ex.: do Dependabot) sugerir atualizar apenas o `requirements.txt`, aplique a alteração na **fonte de verdade** primeiro: atualize a versão mínima correspondente em **`pyproject.toml`** (ex.: `fonttools>=4.62.1`), execute `uv pip compile pyproject.toml -o requirements.txt` e faça commit dos dois arquivos. Não faça merge de uma atualização de dependência que edite só o `requirements.txt`.
 
 ---
 
