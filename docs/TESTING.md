@@ -130,6 +130,7 @@ The **same issues** the Cursor SonarQube extension shows come from the SonarQube
 
 ## See also
 
+- **Documentation index** (all topics, both languages): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
 - [CONTRIBUTING.md](../CONTRIBUTING.md) – Local setup and workflow; run tests before opening a PR.
 - [SECURITY.md](../SECURITY.md) – Supported versions and dependency audit.
-- [docs/USAGE.md](USAGE.md) – API and config behaviour covered by the tests.
+- [docs/USAGE.md](USAGE.md) ([pt-BR](USAGE.pt_BR.md)) – API and config behaviour covered by the tests.
