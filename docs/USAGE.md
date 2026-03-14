@@ -1,6 +1,6 @@
-# How to Use the LGPD Audit Application
+# How to Use Data Boar (LGPD Audit Application)
 
-This guide covers **command-line arguments and outcomes**, **deploying and using the web API**, **configuration (targets and credentials)**, and **downloading reports** (current and previous sessions).
+**Data Boar** is the application name (powered by the python3-lgpd-crawler engine). This guide covers **command-line arguments and outcomes**, **deploying and using the web API**, **configuration (targets and credentials)**, and **downloading reports** (current and previous sessions). Operators can use it to learn how to run, configure, and navigate the app.
 
 **Português (Brasil):** [USAGE.pt_BR.md](USAGE.pt_BR.md)
 
@@ -61,7 +61,7 @@ python main.py --config config.yaml --web --port 8088
 ### Deploying the server
 
 ## Option: run from Docker (no Git clone)
-A pre-built image is available on Docker Hub: `fabioleitao/python3-lgpd-crawler:latest` ([hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)). Pull it and run with a mounted config at `/data/config.yaml` (see README “Deploy with Docker” and [docs/deploy/DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md))). You can use this instanced container instead of installing from source.
+Pre-built images are on Docker Hub: **branded** `fabioleitao/data_boar:latest` ([hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar)); legacy `fabioleitao/python3-lgpd-crawler:latest` also available. Pull and run with a mounted config at `/data/config.yaml` (see README “Deploy with Docker” and [docs/deploy/DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md))). You can use this instanced container instead of installing from source.
 
 1. **Install** the application and optional dependencies (e.g. `.[nosql]`, `.[shares]`) as in the README.
 1. **Prepare** a config file (e.g. `config.yaml`) with `targets`, `file_scan`, `report`, and optionally `api.port`.
@@ -91,8 +91,8 @@ A pre-built image is available on Docker Hub: `fabioleitao/python3-lgpd-crawler:
   Example: `<http://localhost:8088>/` or `<http://your-server:8088>/`
 
 - **OpenAPI docs (interactive):**
-- Swagger UI: `<http://localhost:8088/doc>s`
-- ReDoc: `<http://localhost:8088/redo>c`
+- Swagger UI: `http://localhost:8088/docs`
+- ReDoc: `http://localhost:8088/redoc`
 - **Authentication:** By default the API does not require authentication; secure it at the reverse proxy or network level if exposed. You can optionally enable a shared API key: set `api.require_api_key: true` and `api.api_key` (or `api.api_key_from_env: "VAR"`) in config; then send **X-API-Key** or **Authorization: Bearer &lt;key&gt;** on each request (GET /health remains public). See [SECURITY.md](../SECURITY.md#optional-api-key-enterprise) and the Configuration section below.
 
 ### Web dashboard
