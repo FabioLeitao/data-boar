@@ -63,6 +63,7 @@ python main.py --config config.yaml --web --port 8088
 ## 2. API web e dashboard
 
 ## Opção: executar via Docker (sem clonar o Git)
+
 Uma imagem pré-construída está disponível no Docker Hub: `fabioleitao/python3-lgpd-crawler:latest` ([hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)). Faça pull e execute com um config montado em `/data/config.yaml` (veja o README “Deploy com Docker” e [docs/deploy/DEPLOY.pt_BR.md](deploy/DEPLOY.pt_BR.md) ([EN](deploy/DEPLOY.md))). Você pode usar esse container em vez de instalar a partir do código.
 
 ### URLs principais
