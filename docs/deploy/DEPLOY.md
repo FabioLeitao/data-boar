@@ -42,7 +42,7 @@ The report is written under `report.output_dir` in config (e.g. `/data`); copy i
 
 You can run the application **without cloning the repository** by using the published image on Docker Hub:
 
-- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** and **`fabioleitao/data_boar:1.5.0`**
+- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** and **`fabioleitao/data_boar:1.5.1`**
 - **Legacy:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler) — `fabioleitao/python3-lgpd-crawler:latest` (same image may be published under both names)
 
 Example:
@@ -78,12 +78,12 @@ docker push ghcr.io/fabioleitao/python3-lgpd-crawler:latest
 
 ```bash
 # From repo root
-docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.5.0 .
+docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.5.1 .
 docker login
 # Username: fabioleitao (or your Docker Hub username)
 # Password: your Docker Hub password or Access Token
 docker push fabioleitao/data_boar:latest
-docker push fabioleitao/data_boar:1.5.0
+docker push fabioleitao/data_boar:1.5.1
 ```
 
 Then in `deploy/docker-compose.yml` set `image:` to your pushed image (e.g. `fabioleitao/data_boar:latest` or `ghcr.io/fabioleitao/...`).
@@ -92,10 +92,10 @@ Then in `deploy/docker-compose.yml` set `image:` to your pushed image (e.g. `fab
 
 ```bash
 uv run pytest -v -W error
-docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.5.0 .
+docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.5.1 .
 docker login              # username: fabioleitao, password: your token
 docker push fabioleitao/data_boar:latest
-docker push fabioleitao/data_boar:1.5.0
+docker push fabioleitao/data_boar:1.5.1
 ```
 
 Optional: push the same image under the legacy name for compatibility: `docker tag fabioleitao/data_boar:latest fabioleitao/python3-lgpd-crawler:latest` then `docker push fabioleitao/python3-lgpd-crawler:latest`. See also [DOCKER_SETUP.md](../DOCKER_SETUP.md).
@@ -375,7 +375,7 @@ To run a single audit from the CLI in the cluster, use a **Job** that overrides 
 | Default (API + frontend) | Run image with no command override: `docker run`, Compose, Swarm, or Kubernetes                                                            |
 | CLI one-shot             | Override command: `docker run ... --entrypoint python IMAGE main.py --config /data/config.yaml`                                            |
 | Build image              | `docker build -t python3-lgpd-crawler:latest .`                                                                                            |
-| Push to registry         | `docker tag ... fabioleitao/data_boar:latest` then `docker login` and `docker push fabioleitao/data_boar:latest`     |
+| Push to registry         | `docker tag ... fabioleitao/data_boar:latest` then `docker login` and `docker push fabioleitao/data_boar:latest`                           |
 | **Single container**     | `docker run -d -p 8088:8088 -v ./data:/data python3-lgpd-crawler:latest` (section 3)                                                       |
 | **Docker Compose**       | `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d` — prepare `./data/config.yaml` first (section 4) |
 | **Docker Swarm**         | `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit` (section 5)                            |

@@ -106,7 +106,7 @@ Analysis is driven by [`sonar-project.properties`](../sonar-project.properties) 
 Keeping one `sonar-project.properties` in the repo keeps local (extension) and CI in sync. To enable the CI step:
 
 - **SonarCloud:** Add a secret `SONAR_TOKEN` (create a token at [sonarcloud.io](https://sonarcloud.io)). Ensure `sonar.projectKey` and `sonar.organization` in `sonar-project.properties` match the project you create in SonarCloud (project key is often `organization_repo`).
-- **SonarQube Server:** Add secrets `SONAR_TOKEN` and `SONAR_HOST_URL` (e.g. `https://sonarqube.your-company.com`).
+- **SonarQube Server:** Add secrets `SONAR_TOKEN` and `SONAR_HOST_URL` (e.g. `<https://sonarqube.your-company.co>m`).
 
 The pipeline is intended to be followed for all reported issues (bugs, vulnerabilities, code smells, and security hotspots). Fix or justify findings; add or adjust tests where rules are encoded in the repo (e.g. `test_sonarqube_python.py`, `test_markdown_lint.py`, `test_scripts.py`) so that the same issues do not reappear. New findings from SonarQube should be addressed the same way: fix, add tests if the rule is in scope, and document in [TESTING.md](TESTING.md) or [CONTRIBUTING.md](../CONTRIBUTING.md) where relevant.
 
