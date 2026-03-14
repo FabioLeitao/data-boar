@@ -4,7 +4,7 @@
 
 Data Boar is an application for auditing personal and sensitive data across databases and filesystems, aligned with **LGPD**, **GDPR**, **CCPA**, **HIPAA**, and **GLBA**. It discovers and maps possible PII/sensitive data via regex and ML, stores metadata (including optional **tenant/customer** and **technician/operator** tags per scan) in a local SQLite database, and produces Excel reports with heatmaps and recommendations. The runtime engine and Python package name remain **python3-lgpd-crawler** for compatibility. The **boar** mascot and name emphasize a hungry crawler “rooting” through heterogeneous data sources (databases, files, APIs, dashboards, shares) for compliance-relevant signals.
 
-> **Current release:** 1.5.0 (see [docs/releases/1.5.0.md](docs/releases/1.5.0.md) and the [GitHub Releases page](https://github.com/FabioLeitao/data-boar/releases)).
+> **Current release:** 1.5.1 (see [docs/releases/1.5.0.md](docs/releases/1.5.0.md) and the [GitHub Releases page](https://github.com/FabioLeitao/data-boar/releases)).
 
 > **Documentation note:** This README and `docs/USAGE.md` are the canonical English references. When features or options change, update **both** languages to keep them in sync.
 > **Brazilian Portuguese (pt-BR):** [README.pt_BR.md](README.pt_BR.md) · [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md)
@@ -243,7 +243,7 @@ uvicorn api.routes:app --host 0.0.0.0 --port 8088
 
 When using the API (`--web`), the server loads config from **`CONFIG_PATH`** (environment variable) or `config.yaml` in the working directory if `--config` is not provided on the CLI.
 
-**Web dashboard:** With the server running, open `http://localhost:8088/` for a simple dashboard: scan status, quantity/quality of discovered data (DB/FS findings, failures), **progress graph over time** (total findings and a risk score per session), optional inputs for **tenant/customer** and **technician/operator** before starting a scan, recent sessions (including tenant/technician columns), and links to **Reports** (list and download) and **Configuration** (edit YAML in the browser).
+**Web dashboard:** With the server running, open `<http://localhost:8088>/` for a simple dashboard: scan status, quantity/quality of discovered data (DB/FS findings, failures), **progress graph over time** (total findings and a risk score per session), optional inputs for **tenant/customer** and **technician/operator** before starting a scan, recent sessions (including tenant/technician columns), and links to **Reports** (list and download) and **Configuration** (edit YAML in the browser).
 
 ## API routes (summary):
 
@@ -286,12 +286,12 @@ You can scan remote HTTP(S) APIs for personal or sensitive data by adding target
 
 ### Auth types
 
-| Type              | Use case                                                             | Config                                                                                                                                                        |
-| ------            | ----------                                                           | --------                                                                                                                                                      |
-| **basic**         | Static username and password                                         | `auth: { type: basic, username: "...", password: "..." }`                                                                                                     |
-| **bearer**        | Static or negotiated token (e.g. from Kerberos/AD, or API key)       | `auth: { type: bearer, token: "..." }` or `token_from_env: "MY_TOKEN_VAR"`                                                                                    |
-| **oauth2_client** | OAuth2 client credentials (machine-to-machine)                       | `auth: { type: oauth2_client, token_url: "https://...", client_id: "...", client_secret: "..." }` (or `client_secret: "${ENV_VAR}"` to read from environment) |
-| **custom**        | Custom headers (e.g. `Authorization: Negotiate ...`, API key header) | `auth: { type: custom, headers: { "Authorization": "Bearer ...", "X-API-Key": "..." } }`                                                                      |
+| Type              | Use case                                                             | Config                                                                                                                                                          |
+| ------            | ----------                                                           | --------                                                                                                                                                        |
+| **basic**         | Static username and password                                         | `auth: { type: basic, username: "...", password: "..." }`                                                                                                       |
+| **bearer**        | Static or negotiated token (e.g. from Kerberos/AD, or API key)       | `auth: { type: bearer, token: "..." }` or `token_from_env: "MY_TOKEN_VAR"`                                                                                      |
+| **oauth2_client** | OAuth2 client credentials (machine-to-machine)                       | `auth: { type: oauth2_client, token_url: "<https://...",> client_id: "...", client_secret: "..." }` (or `client_secret: "${ENV_VAR}"` to read from environment) |
+| **custom**        | Custom headers (e.g. `Authorization: Negotiate ...`, API key header) | `auth: { type: custom, headers: { "Authorization": "Bearer ...", "X-API-Key": "..." } }`                                                                        |
 
 If you omit `auth` but set `user`/`username` and `pass`/`password` on the target, **basic** auth is used.
 
@@ -376,7 +376,7 @@ targets:
 
 - **Type:** `dataverse` or `powerapps`
 - **Auth:** Azure AD app with application permission to Dataverse (e.g. “Common Data Service” / `user_impersonation` or env-specific application permission). Admin consent required.
-- **Config:** `org_url` (or `environment_url`), e.g. `https://myorg.crm.dynamics.com`, plus `tenant_id`, `client_id`, `client_secret` (or under `auth:`).
+- **Config:** `org_url` (or `environment_url`), e.g. `<https://myorg.crm.dynamics.co>m`, plus `tenant_id`, `client_id`, `client_secret` (or under `auth:`).
 
 The connector lists entities (tables), their attributes, samples rows, runs sensitivity detection, and writes **Database findings** (schema = entity logical name, table = entity set, column = attribute).
 
@@ -404,8 +404,8 @@ You can scan remote file shares by **FQDN or IP** with credentials in config. In
 
 | Type               | Host / URL                                                         | Credentials                       | Notes                                                                   |
 | ------             | ------------                                                       | -------------                     | --------                                                                |
-| **sharepoint**     | `site_url`: `https://host/sites/sitename`                          | `user`, `pass`; NTLM or basic     | On-prem or URL; path = server-relative folder (e.g. `Shared Documents`) |
-| **webdav**         | `base_url`: `https://host/path`                                    | `user`, `pass`                    | Recursive list and download                                             |
+| **sharepoint**     | `site_url`: `<https://host/sites/sitenam>e`                        | `user`, `pass`; NTLM or basic     | On-prem or URL; path = server-relative folder (e.g. `Shared Documents`) |
+| **webdav**         | `base_url`: `<https://host/pat>h`                                  | `user`, `pass`                    | Recursive list and download                                             |
 | **smb** / **cifs** | `host`: FQDN or IP, `share`: share name, `path`: path inside share | `user`, `pass`, optional `domain` | Port 445 default                                                        |
 | **nfs**            | `path`: **local mount point** (NFS must be mounted first)          | —                                 | `host` / `export_path` for reporting only                               |
 
@@ -526,7 +526,7 @@ You can run the API as a **single container** (`docker run`), with **Docker Comp
 
 Docker images are available on **Docker Hub** so you can run the application without cloning the repository:
 
-- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` and `fabioleitao/data_boar:1.5.0`
+- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` and `fabioleitao/data_boar:1.5.1`
 - **Legacy:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler) — `fabioleitao/python3-lgpd-crawler:latest` (same image may be published under both names)
 
 The image includes regex + ML + optional DL sensitivity detection; you can set ML/DL training terms in config (see `docs/sensitivity-detection.md` and `deploy/config.example.yaml`).

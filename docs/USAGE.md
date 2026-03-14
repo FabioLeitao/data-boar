@@ -88,11 +88,11 @@ A pre-built image is available on Docker Hub: `fabioleitao/python3-lgpd-crawler:
 
 - **Base URL:** `http://<host>:<port>/`
 
-  Example: `http://localhost:8088/` or `http://your-server:8088/`
+  Example: `<http://localhost:8088>/` or `<http://your-server:8088>/`
 
 - **OpenAPI docs (interactive):**
-- Swagger UI: `http://localhost:8088/docs`
-- ReDoc: `http://localhost:8088/redoc`
+- Swagger UI: `<http://localhost:8088/doc>s`
+- ReDoc: `<http://localhost:8088/redo>c`
 - **Authentication:** By default the API does not require authentication; secure it at the reverse proxy or network level if exposed. You can optionally enable a shared API key: set `api.require_api_key: true` and `api.api_key` (or `api.api_key_from_env: "VAR"`) in config; then send **X-API-Key** or **Authorization: Bearer &lt;key&gt;** on each request (GET /health remains public). See [SECURITY.md](../SECURITY.md#optional-api-key-enterprise) and the Configuration section below.
 
 ### Web dashboard
@@ -347,7 +347,7 @@ rate_limit:
 
 The web API and dashboard send **security headers** on every response (see [SECURITY.md](../SECURITY.md)): X-Content-Type-Options, X-Frame-Options, **Content-Security-Policy (CSP)**, Referrer-Policy, Permissions-Policy, and HSTS when the request is considered HTTPS.
 
-- **CSP defaults:** Scripts and styles are allowed from the app origin (`'self'`). The dashboard loads Chart.js from the **jsDelivr CDN** (`https://cdn.jsdelivr.net`), which is allowed by default so the "Progress over time" chart works without extra config. A minimal amount of inline script is used for data passed to the chart; the rest of the dashboard logic lives in `/static/dashboard.js`.
+- **CSP defaults:** Scripts and styles are allowed from the app origin (`'self'`). The dashboard loads Chart.js from the **jsDelivr CDN** (`<https://cdn.jsdelivr.ne>t`), which is allowed by default so the "Progress over time" chart works without extra config. A minimal amount of inline script is used for data passed to the chart; the rest of the dashboard logic lives in `/static/dashboard.js`.
 - **Stricter CSP:** To remove `'unsafe-inline'` (e.g. for a high-security profile), you can set a stricter CSP at the **reverse proxy** (override the app's header) or use an env/config toggle if the application adds one in a future version. With a stricter CSP, all script and style must be from allowed origins (e.g. `'self'` and the CDN); any remaining inline script in templates would need to be refactored into external files. See [SECURITY.md](../SECURITY.md) and [docs/deploy/DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md)) (Security and hardening) for deployment hardening (Docker, Kubernetes, reverse proxy).
 
 ### Targets: databases
@@ -502,7 +502,7 @@ If you omit `auth` but set `user`/`username` and `pass`/`password` on the target
 
 ## Dataverse / Power Apps (`type: dataverse` or `type: powerapps`):
 
-- Required: `name`, `org_url` (or `environment_url`, e.g. `https://myorg.crm.dynamics.com`), `tenant_id`, `client_id`, `client_secret` (or under `auth:`).
+- Required: `name`, `org_url` (or `environment_url`, e.g. `<https://myorg.crm.dynamics.co>m`), `tenant_id`, `client_id`, `client_secret` (or under `auth:`).
 - Azure AD app needs application permission to Dataverse (admin consent). Scope is derived from `org_url`.
 
 ```yaml
