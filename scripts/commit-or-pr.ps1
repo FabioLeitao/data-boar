@@ -105,6 +105,7 @@ if (-not $toAdd.Count -and $Action -eq 'PR') {
                     if ($sym) { $defaultBranch = $sym -replace '^refs/remotes/origin/', '' }
                 }
                 $compareUrl = "https://github.com/$($Matches[1])/$($Matches[2].TrimEnd('.git'))/compare/$defaultBranch...$branchName"
+                Write-Host "On GitHub, set base repository to $($Matches[1])/$($Matches[2].TrimEnd('.git')) and base branch to $defaultBranch (same repo = no fork)."
                 Start-Process $compareUrl
             }
         }
@@ -212,6 +213,7 @@ if ($Action -eq 'PR') {
             }
             $compareUrl = "https://github.com/$owner/$repo/compare/${defaultBranch}...${branchName}"
             Write-Host "Opening compare page in browser (create PR there): $compareUrl"
+            Write-Host "On GitHub, set base repository to $owner/$repo and base branch to $defaultBranch (same repo = no fork)."
             Start-Process $compareUrl
         } else {
             Write-Host "Push succeeded. Open GitHub, go to your repo, and create a PR from branch '$branchName'."
