@@ -14,7 +14,7 @@ Goal: Harden the web surface of the LGPD crawler (CSP, headers, and deploy guida
 ## Current state (high-level)
 
 - CSP is already set in `api/routes.py` in `security_headers_middleware`, but allows `'unsafe-inline'` for scripts and styles:
-- `script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net` (for Chart.js and inline dashboard scripts).
+- `script-src 'self' 'unsafe-inline' <https://cdn.jsdelivr.ne>t` (for Chart.js and inline dashboard scripts).
 - `style-src 'self' 'unsafe-inline'`.
 - Dashboard template `api/templates/dashboard.html` contains **inline script** for:
 - Rendering the Chart.js line chart.
