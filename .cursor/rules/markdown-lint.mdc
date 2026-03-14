@@ -21,6 +21,8 @@ After **creating or editing** any `.md` file in this project:
 
 If the test fails, fix the reported violations (or run the fix script again if it didn’t cover the file). Do not commit markdown changes without the lint test passing.
 
+**Avoid reintroducing:** **MD028** (no blank line inside blockquotes – keep all `>` lines consecutive); **MD026** (no trailing punctuation in headings – remove trailing `.` `:` `;` `!` `?` from `#` headings); **MD041** (first line in file must be a top-level heading – start each `.md` with `# Title`, not blank line or front matter only).
+
 ## Reference
 
 - **TESTING.md** – section “Markdown lint” (MD009, MD012, MD024, MD036, MD051, MD060, MD031, MD034, table style).
