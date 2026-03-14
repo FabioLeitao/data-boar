@@ -55,9 +55,12 @@ From the repo root (PowerShell):
 
 # Create PR on a new or existing branch
 .\scripts\commit-or-pr.ps1 -Action PR -Branch "feature/my-change" -Title "Your title" -Body "Bullets..."
+
+# Create PR and run the test suite before pushing (no push if tests fail)
+.\scripts\commit-or-pr.ps1 -Action PR -Title "Your title" -Body "Bullets..." -RunTests
 ```
 
-- **Push** uses your normal Git remote and SSH keys.
+- **Push** uses your normal Git remote and SSH keys. PR **always pushes the current branch to origin** so the central repo (data-boar) has the full progress and history.
 - **Browser**: With `gh` installed and authenticated, the PR form opens with title and description filled in; you only need to confirm and click “Create pull request.”
 
 ## Which repository to use (data-boar only)

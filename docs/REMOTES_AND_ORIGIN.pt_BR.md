@@ -38,7 +38,7 @@ Não existe `git switch` para remotes; use `git remote set-url origin <url>` par
 ## Comportamento de push e PR
 
 - **Push padrão:** `git push` usa o **remote de rastreamento** do branch atual. O branch que você usa para trabalho novo (ex.: `2026-03-14-3i1y`) está configurado com `remote = origin`, então `git push` vai para **data-boar**.
-- **Push explícito:** Para sempre enviar um branch para data-boar, independente do remote configurado:  
+- **Push explícito:** Para sempre enviar um branch para data-boar, independente do remote configurado:
   `git push origin <nome-do-branch>`
 - **python3-lgpd-crawler-legacy-and-history-only:** O antigo repositório python3-lgpd-crawler; mantido só como histórico legado e para fetch. Não faça push para ele; o push está desabilitado via `pushurl = no-push`.
 
