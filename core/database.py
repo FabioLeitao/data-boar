@@ -365,11 +365,20 @@ class LocalDBManager:
         Return the session immediately before the given one (by started_at desc), for trend comparison.
         Returns dict with session_id, started_at, database_findings, filesystem_findings, scan_failures, or None.
         """
+        prev_list = self.get_previous_sessions(session_id, limit=1)
+        return prev_list[0] if prev_list else None
+
+    def get_previous_sessions(self, session_id: str, limit: int = 3) -> list[dict]:
+        """
+        Return up to `limit` sessions immediately before the given one (by started_at desc), for trend comparison.
+        Most recent previous session first. Each dict has session_id, started_at, database_findings,
+        filesystem_findings, scan_failures.
+        """
         sessions = self.list_sessions()
         for i, s in enumerate(sessions):
-            if s["session_id"] == session_id and i + 1 < len(sessions):
-                return sessions[i + 1]
-        return None
+            if s["session_id"] == session_id:
+                return sessions[i + 1 : i + 1 + limit]
+        return []
 
     def create_session_record(
         self,

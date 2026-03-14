@@ -3,13 +3,13 @@
 # Default: runs the image CMD = web API + frontend (dashboard, reports, config UI) on port 8088.
 # No "command:" override = container starts the API. For CLI one-shot use a separate run with entrypoint override.
 # Requires: config at /data/config.yaml (mount volume or bind).
-# Image: pre-built on Docker Hub (hub.docker.com/r/fabioleitao/python3-lgpd-crawler) or override with build: for local build.
+# Image: pre-built on Docker Hub (hub.docker.com/r/fabioleitao/data_boar) or override with build: for local build.
 # Resources: tuned for I/O-bound workload (network/FS are the bottleneck). CPU left unconstrained for report-generation bursts.
 version: "3.8"
 
 services:
   lgpd-audit:
-    image: fabioleitao/python3-lgpd-crawler:latest
+    image: fabioleitao/data_boar:latest
     # command not set: use image default = web API + frontend
     build:
       context: ..

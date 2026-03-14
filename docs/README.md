@@ -6,8 +6,11 @@ This folder centralizes **application documentation**. Repository root keeps the
 
 ## Documentation policy
 
+- **Location:** Application documentation (user-facing guides, reference, branding, plans, releases) lives under **docs/**. The repo root keeps only what GitHub and automation expect: README, SECURITY, CONTRIBUTING, CODE_OF_CONDUCT, LICENSE, NOTICE. Do not move those. Module-level READMEs that are mere pointers (e.g. [deploy/README.md](../deploy/README.md), [tests/README.md](../tests/README.md)) or deprecated notices next to code (e.g. database/, scanners/) may stay beside the code. **.github/** and **.cursor/** stay where GitHub and Cursor expect them. New substantive docs (e.g. mascot, logo candidates, feature guides) belong in **docs/** and should be linked from this index.
 - **English (EN)** is the **canonical** source: it represents the true capabilities, features, arguments, config, and behaviour of the application. When behaviour or options change, update the English doc first.
 - **Brazilian Portuguese (pt-BR)** must be **kept in sync** with the English version. Each pt-BR file is a translation of its English counterpart (same structure and coverage).
+- **New documentation:** Any **new** documentation file (user-facing guides, reference, legal/copyright, deploy, testing, etc.) must exist in **both English and Brazilian Portuguese**. Exception: **plan files** (e.g. under `docs/`, `docs/completed/`, or `.cursor/plans/`) may be **English-only** to keep track of history and progress; when a plan drives changes to the application, update the **other docs** (README, USAGE, etc.) in **both languages** so they reflect the new behaviour.
+- **When you update docs** to reflect application changes, **sync the other language** too: edit the EN doc first, then update the corresponding pt-BR file so structure and coverage stay aligned.
 - **Language switcher:** Every documentation file that has a translation must have at the **top** (right after the title or in the first line) a clear link to the other language, e.g.
 - In EN files: `**Português (Brasil):** [Filename.pt_BR.md](Filename.pt_BR.md)`
 - In pt-BR files: `**English:** [Filename.md](Filename.md)`
@@ -17,12 +20,14 @@ This folder centralizes **application documentation**. Repository root keeps the
 
 These stay at repo root for GitHub and automation:
 
-| Document         | English                                     | Português (pt-BR)                                       |
-| ---------------- | ----------------------------                | ------------------------------------                    |
-| Readme           | [README.md](../README.md)                   | [README.pt_BR.md](../README.pt_BR.md)                   |
-| Security         | [SECURITY.md](../SECURITY.md)               | [SECURITY.pt_BR.md](../SECURITY.pt_BR.md)               |
-| Contributing     | [CONTRIBUTING.md](../CONTRIBUTING.md)       | [CONTRIBUTING.pt_BR.md](../CONTRIBUTING.pt_BR.md)       |
-| Code of conduct  | [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md) | [CODE_OF_CONDUCT.pt_BR.md](../CODE_OF_CONDUCT.pt_BR.md) |
+| Document           | English                                     | Português (pt-BR)                                       |
+| ----------------   | ----------------------------                | ------------------------------------                    |
+| Readme             | [README.md](../README.md)                   | [README.pt_BR.md](../README.pt_BR.md)                   |
+| License            | [LICENSE](../LICENSE)                       | —                                                       |
+| Notice (copyright) | [NOTICE](../NOTICE)                         | —                                                       |
+| Security           | [SECURITY.md](../SECURITY.md)               | [SECURITY.pt_BR.md](../SECURITY.pt_BR.md)               |
+| Contributing       | [CONTRIBUTING.md](../CONTRIBUTING.md)       | [CONTRIBUTING.pt_BR.md](../CONTRIBUTING.pt_BR.md)       |
+| Code of conduct    | [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md) | [CODE_OF_CONDUCT.pt_BR.md](../CODE_OF_CONDUCT.pt_BR.md) |
 
 ## Usage and configuration
 
@@ -45,16 +50,26 @@ These stay at repo root for GitHub and automation:
 
 Deploy assets (Compose, Kubernetes, config examples) remain in the [deploy/](../deploy/) folder; see [deploy/README.md](../deploy/README.md) for pointers to the deploy docs above.
 
+## Branding and assets
+
+| Topic           | English                                    |
+| -------         | ------------------------------------------ |
+| Mascot assets   | [mascot.md](mascot.md)                     |
+| Logo candidates | [logo-candidates.md](logo-candidates.md)   |
+
+## These docs are EN-only (reference for assets in api/static/).
+
 ## Internal and reference
 
-| Topic           | English                              | Português (pt-BR)                                |
-| --------------- | -----------------------------        | ------------------------------------             |
-| Testing         | [TESTING.md](TESTING.md)             | [TESTING.pt_BR.md](TESTING.pt_BR.md)             |
-| Topology        | [TOPOLOGY.md](TOPOLOGY.md)           | [TOPOLOGY.pt_BR.md](TOPOLOGY.pt_BR.md)           |
-| Commit and PR   | [COMMIT_AND_PR.md](COMMIT_AND_PR.md) | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md) |
+| Topic                   | English                                                  | Português (pt-BR)                                                    |
+| ---------------         | -----------------------------                            | ------------------------------------                                 |
+| Testing                 | [TESTING.md](TESTING.md)                                 | [TESTING.pt_BR.md](TESTING.pt_BR.md)                                 |
+| Topology                | [TOPOLOGY.md](TOPOLOGY.md)                               | [TOPOLOGY.pt_BR.md](TOPOLOGY.pt_BR.md)                               |
+| Commit and PR           | [COMMIT_AND_PR.md](COMMIT_AND_PR.md)                     | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md)                     |
+| Copyright and trademark | [COPYRIGHT_AND_TRADEMARK.md](COPYRIGHT_AND_TRADEMARK.md) | [COPYRIGHT_AND_TRADEMARK.pt_BR.md](COPYRIGHT_AND_TRADEMARK.pt_BR.md) |
 
-- [PLANS_TODO.md](PLANS_TODO.md) ([pt-BR](PLANS_TODO.pt_BR.md)) — Plan status and current app state (single source of truth for open-plan to-dos).
-- [releases/](releases/) — Release notes (e.g. 1.4.1, 1.4.0).
-- [completed/](completed/) — Archived completed plans and the implementation checklist ([NEXT_STEPS.md](completed/NEXT_STEPS.md) ([pt-BR](completed/NEXT_STEPS.pt_BR.md)), all items Done.
+- [PLANS_TODO.md](PLANS_TODO.md) — Plan status and current app state (single source of truth for open-plan to-dos). *Plan files are EN-only for history; operator docs are EN + pt-BR.*
+- [releases/](releases/) — Release notes (e.g. 1.5.1, 1.5.0, 1.4.3).
+- [completed/](completed/) — Archived completed plans and the implementation checklist ([NEXT_STEPS.md](completed/NEXT_STEPS.md)), all items Done.
 
-Man pages: `docs/lgpd_crawler.1` (command), `docs/lgpd_crawler.5` (config and file formats). Install and view with `man lgpd_crawler` and `man 5 lgpd_crawler` (see root README).
+Man pages: `docs/lgpd_crawler.1` (command), `docs/lgpd_crawler.5` (config and file formats). Install with symlinks so both names work; view with `man data_boar` or `man lgpd_crawler`, and `man 5 data_boar` or `man 5 lgpd_crawler` (see root README).
