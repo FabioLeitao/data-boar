@@ -18,7 +18,7 @@ So: **documentation in the repo is enough to protect the *work* (code and mascot
 
 ---
 
-## 1. Are we documenting our copyright?
+## 1. Are we documenting our copyright
 
 **Yes.** The project documents copyright in several places:
 
@@ -31,7 +31,7 @@ That is sufficient for **asserting** copyright and for **license compliance** (e
 
 ---
 
-## 2. How does copyright work? Do we need to “register”?
+## 2. How does copyright work? Do we need to “register”
 
 - **Copyright arises automatically** in most countries when you fix an original work (code, art, text) in a tangible form. You do **not** need to register to “have” copyright.
 - **Registration is optional** in many places but can help:
@@ -71,12 +71,12 @@ So: **copyright** already protects your code and mascot as creative works. To **
 
 ---
 
-## 5. Can we create a trademark? How?
+## 5. Can we create a trademark? How
 
 - **Yes.** You can use “Data Boar” (and the mascot) as a **trademark** as soon as you use them in commerce to identify your product (e.g. the app, reports, website). That use can give you **common-law** rights in jurisdictions that recognize them (e.g. US).
 - To get **stronger, clearer rights** and a public record, you **register** the mark with the relevant office(s).
 
-## How to register a trademark (high level):
+## How to register a trademark (high level)
 
 1. **Choose jurisdiction(s)**
 

@@ -2,7 +2,7 @@
 
 **English:** [README.md](README.md)
 
-Esta pasta centraliza a **documentação da aplicação**. A raiz do repositório mantém os arquivos que o GitHub e as ferramentas esperam (ex.: **README.md**, **SECURITY.md**, **CONTRIBUTING.md**, **CODE_OF_CONDUCT.md**, **LICENSE**). Use este índice para encontrar guias em **inglês** e **português (Brasil)** e para alternar entre idiomas.
+Esta pasta centraliza a **documentação da aplicação**. A raiz do repositório mantém os arquivos que o GitHub e as ferramentas esperam (ex.: **README.md**, **SECURITY.md**, **CONTRIBUTING.md**, **CODE_OF_CONDUCT.md**, **LICENSE**). Use este índice para encontrar guias em **inglês** e **português (Brasil)** e para alternar entre idiomas. **Navegue pelas tabelas abaixo por tópico**; cada linha traz links para a versão em inglês e em português (Brasil), quando existir, para você acessar qualquer documento e trocar de idioma a qualquer momento.
 
 ## Política de documentação
 
@@ -31,15 +31,16 @@ Estes permanecem na raiz do repositório para o GitHub e a automação:
 
 ## Uso e configuração
 
-| Tópico                                                | English                                              | Português (pt-BR)                                                |
-| --------------------                                  | --------------------------                           | ------------------------------                                   |
-| Uso (CLI, API)                                        | [USAGE.md](USAGE.md)                                 | [USAGE.pt_BR.md](USAGE.pt_BR.md)                                 |
-| Sensibilidade (ML/DL)                                 | [sensitivity-detection.md](sensitivity-detection.md) | [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md) |
-| Detecção minor                                        | [minor-detection.md](minor-detection.md)             | [minor-detection.pt_BR.md](minor-detection.pt_BR.md)             |
-| Segurança (correções, testes, orientações ao técnico) | [security.md](security.md)                           | [security.pt_BR.md](security.pt_BR.md)                           |
-| Versionamento                                         | [VERSIONING.md](VERSIONING.md)                       | [VERSIONING.pt_BR.md](VERSIONING.pt_BR.md)                       |
-| Adicionar conectores                                  | [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md)         | [ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md)         |
-| Conformidade                                          | [compliance-frameworks.md](compliance-frameworks.md) | [compliance-frameworks.pt_BR.md](compliance-frameworks.pt_BR.md) |
+| Tópico                                                   | English                                              | Português (pt-BR)                                                |
+| --------------------                                     | --------------------------                           | ------------------------------                                   |
+| Guia técnico (instalação, execução, CLI/API, conectores) | [TECH_GUIDE.md](TECH_GUIDE.md)                       | [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md)                       |
+| Uso (CLI, API)                                           | [USAGE.md](USAGE.md)                                 | [USAGE.pt_BR.md](USAGE.pt_BR.md)                                 |
+| Sensibilidade (ML/DL)                                    | [sensitivity-detection.md](sensitivity-detection.md) | [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md) |
+| Detecção minor                                           | [minor-detection.md](minor-detection.md)             | [minor-detection.pt_BR.md](minor-detection.pt_BR.md)             |
+| Segurança (correções, testes, orientações ao técnico)    | [security.md](security.md)                           | [security.pt_BR.md](security.pt_BR.md)                           |
+| Versionamento                                            | [VERSIONING.md](VERSIONING.md)                       | [VERSIONING.pt_BR.md](VERSIONING.pt_BR.md)                       |
+| Adicionar conectores                                     | [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md)         | [ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md)         |
+| Conformidade                                             | [compliance-frameworks.md](compliance-frameworks.md) | [compliance-frameworks.pt_BR.md](compliance-frameworks.pt_BR.md) |
 
 ## Deploy e Docker
 
@@ -57,7 +58,7 @@ Os artefatos de deploy (Compose, Kubernetes, exemplos de config) ficam na pasta 
 | Ativos do mascote | [mascot.md](mascot.md)                               |
 | Candidatos a logo | [logo-candidates.md](logo-candidates.md)             |
 
-## Esses docs são apenas em inglês (referência para recursos em api/static/).
+## Esses docs são apenas em inglês (referência para recursos em api/static/)
 
 ## Interno e referência
 
@@ -66,10 +67,11 @@ Os artefatos de deploy (Compose, Kubernetes, exemplos de config) ficam na pasta 
 | Testes                    | [TESTING.md](TESTING.md)                                 | [TESTING.pt_BR.md](TESTING.pt_BR.md)                                 |
 | Topologia                 | [TOPOLOGY.md](TOPOLOGY.md)                               | [TOPOLOGY.pt_BR.md](TOPOLOGY.pt_BR.md)                               |
 | Commit e PR               | [COMMIT_AND_PR.md](COMMIT_AND_PR.md)                     | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md)                     |
+| Remotes e origin         | [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md)           | [REMOTES_AND_ORIGIN.pt_BR.md](REMOTES_AND_ORIGIN.pt_BR.md)           |
 | Direitos autorais e marca | [COPYRIGHT_AND_TRADEMARK.md](COPYRIGHT_AND_TRADEMARK.md) | [COPYRIGHT_AND_TRADEMARK.pt_BR.md](COPYRIGHT_AND_TRADEMARK.pt_BR.md) |
 
 - [PLANS_TODO.md](PLANS_TODO.md) — Status dos planos e estado atual da aplicação (fonte única de verdade para os to-dos dos planos abertos). *Arquivos de plano são apenas em inglês para histórico; a documentação para o operador é EN + pt-BR.*
-- [releases/](releases/) — Notas de release (ex.: 1.5.1, 1.5.0, 1.4.3).
+- [releases/](releases/) — Notas de release (ex.: 1.5.2, 1.5.1, 1.5.0, 1.4.3).
 - [completed/](completed/) — Planos concluídos arquivados e o checklist de implementação ([NEXT_STEPS.md](completed/NEXT_STEPS.md)), todos os itens Feitos.
 
 Man pages: `docs/lgpd_crawler.1` (comando), `docs/lgpd_crawler.5` (config e formatos de arquivo). Instale com symlinks para que os dois nomes funcionem; visualize com `man data_boar` ou `man lgpd_crawler`, e `man 5 data_boar` ou `man 5 lgpd_crawler` (veja o README na raiz).

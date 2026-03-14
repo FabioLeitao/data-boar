@@ -34,6 +34,7 @@ All of the above tests live in **`tests/test_security.py`**. Running `pytest tes
 
 ## Related documentation
 
+- **Documentation index** (all topics, both languages): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
 - **SECURITY.md** ([pt-BR](../SECURITY.pt_BR.md)) — Security policy, headers, optional API key, reporting vulnerabilities.
 - **docs/deploy/DEPLOY.md** ([pt-BR](deploy/DEPLOY.pt_BR.md)) — Deployment and hardening (Docker, Kubernetes, reverse proxy).
 - **docs/USAGE.md** ([pt-BR](USAGE.pt_BR.md)) — CLI, API, and configuration (including `api.require_api_key`).

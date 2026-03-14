@@ -2,180 +2,248 @@
 
 Plan files are kept in **English only** for history and progress tracking. Operator-facing documentation (how to use, config, deploy, etc.) exists in both EN and pt-BR; see [README.md](README.md) ([pt-BR](README.pt_BR.md)).
 
-This document is the **single source of truth** for the project’s plan status and remains in **`docs/`** at all times. It lists **incomplete goals** from active plans and the **recommended sequential to-dos** to achieve them. Completed plan documents (design and to-do details) are archived in **`docs/completed/`** for reference; links below point to those files.
+This document is the **single source of truth** for the project's plan status and remains in **`docs/`** at all times. It lists **incomplete goals** from active plans and the **recommended sequential to-dos** to achieve them. Completed plan documents are archived in **`docs/completed/`** for reference; links below point to those files.
 
-All steps are intended to be **non-destructive**, **non-regression**, and **non-performance impacting**; each step should be **tested** and **safe** before marking done.
+**Policy:** When implementing a plan step, **update documentation** (USAGE, TECH_GUIDE, SECURITY, or dedicated docs) and **add or run tests** as the feature is implemented. After completing or adding to-dos, **update this file and the plan file** so progress is tracked in one place. All steps are intended to be **non-destructive**, **non-regression**, and **tested** before marking done.
 
-**Plan status:** Corporate compliance improvements ✅ Complete · Minor data detection ✅ Complete · Aggregated identification ✅ Complete · Sensitive categories ML/DL ✅ Complete · Rate limiting & concurrency ✅ Complete · Web hardening & security ✅ Complete · Logo and naming ⬜ In progress · **Dashboard i18n (multi-language web UI)** ⬜ Under consideration
-
----
-
-## Plan: Dashboard i18n (multi-language web UI) ⬜ **Under consideration**
-
-**Source:** [docs/PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md)
-
-**Status:** No approach decided yet. The plan document sets out **options and recommendations** (path-prefix vs query/cookie, JSON vs gettext, complexity). **There is no to-do list here until we choose an approach;** after that, concrete steps will be added to this section and to the plan file.
+**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ⬜ Not started · **Secrets/vault** ⬜ Not started · **Configurable timeouts** ⬜ Not started · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ⬜ Not started · **Compressed files** ⬜ Not started · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ⬜ Not started · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration
 
 ---
 
-## Plan: Logo and naming recommendations ⬜ **In progress**
+## Conflict and dependency analysis
 
-**Source:** [docs/PLAN_LOGO_AND_NAMING.md](PLAN_LOGO_AND_NAMING.md)
+| Plan | Depends on | Conflicts with | Notes |
+| ---- | ---------- | -------------- | ----- |
+| Security hardening | — | None | Additive (validation, docs, audit). Do first to strengthen base. |
+| Secrets vault | — | None | Phase A (redact, env) improves config safety before vault. |
+| Version check / self-upgrade | — | None | Backup excludes secrets (manifest); compatible with Secrets A. |
+| Additional compliance samples | — | None | Config-only; samples and docs additive. |
+| Compressed files | Config loader (new keys) | None | Additive feature; optional dependency py7zr. |
+| Dashboard i18n | Approach decided | None | No concrete to-dos until routing/translation approach chosen. |
+| Data source versions & hardening | — | None | Additive: new table data_source_inventory, new report sheets; optional CVE lookup. |
+| Strong crypto & controls validation | — | None | Optional flag (CLI + dashboard); new table or extend inventory; report sheet "Crypto & controls"; inference best-effort. |
+| CNPJ alphanumeric format validation | — | None | Format spec + regex/override; optional built-in or config flag; compatibility report; no change to legacy LGPD_CNPJ. |
+| Selenium QA test suite | — | None | On-demand; optional [qa] deps; tests_qa/; report + recommendations; exclude from default pytest. |
+| Synthetic data & confidence validation | — | None | Fixtures (files, SQL, NoSQL, shares); FP/FN + ground truth; confidence bands + operator guidance; timeouts/connectivity docs. |
+| Configurable timeouts | — | None | Global + per-target connect/read timeouts; sane defaults; connector wiring; recommendations (avoid DoS, too-fast). |
+| Notifications (off-band + scan-complete) | Optional: Secrets Phase A | None | Webhook notifier; scan-complete brief to operator/tenant (Slack, Teams, Telegram, etc.); recommendations. |
 
-**Progress:** Mark each to-do done here and in the plan file when actually completed.
-
-Goal: Copyright-safe logo (web, favicon, optional report), integration in the app, and naming recommendations (e.g. compliance_crawler). User decides which options to apply.
-
-| #   | To-do                                                                                                                             | Status    | Notes                                                                                                       |
-| --- | ---                                                                                                                               | ---       | ---                                                                                                         |
-| 1   | Decide logo concept (A–D) and colors; produce master logo (SVG) and export web PNG (32/64 px) and favicon (ICO or 16/32 PNG)      | ✅ Done    | **Data Boar mascot** as logo; master SVG + PNG in `api/static/mascot/`; favicon derived (build_favicon.py). |
-| 2   | Place assets in `api/static/`: favicon.ico (and/or favicon-32.png), logo.svg, logo-64.png                                         | ✅ Done    | Mascot in `api/static/mascot/`; favicon.ico from script; former logo.svg retired.                           |
-| 3   | Add favicon link(s) in `api/templates/base.html` (`<link rel="icon">`)                                                            | ✅ Done    | base.html uses mascot as favicon.                                                                           |
-| 4   | (Optional) Add logo to About page and optionally Dashboard/Reports header                                                         | ✅ Done    | About, Dashboard, Reports, Config, Help: mascot in header + attribution.                                    |
-| 5   | Check PyPI and web for chosen name (e.g. compliance_crawler) availability                                                         | ⬜ Pending | Avoid clashes with existing products                                                                        |
-| 6   | Decide display name and/or package rename; if changing, update `core/about.py` and/or `pyproject.toml` and docs per VERSIONING.md | ✅ Done    | Display name **Data Boar**; package remains `python3-lgpd-crawler`.                                         |
-| 7   | (Optional) Embed logo in Excel Report info sheet via `report/generator.py`                                                        | ✅ Done    | Small mascot (48×48) in Report info at D1.                                                                  |
-| 8   | (Optional) Add logo to heatmap PNG footer in `_create_heatmap`                                                                    | ✅ Done    | Small mascot in lower-right inset (8% size).                                                                |
-
----
-
-## Plan: Corporate compliance improvements ✅ **Complete**
-
-**Source:** `.cursor/plans/corporate_compliance_improvements_plan_b209453a.plan.md`
-
-**Progress:** All to-dos below are complete. This plan is **closed** for implementation; use this section only for reference to the current state of the application.
-
-### To-dos (all complete)
-
-| #   | To-do                                                                                                                                                                                             | Status | Notes                                                                                          |
-| --- | ---                                                                                                                                                                                               | ---    | ---                                                                                            |
-| 1   | **Phase 6 – Config:** Normalize `api.require_api_key`, `api.api_key`, `api.api_key_from_env` in `config/loader.py`                                                                                | ✅ Done | Optional API key for enterprise                                                                |
-| 2   | **Phase 6 – API:** Add middleware/dependency in `api/routes.py` to check `X-API-Key` or `Authorization: Bearer <key>` when `require_api_key` is true; 401 if wrong/missing; **exclude `/health`** | ✅ Done | Load balancers keep 200 on /health                                                             |
-| 3   | **Phase 6 – Tests:** New test: with `require_api_key: true` and valid key → 200; wrong/missing key → 401; `/health` without key → 200                                                             | ✅ Done | Existing API test still passes when option off                                                 |
-| 4   | **Phase 6 – Docs:** Update SECURITY.md to mention optional API key; document key in USAGE (EN and PT-BR)                                                                                          | ✅ Done | Key in env; do not log                                                                         |
-| 5   | **Validate Phase 6:** Run `pytest -W error`; call API with/without key when `require_api_key` true                                                                                                | ✅ Done | 42 tests pass                                                                                  |
-| 6   | **Final:** Run full `pytest -W error`; optional docker build and smoke test                                                                                                                       | ✅ Done | 42 tests pass                                                                                  |
-| 7   | **Publish:** Validate documentation reflects current state; bump minor version if needed; republish Docker image to hub; keep EN and PT-BR docs in sync                                           | ✅ Done | Version 1.5.1; docs validated; branded image fabioleitao/data_boar (see docs/deploy/DEPLOY.md) |
-
-**Current state of the application (for later reference):** Phases 0–5 (baseline, docs/frameworks, recommendation overrides, executive summary, min_sensitivity, config_scope_hash) and Phase 6 (optional API key) are implemented and tested. App version **1.5.1**; display name **Data Boar** (mascot branding, favicon, report/heatmap branding); Trends sheet shows up to 3 previous runs; heatmap PNG embedded in Excel Heatmap data sheet; config supports `api.require_api_key`, `api.api_key`, `api.api_key_from_env`; API middleware enforces X-API-Key or Bearer when required; GET /health is always public; SECURITY.md and USAGE (EN/PT-BR) document the option. Branded Docker image: fabioleitao/data_boar:latest and :1.5.1 (see docs/deploy/DEPLOY.md).
+**Regression and tests:** No plan modifies wipe behaviour, SQLite schema (except Self-upgrade adds optional upgrade_log, Data source versions adds data_source_inventory, Strong crypto adds optional crypto_controls_audit or extends inventory), or existing config keys in a breaking way. New tests per plan must pass together with the full suite (`uv run pytest -v -W error`). Document each new feature in the relevant docs (EN + pt-BR where applicable).
 
 ---
 
-## Plan: Detection and differential treatment of possible minor data ✅ **Complete**
+## Review and sequence rationale
 
-**Source:** [docs/completed/PLAN_MINOR_DATA_DETECTION.md](completed/PLAN_MINOR_DATA_DETECTION.md)
+The recommended order below is chosen to:
 
-**Progress:** All to-dos below are complete. This plan is **closed** for implementation; use this section only for reference to the current state of the application.
+- **Strengthen the base first:** Security hardening and Configurable timeouts reduce risk and improve robustness for all later work.
+- **Respect dependencies:** Secrets Phase A (redact, env) before Phase B (vault); Notifications can optionally use Secrets A for webhook URLs.
+- **Batch additive features:** Compliance samples, Compressed files, Data source versions, and Strong crypto add config/report/sheets without breaking existing flows.
+- **Defer optional or heavy work:** Version check, CNPJ, Selenium QA, Synthetic data, Notifications, and Dashboard i18n come after core security and scan/report features.
 
-Goal: Detect when data may relate to minors (e.g. age from DOB), treat as highest sensitivity, cross-reference with name/official docs/health, optionally full-scan related columns, and surface in report with differential treatment (LGPD Art. 14, GDPR Art. 8).
+**Tier summary (for planning):**
 
-| #   | To-do                                                                                                                    | Status                               |
-| --- | ---                                                                                                                      | ---                                  |
-| 1   | Design & doc: finalize approach (age inference, flag vs level, cross-ref, full-scan); minimal schema impact              | ✅ Done                               |
-| 2   | Detector: DOB/age parsing + age < threshold → possible_minor; keep HIGH/MED/LOW for others                               | ✅ Done                               |
-| 3   | Schema: optional column possible_minor or encode via pattern/norm_tag; migration                                         | ✅ Done (encode via pattern/norm_tag) |
-| 4   | Scanner: pass possible_minor from detector into saved findings                                                           | ✅ Done                               |
-| 5   | Cross-reference: DOB/minor with name, CPF/RG/SSN, health in same row; confidence                                         | ✅ Done                               |
-| 6   | Full scan (optional): when DOB suggests minor + config, full-scan column and adjacent                                    | ✅ Done                               |
-| 7   | Report: highest-priority recommendation/section for possible minors (LGPD 14, GDPR 8)                                    | ✅ Done                               |
-| 8   | Config: minor_age_threshold, minor_full_scan, minor_cross_reference in loader; wire loader → engine → scanner → detector | ✅ Done                               |
-| 9   | Tests: age inference, possible_minor, report, config wiring; no regression                                               | ✅ Done                               |
-| 10  | Docs: sensitivity & compliance (EN/PT-BR) for minor detection                                                            | ✅ Done                               |
+- **Tier 1 – Foundation:** 1 Security hardening, 2 Configurable timeouts, 3 Secrets Phase A.
+- **Tier 2 – Scan and report:** 4 Compliance samples, 5 Compressed files, 6 Data source versions & hardening, 7 Strong crypto & controls.
+- **Tier 3 – Secrets and upgrade:** 8 Secrets Phase B, 9 Version check & self-upgrade.
+- **Tier 4 – Validation and ops:** 10 CNPJ alphanumeric, 11 Selenium QA, 12 Synthetic data & confidence, 13 Notifications, 14 Dashboard i18n.
+
+Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). Within a plan, execute phases in order.
 
 ---
 
-## Plan: Cross-referenced / aggregated data – identification risk ✅ **Complete**
+## Recommended sequence (aggregated)
 
-**Source:** [docs/completed/PLAN_AGGREGATED_IDENTIFICATION.md](completed/PLAN_AGGREGATED_IDENTIFICATION.md)
-
-**Progress:** All to-dos below are complete. This plan is **closed** for implementation; use this section only for reference to the current state of the application.
-
-Goal: Cross information from multiple sources/columns (gender, job position, health, address, phone, etc.) that in **aggregate** can identify individuals; treat as personal/sensitive and report as a **special case** for DPO/compliance, explaining the cross-reference condition.
-
-| #   | To-do                                                                                                                 | Status |
-| --- | ---                                                                                                                   | ---    |
-| 1   | Design & doc: quasi-identifier categories, aggregation scope (per-table/per-file), storage                            | ✅ Done |
-| 2   | Category mapping: column_name + pattern_detected → gender, job_position, health, address, phone (config + defaults)   | ✅ Done |
-| 3   | Schema: table or structure for aggregated identification risk (or synthetic finding with explanation)                 | ✅ Done |
-| 4   | Post-scan aggregation: group by (session, target, table/file); if categories >= threshold, create aggregated record   | ✅ Done |
-| 5   | Report: sheet/section “Cross-referenced data – possible identification” with target, table/file, columns, explanation | ✅ Done |
-| 6   | Report: recommendation row for aggregated case explaining multi-source condition for DPO/compliance                   | ✅ Done |
-| 7   | Config: aggregated_identification_enabled, aggregated_min_categories, quasi_identifier_mapping                        | ✅ Done |
-| 8   | Tests: category mapping, aggregation rule, report; no regression                                                      | ✅ Done |
-| 9   | Docs: sensitivity & compliance (EN/PT-BR) for aggregated identification                                               | ✅ Done |
+1. **Security hardening** (docs + validation + audit) – low risk; improves base.
+2. **Configurable timeouts** – global + per-target connect/read timeouts, sane defaults, connector wiring, recommendations.
+3. **Secrets vault – Phase A** (env expansion, redact GET /config, docs) – config safety before more config surface.
+4. **Additional compliance samples** – config-only; samples + docs + structure test.
+5. **Compressed files** – new config, CLI, connector logic, tests, docs.
+6. **Data source versions & hardening** – inventory table, connector version/protocol collection, CVE/hardening rules, report sheets, next-steps guide.
+7. **Strong crypto & controls validation** – CLI/dashboard flag, strong-crypto validation per connection, anonymisation/controls inference, "Crypto & controls" report sheet.
+8. **Secrets vault – Phase B** (vault impl, re-import CLI/web) – after Phase A.
+9. **Version check & self-upgrade** – version source, container detection, CLI/API, backup/audit log.
+10. **CNPJ alphanumeric format validation** – format spec, regex/override, optional built-in or flag, compatibility recommendations.
+11. **Selenium QA test suite** – on-demand robot QA (navigation, functional, API, report/heatmap downloads, stress); short report and recommendations.
+12. **Synthetic data & confidence validation** – fixtures (all formats, SQL, NoSQL, shares), FP/FN + ground truth, confidence bands + operator guidance, timeouts/connectivity docs.
+13. **Notifications (off-band + scan-complete)** – webhook notifier, scan-complete brief to operator/tenant, how to download report; optional Part A (task/milestone) from CI or script.
+14. **Dashboard i18n** – after approach is decided; add to-dos to this file and plan then.
 
 ---
 
-## Plan: Sensitive categories ML/DL (CID, gender, religion, political, PEP, race, union, genetic, biometric, sex life) ✅ **Complete**
+## Open plans and to-dos (summary)
 
-**Source:** [docs/completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md](completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md)
+### Security hardening – [PLAN_SECURITY_HARDENING.md](PLAN_SECURITY_HARDENING.md)
 
-**Progress:** All to-dos below are complete. This plan is **closed** for implementation; use this section only for reference to the current state of the application.
-
-Goal: Configure with examples so ML/DL can detect other sensitive personal data (CID/ICD, gender, religion, political affiliation, PEP, race/skin color, union, genetic/biometric, sex life, health/disability). Provide ready-to-use term lists and documentation; optional built-in defaults and report overrides.
-
-| #   | To-do                                                                                                                                                                                                           | Status |
-| --- | ---                                                                                                                                                                                                             | ---    |
-| 1   | **Example file:** Create `sensitivity_terms_sensitive_categories.example.yaml` with terms for all categories (EN and PT-BR oriented)                                                                            | ✅ Done |
-| 2   | **Docs EN:** In `sensitivity-detection.md`, add section "Sensitive categories (health, religion, political, etc.)" with link to plan and example file                                                           | ✅ Done |
-| 3   | **Docs PT-BR:** In `sensitivity-detection.pt_BR.md`, add same section in Portuguese                                                                                                                             | ✅ Done |
-| 4   | **Built-in defaults (optional):** Consider adding a subset of these terms to `DEFAULT_ML_TERMS` in `core/detector.py` so out-of-the-box detection includes e.g. religion, political, gender, biometric, genetic | ✅ Done |
-| 5   | **Recommendation overrides example:** Add example in USAGE or in plan for `recommendation_overrides` covering health, religion, political, PEP, race, union, genetic, biometric, sex life                       | ✅ Done |
-| 6   | **Tests:** Add test that when ML terms include e.g. "religion" and "political affiliation", columns/samples with those terms are classified as sensitive; existing tests pass                                   | ✅ Done |
+| # | To-do | Status |
+| - | ----- | ------ |
+| 1.1 | Tenant/technician validation (length, chars); tests | ⬜ Pending |
+| 1.2 | Request body size limit; document SECURITY.md | ⬜ Pending |
+| 1.3 | Logging audit (no secrets in logs); test/checklist | ⬜ Pending |
+| 2.1–2.4 | pip-audit in CI, Dependabot, min versions, optional lockfile audit | ⬜ Pending |
+| 3.1–3.4 | Rate limit/API key/report access docs; optional scan payload limits | ⬜ Pending |
+| 5.1–5.3 | Deploy hardening, secrets, WAF docs | ⬜ Pending |
+| 6.1, 6.3 | Security tests for new validation; no regressions | ⬜ Pending |
+| 7.1–7.3 | Release checklist, docs/security.md, SECURITY.md | ⬜ Pending |
 
 ---
 
-## Plan: Rate limiting and concurrency safeguards ✅ **Complete**
+### Configurable timeouts – [PLAN_CONFIGURABLE_TIMEOUTS_AND_RATE_GUIDANCE.md](PLAN_CONFIGURABLE_TIMEOUTS_AND_RATE_GUIDANCE.md)
 
-**Source:** [docs/completed/PLAN_RATE_LIMIT_SCANS.md](completed/PLAN_RATE_LIMIT_SCANS.md)
-
-**Progress:** All to-dos below are complete. This plan is **closed** for implementation; use this section only for reference to the current state of the application.
-
-Goal: Add configurable rate limiting and concurrency safeguards so the LGPD audit scanner cannot accidentally DoS customer networks while keeping existing behaviour and docs in sync.
-
-| #   | To-do                                                                                                                             | Status |
-| --- | ---                                                                                                                               | ---    |
-| 1   | Add `rate_limit` configuration support in `config/loader.py` (with env overrides) and document it.                                | ✅ Done |
-| 2   | Implement DB-level helpers to query running/last sessions for rate limiting.                                                      | ✅ Done |
-| 3   | Enforce rate limiting in `api/routes.py` for `/scan`, `/start`, `/scan_database` (no impact on read-only endpoints).              | ✅ Done |
-| 4   | Decide and implement CLI interaction with rate limits (reject vs warn) and document the decision.                                 | ✅ Done |
-| 5   | Add bounds and documentation for `scan.max_workers` to avoid extreme values when rate limiting is on.                             | ✅ Done |
-| 6   | Write unit tests for the new rate-limit behaviour and ensure all existing tests still pass.                                       | ✅ Done |
-| 7   | Update README (EN/PT-BR), USAGE (EN/PT-BR), man pages (1 and 5), and `help.html` to describe rate limiting and keep docs in sync. | ✅ Done |
+| Phase | To-do | Status |
+| ----- | ----- | ------ |
+| 1.1–1.3 | Add timeouts (connect_seconds, read_seconds) to config with sane defaults (25, 90); per-target overrides; document in USAGE | ⬜ Pending |
+| 2.1–2.6 | Wire SQL, REST, Power BI/Dataverse, MongoDB, Redis (and others where supported) to use config timeouts | ⬜ Pending |
+| 3.1–3.2 | Pass global config/merged timeouts to connectors; consistent override (target overrides global) | ⬜ Pending |
+| 4.1–4.4 | "Timeouts and load" recommendations in USAGE; optional failure_hint extension; pt_BR; tests | ⬜ Pending |
 
 ---
 
-## Plan: Web hardening and security improvements
+### Notifications (off-band + scan-complete) – [PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md](PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md)
 
-**Source:** [docs/completed/PLAN_WEB_HARDENING_SECURITY.md](completed/PLAN_WEB_HARDENING_SECURITY.md)
-
-Goal: Harden the web surface of the LGPD crawler (CSP, headers, and deploy guidance) without regressing current behaviour, keeping docs and man pages in sync and tests green.
-
-| #   | To-do                                                                                                                                                                                  | Status |
-| --- | ---                                                                                                                                                                                    | ---    |
-| 1   | Refine CSP and security headers in `api/routes.py` (partial lockdown profile, optional stricter mode) and move dashboard JS into `/static/dashboard.js` to reduce inline code.         | ✅ Done |
-| 2   | Confirm and, if needed, adjust Help page JS so it works under the refined CSP.                                                                                                         | ✅ Done |
-| 3   | Extend `docs/deploy/DEPLOY.md` with Docker and Kubernetes hardening guidance (securityContext, NetworkPolicy, PDB, resource tuning) as **optional** examples.                          | ✅ Done |
-| 4   | Update `SECURITY.md` with a short section covering CSP, security headers, and the new hardening examples.                                                                              | ✅ Done |
-| 5   | Update docs (`docs/USAGE.md`, `docs/USAGE.pt_BR.md`) to mention CSP behaviour and how to enable stricter profiles, and update man(1)/(5) plus `help.html` to stay in sync.             | ✅ Done |
-| 6   | Add/adjust tests (e.g. `tests/test_rate_limit_api.py`-style) to assert CSP header presence and default semantics, and re-run the full test suite (`uv run pytest tests/ -v -W error`). | ✅ Done |
+| Phase | To-do | Status |
+| ----- | ----- | ------ |
+| 1.1–1.3 | notifications config; notifier module (webhook, Slack, Teams, Telegram); doc Part A (task/milestone from CI or script) | ⬜ Pending |
+| 2.1–2.4 | Scan-complete summary (totals, HIGH/MEDIUM/LOW, DOB minor, failures); trigger after report gen (CLI + web); “how to download” in message | ⬜ Pending |
+| 3.1–3.3 | Tenant notification; multi-channel; retry and rate limit | ⬜ Pending |
+| 4.1–4.4 | USAGE/SECURITY docs; optional audit log; recommendations; tests | ⬜ Pending |
 
 ---
 
-## Other plans (reference)
+### Secrets and password protection (vault) – [PLAN_SECRETS_VAULT.md](PLAN_SECRETS_VAULT.md)
 
-- **LGPD Audit Full Implementation** (`lgpd_audit_solution_full_implementation_*.plan.md`): No granular to-dos in plan; goals largely reflected in current codebase (unified config, SQLite, API 8088, report, etc.). No sequential to-do list to add here.
-- **Privacy-audit-scanner** (`privacy-audit-scanner_*.plan.md`): Describes a different package layout (`dataguardian/`). Current repo is `python3-lgpd-crawler` with `core/`, `api/`, `report/`, `connectors/`. Those plans’ to-dos (db-scanners, file-scanners, etc.) map to existing components; consider them **reference only** unless you adopt that structure.
+| Phase | To-do | Status |
+| ----- | ----- | ------ |
+| A1 | pass_from_env / password_from_env (all connectors); document | ⬜ Pending |
+| A2 | Redact secrets in GET /config; POST merge/refs | ⬜ Pending |
+| A3 | Config permissions, .gitignore, release checklist | ⬜ Pending |
+| B1–B6 | Vault schema, local vault, loader @vault/@env, CLI reimport, web reimport, optional remove-from-config | ⬜ Pending |
+| C1–C2 | Vault key management docs; release checklist | ⬜ Pending |
+
+---
+
+### Version check and self-upgrade – [PLAN_SELF_UPGRADE_AND_VERSION_CHECK.md](PLAN_SELF_UPGRADE_AND_VERSION_CHECK.md)
+
+| # | To-do | Status |
+| - | ----- | ------ |
+| 1.1–1.3 | Repo URL, version fetch (GitHub API), expose current/latest/notes | ⬜ Pending |
+| 2.1–2.5 | CLI --check-update, --upgrade; API GET /check-update, POST /upgrade; schedule docs | ⬜ Pending |
+| 3.1–3.5 | Backup, upgrade method, restore, upgrade_log, restart docs | ⬜ Pending |
+| 4.1–4.4 | Container detection; message; Docker/Kubernetes commands | ⬜ Pending |
+| 5.1–5.2 | No downgrade; --force flag | ⬜ Pending |
+| 6.1–6.3 | No data loss; config/overrides backup; audit trail | ⬜ Pending |
+| 7.1–7.3 | Tests; USAGE/DEPLOY docs; release notes | ⬜ Pending |
+
+---
+
+### Additional compliance samples – [PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md](PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md)
+
+| # | To-do | Status |
+| - | ----- | ------ |
+| 1.1 | Create docs/compliance-samples/ (or deploy/); README | ⬜ Pending |
+| 1.2–1.6 | UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS sample files | ⬜ Pending |
+| 2.1–2.4 | README pitch; compliance-frameworks/samples doc; USAGE/TECH_GUIDE/index | ⬜ Pending |
+| 3.1–3.2 | Test sample YAML structure; doc existence test | ⬜ Pending |
+| 4.1 | No regressions; full test suite | ⬜ Pending |
+
+---
+
+### Compressed files (scan inside archives) – [PLAN_COMPRESSED_FILES.md](PLAN_COMPRESSED_FILES.md)
+
+| # | To-do | Status |
+| - | ----- | ------ |
+| 1 | Config: file_scan.scan_compressed, max_inner_size, compressed_extensions | ⬜ Pending |
+| 2 | CLI --scan-compressed | ⬜ Pending |
+| 3 | Archive detection (magic bytes: zip, gz, 7z, tar, bz2, xz) | ⬜ Pending |
+| 4 | Open-archive helper (zipfile, tarfile, py7zr optional) | ⬜ Pending |
+| 5 | FilesystemConnector: scan inside archives; path like archive\|inner | ⬜ Pending |
+| 6 | Optional [compressed] extra; graceful skip if py7zr missing | ⬜ Pending |
+| 7–11 | Engine/API/dashboard; share connectors; tests; docs (EN + pt-BR) | ⬜ Pending |
+
+---
+
+### Data source versions & hardening – [PLAN_DATA_SOURCE_VERSIONS_AND_HARDENING.md](PLAN_DATA_SOURCE_VERSIONS_AND_HARDENING.md)
+
+| Phase | To-do | Status |
+| ----- | ----- | ------ |
+| 1.1–1.9 | Data model (data_source_inventory), save method; SQL/MongoDB/Redis/Power BI/Dataverse/REST version collection; Report "Data source inventory" sheet; tests; docs | ⬜ Pending |
+| 2.1–2.5 | Snowflake, SMB, SharePoint, WebDAV, NFS version/protocol collection; tests; docs | ⬜ Pending |
+| 3.1–3.6 | CVE/hardening rules, hardening engine, "Hardening recommendations" sheet, mitigation from public docs only; tests; docs | ⬜ Pending |
+| 4.1–4.4 | Hardening summary in report; optional standalone guide; docs/hardening-guide.md; full regression | ⬜ Pending |
+
+---
+
+### Strong crypto & controls validation – [PLAN_OPTIONAL_STRONG_CRYPTO_AND_CONTROLS_VALIDATION.md](PLAN_OPTIONAL_STRONG_CRYPTO_AND_CONTROLS_VALIDATION.md)
+
+| Phase | To-do | Status |
+| ----- | ----- | ------ |
+| 1.1–1.7 | CLI --validate-crypto; optional config scan.validate_crypto; API body validate_crypto; dashboard checkbox; engine wiring; tests; docs | ⬜ Pending |
+| 2.1–2.8 | Strong-crypto criteria; SQL/Mongo/Redis/REST/SMB validation; persist results; "Crypto & controls" sheet; tests; docs | ⬜ Pending |
+| 3.1–3.6 | Anonymisation/controls heuristics (column/field names, metadata); store summary; disclaimer in report; tests; docs | ⬜ Pending |
+| 4.1–4.3 | Crypto failures do not fail scan; full regression; optional link to Data source inventory | ⬜ Pending |
+
+---
+
+### CNPJ alphanumeric format validation – [PLAN_CNPJ_ALPHANUMERIC_FORMAT_VALIDATION.md](PLAN_CNPJ_ALPHANUMERIC_FORMAT_VALIDATION.md)
+
+| Phase | To-do | Status |
+| ----- | ----- | ------ |
+| 1.1–1.4 | Research and specify alphanumeric CNPJ format; propose regex; document in sensitivity-detection (EN + pt_BR) | ⬜ Pending |
+| 2.1–2.3 | Example regex_overrides + ML term; verify scan detects both legacy and alphanumeric; USAGE docs | ⬜ Pending |
+| 3.1–3.4 | Decide built-in vs flag vs override-only; optional built-in/flag; optional "CNPJ format compatibility" report summary | ⬜ Pending |
+| 4.1–4.3 | "How to get there" recommendations; update PLANS_TODO and plan; full regression | ⬜ Pending |
+
+---
+
+### Selenium QA test suite – [PLAN_SELENIUM_QA_TEST_SUITE.md](PLAN_SELENIUM_QA_TEST_SUITE.md)
+
+| Phase | To-do | Status |
+| ----- | ----- | ------ |
+| 1.1–1.6 | Optional [qa] deps (Selenium, webdriver-manager); tests_qa/ conftest + navigation + API baseline; runner stub; docs | ⬜ Pending |
+| 2.1–2.5 | Buttons/forms; reports list; report/heatmap downloads; optional /logs; include in runner and report | ⬜ Pending |
+| 3.1–3.4 | Report generator (pass/fail, duration, recommendations); configurable output dir; docs | ⬜ Pending |
+| 4.1–4.3 | Optional stress tests; exclude QA from default pytest; final docs and PLANS_TODO | ⬜ Pending |
+
+---
+
+### Synthetic data & confidence validation – [PLAN_SYNTHETIC_DATA_AND_CONFIDENCE_VALIDATION.md](PLAN_SYNTHETIC_DATA_AND_CONFIDENCE_VALIDATION.md)
+
+| Phase | To-do | Status |
+| ----- | ----- | ------ |
+| 1.1–1.5 | Fixture root; file-format coverage + ground-truth manifest; doc and optional tests | ⬜ Pending |
+| 2.1–2.4 | SQL/NoSQL fixtures (Docker or in-memory); manifest; doc and optional precision/recall script | ⬜ Pending |
+| 3.1–3.3 | Shares fixtures or doc; Troubleshooting (timeouts, connectivity); optional timeout fixture | ⬜ Pending |
+| 4.1–4.5 | Confidence bands + operator guidance; report column/section; docs EN + pt_BR; tests | ⬜ Pending |
+| 5.1–5.3 | Optional validation scoring script; tune doc; PLANS_TODO update | ⬜ Pending |
+
+---
+
+### Dashboard i18n – [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md)
+
+**Status:** Under consideration. No to-do list until routing (path prefix vs query/cookie) and translation storage (JSON vs gettext) are decided. After decision, add concrete steps to this plan and to [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md).
+
+---
+
+## Completed plans (reference)
+
+- **Corporate compliance** – [.cursor/plans/](.cursor/plans/) (reference)
+- **Minor data detection** – [completed/PLAN_MINOR_DATA_DETECTION.md](completed/PLAN_MINOR_DATA_DETECTION.md)
+- **Aggregated identification** – [completed/PLAN_AGGREGATED_IDENTIFICATION.md](completed/PLAN_AGGREGATED_IDENTIFICATION.md)
+- **Sensitive categories ML/DL** – [completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md](completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md)
+- **Rate limiting** – [completed/PLAN_RATE_LIMIT_SCANS.md](completed/PLAN_RATE_LIMIT_SCANS.md)
+- **Web hardening** – [completed/PLAN_WEB_HARDENING_SECURITY.md](completed/PLAN_WEB_HARDENING_SECURITY.md)
+- **Logo and naming** – [completed/PLAN_LOGO_AND_NAMING.md](completed/PLAN_LOGO_AND_NAMING.md)
 
 ---
 
 ## How to use this list
 
-1. **Execute to-dos in order** (1 → 2 → … → 7).
-1. **Mark done** when the step is implemented, tests pass, and behaviour is verified (e.g. in plan file set `status: completed`, or tick in this table when you sync).
-1. **After each step:** run `uv run pytest -W error` to ensure no regression.
-1. **Publish step:** update README/USAGE/SECURITY and version as needed; build and push Docker image; keep EN/PT-BR aligned.
+1. **Execute to-dos** in the recommended sequence (or in dependency order within a plan).
+2. **Mark done** in both this file and the plan file when a step is implemented, tested, and documented.
+3. **After each step:** run `uv run pytest -v -W error` to ensure no regression.
+4. **Documentation:** Update USAGE, TECH_GUIDE, SECURITY, or dedicated docs (EN + pt-BR) as features land; add new doc files to docs/README index and, if needed, to test_docs_markdown.
+5. **New to-dos:** When adding a new to-do to any plan, add it here under the corresponding plan section so this remains the source of truth.
 
 ---
 
-*Last synced with plan files and codebase. Update this doc when completing steps or when plans change.*
+*Last synced with plan files. Update this doc when completing steps or when plans change.*

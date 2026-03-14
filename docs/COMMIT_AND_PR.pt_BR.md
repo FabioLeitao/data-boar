@@ -43,6 +43,16 @@ Na raiz do repositório (PowerShell):
 - **Push** usa seu remote e chaves SSH normais do Git.
 - **Navegador:** Com `gh` instalado e autenticado, o formulário de PR abre com título e descrição preenchidos; basta confirmar e clicar em “Create pull request”.
 
+## Qual repositório usar (apenas data-boar)
+
+- **`origin`** aponta para **FabioLeitao/data-boar** — é o **único** repositório para onde você faz push e abre PRs. Todo o trabalho novo e a identidade do projeto ficam aqui.
+- Um remote chamado **`python3-lgpd-crawler-legacy-and-history-only`** (o antigo repositório python3-lgpd-crawler) é mantido só para **histórico legado e fetch**. **Não** faça push para ele; o push está desabilitado para evitar envios acidentais.
+- Ao abrir o PR no navegador (página de compare ou `gh pr create --web`), confira:
+  - **Repositório base:** `FabioLeitao/data-boar`
+  - **Branch base:** `main`
+  - **Comparar/head:** seu branch (ex.: `2026-03-14-3i1y`) em **data-boar**
+- Se o GitHub sugerir “you may need to fork”, em geral o **base** está em outro repositório (ex.: o antigo). Altere o base para **data-boar** e o branch base para **main** para que o PR seja “mesmo repositório” e nenhum fork seja necessário.
+
 ## Requisitos
 
 - **Git** e (para PR) **SSH** ou HTTPS com push para o GitHub.
@@ -52,3 +62,5 @@ Na raiz do repositório (PowerShell):
 
 - O script **respeita `.gitignore`**: usa `git check-ignore` para que apenas caminhos não ignorados sejam colocados em stage ou commitados (ex.: `audit_results.db`, relatórios, `__pycache__` nunca são incluídos).
 - O agente **não** tem acesso às suas credenciais; ele executa `git` e `gh` no seu ambiente, então seu SSH e `gh auth` são usados.
+
+**Índice da documentação** (todos os tópicos, ambos os idiomas): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
