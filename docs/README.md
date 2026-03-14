@@ -2,7 +2,7 @@
 
 **Português (Brasil):** [README.pt_BR.md](README.pt_BR.md)
 
-This folder centralizes **application documentation**. Repository root keeps the files that GitHub and tooling expect (e.g. **README.md**, **SECURITY.md**, **CONTRIBUTING.md**, **CODE_OF_CONDUCT.md**, **LICENSE**). Use this index to find guides in **English** and **Português (Brasil)** and to jump between languages.
+This folder centralizes **application documentation**. Repository root keeps the files that GitHub and tooling expect (e.g. **README.md**, **SECURITY.md**, **CONTRIBUTING.md**, **CODE_OF_CONDUCT.md**, **LICENSE**). Use this index to find guides in **English** and **Português (Brasil)** and to jump between languages. **Browse the tables below by topic**; each row links to the English and Português (Brasil) version when available, so you can reach every document and switch language at any time.
 
 ## Documentation policy
 
@@ -31,15 +31,16 @@ These stay at repo root for GitHub and automation:
 
 ## Usage and configuration
 
-| Topic                                        | English                                              | Português (pt-BR)                                                |
-| ------------------                           | --------------------------                           | ------------------------------                                   |
-| Usage (CLI, API)                             | [USAGE.md](USAGE.md)                                 | [USAGE.pt_BR.md](USAGE.pt_BR.md)                                 |
-| Sensitivity (ML/DL)                          | [sensitivity-detection.md](sensitivity-detection.md) | [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md) |
-| Minor detection                              | [minor-detection.md](minor-detection.md)             | [minor-detection.pt_BR.md](minor-detection.pt_BR.md)             |
-| Security (fixes, tests, technician guidance) | [security.md](security.md)                           | [security.pt_BR.md](security.pt_BR.md)                           |
-| Versioning                                   | [VERSIONING.md](VERSIONING.md)                       | [VERSIONING.pt_BR.md](VERSIONING.pt_BR.md)                       |
-| Adding connectors                            | [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md)         | [ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md)         |
-| Compliance                                   | [compliance-frameworks.md](compliance-frameworks.md) | [compliance-frameworks.pt_BR.md](compliance-frameworks.pt_BR.md) |
+| Topic                                               | English                                              | Português (pt-BR)                                                |
+| ------------------                                  | --------------------------                           | ------------------------------                                   |
+| Technical guide (install, run, CLI/API, connectors) | [TECH_GUIDE.md](TECH_GUIDE.md)                       | [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md)                       |
+| Usage (CLI, API)                                    | [USAGE.md](USAGE.md)                                 | [USAGE.pt_BR.md](USAGE.pt_BR.md)                                 |
+| Sensitivity (ML/DL)                                 | [sensitivity-detection.md](sensitivity-detection.md) | [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md) |
+| Minor detection                                     | [minor-detection.md](minor-detection.md)             | [minor-detection.pt_BR.md](minor-detection.pt_BR.md)             |
+| Security (fixes, tests, technician guidance)        | [security.md](security.md)                           | [security.pt_BR.md](security.pt_BR.md)                           |
+| Versioning                                          | [VERSIONING.md](VERSIONING.md)                       | [VERSIONING.pt_BR.md](VERSIONING.pt_BR.md)                       |
+| Adding connectors                                   | [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md)         | [ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md)         |
+| Compliance                                          | [compliance-frameworks.md](compliance-frameworks.md) | [compliance-frameworks.pt_BR.md](compliance-frameworks.pt_BR.md) |
 
 ## Deploy and Docker
 
@@ -57,7 +58,7 @@ Deploy assets (Compose, Kubernetes, config examples) remain in the [deploy/](../
 | Mascot assets   | [mascot.md](mascot.md)                     |
 | Logo candidates | [logo-candidates.md](logo-candidates.md)   |
 
-## These docs are EN-only (reference for assets in api/static/).
+## These docs are EN-only (reference for assets in api/static/)
 
 ## Internal and reference
 
@@ -66,10 +67,11 @@ Deploy assets (Compose, Kubernetes, config examples) remain in the [deploy/](../
 | Testing                 | [TESTING.md](TESTING.md)                                 | [TESTING.pt_BR.md](TESTING.pt_BR.md)                                 |
 | Topology                | [TOPOLOGY.md](TOPOLOGY.md)                               | [TOPOLOGY.pt_BR.md](TOPOLOGY.pt_BR.md)                               |
 | Commit and PR           | [COMMIT_AND_PR.md](COMMIT_AND_PR.md)                     | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md)                     |
+| Remotes and origin      | [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md)           | [REMOTES_AND_ORIGIN.pt_BR.md](REMOTES_AND_ORIGIN.pt_BR.md)           |
 | Copyright and trademark | [COPYRIGHT_AND_TRADEMARK.md](COPYRIGHT_AND_TRADEMARK.md) | [COPYRIGHT_AND_TRADEMARK.pt_BR.md](COPYRIGHT_AND_TRADEMARK.pt_BR.md) |
 
 - [PLANS_TODO.md](PLANS_TODO.md) — Plan status and current app state (single source of truth for open-plan to-dos). *Plan files are EN-only for history; operator docs are EN + pt-BR.*
-- [releases/](releases/) — Release notes (e.g. 1.5.1, 1.5.0, 1.4.3).
+- [releases/](releases/) — Release notes (e.g. 1.5.2, 1.5.1, 1.5.0, 1.4.3).
 - [completed/](completed/) — Archived completed plans and the implementation checklist ([NEXT_STEPS.md](completed/NEXT_STEPS.md)), all items Done.
 
 Man pages: `docs/lgpd_crawler.1` (command), `docs/lgpd_crawler.5` (config and file formats). Install with symlinks so both names work; view with `man data_boar` or `man lgpd_crawler`, and `man 5 data_boar` or `man 5 lgpd_crawler` (see root README).
