@@ -18,7 +18,7 @@ Ou seja: **a documentação no repositório é suficiente para proteger a *obra*
 
 ---
 
-## 1. Estamos documentando nossos direitos autorais?
+## 1. Estamos documentando nossos direitos autorais
 
 **Sim.** O projeto documenta direitos autorais em vários lugares:
 
@@ -31,7 +31,7 @@ Isso é suficiente para **afirmar** direitos autorais e para **conformidade com 
 
 ---
 
-## 2. Como funcionam os direitos autorais? Precisamos “registrar”?
+## 2. Como funcionam os direitos autorais? Precisamos “registrar”
 
 - **Os direitos autorais surgem automaticamente** na maioria dos países quando você fixa uma obra original (código, arte, texto) em suporte tangível. Você **não** precisa registrar para “ter” direitos autorais.
 - **O registro é opcional** em muitos lugares, mas pode ajudar:
@@ -71,12 +71,12 @@ Ou seja: **direitos autorais** já protegem seu código e mascote como obras cri
 
 ---
 
-## 5. Podemos criar uma marca? Como?
+## 5. Podemos criar uma marca? Como
 
 - **Sim.** Você pode usar “Data Boar” (e o mascote) como **marca** assim que os usar no comércio para identificar seu produto (ex.: o app, relatórios, site). Esse uso pode gerar direitos **common law** em jurisdições que os reconhecem (ex.: EUA).
 - Para obter **direitos mais fortes e claros** e um registro público, **registre** a marca no(s) escritório(s) relevante(s).
 
-## Como registrar uma marca (em alto nível):
+## Como registrar uma marca (em alto nível)
 
 1. **Escolher jurisdição(s)**
 

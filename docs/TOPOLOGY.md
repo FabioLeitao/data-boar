@@ -26,8 +26,7 @@ Textual description of modules, classes, and main functions and how they connect
 - **core/session.py**
 - `new_session_id()` — Return UUID4 hex (12 chars) + timestamp string for scan session.
 
--- **core/database.py**
-
+- **core/database.py**
 - **ScanSession** — SQLAlchemy model: id, session_id, started_at, finished_at, status, tenant_name (optional customer/tenant), technician_name (optional operator).
 - **DatabaseFinding** — session_id, target_name, server_ip, engine_details, schema_name, table_name, column_name, data_type, sensitivity_level, pattern_detected, norm_tag, ml_confidence, created_at.
 - **FilesystemFinding** — session_id, target_name, path, file_name, data_type, sensitivity_level, pattern_detected, norm_tag, ml_confidence, created_at.
@@ -145,3 +144,5 @@ Textual description of modules, classes, and main functions and how they connect
 - report.generator — core.database (LocalDBManager usage), pandas, openpyxl, matplotlib/seaborn.
 - api.routes — config.loader, core.engine.
 - main — config.loader, core.engine, api.routes (for app), uvicorn.
+
+**Documentation index** (all topics, both languages): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).

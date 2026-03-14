@@ -34,7 +34,7 @@ Você pode **definir as palavras de treino para ML e DL** no arquivo de config p
 
 Tanto `ml_patterns_file` quanto `dl_patterns_file` usam a mesma estrutura. Você pode apontar ambos para o mesmo arquivo se quiser que ML e DL usem os mesmos termos.
 
-## Exemplo YAML:
+## Exemplo YAML
 
 ```yaml
 # Lista de termos; cada um tem "text" e "label"
@@ -81,7 +81,7 @@ patterns:
     label: non_sensitive
 ```
 
-## Exemplo JSON:
+## Exemplo JSON
 
 ```json
 [
@@ -399,3 +399,5 @@ Quando um padrão customizado der match no nome da coluna ou no texto amostrado,
 - **Inline sobrescreve arquivo:** Quando `ml_terms` ou `dl_terms` estão preenchidos no config, eles são usados no lugar do carregamento do arquivo correspondente.
 
 **Padrões regex:** Use `regex_overrides_file` no config principal para adicionar ou sobrescrever padrões de detecção por valor (veja [Padrões regex customizados](#padrões-regex-customizados-detectar-novos-dados-pessoaissensíveis) acima).
+
+**Índice da documentação** (todos os tópicos, ambos os idiomas): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).

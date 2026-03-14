@@ -73,3 +73,5 @@ Descrição textual dos módulos, classes e funções principais e como eles se 
 ## Direção de dependências (sem ciclos)
 
 config.loader, core.session, core.database não importam o projeto. core.detector (opcional yaml/sklearn/pandas). core.scanner → core.detector. core.connector_registry — nenhum. connectors.* → core.connector_registry, core.database, core.scanner, utils.logger. core.engine → registry, database, scanner, session; importa conectores. report.generator → core.database, pandas, openpyxl, matplotlib/seaborn. api.routes → config.loader, core.engine. main → config.loader, core.engine, api.routes, uvicorn.
+
+**Índice da documentação** (todos os tópicos, ambos os idiomas): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).

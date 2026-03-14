@@ -6,7 +6,31 @@ This document is the **single source of truth** for the project’s plan status 
 
 All steps are intended to be **non-destructive**, **non-regression**, and **non-performance impacting**; each step should be **tested** and **safe** before marking done.
 
-**Plan status:** Corporate compliance improvements ✅ Complete · Minor data detection ✅ Complete · Aggregated identification ✅ Complete · Sensitive categories ML/DL ✅ Complete · Rate limiting & concurrency ✅ Complete · Web hardening & security ✅ Complete · Logo and naming ⬜ In progress · **Dashboard i18n (multi-language web UI)** ⬜ Under consideration
+**Plan status:** Corporate compliance improvements ✅ Complete · Minor data detection ✅ Complete · Aggregated identification ✅ Complete · Sensitive categories ML/DL ✅ Complete · Rate limiting & concurrency ✅ Complete · Web hardening & security ✅ Complete · Logo and naming ⬜ In progress · **Dashboard i18n (multi-language web UI)** ⬜ Under consideration · **Compressed files (optional scan inside archives)** ⬜ Not started
+
+---
+
+## Plan: Optional scan inside compressed files ⬜ **Not started**
+
+**Source:** [docs/PLAN_COMPRESSED_FILES.md](PLAN_COMPRESSED_FILES.md)
+
+**Goal:** Optionally identify, open, and scan content inside compressed files (zip, tar, tar.gz, 7z, etc.) when the user enables it via config, CLI `--scan-compressed`, or web checkbox. Default is off (no extra I/O or time). Validate by magic bytes where possible; report findings with path like `archive.zip|path/inside.csv`. No regressions; new tests and docs.
+
+**Progress:** Mark each to-do done here and in the plan file when actually completed.
+
+| #   | To-do                                                                                                            | Status     |           |
+| --- | ---------------------------------------------------------------------                                            | ---------  |           |
+| 1   | Config: file_scan.scan_compressed (default false), optional max_inner_size / compressed_extensions               | ⬜ Pending  |           |
+| 2   | CLI: --scan-compressed flag; override config for that run                                                        | ⬜ Pending  |           |
+| 3   | Archive detection: magic bytes for zip, gz, 7z, tar, bz2, xz                                                     | ⬜ Pending  |           |
+| 4   | Open-archive helper: zipfile, tarfile, py7zr (optional); iterate members, yield content                          | ⬜ Pending  |           |
+| 5   | FilesystemConnector: when scan_compressed true, open archives and scan inner members; save_finding with archive\|inner path | ⬜ Pending |           |
+| 6   | Optional extra [compressed] with py7zr; graceful skip when .7z and py7zr missing                                 | ⬜ Pending  |           |
+| 7   | Engine: pass scan_compressed to connectors; API run-time override                                                | ⬜ Pending  |           |
+| 8   | API ScanStartBody.scan_compressed; dashboard checkbox                                                            | ⬜ Pending  |           |
+| 9   | Share connectors: scan inside archives when option on (or v1 filesystem only)                                    | ⬜ Pending  |           |
+| 10  | Tests: magic, option off/on, findings from inside zip; no regression                                             | ⬜ Pending  |           |
+| 11  | Docs: USAGE, TECH_GUIDE, man pages, help, README (EN + pt-BR)                                                    | ⬜ Pending  |           |
 
 ---
 
@@ -26,16 +50,16 @@ All steps are intended to be **non-destructive**, **non-regression**, and **non-
 
 Goal: Copyright-safe logo (web, favicon, optional report), integration in the app, and naming recommendations (e.g. compliance_crawler). User decides which options to apply.
 
-| #   | To-do                                                                                                                             | Status    | Notes                                                                                                       |
-| --- | ---                                                                                                                               | ---       | ---                                                                                                         |
-| 1   | Decide logo concept (A–D) and colors; produce master logo (SVG) and export web PNG (32/64 px) and favicon (ICO or 16/32 PNG)      | ✅ Done    | **Data Boar mascot** as logo; master SVG + PNG in `api/static/mascot/`; favicon derived (build_favicon.py). |
-| 2   | Place assets in `api/static/`: favicon.ico (and/or favicon-32.png), logo.svg, logo-64.png                                         | ✅ Done    | Mascot in `api/static/mascot/`; favicon.ico from script; former logo.svg retired.                           |
-| 3   | Add favicon link(s) in `api/templates/base.html` (`<link rel="icon">`)                                                            | ✅ Done    | base.html uses mascot as favicon.                                                                           |
-| 4   | (Optional) Add logo to About page and optionally Dashboard/Reports header                                                         | ✅ Done    | About, Dashboard, Reports, Config, Help: mascot in header + attribution.                                    |
-| 5   | Check PyPI and web for chosen name (e.g. compliance_crawler) availability                                                         | ⬜ Pending | Avoid clashes with existing products                                                                        |
-| 6   | Decide display name and/or package rename; if changing, update `core/about.py` and/or `pyproject.toml` and docs per VERSIONING.md | ✅ Done    | Display name **Data Boar**; package remains `python3-lgpd-crawler`.                                         |
-| 7   | (Optional) Embed logo in Excel Report info sheet via `report/generator.py`                                                        | ✅ Done    | Small mascot (48×48) in Report info at D1.                                                                  |
-| 8   | (Optional) Add logo to heatmap PNG footer in `_create_heatmap`                                                                    | ✅ Done    | Small mascot in lower-right inset (8% size).                                                                |
+| #   | To-do                                                                                                                             | Status | Notes                                                                                                       |
+| --- | ---                                                                                                                               | ---    | ---                                                                                                         |
+| 1   | Decide logo concept (A–D) and colors; produce master logo (SVG) and export web PNG (32/64 px) and favicon (ICO or 16/32 PNG)      | ✅ Done | **Data Boar mascot** as logo; master SVG + PNG in `api/static/mascot/`; favicon derived (build_favicon.py). |
+| 2   | Place assets in `api/static/`: favicon.ico (and/or favicon-32.png), logo.svg, logo-64.png                                         | ✅ Done | Mascot in `api/static/mascot/`; favicon.ico from script; former logo.svg retired.                           |
+| 3   | Add favicon link(s) in `api/templates/base.html` (`<link rel="icon">`)                                                            | ✅ Done | base.html uses mascot as favicon.                                                                           |
+| 4   | (Optional) Add logo to About page and optionally Dashboard/Reports header                                                         | ✅ Done | About, Dashboard, Reports, Config, Help: mascot in header + attribution.                                    |
+| 5   | Check PyPI and web for chosen name (e.g. compliance_crawler) availability                                                         | ✅ Done | PyPI data-boar/data_boar: 404 (available). Web: no Data Boar compliance product clash. Package unchanged.   |
+| 6   | Decide display name and/or package rename; if changing, update `core/about.py` and/or `pyproject.toml` and docs per VERSIONING.md | ✅ Done | Display name **Data Boar**; package remains `python3-lgpd-crawler`.                                         |
+| 7   | (Optional) Embed logo in Excel Report info sheet via `report/generator.py`                                                        | ✅ Done | Small mascot (48×48) in Report info at D1.                                                                  |
+| 8   | (Optional) Add logo to heatmap PNG footer in `_create_heatmap`                                                                    | ✅ Done | Small mascot in lower-right inset (8% size).                                                                |
 
 ---
 
