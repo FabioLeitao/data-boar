@@ -6,6 +6,7 @@ Tests that encode SonarQube-style quality rules across Python code so regression
 - S8415: HTTP status codes 400, 404, 429 documented in OpenAPI (validated in test_routes_responses).
 - S3776 cognitive complexity: refactored helpers exist in connector_registry and sql_connector.
 - No bare except (S5706): key modules do not use bare 'except:'.
+- S4423: SSL/TLS contexts use strong protocol (minimum TLS 1.2) where create_default_context is used.
 """
 
 import ast
@@ -145,3 +146,30 @@ def test_config_loader_no_bare_except():
     tree = ast.parse(source)
     bare = _has_bare_except(tree)
     assert not bare, f"config/loader.py has bare except at line(s) {[b[0] for b in bare]}"
+
+
+# --- S4423: Strong SSL/TLS protocol (no weak defaults) ---
+
+
+def test_ssl_create_default_context_uses_minimum_tls_version():
+    """Any Python file that uses ssl.create_default_context() must set minimum_version (S4423)."""
+    root = _project_root()
+    exclude_dirs = {".cursor", ".git", ".venv", "venv", "__pycache__", "node_modules"}
+    violations: list[Path] = []
+    for path in root.rglob("*.py"):
+        try:
+            rel = path.relative_to(root)
+        except ValueError:
+            continue
+        if any(part in exclude_dirs for part in rel.parts):
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        if "ssl.create_default_context()" not in text:
+            continue
+        # Same file must enforce strong protocol (TLS 1.2+)
+        if "minimum_version" not in text or "TLSVersion" not in text:
+            violations.append(path)
+    assert not violations, (
+        "S4423: these files use ssl.create_default_context() but do not set minimum_version (e.g. "
+        "ctx.minimum_version = ssl.TLSVersion.TLSv1_2): " + ", ".join(str(p.relative_to(root)) for p in violations)
+    )
