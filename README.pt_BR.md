@@ -189,10 +189,10 @@ Em sistemas que usam a interface tradicional
 `man`
 , há duas páginas de manual:
 
-- **Seção 1 (comando):** `docs/lgpd_crawler.1` – descreve o programa, suas opções, a API web e exemplos com curl. Visualize com `man lgpd_crawler` ou `man 1 lgpd_crawler`.
-- **Seção 5 (formatos de arquivo):** `docs/lgpd_crawler.5` – descreve a topologia do config principal e dos arquivos opcionais (regex overrides, arquivos de termos ML/DL, learned patterns), com exemplos. Visualize com `man 5 lgpd_crawler`.
+- **Seção 1 (comando):** `docs/lgpd_crawler.1` – descreve o programa, suas opções, a API web e exemplos com curl. Visualize com `man data_boar` ou `man lgpd_crawler` (ou `man 1 data_boar`, `man 1 lgpd_crawler`).
+- **Seção 5 (formatos de arquivo):** `docs/lgpd_crawler.5` – descreve a topologia do config principal e dos arquivos opcionais (regex overrides, arquivos de termos ML/DL, learned patterns), com exemplos. Visualize com `man 5 data_boar` ou `man 5 lgpd_crawler`.
 
-No Linux/BSD, a seção 1 é para programas e comandos; a seção 5 é para formatos de arquivo e convenções de configuração. Instalar ambas permite usar `man lgpd_crawler` para saber como executar a aplicação e `man 5 lgpd_crawler` para saber como configurá-la e definir padrões.
+No Linux/BSD, a seção 1 é para programas e comandos; a seção 5 é para formatos de arquivo e convenções de configuração. Instale ambas as páginas e crie os symlinks (veja abaixo) para que **data_boar** e **lgpd_crawler** funcionem: `man data_boar` / `man lgpd_crawler` para o comando, `man 5 data_boar` / `man 5 lgpd_crawler` para config e formatos de arquivo.
 
 **Instalar ambas as páginas** (crie os diretórios de destino antes para que o `cp` não falhe se não existirem). Logo após criar os diretórios, execute `chmod 755` neles para que todos os usuários possam acessar as páginas de manual; dependendo do umask padrão, diretórios novos podem ficar 750 e apenas root conseguiria acessá-los. Após copiar, execute `chmod 644` nos arquivos instalados para que todos possam lê-los (os arquivos copiados podem ficar 640).
 
@@ -203,17 +203,19 @@ sudo chmod 755 /usr/local/share/man/man1/ /usr/local/share/man/man5/
 sudo cp docs/lgpd_crawler.1 /usr/local/share/man/man1/
 sudo cp docs/lgpd_crawler.5 /usr/local/share/man/man5/
 sudo chmod 644 /usr/local/share/man/man1/lgpd_crawler.1 /usr/local/share/man/man5/lgpd_crawler.5
+sudo ln -sf lgpd_crawler.1 /usr/local/share/man/man1/data_boar.1
+sudo ln -sf lgpd_crawler.5 /usr/local/share/man/man5/data_boar.5
 sudo mandb    # ou: sudo makewhatis   # conforme a distro
 ```
 
-Depois:
+Os symlinks fazem com que **data_boar** e **lgpd_crawler** apontem para as mesmas páginas. Depois:
 
 ```bash
-man lgpd_crawler     # comando e opções (seção 1)
-man 5 lgpd_crawler   # config e formatos de arquivo (seção 5)
+man data_boar        # ou: man lgpd_crawler     # comando e opções (seção 1)
+man 5 data_boar      # ou: man 5 lgpd_crawler   # config e formatos de arquivo (seção 5)
 ```
 
-Ao adicionar novas opções de CLI ou capacidades da API, atualize `docs/lgpd_crawler.1`; ao alterar chaves de config ou formatos de arquivos de padrão, atualize `docs/lgpd_crawler.5` e este README para que as man pages continuem refletindo o comportamento atual. Para **bumps de versão** (convenção major.minor.build e onde atualizar o número da versão), veja [docs/VERSIONING.pt_BR.md](docs/VERSIONING.pt_BR.md) ([inglês](docs/VERSIONING.md)).
+Ao adicionar novas opções de CLI ou capacidades da API, atualize `docs/lgpd_crawler.1`; ao alterar chaves de config ou formatos de arquivos de padrão, atualize `docs/lgpd_crawler.5` e este README para que as man pages continuem refletindo o comportamento atual. Os mesmos arquivos são visualizados como `man data_boar` e `man lgpd_crawler` (seções 1 e 5) via symlinks na instalação. Para **bumps de versão** (convenção major.minor.build e onde atualizar o número da versão), veja [docs/VERSIONING.pt_BR.md](docs/VERSIONING.pt_BR.md) ([inglês](docs/VERSIONING.md)).
 
 ## Deploy com Docker
 
@@ -271,3 +273,7 @@ Para detalhes mais avançados (conectores opcionais, REST APIs, Power BI, Datave
 - `docs/USAGE.pt_BR.md` (português – uso da API e configuração)
 - **Adicionar novo conector:** [docs/ADDING_CONNECTORS.pt_BR.md](docs/ADDING_CONNECTORS.pt_BR.md) (português) · [docs/ADDING_CONNECTORS.md](docs/ADDING_CONNECTORS.md) (inglês)
 - **Detecção de sensibilidade (ML/DL):** [docs/sensitivity-detection.pt_BR.md](docs/sensitivity-detection.pt_BR.md) (português) · [docs/sensitivity-detection.md](docs/sensitivity-detection.md) (inglês)
+
+## Licença e direitos autorais
+
+Veja [LICENSE](LICENSE). Aviso de projeto e direitos autorais: [NOTICE](NOTICE). Para tornar direitos autorais e marca oficial (registro, registros): [docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md](docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md) (português) · [docs/COPYRIGHT_AND_TRADEMARK.md](docs/COPYRIGHT_AND_TRADEMARK.md) (inglês).
