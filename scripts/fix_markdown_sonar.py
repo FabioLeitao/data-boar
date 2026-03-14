@@ -7,7 +7,9 @@ Rules addressed:
 - MD009: Trailing spaces → 0 or 2 (remove odd trailing spaces)
 - MD012: Multiple consecutive blank lines → 1
 - MD029: Ordered list prefix → 1/1/1 (all items use "1.")
+- MD031: Blank lines around fenced code blocks (before/after ``` or ~~~)
 - MD032: Blank lines around lists
+- MD034: No bare URLs → wrap in angle brackets (skip inside fenced blocks and inline code)
 - MD036: Emphasis used as heading → ## heading
 - MD047: File ends with single newline
 - MD060: Table column style "aligned" (pad cells so pipes align with header)
@@ -161,6 +163,65 @@ def fix_md060_tables(text: str) -> str:
     return "\n".join(out)
 
 
+# --- MD031: Blank lines around fenced code blocks ---
+_FENCE_RE = re.compile(r"^\s*(`{3,}|~{3,})")
+
+
+def fix_md031(lines: list[str]) -> list[str]:
+    """Ensure blank line before opening fence and after closing fence."""
+    if not lines:
+        return lines
+    out: list[str] = []
+    in_fence = False
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        is_fence = bool(_FENCE_RE.match(stripped))
+        if is_fence:
+            if not in_fence:
+                # Opening fence: ensure blank before
+                if out and out[-1].strip() != "":
+                    out.append("")
+            else:
+                # Closing fence: we'll add blank after this line if next is non-blank
+                pass
+        out.append(line)
+        if is_fence:
+            in_fence = not in_fence
+            if not in_fence and i + 1 < len(lines) and lines[i + 1].strip() != "":
+                out.append("")
+    return out
+
+
+# --- MD034: No bare URLs (wrap in angle brackets) ---
+# Match http:// or https:// then URL chars (no spaces, no ] ) > `)
+_BARE_URL_RE = re.compile(r"(?<![<\()])(https?://[^\s\]\)\<\>`]+)(?![\]\)\>\`])")
+
+
+def fix_md034_line(line: str, in_fence: bool) -> str:
+    """Wrap bare URLs in angle brackets. Skip when inside fenced block or when already wrapped/linked."""
+    if in_fence or "http" not in line:
+        return line
+    if "<http" in line or "](http" in line:
+        return line
+    # Do not modify inline code (backtick-wrapped)
+    def repl(m: re.Match[str]) -> str:
+        url = m.group(1)
+        return f"<{url}>"
+    return _BARE_URL_RE.sub(repl, line)
+
+
+def fix_md034(text: str) -> str:
+    """Wrap bare URLs in angle brackets; skip inside fenced code blocks."""
+    lines = text.splitlines()
+    out: list[str] = []
+    in_fence = False
+    for line in lines:
+        if _FENCE_RE.match(line.strip()):
+            in_fence = not in_fence
+        out.append(fix_md034_line(line, in_fence))
+    return "\n".join(out)
+
+
 def process_file(path: Path) -> bool:
     """Apply all fixes; return True if file was changed."""
     raw = path.read_text(encoding="utf-8", errors="replace")
@@ -191,11 +252,15 @@ def process_file(path: Path) -> bool:
 
     # MD032: blanks around lists (operate on result_lines)
     result_lines = fix_md032(result_lines)
+    # MD031: blank lines around fenced code blocks
+    result_lines = fix_md031(result_lines)
 
     text = "\n".join(result_lines)
     # MD060: tables (re-parse and reformat)
     text = fix_md060_tables(text)
-    # MD012 again (collapse any double blanks from MD032)
+    # MD034: wrap bare URLs in angle brackets (skip inside fenced blocks)
+    text = fix_md034(text)
+    # MD012 again (collapse any double blanks from MD032 / MD031)
     text = fix_md012(text)
     # MD047
     text = fix_md047(text)
