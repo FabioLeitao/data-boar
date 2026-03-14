@@ -18,7 +18,7 @@ Reporting covers **multiple scan sessions** with **trends** (this run vs previou
 
 **Typical scenarios:** Preparing for an audit or regulator request; mapping data before a migration or DLP rollout; raising compliance awareness without a full war room.
 
-> **Current release:** 1.5.2 (see [docs/releases/1.5.1.md](docs/releases/1.5.1.md) and the [GitHub Releases page](https://github.com/FabioLeitao/data-boar/releases)).
+> **Current release:** 1.5.2. Release notes: [docs/releases/](docs/releases/) and the [GitHub Releases page](https://github.com/FabioLeitao/data-boar/releases).
 > **Documentation note:** This README and `docs/USAGE.md` are the canonical English references. When features or options change, update **both** languages to keep them in sync.
 
 ---
