@@ -6,6 +6,7 @@ alwaysApply: false
 
 # Documentation policy (EN + pt-BR)
 
+- **Location:** Put new application documentation (guides, reference, branding) under **docs/** and link from docs/README.md. Keep at repo root only what GitHub/tooling expect (README, SECURITY, CONTRIBUTING, CODE_OF_CONDUCT, LICENSE, NOTICE). Do not move **.github/** or **.cursor/**; pointer READMEs (deploy/, tests/) or deprecated notices (database/, scanners/) may stay next to code.
 - **English (EN)** is the **canonical** source: it reflects the true capabilities, features, arguments, config, and behaviour of the application. Update the English doc first when behaviour or options change.
 - **Brazilian Portuguese (pt-BR)** must be **kept in sync** with the English version. Each pt-BR file is a translation of its English counterpart (same structure and coverage).
 

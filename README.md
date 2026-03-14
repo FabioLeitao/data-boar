@@ -1,8 +1,10 @@
 # Data Boar
 
+![Data Boar mascot](api/static/mascot/data_boar_mascote_color.svg)
+
 Data Boar is an application for auditing personal and sensitive data across databases and filesystems, aligned with **LGPD**, **GDPR**, **CCPA**, **HIPAA**, and **GLBA**. It discovers and maps possible PII/sensitive data via regex and ML, stores metadata (including optional **tenant/customer** and **technician/operator** tags per scan) in a local SQLite database, and produces Excel reports with heatmaps and recommendations. The runtime engine and Python package name remain **python3-lgpd-crawler** for compatibility. The **boar** mascot and name emphasize a hungry crawler “rooting” through heterogeneous data sources (databases, files, APIs, dashboards, shares) for compliance-relevant signals.
 
-> **Current release:** 1.4.3 (see [docs/releases/1.4.3.md](docs/releases/1.4.3.md) and the [GitHub Releases page](https://github.com/FabioLeitao/data-boar/releases/tag/v1.4.3)).
+> **Current release:** 1.5.1 (see [docs/releases/1.5.0.md](docs/releases/1.5.0.md) and the [GitHub Releases page](https://github.com/FabioLeitao/data-boar/releases)).
 
 > **Documentation note:** This README and `docs/USAGE.md` are the canonical English references. When features or options change, update **both** languages to keep them in sync.
 > **Brazilian Portuguese (pt-BR):** [README.pt_BR.md](README.pt_BR.md) · [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md)
@@ -18,7 +20,7 @@ Data Boar is an application for auditing personal and sensitive data across data
 - **Filesystem**: Recursive scan of local (or mounted) directories; permission check before reading. Supports many extensions: text (`.txt`, `.csv`, `.json`, `.xml`, `.html`, `.md`, `.yml`, `.log`, `.ini`, `.sql`, `.rtf`, etc.), documents (`.pdf`, `.doc`, `.docx`, `.odt`, `.ods`, `.odp`, `.xls`, `.xlsx`, `.xlsm`, `.ppt`, `.pptx`), email (`.eml`, `.msg`), and data (`.sqlite`, `.db`). **SQLite files** (`.sqlite`, `.sqlite3`, `.db`) found on disk are opened and scanned as databases (discover tables/columns, sample and detect); set `file_scan.scan_sqlite_as_db: false` to skip. Set `file_scan.extensions` to a list of suffixes, or `"*"` / `"all"` for all supported types.
 - **Sensitivity detection**: Regex (configurable) + **ML** (TF-IDF + RandomForest) + optional **DL** (sentence embeddings + classifier) on column names and sampled content; no raw data is stored. You can set **ML and DL training terms** in the config (inline or via `ml_patterns_file` / `dl_patterns_file`). See [docs/sensitivity-detection.md](docs/sensitivity-detection.md) (English) or [docs/sensitivity-detection.pt_BR.md](docs/sensitivity-detection.pt_BR.md) (Português – Brasil) for examples. **Lyrics and music tablature** are detected via heuristics so that date-like or digit sequences in song lyrics and guitar tabs are downgraded to MEDIUM/LOW to reduce false positives; strong PII (CPF, email, etc.) still reports HIGH.
 - **Single SQLite**: All findings and failures per session (UUID + timestamp); metadata per scan includes optional **tenant_name** (customer/tenant) and **technician_name** (operator responsible). Separate tables for database findings, filesystem findings, and scan failures.
-- **Reporting**: Excel with sheets **"Report info"** (Session ID, Started at, Tenant/Customer, Technician/Operator, Application, Version, Author, License, Copyright), "Database findings", "Filesystem findings", "Scan failures", "Recommendations", "Praise / existing controls" (indications of encryption/hashing/tokenization), **"Trends - Session comparison"** (vs previous run), and sensitivity/risk heatmap (PNG). The heatmap image and dashboard/reports pages include the same application and author attribution.
+- **Reporting**: Excel with sheets **"Report info"** (Session ID, Started at, Tenant/Customer, Technician/Operator, Application, Version, Author, License, Copyright), "Database findings", "Filesystem findings", "Scan failures", "Recommendations", "Praise / existing controls" (indications of encryption/hashing/tokenization), **"Trends - Session comparison"** (this run vs up to 3 previous runs; aggregate notes), **"Heatmap data"** (table plus embedded heatmap image, fit-to-one-page when printed), and a standalone sensitivity/risk heatmap PNG. Report info and heatmap include optional Data Boar mascot branding; dashboard/reports pages show application and author attribution.
 - **CLI and REST API**: Run one-shot audit from command line or start API (default port 8088) for `/scan`, `/start`, `/scan_database`, `/status`, `/report`, `/heatmap`, `/list`, `/reports/{session_id}`, `/logs`, `/about`, and `PATCH /sessions/{session_id}` for tenant/technician metadata. Both modes allow tagging scans with optional **tenant/customer** and **technician/operator** information. The web dashboard includes **Help**, **About** (author and license), and security headers (see SECURITY.md). The application works behind NAT, load balancers, and reverse proxies (nginx, Traefik, Caddy); set `X-Forwarded-Proto: https` when TLS is terminated at the proxy.
 
 ## Requirements and environment preparation
@@ -241,7 +243,7 @@ uvicorn api.routes:app --host 0.0.0.0 --port 8088
 
 When using the API (`--web`), the server loads config from **`CONFIG_PATH`** (environment variable) or `config.yaml` in the working directory if `--config` is not provided on the CLI.
 
-**Web dashboard:** With the server running, open `http://localhost:8088/` for a simple dashboard: scan status, quantity/quality of discovered data (DB/FS findings, failures), **progress graph over time** (total findings and a risk score per session), optional inputs for **tenant/customer** and **technician/operator** before starting a scan, recent sessions (including tenant/technician columns), and links to **Reports** (list and download) and **Configuration** (edit YAML in the browser).
+**Web dashboard:** With the server running, open `<http://localhost:8088>/` for a simple dashboard: scan status, quantity/quality of discovered data (DB/FS findings, failures), **progress graph over time** (total findings and a risk score per session), optional inputs for **tenant/customer** and **technician/operator** before starting a scan, recent sessions (including tenant/technician columns), and links to **Reports** (list and download) and **Configuration** (edit YAML in the browser).
 
 ## API routes (summary):
 
@@ -284,12 +286,12 @@ You can scan remote HTTP(S) APIs for personal or sensitive data by adding target
 
 ### Auth types
 
-| Type              | Use case                                                             | Config                                                                                                                                                        |
-| ------            | ----------                                                           | --------                                                                                                                                                      |
-| **basic**         | Static username and password                                         | `auth: { type: basic, username: "...", password: "..." }`                                                                                                     |
-| **bearer**        | Static or negotiated token (e.g. from Kerberos/AD, or API key)       | `auth: { type: bearer, token: "..." }` or `token_from_env: "MY_TOKEN_VAR"`                                                                                    |
-| **oauth2_client** | OAuth2 client credentials (machine-to-machine)                       | `auth: { type: oauth2_client, token_url: "https://...", client_id: "...", client_secret: "..." }` (or `client_secret: "${ENV_VAR}"` to read from environment) |
-| **custom**        | Custom headers (e.g. `Authorization: Negotiate ...`, API key header) | `auth: { type: custom, headers: { "Authorization": "Bearer ...", "X-API-Key": "..." } }`                                                                      |
+| Type              | Use case                                                             | Config                                                                                                                                                          |
+| ------            | ----------                                                           | --------                                                                                                                                                        |
+| **basic**         | Static username and password                                         | `auth: { type: basic, username: "...", password: "..." }`                                                                                                       |
+| **bearer**        | Static or negotiated token (e.g. from Kerberos/AD, or API key)       | `auth: { type: bearer, token: "..." }` or `token_from_env: "MY_TOKEN_VAR"`                                                                                      |
+| **oauth2_client** | OAuth2 client credentials (machine-to-machine)                       | `auth: { type: oauth2_client, token_url: "<https://...",> client_id: "...", client_secret: "..." }` (or `client_secret: "${ENV_VAR}"` to read from environment) |
+| **custom**        | Custom headers (e.g. `Authorization: Negotiate ...`, API key header) | `auth: { type: custom, headers: { "Authorization": "Bearer ...", "X-API-Key": "..." } }`                                                                        |
 
 If you omit `auth` but set `user`/`username` and `pass`/`password` on the target, **basic** auth is used.
 
@@ -374,7 +376,7 @@ targets:
 
 - **Type:** `dataverse` or `powerapps`
 - **Auth:** Azure AD app with application permission to Dataverse (e.g. “Common Data Service” / `user_impersonation` or env-specific application permission). Admin consent required.
-- **Config:** `org_url` (or `environment_url`), e.g. `https://myorg.crm.dynamics.com`, plus `tenant_id`, `client_id`, `client_secret` (or under `auth:`).
+- **Config:** `org_url` (or `environment_url`), e.g. `<https://myorg.crm.dynamics.co>m`, plus `tenant_id`, `client_id`, `client_secret` (or under `auth:`).
 
 The connector lists entities (tables), their attributes, samples rows, runs sensitivity detection, and writes **Database findings** (schema = entity logical name, table = entity set, column = attribute).
 
@@ -402,8 +404,8 @@ You can scan remote file shares by **FQDN or IP** with credentials in config. In
 
 | Type               | Host / URL                                                         | Credentials                       | Notes                                                                   |
 | ------             | ------------                                                       | -------------                     | --------                                                                |
-| **sharepoint**     | `site_url`: `https://host/sites/sitename`                          | `user`, `pass`; NTLM or basic     | On-prem or URL; path = server-relative folder (e.g. `Shared Documents`) |
-| **webdav**         | `base_url`: `https://host/path`                                    | `user`, `pass`                    | Recursive list and download                                             |
+| **sharepoint**     | `site_url`: `<https://host/sites/sitenam>e`                        | `user`, `pass`; NTLM or basic     | On-prem or URL; path = server-relative folder (e.g. `Shared Documents`) |
+| **webdav**         | `base_url`: `<https://host/pat>h`                                  | `user`, `pass`                    | Recursive list and download                                             |
 | **smb** / **cifs** | `host`: FQDN or IP, `share`: share name, `path`: path inside share | `user`, `pass`, optional `domain` | Port 445 default                                                        |
 | **nfs**            | `path`: **local mount point** (NFS must be mounted first)          | —                                 | `host` / `export_path` for reporting only                               |
 
@@ -466,14 +468,18 @@ To support a new data source (e.g. another database driver or API), see **[docs/
 
 ## Dependencies and security
 
-- **Sync locked deps:** From project root, treat `pyproject.toml` as the **single source of truth** and regenerate `requirements.txt` whenever dependencies change:
+- **Source of truth:** For the **uv** toolchain, **`pyproject.toml`** is the single source of truth for libraries; **pip** and **`requirements.txt`** are derivative (requirements.txt is generated from pyproject.toml for environments that use pip). Dependencies are declared in **`pyproject.toml`**; **`requirements.txt`** must not be edited by hand for version bumps. When you add, remove, or change a dependency, edit **`pyproject.toml`** only, then regenerate `requirements.txt`.
+
+- **Regenerate requirements.txt after any dependency change:**
 
   ```bash
-  # Generate requirements.txt from pyproject.toml using uv
+  # From project root: generate requirements.txt from pyproject.toml using uv
   uv pip compile pyproject.toml -o requirements.txt
   ```
 
-  This keeps `requirements.txt` aligned with the versions and extras defined in `pyproject.toml` so environments that still rely on `pip install -r requirements.txt` behave identically to `uv sync`.
+  This keeps `requirements.txt` aligned with the versions and extras defined in `pyproject.toml` so environments that use `pip install -r requirements.txt` behave identically to `uv sync`.
+
+- **Dependabot / automation:** If a PR (e.g. from Dependabot) suggests updating only `requirements.txt`, apply the change to the **source of truth** first: update the corresponding minimum version in **`pyproject.toml`** (e.g. `fonttools>=4.62.1`), then run `uv pip compile pyproject.toml -o requirements.txt` and commit both files. Do not merge a dependency update that only edits `requirements.txt`.
 
 - **Check for known CVEs:** Run `uv pip audit` (or `pip audit` if available) before deployment; fix or pin any vulnerable packages.
 - See also **Security and compliance** below.
@@ -484,10 +490,10 @@ For systems that use the traditional
 `man`
 interface, two manual pages are provided:
 
-- **Section 1 (command):** `docs/lgpd_crawler.1` – describes the program, its options, the web API, and curl examples. View with `man lgpd_crawler` or `man 1 lgpd_crawler`.
-- **Section 5 (file formats):** `docs/lgpd_crawler.5` – describes the main config file topology and optional files (regex overrides, ML/DL pattern files, learned patterns), with examples. View with `man 5 lgpd_crawler`.
+- **Section 1 (command):** `docs/lgpd_crawler.1` – describes the program, its options, the web API, and curl examples. View with `man data_boar` or `man lgpd_crawler` (or `man 1 data_boar`, `man 1 lgpd_crawler`).
+- **Section 5 (file formats):** `docs/lgpd_crawler.5` – describes the main config file topology and optional files (regex overrides, ML/DL pattern files, learned patterns), with examples. View with `man 5 data_boar` or `man 5 lgpd_crawler`.
 
-On Linux/BSD, section 1 is for executable commands; section 5 is for configuration and file format conventions. Installing both lets users run `man lgpd_crawler` for how to run the app and `man 5 lgpd_crawler` for how to configure it and define patterns.
+On Linux/BSD, section 1 is for executable commands; section 5 is for configuration and file format conventions. Install both pages and add symlinks (see below) so that both **data_boar** and **lgpd_crawler** work: `man data_boar` / `man lgpd_crawler` for the command, `man 5 data_boar` / `man 5 lgpd_crawler` for config and file formats.
 
 **Install both pages** (create the target directories first so the copy does not fail if they are missing). Right after creating the directories, run `chmod 755` on them so that all users can access the man pages; depending on your default umask, new directories may otherwise be 750 and only root could traverse them. After copying, run `chmod 644` on the installed files so that all users can read the pages (copied files may otherwise be 640).
 
@@ -498,17 +504,19 @@ sudo chmod 755 /usr/local/share/man/man1/ /usr/local/share/man/man5/
 sudo cp docs/lgpd_crawler.1 /usr/local/share/man/man1/
 sudo cp docs/lgpd_crawler.5 /usr/local/share/man/man5/
 sudo chmod 644 /usr/local/share/man/man1/lgpd_crawler.1 /usr/local/share/man/man5/lgpd_crawler.5
+sudo ln -sf lgpd_crawler.1 /usr/local/share/man/man1/data_boar.1
+sudo ln -sf lgpd_crawler.5 /usr/local/share/man/man5/data_boar.5
 sudo mandb    # or: sudo makewhatis   # depends on distro
 ```
 
-After that:
+The symlinks make both **data_boar** and **lgpd_crawler** resolve to the same pages. After that:
 
 ```bash
-man lgpd_crawler     # command and options (section 1)
-man 5 lgpd_crawler   # config and file formats (section 5)
+man data_boar        # or: man lgpd_crawler     # command and options (section 1)
+man 5 data_boar      # or: man 5 lgpd_crawler   # config and file formats (section 5)
 ```
 
-When adding new CLI options or API capabilities, update `docs/lgpd_crawler.1`; when adding or changing config keys or pattern file formats, update `docs/lgpd_crawler.5` and this README so the man pages continue to reflect the current behaviour. For **version bumps** (major.minor.build convention and where to update the version number), see [docs/VERSIONING.md](docs/VERSIONING.md).
+When adding new CLI options or API capabilities, update `docs/lgpd_crawler.1`; when adding or changing config keys or pattern file formats, update `docs/lgpd_crawler.5` and this README so the man pages continue to reflect the current behaviour. The same files are viewed as both `man data_boar` and `man lgpd_crawler` (section 1 and 5) via symlinks at install time. For **version bumps** (major.minor.build convention and where to update the version number), see [docs/VERSIONING.md](docs/VERSIONING.md).
 
 ## Deploy with Docker
 
@@ -516,16 +524,18 @@ You can run the API as a **single container** (`docker run`), with **Docker Comp
 
 ### Pre-built image (Docker Hub)
 
-A Docker image is available on **Docker Hub** so you can run the application without cloning the repository:
+Docker images are available on **Docker Hub** so you can run the application without cloning the repository:
 
-- **Repository:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)
-- **Image name:** `fabioleitao/python3-lgpd-crawler:latest` (version tag `latest`; other tags may be published for specific releases). The image includes regex + ML + optional DL sensitivity detection; you can set ML/DL training terms in config (see `docs/sensitivity-detection.md` and `deploy/config.example.yaml`).
+- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` and `fabioleitao/data_boar:1.5.1`
+- **Legacy:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler) — `fabioleitao/python3-lgpd-crawler:latest` (same image may be published under both names)
+
+The image includes regex + ML + optional DL sensitivity detection; you can set ML/DL training terms in config (see `docs/sensitivity-detection.md` and `deploy/config.example.yaml`).
 
 Example: run the web API with a local config directory:
 
 ```bash
-docker pull fabioleitao/python3-lgpd-crawler:latest
-docker run -d -p 8088:8088 -v /path/to/your/data:/data -e CONFIG_PATH=/data/config.yaml fabioleitao/python3-lgpd-crawler:latest
+docker pull fabioleitao/data_boar:latest
+docker run -d -p 8088:8088 -v /path/to/your/data:/data -e CONFIG_PATH=/data/config.yaml fabioleitao/data_boar:latest
 ```
 
 Prepare `/data/config.yaml` from `deploy/config.example.yaml` (see [docs/deploy/DEPLOY.md](docs/deploy/DEPLOY.md) ([pt-BR](docs/deploy/DEPLOY.pt_BR.md))). You can decide to use this image as an instanced container instead of pulling the code from Git and building locally.
@@ -553,6 +563,6 @@ The application explicitly references **LGPD**, **GDPR**, **CCPA**, **HIPAA**, a
 - **Behind a reverse proxy (nginx, Traefik, Caddy):** Set `X-Forwarded-Proto: https` for TLS-terminated traffic so HSTS and scheme detection work correctly.
 - **Reporting vulnerabilities:** See [SECURITY.md](SECURITY.md). **Testing:** See [docs/TESTING.md](docs/TESTING.md). **Contributing:** See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## License
+## License and copyright
 
-See [LICENSE](LICENSE).
+See [LICENSE](LICENSE). Project and copyright notice: [NOTICE](NOTICE). For making copyright and trademark official (registration, registries): [docs/COPYRIGHT_AND_TRADEMARK.md](docs/COPYRIGHT_AND_TRADEMARK.md) ([pt-BR](docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md)).
