@@ -1,6 +1,6 @@
 # Consolidated plans – sequential to-dos
 
-**Português (Brasil):** [PLANS_TODO.pt_BR.md](PLANS_TODO.pt_BR.md)
+Plan files are kept in **English only** for history and progress tracking. Operator-facing documentation (how to use, config, deploy, etc.) exists in both EN and pt-BR; see [README.md](README.md) ([pt-BR](README.pt_BR.md)).
 
 This document is the **single source of truth** for the project’s plan status and remains in **`docs/`** at all times. It lists **incomplete goals** from active plans and the **recommended sequential to-dos** to achieve them. Completed plan documents (design and to-do details) are archived in **`docs/completed/`** for reference; links below point to those files.
 
