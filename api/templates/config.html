@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% block title %}Configuration — LGPD Audit{% endblock %}
+{% block title %}Configuration — Data Boar{% endblock %}
 {% block content %}
-<h1>Scan configuration</h1>
+<h1><img src="/static/mascot/data_boar_mascote_color.svg" alt="" width="40" height="40" style="vertical-align: middle; margin-right: 0.35em;">Scan configuration</h1>
 <p>Edit the audit configuration (YAML). Saved file: <code>{{ config_path }}</code>. Changes apply to the next scan.</p>
 {% if config_save_error %}<p class="error">{{ config_save_error }}</p>{% endif %}
 {% if config_saved %}<p class="success">Configuration saved successfully.</p>{% endif %}
