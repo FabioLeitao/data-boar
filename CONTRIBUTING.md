@@ -69,7 +69,7 @@ Before tagging a **stable release**, maintainers should:
 
 - **Lockfile and audit:** Run `uv lock` to refresh the lockfile from current `pyproject.toml`, then `uv sync` and `uv run pip-audit`. Fix or upgrade any high/critical findings, then run `uv export --no-emit-package pyproject.toml -o requirements.txt` and commit **uv.lock** and **requirements.txt** so the release is reproducible, compatible, and safe. This protects users from accidental breakage while keeping the release on audited dependencies.
 - **Docs:** Ensure [SECURITY.md](SECURITY.md) and [docs/SECURITY.md](docs/SECURITY.md) reflect current behaviour (validation, headers, API key, logging policy).
-- **Secrets and logging:** Confirm no API keys or passwords in logs; config file and env handling restrict access to trusted users (see [SECURITY.md](SECURITY.md)). When adding or changing log statements, do not log raw config, request bodies, or credentials; failure/exception text is redacted via `core.validation.redact_secrets_for_log` (regression: `test_redact_secrets_for_log_*` in `tests/test_security.py`).
+- **Secrets and logging:** Confirm no API keys or passwords in logs; config file and env handling restrict access to trusted users (see [SECURITY.md](SECURITY.md)). Ensure **config file permissions** restrict read/write to trusted users and that **config.yaml** (and any file with secrets) is **not committed** (see .gitignore). When adding or changing log statements, do not log raw config, request bodies, or credentials; failure/exception text is redacted via `core.validation.redact_secrets_for_log` (regression: `test_redact_secrets_for_log_*` in `tests/test_security.py`).
 
 ## Deployment and production
 
