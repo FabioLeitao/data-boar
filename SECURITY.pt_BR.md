@@ -121,9 +121,9 @@ Se não tiver certeza se algo é sensível do ponto de vista de segurança, pref
 
 Estes são **metas** para mantenedores e reportadores, não obrigações contratuais. Ajuste conforme a capacidade da equipe.
 
-| Área | Meta opcional |
-|------|----------------|
-| **Reportes de vulnerabilidade** | Objetivamos **confirmar recebimento** em até **5 dias úteis** e, para achados **altos/críticos**, **corrigir ou documentar** (ex.: advisory, mitigação ou “não corrigir” com justificativa) em até **30 dias**. |
+| Área                               | Meta opcional                                                                                                                                                                                                                                                                |
+| ------                             | ----------------                                                                                                                                                                                                                                                             |
+| **Reportes de vulnerabilidade**    | Objetivamos **confirmar recebimento** em até **5 dias úteis** e, para achados **altos/críticos**, **corrigir ou documentar** (ex.: advisory, mitigação ou “não corrigir” com justificativa) em até **30 dias**.                                                              |
 | **PRs de segurança do Dependabot** | Tratamos os PRs **de segurança** do Dependabot como **P0**: objetivamos **fazer merge ou responder** (ex.: merge, fechar com comentário ou adiar com justificativa) em até **5 dias úteis**. PRs de dependência que não sejam de segurança seguem o ciclo normal de revisão. |
 
 Veja **CONTRIBUTING** para como aplicar atualizações de dependências e executar `pip-audit`; veja **`.github/dependabot.yml`** para a configuração do Dependabot.
