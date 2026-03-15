@@ -89,6 +89,38 @@ class TestCategoryMapping(unittest.TestCase):
                 cats = map_finding_to_categories({"column_name": col, "pattern_detected": ""})
                 self.assertIn("other", cats, f"Column '{col}' should map to category 'other'")
 
+    def test_id_document_column_names_multilingual(self):
+        """ID/document columns (passport, ctps, documento oficial, green card, etc.) map to category 'other'."""
+        id_columns = [
+            "passaporte",
+            "passport",
+            "ctps",
+            "carteira de trabalho",
+            "documento oficial",
+            "official document",
+            "distintivo",
+            "pis",
+            "cartão cidadão",
+            "certidão",
+            "green card",
+            "registro no conselho de classe",
+            "cnh",
+            "driver license",
+            "documento de identidade",
+            "identity document",
+            "id card",
+            "national id",
+            "document number",
+            "carte d'identité",
+            "cpf",
+            "rg",
+            "identidade",
+        ]
+        for col in id_columns:
+            with self.subTest(column=col):
+                cats = map_finding_to_categories({"column_name": col, "pattern_detected": ""})
+                self.assertIn("other", cats, f"Column '{col}' should map to category 'other'")
+
     def test_pattern_detected_maps_to_category(self):
         self.assertIn("phone", map_finding_to_categories({"column_name": "x", "pattern_detected": "PHONE_BR"}))
         self.assertIn("other", map_finding_to_categories({"column_name": "x", "pattern_detected": "EMAIL"}))

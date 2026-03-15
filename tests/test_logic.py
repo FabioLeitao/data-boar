@@ -124,6 +124,33 @@ class TestAuditLogic(unittest.TestCase):
                     f"Column '{col}' should be flagged as sensitive (name/identifier)",
                 )
 
+    def test_id_document_column_names_flagged_sensitive(self):
+        """ID/document column names (passport, ctps, documento oficial, green card, etc.) are recognised and flagged."""
+        scanner = DataScanner()
+        id_columns = [
+            "passaporte",
+            "passport",
+            "ctps",
+            "documento oficial",
+            "green card",
+            "cnh",
+            "driver license",
+            "identity document",
+            "id card",
+            "national id",
+            "document number",
+            "certidao",
+            "cartao cidadao",
+        ]
+        for col in id_columns:
+            with self.subTest(column=col):
+                result = scanner.scan_column(col, "sample value")
+                self.assertIn(
+                    result["sensitivity_level"],
+                    ("HIGH", "MEDIUM"),
+                    f"Column '{col}' should be flagged as sensitive (ID/document)",
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

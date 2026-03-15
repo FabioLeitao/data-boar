@@ -92,6 +92,35 @@ terms:
     label: sensitive
   - text: "nom complet"
     label: sensitive
+  # ID / document (EN + FR for Canadian data)
+  - text: "passport"
+    label: sensitive
+  - text: "passeport"
+    label: sensitive
+  - text: "id card"
+    label: sensitive
+  - text: "identity document"
+    label: sensitive
+  - text: "document d'identité"
+    label: sensitive
+  - text: "carte d'identité"
+    label: sensitive
+  - text: "national id"
+    label: sensitive
+  - text: "document number"
+    label: sensitive
+  - text: "social insurance number"
+    label: sensitive
+  - text: "numéro d'assurance sociale"
+    label: sensitive
+  - text: "driver license"
+    label: sensitive
+  - text: "permis de conduire"
+    label: sensitive
+  - text: "green card"
+    label: sensitive
+  - text: "professional registration"
+    label: sensitive
 
 recommendation_overrides:
   - norm_tag_pattern: "PIPEDA"
