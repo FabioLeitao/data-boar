@@ -6,7 +6,7 @@ This document is the **single source of truth** for the project's plan status an
 
 **Policy:** When implementing a plan step, **update documentation** (USAGE, TECH_GUIDE, SECURITY, or dedicated docs) and **add or run tests** as the feature is implemented. After completing or adding to-dos, **update this file and the plan file** so progress is tracked in one place. All steps are intended to be **non-destructive**, **non-regression**, and **tested** before marking done.
 
-**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ⬜ Not started · **Compressed files** ⬜ Not started · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ⬜ Not started · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started
+**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ⬜ Not started · **Compressed files** ⬜ Not started · **Content type & cloaking detection** ⬜ Not started · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ⬜ Not started · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started
 
 ---
 
@@ -19,6 +19,7 @@ This document is the **single source of truth** for the project's plan status an
 | Version check / self-upgrade             | —                               | None           | Backup excludes secrets (manifest); compatible with Secrets A.                                                                |
 | Additional compliance samples            | —                               | None           | Config-only; samples and docs additive.                                                                                       |
 | Compressed files                         | Config loader (new keys)        | None           | Additive feature; optional dependency py7zr.                                                                                  |
+| Content type & cloaking detection        | —                               | None           | Opt-in magic-byte/MIME detection for renamed/cloaked files; more I/O/CPU; steganography out of scope for v1.                   |
 | Dashboard i18n                           | Approach decided                | None           | No concrete to-dos until routing/translation approach chosen.                                                                 |
 | Data source versions & hardening         | —                               | None           | Additive: new table data_source_inventory, new report sheets; optional CVE lookup.                                            |
 | Strong crypto & controls validation      | —                               | None           | Optional flag (CLI + dashboard); new table or extend inventory; report sheet "Crypto & controls"; inference best-effort.      |
@@ -45,7 +46,7 @@ The recommended order below is chosen to:
 ## Tier summary (for planning):
 
 - **Tier 1 – Foundation:** 1 Security hardening, 2 Configurable timeouts, 3 Secrets Phase A.
-- **Tier 2 – Scan and report:** 4 Compliance samples, 5 Compressed files, 6 Data source versions & hardening, 7 Strong crypto & controls, 8 SAP connector.
+- **Tier 2 – Scan and report:** 4 Compliance samples, 5 Compressed files, 6 Content type & cloaking detection, 7 Data source versions & hardening, 8 Strong crypto & controls, 9 SAP connector.
 - **Tier 3 – Secrets and upgrade:** 9 Secrets Phase B, 10 Version check & self-upgrade.
 - **Tier 4 – Validation and ops:** 11 CNPJ alphanumeric, 12 Selenium QA, 13 Synthetic data & confidence, 14 Notifications, 15 Dashboard i18n.
 
@@ -59,7 +60,8 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 1. **Configurable timeouts** – global + per-target connect/read timeouts, sane defaults, connector wiring, recommendations.
 1. **Secrets vault – Phase A** (env expansion, redact GET /config, docs) – config safety before more config surface.
 1. **Additional compliance samples** – config-only; samples + docs + structure test.
-1. **Compressed files** – new config, CLI, connector logic, tests, docs.
+1. **Compressed files** – new config, CLI, connector logic, tests, docs; resource-exhaustion guards and user warning (see plan).
+1. **Content type & cloaking detection** – opt-in magic-byte/MIME detection for renamed/cloaked files; config, CLI, dashboard; tests; docs. Steganography out of scope for v1.
 1. **Data source versions & hardening** – inventory table, connector version/protocol collection, CVE/hardening rules, report sheets, next-steps guide.
 1. **Strong crypto & controls validation** – CLI/dashboard flag, strong-crypto validation per connection, anonymisation/controls inference, "Crypto & controls" report sheet.
 1. **Secrets vault – Phase B** (vault impl, re-import CLI/web) – after Phase A.
@@ -136,6 +138,20 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 | 5    | FilesystemConnector: scan inside archives; path like archive\            | inner     | ⬜ Pending |
 | 6    | Optional [compressed] extra; graceful skip if py7zr missing              | ⬜ Pending |           |
 | 7–11 | Engine/API/dashboard; share connectors; tests; docs (EN + pt-BR)         | ⬜ Pending |           |
+| 12   | Resource exhaustion: max_inner_size, temp caps; user warning when enabling (disk, I/O, run time) | ⬜ Pending |           |
+
+---
+
+### Content type & cloaking detection – [PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md](PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md)
+
+| #   | To-do                                                                                                                       | Status    |
+| --- | ---------------------------------------------------------------------------------------------------------------------------- | ------    |
+| 1   | Magic-byte table + read_magic / infer_content_type for supported formats                                                     | ⬜ Pending |
+| 2   | Config file_scan.use_content_type (default false); engine/connectors                                                        | ⬜ Pending |
+| 3   | FilesystemConnector (and shares): use inferred type when option on; fallback to extension                                   | ⬜ Pending |
+| 4   | CLI --content-type-check; API/dashboard checkbox + user warning (may increase I/O and run time)                             | ⬜ Pending |
+| 5   | Tests: default unchanged; with option on, renamed PDF scanned by content; no regressions                                     | ⬜ Pending |
+| 6   | Docs: option, benefit (renamed/cloaking), resource impact; steganography out of scope for v1                                 | ⬜ Pending |
 
 ---
 
