@@ -1,0 +1,83 @@
+# LGPD – sample compliance profile (Brazil; Lei Geral de Proteção de Dados)
+#
+# Target audience: Brazilian deployments and LGPD compliance. This sample adds
+# bilingual (Portuguese BR + English) ML terms so column names in either language
+# are detected (e.g. "documento oficial" / "official document", "RG" / "ID",
+# "CNH" / "Driver License"). Use when scanning data that may have PT-BR or EN labels.
+#
+# How to use:
+#   1. Set in your main config:
+#        regex_overrides_file: path/to/compliance-sample-lgpd.yaml
+#        ml_patterns_file: path/to/compliance-sample-lgpd.yaml
+#   2. Merge the recommendation_overrides list below into your config under report.recommendation_overrides.
+#
+# Built-in detector already includes CPF, CNPJ, PHONE_BR; this sample adds RG, CEP and
+# bilingual terms for document/identifier vocabulary. Use double-quoted YAML with
+# escaped backslashes for regex (see .cursor/rules/yaml-regex-patterns.mdc).
+
+regex:
+  - name: "RG_BR"
+    pattern: "\\b\\d{1,2}\\.?\\d{3}\\.?\\d{3}-?[0-9Xx]\\b"
+    norm_tag: "LGPD Art. 5"
+  - name: "CEP_BR"
+    pattern: "\\b\\d{5}-?\\d{3}\\b"
+    norm_tag: "LGPD Art. 5"
+
+# ML/DL terms: Portuguese (BR) and English for LGPD-relevant document and identifier names.
+terms:
+  - text: "documento oficial"
+    label: sensitive
+  - text: "official document"
+    label: sensitive
+  - text: "rg"
+    label: sensitive
+  - text: "id"
+    label: sensitive
+  - text: "cpf"
+    label: sensitive
+  - text: "cnpj"
+    label: sensitive
+  - text: "cnh"
+    label: sensitive
+  - text: "carteira de motorista"
+    label: sensitive
+  - text: "driver license"
+    label: sensitive
+  - text: "carteira nacional de habilitação"
+    label: sensitive
+  - text: "data de nascimento"
+    label: sensitive
+  - text: "date of birth"
+    label: sensitive
+  - text: "nome completo"
+    label: sensitive
+  - text: "full name"
+    label: sensitive
+  - text: "endereço"
+    label: sensitive
+  - text: "address"
+    label: sensitive
+  - text: "telefone"
+    label: sensitive
+  - text: "phone"
+    label: sensitive
+  - text: "identidade"
+    label: sensitive
+  - text: "identity"
+    label: sensitive
+  - text: "número do documento"
+    label: sensitive
+  - text: "document number"
+    label: sensitive
+  - text: "número de identificação"
+    label: sensitive
+  - text: "identification number"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "LGPD Art. 5"
+    base_legal: "LGPD Art. 5 (dados pessoais); Lei 13.709/2018"
+    risk: "Identificação de pessoa natural."
+    recommendation: "Aplicar bases legais e medidas de segurança da LGPD; tratar conforme finalidade e necessidade."
+    priority: "ALTA"
+    relevant_for: "DPO, Encarregado LGPD"
