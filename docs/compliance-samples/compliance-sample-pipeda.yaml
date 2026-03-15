@@ -1,0 +1,60 @@
+# PIPEDA – sample compliance profile (Canada; federal private sector)
+#
+# Target audience: Canadian deployments and PIPEDA compliance. Bilingual (English + French)
+# ML terms per compliance-samples language rule: "personal information" / "renseignements personnels",
+# "consent" / "consentement", etc.
+#
+# How to use:
+#   1. Set in your main config:
+#        regex_overrides_file: path/to/compliance-sample-pipeda.yaml
+#        ml_patterns_file: path/to/compliance-sample-pipeda.yaml
+#   2. Merge the recommendation_overrides list below into your config under report.recommendation_overrides.
+#
+# PIPEDA: Personal Information Protection and Electronic Documents Act; Office of the Privacy Commissioner.
+
+regex:
+  - name: "SIN_CA"
+    pattern: "\\b\\d{3}[-\\s]?\\d{3}[-\\s]?\\d{3}\\b"
+    norm_tag: "PIPEDA"
+  - name: "SIN_CA_ALT"
+    pattern: "\\b\\d{9}\\b"
+    norm_tag: "PIPEDA"
+
+# ML terms: English and French (PIPEDA s. 2 "personal information"; consent, limitation).
+terms:
+  - text: "personal information"
+    label: sensitive
+  - text: "renseignements personnels"
+    label: sensitive
+  - text: "consent"
+    label: sensitive
+  - text: "consentement"
+    label: sensitive
+  - text: "data subject"
+    label: sensitive
+  - text: "sujet des données"
+    label: sensitive
+  - text: "privacy commissioner"
+    label: sensitive
+  - text: "commissaire à la vie privée"
+    label: sensitive
+  - text: "pipeda"
+    label: sensitive
+  - text: "limitation of purposes"
+    label: sensitive
+  - text: "limitation des finalités"
+    label: sensitive
+  - text: "social insurance number"
+    label: sensitive
+  - text: "numéro d'assurance sociale"
+    label: sensitive
+  - text: "nas"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "PIPEDA"
+    base_legal: "PIPEDA s. 2 (personal information); Privacy Commissioner"
+    risk: "Personal information as defined under Canadian federal law."
+    recommendation: "Review PIPEDA consent and limitation purposes; comply with Office of the Privacy Commissioner guidance."
+    priority: "ALTA"
+    relevant_for: "DPO, Privacy Officer, Privacy Commissioner"
