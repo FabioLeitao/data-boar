@@ -238,7 +238,23 @@ Esse endpoint procura, entre os arquivos `audit_YYYYMMDD.log` disponíveis (do m
 - `scan` – `max_workers` para paralelismo.
 - `timeouts` – timeouts globais para conexões (ex.: `connect_seconds`, `read_seconds`); cada alvo pode sobrescrever com `connect_timeout`, `read_timeout` ou `timeout`. Ver abaixo.
 - `api.workers` – número de workers uvicorn (padrão 1; 2+ para mais requisições concorrentes).
-- Opcionais: `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection` (termos ML/DL inline), `learned_patterns` (export de termos classificados).
+- Opcionais: `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection` (termos ML/DL inline), `learned_patterns` (export de termos classificados), **`pattern_files_encoding`** (encoding dos arquivos de padrões; ver abaixo).
+
+### Encoding de arquivos (config e arquivos de padrões) {#file-encoding-config-and-pattern-files}
+
+Config e amostras de conformidade podem usar diferentes conjuntos de caracteres. A aplicação suporta isso para que termos multilíngues (ex.: japonês, árabe, francês) e ambientes legados não quebrem em produção.
+
+- **Arquivo de config:** Lido com **auto-detecção**: UTF-8, UTF-8 com BOM, ANSI Windows (cp1252) e Latin-1 são tentados em ordem. Não é necessário definir encoding para o config principal.
+- **Arquivos de padrões** (`regex_overrides_file`, `ml_patterns_file`, `dl_patterns_file`): Lidos com o encoding definido por **`pattern_files_encoding`** (padrão **`utf-8`**). Use quando seus YAML/JSON estiverem em outro encoding (ex.: `cp1252`, `latin_1`, `utf-8-sig`). Bytes inválidos são substituídos para que um caractere problemático não derrube a varredura.
+- **Recomendação:** Salve todos os configs e amostras em **UTF-8** para melhor compatibilidade com conteúdo multilíngue (amostras para APAC, EMEA etc.). O relatório Excel e o heatmap suportam Unicode.
+
+Exemplo no config:
+
+```yaml
+pattern_files_encoding: utf-8   # padrão; ou cp1252, latin_1, utf-8-sig para legado
+regex_overrides_file: docs/compliance-samples/compliance-sample-uk_gdpr.yaml
+ml_patterns_file: docs/compliance-samples/compliance-sample-pipeda.yaml
+```
 
 **Padrões regex customizados:** Para a aplicação se atentar a **novos valores possivelmente pessoais ou sensíveis** (ex.: RG, placa, número de plano de saúde), defina **`regex_overrides_file`** no config com o caminho de um arquivo YAML/JSON contendo uma lista de `{ name, pattern, norm_tag }`. O detector aplica cada padrão ao nome da coluna e ao texto amostrado; qualquer match é reportado com sensibilidade HIGH (ou MEDIUM em contexto de letras/cifras). Formato e exemplos (RG, placa, CEP, telefone EUA, etc.): [SENSITIVITY_DETECTION.pt_BR.md#padrões-regex-customizados-detectar-novos-dados-pessoaissensíveis](SENSITIVITY_DETECTION.pt_BR.md#padrões-regex-customizados-detectar-novos-dados-pessoaissensíveis) (pt-BR) · [SENSITIVITY_DETECTION.md#custom-regex-patterns-detecting-new-personalsensitive-values](SENSITIVITY_DETECTION.md#custom-regex-patterns-detecting-new-personalsensitive-values) (EN). Para **múltiplas regulamentações e exemplos de configuração** (embutidas: LGPD, GDPR, CCPA, HIPAA, GLBA; extensibilidade para UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS ou custom) e ajuda com ajuste fino, veja [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) ([EN](COMPLIANCE_FRAMEWORKS.md)).
 
@@ -294,14 +310,19 @@ timeouts:
   read_seconds: 90
 
 targets:
-  - name: fast-db
+
+- name: fast-db
+
     type: database
     # usa 25 / 90
-  - name: slow-api
+- name: slow-api
+
     type: api
     connect_timeout: 60
     read_timeout: 120
-  - name: legacy
+
+- name: legacy
+
     type: database
     timeout: 45   # 45 para connect e read
 ```
@@ -313,10 +334,10 @@ Os conectores usam os valores mesclados (global ou por alvo) ao abrir conexões 
 Recomendações para que as varreduras permaneçam estáveis sem sobrecarregar os alvos nem esperar indefinidamente:
 
 1. **Não espere para sempre:** Defina timeouts de conexão e de leitura para que um alvo travado não bloqueie toda a varredura. Use as dicas de falha no relatório para identificar falhas por timeout e qual alvo falhou.
-2. **Não seja agressivo demais:** Timeouts muito baixos geram falsos timeouts em redes ocupadas ou lentas (ex.: durante backup). Se aparecerem muitos timeouts, **aumente** `connect_seconds` e `read_seconds` (ou por alvo `connect_timeout` / `read_timeout`) e considere reexecutar em horário de menor uso.
-3. **Evite DoS e “muito rápido demais”:** Use **rate_limit** (ex.: `max_concurrent_scans: 1`, `min_interval_seconds: 5`) e **scan.max_workers: 1** (ou 2) para que o scanner não abra muitas conexões ao mesmo tempo. Isso reduz carga nos alvos e evita amplificar lentidão ou causar DoS.
-4. **Janelas de backup ou manutenção:** Se as varreduras rodarem durante backup ou manutenção, aumente os timeouts e mantenha o paralelismo baixo; ou agende varreduras fora dessas janelas.
-5. **Sobrescrita por alvo:** Para um banco ou API lento, defina `connect_timeout` / `read_timeout` (ou `timeout`) nesse alvo em vez de aumentar os padrões globais para todos.
+1. **Não seja agressivo demais:** Timeouts muito baixos geram falsos timeouts em redes ocupadas ou lentas (ex.: durante backup). Se aparecerem muitos timeouts, **aumente** `connect_seconds` e `read_seconds` (ou por alvo `connect_timeout` / `read_timeout`) e considere reexecutar em horário de menor uso.
+1. **Evite DoS e “muito rápido demais”:** Use **rate_limit** (ex.: `max_concurrent_scans: 1`, `min_interval_seconds: 5`) e **scan.max_workers: 1** (ou 2) para que o scanner não abra muitas conexões ao mesmo tempo. Isso reduz carga nos alvos e evita amplificar lentidão ou causar DoS.
+1. **Janelas de backup ou manutenção:** Se as varreduras rodarem durante backup ou manutenção, aumente os timeouts e mantenha o paralelismo baixo; ou agende varreduras fora dessas janelas.
+1. **Sobrescrita por alvo:** Para um banco ou API lento, defina `connect_timeout` / `read_timeout` (ou `timeout`) nesse alvo em vez de aumentar os padrões globais para todos.
 
 ### API e segurança (CSP, cabeçalhos)
 

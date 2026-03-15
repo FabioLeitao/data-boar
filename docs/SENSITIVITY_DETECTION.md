@@ -309,7 +309,7 @@ The file must contain a **list of objects**, each with:
 | `pattern`  | Yes      | Regular expression (Python `re` syntax). Matched against column name + sample text. Use raw strings; prefer `\b` for word boundaries to avoid partial matches.                                                                                                                                                                   |
 | `norm_tag` | No       | Label for compliance/reporting (e.g. `LGPD Art. 5`, `Custom`). Default: `"Custom"`. You can set this to any framework label (e.g. `"UK GDPR"`, `"PIPEDA s. 2"`, `"APPI"`, `"POPIA"`) so findings appear under that norm in reports and recommendations; see [Compliance frameworks and extensibility](COMPLIANCE_FRAMEWORKS.md). |
 
-You can use a root-level list or a key `patterns` or `regex` containing the list. You can copy from [regex_overrides.example.yaml](regex_overrides.example.yaml) and edit. Use **double-quoted** YAML for `pattern` values with **escaped backslashes** (e.g. `"\\b\\d{5}"`) so linters and loaders do not report invalid escape sequences; see `.cursor/rules/yaml-regex-patterns.mdc`.
+You can use a root-level list or a key `patterns` or `regex` containing the list. You can copy from [regex_overrides.example.yaml](regex_overrides.example.yaml) and edit. Use **double-quoted** YAML for `pattern` values with **escaped backslashes** (e.g. `"\\b\\d{5}"`) so linters and loaders do not report invalid escape sequences; see `.cursor/rules/yaml-regex-patterns.mdc`. For **file encoding** (UTF-8, cp1252, etc.), see [USAGE.md](USAGE.md#file-encoding-config-and-pattern-files).
 
 ## YAML example (regex overrides)
 

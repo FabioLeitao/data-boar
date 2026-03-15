@@ -1,5 +1,11 @@
-"""Tests for report Recommendations sheet, recommendation_overrides, and Executive summary."""
+"""Tests for report Recommendations sheet, recommendation_overrides, and Executive summary.
+
+Includes encoding: Excel report must correctly contain Unicode in recommendation text
+(multilingual compliance samples, base_legal, etc.) so we do not regress in production.
+"""
 from pathlib import Path
+
+import pandas as pd
 
 from core.database import LocalDBManager
 from report.generator import generate_report
@@ -258,5 +264,52 @@ def test_config_scope_hash_stored_and_in_report_info(tmp_path):
         scope_row = df[df["Field"] == "Config scope hash"]
         assert len(scope_row) == 1
         assert scope_row.iloc[0]["Value"] == "a1b2c3d4e5f6"
+    finally:
+        mgr.dispose()
+
+
+def test_report_recommendations_unicode_in_override(tmp_path):
+    """Excel Recommendations sheet contains Unicode from recommendation_overrides (multilingual support)."""
+    db_path = str(tmp_path / "audit_unicode.db")
+    out_dir = str(tmp_path / "out_unicode")
+    Path(out_dir).mkdir(parents=True, exist_ok=True)
+    mgr = LocalDBManager(db_path)
+    try:
+        mgr.set_current_session_id("s-unicode")
+        mgr.create_session_record("s-unicode")
+        mgr.save_finding(
+            "database",
+            target_name="T1",
+            column_name="personal_data",
+            sensitivity_level="HIGH",
+            pattern_detected="APPI",
+            norm_tag="APPI",
+            ml_confidence=88,
+        )
+        mgr.finish_session("s-unicode")
+        # Unicode in base_legal and recommendation (e.g. Japanese, Arabic, or accented)
+        config = {
+            "report": {
+                "output_dir": out_dir,
+                "recommendation_overrides": [
+                    {
+                        "norm_tag_pattern": "APPI",
+                        "base_legal": "APPI 個人情報の保護 (Japan)",
+                        "risk": "Identification of data subject.",
+                        "recommendation": "Apply safeguards. Dados pessoais / données personnelles.",
+                        "priority": "ALTA",
+                        "relevant_for": "DPO",
+                    },
+                ],
+            },
+        }
+        path = generate_report(mgr, "s-unicode", output_dir=out_dir, config=config)
+        assert path is not None
+        with pd.ExcelFile(path) as xl:
+            df = pd.read_excel(xl, sheet_name="Recommendations")
+        appi_row = df[df["Data / Pattern"] == "APPI"].iloc[0]
+        assert "APPI" in str(appi_row["Base legal"])
+        assert "個人" in str(appi_row["Base legal"]) or "Japan" in str(appi_row["Base legal"])
+        assert "safeguards" in str(appi_row["Recomendação"]) or "données" in str(appi_row["Recomendação"])
     finally:
         mgr.dispose()

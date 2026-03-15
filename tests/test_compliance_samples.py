@@ -4,7 +4,11 @@ Tests for docs/compliance-samples/compliance-sample-*.yaml files.
 Validates that each compliance sample YAML has the structure expected by the
 detector (regex, terms) and report generator (recommendation_overrides), and
 that the detector can load each sample without error.
+
+Encoding: detector must load samples with UTF-8 Unicode content (multilingual terms)
+without regression; see test_compliance_sample_unicode_terms_loadable.
 """
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -110,3 +114,43 @@ def test_compliance_sample_loadable_by_detector(sample_path):
     result = scanner.scan_column("test_column", "some sample text")
     assert "sensitivity_level" in result
     assert "norm_tag" in result
+
+
+def test_compliance_sample_unicode_terms_loadable():
+    """Detector loads a compliance-style YAML with UTF-8 Unicode terms (multilingual support)."""
+    from core.scanner import DataScanner
+
+    sample = {
+        "terms": [
+            {"text": "personal information", "label": "sensitive"},
+            {"text": "renseignements personnels", "label": "sensitive"},
+            {"text": "個人情報", "label": "sensitive"},
+        ],
+        "recommendation_overrides": [
+            {
+                "norm_tag_pattern": "PIPEDA",
+                "base_legal": "PIPEDA s. 2",
+                "risk": "Risque",
+                "recommendation": "Recomendação",
+                "priority": "ALTA",
+                "relevant_for": "DPO",
+            },
+        ],
+    }
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".yaml", encoding="utf-8", delete=False
+    ) as f:
+        path = Path(f.name)
+    try:
+        path.write_text(
+            yaml.dump(sample, default_flow_style=False, allow_unicode=True, sort_keys=False),
+            encoding="utf-8",
+        )
+        scanner = DataScanner(
+            ml_patterns_path=str(path),
+            file_encoding="utf-8",
+        )
+        result = scanner.scan_column("個人情報", "sample")
+        assert "sensitivity_level" in result
+    finally:
+        path.unlink(missing_ok=True)
