@@ -97,6 +97,9 @@ class DataverseConnector:
         if not self._token:
             raise ValueError("Dataverse auth failed: provide tenant_id, client_id, client_secret (or auth block)")
         base = _api_base(org_url)
+        connect_s = float(self.config.get("connect_timeout_seconds", 25))
+        read_s = float(self.config.get("read_timeout_seconds", 90))
+        timeout = httpx.Timeout(read_s, connect=connect_s, read=read_s)
         self._client = httpx.Client(
             base_url=base,
             headers={
@@ -105,7 +108,7 @@ class DataverseConnector:
                 "OData-MaxVersion": "4.0",
                 "OData-Version": "4.0",
             },
-            timeout=60.0,
+            timeout=timeout,
         )
 
     def close(self) -> None:

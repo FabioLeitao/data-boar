@@ -8,6 +8,7 @@ from unittest.mock import MagicMock
 
 from connectors.sql_connector import (
     SQLConnector,
+    _connect_args_from_target,
     _discover_fallback_no_schemas,
     _get_skip_schemas,
     _should_skip_schema,
@@ -84,3 +85,42 @@ def test_discover_fallback_no_schemas_returns_list():
     out = _discover_fallback_no_schemas(inspector)
     assert isinstance(out, list)
     engine.dispose()
+
+
+def test_connect_args_from_target_postgresql():
+    """_connect_args_from_target returns connect_timeout and statement_timeout for PostgreSQL."""
+    target = {"driver": "postgresql", "connect_timeout_seconds": 15, "read_timeout_seconds": 120}
+    args = _connect_args_from_target(target)
+    assert args["connect_timeout"] == 15
+    assert "options" in args
+    assert "statement_timeout=120000" in args["options"]
+
+
+def test_connect_args_from_target_mysql():
+    """_connect_args_from_target returns connect_timeout for MySQL."""
+    target = {"driver": "mysql", "connect_timeout_seconds": 10, "read_timeout_seconds": 60}
+    args = _connect_args_from_target(target)
+    assert args["connect_timeout"] == 10
+    assert "options" not in args
+
+
+def test_connect_args_from_target_sqlite():
+    """_connect_args_from_target returns timeout (lock wait) for SQLite."""
+    target = {"driver": "sqlite", "read_timeout_seconds": 30}
+    args = _connect_args_from_target(target)
+    assert args["timeout"] == 30
+
+
+def test_connect_args_from_target_defaults():
+    """_connect_args_from_target uses defaults 25/90 when keys missing."""
+    target = {"driver": "postgresql"}
+    args = _connect_args_from_target(target)
+    assert args["connect_timeout"] == 25
+    assert "statement_timeout=90000" in args["options"]
+
+
+def test_connect_args_from_target_clamped():
+    """_connect_args_from_target clamps timeouts to at least 1."""
+    target = {"driver": "mysql", "connect_timeout_seconds": 0, "read_timeout_seconds": -1}
+    args = _connect_args_from_target(target)
+    assert args["connect_timeout"] >= 1

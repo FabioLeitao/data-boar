@@ -75,13 +75,16 @@ class PowerBIConnector:
         self._token = _get_access_token(self.config)
         if not self._token:
             raise ValueError("Power BI auth failed: provide tenant_id, client_id, client_secret (or auth block)")
+        connect_s = float(self.config.get("connect_timeout_seconds", 25))
+        read_s = float(self.config.get("read_timeout_seconds", 90))
+        timeout = httpx.Timeout(read_s, connect=connect_s, read=read_s)
         self._client = httpx.Client(
             base_url=_PBI_BASE,
             headers={
                 "Authorization": f"Bearer {self._token}",
                 "Content-Type": "application/json",
             },
-            timeout=60.0,
+            timeout=timeout,
         )
 
     def close(self) -> None:
