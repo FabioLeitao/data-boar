@@ -25,6 +25,9 @@ Todos esses testes estão em **`tests/test_security.py`**. Executar `pytest test
 
 ## Recomendações para técnicos
 
+- **Validação de tenant e técnico:** Os valores de tenant e técnico (corpo de início de varredura, PATCH de sessão, varredura via config) são validados quanto ao tamanho máximo e caracteres permitidos (imprimíveis, sem caracteres de controle), depois trim e sanitizados antes do armazenamento; entrada inválida ou excessiva é rejeitada ou truncada para que relatórios e o dashboard nunca exibam valores não sanitizados.
+- **Limite de tamanho do corpo da requisição:** A API rejeita requisições cujo corpo exceda **1 MB** (ex.: POST `/config`, POST `/scan`, POST `/scan_database`) com **HTTP 413 Payload Too Large** para reduzir DoS por payloads grandes.
+- **Política de logging:** Chaves de API, senhas e strings de conexão nunca são gravadas em log; detalhes de falha e mensagens de exceção são redigidos (ex.: URLs de conexão e valores no estilo `password=` / `api_key=` mascarados) antes de serem registrados.
 - **Senhas com caracteres especiais:** Você pode usar com segurança senhas de banco ou MongoDB que contenham `@`, `:`, `/` ou `#`. A aplicação as codifica ao montar as URLs de conexão. Nenhuma configuração extra é necessária.
 - **Proteger o config na interface:** A página **Configuração** (GET `/config`) exibe e permite editar o arquivo de config principal, que pode conter credenciais. Se a API estiver exposta a usuários ou redes não confiáveis, defina **`api.require_api_key: true`** e forneça uma chave de API forte (ou `api.api_key_from_env`). Assim, apenas requisições que enviarem **X-API-Key** ou **Authorization: Bearer** válidos poderão acessar `/config`.
 - **Onde o config fica armazenado:** O caminho do arquivo de config é definido na inicialização (padrão `config.yaml` ou `CONFIG_PATH`). Garanta que as permissões do arquivo e do diretório restrinjam leitura/escrita apenas a usuários confiáveis.

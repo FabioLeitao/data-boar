@@ -25,6 +25,9 @@ All of the above tests live in **`tests/test_security.py`**. Running `pytest tes
 
 ## Recommendations for technicians
 
+- **Tenant and technician validation:** Values for tenant and technician (scan start body, session PATCH, config-driven scan) are validated for maximum length and allowed characters (printable, no control characters), then trimmed and sanitized before storage; invalid or oversized input is rejected or truncated so reports and the dashboard never display unsanitized values.
+- **Request body size limit:** The API rejects requests whose body exceeds **1 MB** (e.g. POST `/config`, POST `/scan`, POST `/scan_database`) with **HTTP 413 Payload Too Large** to reduce DoS via huge payloads.
+- **Logging policy:** API keys, passwords, and connection strings are never written to logs; failure details and exception messages are redacted (e.g. connection URLs and `password=` / `api_key=`-style values masked) before being logged.
 - **Passwords with special characters:** You can safely use database or MongoDB passwords that contain `@`, `:`, `/`, or `#`. The application encodes them when building connection URLs. No extra configuration is required.
 - **Protecting the config in the UI:** The **Configuration** page (GET `/config`) shows and allows editing the main config file, which may contain credentials. If the API is exposed to untrusted users or networks, set **`api.require_api_key: true`** and provide a strong API key (or `api.api_key_from_env`). Then only requests that send a valid **X-API-Key** or **Authorization: Bearer** can access `/config`.
 - **Where config is stored:** The config file path is set at startup (default `config.yaml` or `CONFIG_PATH`). Ensure the file and directory permissions restrict read/write to trusted users only.
