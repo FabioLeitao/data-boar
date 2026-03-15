@@ -93,6 +93,28 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         e if e.startswith(".") else f".{e.lstrip('*')}" for e in exts
     ]
 
+    # Resolve credential-from-env for targets (Phase A: secrets in env, not in config)
+    for t in out.get("targets") or []:
+        if not isinstance(t, dict):
+            continue
+        env_pass_key = (t.get("pass_from_env") or t.get("password_from_env") or "").strip()
+        if env_pass_key:
+            t["pass"] = (os.environ.get(env_pass_key) or "").strip() or t.get("pass") or t.get("password") or ""
+        env_user_key = (t.get("user_from_env") or "").strip()
+        if env_user_key:
+            t["user"] = (os.environ.get(env_user_key) or "").strip() or t.get("user") or t.get("username") or ""
+        auth = t.get("auth")
+        if isinstance(auth, dict):
+            token_env = (auth.get("token_from_env") or "").strip()
+            if token_env:
+                auth["token"] = (os.environ.get(token_env) or "").strip() or auth.get("token") or ""
+            cs_env = (auth.get("client_secret_from_env") or "").strip()
+            if cs_env:
+                auth["client_secret"] = (os.environ.get(cs_env) or "").strip() or auth.get("client_secret") or ""
+        env_cs_key = (t.get("client_secret_from_env") or "").strip()
+        if env_cs_key:
+            t["client_secret"] = (os.environ.get(env_cs_key) or "").strip() or t.get("client_secret") or ""
+
     # Report
     out["report"] = data.get("report", {})
     if "output_dir" not in out["report"]:
