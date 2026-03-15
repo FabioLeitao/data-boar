@@ -1,7 +1,7 @@
 # Example custom regex patterns for sensitivity detection.
 # Copy to e.g. config/regex_overrides.yaml and set in config:
 #   regex_overrides_file: config/regex_overrides.yaml
-# See sensitivity-detection.md (EN) / sensitivity-detection.pt_BR.md (pt-BR) for format and more examples.
+# See SENSITIVITY_DETECTION.md (EN) / SENSITIVITY_DETECTION.pt_BR.md (pt-BR) for format and more examples.
 # Each pattern is matched against (column name + sample text). Match → finding reported with HIGH sensitivity.
 
 - name: "RG_BR"

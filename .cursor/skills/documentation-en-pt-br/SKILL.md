@@ -10,8 +10,8 @@ Use this skill when **creating or editing** user-facing documentation (docs/, RE
 ## Source of truth (order)
 
 1. **Code and application behaviour** – Config, API, CLI, and capabilities are the deepest source of truth. Docs must describe what the app actually does.
-2. **English (EN)** – The canonical written source. Update EN first when behaviour or options change; EN must accurately reflect the code.
-3. **Brazilian Portuguese (pt-BR)** – Translation of the EN doc; same structure and coverage. Sync pt-BR after updating EN.
+1. **English (EN)** – The canonical written source. Update EN first when behaviour or options change; EN must accurately reflect the code.
+1. **Brazilian Portuguese (pt-BR)** – Translation of the EN doc; same structure and coverage. Sync pt-BR after updating EN.
 
 ## Navigability (no dead ends)
 
@@ -31,21 +31,42 @@ When you cross-link to **another** doc that has both languages, provide both lin
 
 ## When adding a new documentation file
 
-**Exception:** Plan files (`docs/PLAN_*.md`, `docs/PLANS_TODO.md`, `docs/completed/`, `.cursor/plans/`) may be English-only.
+**Exception:** Plan files (`docs/plans/PLAN_*.md`, `docs/plans/PLANS_TODO.md`, `docs/plans/completed/`, `.cursor/plans/`) may be English-only.
 
 For all other new docs (guides, reference, deploy, testing, observability, etc.):
 
 1. **Create the English file first** under `docs/` (or root if it is README, SECURITY, etc.). Start with `# Title` (MD041); add language switcher at top: `**Português (Brasil):** [Filename.pt_BR.md](Filename.pt_BR.md)`.
-2. **Add the doc to docs/README.md** in the appropriate table (Usage, Deploy, Internal, etc.). Include both EN and pt-BR links in the row once pt-BR exists.
-3. **Create the pt-BR file** with the same structure and sections. Top line: `**English:** [Filename.md](Filename.md)`. Keep coverage and structure aligned with EN.
-4. **Run markdown fix and lint:** `uv run python scripts/fix_markdown_sonar.py` then `uv run pytest tests/test_markdown_lint.py -v -W error`. Restore semantic list numbering (1. 2. 3.) by hand if the fix script changed step lists. Fix MD024 (unique headings), MD022/MD032/MD041/MD026 as needed (see markdown-lint rule and quality skill).
+1. **Add the doc to docs/README.md** in the appropriate table (Usage, Deploy, Internal, etc.). Include both EN and pt-BR links in the row once pt-BR exists.
+1. **Create the pt-BR file** with the same structure and sections. Top line: `**English:** [Filename.md](Filename.md)`. Keep coverage and structure aligned with EN.
+1. **Run markdown fix and lint:** `uv run python scripts/fix_markdown_sonar.py` then `uv run pytest tests/test_markdown_lint.py -v -W error`. Restore semantic list numbering (1. 2. 3.) by hand if the fix script changed step lists. Fix MD024 (unique headings), MD022/MD032/MD041/MD026 as needed (see markdown-lint rule and quality skill).
 
 ## When updating existing documentation
 
 1. Change **code or behaviour** first if the doc is reflecting a feature change.
-2. Update the **English** doc so it matches the application.
-3. **Sync the pt-BR** file: same sections, same meaning; update links and examples as needed.
-4. Run the markdown fix script and lint test; fix any new violations.
+1. Update the **English** doc so it matches the application.
+1. **Sync the pt-BR** file: same sections, same meaning; update links and examples as needed.
+1. Run the markdown fix script and lint test; fix any new violations.
+
+## Plan files (location and completion)
+
+- **Open plans** live in `docs/plans/` (`PLANS_TODO.md` and `PLAN_*.md`). **Completed plans** live in `docs/plans/completed/`.
+- When you **complete** a plan: mark to-dos done in the plan and in `PLANS_TODO.md`, then **move** the plan file to `docs/plans/completed/`, update `PLANS_TODO.md` and any cross-references (USAGE, SENSITIVITY_DETECTION, etc.) to the new path. **Update the pitch** (README and README.pt_BR): remove the item from the Roadmap sentence and reflect the new capability so the pitch stays in sync (see pitch–roadmap rule below).
+- **Rule:** `.cursor/rules/docs-plans.mdc` – full workflow for plan location and completion.
+
+## Pitch and roadmap (keep in sync with plans)
+
+The README "For decision-makers" section (the **pitch**) must stay in sync with what we have accomplished and what we are working on:
+
+- **When you create a new plan:** Add the new roadmap goal to the **Roadmap** sentence in README and README.pt_BR (e.g. in "Why it holds up") so the pitch mentions what we are working toward.
+- **When you complete a plan:** Remove that item from the Roadmap sentence and, if useful, add or strengthen wording in "What we surface" or "Why it holds up" to describe the **new capability** and why prospects should consider the product. Update both EN and pt-BR.
+- **When you remove, cancel, or substitute a plan:** Update the pitch so the Roadmap no longer mentions the dropped goal (or replace with the substitute). Reduce "future development" wording so the pitch does not promise work that is no longer planned. Sync README.pt_BR.
+- **Rule:** `.cursor/rules/pitch-roadmap-sync.mdc` – full guidance for pitch and roadmap sync.
+
+## Documentation and code naming
+
+- **Documentation .md** (docs/, root): Use **UPPERCASE subject** names (e.g. `SENSITIVITY_DETECTION.md`, `SENSITIVITY_DETECTION.pt_BR.md`). Do not capitalize the `.md` extension or the language hint (e.g. `.pt_BR.md`).
+- **Code, config, rules, skills:** Keep **lowercase** (e.g. `config.yaml`, `regex_overrides.example.yaml`, `markdown-lint.mdc`).
+- **Rule:** `.cursor/rules/doc-and-code-naming.mdc` – full convention for doc vs code/config naming.
 
 ## Alignment with project
 

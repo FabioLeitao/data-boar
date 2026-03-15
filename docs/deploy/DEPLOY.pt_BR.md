@@ -83,7 +83,7 @@ Opcional: publicar a mesma imagem com o nome legado: `docker tag fabioleitao/dat
 
 A aplicação espera **config em `/data/config.yaml`** dentro do container. Use o mesmo esquema do repositório (veja [USAGE.md](../USAGE.md) e [USAGE.pt_BR.md](../USAGE.pt_BR.md)). Mínimo para apenas API: `targets: []`, `report.output_dir: /data`, `sqlite_path: /data/audit_results.db`, `api.port: 8088`.
 
-**Detecção de sensibilidade (ML/DL):** Configure termos de treino via `ml_patterns_file`, `dl_patterns_file` ou `sensitivity_detection.ml_terms` / `dl_terms` no config. Monte seus arquivos de termos em `/data`. Veja [sensitivity-detection.md](../sensitivity-detection.md) e [sensitivity-detection.pt_BR.md](../sensitivity-detection.pt_BR.md).
+**Detecção de sensibilidade (ML/DL):** Configure termos de treino via `ml_patterns_file`, `dl_patterns_file` ou `sensitivity_detection.ml_terms` / `dl_terms` no config. Monte seus arquivos de termos em `/data`. Veja [SENSITIVITY_DETECTION.md](../SENSITIVITY_DETECTION.md) e [SENSITIVITY_DETECTION.pt_BR.md](../SENSITIVITY_DETECTION.pt_BR.md).
 
 Copie `deploy/config.example.yaml`, edite e use volume ou bind mount para `/data`.
 

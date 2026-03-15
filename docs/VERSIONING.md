@@ -53,14 +53,14 @@ When you bump the version, update **all** of the following so the number is cons
 
 ### 5. Documentation (EN and PT-BR)
 
-| Location                  | What to change                                                                                                                                   |
-| ---                       | ---                                                                                                                                              |
-| **`README.md`**           | If the text mentions the current version number (e.g. in a release or image tag example), update it.                                             |
-| **`README.pt_BR.md`**     | Same as README.md for any explicit version mention.                                                                                              |
-| **`docs/USAGE.md`**       | Update any explicit version reference if present.                                                                                                |
-| **`docs/USAGE.pt_BR.md`** | Same as USAGE.md.                                                                                                                                |
-| **`docs/PLANS_TODO.md`**  | If there is a “current version” or “app version” note in a plan’s “Current state” or publish step, update it when you release.                   |
-| **Other docs**            | Search the repo for the old version string (e.g. `1.3.0`) and update any remaining references in SECURITY.md, CONTRIBUTING.md, or release notes. |
+| Location                       | What to change                                                                                                                                   |
+| ---                            | ---                                                                                                                                              |
+| **`README.md`**                | If the text mentions the current version number (e.g. in a release or image tag example), update it.                                             |
+| **`README.pt_BR.md`**          | Same as README.md for any explicit version mention.                                                                                              |
+| **`docs/USAGE.md`**            | Update any explicit version reference if present.                                                                                                |
+| **`docs/USAGE.pt_BR.md`**      | Same as USAGE.md.                                                                                                                                |
+| **`docs/plans/PLANS_TODO.md`** | If there is a “current version” or “app version” note in a plan’s “Current state” or publish step, update it when you release.                   |
+| **Other docs**                 | Search the repo for the old version string (e.g. `1.3.0`) and update any remaining references in SECURITY.md, CONTRIBUTING.md, or release notes. |
 
 ### 6. UI and reports (no edit needed if 1–2 are done)
 

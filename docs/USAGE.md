@@ -308,11 +308,11 @@ You can set the **training words for ML and DL** in the main config (inline) or 
 - **Inline:** `sensitivity_detection.ml_terms`, `sensitivity_detection.dl_terms` – same structure; when non-empty they override the corresponding file.
 - **DL backend:** Optional; install with `uv pip install -e ".[dl]"`. When installed and DL terms are provided, confidence is combined with ML for better semantic detection.
 
-**Full description and examples:** [sensitivity-detection.md](sensitivity-detection.md) (English) · [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md) (Português – Brasil).
+**Full description and examples:** [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) (English) · [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md) (Português – Brasil).
 
 ### Custom regex patterns (new personal/sensitive values)
 
-To detect **new possibly personal or sensitive values** (e.g. RG, vehicle plate, health plan ID), add custom regex patterns. In the main config set **`regex_overrides_file`** to the path of a YAML or JSON file with a list of `{ name, pattern, norm_tag }`. The detector matches each pattern against the column name and sample text; any match is reported with HIGH sensitivity. Your file adds to or overrides built-in patterns (CPF, CNPJ, email, phone, SSN, credit card, dates). **Format and examples:** [sensitivity-detection.md](sensitivity-detection.md#custom-regex-patterns-detecting-new-personalsensitive-values) (EN) · [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md#padrões-regex-customizados-detectar-novos-dados-pessoaissensíveis) (pt-BR).
+To detect **new possibly personal or sensitive values** (e.g. RG, vehicle plate, health plan ID), add custom regex patterns. In the main config set **`regex_overrides_file`** to the path of a YAML or JSON file with a list of `{ name, pattern, norm_tag }`. The detector matches each pattern against the column name and sample text; any match is reported with HIGH sensitivity. Your file adds to or overrides built-in patterns (CPF, CNPJ, email, phone, SSN, credit card, dates). **Format and examples:** [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md#custom-regex-patterns-detecting-new-personalsensitive-values) (EN) · [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md#padrões-regex-customizados-detectar-novos-dados-pessoaissensíveis) (pt-BR). For **multiple regulations and sample configuration** (built-in: LGPD, GDPR, CCPA, HIPAA, GLBA; extensibility for UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS, or custom), and for assistance with tuning, see [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) ([pt-BR](COMPLIANCE_FRAMEWORKS.pt_BR.md)).
 
 ### Rate limiting and safe concurrency
 
@@ -610,7 +610,7 @@ report:
       recommendation: "Review PIPEDA consent and limitation purposes."
       priority: "MÉDIA"
       relevant_for: "DPO, Privacy Officer"
-    # Sensitive categories (LGPD Art. 5 II, 11; GDPR Art. 9) – see docs/completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md
+    # Sensitive categories (LGPD Art. 5 II, 11; GDPR Art. 9) – see docs/plans/completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md
     - norm_tag_pattern: "health"
 
       base_legal: "LGPD Art. 5 II, 11 – dado de saúde; GDPR Art. 9"
@@ -691,7 +691,7 @@ api:
   # api_key: "your-secret-key"              # or use api_key_from_env to read from environment
   # api_key_from_env: "AUDIT_API_KEY"
 
-# Optional: possible minor data detection (LGPD Art. 14, GDPR Art. 8). See docs/completed/PLAN_MINOR_DATA_DETECTION.md and docs/minor-detection.md.
+# Optional: possible minor data detection (LGPD Art. 14, GDPR Art. 8). See docs/plans/completed/PLAN_MINOR_DATA_DETECTION.md and docs/MINOR_DETECTION.md.
 # detection:
 #   minor_age_threshold: 18        # age below this flags DOB/age columns as possible minor (default 18)
 #   minor_full_scan: false         # when true (databases only), re-sample columns that look like DOB/age for minors using minor_full_scan_limit
@@ -730,4 +730,4 @@ scan:
 - **Download report by session:** `GET /reports/{session_id}`
 - **Interactive API docs:** `http://<host>:<port>/docs`
 
-**Related documentation:** Full documentation index (all topics, both languages): [README](README.md) · [README.pt_BR.md](README.pt_BR.md). Technical guide: [TECH_GUIDE.md](TECH_GUIDE.md) · [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md). [sensitivity-detection.md](sensitivity-detection.md) (ML/DL training terms; [pt-BR](sensitivity-detection.pt_BR.md)). For `recommendation_overrides` covering sensitive categories (health, religion, political, PEP, race, union, genetic, biometric, sex life), see the example above (Global options) and [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md). To add a new data-source connector (database, API, share), see [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md) ([pt-BR](ADDING_CONNECTORS.pt_BR.md)). Deploy: [deploy/DEPLOY.md](deploy/DEPLOY.md) · [deploy/DEPLOY.pt_BR.md](deploy/DEPLOY.pt_BR.md). Further: [TESTING](TESTING.md) ([pt-BR](TESTING.pt_BR.md)), [TOPOLOGY](TOPOLOGY.md) ([pt-BR](TOPOLOGY.pt_BR.md)), [COMMIT_AND_PR](COMMIT_AND_PR.md) ([pt-BR](COMMIT_AND_PR.pt_BR.md)), [compliance-frameworks](compliance-frameworks.md) ([pt-BR](compliance-frameworks.pt_BR.md)).
+**Related documentation:** Full documentation index (all topics, both languages): [README](README.md) · [README.pt_BR.md](README.pt_BR.md). Technical guide: [TECH_GUIDE.md](TECH_GUIDE.md) · [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md). [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) (ML/DL training terms; [pt-BR](SENSITIVITY_DETECTION.pt_BR.md)). For `recommendation_overrides` covering sensitive categories (health, religion, political, PEP, race, union, genetic, biometric, sex life), see the example above (Global options) and [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](plans/completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md). To add a new data-source connector (database, API, share), see [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md) ([pt-BR](ADDING_CONNECTORS.pt_BR.md)). Deploy: [deploy/DEPLOY.md](deploy/DEPLOY.md) · [deploy/DEPLOY.pt_BR.md](deploy/DEPLOY.pt_BR.md). Further: [TESTING](TESTING.md) ([pt-BR](TESTING.pt_BR.md)), [TOPOLOGY](TOPOLOGY.md) ([pt-BR](TOPOLOGY.pt_BR.md)), [COMMIT_AND_PR](COMMIT_AND_PR.md) ([pt-BR](COMMIT_AND_PR.pt_BR.md)), [compliance-frameworks](COMPLIANCE_FRAMEWORKS.md) ([pt-BR](COMPLIANCE_FRAMEWORKS.pt_BR.md)).

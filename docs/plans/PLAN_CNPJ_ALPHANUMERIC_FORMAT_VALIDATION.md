@@ -1,7 +1,7 @@
 # Plan: CNPJ alphanumeric format – understanding, validation, and compatibility
 
 **Status:** Not started
-**Synced with:** [docs/PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
+**Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
 
@@ -28,8 +28,8 @@ This plan uses the app’s **existing scan capabilities** across multiple data s
 
   (14 digits with optional `.` `/` `-`). This matches the **legacy** format only.
 
-- **Overrides:** [regex_overrides_file](sensitivity-detection.md) and [regex_overrides.example.yaml](regex_overrides.example.yaml) allow adding or overriding patterns (name, pattern, norm_tag). So an **alphanumeric CNPJ pattern can be added via config** without code change.
-- **ML/DL:** [ml_patterns_file](sensitivity-detection.md) and [sensitivity_detection.ml_terms](USAGE.md) (and DL equivalents) can include terms like `cnpj` for column-name/sample context. They do not define the **value format**; regex does.
+- **Overrides:** [regex_overrides_file](SENSITIVITY_DETECTION.md) and [regex_overrides.example.yaml](regex_overrides.example.yaml) allow adding or overriding patterns (name, pattern, norm_tag). So an **alphanumeric CNPJ pattern can be added via config** without code change.
+- **ML/DL:** [ml_patterns_file](SENSITIVITY_DETECTION.md) and [sensitivity_detection.ml_terms](USAGE.md) (and DL equivalents) can include terms like `cnpj` for column-name/sample context. They do not define the **value format**; regex does.
 - **Scan:** All connectors (SQL, MongoDB, Redis, filesystem, REST, SMB, etc.) use the same detector; any new or overridden pattern applies to **all data sources** in the “data soup” once loaded.
 - **Report:** Findings show `pattern_detected` (e.g. `LGPD_CNPJ`); we could add a distinct pattern name for alphanumeric CNPJ (e.g. `LGPD_CNPJ_ALPHA`) and optionally a small “CNPJ format compatibility” summary in the report.
 
@@ -78,16 +78,16 @@ This is **pattern-based compatibility** (format of allowed or found data), not s
 
 | #   | To-do                                                                                                                                                                                                                                                                         | Status |
 | --- | ---------------------------------------------------------------------                                                                                                                                                                                                         | ------ |
-| 1.1 | Research: document the current Brazilian alphanumeric CNPJ format (official or de facto: length, character set, structure, punctuation). Add a short “CNPJ formats” section in docs (e.g. sensitivity-detection.md or a new doc) describing legacy (numeric) vs alphanumeric. | ⬜      |
+| 1.1 | Research: document the current Brazilian alphanumeric CNPJ format (official or de facto: length, character set, structure, punctuation). Add a short “CNPJ formats” section in docs (e.g. SENSITIVITY_DETECTION.md or a new doc) describing legacy (numeric) vs alphanumeric. | ⬜      |
 | 1.2 | If no single official spec is found, define a **working spec** (e.g. “alphanumeric CNPJ = 14–20 chars, [0-9A-Za-z] plus optional ./-/”) and document it as “configurable; adjust regex if your sector uses a different variant”.                                              | ⬜      |
 | 1.3 | Propose a **regex pattern** that matches the alphanumeric format (and does not match the legacy numeric-only format, or document overlap). Example placeholder: optional pattern for base-32-like (e.g. `[0-9A-Va-v]{14}` or as per spec).                                    | ⬜      |
-| 1.4 | Docs: add “CNPJ (Brazil): legacy vs alphanumeric” to sensitivity-detection.md and sensitivity-detection.pt_BR.md with the chosen spec and example.                                                                                                                            | ⬜      |
+| 1.4 | Docs: add “CNPJ (Brazil): legacy vs alphanumeric” to SENSITIVITY_DETECTION.md and SENSITIVITY_DETECTION.pt_BR.md with the chosen spec and example.                                                                                                                            | ⬜      |
 
 ### Phase 2: Feasibility – support by override only (no code change)
 
 | #   | To-do                                                                                                                                                                                                                                  | Status |
 | --- | ---------------------------------------------------------------------                                                                                                                                                                  | ------ |
-| 2.1 | Provide an **example regex_overrides** entry (and optional ml_patterns term) for alphanumeric CNPJ in docs (e.g. regex_overrides.example.yaml and sensitivity-detection.md). Name e.g. `LGPD_CNPJ_ALPHA`; norm_tag LGPD Art. 5.        | ⬜      |
+| 2.1 | Provide an **example regex_overrides** entry (and optional ml_patterns term) for alphanumeric CNPJ in docs (e.g. regex_overrides.example.yaml and SENSITIVITY_DETECTION.md). Name e.g. `LGPD_CNPJ_ALPHA`; norm_tag LGPD Art. 5.        | ⬜      |
 | 2.2 | Verify with a small test or manual run that (1) existing scan still detects legacy `LGPD_CNPJ`, (2) with the override added, alphanumeric-style values are detected and reported with the new pattern name.                            | ⬜      |
 | 2.3 | Document in USAGE (EN + pt-BR): “To validate compatibility with alphanumeric CNPJ, add the pattern from regex_overrides.example.yaml (or the CNPJ formats doc); re-run the scan; check report for pattern_detected = LGPD_CNPJ_ALPHA.” | ⬜      |
 
@@ -105,7 +105,7 @@ This is **pattern-based compatibility** (format of allowed or found data), not s
 | #   | To-do                                                                                                                                                                                                                                                                                                                                       | Status |
 | --- | ---------------------------------------------------------------------                                                                                                                                                                                                                                                                       | ------ |
 | 4.1 | Write a short **“How to get there”** section (in this plan or in docs): (1) Use regex_overrides_file with the alphanumeric pattern; (2) optionally add ML term “cnpj” / “cnpj alfanumérico”; (3) run scan; (4) use report to see where alphanumeric-compatible data appears; (5) if built-in or flag is implemented, enable it and re-scan. | ⬜      |
-| 4.2 | Update PLANS_TODO.md and this plan when steps are completed; ensure sensitivity-detection and USAGE docs (EN + pt_BR) are in sync.                                                                                                                                                                                                          | ⬜      |
+| 4.2 | Update PLANS_TODO.md and this plan when steps are completed; ensure SENSITIVITY_DETECTION and USAGE docs (EN + pt_BR) are in sync.                                                                                                                                                                                                          | ⬜      |
 | 4.3 | Regression: full test suite passes; existing LGPD_CNPJ behaviour unchanged when alphanumeric is not enabled.                                                                                                                                                                                                                                | ⬜      |
 
 ---
