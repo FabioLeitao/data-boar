@@ -91,6 +91,36 @@ def test_recommendations_with_overrides_uses_override_for_matching_norm_tag(tmp_
         mgr.dispose()
 
 
+def test_pii_ambiguous_recommendation_row_medium_and_confirm_manually(tmp_path):
+    """PII_AMBIGUOUS (generic doc_id, document_id, etc.) gets MÉDIA priority and 'Confirmar manualmente' in Recommendations."""
+    db_path = str(tmp_path / "audit_ambiguous.db")
+    out_dir = str(tmp_path / "out_ambiguous")
+    Path(out_dir).mkdir(parents=True, exist_ok=True)
+    mgr = LocalDBManager(db_path)
+    try:
+        mgr.set_current_session_id("s-amb")
+        mgr.create_session_record("s-amb")
+        mgr.save_finding(
+            "database",
+            target_name="T1",
+            column_name="doc_id",
+            sensitivity_level="MEDIUM",
+            pattern_detected="PII_AMBIGUOUS",
+            norm_tag="Generic identifier – confirm manually (doc_id, document_id, etc.)",
+            ml_confidence=60,
+        )
+        mgr.finish_session("s-amb")
+        path = generate_report(mgr, "s-amb", output_dir=out_dir, config=None)
+        assert path is not None
+        with pd.ExcelFile(path) as xl:
+            df = pd.read_excel(xl, sheet_name="Recommendations")
+        row = df[df["Data / Pattern"] == "PII_AMBIGUOUS"].iloc[0]
+        assert "MÉDIA" in str(row["Prioridade"])
+        assert "Confirmar manualmente" in str(row["Recomendação"]) or "confirmar" in str(row["Recomendação"]).lower()
+    finally:
+        mgr.dispose()
+
+
 def test_executive_summary_sheet_when_enabled(tmp_path):
     """With report.include_executive_summary true, report contains 'Executive summary' sheet with Metric, Category, Count."""
     db_path = str(tmp_path / "audit_exec.db")

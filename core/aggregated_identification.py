@@ -168,6 +168,32 @@ DEFAULT_COLUMN_CATEGORY_MAP: dict[str, str] = {
     "personalausweis": "other",
     "tax id": "other",
     "identidade": "other",
+    # French document nicknames and regional (carte bleue, carte rose, carte vitale, etc.)
+    "carte bleue": "other",
+    "carte rose": "other",
+    "carte vitale": "other",
+    "titre de séjour": "other",
+    "carte de séjour": "other",
+    "numéro de sécurité sociale": "other",
+    "numero de securite sociale": "other",
+    # Further regional ID/document (PT-BR, EN, ES, DE)
+    "rne": "other",
+    "ric": "other",
+    "certidão de nascimento": "other",
+    "certidao de nascimento": "other",
+    "oab": "other",
+    "crm": "other",
+    "registro profissional": "other",
+    "employee badge number": "other",
+    "membership number": "other",
+    "license number": "other",
+    "permit number": "other",
+    "nie": "other",
+    "libro de familia": "other",
+    "carnet de conducir": "other",
+    "titulo de residencia": "other",
+    "aufenthaltserlaubnis": "other",
+    "sozialversicherungsnummer": "other",
 }
 
 # Built-in: pattern_detected (substring) -> category
@@ -178,6 +204,7 @@ DEFAULT_PATTERN_CATEGORY_MAP: dict[str, str] = {
     "CPF": "other",
     "RG": "other",
     "SSN": "other",
+    "PII_AMBIGUOUS": "other",  # generic identifier – confirm manually
     "DATE_": "other",  # age/DOB related
     "DOB": "other",
     "ADDRESS": "address",

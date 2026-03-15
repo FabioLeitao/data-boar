@@ -85,6 +85,17 @@ DEFAULT_ML_TERMS = [
     ("número do documento", 1), ("document number", 1), ("identification number", 1),
     ("carte d'identité", 1), ("document d'identité", 1), ("Personalausweis", 1), ("Ausweisnummer", 1),
     ("tax id", 1), ("tax identification number", 1), ("cadastro de pessoa física", 1),
+    # French document nicknames and regional variants (carte bleue, carte rose, etc.)
+    ("carte bleue", 1), ("carte rose", 1), ("carte vitale", 1), ("titre de séjour", 1), ("carte de séjour", 1),
+    ("numéro de sécurité sociale", 1), ("numero de securite sociale", 1), ("n° sécu", 1),
+    # Further regional ID/document variations (PT-BR, EN, ES, FR, DE)
+    ("rne", 1), ("ric", 1), ("certidão de nascimento", 1), ("certidão de casamento", 1), ("certidão de óbito", 1),
+    ("certidao de nascimento", 1), ("oab", 1), ("crm", 1), ("crc", 1), ("crea", 1), ("crq", 1), ("registro profissional", 1),
+    ("employee badge number", 1), ("membership number", 1), ("license number", 1), ("permit number", 1),
+    ("alien registration number", 1), ("visa number", 1), ("nie", 1), ("libro de familia", 1), ("carnet de conducir", 1),
+    ("titulo de residencia", 1), ("Aufenthaltserlaubnis", 1), ("Sozialversicherungsnummer", 1),
+    # Generic/ambiguous identifiers → flagged but treated as MEDIUM + "confirm manually" (see AMBIGUOUS_COLUMN_TOKENS)
+    ("doc_id", 1), ("document_id", 1), ("id_number", 1), ("doc_number", 1), ("doc_ref", 1), ("document_ref", 1), ("identifier", 1),
     # Sensitive categories (LGPD Art. 5 II, 11; GDPR Art. 9) – additive subset for out-of-the-box
     ("religious affiliation", 1), ("religiao", 1), ("political affiliation", 1), ("filiacao politica", 1),
     ("biometric data", 1), ("genetic data", 1), ("union affiliation", 1), ("sindicato", 1),
@@ -100,6 +111,19 @@ DEFAULT_ML_TERMS = [
 
 # Regex patterns that often match in lyrics/tabs without real PII (dates in lyrics, digits in tabs)
 WEAK_PATTERNS_IN_ENTERTAINMENT = frozenset({"DATE_DMY", "PHONE_BR"})
+
+# Column-name tokens that are ambiguous (may be PII or internal ID). When the only signal is ML match
+# and column name matches one of these, we return MEDIUM and PII_AMBIGUOUS so the report recommends manual confirmation.
+AMBIGUOUS_COLUMN_TOKENS = (
+    "doc_id",
+    "document_id",
+    "id_number",
+    "doc_number",
+    "doc_ref",
+    "document_ref",
+    "identifier",
+)
+PII_AMBIGUOUS_NORM_TAG = "Generic identifier – confirm manually (doc_id, document_id, etc.)"
 
 
 def _looks_like_lyrics(sample: str) -> bool:
@@ -483,6 +507,12 @@ class SensitivityDetector:
         if possible_minor:
             # Minor indication even without strong ML/regex confidence → treat as HIGH with dedicated norm_tag.
             return "HIGH", "DOB_POSSIBLE_MINOR", "LGPD Art. 14 – possible minor data; GDPR Art. 8", max(combined_confidence, 80)
+        # Ambiguous column names (doc_id, document_id, etc.): flag for review but MEDIUM priority and ask operator to confirm.
+        col_lower = (column_name or "").lower().strip()
+        if not found_patterns and combined_confidence >= 40:
+            for token in AMBIGUOUS_COLUMN_TOKENS:
+                if token in col_lower or col_lower == token:
+                    return "MEDIUM", "PII_AMBIGUOUS", PII_AMBIGUOUS_NORM_TAG, combined_confidence
         if combined_confidence >= 70:
             if entertainment_context:
                 # ML-only confidence in entertainment context (lyrics/tabs) → cap at MEDIUM so that

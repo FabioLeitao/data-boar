@@ -399,4 +399,19 @@ When a custom pattern matches the column name or sample text, the finding is rep
 - **Inline overrides file:** When `ml_terms` or `dl_terms` are non-empty in config, they are used instead of loading from the corresponding file.
 - **Regex patterns:** Use `regex_overrides_file` in the main config to add or override patterns for value-based detection (see [Custom regex patterns](#custom-regex-patterns-detecting-new-personalsensitive-values) above).
 
+### Generic/ambiguous identifiers (PII_AMBIGUOUS)
+
+Column names such as **doc_id**, **document_id**, **id_number**, **doc_number**, **doc_ref**, **document_ref**, or **identifier** are ambiguous: they may hold PII (e.g. identity document number) or only an internal reference. The detector flags them as **sensitive** via ML terms but returns **MEDIUM** sensitivity and **pattern_detected** `PII_AMBIGUOUS` with norm_tag *"Generic identifier – confirm manually"*. The report recommendation then asks the **operator to confirm manually** whether the column contains personal data. Merge a recommendation override with `norm_tag_pattern: "PII_AMBIGUOUS"` (see EU GDPR or LGPD compliance samples) to get the "confirm manually" text in the report.
+
+### Regional document nicknames and ID variations
+
+Default ML terms and compliance samples include **regional naming** so column names in local language are recognised:
+
+- **France:** *carte bleue*, *carte rose*, *carte vitale*, *titre de séjour*, *carte de séjour*, *numéro de sécurité sociale*, *carte d'identité*, *passeport*.
+- **Germany:** *Personalausweis*, *Reisepass*, *Aufenthaltserlaubnis*, *Sozialversicherungsnummer*.
+- **Spain:** *pasaporte*, *documento de identidad*, *libro de familia*, *carnet de conducir*, *NIE*.
+- **Brazil (PT-BR):** *passaporte*, *CTPS*, *carteira de trabalho*, *certidão (nascimento/casamento/óbito)*, *título eleitoral*, *PIS*, *cartão cidadão*, *OAB*, *CRM*, *CRC*, *CREA*, *CRQ*, *registro profissional*, and the ID terms already listed.
+
+Add or override terms in `ml_patterns_file` or `sensitivity_detection.ml_terms` for other locales.
+
 **Documentation index** (all topics, both languages): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).

@@ -346,9 +346,21 @@ def _find_override_row(pat: str, norm: str, overrides: list[dict]) -> dict | Non
 def _recommendation_row_for_pattern(pat: str, norm: str) -> dict:
     """
     Build a single recommendation row from pattern_detected and norm_tag.
-    Priority: minor (Art. 14) > CPF/SSN/LGPD > EMAIL > CREDIT/CARD > default.
+    Priority: minor (Art. 14) > PII_AMBIGUOUS (confirm manually) > CPF/SSN/LGPD > EMAIL > CREDIT/CARD > default.
     """
     norm_lower = norm.lower()
+    if "PII_AMBIGUOUS" in pat or "Generic identifier" in norm:
+        return {
+            _REC_DATA_PATTERN: pat,
+            _REC_BASE_LEGAL: norm or "Generic identifier – confirm manually",
+            _REC_RISCO: "Nome de coluna genérico (doc_id, document_id, id_number, etc.). Pode ser PII ou ID interno.",
+            _REC_RECOMENDACAO: (
+                "Confirmar manualmente: verificar se a coluna contém dado pessoal (PII) ou apenas identificador interno. "
+                "Se for PII, aplicar controles de acesso e base legal; se for interno, pode ser tratado como MÉDIA prioridade."
+            ),
+            _REC_PRIORIDADE: "MÉDIA",
+            _REC_RELEVANTE_PARA: "Operador, DPO, Segurança da Informação",
+        }
     if "DOB_POSSIBLE_MINOR" in pat or ("LGPD Art. 14" in norm and ("menor" in norm_lower or "minor" in norm_lower)):
         return {
             _REC_DATA_PATTERN: pat,

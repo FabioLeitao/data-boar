@@ -138,8 +138,39 @@ terms:
     label: sensitive
   - text: "professional registration"
     label: sensitive
+  # French document nicknames (carte bleue, carte rose, carte vitale, etc.) and regional ID
+  - text: "carte bleue"
+    label: sensitive
+  - text: "carte rose"
+    label: sensitive
+  - text: "carte vitale"
+    label: sensitive
+  - text: "titre de séjour"
+    label: sensitive
+  - text: "carte de séjour"
+    label: sensitive
+  - text: "numéro de sécurité sociale"
+    label: sensitive
+  - text: "numero de securite sociale"
+    label: sensitive
+  - text: "Aufenthaltserlaubnis"
+    label: sensitive
+  - text: "Sozialversicherungsnummer"
+    label: sensitive
+  - text: "nie"
+    label: sensitive
+  - text: "libro de familia"
+    label: sensitive
+  - text: "carnet de conducir"
+    label: sensitive
 
 recommendation_overrides:
+  - norm_tag_pattern: "PII_AMBIGUOUS"
+    base_legal: "Generic identifier – confirm manually"
+    risk: "Column name is generic (doc_id, document_id, id_number, etc.). May be PII or internal ID."
+    recommendation: "Confirm manually: verify whether the column contains personal data (PII) or only an internal identifier. If PII, apply access controls and lawful basis; if internal, treat as medium priority."
+    priority: "MÉDIA"
+    relevant_for: "Operator, DPO, Information Security"
   - norm_tag_pattern: "EU GDPR"
     base_legal: "Regulation (EU) 2016/679 Art. 4(1); Recitals; EDPB"
     risk: "Identification of data subject; personal data as defined in EU GDPR."
