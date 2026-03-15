@@ -62,7 +62,7 @@ Essa abordagem faz parte da linha de base de segurança do projeto. Para a lista
 - **Validação de entrada (tenant/técnico):** Os valores de tenant e técnico (corpo de início de varredura, PATCH de sessão, varredura via config) são validados quanto ao tamanho e caracteres permitidos (imprimíveis, sem caracteres de controle), depois sanitizados antes do armazenamento, para que relatórios e o dashboard nunca exibam entrada não sanitizada. Veja **`core/validation.py`** `sanitize_tenant_technician` e **`tests/test_security.py`**.
 - **Injeção de credenciais em URLs de conexão:** Usuário e senha são codificados para URL ao montar as URLs de conexão com bancos (conector SQL, conector MongoDB), de modo que caracteres especiais (`@`, `:`, `/`, `#`) em credenciais não quebrem o parsing da URL nem sejam interpretados como host/caminho. Veja **`connectors/sql_connector.py`** `_quote_userinfo` / `_build_url`, **`connectors/mongodb_connector.py`** `connect()`, e **`tests/test_security.py`** (ex.: `test_sql_connector_build_url_encodes_password_special_chars`, `test_mongodb_connector_uri_encodes_password_special_chars`).
 - **Config e serialização:** O config YAML é carregado com `yaml.safe_load` (sem deserialização de objetos Python arbitrários). Veja **`tests/test_security.py`** para um teste que rejeita tags YAML inseguras.
-- **Exposição do endpoint de config:** Quando `api.require_api_key` é true, GET `/config` retorna 401 sem uma chave de API válida, de modo que o config bruto (que pode conter segredos) não fique exposto. Veja **`tests/test_security.py`** `test_config_endpoint_requires_api_key_when_required`.
+- **Exposição do endpoint de config:** Quando `api.require_api_key` é true, GET `/config` retorna 401 sem uma chave de API válida, de modo que o config bruto (que pode conter segredos) não fique exposto. **GET `/config` sempre redige valores secretos** (senhas, API key, tokens, client_secret, etc.) antes de enviar o YAML ao navegador, de modo que a UI nunca exiba nem transmita segredos em claro; ao salvar, placeholders são mesclados ao arquivo atual para que segredos reais não sejam sobrescritos. Veja **`config/redact_config.py`** e **`tests/test_security.py`**.
 - **Limite de tamanho do corpo da requisição:** A API rejeita requisições cujo **Content-Length** exceda **1 MB** (ex.: POST `/config`, POST `/scan`, POST `/scan_database`) com **HTTP 413 Payload Too Large** para reduzir DoS por corpos JSON ou form grandes. Veja **`api/routes.py`** `request_body_size_middleware` e **`tests/test_security.py`**.
 - **Política de logging:** Chave de API, senhas e strings de conexão não devem aparecer em logs de auditoria ou da aplicação. Detalhes de falha e mensagens de exceção passam por **`core.validation.redact_secrets_for_log`** antes de serem gravados; URLs de conexão e valores no estilo `password=` / `api_key=` são mascarados. Veja **`core/database.py`** (save_failure) e **`tests/test_security.py`** (redact_secrets_for_log).
 - **Acesso a relatório e heatmap:** Os endpoints de relatório e heatmap validam o formato do `session_id` antes do uso; IDs inválidos retornam 400, sessões desconhecidas ou inexistentes retornam 404 (sem enumeração de sessões nem distinção 403/404 para IDs desconhecidos). Veja **`api/routes.py`** e **`docs/SECURITY.md`**.
@@ -116,3 +116,14 @@ Se você acredita ter encontrado uma vulnerabilidade de segurança neste projeto
    - Investigar e, se confirmado, trabalhar em uma correção e coordenar a divulgação.
 
 Se não tiver certeza se algo é sensível do ponto de vista de segurança, prefira o canal privado (ou uma issue pública mínima) para que possamos triar com segurança.
+
+## Resposta de segurança (SLAs opcionais)
+
+Estes são **metas** para mantenedores e reportadores, não obrigações contratuais. Ajuste conforme a capacidade da equipe.
+
+| Área | Meta opcional |
+|------|----------------|
+| **Reportes de vulnerabilidade** | Objetivamos **confirmar recebimento** em até **5 dias úteis** e, para achados **altos/críticos**, **corrigir ou documentar** (ex.: advisory, mitigação ou “não corrigir” com justificativa) em até **30 dias**. |
+| **PRs de segurança do Dependabot** | Tratamos os PRs **de segurança** do Dependabot como **P0**: objetivamos **fazer merge ou responder** (ex.: merge, fechar com comentário ou adiar com justificativa) em até **5 dias úteis**. PRs de dependência que não sejam de segurança seguem o ciclo normal de revisão. |
+
+Veja **CONTRIBUTING** para como aplicar atualizações de dependências e executar `pip-audit`; veja **`.github/dependabot.yml`** para a configuração do Dependabot.
