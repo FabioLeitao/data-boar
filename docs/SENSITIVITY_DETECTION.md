@@ -101,7 +101,7 @@ When **aggregated identification** is enabled, the report generator groups findi
 | ---                                           | ---     | ---      | ---                                                                                                                                                                                                                                                                                       |
 | `detection.aggregated_identification_enabled` | boolean | **true** | Set to `false` to disable aggregation and the Cross-ref sheet.                                                                                                                                                                                                                            |
 | `detection.aggregated_min_categories`         | integer | **2**    | Minimum number of distinct quasi-identifier categories in a table/file to flag (e.g. 3 for stricter).                                                                                                                                                                                     |
-| `detection.quasi_identifier_mapping`          | list    | **[]**   | Optional list of `{ column_pattern, category }` or `{ pattern_detected, category }` to map columns/patterns to `gender`, `job_position`, `health`, `address`, `phone`, `other`. Built-in defaults already map common names (e.g. gender, sex, cargo, department, health, address, phone). |
+| `detection.quasi_identifier_mapping`          | list    | **[]**   | Optional list of `{ column_pattern, category }` or `{ pattern_detected, category }` to map columns/patterns to `gender`, `job_position`, `health`, `address`, `phone`, `other`. Built-in defaults map common names (e.g. gender, sex, cargo, department, health, address), **phone** (phone, telefone, celular, home phone, téléphone, handynummer, etc.), **name/identifier** to `other` (first name, surname, nome, apellido, vorname, etc.), and **ID/document** to `other` (cpf, rg, passaporte, passport, ctps, documento oficial, pis, cartão cidadão, certidão, green card, cnh, driver license, identity document, id card, national id, document number, carte d'identité, etc.). |
 
 ## Example: enable with custom mapping and minimum 3 categories
 
@@ -398,5 +398,20 @@ When a custom pattern matches the column name or sample text, the finding is rep
 - **Same format:** Both use a list of `{ text, label }` with `label` = `sensitive` or `non_sensitive` (or `1` / `0`).
 - **Inline overrides file:** When `ml_terms` or `dl_terms` are non-empty in config, they are used instead of loading from the corresponding file.
 - **Regex patterns:** Use `regex_overrides_file` in the main config to add or override patterns for value-based detection (see [Custom regex patterns](#custom-regex-patterns-detecting-new-personalsensitive-values) above).
+
+### Generic/ambiguous identifiers (PII_AMBIGUOUS)
+
+Column names such as **doc_id**, **document_id**, **id_number**, **doc_number**, **doc_ref**, **document_ref**, or **identifier** are ambiguous: they may hold PII (e.g. identity document number) or only an internal reference. The detector flags them as **sensitive** via ML terms but returns **MEDIUM** sensitivity and **pattern_detected** `PII_AMBIGUOUS` with norm_tag *"Generic identifier – confirm manually"*. The report recommendation then asks the **operator to confirm manually** whether the column contains personal data. Merge a recommendation override with `norm_tag_pattern: "PII_AMBIGUOUS"` (see EU GDPR or LGPD compliance samples) to get the "confirm manually" text in the report.
+
+### Regional document nicknames and ID variations
+
+Default ML terms and compliance samples include **regional naming** so column names in local language are recognised:
+
+- **France:** *carte bleue*, *carte rose*, *carte vitale*, *titre de séjour*, *carte de séjour*, *numéro de sécurité sociale*, *carte d'identité*, *passeport*.
+- **Germany:** *Personalausweis*, *Reisepass*, *Aufenthaltserlaubnis*, *Sozialversicherungsnummer*.
+- **Spain:** *pasaporte*, *documento de identidad*, *libro de familia*, *carnet de conducir*, *NIE*.
+- **Brazil (PT-BR):** *passaporte*, *CTPS*, *carteira de trabalho*, *certidão (nascimento/casamento/óbito)*, *título eleitoral*, *PIS*, *cartão cidadão*, *OAB*, *CRM*, *CRC*, *CREA*, *CRQ*, *registro profissional*, and the ID terms already listed.
+
+Add or override terms in `ml_patterns_file` or `sensitivity_detection.ml_terms` for other locales.
 
 **Documentation index** (all topics, both languages): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
