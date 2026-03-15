@@ -23,6 +23,7 @@ All tests must pass with **no errors or warnings**. See **[docs/TESTING.md](../d
 | `test_api_key.py`                   | Optional API key (X-API-Key / Bearer), /health public         |
 | `test_api_scan.py`                  | POST /scan and audit trigger                                  |
 | `test_audit.py`                     | Sensitivity detection (CPF, email, religion, etc.)            |
+| `test_connector_timeouts.py`        | Configurable timeouts: normalized config, REST/SQL/MongoDB/Redis wiring |
 | `test_csp_headers.py`               | CSP and security headers on HTML endpoints                    |
 | `test_data_scanner.py`              | Connector registry (filesystem, DB, API)                      |
 | `test_database.py`                  | Config normalization, DB manager, sessions, wipe              |
