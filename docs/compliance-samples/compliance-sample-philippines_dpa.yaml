@@ -1,0 +1,55 @@
+# Philippines DPA – sample compliance profile (Data Privacy Act 2012, RA 10173)
+#
+# Target audience: Philippines and SEA deployments. National Privacy Commission (NPC).
+# Terms: personal information, sensitive personal information (EN).
+#
+# How to use:
+#   1. Set in your main config:
+#        regex_overrides_file: path/to/compliance-sample-philippines_dpa.yaml
+#        ml_patterns_file: path/to/compliance-sample-philippines_dpa.yaml
+#   2. Merge the recommendation_overrides list below into your config under report.recommendation_overrides.
+#
+# Philippines: RA 10173; National Privacy Commission (NPC); PIC/PIP concepts.
+
+regex:
+  - name: "PH_SSS_ID"
+    pattern: "\\b\\d{2}-?\\d{7}-?\\d\\b"
+    norm_tag: "Philippines DPA"
+  - name: "PH_GSIS_ID"
+    pattern: "\\b\\d{4}-?\\d{4}-?\\d{4}\\b"
+    norm_tag: "Philippines DPA"
+
+# ML terms: personal information, sensitive personal information, NPC.
+terms:
+  - text: "personal information"
+    label: sensitive
+  - text: "sensitive personal information"
+    label: sensitive
+  - text: "personal information controller"
+    label: sensitive
+  - text: "pic"
+    label: sensitive
+  - text: "personal information processor"
+    label: sensitive
+  - text: "pip"
+    label: sensitive
+  - text: "national privacy commission"
+    label: sensitive
+  - text: "npc"
+    label: sensitive
+  - text: "data subject"
+    label: sensitive
+  - text: "consent"
+    label: sensitive
+  - text: "data privacy act"
+    label: sensitive
+  - text: "ra 10173"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "Philippines DPA"
+    base_legal: "Data Privacy Act 2012 (RA 10173); National Privacy Commission (NPC)"
+    risk: "Personal information and sensitive personal information; PIC/PIP obligations."
+    recommendation: "Comply with RA 10173; register with NPC if required; implement consent and security measures per NPC advisories."
+    priority: "ALTA"
+    relevant_for: "DPO, PIC, PIP, National Privacy Commission"

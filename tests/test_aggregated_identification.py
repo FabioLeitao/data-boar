@@ -21,9 +21,110 @@ class TestCategoryMapping(unittest.TestCase):
         self.assertIn("address", map_finding_to_categories({"column_name": "user_address", "pattern_detected": ""}))
         self.assertIn("phone", map_finding_to_categories({"column_name": "telefone", "pattern_detected": ""}))
 
+    def test_phone_column_names_multilingual(self):
+        """Phone category: multiple naming schemes and languages (home phone, mobile, celular, téléphone, etc.)."""
+        phone_columns = [
+            "phone",
+            "telefone",
+            "celular",
+            "mobile",
+            "fone",
+            "home_phone",
+            "home phone",
+            "work_phone",
+            "work phone",
+            "cell_phone",
+            "cell phone",
+            "contact_number",
+            "phone_number",
+            "téléphone",
+            "teléfono",
+            "telefono",
+            "móvil",
+            "cel",
+            "handy",
+            "handynummer",
+            "mobilnummer",
+            "telefon",
+            "contato",
+            "contact",
+        ]
+        for col in phone_columns:
+            with self.subTest(column=col):
+                cats = map_finding_to_categories({"column_name": col, "pattern_detected": ""})
+                self.assertIn("phone", cats, f"Column '{col}' should map to category 'phone'")
+
+    def test_name_column_names_multilingual(self):
+        """Name/identifier category (other): multiple naming schemes and languages (first name, surname, apellido, etc.)."""
+        name_columns = [
+            "first name",
+            "first_name",
+            "last name",
+            "last_name",
+            "surname",
+            "full name",
+            "full_name",
+            "birth name",
+            "nickname",
+            "given name",
+            "family name",
+            "middle name",
+            "nome",
+            "sobrenome",
+            "nome completo",
+            "nombre",
+            "apellido",
+            "nombre completo",
+            "prénom",
+            "nom de famille",
+            "nom complet",
+            "vorname",
+            "nachname",
+            "geburtsname",
+            "familienname",
+            "cognome",
+        ]
+        for col in name_columns:
+            with self.subTest(column=col):
+                cats = map_finding_to_categories({"column_name": col, "pattern_detected": ""})
+                self.assertIn("other", cats, f"Column '{col}' should map to category 'other'")
+
+    def test_id_document_column_names_multilingual(self):
+        """ID/document columns (passport, ctps, documento oficial, green card, etc.) map to category 'other'."""
+        id_columns = [
+            "passaporte",
+            "passport",
+            "ctps",
+            "carteira de trabalho",
+            "documento oficial",
+            "official document",
+            "distintivo",
+            "pis",
+            "cartão cidadão",
+            "certidão",
+            "green card",
+            "registro no conselho de classe",
+            "cnh",
+            "driver license",
+            "documento de identidade",
+            "identity document",
+            "id card",
+            "national id",
+            "document number",
+            "carte d'identité",
+            "cpf",
+            "rg",
+            "identidade",
+        ]
+        for col in id_columns:
+            with self.subTest(column=col):
+                cats = map_finding_to_categories({"column_name": col, "pattern_detected": ""})
+                self.assertIn("other", cats, f"Column '{col}' should map to category 'other'")
+
     def test_pattern_detected_maps_to_category(self):
         self.assertIn("phone", map_finding_to_categories({"column_name": "x", "pattern_detected": "PHONE_BR"}))
         self.assertIn("other", map_finding_to_categories({"column_name": "x", "pattern_detected": "EMAIL"}))
+        self.assertIn("other", map_finding_to_categories({"column_name": "x", "pattern_detected": "PII_AMBIGUOUS"}))
 
     def test_file_name_used_for_filesystem(self):
         cats = map_finding_to_categories({"file_name": "contacts_phone.csv", "pattern_detected": ""})
