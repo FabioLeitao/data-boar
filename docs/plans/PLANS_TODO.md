@@ -12,22 +12,22 @@ This document is the **single source of truth** for the project's plan status an
 
 ## Conflict and dependency analysis
 
-| Plan                                     | Depends on                | Conflicts with | Notes                                                                                                                         |
-| ----                                     | ----------                | -------------- | -----                                                                                                                         |
-| Security hardening                       | —                         | None           | Additive (validation, docs, audit). Do first to strengthen base.                                                              |
-| Secrets vault                            | —                         | None           | Phase A (redact, env) improves config safety before vault.                                                                    |
-| Version check / self-upgrade             | —                         | None           | Backup excludes secrets (manifest); compatible with Secrets A.                                                                |
-| Additional compliance samples            | —                         | None           | Config-only; samples and docs additive.                                                                                       |
-| Compressed files                         | Config loader (new keys)  | None           | Additive feature; optional dependency py7zr.                                                                                  |
-| Dashboard i18n                           | Approach decided          | None           | No concrete to-dos until routing/translation approach chosen.                                                                 |
-| Data source versions & hardening         | —                         | None           | Additive: new table data_source_inventory, new report sheets; optional CVE lookup.                                            |
-| Strong crypto & controls validation      | —                         | None           | Optional flag (CLI + dashboard); new table or extend inventory; report sheet "Crypto & controls"; inference best-effort.      |
-| CNPJ alphanumeric format validation      | —                         | None           | Format spec + regex/override; optional built-in or config flag; compatibility report; no change to legacy LGPD_CNPJ.          |
-| Selenium QA test suite                   | —                         | None           | On-demand; optional [qa] deps; tests_qa/; report + recommendations; exclude from default pytest.                              |
-| Synthetic data & confidence validation   | —                         | None           | Fixtures (files, SQL, NoSQL, shares); FP/FN + ground truth; confidence bands + operator guidance; timeouts/connectivity docs. |
-| Configurable timeouts                    | —                         | None           | Global + per-target connect/read timeouts; sane defaults; connector wiring; recommendations (avoid DoS, too-fast).            |
-| Notifications (off-band + scan-complete) | Optional: Secrets Phase A | None           | Webhook notifier; scan-complete brief to operator/tenant (Slack, Teams, Telegram, etc.); recommendations.                     |
-| SAP connector                            | Optional: Configurable timeouts | None    | Add SAP (HANA/OData/RFC) to data soup; same discovery/sample/finding flow; optional [sap] extra. See PLAN_SAP_CONNECTOR.     |
+| Plan                                     | Depends on                      | Conflicts with | Notes                                                                                                                         |
+| ----                                     | ----------                      | -------------- | -----                                                                                                                         |
+| Security hardening                       | —                               | None           | Additive (validation, docs, audit). Do first to strengthen base.                                                              |
+| Secrets vault                            | —                               | None           | Phase A (redact, env) improves config safety before vault.                                                                    |
+| Version check / self-upgrade             | —                               | None           | Backup excludes secrets (manifest); compatible with Secrets A.                                                                |
+| Additional compliance samples            | —                               | None           | Config-only; samples and docs additive.                                                                                       |
+| Compressed files                         | Config loader (new keys)        | None           | Additive feature; optional dependency py7zr.                                                                                  |
+| Dashboard i18n                           | Approach decided                | None           | No concrete to-dos until routing/translation approach chosen.                                                                 |
+| Data source versions & hardening         | —                               | None           | Additive: new table data_source_inventory, new report sheets; optional CVE lookup.                                            |
+| Strong crypto & controls validation      | —                               | None           | Optional flag (CLI + dashboard); new table or extend inventory; report sheet "Crypto & controls"; inference best-effort.      |
+| CNPJ alphanumeric format validation      | —                               | None           | Format spec + regex/override; optional built-in or config flag; compatibility report; no change to legacy LGPD_CNPJ.          |
+| Selenium QA test suite                   | —                               | None           | On-demand; optional [qa] deps; tests_qa/; report + recommendations; exclude from default pytest.                              |
+| Synthetic data & confidence validation   | —                               | None           | Fixtures (files, SQL, NoSQL, shares); FP/FN + ground truth; confidence bands + operator guidance; timeouts/connectivity docs. |
+| Configurable timeouts                    | —                               | None           | Global + per-target connect/read timeouts; sane defaults; connector wiring; recommendations (avoid DoS, too-fast).            |
+| Notifications (off-band + scan-complete) | Optional: Secrets Phase A       | None           | Webhook notifier; scan-complete brief to operator/tenant (Slack, Teams, Telegram, etc.); recommendations.                     |
+| SAP connector                            | Optional: Configurable timeouts | None           | Add SAP (HANA/OData/RFC) to data soup; same discovery/sample/finding flow; optional [sap] extra. See PLAN_SAP_CONNECTOR.      |
 
 **Regression and tests:** No plan modifies wipe behaviour, SQLite schema (except Self-upgrade adds optional upgrade_log, Data source versions adds data_source_inventory, Strong crypto adds optional crypto_controls_audit or extends inventory), or existing config keys in a breaking way. New tests per plan must pass together with the full suite (`uv run pytest -v -W error`). Document each new feature in the relevant docs (EN + pt-BR where applicable).
 
@@ -90,9 +90,9 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 
 | Phase | To-do                                                                                                  | Status    |
 | ----- | -----                                                                                                  | ------    |
-| A1    | pass_from_env / password_from_env (all connectors); document                                           | ✅ Done   |
-| A2    | Redact secrets in GET /config; POST merge/refs                                                         | ✅ Done   |
-| A3    | Config permissions, .gitignore, release checklist                                                      | ✅ Done   |
+| A1    | pass_from_env / password_from_env (all connectors); document                                           | ✅ Done    |
+| A2    | Redact secrets in GET /config; POST merge/refs                                                         | ✅ Done    |
+| A3    | Config permissions, .gitignore, release checklist                                                      | ✅ Done    |
 | B1–B6 | Vault schema, local vault, loader @vault/@env, CLI reimport, web reimport, optional remove-from-config | ⬜ Pending |
 | C1–C2 | Vault key management docs; release checklist                                                           | ⬜ Pending |
 
@@ -114,13 +114,14 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 
 ### Additional compliance samples – [PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md](PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md)
 
-| #       | To-do                                                                   | Status    |
-| -       | -----                                                                   | ------    |
-| 1.1     | Create docs/compliance-samples/ (or deploy/); README                    | ⬜ Pending |
-| 1.2–1.6 | UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS sample files                      | ⬜ Pending |
-| 2.1–2.4 | README pitch; compliance-frameworks/samples doc; USAGE/TECH_GUIDE/index | ⬜ Pending |
-| 3.1–3.2 | Test sample YAML structure; doc existence test                          | ⬜ Pending |
-| 4.1     | No regressions; full test suite                                         | ⬜ Pending |
+| #       | To-do                                                                   | Status                    |
+| -       | -----                                                                   | ------                    |
+| 1.1     | Create docs/compliance-samples/ (or deploy/); README                    | Done                      |
+| 1.2–1.8 | UK GDPR, EU GDPR, Benelux, PIPEDA, POPIA, APPI, PCI-DSS sample files   | 1.2 Done; 1.3–1.8 Pending |
+| 1.9–1.17 | Optional regional samples (Philippines, Australia, Singapore, UAE, Argentina, Kenya, India, Turkey, + others) | ⬜ Optional |
+| 2.1–2.4 | README pitch; compliance-frameworks/samples doc; USAGE/TECH_GUIDE/index | ⬜ Pending                 |
+| 3.1–3.2 | Test sample YAML structure; doc existence test                          | ⬜ Pending                 |
+| 4.1     | No regressions; full test suite                                         | ⬜ Pending                 |
 
 ---
 
@@ -196,11 +197,11 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 
 ### SAP connector – [PLAN_SAP_CONNECTOR.md](PLAN_SAP_CONNECTOR.md)
 
-| Phase   | To-do                                                                                                                                    | Status    |
-| -----   | -----                                                                                                                                    | ------    |
-| 1.1–1.3 | Research SAP access (HANA/OData/RFC); decide primary path; define config shape                                                           | ⬜ Pending |
-| 2.1–2.3 | Connector module (discovery, sampling, scan_column, save_finding); register; optional [sap] extra                                         | ⬜ Pending |
-| 3.1–3.3 | USAGE/TECH_GUIDE (EN + pt-BR); tests; pitch/roadmap update in README                                                                     | ⬜ Pending |
+| Phase   | To-do                                                                                             | Status    |
+| -----   | -----                                                                                             | ------    |
+| 1.1–1.3 | Research SAP access (HANA/OData/RFC); decide primary path; define config shape                    | ⬜ Pending |
+| 2.1–2.3 | Connector module (discovery, sampling, scan_column, save_finding); register; optional [sap] extra | ⬜ Pending |
+| 3.1–3.3 | USAGE/TECH_GUIDE (EN + pt-BR); tests; pitch/roadmap update in README                              | ⬜ Pending |
 
 ---
 
@@ -228,15 +229,15 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 
 Goal categories (so we don’t forget). **Full prioritised checklist and to-dos:** [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md). Status is updated only there.
 
-| Category | One-line summary | Status |
-|----------|------------------|--------|
-| **Release** | Checklist in CONTRIBUTING; history = git + `docs/releases/`. | Done |
-| **Security response** | Vulnerability and Dependabot security PR SLAs in SECURITY.md. | Done |
-| **Runbooks** | Operator runbook one-pager; backup and restore in USAGE/deploy. | Not started |
-| **Compliance evidence** | “Compliance and evidence” in SECURITY or doc; data retention mention. | Not started |
-| **Onboarding** | Short onboarding checklist in CONTRIBUTING. | Not started |
-| **Dependency policy** | Python/platform support sentence; optional lockfile refresh policy. | Not started |
-| **Check-all script** | One command (uv sync, ruff, pytest, pip-audit) approximates CI locally. | Not started |
+| Category                | One-line summary                                                        | Status      |
+| ----------              | ------------------                                                      | --------    |
+| **Release**             | Checklist in CONTRIBUTING; history = git + `docs/releases/`.            | Done        |
+| **Security response**   | Vulnerability and Dependabot security PR SLAs in SECURITY.md.           | Done        |
+| **Runbooks**            | Operator runbook one-pager; backup and restore in USAGE/deploy.         | Not started |
+| **Compliance evidence** | “Compliance and evidence” in SECURITY or doc; data retention mention.   | Not started |
+| **Onboarding**          | Short onboarding checklist in CONTRIBUTING.                             | Not started |
+| **Dependency policy**   | Python/platform support sentence; optional lockfile refresh policy.     | Not started |
+| **Check-all script**    | One command (uv sync, ruff, pytest, pip-audit) approximates CI locally. | Not started |
 
 See PLAN_READINESS for MCP recommendation, workflow automation, and when to revisit (release, onboarding, audit).
 

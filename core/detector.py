@@ -21,6 +21,7 @@ from typing import Any
 import re
 
 from core.dl_backend import DLClassifier, is_available as dl_available
+from utils.file_encoding import read_text_with_encoding
 
 # Optional ML deps (numpy/pandas/sklearn) - fail gracefully if not installed
 try:
@@ -121,13 +122,16 @@ def _looks_like_music_tab(sample: str) -> bool:
     return False
 
 
-def _load_regex_overrides(path: str | None) -> dict[str, tuple[str, str]]:
-    """Load name -> (pattern, norm_tag) from YAML/JSON file."""
+def _load_regex_overrides(
+    path: str | None,
+    encoding: str = "utf-8",
+    errors: str = "replace",
+) -> dict[str, tuple[str, str]]:
+    """Load name -> (pattern, norm_tag) from YAML/JSON file. Uses given encoding (default utf-8)."""
     if not path or not Path(path).exists():
         return {}
-    p = Path(path)
-    raw = p.read_text(encoding="utf-8")
-    if p.suffix.lower() in (".yaml", ".yml"):
+    raw = read_text_with_encoding(path, encoding=encoding, errors=errors)
+    if Path(path).suffix.lower() in (".yaml", ".yml"):
         import yaml
         data = yaml.safe_load(raw)
     else:
@@ -147,13 +151,16 @@ def _load_regex_overrides(path: str | None) -> dict[str, tuple[str, str]]:
     return out
 
 
-def _load_ml_patterns(path: str | None) -> list[tuple[str, int]]:
-    """Load (text, label) from YAML/JSON; label 1=sensitive, 0=non_sensitive."""
+def _load_ml_patterns(
+    path: str | None,
+    encoding: str = "utf-8",
+    errors: str = "replace",
+) -> list[tuple[str, int]]:
+    """Load (text, label) from YAML/JSON; label 1=sensitive, 0=non_sensitive. Uses given encoding."""
     if not path or not Path(path).exists():
         return []
-    p = Path(path)
-    raw = p.read_text(encoding="utf-8")
-    if p.suffix.lower() in (".yaml", ".yml"):
+    raw = read_text_with_encoding(path, encoding=encoding, errors=errors)
+    if Path(path).suffix.lower() in (".yaml", ".yml"):
         import yaml
         data = yaml.safe_load(raw)
     else:
@@ -175,6 +182,8 @@ def _load_ml_patterns(path: str | None) -> list[tuple[str, int]]:
 def _ml_terms_from_inline_or_file(
     inline: list[dict[str, Any]] | list[tuple[str, int]] | None,
     path: str | None,
+    encoding: str = "utf-8",
+    errors: str = "replace",
 ) -> list[tuple[str, int]]:
     """ML training terms: prefer inline when non-empty; else file; else DEFAULT_ML_TERMS."""
     if inline:
@@ -192,12 +201,14 @@ def _ml_terms_from_inline_or_file(
                     out.append((text, label))
         if out:
             return out
-    return _load_ml_patterns(path) or DEFAULT_ML_TERMS
+    return _load_ml_patterns(path, encoding=encoding, errors=errors) or DEFAULT_ML_TERMS
 
 
 def _load_dl_terms(
     path: str | None,
     inline: list[dict[str, Any]] | list[tuple[str, int]] | None,
+    encoding: str = "utf-8",
+    errors: str = "replace",
 ) -> list[tuple[str, int]]:
     """DL training terms: prefer inline (list of {text, label}); else load from path (same format as ML)."""
     if inline:
@@ -215,7 +226,7 @@ def _load_dl_terms(
                     out.append((text, label))
         if out:
             return out
-    return _load_ml_patterns(path)
+    return _load_ml_patterns(path, encoding=encoding, errors=errors)
 
 
 def _detect_possible_minor(column_name: str, sample_text: str, minor_age_threshold: int) -> bool:
@@ -342,15 +353,18 @@ class SensitivityDetector:
         dl_patterns_path: str | None = None,
         dl_terms_inline: list[dict[str, Any]] | list[tuple[str, int]] | None = None,
         detection_config: dict[str, Any] | None = None,
+        file_encoding: str = "utf-8",
     ):
+        enc = file_encoding or "utf-8"
+        err = "replace"
         self.patterns = dict(DEFAULT_PATTERNS)
-        over = _load_regex_overrides(regex_overrides_path)
+        over = _load_regex_overrides(regex_overrides_path, encoding=enc, errors=err)
         for k, v in over.items():
             self.patterns[k] = v
         self._compiled = {name: re.compile(pat) for name, (pat, _) in self.patterns.items()}
 
         # ML terms: inline overrides file; file overrides default
-        ml_terms = _ml_terms_from_inline_or_file(ml_terms_inline, ml_patterns_path)
+        ml_terms = _ml_terms_from_inline_or_file(ml_terms_inline, ml_patterns_path, encoding=enc, errors=err)
         self._ml_available = False
         self._vectorizer = None
         self._model = None
@@ -364,7 +378,7 @@ class SensitivityDetector:
             self._ml_available = True
 
         # DL terms: inline or from dl_patterns_path (same file format as ML)
-        dl_terms = _load_dl_terms(dl_patterns_path, dl_terms_inline)
+        dl_terms = _load_dl_terms(dl_patterns_path, dl_terms_inline, encoding=enc, errors=err)
         self._dl_classifier: DLClassifier | None = None
         if dl_terms and dl_available():
             self._dl_classifier = DLClassifier(dl_terms)
