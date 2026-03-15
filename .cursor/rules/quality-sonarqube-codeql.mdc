@@ -28,7 +28,7 @@ This project enforces quality and security via **tests** (CI) and **CodeQL** (Gi
    - **S1192:** Use constants for repeated string literals (session_id pattern, template names, response codes); see test_sonarqube_python and api/routes.
 
 1. **Avoid CodeQL-relevant patterns** (CI runs CodeQL on push/PR):
-   - Do not log secrets (API keys, passwords, connection strings). See SECURITY.md and docs/security.md.
+   - Do not log secrets (API keys, passwords, connection strings). See SECURITY.md and docs/SECURITY.md.
    - Do not build SQL or shell commands by concatenating user input; use parameterized queries and safe APIs.
    - Prefer strong crypto (e.g. TLS 1.2+); avoid weak or deprecated algorithms for sensitive data.
 

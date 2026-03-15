@@ -1,0 +1,41 @@
+---
+description: Where plan files live and how to complete a plan without breaking links. Use when creating, moving, or completing plan docs under docs/plans/.
+globs: ["docs/plans/**/*.md", "**/PLAN_*.md", "**/PLANS_TODO.md"]
+alwaysApply: false
+---
+
+# Plan files location and completion workflow
+
+Plan documents are kept in a **dedicated subfolder** so they do not mix with operator-facing documentation and how-tos.
+
+## Location
+
+- **Open plans:** `docs/plans/` — `PLANS_TODO.md` and all active `PLAN_*.md` files.
+- **Completed plans:** `docs/plans/completed/` — Archived plan documents and the implementation checklist (`NEXT_STEPS.md`).
+
+Do **not** put plan files in `docs/` root or in `docs/completed/` (that folder was retired in favour of `docs/plans/completed/`).
+
+## When completing a plan
+
+1. Mark all to-dos **Done** in the plan file and in **`docs/plans/PLANS_TODO.md`**.
+1. **Move** the plan file from `docs/plans/PLAN_*.md` to `docs/plans/completed/PLAN_*.md` (e.g. `git mv docs/plans/PLAN_XYZ.md docs/plans/completed/`).
+1. **Update** `docs/plans/PLANS_TODO.md`: remove the plan from the open list and ensure the "Completed plans" section links to `completed/PLAN_XYZ.md`.
+1. **Update** any references elsewhere (e.g. `docs/USAGE.md`, `docs/SENSITIVITY_DETECTION.md`, `core/detector.py`, other plan files) from `docs/plans/PLAN_*.md` to `docs/plans/completed/PLAN_*.md` where they point to the completed plan.
+1. In the **moved** file, set **Status** to "Complete" and note that it is archived in `docs/plans/completed/`. Keep the "Synced with" link to `../PLANS_TODO.md` so readers can jump back to the central to-do list.
+1. **Update the pitch** in **README.md** and **README.pt_BR.md**: remove the completed item from the **Roadmap** sentence and, if useful, reflect the new capability in "What we surface" or "Why it holds up" so the pitch describes what the application now does and why to consider the product. See `.cursor/rules/pitch-roadmap-sync.mdc`.
+
+## Cross-references
+
+- From **docs/** (e.g. README, USAGE): link to `plans/PLANS_TODO.md` and `plans/completed/PLAN_*.md` as needed.
+- From **docs/plans/** (open plans): use relative links `[PLANS_TODO.md](PLANS_TODO.md)` and `[PLAN_*.md](PLAN_*.md)`.
+- From **docs/plans/completed/**: use `[../PLANS_TODO.md](../PLANS_TODO.md)` to point back to the central list.
+
+## Pitch and roadmap
+
+When you **create** a new plan, add the new roadmap goal to the pitch (README "For decision-makers" / "Why it holds up"). When you **complete** a plan, update the pitch so the new capability is reflected and that item is removed from the Roadmap sentence. When you **remove, cancel, or substitute** a plan, update the pitch so the Roadmap no longer mentions the dropped goal. Keep README and README.pt_BR in sync. **Rule:** `.cursor/rules/pitch-roadmap-sync.mdc`.
+
+## Reference
+
+- **Central to-do list:** `docs/plans/PLANS_TODO.md`.
+- **Pitch–roadmap sync:** `.cursor/rules/pitch-roadmap-sync.mdc`.
+- **Doc index and policy:** `docs/README.md` (section "Documentation policy"); plan links are under "Internal and reference".
