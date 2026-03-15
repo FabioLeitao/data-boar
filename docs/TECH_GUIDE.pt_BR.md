@@ -463,18 +463,19 @@ Para suportar uma nova fonte de dados (ex.: outro driver de banco ou API), veja 
 
 ## Dependências e segurança
 
-- **Fonte da verdade:** Para a ferramenta **uv**, o **`pyproject.toml`** é a única fonte de verdade para bibliotecas; **pip** e **`requirements.txt`** são derivados (requirements.txt é gerado a partir do pyproject.toml para ambientes que usam pip). As dependências são declaradas no **`pyproject.toml`**; o **`requirements.txt`** não deve ser editado manualmente para alterações de versão. Ao adicionar, remover ou alterar uma dependência, edite apenas o **`pyproject.toml`**, depois regenere o requirements.txt.
+- **Fonte da verdade:** Para a ferramenta **uv**, o **`pyproject.toml`** é a fonte de verdade das dependências declaradas; o **`uv.lock`** fixa a árvore resolvida para instalações reproduzíveis (evita quebras “funcionou ontem”). **pip** e **`requirements.txt`** são derivados (o requirements.txt é exportado do lockfile para ambientes pip). Não edite **`uv.lock`** nem **`requirements.txt`** à mão para mudanças de versão. Ao adicionar, remover ou alterar uma dependência, edite apenas o **`pyproject.toml`**, depois execute `uv lock` e export.
 
-- **Regenere o requirements.txt após qualquer alteração de dependência:**
+- **Regenere o lockfile e o requirements.txt após qualquer alteração de dependência:**
 
   ```bash
-  # Na raiz do projeto: gerar requirements.txt a partir do pyproject.toml com uv
-  uv pip compile pyproject.toml -o requirements.txt
+  # Na raiz do projeto: resolver e bloquear, depois exportar para pip
+  uv lock
+  uv export --no-emit-package pyproject.toml -o requirements.txt
   ```
 
-  Isso mantém o `requirements.txt` alinhado com as versões e extras definidos no `pyproject.toml`, para que ambientes que usam `pip install -r requirements.txt` se comportem igual ao `uv sync`.
+  Faça commit de **pyproject.toml**, **uv.lock** e **requirements.txt**. Assim as instalações permanecem reproduzíveis e alinhadas; `pip install -r requirements.txt` equivale ao `uv sync`.
 
-- **Dependabot / automação:** Se um PR (ex.: do Dependabot) sugerir atualizar apenas o `requirements.txt`, aplique a alteração na **fonte da verdade** primeiro: atualize a versão mínima correspondente no **`pyproject.toml`** (ex.: `fonttools>=4.62.1`), depois execute `uv pip compile pyproject.toml -o requirements.txt` e faça commit dos dois arquivos. Não faça merge de uma atualização de dependência que edite só o `requirements.txt`.
+- **Dependabot / automação:** Se um PR (ex.: do Dependabot) sugerir atualizar só o `requirements.txt` ou o `uv.lock`, aplique a alteração na **fonte da verdade** primeiro: atualize a versão mínima correspondente no **`pyproject.toml`**, depois execute `uv lock` e `uv export --no-emit-package pyproject.toml -o requirements.txt` e faça commit dos três arquivos. Não faça merge de uma atualização de dependência que edite apenas `requirements.txt` ou `uv.lock`.
 
 - **Verificar CVEs conhecidos:** Execute `uv pip audit` (ou `pip audit` se disponível) antes da implantação; corrija ou fixe pacotes vulneráveis.
 - Veja também **Segurança e conformidade** abaixo.
