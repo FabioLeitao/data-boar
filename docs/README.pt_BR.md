@@ -41,6 +41,7 @@ Estes permanecem na raiz do repositório para o GitHub e a automação:
 | Versionamento                                            | [VERSIONING.md](VERSIONING.md)                       | [VERSIONING.pt_BR.md](VERSIONING.pt_BR.md)                       |
 | Adicionar conectores                                     | [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md)         | [ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md)         |
 | Conformidade                                             | [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) | [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) |
+| Conformidade e jurídico (para jurídico e DPOs)            | [COMPLIANCE_AND_LEGAL.md](COMPLIANCE_AND_LEGAL.md)   | [COMPLIANCE_AND_LEGAL.pt_BR.md](COMPLIANCE_AND_LEGAL.pt_BR.md)   |
 | Amostras de conformidade (UK GDPR, EU GDPR, PIPEDA, etc.) | [compliance-samples/](compliance-samples/) · [COMPLIANCE_FRAMEWORKS.md#compliance-samples](COMPLIANCE_FRAMEWORKS.md#compliance-samples) | [compliance-samples/](compliance-samples/) · [COMPLIANCE_FRAMEWORKS.pt_BR.md#amostras-de-conformidade](COMPLIANCE_FRAMEWORKS.pt_BR.md#amostras-de-conformidade) |
 | Glossário (termos)                                       | [GLOSSARY.md](GLOSSARY.md)                           | [GLOSSARY.pt_BR.md](GLOSSARY.pt_BR.md)                           |
 
