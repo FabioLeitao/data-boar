@@ -17,7 +17,7 @@ Arquivos de configuração de exemplo para habilitar **frameworks de conformidad
 | **compliance-sample-appi.yaml**    | APPI (Japão): informação pessoal e dados pessoais retidos; termos e overrides alinhados à PPC.                                                                  |
 | **compliance-sample-pci_dss.yaml** | PCI-DSS (dados de cartão de pagamento): padrões de cartão/financeiro e recommendation overrides para comerciantes e avaliadores.                                |
 
-**compliance-sample-lgpd.yaml** e **compliance-sample-uk_gdpr.yaml** estão disponíveis; EU GDPR, Benelux, PIPEDA, POPIA, APPI e PCI-DSS serão adicionados em fases posteriores. Cada amostra é autocontida (regex overrides, termos ML, recommendation overrides) para que você possa habilitar um framework incluindo os blocos desse arquivo no seu config.
+**compliance-sample-lgpd.yaml** e **compliance-sample-uk_gdpr.yaml** estão disponíveis; EU GDPR, Benelux, PIPEDA, POPIA, APPI e PCI-DSS serão adicionados em fases posteriores. **Amostras regionais opcionais** (Filipinas DPA, Austrália Privacy Act, Singapura PDPA, UAE/Arábia Saudita PDPL, Argentina/Colômbia/Chile, Quênia/Nigéria/Marrocos, Índia DPDP, Turquia KVKK, Suíça FADP, Nova Zelândia, Israel, etc.) podem ser adicionadas conforme necessidade—mesmo formato; veja [PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md](../plans/PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md) “Optional regional samples (Phase 3+)”. Cada amostra é autocontida (regex overrides, termos ML, recommendation overrides) para que você possa habilitar um framework incluindo os blocos desse arquivo no seu config.
 
 ### Idioma e público-alvo
 
@@ -33,6 +33,16 @@ Ao escolher ou criar uma amostra, considere o(s) **idioma(s)** da região alvo p
 | **POPIA (África do Sul)** | Inglês; adicione idiomas locais nos termos se seus dados usarem.                                         |
 | **APPI (Japão)**          | Japonês e/ou inglês conforme os nomes de colunas.                                                        |
 | **PCI-DSS**               | Inglês.                                                                                                  |
+| **Filipinas (DPA)**       | Inglês.                                                                                                  |
+| **Austrália / NZ**        | Inglês.                                                                                                  |
+| **Singapura (PDPA)**      | Inglês.                                                                                                  |
+| **UAE / Arábia Saudita (PDPL)** | Inglês; opcional árabe para nomes de colunas.                                          |
+| **Argentina / Colômbia / Chile** | Espanhol e inglês (ex.: datos personales / personal data).                        |
+| **Quênia / Nigéria**      | Inglês.                                                                                                  |
+| **Marrocos**              | Francês e/ou árabe conforme relevante.                                                                   |
+| **Índia (DPDP)**          | Inglês.                                                                                                  |
+| **Turquia (KVKK)**        | Turco e inglês (ex.: kişisel veri / personal data).                                                      |
+| **Suíça (FADP)**          | Inglês; opcional DE/FR/IT.                                                                               |
 
 Documente no cabeçalho da amostra ou em [COMPLIANCE_FRAMEWORKS](../COMPLIANCE_FRAMEWORKS.pt_BR.md) quando uma amostra incluir termos em mais de um idioma. Veja também a regra **.cursor/rules/compliance-samples-language.mdc**.
 
