@@ -75,33 +75,6 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 
 ## Open plans and to-dos (summary)
 
-### Security hardening – [PLAN_SECURITY_HARDENING.md](PLAN_SECURITY_HARDENING.md)
-
-| #        | To-do                                                               | Status                                       |
-| -        | -----                                                               | ------                                       |
-| 1.1      | Tenant/technician validation (length, chars); tests                 | ✅ Done                                       |
-| 1.2      | Request body size limit; document SECURITY.md                       | ✅ Done                                       |
-| 1.3      | Logging audit (no secrets in logs); test/checklist                  | ✅ Done                                       |
-| 2.1–2.3  | pip-audit in CI, Dependabot/release checklist, min versions         | ✅ Done                                       |
-| 2.4      | Lockfile (uv.lock) + audit against locked env; refresh on release   | ✅ Done                                       |
-| 3.1–3.4  | Rate limit/API key/report access docs; optional scan payload limits | ✅ Done                                       |
-| 5.1–5.3  | Deploy hardening, secrets, WAF docs                                 | ✅ Done                                       |
-| 6.1, 6.3 | Security tests for new validation; no regressions                   | ✅ Done                                       |
-| 7.1–7.3  | Release checklist, docs/SECURITY.md, SECURITY.md                    | 7.1 ✅ 7.2 ✅ 7.3 ✅ |
-
----
-
-### Configurable timeouts – [PLAN_CONFIGURABLE_TIMEOUTS_AND_RATE_GUIDANCE.md](PLAN_CONFIGURABLE_TIMEOUTS_AND_RATE_GUIDANCE.md)
-
-| Phase   | To-do                                                                                                                       | Status    |
-| -----   | -----                                                                                                                       | ------    |
-| 1.1–1.3 | Add timeouts (connect_seconds, read_seconds) to config with sane defaults (25, 90); per-target overrides; document in USAGE | ✅ Done   |
-| 2.1–2.6 | Wire SQL, REST, Power BI/Dataverse, MongoDB, Redis (and others where supported) to use config timeouts                      | ✅ Done   |
-| 3.1–3.2 | Pass global config/merged timeouts to connectors; consistent override (target overrides global)                             | ✅ Done (loader merges onto each target) |
-| 4.1–4.4 | "Timeouts and load" recommendations in USAGE; optional failure_hint extension; pt_BR; tests                                 | ✅ Done   |
-
----
-
 ### Notifications (off-band + scan-complete) – [PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md](PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md)
 
 | Phase   | To-do                                                                                                                                    | Status    |
@@ -246,6 +219,8 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 - **Rate limiting** – [completed/PLAN_RATE_LIMIT_SCANS.md](completed/PLAN_RATE_LIMIT_SCANS.md)
 - **Web hardening** – [completed/PLAN_WEB_HARDENING_SECURITY.md](completed/PLAN_WEB_HARDENING_SECURITY.md)
 - **Logo and naming** – [completed/PLAN_LOGO_AND_NAMING.md](completed/PLAN_LOGO_AND_NAMING.md)
+- **Security hardening** – [completed/PLAN_SECURITY_HARDENING.md](completed/PLAN_SECURITY_HARDENING.md)
+- **Configurable timeouts** – [completed/PLAN_CONFIGURABLE_TIMEOUTS_AND_RATE_GUIDANCE.md](completed/PLAN_CONFIGURABLE_TIMEOUTS_AND_RATE_GUIDANCE.md)
 
 ---
 
