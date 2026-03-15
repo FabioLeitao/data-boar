@@ -26,8 +26,8 @@ def main():
     except FileNotFoundError:
         example = {"targets": [{"name": "Local_Files", "type": "filesystem", "path": "./", "recursive": True}]}
         import yaml
-        with open(args.config, "w") as f:
-            yaml.dump(example, f)
+        with open(args.config, "w", encoding="utf-8") as f:
+            yaml.dump(example, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
         config = load_config(args.config)
     except Exception as e:
         print(f"Config error: {e}")

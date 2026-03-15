@@ -298,7 +298,23 @@ CLI uses the path you pass with `--config` (e.g. `config.yaml`). For the **web s
 ### Config file location and shape
 
 - **Location:** Any path; typical names: `config.yaml`, `config/config.json`. Legacy `config/config.json` with `databases` and `file_scan.directories` is normalized automatically.
-- **Root keys:** `targets`, `file_scan`, `report`, `api`, `sqlite_path`, `scan`, **`rate_limit`**, **`timeouts`**, optional `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection`, `learned_patterns`.
+- **Root keys:** `targets`, `file_scan`, `report`, `api`, `sqlite_path`, `scan`, **`rate_limit`**, **`timeouts`**, optional `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection`, `learned_patterns`, **`pattern_files_encoding`**.
+
+### File encoding (config and pattern files)
+
+Config and compliance sample files can use different character sets. The application supports this so multilingual terms (e.g. Japanese, Arabic, French) and legacy environments do not break in production.
+
+- **Config file:** Read with **auto-detection**: UTF-8, UTF-8 with BOM, Windows ANSI (cp1252), and Latin-1 are tried in order. No need to set encoding for the main config file.
+- **Pattern files** (`regex_overrides_file`, `ml_patterns_file`, `dl_patterns_file`): Read with the encoding set by **`pattern_files_encoding`** (default **`utf-8`**). Use this when your YAML/JSON is saved in another encoding (e.g. `cp1252`, `latin_1`, `utf-8-sig`). Invalid bytes are replaced so a single bad character does not crash the scan.
+- **Recommendation:** Save all config and sample files in **UTF-8** for best compatibility with multilingual content (compliance samples for APAC, EMEA, etc.). The Excel report and heatmap output support Unicode.
+
+Example in config:
+
+```yaml
+pattern_files_encoding: utf-8   # default; or cp1252, latin_1, utf-8-sig for legacy
+regex_overrides_file: docs/compliance-samples/compliance-sample-uk_gdpr.yaml
+ml_patterns_file: docs/compliance-samples/compliance-sample-pipeda.yaml
+```
 
 ### Credentials from environment (secrets not in config)
 
@@ -306,10 +322,10 @@ To keep secrets **out of the config file**, use **`*_from_env`** keys so the app
 
 - **API key:** `api.api_key_from_env: "AUDIT_API_KEY"` (see Authentication above).
 - **Targets (databases, REST, Power BI, etc.):**
-  - **Password:** `pass_from_env: "DB_PASS"` or `password_from_env: "DB_PASS"` — the app reads the password from the named env var.
-  - **User:** `user_from_env: "DB_USER"` — username from env.
-  - **REST / OAuth:** In the target’s `auth` block: `token_from_env: "REST_TOKEN"`, `client_secret_from_env: "CLIENT_SECRET"`.
-  - **Power BI / Dataverse:** At target level: `client_secret_from_env: "PBI_SECRET"`, or in `auth`: `client_secret_from_env: "PBI_SECRET"`.
+- **Password:** `pass_from_env: "DB_PASS"` or `password_from_env: "DB_PASS"` — the app reads the password from the named env var.
+- **User:** `user_from_env: "DB_USER"` — username from env.
+- **REST / OAuth:** In the target’s `auth` block: `token_from_env: "REST_TOKEN"`, `client_secret_from_env: "CLIENT_SECRET"`.
+- **Power BI / Dataverse:** At target level: `client_secret_from_env: "PBI_SECRET"`, or in `auth`: `client_secret_from_env: "PBI_SECRET"`.
 
 When a `*_from_env` key is set, the resolved value is used for the connection; the config file can omit the literal secret. Restrict config file permissions and **do not commit** config files that contain credentials; see [SECURITY.md](../SECURITY.md) (Config file and secrets).
 
@@ -377,14 +393,19 @@ timeouts:
   read_seconds: 90
 
 targets:
-  - name: fast-db
+
+- name: fast-db
+
     type: database
     # uses 25 / 90
-  - name: slow-api
+- name: slow-api
+
     type: api
     connect_timeout: 60
     read_timeout: 120
-  - name: legacy
+
+- name: legacy
+
     type: database
     timeout: 45   # 45 for both connect and read
 ```
@@ -396,10 +417,10 @@ Connectors use the merged values (global or per-target) when opening connections
 Recommendations so scans stay robust without overloading targets or waiting forever:
 
 1. **Don’t wait forever:** Set connect and read timeouts so one stuck target does not block the whole scan. Use report failure hints to spot timeout failures and which target failed.
-2. **Don’t be too aggressive:** Too-low timeouts cause false timeouts on busy or slow networks (e.g. during backup). If you see many timeouts, **increase** `connect_seconds` and `read_seconds` (or per-target `connect_timeout` / `read_timeout`) and consider re-running during off-peak.
-3. **Avoid DoS and "too much, too fast":** Use **rate_limit** (e.g. `max_concurrent_scans: 1`, `min_interval_seconds: 5`) and **scan.max_workers: 1** (or 2) so the scanner does not open many connections at once. This reduces load on targets and avoids amplifying slowness or causing DoS.
-4. **Backup or maintenance windows:** If scans run during backup or maintenance, increase timeouts and keep parallelism low; or schedule scans outside those windows.
-5. **Per-target overrides:** For one slow database or API, set `connect_timeout` / `read_timeout` (or `timeout`) on that target instead of raising global defaults for everyone.
+1. **Don’t be too aggressive:** Too-low timeouts cause false timeouts on busy or slow networks (e.g. during backup). If you see many timeouts, **increase** `connect_seconds` and `read_seconds` (or per-target `connect_timeout` / `read_timeout`) and consider re-running during off-peak.
+1. **Avoid DoS and "too much, too fast":** Use **rate_limit** (e.g. `max_concurrent_scans: 1`, `min_interval_seconds: 5`) and **scan.max_workers: 1** (or 2) so the scanner does not open many connections at once. This reduces load on targets and avoids amplifying slowness or causing DoS.
+1. **Backup or maintenance windows:** If scans run during backup or maintenance, increase timeouts and keep parallelism low; or schedule scans outside those windows.
+1. **Per-target overrides:** For one slow database or API, set `connect_timeout` / `read_timeout` (or `timeout`) on that target instead of raising global defaults for everyone.
 
 ### API and security (CSP, headers)
 
