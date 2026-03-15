@@ -123,10 +123,10 @@ Optionally extend `failure_hint("timeout")` with one line: "You can set timeouts
 
 ### Phase 3: Pass config to connectors
 
-| #   | To-do                                                                                                                                                                                                                       | Status |
-| --- | ---------------------------------------------------------------------                                                                                                                                                       | ------ |
+| #   | To-do                                                                                                                                                                                                                       | Status                                                    |
+| --- | ---------------------------------------------------------------------                                                                                                                                                       | ------                                                    |
 | 3.1 | Ensure engine or connector instantiation receives global config (or merged timeout values) so connectors can read defaults. (Today some connectors only get target_config; may need to pass config or pre-merged timeouts.) | ✅ (loader merges onto each target; engine passes target.) |
-| 3.2 | Use consistent source: e.g. target.timeout or target.read_timeout override config.timeouts.read_seconds.                                                                                                                    | ✅      |
+| 3.2 | Use consistent source: e.g. target.timeout or target.read_timeout override config.timeouts.read_seconds.                                                                                                                    | ✅                                                         |
 
 ### Phase 4: Recommendations and failure hint
 

@@ -134,11 +134,11 @@ So the plan keeps **vault optional** and emphasises **env expansion** and **UI r
 
 ## Execution log (progress and history)
 
-| Date       | Step | Action                                                                                                               |
-| ---------- | ---- | ------                                                                                                               |
+| Date       | Step | Action                                                                                                                                                                |
+| ---------- | ---- | ------                                                                                                                                                                |
 | 2026-03    | A1   | pass_from_env, password_from_env, user_from_env, auth.token_from_env, auth.client_secret_from_env, client_secret_from_env in config/loader.py; USAGE + SECURITY docs. |
-| 2026-03    | A2   | config/redact_config.py: redact_config_for_display, merge_config_on_save; GET /config redacts, POST merges; tests in test_security.py. |
-| 2026-03    | A3   | .gitignore: config.yaml, *.vault; SECURITY.md + docs/SECURITY.pt_BR.md config file and redaction; CONTRIBUTING release checklist. |
+| 2026-03    | A2   | config/redact_config.py: redact_config_for_display, merge_config_on_save; GET /config redacts, POST merges; tests in test_security.py.                                |
+| 2026-03    | A3   | .gitignore: config.yaml, *.vault; SECURITY.md + docs/SECURITY.pt_BR.md config file and redaction; CONTRIBUTING release checklist.                                     |
 
 ## Update this table when completing each step; keep Status cells in the tables above in sync.
 
