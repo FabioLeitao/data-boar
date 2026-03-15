@@ -60,16 +60,16 @@ Thank you for considering contributing. This document covers local setup, workfl
 ## CI and dependency hygiene
 
 - **CI:** GitHub Actions run tests and **dependency audit** (`uv run pip-audit`) on every push/PR to `main` (or `master`). PRs must resolve any audit failures (fix or upgrade vulnerable dependencies) before merge. When SonarQube/SonarCloud is enabled (see [docs/TESTING.md](docs/TESTING.md)), address reported issues so the quality gate stays green.
-- **Dependencies:** The source of truth for libraries is **`pyproject.toml`** (uv toolchain); pip and **`requirements.txt`** are derivative. Declare all runtime and dev dependencies in **`pyproject.toml`**. Prefer **minimum versions (`>=`)** so security patches apply; use exact pins (`==`) only when required for reproducibility. When you add or change deps, run `uv sync` and regenerate the lockfile with `uv pip compile pyproject.toml -o requirements.txt`. Do not edit `requirements.txt` by hand for version changes.
-- **Dependabot / automation:** When applying a dependency update (e.g. from a Dependabot PR), update **`pyproject.toml`** first (bump the minimum version for that package), then run `uv pip compile pyproject.toml -o requirements.txt` and commit both files. Merge dependency PRs only after CI (tests and audit) pass.
+- **Dependencies:** The source of truth for libraries is **`pyproject.toml`** (uv toolchain). The **`uv.lock`** file pins the exact resolved dependency tree so installs are reproducible and users are protected from “it worked yesterday” breakage when a dependency updates. Declare all runtime and dev dependencies in **`pyproject.toml`** (prefer **minimum versions `>=`**; pin `==` only when needed). When you add or change deps, run `uv lock`, then `uv export --no-emit-package pyproject.toml -o requirements.txt`, and commit **pyproject.toml**, **uv.lock**, and **requirements.txt**. Do not edit `uv.lock` or `requirements.txt` by hand for version changes. CI runs `uv sync` (which uses `uv.lock`) and then `pip-audit`, so the locked environment is what is tested and audited.
+- **Dependabot / automation:** Dependabot opens weekly PRs for pip and GitHub Actions. When applying a dependency update (e.g. from a Dependabot PR), update **`pyproject.toml`** first (bump the minimum version), then run `uv lock` and `uv export --no-emit-package pyproject.toml -o requirements.txt`, and commit all three files. Merge dependency PRs only after CI (tests and audit) pass. Dependabot helps signal when to refresh dependencies; acting on those PRs (or before a stable release) keeps the lockfile updated, compatible, and safe.
 
 ## Release checklist (Security)
 
-Before tagging a release, maintainers should:
+Before tagging a **stable release**, maintainers should:
 
-- **Dependency audit:** Run `uv sync`, then `uv run pip-audit`. Fix or upgrade any high/critical findings before release.
+- **Lockfile and audit:** Run `uv lock` to refresh the lockfile from current `pyproject.toml`, then `uv sync` and `uv run pip-audit`. Fix or upgrade any high/critical findings, then run `uv export --no-emit-package pyproject.toml -o requirements.txt` and commit **uv.lock** and **requirements.txt** so the release is reproducible, compatible, and safe. This protects users from accidental breakage while keeping the release on audited dependencies.
 - **Docs:** Ensure [SECURITY.md](SECURITY.md) and [docs/SECURITY.md](docs/SECURITY.md) reflect current behaviour (validation, headers, API key, logging policy).
-- **Secrets:** Confirm no API keys or passwords in logs; config file and env handling restrict access to trusted users (see [SECURITY.md](SECURITY.md)).
+- **Secrets and logging:** Confirm no API keys or passwords in logs; config file and env handling restrict access to trusted users (see [SECURITY.md](SECURITY.md)). Ensure **config file permissions** restrict read/write to trusted users and that **config.yaml** (and any file with secrets) is **not committed** (see .gitignore). When adding or changing log statements, do not log raw config, request bodies, or credentials; failure/exception text is redacted via `core.validation.redact_secrets_for_log` (regression: `test_redact_secrets_for_log_*` in `tests/test_security.py`).
 
 ## Deployment and production
 
