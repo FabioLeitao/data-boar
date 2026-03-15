@@ -105,6 +105,39 @@ terms:
     label: sensitive
   - text: "apellido"
     label: sensitive
+  # ID / document (EN + DE/FR/ES for multilingual EU data)
+  - text: "passport"
+    label: sensitive
+  - text: "id card"
+    label: sensitive
+  - text: "identity document"
+    label: sensitive
+  - text: "national id"
+    label: sensitive
+  - text: "document number"
+    label: sensitive
+  - text: "driver license"
+    label: sensitive
+  - text: "driving licence"
+    label: sensitive
+  - text: "carte d'identité"
+    label: sensitive
+  - text: "document d'identité"
+    label: sensitive
+  - text: "passeport"
+    label: sensitive
+  - text: "Personalausweis"
+    label: sensitive
+  - text: "Reisepass"
+    label: sensitive
+  - text: "pasaporte"
+    label: sensitive
+  - text: "documento de identidad"
+    label: sensitive
+  - text: "green card"
+    label: sensitive
+  - text: "professional registration"
+    label: sensitive
 
 recommendation_overrides:
   - norm_tag_pattern: "EU GDPR"

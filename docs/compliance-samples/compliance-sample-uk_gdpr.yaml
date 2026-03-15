@@ -77,6 +77,31 @@ terms:
     label: sensitive
   - text: "middle name"
     label: sensitive
+  # ID / document (naming schemes for column names)
+  - text: "passport"
+    label: sensitive
+  - text: "id card"
+    label: sensitive
+  - text: "identity document"
+    label: sensitive
+  - text: "national id"
+    label: sensitive
+  - text: "document number"
+    label: sensitive
+  - text: "driver license"
+    label: sensitive
+  - text: "driving licence"
+    label: sensitive
+  - text: "national insurance number"
+    label: sensitive
+  - text: "ni number"
+    label: sensitive
+  - text: "voter id"
+    label: sensitive
+  - text: "green card"
+    label: sensitive
+  - text: "professional registration"
+    label: sensitive
 
 # Merge this list into config.report.recommendation_overrides.
 recommendation_overrides:
