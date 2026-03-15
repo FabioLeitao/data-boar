@@ -4,7 +4,9 @@ audit_results.db-journal
 *.db-journal
 Relatorio_Auditoria_*.xlsx
 heatmap*.png
+config.yaml
 config.local.yaml
+*.vault
 .env.local
 .env.*.local
 
@@ -39,7 +41,6 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-uv.lock
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
