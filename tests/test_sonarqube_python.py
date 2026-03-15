@@ -4,9 +4,10 @@ Tests that encode SonarQube-style quality rules across Python code so regression
 - S1192 / literal duplication: constants used instead of repeated string literals (routes, report).
 - Regex / S5856: session_id pattern uses \\w with re.ASCII.
 - S8415: HTTP status codes 400, 404, 429 documented in OpenAPI (validated in test_routes_responses).
-- S3776 cognitive complexity: refactored helpers exist in connector_registry and sql_connector.
+- S3776 cognitive complexity: refactored helpers exist in connector_registry and sql_connector; keep functions in this file under 15 (test_sonarqube_cognitive_complexity_under_threshold).
 - No bare except (S5706): key modules do not use bare 'except:'.
 - S4423: SSL/TLS contexts use strong protocol (minimum TLS 1.2) where create_default_context is used.
+- S3981: length of a collection is always >=0; use ==0 or >0 instead (no len(...) >= 0 in code).
 """
 
 import ast
@@ -172,4 +173,78 @@ def test_ssl_create_default_context_uses_minimum_tls_version():
     assert not violations, (
         "S4423: these files use ssl.create_default_context() but do not set minimum_version (e.g. "
         "ctx.minimum_version = ssl.TLSVersion.TLSv1_2): " + ", ".join(str(p.relative_to(root)) for p in violations)
+    )
+
+
+# --- S3981: No redundant len(...) >= 0 (use ==0 or >0) ---
+
+_S3981_EXCLUDE_DIRS = {".cursor", ".git", ".venv", "venv", "__pycache__", "node_modules"}
+_S3981_PATTERN = re.compile(r"len\s*\([^)]*\)\s*>=\s*0")
+
+
+def _s3981_should_skip_path(path: Path, root: Path) -> bool:
+    """True if path is under an excluded directory (S3981 scan)."""
+    try:
+        rel = path.relative_to(root)
+    except ValueError:
+        return True
+    return any(part in _S3981_EXCLUDE_DIRS for part in rel.parts)
+
+
+def _s3981_violations_in_file(path: Path, root: Path) -> list[tuple[Path, int, str]]:
+    """Return (path, lineno, line) for lines that violate S3981 (len(...) >= 0 in code)."""
+    result: list[tuple[Path, int, str]] = []
+    for lineno, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), start=1):
+        stripped = line.strip()
+        if stripped.startswith("#"):
+            continue
+        if not _S3981_PATTERN.search(line):
+            continue
+        if stripped.startswith(("assert ", "if ", "elif ", "while ")) or " return " in line:
+            result.append((path, lineno, line.strip()))
+    return result
+
+
+def test_no_len_ge_zero_s3981():
+    """No Python file must use len(...) >= 0; use ==0 or >0 instead (S3981)."""
+    root = _project_root()
+    violations: list[tuple[Path, int, str]] = []
+    for path in root.rglob("*.py"):
+        if _s3981_should_skip_path(path, root):
+            continue
+        violations.extend(_s3981_violations_in_file(path, root))
+    assert not violations, (
+        "S3981: length is always >=0; use ==0 or >0. Violations: "
+        + "; ".join(f"{p.relative_to(root)}:{ln} {snippet}" for p, ln, snippet in violations)
+    )
+
+
+# --- S3776: Cognitive complexity cap (keep this file's functions under threshold) ---
+
+_S3776_MAX_COMPLEXITY = 15
+_S3776_COMPLEXITY_NODES = (ast.If, ast.For, ast.While, ast.With, ast.ExceptHandler, ast.BoolOp)
+
+
+def _ast_complexity_score(node: ast.AST) -> int:
+    """Approximate cognitive complexity: count control flow and boolean branches (S3776 proxy)."""
+    total = 0
+    for child in ast.walk(node):
+        if isinstance(child, _S3776_COMPLEXITY_NODES):
+            total += 1
+    return total
+
+
+def test_sonarqube_cognitive_complexity_under_threshold():
+    """No function in this file must exceed S3776 cognitive complexity threshold (extract helpers if needed)."""
+    path = Path(__file__).resolve()
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    over: list[tuple[str, int]] = []
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            score = _ast_complexity_score(node)
+            if score > _S3776_MAX_COMPLEXITY:
+                over.append((node.name, score))
+    assert not over, (
+        f"S3776: keep cognitive complexity <={_S3776_MAX_COMPLEXITY}. "
+        f"Over threshold: {', '.join(f'{name}({s})' for name, s in over)}. Extract helpers to reduce."
     )

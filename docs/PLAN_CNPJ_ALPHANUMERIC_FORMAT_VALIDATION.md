@@ -3,7 +3,7 @@
 **Status:** Not started
 **Synced with:** [docs/PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
-*When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.*
+## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
 
 This plan uses the app’s **existing scan capabilities** across multiple data sources (databases, filesystems, APIs, shares) to **validate compatibility** of found data with the **current Brazilian alphanumeric CNPJ format** (as opposed to the legacy numbers-and-punctuation-only format). The focus is to (1) **understand and specify** this format, (2) **assess whether the app can support it** (by default, flag, or config/regex/ML/DL overrides), and (3) **give clear recommendations** on how to get there. No change to existing behaviour until the format is agreed and an option is explicitly enabled.
 
@@ -13,8 +13,8 @@ This plan uses the app’s **existing scan capabilities** across multiple data s
 
 - **Format understanding:** Document the **current Brazilian alphanumeric CNPJ format** (how it differs from the old 14-digit numeric format with optional `./-/` punctuation). If an official or widely adopted spec exists (e.g. Receita Federal, sector norms), reference it; otherwise define a **working specification** (character set, length, structure) so the app can detect and validate it.
 - **Compatibility validation:** Use existing scans (same connectors and sensitivity pipeline) to:
-  - Detect values that **match the alphanumeric CNPJ pattern** (and optionally the legacy numeric pattern).
-  - Report **compatibility**: e.g. “column X contains values compatible with alphanumeric CNPJ” vs “only legacy numeric CNPJ” vs “mixed/invalid”.
+- Detect values that **match the alphanumeric CNPJ pattern** (and optionally the legacy numeric pattern).
+- Report **compatibility**: e.g. “column X contains values compatible with alphanumeric CNPJ” vs “only legacy numeric CNPJ” vs “mixed/invalid”.
 - **App capability:** Determine whether support is best delivered by **default** (new built-in pattern), **flag** (e.g. `--cnpj-alphanumeric` or config `detection.cnpj_alphanumeric: true`), or **config/regex/ML/DL overrides** only, and **recommend** the preferred approach.
 - **Recommendations:** Provide operator-facing guidance (USAGE, example YAML, regex_overrides and ML terms) so that users can enable alphanumeric CNPJ detection and, if needed, phase in the new format without breaking existing numeric CNPJ detection.
 
@@ -27,6 +27,7 @@ This plan uses the app’s **existing scan capabilities** across multiple data s
   `\b\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2}\b`
 
   (14 digits with optional `.` `/` `-`). This matches the **legacy** format only.
+
 - **Overrides:** [regex_overrides_file](sensitivity-detection.md) and [regex_overrides.example.yaml](regex_overrides.example.yaml) allow adding or overriding patterns (name, pattern, norm_tag). So an **alphanumeric CNPJ pattern can be added via config** without code change.
 - **ML/DL:** [ml_patterns_file](sensitivity-detection.md) and [sensitivity_detection.ml_terms](USAGE.md) (and DL equivalents) can include terms like `cnpj` for column-name/sample context. They do not define the **value format**; regex does.
 - **Scan:** All connectors (SQL, MongoDB, Redis, filesystem, REST, SMB, etc.) use the same detector; any new or overridden pattern applies to **all data sources** in the “data soup” once loaded.
@@ -44,11 +45,12 @@ The **legacy** CNPJ format is:
 The **current Brazilian alphanumeric format** (as referred to in this plan) is the one that **allows letters** in addition to digits (and possibly punctuation). Exact specification depends on official or sector adoption:
 
 - **Possible interpretations (to be confirmed in Phase 1):**
-  - A **base-32 or similar** encoding of the 14-digit number (fixed length, character set 0–9 and A–V or similar).
-  - A **new identifier structure** with letters in fixed positions (e.g. prefix or suffix).
-  - A **format with optional punctuation** but with letters allowed in certain segments.
+- A **base-32 or similar** encoding of the 14-digit number (fixed length, character set 0–9 and A–V or similar).
+- A **new identifier structure** with letters in fixed positions (e.g. prefix or suffix).
+- A **format with optional punctuation** but with letters allowed in certain segments.
 
 **Plan assumption:** Phase 1 will **research and document** the exact format (length, allowed character set, position rules). If no single official spec is found, the plan will define a **configurable pattern** (regex) and optionally a **validation checklist** (e.g. length, character set) so that:
+
 - The app can **detect** values that match the alphanumeric format.
 - The app can **distinguish** in reports between “legacy numeric CNPJ”, “alphanumeric CNPJ”, and “not compatible”.
 
@@ -61,10 +63,10 @@ Implementation will **not** hardcode an unverified format; it will allow **regex
 - **Scan:** Unchanged. All existing targets (DB, filesystem, API, shares) are scanned; column names and sample content are passed to the detector.
 - **Detection:** Add or override a **regex pattern** for alphanumeric CNPJ. Optionally add **ML/DL** terms (e.g. “cnpj alfanumérico”) to improve context detection. The detector already merges regex_overrides with built-in patterns; no change to pipeline structure.
 - **Compatibility notion:** “Compatible with alphanumeric CNPJ” = at least one value in the scanned data (per column/source) matches the alphanumeric pattern. We can report:
-  - Rows/columns where **only** legacy numeric CNPJ was found.
-  - Rows/columns where **only** alphanumeric CNPJ was found.
-  - Rows/columns where **both** appear (mixed).
-  - Rows/columns where **neither** matches (no CNPJ-like value in sample).
+- Rows/columns where **only** legacy numeric CNPJ was found.
+- Rows/columns where **only** alphanumeric CNPJ was found.
+- Rows/columns where **both** appear (mixed).
+- Rows/columns where **neither** matches (no CNPJ-like value in sample).
 
 This is **pattern-based compatibility** (format of allowed or found data), not semantic validation (e.g. checksum or Receita Federal lookup).
 
@@ -74,37 +76,37 @@ This is **pattern-based compatibility** (format of allowed or found data), not s
 
 ### Phase 1: Understand and specify the format
 
-| #   | To-do                                                                 | Status |
-| --- | --------------------------------------------------------------------- | ------ |
-| 1.1 | Research: document the current Brazilian alphanumeric CNPJ format (official or de facto: length, character set, structure, punctuation). Add a short “CNPJ formats” section in docs (e.g. sensitivity-detection.md or a new doc) describing legacy (numeric) vs alphanumeric. | ⬜     |
-| 1.2 | If no single official spec is found, define a **working spec** (e.g. “alphanumeric CNPJ = 14–20 chars, [0-9A-Za-z] plus optional ./-/”) and document it as “configurable; adjust regex if your sector uses a different variant”. | ⬜     |
-| 1.3 | Propose a **regex pattern** that matches the alphanumeric format (and does not match the legacy numeric-only format, or document overlap). Example placeholder: optional pattern for base-32-like (e.g. `[0-9A-Va-v]{14}` or as per spec). | ⬜     |
-| 1.4 | Docs: add “CNPJ (Brazil): legacy vs alphanumeric” to sensitivity-detection.md and sensitivity-detection.pt_BR.md with the chosen spec and example. | ⬜     |
+| #   | To-do                                                                                                                                                                                                                                                                         | Status |
+| --- | ---------------------------------------------------------------------                                                                                                                                                                                                         | ------ |
+| 1.1 | Research: document the current Brazilian alphanumeric CNPJ format (official or de facto: length, character set, structure, punctuation). Add a short “CNPJ formats” section in docs (e.g. sensitivity-detection.md or a new doc) describing legacy (numeric) vs alphanumeric. | ⬜      |
+| 1.2 | If no single official spec is found, define a **working spec** (e.g. “alphanumeric CNPJ = 14–20 chars, [0-9A-Za-z] plus optional ./-/”) and document it as “configurable; adjust regex if your sector uses a different variant”.                                              | ⬜      |
+| 1.3 | Propose a **regex pattern** that matches the alphanumeric format (and does not match the legacy numeric-only format, or document overlap). Example placeholder: optional pattern for base-32-like (e.g. `[0-9A-Va-v]{14}` or as per spec).                                    | ⬜      |
+| 1.4 | Docs: add “CNPJ (Brazil): legacy vs alphanumeric” to sensitivity-detection.md and sensitivity-detection.pt_BR.md with the chosen spec and example.                                                                                                                            | ⬜      |
 
 ### Phase 2: Feasibility – support by override only (no code change)
 
-| #   | To-do                                                                 | Status |
-| --- | --------------------------------------------------------------------- | ------ |
-| 2.1 | Provide an **example regex_overrides** entry (and optional ml_patterns term) for alphanumeric CNPJ in docs (e.g. regex_overrides.example.yaml and sensitivity-detection.md). Name e.g. `LGPD_CNPJ_ALPHA`; norm_tag LGPD Art. 5. | ⬜     |
-| 2.2 | Verify with a small test or manual run that (1) existing scan still detects legacy `LGPD_CNPJ`, (2) with the override added, alphanumeric-style values are detected and reported with the new pattern name. | ⬜     |
-| 2.3 | Document in USAGE (EN + pt-BR): “To validate compatibility with alphanumeric CNPJ, add the pattern from regex_overrides.example.yaml (or the CNPJ formats doc); re-run the scan; check report for pattern_detected = LGPD_CNPJ_ALPHA.” | ⬜     |
+| #   | To-do                                                                                                                                                                                                                                  | Status |
+| --- | ---------------------------------------------------------------------                                                                                                                                                                  | ------ |
+| 2.1 | Provide an **example regex_overrides** entry (and optional ml_patterns term) for alphanumeric CNPJ in docs (e.g. regex_overrides.example.yaml and sensitivity-detection.md). Name e.g. `LGPD_CNPJ_ALPHA`; norm_tag LGPD Art. 5.        | ⬜      |
+| 2.2 | Verify with a small test or manual run that (1) existing scan still detects legacy `LGPD_CNPJ`, (2) with the override added, alphanumeric-style values are detected and reported with the new pattern name.                            | ⬜      |
+| 2.3 | Document in USAGE (EN + pt-BR): “To validate compatibility with alphanumeric CNPJ, add the pattern from regex_overrides.example.yaml (or the CNPJ formats doc); re-run the scan; check report for pattern_detected = LGPD_CNPJ_ALPHA.” | ⬜      |
 
 ### Phase 3: Optional built-in or flag (if desired)
 
-| #   | To-do                                                                 | Status |
-| --- | --------------------------------------------------------------------- | ------ |
-| 3.1 | Decide: support as **default built-in** (new pattern in DEFAULT_PATTERNS), **config flag** (e.g. `detection.cnpj_alphanumeric: true` that adds the pattern at load time), or **override only**. Document decision and rationale in the plan. | ⬜     |
-| 3.2 | If built-in: add `LGPD_CNPJ_ALPHA` to DEFAULT_PATTERNS with the agreed regex; ensure legacy `LGPD_CNPJ` remains; add test that both patterns can match their respective samples. | ⬜     |
-| 3.3 | If config flag: add `detection.cnpj_alphanumeric` (or similar) in config loader; when true, inject alphanumeric pattern into detector; document in USAGE and config schema. | ⬜     |
-| 3.4 | Optional report enhancement: add a one-line “CNPJ format compatibility” summary (e.g. “Legacy numeric: N columns; Alphanumeric: M columns”) in Report info or a small dedicated section when both patterns are in use. | ⬜     |
+| #   | To-do                                                                                                                                                                                                                                        | Status |
+| --- | ---------------------------------------------------------------------                                                                                                                                                                        | ------ |
+| 3.1 | Decide: support as **default built-in** (new pattern in DEFAULT_PATTERNS), **config flag** (e.g. `detection.cnpj_alphanumeric: true` that adds the pattern at load time), or **override only**. Document decision and rationale in the plan. | ⬜      |
+| 3.2 | If built-in: add `LGPD_CNPJ_ALPHA` to DEFAULT_PATTERNS with the agreed regex; ensure legacy `LGPD_CNPJ` remains; add test that both patterns can match their respective samples.                                                             | ⬜      |
+| 3.3 | If config flag: add `detection.cnpj_alphanumeric` (or similar) in config loader; when true, inject alphanumeric pattern into detector; document in USAGE and config schema.                                                                  | ⬜      |
+| 3.4 | Optional report enhancement: add a one-line “CNPJ format compatibility” summary (e.g. “Legacy numeric: N columns; Alphanumeric: M columns”) in Report info or a small dedicated section when both patterns are in use.                       | ⬜      |
 
 ### Phase 4: Recommendations and docs
 
-| #   | To-do                                                                 | Status |
-| --- | --------------------------------------------------------------------- | ------ |
-| 4.1 | Write a short **“How to get there”** section (in this plan or in docs): (1) Use regex_overrides_file with the alphanumeric pattern; (2) optionally add ML term “cnpj” / “cnpj alfanumérico”; (3) run scan; (4) use report to see where alphanumeric-compatible data appears; (5) if built-in or flag is implemented, enable it and re-scan. | ⬜     |
-| 4.2 | Update PLANS_TODO.md and this plan when steps are completed; ensure sensitivity-detection and USAGE docs (EN + pt_BR) are in sync. | ⬜     |
-| 4.3 | Regression: full test suite passes; existing LGPD_CNPJ behaviour unchanged when alphanumeric is not enabled. | ⬜     |
+| #   | To-do                                                                                                                                                                                                                                                                                                                                       | Status |
+| --- | ---------------------------------------------------------------------                                                                                                                                                                                                                                                                       | ------ |
+| 4.1 | Write a short **“How to get there”** section (in this plan or in docs): (1) Use regex_overrides_file with the alphanumeric pattern; (2) optionally add ML term “cnpj” / “cnpj alfanumérico”; (3) run scan; (4) use report to see where alphanumeric-compatible data appears; (5) if built-in or flag is implemented, enable it and re-scan. | ⬜      |
+| 4.2 | Update PLANS_TODO.md and this plan when steps are completed; ensure sensitivity-detection and USAGE docs (EN + pt_BR) are in sync.                                                                                                                                                                                                          | ⬜      |
+| 4.3 | Regression: full test suite passes; existing LGPD_CNPJ behaviour unchanged when alphanumeric is not enabled.                                                                                                                                                                                                                                | ⬜      |
 
 ---
 
@@ -131,4 +133,4 @@ This is **pattern-based compatibility** (format of allowed or found data), not s
 
 ---
 
-*Last updated with plan file. Update PLANS_TODO.md when completing or adding to-dos.*
+## Last updated with plan file. Update PLANS_TODO.md when completing or adding to-dos.
