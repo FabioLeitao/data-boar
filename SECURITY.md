@@ -12,18 +12,18 @@ This document describes which versions of the application are supported, which d
 
 ## Dependencies and environment
 
-**`pyproject.toml`** is the source of truth for the **uv** toolColleague-Nn; **pip** and **`requirements.txt`** are derivative (requirements.txt is generated from pyproject.toml for pip-based or legacy environments). Dependencies are declared in **`pyproject.toml`** and managed primarily via **uv**:
+**`pyproject.toml`** is the source of truth for the **uv** toolColleague-Nn. The **`uv.lock`** file pins the exact resolved dependency tree so that installs are reproducible and users are protected from accidental breakage when a dependency updates (“it worked yesterday”). **pip** and **`requirements.txt`** are derivative (requirements.txt is exported from the lockfile for pip-based or legacy environments). Dependencies are declared in **`pyproject.toml`** and managed via **uv**:
 
-- To install in a fresh environment:
+- To install in a fresh environment (uses **uv.lock** for reproducible versions):
 
   ```bash
   uv sync
   ```
 
-- To generate a locked `requirements.txt` for legacy environments that use plain `pip`:
+- To export a locked **requirements.txt** for environments that use plain **pip** (same versions as **uv.lock**):
 
   ```bash
-  uv pip compile pyproject.toml -o requirements.txt
+  uv export --no-emit-package pyproject.toml -o requirements.txt
   ```
 
 ### Runtime prerequisites (Linux example)
@@ -41,9 +41,9 @@ Additional client libraries may be required depending on which connectors you us
 
 ## Keeping dependencies up to date
 
-- Dependencies in **`pyproject.toml`** use **minimum versions (`>=`)** so security patches are allowed; pin exact versions (`==`) only where necessary for reproducibility. **Dependabot** (see `.github/dependabot.yml`) opens weekly PRs for pip and GitHub Actions. When applying a pip dependency update (from Dependabot or elsewhere), update **`pyproject.toml`** first (raise the minimum version for that package), then run `uv pip compile pyproject.toml -o requirements.txt` and commit both files; do not merge a change that only edits `requirements.txt`. Prefer merging dependency PRs after CI (tests and audit) pass.
+- Dependencies in **`pyproject.toml`** use **minimum versions (`>=`)** so security patches are allowed; pin exact versions (`==`) only where necessary. The **lockfile (`uv.lock`)** is committed so that everyone (and CI) installs the same tree; it is refreshed when dependencies change or before a stable release so the app stays updated, compatible, and safe. **Dependabot** (see `.github/dependabot.yml`) opens weekly PRs for pip and GitHub Actions and helps signal when to act: when you apply an update (or before a release), update **`pyproject.toml`** first, then run `uv lock` and `uv export --no-emit-package pyproject.toml -o requirements.txt`, and commit **pyproject.toml**, **uv.lock**, and **requirements.txt**. Do not merge a change that only edits `requirements.txt` or `uv.lock` without updating the other. Merge dependency PRs only after CI (tests and audit) pass.
 
-- Locally, install and run a dependency audit:
+- Locally, install and run a dependency audit (CI does the same on every push/PR):
 
   ```bash
   uv sync
@@ -51,9 +51,7 @@ Additional client libraries may be required depending on which connectors you us
   uv run pip-audit
   ```
 
-  CI runs the same audit on every push/PR.
-
-- Whenever you change dependencies (including when applying Dependabot or automation recommendations), edit **`pyproject.toml`** first, then regenerate `requirements.txt` with `uv pip compile pyproject.toml -o requirements.txt` so both files stay in sync.
+- Whenever you change dependencies (including when applying Dependabot or automation), edit **`pyproject.toml`** first, then run `uv lock` and `uv export --no-emit-package pyproject.toml -o requirements.txt` so **uv.lock** and **requirements.txt** stay in sync with the lockfile.
 
 This approach is part of the project’s security baseline. For the full list of hardening measures and status, see **`docs/plans/PLAN_SECURITY_HARDENING.md`**.
 
