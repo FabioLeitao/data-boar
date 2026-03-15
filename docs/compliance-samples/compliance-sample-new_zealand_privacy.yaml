@@ -1,0 +1,55 @@
+# New Zealand Privacy Act – sample compliance profile (Privacy Act 2020, OPC)
+#
+# Target audience: New Zealand and Oceania deployments. Office of the Privacy Commissioner (OPC).
+# Terms: personal information, privacy principles (EN).
+#
+# How to use:
+#   1. Set in your main config:
+#        regex_overrides_file: path/to/compliance-sample-new_zealand_privacy.yaml
+#        ml_patterns_file: path/to/compliance-sample-new_zealand_privacy.yaml
+#   2. Merge the recommendation_overrides list below into your config under report.recommendation_overrides.
+#
+# New Zealand: Privacy Act 2020; Office of the Privacy Commissioner (OPC).
+
+regex:
+  - name: "IRD_NZ"
+    pattern: "\\b\\d{2,3}-?\\d{2,3}-?\\d{3}\\b"
+    norm_tag: "New Zealand Privacy"
+  - name: "NHI_NZ"
+    pattern: "\\b[A-Z]{3}\\d{4}\\b"
+    norm_tag: "New Zealand Privacy"
+
+# ML terms: personal information, privacy principles, OPC.
+terms:
+  - text: "personal information"
+    label: sensitive
+  - text: "privacy principles"
+    label: sensitive
+  - text: "information privacy principles"
+    label: sensitive
+  - text: "ipp"
+    label: sensitive
+  - text: "privacy commissioner"
+    label: sensitive
+  - text: "opc"
+    label: sensitive
+  - text: "privacy act"
+    label: sensitive
+  - text: "agency"
+    label: sensitive
+  - text: "data subject"
+    label: sensitive
+  - text: "consent"
+    label: sensitive
+  - text: "notifiable privacy breach"
+    label: sensitive
+  - text: "privacy breach"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "New Zealand Privacy"
+    base_legal: "Privacy Act 2020 (NZ); Office of the Privacy Commissioner (OPC)"
+    risk: "Personal information; Information Privacy Principles; notifiable privacy breach."
+    recommendation: "Comply with Privacy Act 2020; follow IPPs; assess notifiable privacy breach obligations; engage OPC as needed."
+    priority: "ALTA"
+    relevant_for: "DPO, Privacy Officer, OPC"
