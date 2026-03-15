@@ -41,7 +41,7 @@ Additional client libraries may be required depending on which connectors you us
 
 ## Keeping dependencies up to date
 
-- Dependencies in **`pyproject.toml`** use minimum versions (`>=`) so security patches are allowed; **Dependabot** (see `.github/dependabot.yml`) opens weekly PRs for pip and GitHub Actions. When applying a pip dependency update (from Dependabot or elsewhere), update **`pyproject.toml`** first (raise the minimum version for that package), then run `uv pip compile pyproject.toml -o requirements.txt` and commit both files; do not merge a change that only edits `requirements.txt`. Prefer merging dependency PRs after CI (tests and audit) pass.
+- Dependencies in **`pyproject.toml`** use **minimum versions (`>=`)** so security patches are allowed; pin exact versions (`==`) only where necessary for reproducibility. **Dependabot** (see `.github/dependabot.yml`) opens weekly PRs for pip and GitHub Actions. When applying a pip dependency update (from Dependabot or elsewhere), update **`pyproject.toml`** first (raise the minimum version for that package), then run `uv pip compile pyproject.toml -o requirements.txt` and commit both files; do not merge a change that only edits `requirements.txt`. Prefer merging dependency PRs after CI (tests and audit) pass.
 
 - Locally, install and run a dependency audit:
 
@@ -87,7 +87,7 @@ The API does not implement authentication by default; secure the app at the reve
 
 ## Deployment hardening and reverse proxy
 
-Security headers (including CSP) are implemented in **`api/routes.py`** (middleware applied to web and API responses). To harden container and cluster deployments:
+Security headers (including CSP) are implemented in **`api/routes.py`** (middleware applied to web and API responses). For **operator-facing hardening** (containers, reverse proxy, TLS, WAF), see **`docs/USAGE.md`** and **`docs/deploy/DEPLOY.md`** (Security and hardening). To harden container and cluster deployments:
 
 - **Docker and Kubernetes:** See **`docs/deploy/DEPLOY.md`**, section **“Security and hardening (optional)”**, for:
 - Running as non-root, resource limits, and healthchecks.

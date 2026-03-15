@@ -47,7 +47,7 @@ def test_report_includes_report_info_tenant_and_technician(tmp_path):
         mgr.set_current_session_id("s-tenant-tech")
         mgr.create_session_record("s-tenant-tech", tenant_name="Acme Corp", technician_name="Maria Silva")
         mgr.save_finding("database", target_name="T1", column_name="email", sensitivity_level="HIGH", pattern_detected="EMAIL", norm_tag="GDPR", ml_confidence=80)
-        mgr.finish_session("s-tenant")
+        mgr.finish_session("s-tenant-tech")
         path = generate_report(mgr, "s-tenant-tech", output_dir=out_dir)
         assert path is not None
         with pd.ExcelFile(path) as xl:
@@ -81,9 +81,8 @@ def test_report_excel_and_heatmap_data_sheet_no_regression(tmp_path):
         assert len(df) >= 1
         # Heatmap data is target x sensitivity counts; has index (target) and at least one sensitivity column
         assert df.shape[1] >= 1
-        # Standalone heatmap PNG should exist in output_dir when matplotlib available and there are findings
-        heatmap_pngs = list(out_dir.glob("heatmap_*.png"))
-        assert len(heatmap_pngs) >= 0  # 0 if matplotlib missing, 1 if present
+        # Heatmap PNG in output_dir when matplotlib available (0 if missing, 1 if present)
+        list(out_dir.glob("heatmap_*.png"))  # no assertion: count is environment-dependent
     finally:
         mgr.dispose()
 
