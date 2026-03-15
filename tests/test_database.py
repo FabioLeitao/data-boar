@@ -4,7 +4,7 @@ import pytest
 from pathlib import Path
 
 from config.loader import load_config, normalize_config
-from core.database import LocalDBManager, DataWipeLog
+from core.database import LocalDBManager, DataWipeLog, failure_hint
 
 
 def test_normalize_config_empty():
@@ -100,6 +100,22 @@ def test_normalize_config_timeouts_and_per_target():
     out2 = normalize_config({"targets": []})
     assert out2.get("timeouts", {}).get("connect_seconds") == 25
     assert out2.get("timeouts", {}).get("read_seconds") == 90
+
+
+def test_failure_hint_timeout_includes_config_guidance():
+    """failure_hint('timeout') points operators to config timeouts and USAGE (Phase 4.2)."""
+    hint = failure_hint("timeout")
+    assert "timeout" in hint.lower()
+    assert "USAGE" in hint or "timeouts" in hint
+    assert "connect" in hint.lower() or "read" in hint.lower()
+
+
+def test_failure_hint_other_reasons():
+    """failure_hint returns sensible hints for unreachable, auth_failed, permission_denied."""
+    assert "connectivity" in failure_hint("unreachable").lower() or "network" in failure_hint("unreachable").lower()
+    assert "auth" in failure_hint("auth_failed").lower()
+    assert "permission" in failure_hint("permission_denied").lower()
+    assert "unexpected" in failure_hint("unknown").lower() or "error" in failure_hint("unknown").lower()
 
 
 def test_local_db_manager(tmp_path):
