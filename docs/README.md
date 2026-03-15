@@ -70,6 +70,7 @@ Deploy assets (Compose, Kubernetes, config examples) remain in the [deploy/](../
 | Remotes and origin      | [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md)           | [REMOTES_AND_ORIGIN.pt_BR.md](REMOTES_AND_ORIGIN.pt_BR.md)           |
 | Troubleshooting         | [TROUBLESHOOTING.md](TROUBLESHOOTING.md)                 | [TROUBLESHOOTING.pt_BR.md](TROUBLESHOOTING.pt_BR.md)                 |
 | Copyright and trademark | [COPYRIGHT_AND_TRADEMARK.md](COPYRIGHT_AND_TRADEMARK.md) | [COPYRIGHT_AND_TRADEMARK.pt_BR.md](COPYRIGHT_AND_TRADEMARK.pt_BR.md) |
+| Observability and SRE   | [OBSERVABILITY_SRE.md](OBSERVABILITY_SRE.md)             | [OBSERVABILITY_SRE.pt_BR.md](OBSERVABILITY_SRE.pt_BR.md)             |
 
 - [PLANS_TODO.md](PLANS_TODO.md) — Plan status and current app state (single source of truth for open-plan to-dos). *Plan files are EN-only for history; operator docs are EN + pt-BR.*
 - [releases/](releases/) — Release notes (e.g. 1.5.2, 1.5.1, 1.5.0, 1.4.3).

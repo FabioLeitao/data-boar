@@ -209,7 +209,6 @@ def _one_trend_row(
     """Build a single row for the Trends sheet (this run vs up to 3 previous runs)."""
     prev_values = [get_prev_value(p) for p in prev_runs]
     prev_1_val = prev_values[0] if prev_values else None
-    prev_1_date = prev_runs[0].get("started_at") if prev_runs else None
     # Pad to _MAX_PREV_RUNS for consistent columns
     counts: list[int | str] = [prev_values[i] if i < len(prev_values) else "-" for i in range(_MAX_PREV_RUNS)]
     dates: list[str] = [

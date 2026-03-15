@@ -55,13 +55,15 @@ uv run pytest -v -W error -k "session_id"
 These tests encode **SonarQube** or **API contract** rules so that regressions are caught in CI:
 
 - **test_routes_responses.py** – Ensures HTTP status codes (400, 404, 429) are both implemented and declared in the OpenAPI schema (SonarQube S8415). Validates invalid `session_id` returns 400 and that the config page responds correctly.
-- **test_sonarqube_python.py** – Ensures constants are used instead of duplicated literals (S1192), session_id pattern uses `\w` with `re.ASCII` (S5856), refactored helpers exist in connector_registry and sql_connector (S3776), and key modules do not use bare `except:` (S5706).
+- **test_sonarqube_python.py** – Ensures constants instead of duplicated literals (S1192), session_id pattern with `re.ASCII` (S5856), refactored helpers in connector_registry and sql_connector (S3776), no bare `except:` in key modules (S5706), no `len(...) >= 0` (S3981), cognitive complexity cap in that file (S3776), and TLS 1.2+ where `ssl.create_default_context()` is used (S4423).
 - **test_ml_engine.py** – Ensures ML scanner has random_state seed (S6709), required hyperparameters (S6973), and local variable naming (S117).
 - **test_docs_markdown.py** – Ensures key docs exist, have minimal structure, and internal links in README and docs/USAGE resolve (no broken links).
-- **test_markdown_lint.py** – Ensures all project Markdown files pass MD009, MD012, MD024, MD036, MD051, MD060 (trailing spaces, consecutive blank lines, duplicate headings, emphasis-as-heading, link fragments, code fence consistency). See [Markdown lint](#markdown-lint) below.
+- **test_markdown_lint.py** – Ensures all project Markdown and rule/skill files (`.md`, `.mdc`, including under `.cursor/`) pass MD009, MD012, MD024, MD036, MD051, MD060, MD031, MD034. See [Markdown lint](#markdown-lint) below.
 - **test_security.py** – Ensures SQL identifier escaping prevents second-statement execution (SQL injection), session_id pattern rejects path traversal and SQL-like payloads, database layer uses ORM for session_id (no raw interpolation), and YAML config uses safe_load (no code execution). See [SECURITY.md](../SECURITY.md#resistance-to-common-vulnerabilities).
 
 When adding or changing API behaviour, config schema, or quality rules, update the relevant test module and keep this document in sync.
+
+**Cursor:** The project includes a rule (`.cursor/rules/quality-sonarqube-codeql.mdc`) and a skill (`.cursor/skills/quality-sonarqube-codeql/SKILL.md`) so that when editing Python or markdown, the agent avoids SonarQube/CodeQL violations and runs these quality tests after changes. When adding a new quality rule, add a test that enforces it, then update the rule and skill with the rule id and guidance, and keep this document in sync.
 
 ### Script testing
 
@@ -89,6 +91,8 @@ Run the check as part of the full suite: `uv run pytest tests/test_markdown_lint
 ## CI
 
 GitHub Actions (`.github/workflows/ci.yml`) runs:
+
+- **Lint** – `uv run ruff check .` (config in pyproject.toml; legacy dirs excluded). Run the same command locally before PR so the lint job passes. Optional: `uv run pre-commit install` to run Ruff on commit.
 
 1. **Test** – `uv run pytest -v -W error` on Ubuntu with Python 3.12.
 1. **Dependency audit** – `uv run pip-audit` after `uv sync`.

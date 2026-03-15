@@ -3,7 +3,7 @@
 **Status:** Not started
 **Synced with:** [docs/PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
-*When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.*
+## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
 
 This plan adds **sample configuration files** and documentation so the application can be used out-of-the-box for **additional compliance frameworks** (UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS) with the same scan-and-report flow already used for LGPD, GDPR, CCPA, HIPAA, and GLBA. It ensures **flexibility** and **sellability** for future contracts (e.g. scanning company data for UK, Canadian, South African, Japanese, or payment-card compliance) while keeping **complexity low** (config-only; no code changes required for detection and reporting). The plan covers **what to put in which file**, **how the samples achieve each compliance**, **pitch** (short, professional mention in README) and **technical depth** (dedicated doc and links from USAGE/TECH_GUIDE), plus **tests** and **new doc files** where needed.
 
