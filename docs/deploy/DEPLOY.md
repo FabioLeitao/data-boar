@@ -109,7 +109,7 @@ The app expects **config at `/data/config.yaml`** inside the container. Use the 
 - `sqlite_path: /data/audit_results.db`
 - `api.port: 8088`
 
-**Sensitivity detection (ML/DL):** You can configure training terms for pattern and sensitivity detection via `ml_patterns_file`, `dl_patterns_file`, or inline `sensitivity_detection.ml_terms` / `sensitivity_detection.dl_terms` in config. Mount your terms file(s) under `/data` (e.g. `/data/ml_terms.yaml`) and set the paths in config. See [sensitivity-detection.md](../sensitivity-detection.md) and `deploy/config.example.yaml` for examples. The image includes regex + ML (TF-IDF + RandomForest); optional DL (sentence embeddings) requires installing the `.[dl]` extra when building a custom image.
+**Sensitivity detection (ML/DL):** You can configure training terms for pattern and sensitivity detection via `ml_patterns_file`, `dl_patterns_file`, or inline `sensitivity_detection.ml_terms` / `sensitivity_detection.dl_terms` in config. Mount your terms file(s) under `/data` (e.g. `/data/ml_terms.yaml`) and set the paths in config. See [SENSITIVITY_DETECTION.md](../SENSITIVITY_DETECTION.md) and `deploy/config.example.yaml` for examples. The image includes regex + ML (TF-IDF + RandomForest); optional DL (sentence embeddings) requires installing the `.[dl]` extra when building a custom image.
 
 Copy `deploy/config.example.yaml` and edit, then either:
 

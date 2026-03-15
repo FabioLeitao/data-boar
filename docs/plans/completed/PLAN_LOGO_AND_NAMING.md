@@ -1,7 +1,7 @@
 # Logo, favicon, and application naming recommendations
 
-**Status:** Complete (all to-dos done; plan archived in `docs/completed/`)
-**Synced with:** [docs/PLANS_TODO.md](../PLANS_TODO.md) (central to-do list)
+**Status:** Complete (all to-dos done; plan archived in `docs/plans/completed/`)
+**Synced with:** [PLANS_TODO.md](../PLANS_TODO.md) (central to-do list)
 
 Plan for a copyright-safe logo (web, favicon, optional report), integration points in the app, and alternative application names (e.g. compliance_crawler) with availability notes for you to decide.
 
