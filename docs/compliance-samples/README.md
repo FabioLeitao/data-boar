@@ -16,8 +16,24 @@ Sample configuration files to enable **additional compliance frameworks** with t
 | **compliance-sample-popia.yaml**   | POPIA (South Africa): responsible party, personal information, and SA identifiers.                                                                         |
 | **compliance-sample-appi.yaml**    | APPI (Japan): personal information and retained personal data; terms and overrides for PPC alignment.                                                      |
 | **compliance-sample-pci_dss.yaml** | PCI-DSS (payment card data): card/financial patterns and recommendation overrides for merchants and assessors.                                             |
+| **compliance-sample-philippines_dpa.yaml** | Philippines DPA (RA 10173): NPC; personal information, sensitive personal information; EN. |
+| **compliance-sample-australia_privacy.yaml** | Australia Privacy Act 1988: OAIC, APPs; personal information; TFN/Medicare regex; EN. |
+| **compliance-sample-singapore_pdpa.yaml** | Singapore PDPA 2012: PDPC; personal data, DNC; NRIC regex; EN. |
+| **compliance-sample-uae_pdpl.yaml** | UAE PDPL (Decree-Law 45/2021): UAE Data Office; personal/sensitive data; EN + optional AR terms. |
+| **compliance-sample-argentina_pdpa.yaml** | Argentina Ley 25.326: DNPDP; datos personales; ES + EN terms; CUIT/CUIL/DNI regex. |
+| **compliance-sample-kenya_dpa.yaml** | Kenya Data Protection Act 2019: ODPC; personal data, data controller; EN. |
+| **compliance-sample-india_dpdp.yaml** | India DPDP Act 2023: DPBI; personal data, data fiduciary; Aadhaar/PAN regex; EN. |
+| **compliance-sample-turkey_kvkk.yaml** | Turkey KVKK (Law 6698): KVKK Board; kişisel veri; EN + TR terms; TC Kimlik regex. |
+| **compliance-sample-new_zealand_privacy.yaml** | New Zealand Privacy Act 2020: OPC; personal information, IPPs; EN. |
+| **compliance-sample-saudi_pdpl.yaml** | Saudi PDPL (Royal Decree M/19): SDAIA; personal/sensitive data; EN. |
+| **compliance-sample-israel_ppl.yaml** | Israel Privacy Protection Law: PPA; personal information, database registrar; EN. |
+| **compliance-sample-colombia_1581.yaml** | Colombia Ley 1581/2012: SIC; datos personales; ES + EN terms; CC/NIT regex. |
+| **compliance-sample-chile_privacy.yaml** | Chile Law 19.628: datos personales; ES + EN terms; RUT regex. |
+| **compliance-sample-nigeria_ndpr.yaml** | Nigeria NDPR 2019: NITDA; personal data, data controller; EN. |
+| **compliance-sample-morocco_09_08.yaml** | Morocco Law 09-08: CNDP; données à caractère personnel; FR + EN terms; CIN regex. |
+| **compliance-sample-switzerland_fadp.yaml** | Switzerland revised FADP: FDPIC; personal data; EN + optional DE/FR/IT terms; AHV/UID regex. |
 
-All samples in the table above are available. **Optional regional samples** (Philippines DPA, Australia Privacy Act, Singapore PDPA, UAE/Saudi PDPL, Argentina/Colombia/Chile, Kenya/Nigeria/Morocco, India DPDP, Turkey KVKK, Switzerland FADP, New Zealand, Israel, etc.) may be added as needed—same format; see [PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md](../plans/PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md) “Optional regional samples (Phase 3+)”. Each sample is self-contained (regex overrides, ML terms, recommendation overrides) so you can enable one framework by including that file's blocks in your config.
+All samples in the tables above are available. Each sample is self-contained (regex overrides, ML terms, recommendation overrides) so you can enable one framework by including that file's blocks in your config. See [PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md](../plans/PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md) for the full list and optional regional scope.
 
 ### Language and target audience
 
