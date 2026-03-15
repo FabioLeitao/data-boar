@@ -23,7 +23,7 @@ from pathlib import Path
 
 import yaml
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
@@ -262,6 +262,10 @@ def _check_rate_limit(source: str) -> None:
     _raise_if_interval_limit_exceeded(dbm, min_interval, grace, source)
 
 
+# Max request body size (1 MB) for JSON/config and scan start body to reduce DoS via huge payloads
+MAX_REQUEST_BODY_BYTES = 1_000_000
+
+
 def _is_secure_request(request: Request) -> bool:
     """True if request was made over HTTPS (direct or via trusted proxy X-Forwarded-Proto)."""
     proto = request.headers.get("x-forwarded-proto", "").strip().lower()
@@ -331,8 +335,27 @@ async def optional_api_key_middleware(request: Request, call_next):
         if auth.lower().startswith("bearer "):
             provided = auth[7:].strip()
     if not provided or provided != expected:
-        from fastapi.responses import JSONResponse
         return JSONResponse(status_code=401, content={"detail": "Missing or invalid API key"})
+    return await call_next(request)
+
+
+@app.middleware("http")
+async def request_body_size_middleware(request: Request, call_next):
+    """
+    Reject requests with Content-Length exceeding MAX_REQUEST_BODY_BYTES (1 MB) to prevent
+    DoS via huge JSON or form bodies (e.g. POST /config, POST /scan, POST /scan_database).
+    Added last so it runs first (outermost) in the middleware stack.
+    """
+    content_length = request.headers.get("content-length")
+    if content_length is not None:
+        try:
+            if int(content_length) > MAX_REQUEST_BODY_BYTES:
+                return JSONResponse(
+                    status_code=413,
+                    content={"detail": "Request body too large. Maximum size is 1 MB."},
+                )
+        except ValueError:
+            pass  # Invalid Content-Length; let the server handle it
     return await call_next(request)
 
 
@@ -494,13 +517,10 @@ async def start_scan(background_tasks: BackgroundTasks, body: ScanStartBody | No
     # Global rate limiting (DB-backed) to avoid accidental DoS from repeated scans
     _check_rate_limit(source="scan")
     from core.session import new_session_id
+    from core.validation import sanitize_tenant_technician
     session_id = new_session_id()
-    tenant = (body.tenant if body else None) or None
-    technician = (body.technician if body else None) or None
-    if isinstance(tenant, str):
-        tenant = tenant.strip() or None
-    if isinstance(technician, str):
-        technician = technician.strip() or None
+    tenant = sanitize_tenant_technician((body.tenant if body else None) or None)
+    technician = sanitize_tenant_technician((body.technician if body else None) or None)
     engine.db_manager.set_current_session_id(session_id)
     engine.db_manager.create_session_record(
         session_id,
@@ -603,7 +623,8 @@ async def update_session_tenant(session_id: str, body: SessionTenantUpdate):
     sessions = [s for s in engine.db_manager.list_sessions() if s.get("session_id") == session_id]
     if not sessions:
         raise HTTPException(status_code=404, detail=f"Session {session_id} not found.")
-    tenant = (body.tenant or "").strip() or None
+    from core.validation import sanitize_tenant_technician
+    tenant = sanitize_tenant_technician(body.tenant)
     engine.db_manager.update_session_tenant(session_id, tenant)
     _invalidate_sessions_cache()
     return {"session_id": session_id, "tenant": tenant}
@@ -617,7 +638,8 @@ async def update_session_technician(session_id: str, body: SessionTechnicianUpda
     sessions = [s for s in engine.db_manager.list_sessions() if s.get("session_id") == session_id]
     if not sessions:
         raise HTTPException(status_code=404, detail=f"Session {session_id} not found.")
-    technician = (body.technician or "").strip() or None
+    from core.validation import sanitize_tenant_technician
+    technician = sanitize_tenant_technician(body.technician)
     engine.db_manager.update_session_technician(session_id, technician)
     _invalidate_sessions_cache()
     return {"session_id": session_id, "technician": technician}
@@ -706,9 +728,10 @@ async def scan_database(config: DatabaseConfig, background_tasks: BackgroundTask
         "database": config.database,
     }
     from core.session import new_session_id
+    from core.validation import sanitize_tenant_technician
     session_id = new_session_id()
-    tenant = (config.tenant or "").strip() or None
-    technician = (config.technician or "").strip() or None
+    tenant = sanitize_tenant_technician(config.tenant)
+    technician = sanitize_tenant_technician(config.technician)
     engine.db_manager.set_current_session_id(session_id)
     engine.db_manager.create_session_record(
         session_id,

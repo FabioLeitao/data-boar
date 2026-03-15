@@ -197,8 +197,9 @@ def main() -> None:
                 print("  - " + ln)
             print("CLI will continue, but consider adjusting rate_limit settings if this is unexpected.")
 
-    tenant = (args.tenant or "").strip() or None
-    technician = (args.technician or "").strip() or None
+    from core.validation import sanitize_tenant_technician
+    tenant = sanitize_tenant_technician(args.tenant)
+    technician = sanitize_tenant_technician(args.technician)
     session_id = engine.start_audit(tenant_name=tenant, technician_name=technician)
     print(f"Scan session: {session_id}")
     report_path = engine.generate_final_reports(session_id)
