@@ -1,6 +1,6 @@
 # Plan: Configurable timeouts for data soup access (sane defaults and recommendations)
 
-**Status:** In progress (Phases 1–2 and 3 done; Phase 4 pending)
+**Status:** Done (Phases 1–4 complete)
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
@@ -132,10 +132,10 @@ Optionally extend `failure_hint("timeout")` with one line: "You can set timeouts
 
 | #   | To-do                                                                                                                                                                                                         | Status |
 | --- | ---------------------------------------------------------------------                                                                                                                                         | ------ |
-| 4.1 | Add "Timeouts and load" (or "Scan behaviour and timeouts") to USAGE.md with: don’t wait forever, don’t be too aggressive, avoid DoS/too-fast (rate_limit, max_workers), backup windows, per-target overrides. | ⬜      |
-| 4.2 | Optional: extend failure_hint("timeout") with a line pointing to config timeouts and USAGE.                                                                                                                   | ⬜      |
-| 4.3 | Optional: add same recommendations to docs in pt_BR.                                                                                                                                                          | ⬜      |
-| 4.4 | Tests: unit test that normalized config contains default timeouts; optional integration test that a connector receives and uses timeout (e.g. REST with short timeout fails or times out).                    | ⬜      |
+| 4.1 | Add "Timeouts and load" (or "Scan behaviour and timeouts") to USAGE.md with: don't wait forever, don't be too aggressive, avoid DoS/too-fast (rate_limit, max_workers), backup windows, per-target overrides. | ✅      |
+| 4.2 | Optional: extend failure_hint("timeout") with a line pointing to config timeouts and USAGE.                                                                                                                   | ✅      |
+| 4.3 | Optional: add same recommendations to docs in pt_BR.                                                                                                                                                          | ✅      |
+| 4.4 | Tests: unit test that normalized config contains default timeouts; optional integration test that a connector receives and uses timeout (e.g. REST with short timeout fails or times out).                    | ✅      |
 
 ---
 

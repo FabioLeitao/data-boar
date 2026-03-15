@@ -230,10 +230,10 @@ Esse endpoint procura, entre os arquivos `audit_YYYYMMDD.log` disponíveis (do m
 ## 4. Notas sobre configuração
 
 - A aplicação utiliza um único arquivo de configuração (YAML/JSON) com as chaves principais:
-- `targets` – alvos a escanear (bancos, diretórios, APIs, compartilhamentos).
+- `targets` – alvos a escanear (bancos, diretórios, APIs, compartilhamentos). Não há limite rígido de alvos por varredura; listas muito grandes (ex.: centenas de bancos ou APIs) podem aumentar tempo e uso de memória—considere um escopo razoável por varredura.
 - `file_scan` – extensões, recursividade, `scan_sqlite_as_db`, `sample_limit`.
 - `report` – `output_dir` para relatórios/heatmaps; opcionalmente `recommendation_overrides` (lista de mapeamentos por `norm_tag` para Base legal, Risco, Recomendação, Prioridade, Relevante para). Exemplo completo em [USAGE.md](USAGE.md) (seção 4, Global options); exemplo para categorias sensíveis (saúde, religião, política, PEP, raça, sindicato, genético, biométrico, vida sexual) em [USAGE.md#recommendation_overrides](USAGE.md) e abaixo em pt-BR (ver também [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](plans/completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md)).
-- `api` – porta da API; opcionalmente `require_api_key`, `api_key` ou `api_key_from_env` para exigir chave de API (cabeçalho X-API-Key ou Authorization: Bearer); GET /health permanece público. Ver [SECURITY.md](../SECURITY.md).
+- `api` – porta da API; opcionalmente `require_api_key`, `api_key` ou `api_key_from_env` para exigir chave de API (cabeçalho X-API-Key ou Authorization: Bearer); GET /health permanece público. **Em produção recomenda-se** `require_api_key: true` e chave forte via variável de ambiente (ex.: `api.api_key_from_env: "AUDIT_API_KEY"`) para não armazenar a chave no config. Ver [SECURITY.md](../SECURITY.md).
 - `sqlite_path` – caminho do banco SQLite com resultados.
 - `scan` – `max_workers` para paralelismo.
 - `timeouts` – timeouts globais para conexões (ex.: `connect_seconds`, `read_seconds`); cada alvo pode sobrescrever com `connect_timeout`, `read_timeout` ou `timeout`. Ver abaixo.
@@ -272,6 +272,7 @@ rate_limit:
 
 - A CLI usa a mesma lógica apenas para imprimir **avisos** (não muda o código de saída), de forma a manter scripts existentes funcionando enquanto você enxerga quando sua política bloquearia chamadas via API/dashboard.
 - É possível sobrescrever os valores via variáveis de ambiente: `RATE_LIMIT_ENABLED`, `RATE_LIMIT_MAX_CONCURRENT_SCANS`, `RATE_LIMIT_MIN_INTERVAL_SECONDS`, `RATE_LIMIT_GRACE_FOR_RUNNING_STATUS`.
+- **Produção:** O rate limiting é a primeira linha de defesa contra abuso e sobrecarga de varreduras. Desabilitar ou relaxar os limites (ex.: `max_concurrent_scans` alto ou `min_interval_seconds` zero) aumenta o risco de abuso e esgotamento de recursos; mantenha os limites ativos com valores conservadores em produção.
 
 ### Timeouts para conexões com fontes de dados
 
@@ -306,6 +307,16 @@ targets:
 ```
 
 Os conectores usam os valores mesclados (global ou por alvo) ao abrir conexões e fazer I/O; veja o esquema do config e a documentação dos conectores.
+
+### Timeouts e carga
+
+Recomendações para que as varreduras permaneçam estáveis sem sobrecarregar os alvos nem esperar indefinidamente:
+
+1. **Não espere para sempre:** Defina timeouts de conexão e de leitura para que um alvo travado não bloqueie toda a varredura. Use as dicas de falha no relatório para identificar falhas por timeout e qual alvo falhou.
+2. **Não seja agressivo demais:** Timeouts muito baixos geram falsos timeouts em redes ocupadas ou lentas (ex.: durante backup). Se aparecerem muitos timeouts, **aumente** `connect_seconds` e `read_seconds` (ou por alvo `connect_timeout` / `read_timeout`) e considere reexecutar em horário de menor uso.
+3. **Evite DoS e “muito rápido demais”:** Use **rate_limit** (ex.: `max_concurrent_scans: 1`, `min_interval_seconds: 5`) e **scan.max_workers: 1** (ou 2) para que o scanner não abra muitas conexões ao mesmo tempo. Isso reduz carga nos alvos e evita amplificar lentidão ou causar DoS.
+4. **Janelas de backup ou manutenção:** Se as varreduras rodarem durante backup ou manutenção, aumente os timeouts e mantenha o paralelismo baixo; ou agende varreduras fora dessas janelas.
+5. **Sobrescrita por alvo:** Para um banco ou API lento, defina `connect_timeout` / `read_timeout` (ou `timeout`) nesse alvo em vez de aumentar os padrões globais para todos.
 
 ### API e segurança (CSP, cabeçalhos)
 

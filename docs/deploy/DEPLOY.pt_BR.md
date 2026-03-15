@@ -89,7 +89,7 @@ Copie `deploy/config.example.yaml`, edite e use volume ou bind mount para `/data
 
 ### Segurança e endurecimento (opcional)
 
-Práticas opcionais para endurecer a implantação. Veja [SECURITY.md](../../SECURITY.md). A imagem já roda como usuário não-root (`appuser`, UID 1000). Para Kubernetes, você pode adicionar securityContext, NetworkPolicy e PDB (exemplos em `deploy/kubernetes/`).
+Práticas opcionais para endurecer a implantação. Veja [SECURITY.md](../../SECURITY.md). A imagem já roda como usuário não-root (`appuser`, UID 1000). Para Kubernetes, você pode adicionar securityContext, NetworkPolicy e PDB (exemplos em `deploy/kubernetes/`). **Em produção**, defina `api.require_api_key: true` e use uma chave forte via variável de ambiente (ex.: `api.api_key_from_env: "AUDIT_API_KEY"`) para não armazenar credenciais no config.
 
 ## 3. Executar como container único (docker run)
 
