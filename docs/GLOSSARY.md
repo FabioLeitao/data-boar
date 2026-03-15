@@ -1,0 +1,27 @@
+# Glossary
+
+Short definitions of terms used in Data Boar documentation and configuration. Helps new readers and translators.
+
+**Português (Brasil):** [GLOSSARY.pt_BR.md](GLOSSARY.pt_BR.md)
+
+---
+
+| Term | Definition |
+|------|------------|
+| **Data Boar** | The product display name. A “boar” roots through data; the tool discovers and maps personal and sensitive data across many sources for compliance (LGPD, GDPR, CCPA, etc.). The engine package name is `python3-lgpd-crawler`. |
+| **data soup** | The mix of data sources you scan—databases, files, APIs, Power BI, Dataverse, shares, etc. Data Boar “ingests and digests” this soup: it discovers structures, samples values, and reports where PII or sensitive data appears. |
+| **finding** | A single detection result: a location (e.g. table.column or file path), the **pattern_detected**, **sensitivity level**, and optional **norm_tag**. Stored as metadata in SQLite and shown in the Excel report (e.g. “Database findings”, “Filesystem findings”). |
+| **norm_tag** | A label that ties a finding to a regulation or framework (e.g. `LGPD Art. 5`, `GDPR Art. 4(1)`, `CCPA`). Set by built-in patterns or in **regex overrides** and **recommendation overrides** so reports show the right “Base legal” and “Relevante para” per framework. |
+| **pattern_detected** | The name of the rule that matched: a built-in pattern (e.g. `LGPD_CPF`, `EMAIL`, `CCPA_SSN`) or a custom name from **regex_overrides_file**. Used in reports and for **recommendation overrides** (e.g. `norm_tag_pattern`). |
+| **recommendation override** | A config block (`report.recommendation_overrides`) that customises the Excel “Recommendations” row for a given **norm_tag** or **pattern_detected**: base legal, risk, recommendation text, priority, and “relevant for”. Lets you align report language with UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS, or internal norms without code changes. |
+| **regex override** | A custom regex pattern defined in **regex_overrides_file** (or inline). Each entry has `name`, `pattern`, and optional `norm_tag`. The detector matches against column names and sample text; a match produces a **finding** with that name and norm_tag. See [regex_overrides.example.yaml](regex_overrides.example.yaml) and [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md). |
+| **sensitivity level** | One of **HIGH**, **MEDIUM**, **LOW**. Indicates how sensitive the detected data is (e.g. direct identifiers → HIGH; quasi-identifiers or context-only → MEDIUM/LOW). Used for filtering (`report.min_sensitivity`), report sheets, and the **heatmap**. |
+| **session** | A single scan run. Each CLI or API scan creates a session (UUID + timestamp). Findings and failures are stored against that session; the Excel report and **heatmap** are generated per session. |
+| **target** | A configured data source to scan: e.g. a database (SQL/NoSQL), a filesystem path, a REST API, a share (SMB, NFS, SharePoint, WebDAV), Power BI, or Dataverse. Defined under `targets` in the config. |
+| **connector** | The code that talks to a **target** type: discovers schema or listing, samples data, runs sensitivity detection, and saves **findings**. New connectors are added per [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md). |
+| **heatmap** | A visualisation (PNG and/or sheet in the Excel report) of sensitivity/risk: typically rows = tables or files, columns = sensitivity level or categories, colour = risk. Helps DPOs and compliance see “hot” areas at a glance. |
+| **quasi-identifier** | A piece of data that, alone or in combination with others, can contribute to re-identifying a person (e.g. gender, job, age band, postcode). When **aggregated identification** is enabled, the report flags tables/files where several quasi-identifier categories appear together (LGPD Art. 5, GDPR Recital 26). |
+
+---
+
+**See also:** [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) (regulations and extensibility), [USAGE.md](USAGE.md) (config and API), [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) (patterns and ML/DL). Full index: [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
