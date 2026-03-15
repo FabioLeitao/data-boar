@@ -1,7 +1,7 @@
 # Plan: Configurable timeouts for data soup access (sane defaults and recommendations)
 
 **Status:** Done (Phases 1–4 complete)
-**Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
+**Synced with:** [PLANS_TODO.md](../PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
 
@@ -150,7 +150,7 @@ Optionally extend `failure_hint("timeout")` with one line: "You can set timeouts
 ## Conflict and placement in roadmap
 
 - **No conflicts** with other plans. Additive (config keys, connector wiring, docs).
-- **Placement:** Can be done early (improves robustness of all scans). See [PLANS_TODO.md](PLANS_TODO.md).
+- **Placement:** Can be done early (improves robustness of all scans). See [PLANS_TODO.md](../PLANS_TODO.md).
 
 ---
 
