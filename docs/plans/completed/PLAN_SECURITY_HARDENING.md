@@ -1,7 +1,7 @@
 # Plan: Security hardening and vulnerability closure
 
 **Status:** Done (Tier 1 foundation). All steps 1.1–1.3, 2.1–2.4, 3.1–3.4, 5.1–5.3, 6.1–6.3, 7.1–7.3 complete.
-**Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
+**Synced with:** [PLANS_TODO.md](../PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
 
