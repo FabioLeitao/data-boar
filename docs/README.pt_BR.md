@@ -73,7 +73,7 @@ Os artefatos de deploy (Compose, Kubernetes, exemplos de config) ficam na pasta 
 | Direitos autorais e marca | [COPYRIGHT_AND_TRADEMARK.md](COPYRIGHT_AND_TRADEMARK.md) | [COPYRIGHT_AND_TRADEMARK.pt_BR.md](COPYRIGHT_AND_TRADEMARK.pt_BR.md) |
 
 - [plans/PLANS_TODO.md](plans/PLANS_TODO.md) — Status dos planos e estado atual da aplicação (fonte única de verdade para os to-dos dos planos abertos). *Arquivos de plano são apenas em inglês para histórico; a documentação para o operador é EN + pt-BR.*
-- [releases/](releases/) — Notas de release (ex.: 1.5.2, 1.5.1, 1.5.0, 1.4.3).
+- [releases/](releases/) — Notas de release (ex.: 1.5.3, 1.5.2, 1.5.1, 1.5.0, 1.4.3).
 - [plans/completed/](plans/completed/) — Planos concluídos arquivados e o checklist de implementação ([NEXT_STEPS.md](plans/completed/NEXT_STEPS.md)), todos os itens Feitos.
 
 Man pages: `docs/lgpd_crawler.1` (comando), `docs/lgpd_crawler.5` (config e formatos de arquivo). Instale com symlinks para que os dois nomes funcionem; visualize com `man data_boar` ou `man lgpd_crawler`, e `man 5 data_boar` ou `man 5 lgpd_crawler` (veja o README na raiz).
