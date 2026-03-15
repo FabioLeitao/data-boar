@@ -1,6 +1,6 @@
 # Plan: Additional detection techniques and false-negative reduction
 
-**Status:** Not started  
+**Status:** Not started
 **Goal:** Explore techniques, frameworks, and libraries (beyond Regex, ML, and DL) to improve report quality, with emphasis on **reducing false negatives** (missed PII) even at the cost of more false positives (which can be handled later by human review).
 
 ---
@@ -103,7 +103,7 @@ Combined logic: regex wins when matched; otherwise `combined_confidence = max(ml
 
 We already infer personal or sensitive data under LGPD/GDPR/CCPA etc. from an **incomplete set**: column names plus a **sample** of values (e.g. `sample_limit` rows), not the full population. Aggregation then groups findings by table or file and infers **“possible identification”** when multiple quasi-identifier categories (gender, health, phone, address, other) appear together in the same group. That inference is therefore uncertain: we may miss columns that are PII but didn’t show up in the sample, or we may under-count categories and miss a high-risk combination.
 
-**Policy for aggregated and incomplete inference:**  
+**Policy for aggregated and incomplete inference:**
 Prefer **more false positives and human confirmation** over **false negatives and regulatory punishment**. When in doubt, flag as “possible” / “suggested review” so the operator can confirm, rather than dismissing and risking a violation.
 
 ### Tactics to improve aggregated/incomplete inference (FN‑first balance)
@@ -131,7 +131,7 @@ Prefer **more false positives and human confirmation** over **false negatives an
 6. **Region-specific column dictionaries** (config) and, where connector supports it, **FK/table context**.
 7. NER / Presidio as **optional, documented** extensions once fixtures and FN metrics are in place.
 
-**Aggregated and incomplete-data inference (FN-first balance)**
+## Aggregated and incomplete-data inference (FN-first balance)
 
 8. **Report wording and transparency**: in aggregated sheet and recommendations, state that results are based on sampled/incomplete data and human confirmation is recommended; use "possible", "suggested", "may allow identification".
 9. **Verify MEDIUM and PII_AMBIGUOUS contribute to aggregation** (map to category and count toward min_categories); document behaviour.
@@ -142,23 +142,23 @@ Prefer **more false positives and human confirmation** over **false negatives an
 
 ## Verification plan (how to confirm it works)
 
-1. **Define a small ground-truth set**  
-   - Use or extend the synthetic/fixture approach from PLAN_SYNTHETIC_DATA_AND_CONFIDENCE_VALIDATION.  
+1. **Define a small ground-truth set**
+   - Use or extend the synthetic/fixture approach from PLAN_SYNTHETIC_DATA_AND_CONFIDENCE_VALIDATION.
    - Include: clear PII (CPF, email, names), clear non-PII (counts, logs), and **intentional FN** (e.g. misspelled column names, masked values, regional nicknames).
 
-2. **Baseline**  
-   - Run current detector (regex + ML + DL) on the set; record per-column sensitivity and pattern.  
+2. **Baseline**
+   - Run current detector (regex + ML + DL) on the set; record per-column sensitivity and pattern.
    - Compute recall (how many of the known PII columns were flagged as HIGH or MEDIUM).
 
-3. **Per-technique validation**  
-   - Enable one new technique at a time (e.g. fuzzy match, or lower MEDIUM threshold).  
-   - Re-run and compare recall and precision.  
+3. **Per-technique validation**
+   - Enable one new technique at a time (e.g. fuzzy match, or lower MEDIUM threshold).
+   - Re-run and compare recall and precision.
    - Accept a technique if recall increases and precision stays acceptable (or FP are documented as “review”).
 
-4. **Regression**  
+4. **Regression**
    - Ensure existing tests still pass; add tests for new code paths and for “no change when optional feature off”.
 
-5. **Documentation**  
+5. **Documentation**
    - Document each optional technique in `docs/SENSITIVITY_DETECTION.md`: when it runs, how to enable/disable, and how it affects FN/FP.
 
 ---
