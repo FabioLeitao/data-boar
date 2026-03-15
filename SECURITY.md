@@ -53,7 +53,7 @@ Additional client libraries may be required depending on which connectors you us
 
 - Whenever you change dependencies (including when applying Dependabot or automation), edit **`pyproject.toml`** first, then run `uv lock` and `uv export --no-emit-package pyproject.toml -o requirements.txt` so **uv.lock** and **requirements.txt** stay in sync with the lockfile.
 
-This approach is part of the project’s security baseline. For the full list of hardening measures and status, see **`docs/plans/PLAN_SECURITY_HARDENING.md`**.
+This approach is part of the project’s security baseline. For the full list of hardening measures and status, see **`docs/plans/completed/PLAN_SECURITY_HARDENING.md`**.
 
 ## Resistance to common vulnerabilities
 
@@ -68,7 +68,7 @@ This approach is part of the project’s security baseline. For the full list of
 - **Logging policy:** API key, passwords, and connection strings must not appear in audit or application logs. Failure details and exception messages are passed through **`core.validation.redact_secrets_for_log`** before being written to the log; connection URLs and `password=` / `api_key=`-style values are masked. Do not log raw config, request bodies, or driver exception messages that might contain credentials. See **`core/database.py`** (save_failure) and **`tests/test_security.py`** (redact_secrets_for_log).
 - **Report and heatmap access:** Report and heatmap endpoints validate `session_id` format before use; invalid IDs return 400, unknown or missing sessions return 404 (no session enumeration or 403/404 distinction for unknown IDs). See **`api/routes.py`** and **`docs/SECURITY.md`**.
 
-For a **technician-oriented summary** (what to watch for, regression tests, recommendations), see **`docs/SECURITY.md`** (EN) and **`docs/SECURITY.pt_BR.md`** (pt-BR). For completed and planned hardening steps, see **`docs/plans/PLAN_SECURITY_HARDENING.md`**.
+For a **technician-oriented summary** (what to watch for, regression tests, recommendations), see **`docs/SECURITY.md`** (EN) and **`docs/SECURITY.pt_BR.md`** (pt-BR). For completed and planned hardening steps, see **`docs/plans/completed/PLAN_SECURITY_HARDENING.md`**.
 
 ## HTTP security headers (web and API)
 
