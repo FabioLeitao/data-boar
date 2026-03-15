@@ -56,7 +56,7 @@ DevSecOps means **security as code**, **shift-left**, and **automation**. The pr
 | **Secrets**              | No secrets in logs (policy in SECURITY.md); config and env for API key; release checklist confirms no secrets in logs                     |
 | **Supply chain**         | Dependabot, minimum versions in pyproject.toml, audit before release                                                                      |
 
-**Recommendation:** Keep integrating security into the same pipeline (tests + lint + audit). When you add new features (e.g. webhooks, new connectors), add tests and update [SECURITY.md](../SECURITY.md) and [docs/security.md](security.md) so behaviour stays documented.
+**Recommendation:** Keep integrating security into the same pipeline (tests + lint + audit). When you add new features (e.g. webhooks, new connectors), add tests and update [SECURITY.md](../SECURITY.md) and [docs/SECURITY.md](SECURITY.md) so behaviour stays documented.
 
 ---
 

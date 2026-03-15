@@ -53,14 +53,14 @@ Ao dar bump na versão, atualize **todos** os itens abaixo para manter o número
 
 ### 5. Documentação (EN e PT-BR)
 
-| Local                     | O que alterar                                                                                                                                          |
-| ---                       | ---                                                                                                                                                    |
-| **`README.md`**           | Se o texto citar o número da versão atual (ex.: em exemplo de tag de imagem), atualize.                                                                |
-| **`README.pt_BR.md`**     | Idem ao README.md para qualquer menção explícita à versão.                                                                                             |
-| **`docs/USAGE.md`**       | Atualize qualquer referência explícita à versão, se houver.                                                                                            |
-| **`docs/USAGE.pt_BR.md`** | Idem ao USAGE.md.                                                                                                                                      |
-| **`docs/PLANS_TODO.md`**  | Se houver nota de “versão atual” ou “app version” no “Current state” ou passo de publish de um plano, atualize ao lançar.                              |
-| **Outros docs**           | Pesquise no repositório pela string da versão antiga (ex.: `1.3.0`) e atualize referências restantes em SECURITY.md, CONTRIBUTING.md ou release notes. |
+| Local                          | O que alterar                                                                                                                                          |
+| ---                            | ---                                                                                                                                                    |
+| **`README.md`**                | Se o texto citar o número da versão atual (ex.: em exemplo de tag de imagem), atualize.                                                                |
+| **`README.pt_BR.md`**          | Idem ao README.md para qualquer menção explícita à versão.                                                                                             |
+| **`docs/USAGE.md`**            | Atualize qualquer referência explícita à versão, se houver.                                                                                            |
+| **`docs/USAGE.pt_BR.md`**      | Idem ao USAGE.md.                                                                                                                                      |
+| **`docs/plans/PLANS_TODO.md`** | Se houver nota de “versão atual” ou “app version” no “Current state” ou passo de publish de um plano, atualize ao lançar.                              |
+| **Outros docs**                | Pesquise no repositório pela string da versão antiga (ex.: `1.3.0`) e atualize referências restantes em SECURITY.md, CONTRIBUTING.md ou release notes. |
 
 ### 6. Interface e relatórios (não é preciso editar se 1–2 forem feitos)
 

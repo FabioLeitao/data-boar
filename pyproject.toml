@@ -87,7 +87,7 @@ dependencies = [
 nosql = ["pymongo>=4.0", "redis>=5.0"]
 bigdata = ["snowflake-connector-python>=3.0"]
 shares = ["smbprotocol>=1.2.0", "webdavclient3>=0.14.0", "requests_ntlm>=1.2.0"]
-# Deep-learning sensitivity: sentence embeddings + classifier on your training terms (see docs/sensitivity-detection.md)
+# Deep-learning sensitivity: sentence embeddings + classifier on your training terms (see docs/SENSITIVITY_DETECTION.md)
 dl = ["sentence-transformers>=3.0.0"]
 
 [tool.pytest.ini_options]

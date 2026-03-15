@@ -1,0 +1,27 @@
+# Glossário
+
+Definições curtas de termos usados na documentação e na configuração do Data Boar. Ajuda novos leitores e tradutores.
+
+**English:** [GLOSSARY.md](GLOSSARY.md)
+
+---
+
+| Termo | Definição |
+|-------|-----------|
+| **Data Boar** | Nome de exibição do produto. Um “javali” fuça os dados; a ferramenta descobre e mapeia dados pessoais e sensíveis em várias fontes para conformidade (LGPD, GDPR, CCPA etc.). O nome do pacote do motor é `python3-lgpd-crawler`. |
+| **data soup** (sopa de dados) | O conjunto de fontes de dados que você varre—bancos, arquivos, APIs, Power BI, Dataverse, shares etc. O Data Boar “ingerir e digerir” essa sopa: descobre estruturas, amostra valores e reporta onde PII ou dados sensíveis aparecem. |
+| **finding** (achado) | Um resultado de detecção: um local (ex.: tabela.coluna ou caminho de arquivo), o **pattern_detected**, o **sensitivity level** e opcionalmente o **norm_tag**. Armazenado como metadado no SQLite e exibido no relatório Excel (ex.: “Database findings”, “Filesystem findings”). |
+| **norm_tag** | Rótulo que associa um achado a uma regulamentação ou framework (ex.: `LGPD Art. 5`, `GDPR Art. 4(1)`, `CCPA`). Definido pelos padrões embutidos ou em **regex overrides** e **recommendation overrides** para que os relatórios mostrem a “Base legal” e “Relevante para” corretos por framework. |
+| **pattern_detected** | Nome da regra que deu match: um padrão embutido (ex.: `LGPD_CPF`, `EMAIL`, `CCPA_SSN`) ou um nome customizado do **regex_overrides_file**. Usado nos relatórios e nos **recommendation overrides** (ex.: `norm_tag_pattern`). |
+| **recommendation override** (override de recomendação) | Bloco de config (`report.recommendation_overrides`) que personaliza a linha “Recomendações” do Excel para um **norm_tag** ou **pattern_detected**: base legal, risco, texto de recomendação, prioridade e “relevante para”. Permite alinhar a linguagem do relatório a UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS ou normas internas sem mudar código. |
+| **regex override** (override de regex) | Padrão regex customizado definido no **regex_overrides_file** (ou inline). Cada entrada tem `name`, `pattern` e opcionalmente `norm_tag`. O detector aplica o padrão a nomes de colunas e texto amostrado; um match gera um **finding** com esse nome e norm_tag. Veja [regex_overrides.example.yaml](regex_overrides.example.yaml) e [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md). |
+| **sensitivity level** (nível de sensibilidade) | Um de **HIGH**, **MEDIUM**, **LOW**. Indica o quão sensível é o dado detectado (ex.: identificadores diretos → HIGH; quasi-identificadores ou só contexto → MEDIUM/LOW). Usado para filtrar (`report.min_sensitivity`), abas do relatório e o **heatmap**. |
+| **session** (sessão) | Uma execução de varredura. Cada scan via CLI ou API cria uma sessão (UUID + timestamp). Achados e falhas ficam associados a essa sessão; o relatório Excel e o **heatmap** são gerados por sessão. |
+| **target** (alvo) | Uma fonte de dados configurada para varredura: ex. um banco (SQL/NoSQL), um caminho de filesystem, uma API REST, um share (SMB, NFS, SharePoint, WebDAV), Power BI ou Dataverse. Definido em `targets` no config. |
+| **connector** (conector) | O código que fala com um tipo de **target**: descobre schema ou listagem, amostra dados, executa detecção de sensibilidade e grava **findings**. Novos conectores são adicionados conforme [ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md). |
+| **heatmap** | Visualização (PNG e/ou planilha no relatório Excel) de sensibilidade/risco: em geral linhas = tabelas ou arquivos, colunas = nível de sensibilidade ou categorias, cor = risco. Ajuda DPOs e conformidade a ver áreas “quentes” de relance. |
+| **quasi-identifier** (quasi-identificador) | Dado que, sozinho ou em combinação com outros, pode contribuir para reidentificar uma pessoa (ex.: gênero, cargo, faixa etária, CEP). Com **identificação agregada** habilitada, o relatório sinaliza tabelas/arquivos onde várias categorias de quasi-identificadores aparecem juntas (LGPD Art. 5, GDPR Recital 26). |
+
+---
+
+**Veja também:** [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) (regulamentações e extensibilidade), [USAGE.pt_BR.md](USAGE.pt_BR.md) (config e API), [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md) (padrões e ML/DL). Índice completo: [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
