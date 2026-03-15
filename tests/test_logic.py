@@ -77,6 +77,27 @@ class TestAuditLogic(unittest.TestCase):
         self.assertIn(result["sensitivity_level"], ("LOW", "MEDIUM"))
         self.assertNotEqual(result["sensitivity_level"], "HIGH")
 
+    def test_phone_column_names_flagged_sensitive(self):
+        """Phone-related column names (home phone, mobile, celular, téléphone, etc.) are recognised and flagged."""
+        scanner = DataScanner()
+        phone_columns = [
+            "celular",
+            "home_phone",
+            "mobile",
+            "telefone",
+            "téléphone",
+            "work phone",
+            "handynummer",
+        ]
+        for col in phone_columns:
+            with self.subTest(column=col):
+                result = scanner.scan_column(col, "sample value")
+                self.assertIn(
+                    result["sensitivity_level"],
+                    ("HIGH", "MEDIUM"),
+                    f"Column '{col}' should be flagged as sensitive (phone)",
+                )
+
 
 if __name__ == "__main__":
     unittest.main()
