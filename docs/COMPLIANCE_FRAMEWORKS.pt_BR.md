@@ -35,13 +35,13 @@ Seja qual for o **idioma**, **encoding** ou **região** da sua sopa de dados, a 
 
 ### Como habilitar e operar
 
-1. **Escolha a amostra certa para sua região**  
+1. **Escolha a amostra certa para sua região**
    Veja a tabela no [README de compliance-samples](compliance-samples/README.pt_BR.md) e a seção “Idioma e público-alvo”. Exemplos: Brasil → LGPD (PT-BR+EN); Canadá → PIPEDA (EN+FR); Reino Unido → UK GDPR; EEE → EU GDPR; Benelux → amostra Benelux; Japão → APPI; África do Sul → POPIA.
 
-2. **Salve config e amostras em UTF-8 (recomendado)**  
+2. **Salve config e amostras em UTF-8 (recomendado)**
    Salvar tudo em **UTF-8** evita problemas de encoding com termos multilíngues. O config principal ainda será carregado se estiver em outro encoding (auto-detecção).
 
-3. **Defina os caminhos e o encoding no config**  
+3. **Defina os caminhos e o encoding no config**
    No seu `config.yaml` (ou `config.json`) principal:
 
    ```yaml
@@ -54,7 +54,7 @@ Seja qual for o **idioma**, **encoding** ou **região** da sua sopa de dados, a 
 
    Depois mescle os **`recommendation_overrides`** da amostra no seu config em `report.recommendation_overrides` (veja [USAGE.pt_BR](USAGE.pt_BR.md) seção de relatório).
 
-4. **Execute a varredura**  
+4. **Execute a varredura**
    Use o CLI ou a API como de costume. Os achados usarão as norm tags e o texto de recomendação da amostra; o relatório Excel exibirá Unicode corretamente.
 
 Para todas as opções de encoding e exemplos, veja [USAGE – File encoding](USAGE.md#file-encoding-config-and-pattern-files) (EN) e [USAGE.pt_BR – Encoding de arquivos](USAGE.pt_BR.md#file-encoding-config-and-pattern-files) (pt-BR).
