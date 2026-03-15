@@ -1,0 +1,54 @@
+# Singapore PDPA – sample compliance profile (Personal Data Protection Act 2012, PDPC)
+#
+# Target audience: Singapore and APAC deployments. PDPC; personal data, DNC.
+#
+# How to use:
+#   1. Set in your main config:
+#        regex_overrides_file: path/to/compliance-sample-singapore_pdpa.yaml
+#        ml_patterns_file: path/to/compliance-sample-singapore_pdpa.yaml
+#   2. Merge the recommendation_overrides list below into your config under report.recommendation_overrides.
+#
+# Singapore: PDPA 2012; Personal Data Protection Commission (PDPC).
+
+regex:
+  - name: "NRIC_SG"
+    pattern: "\\b[SFTG]\\d{7}[A-Z]\\b"
+    norm_tag: "Singapore PDPA"
+  - name: "NRIC_SG_ALT"
+    pattern: "\\b\\d{4}\\s?\\d{4}\\s?\\d{4}\\b"
+    norm_tag: "Singapore PDPA"
+
+# ML terms: personal data, PDPC, DNC, consent.
+terms:
+  - text: "personal data"
+    label: sensitive
+  - text: "pdpa"
+    label: sensitive
+  - text: "pdpc"
+    label: sensitive
+  - text: "data protection commission"
+    label: sensitive
+  - text: "do not call"
+    label: sensitive
+  - text: "dnc"
+    label: sensitive
+  - text: "data subject"
+    label: sensitive
+  - text: "consent"
+    label: sensitive
+  - text: "organisation"
+    label: sensitive
+  - text: "purpose limitation"
+    label: sensitive
+  - text: "notification obligation"
+    label: sensitive
+  - text: "nric"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "Singapore PDPA"
+    base_legal: "Personal Data Protection Act 2012; PDPC"
+    risk: "Personal data; consent and purpose limitation; DNC regime."
+    recommendation: "Comply with PDPA; register with PDPC if required; implement consent and notification obligations; respect DNC."
+    priority: "ALTA"
+    relevant_for: "DPO, PDPC, Data Protection Officer"

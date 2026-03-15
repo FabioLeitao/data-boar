@@ -151,6 +151,15 @@ class TestAuditLogic(unittest.TestCase):
                     f"Column '{col}' should be flagged as sensitive (ID/document)",
                 )
 
+    def test_ambiguous_column_doc_id_returns_medium_and_pii_ambiguous(self):
+        """Generic column names (doc_id, document_id, etc.) return MEDIUM and PII_AMBIGUOUS for manual confirmation."""
+        scanner = DataScanner()
+        for col in ("doc_id", "document_id", "id_number"):
+            with self.subTest(column=col):
+                result = scanner.scan_column(col, "sample value")
+                self.assertEqual(result["sensitivity_level"], "MEDIUM", f"Column '{col}' should be MEDIUM (ambiguous)")
+                self.assertIn("PII_AMBIGUOUS", result.get("pattern_detected", ""), f"Column '{col}' should have PII_AMBIGUOUS")
+
 
 if __name__ == "__main__":
     unittest.main()
