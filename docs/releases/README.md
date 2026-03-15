@@ -1,6 +1,15 @@
 # Release notes and how to publish a GitHub release
 
-Each release has a markdown file here (e.g. `1.3.1.md`) with the release notes.
+Each release has a markdown file here (e.g. `1.3.1.md`, `1.5.4.md`) with the release notes.
+
+## Get ready for a PR (version bump + release note)
+
+When preparing a release (e.g. 1.5.4):
+
+1. Bump version everywhere per [VERSIONING.md](../VERSIONING.md): `pyproject.toml`, `core/about.py`, man pages, DEPLOY, TECH_GUIDE, README (EN + pt-BR), docs/README (EN + pt-BR).
+2. Add a new file here (e.g. `1.5.4.md`) with highlights, changes, Docker build/push commands, and **After merging the release PR** (tag, push image, `gh release create`).
+3. Run the full test suite: `uv run pytest -v -W error`.
+4. Open a PR with your branch; after merge, follow the “After merging” steps in the release note to tag, push the Docker image, and create the GitHub release.
 
 ## After you push the code to GitHub
 
