@@ -545,7 +545,7 @@ Full steps (build, push, single container, Compose, Swarm, Kubernetes): **[deplo
 
 ## Compliance frameworks and extensibility
 
-The application explicitly references **LGPD**, **GDPR**, **CCPA**, **HIPAA**, and **GLBA** in built-in patterns and report labels. You can extend support to other regulations (e.g. UK GDPR, PIPEDA, APPI, POPIA) without code changes: set **`norm_tag`** in [regex overrides](SENSITIVITY_DETECTION.md#custom-regex-patterns-detecting-new-personalsensitive-values) or custom connectors to any framework label, and use **`report.recommendation_overrides`** in config to tailor recommendation text. See **[COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md)** for details.
+The application explicitly references **LGPD**, **GDPR**, **CCPA**, **HIPAA**, and **GLBA** in built-in patterns and report labels. We provide **sample configuration and config-file examples** (e.g. [regex_overrides.example.yaml](regex_overrides.example.yaml), recommendation overrides in [USAGE.md](USAGE.md)) so you can extend to **UK GDPR**, **PIPEDA**, **POPIA**, **APPI**, **PCI-DSS**, or custom norms without code changes: set **`norm_tag`** in [regex overrides](SENSITIVITY_DETECTION.md#custom-regex-patterns-detecting-new-personalsensitive-values) or custom connectors to any framework label, and use **`report.recommendation_overrides`** in config to tailor recommendation text. We can **assist with tuning** (tailored configs or slight code changes) for further compatibility when you reach out. See **[COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md)** ([pt-BR](COMPLIANCE_FRAMEWORKS.pt_BR.md)) for the full list of supported regulations, sample files, and extensibility.
 
 ## Security and compliance
 

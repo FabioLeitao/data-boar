@@ -41,6 +41,7 @@ Estes permanecem na raiz do repositório para o GitHub e a automação:
 | Versionamento                                            | [VERSIONING.md](VERSIONING.md)                       | [VERSIONING.pt_BR.md](VERSIONING.pt_BR.md)                       |
 | Adicionar conectores                                     | [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md)         | [ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md)         |
 | Conformidade                                             | [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) | [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) |
+| Glossário (termos)                                       | [GLOSSARY.md](GLOSSARY.md)                           | [GLOSSARY.pt_BR.md](GLOSSARY.pt_BR.md)                           |
 
 ## Deploy e Docker
 
