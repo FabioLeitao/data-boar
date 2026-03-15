@@ -21,6 +21,11 @@ scan:
   # Parallel targets: 1 = sequential (minimal), 2–4 for many DB/FS targets (I/O-bound; network/disk are the bottleneck)
   max_workers: 1
 
+# Optional: connection/read timeouts (seconds). Per-target overrides: connect_timeout, read_timeout, or timeout on each target (see docs/USAGE.md).
+# timeouts:
+#   connect_seconds: 25
+#   read_seconds: 90
+
 # Optional: ML/DL training terms for sensitivity detection (see docs/SENSITIVITY_DETECTION.md).
 # Uncomment and set paths, or use inline sensitivity_detection.ml_terms / dl_terms.
 # ml_patterns_file: /data/config/ml_terms.yaml
