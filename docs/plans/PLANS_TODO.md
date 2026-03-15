@@ -87,7 +87,7 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 | 3.1–3.4  | Rate limit/API key/report access docs; optional scan payload limits | ✅ Done                                       |
 | 5.1–5.3  | Deploy hardening, secrets, WAF docs                                 | ✅ Done                                       |
 | 6.1, 6.3 | Security tests for new validation; no regressions                   | ⬜ Pending                                    |
-| 7.1–7.3  | Release checklist, docs/SECURITY.md, SECURITY.md                    | 7.1 ✅ (checklist in CONTRIBUTING); 7.2–7.3 ⬜ |
+| 7.1–7.3  | Release checklist, docs/SECURITY.md, SECURITY.md                    | 7.1 ✅ 7.2 ✅ 7.3 ✅ |
 
 ---
 
