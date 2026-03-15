@@ -1,6 +1,6 @@
 # Plan: Security hardening and vulnerability closure
 
-**Status:** In progress (1.1–1.3, 2.1–2.3, 3.1–3.4, 5.1–5.3, 6.1, 7.1–7.3 done; 2.4, 6.3 pending)
+**Status:** Done (Tier 1 foundation). All steps 1.1–1.3, 2.1–2.4, 3.1–3.4, 5.1–5.3, 6.1–6.3, 7.1–7.3 complete.
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
@@ -33,7 +33,7 @@ All steps are **additive or configurable** where possible; avoid breaking existi
 | --- | -------------------------------------------------------------------------------------------------------------------------------------                                                                                                                                                            | ---------- | -----                                                                                                                                                                                   |
 | 1.1 | **Tenant / technician validation:** Add optional max length (e.g. 256 chars) and allowlist of characters (printable, no control chars) for `tenant` and `technician` in ScanStartBody, SessionTenantUpdate, SessionTechnicianUpdate, and config-driven scan. Store trimmed/sanitized value only. | ✅ Done     | core/validation.sanitize_tenant_technician; api/routes + main.py; test_security. |
 | 1.2 | **Request body size limit:** Ensure FastAPI/ASGI request body size is bounded (e.g. 1 MB for JSON config save and scan start body) to prevent DoS via huge payloads. Document in SECURITY.md.                                                                                                    | ✅ Done     | request_body_size_middleware; SECURITY.md; test. |
-| 1.3 | **Logging:** Audit code paths that log request data, config, or errors; ensure API key, passwords, and connection strings are never logged. Add a regression test or checklist.                                                                                                                  | ⬜ Pending  | Align with SECURITY.md (“do not log the key”).                                                                                                                                          |
+| 1.3 | **Logging:** Audit code paths that log request data, config, or errors; ensure API key, passwords, and connection strings are never logged. Add a regression test or checklist.                                                                                                                  | ✅ Done     | core/database.py redact_secrets_for_log; test_redact_secrets_for_log_*; CONTRIBUTING Release checklist + SECURITY.md (“do not log the key”).                                                                                                                                          |
 
 ---
 
@@ -42,9 +42,14 @@ All steps are **additive or configurable** where possible; avoid breaking existi
 | #   | To-do                                                                                                                                                                      | Status     | Notes                                                                                     |
 | --- | -------------------------------------------------------------------------------------------------------------------------------------                                      | ---------- | -----                                                                                     |
 | 2.1 | **pip-audit in CI:** Confirm `uv run pip-audit` runs on every push/PR (already in `.github/workflows/ci.yml`). Fix any new findings before release.                        | ✅ Done     | CI verified; CONTRIBUTING now states PRs must resolve audit failures.                     |
-| 2.2 | **Dependabot:** Keep weekly pip and github-actions updates enabled; when merging, update `pyproject.toml` first, then `uv pip compile pyproject.toml -o requirements.txt`. | ✅ Done     | Release checklist added in CONTRIBUTING (audit, docs, no secrets in logs).                |
+| 2.2 | **Dependabot:** Keep weekly pip and github-actions updates enabled; when merging, update `pyproject.toml` first, then `uv lock` and `uv export --no-emit-package pyproject.toml -o requirements.txt`. | ✅ Done     | CONTRIBUTING and SECURITY: lockfile workflow; release checklist refreshes lockfile.        |
 | 2.3 | **Minimum versions:** Prefer `>=` in pyproject.toml for security patches; pin `==` only where necessary for reproducibility. Document in SECURITY.md or CONTRIBUTING.      | ✅ Done     | SECURITY.md and CONTRIBUTING now state prefer >=, pin == only when needed.                |
-| 2.4 | **Optional: lockfile audit:** If introducing a lockfile (e.g. `uv.lock`), run `pip-audit` against the locked environment in CI so upgrades are audited before merge.       | ⬜ Pending  | Only if project adopts lockfile; otherwise current approach (sync + audit) is sufficient. |
+| 2.4 | **Lockfile and audit:** Adopt `uv.lock`; run `pip-audit` against the locked environment in CI. Refresh lockfile when deps change or before a stable release; Dependabot signals when to act.       | ✅ Done     | uv.lock committed; CI uses it; CONTRIBUTING/SECURITY document workflow and release refresh. |
+
+### Lockfile (uv.lock) — rationale and process
+
+- **Why:** Reproducible installs (same tree in dev, CI, and production); protects users from “it worked yesterday” breakage when a dependency updates; pip-audit runs against what is actually installed; aligns with future self-update and stable releases.
+- **Process:** (1) Declare deps in `pyproject.toml` with minimum versions (`>=`). (2) Run `uv lock` to resolve and pin the tree in `uv.lock`; run `uv export --no-emit-package pyproject.toml -o requirements.txt` for pip users. (3) Commit `pyproject.toml`, `uv.lock`, and `requirements.txt`. (4) When applying Dependabot (or any dep update): update pyproject first, then `uv lock` + export, commit all three. (5) Before a **stable release**: refresh lockfile (`uv lock`), run tests and pip-audit, then export and commit so the release is updated, compatible, and safe. Dependabot PRs help signal when to act; no need to chase every minor update between releases.
 
 ---
 
@@ -85,7 +90,7 @@ All steps are **additive or configurable** where possible; avoid breaking existi
 | --- | -------------------------------------------------------------------------------------------------------------------------------------                                                                                   | ---------- | -----                                                                                            |
 | 6.1 | **Security tests:** `tests/test_security.py` covers SQL injection, path traversal, credential encoding, safe_load, config endpoint. Keep these green; add tests for any new validation (e.g. tenant/technician length). | ✅ Done     | test_sanitize_tenant_technician_* (4 tests), test_request_body_size_limit_returns_413_*, test_redact_secrets_for_log_*. |
 | 6.2 | **S4423 regression:** `test_ssl_create_default_context_uses_minimum_tls_version` in test_sonarqube_python.py ensures no new use of default context without minimum TLS.                                                 | ✅ Done     | Already in place.                                                                                |
-| 6.3 | **No regressions:** Before marking any step done, run `uv run pytest -v -W error` and relevant security tests.                                                                                                          | ⬜ Pending  | Apply to every step in this plan.                                                                |
+| 6.3 | **No regressions:** Before marking any step done, run `uv run pytest -v -W error` and relevant security tests.                                                                                                          | ✅ Done     | Process: run full suite; CI enforces it.                                                           |
 
 ---
 
