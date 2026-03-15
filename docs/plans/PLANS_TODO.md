@@ -6,7 +6,7 @@ This document is the **single source of truth** for the project's plan status an
 
 **Policy:** When implementing a plan step, **update documentation** (USAGE, TECH_GUIDE, SECURITY, or dedicated docs) and **add or run tests** as the feature is implemented. After completing or adding to-dos, **update this file and the plan file** so progress is tracked in one place. All steps are intended to be **non-destructive**, **non-regression**, and **tested** before marking done.
 
-**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ⬜ Not started · **Secrets/vault** ⬜ Not started · **Configurable timeouts** ⬜ Not started · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ⬜ Not started · **Compressed files** ⬜ Not started · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ⬜ Not started · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started
+**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ⬜ Not started · **Secrets/vault** ⬜ Not started · **Configurable timeouts** 🔄 In progress (Phases 1–2 done) · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ⬜ Not started · **Compressed files** ⬜ Not started · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ⬜ Not started · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started
 
 ---
 
@@ -95,9 +95,9 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 
 | Phase   | To-do                                                                                                                       | Status    |
 | -----   | -----                                                                                                                       | ------    |
-| 1.1–1.3 | Add timeouts (connect_seconds, read_seconds) to config with sane defaults (25, 90); per-target overrides; document in USAGE | ⬜ Pending |
-| 2.1–2.6 | Wire SQL, REST, Power BI/Dataverse, MongoDB, Redis (and others where supported) to use config timeouts                      | ⬜ Pending |
-| 3.1–3.2 | Pass global config/merged timeouts to connectors; consistent override (target overrides global)                             | ⬜ Pending |
+| 1.1–1.3 | Add timeouts (connect_seconds, read_seconds) to config with sane defaults (25, 90); per-target overrides; document in USAGE | ✅ Done   |
+| 2.1–2.6 | Wire SQL, REST, Power BI/Dataverse, MongoDB, Redis (and others where supported) to use config timeouts                      | ✅ Done   |
+| 3.1–3.2 | Pass global config/merged timeouts to connectors; consistent override (target overrides global)                             | ✅ Done (loader merges onto each target) |
 | 4.1–4.4 | "Timeouts and load" recommendations in USAGE; optional failure_hint extension; pt_BR; tests                                 | ⬜ Pending |
 
 ---

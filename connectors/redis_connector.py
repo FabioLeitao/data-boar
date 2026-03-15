@@ -31,7 +31,16 @@ class RedisConnector:
         host = self.config.get("host", "localhost")
         port = int(self.config.get("port", 6379))
         password = self.config.get("pass") or self.config.get("password")
-        self._client = redis.Redis(host=host, port=port, password=password or None, decode_responses=True)
+        connect_s = max(1, int(self.config.get("connect_timeout_seconds", 25)))
+        read_s = max(1, int(self.config.get("read_timeout_seconds", 90)))
+        self._client = redis.Redis(
+            host=host,
+            port=port,
+            password=password or None,
+            decode_responses=True,
+            socket_connect_timeout=connect_s,
+            socket_timeout=read_s,
+        )
 
     def close(self) -> None:
         if self._client:
