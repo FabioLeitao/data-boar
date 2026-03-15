@@ -41,6 +41,7 @@ These stay at repo root for GitHub and automation:
 | Versioning                                          | [VERSIONING.md](VERSIONING.md)                       | [VERSIONING.pt_BR.md](VERSIONING.pt_BR.md)                       |
 | Adding connectors                                   | [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md)         | [ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md)         |
 | Compliance                                          | [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) | [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) |
+| Compliance samples (UK GDPR, EU GDPR, PIPEDA, etc.) | [compliance-samples/](compliance-samples/) · [COMPLIANCE_FRAMEWORKS.md#compliance-samples](COMPLIANCE_FRAMEWORKS.md#compliance-samples) | [compliance-samples/](compliance-samples/) · [COMPLIANCE_FRAMEWORKS.pt_BR.md#amostras-de-conformidade](COMPLIANCE_FRAMEWORKS.pt_BR.md#amostras-de-conformidade) |
 | Operator / IT requirements (minimal permissions)     | [OPERATOR_IT_REQUIREMENTS.md](OPERATOR_IT_REQUIREMENTS.md) | [OPERATOR_IT_REQUIREMENTS.pt_BR.md](OPERATOR_IT_REQUIREMENTS.pt_BR.md) |
 | Glossary (terms)                                    | [GLOSSARY.md](GLOSSARY.md)                           | [GLOSSARY.pt_BR.md](GLOSSARY.pt_BR.md)                           |
 
@@ -75,7 +76,7 @@ Deploy assets (Compose, Kubernetes, config examples) remain in the [deploy/](../
 | Observability and SRE   | [OBSERVABILITY_SRE.md](OBSERVABILITY_SRE.md)             | [OBSERVABILITY_SRE.pt_BR.md](OBSERVABILITY_SRE.pt_BR.md)             |
 
 - [plans/PLANS_TODO.md](plans/PLANS_TODO.md) — Plan status and current app state (single source of truth for open-plan to-dos). *Plan files are EN-only for history; operator docs are EN + pt-BR.*
-- [releases/](releases/) — Release notes (e.g. 1.5.3, 1.5.2, 1.5.1, 1.5.0, 1.4.3).
+- [releases/](releases/) — Release notes (e.g. 1.5.4, 1.5.3, 1.5.2, 1.5.1, 1.5.0, 1.4.3).
 - [plans/completed/](plans/completed/) — Archived completed plans and the implementation checklist ([NEXT_STEPS.md](plans/completed/NEXT_STEPS.md)), all items Done.
 
 Man pages: `docs/lgpd_crawler.1` (command), `docs/lgpd_crawler.5` (config and file formats). Install with symlinks so both names work; view with `man data_boar` or `man lgpd_crawler`, and `man 5 data_boar` or `man 5 lgpd_crawler` (see root README).
