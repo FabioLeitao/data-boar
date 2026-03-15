@@ -658,7 +658,7 @@ Install optional deps: `uv pip install -e ".[shares]"`.
     path: "/mnt/nfs_data"   # local mount point
 ```
 
-All share types use the same `file_scan` settings (extensions, recursive, scan_sqlite_as_db, sample_limit). Findings appear in the **Filesystem findings** sheet.
+All share types use the same `file_scan` settings (extensions, recursive, scan_sqlite_as_db, sample_limit, file_passwords). Findings appear in the **Filesystem findings** sheet.
 
 ### Global options (excerpt)
 
@@ -668,7 +668,19 @@ file_scan:
   recursive: true
   scan_sqlite_as_db: true
   sample_limit: 5
+  # Optional: passwords for password-protected files (PDF, ZIP-based e.g. .docx/.pptx)
+  # Keys: extension with leading dot (e.g. ".pdf", ".pptx") or "default"; values: password string.
+  # Without a matching password, encrypted files are skipped (no content extracted).
+  # file_passwords:
+  #   ".pdf": "my-pdf-secret"
+  #   ".pptx": "presentation-pass"
+  #   default: "fallback-for-any-encrypted"
 
+```
+
+**Password-protected files (`file_passwords`):** Some PDFs and ZIP-based documents (e.g. `.docx`, `.pptx`) can be encrypted with a password. If you need to scan such files, set **`file_scan.file_passwords`** to a dict mapping extension keys (e.g. `".pdf"`, `".pptx"`) or `"default"` to the password string. Keys are normalized to lowercase with a leading dot. Without a matching password, encrypted files are skipped (no content is extracted). **Limitations:** Workbook-level encrypted Excel (`.xlsx`/`.xlsm`) is not supported; the standard library `zipfile` only supports ZipCrypto for ZIP-based formats (AES-encrypted ZIP may require additional support). Use environment variables or a secrets manager for production so passwords are not stored in the config file.
+
+```yaml
 report:
   output_dir: .    # directory for Excel and heatmap PNG
   # Optional: custom recommendation text per norm/framework (UK GDPR, PIPEDA, or sensitive categories)
