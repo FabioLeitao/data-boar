@@ -1,0 +1,58 @@
+# Australia Privacy Act – sample compliance profile (Privacy Act 1988, OAIC, APPs)
+#
+# Target audience: Australian and Oceania deployments. OAIC, APPs, Notifiable Data Breaches.
+# Terms: personal information (EN). Optional TFN regex for Tax File Number.
+#
+# How to use:
+#   1. Set in your main config:
+#        regex_overrides_file: path/to/compliance-sample-australia_privacy.yaml
+#        ml_patterns_file: path/to/compliance-sample-australia_privacy.yaml
+#   2. Merge the recommendation_overrides list below into your config under report.recommendation_overrides.
+#
+# Australia: Privacy Act 1988; Office of the Australian Information Commissioner (OAIC); APPs.
+
+regex:
+  - name: "TFN_AU"
+    pattern: "\\b\\d{8}\\b"
+    norm_tag: "Australia Privacy"
+  - name: "TFN_AU_ALT"
+    pattern: "\\b\\d{9}\\b"
+    norm_tag: "Australia Privacy"
+  - name: "MEDICARE_AU"
+    pattern: "\\b\\d{10}\\s?\\d\\b"
+    norm_tag: "Australia Privacy"
+
+# ML terms: personal information, APPs, OAIC, notifiable data breach.
+terms:
+  - text: "personal information"
+    label: sensitive
+  - text: "tax file number"
+    label: sensitive
+  - text: "tfn"
+    label: sensitive
+  - text: "oaic"
+    label: sensitive
+  - text: "australian privacy principles"
+    label: sensitive
+  - text: "apps"
+    label: sensitive
+  - text: "notifiable data breach"
+    label: sensitive
+  - text: "ndb scheme"
+    label: sensitive
+  - text: "privacy act"
+    label: sensitive
+  - text: "data subject"
+    label: sensitive
+  - text: "consent"
+    label: sensitive
+  - text: "information commissioner"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "Australia Privacy"
+    base_legal: "Privacy Act 1988 (Cth); OAIC; Australian Privacy Principles (APPs)"
+    risk: "Personal information; TFN and other identifiers; notifiable data breach obligations."
+    recommendation: "Comply with APPs; assess NDB obligations; follow OAIC guidelines for collection, use and disclosure."
+    priority: "ALTA"
+    relevant_for: "DPO, OAIC, Privacy Officer"
