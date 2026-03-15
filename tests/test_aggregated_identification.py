@@ -124,6 +124,7 @@ class TestCategoryMapping(unittest.TestCase):
     def test_pattern_detected_maps_to_category(self):
         self.assertIn("phone", map_finding_to_categories({"column_name": "x", "pattern_detected": "PHONE_BR"}))
         self.assertIn("other", map_finding_to_categories({"column_name": "x", "pattern_detected": "EMAIL"}))
+        self.assertIn("other", map_finding_to_categories({"column_name": "x", "pattern_detected": "PII_AMBIGUOUS"}))
 
     def test_file_name_used_for_filesystem(self):
         cats = map_finding_to_categories({"file_name": "contacts_phone.csv", "pattern_detected": ""})
