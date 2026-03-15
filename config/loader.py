@@ -216,6 +216,50 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         "grace_for_running_status": grace,
     }
 
+    # Timeouts for data source connections (global defaults; per-target overrides applied below)
+    timeout_cfg = data.get("timeouts") or {}
+    _connect = timeout_cfg.get("connect_seconds", 25)
+    _read = timeout_cfg.get("read_seconds", 90)
+    try:
+        _connect = max(1, int(_connect))
+    except (TypeError, ValueError):
+        _connect = 25
+    try:
+        _read = max(1, int(_read))
+    except (TypeError, ValueError):
+        _read = 90
+    out["timeouts"] = {"connect_seconds": _connect, "read_seconds": _read}
+
+    # Per-target timeout overrides: merge global timeouts with optional target.connect_timeout,
+    # target.read_timeout, or target.timeout (single value for both). Target overrides global when set.
+    global_connect = out["timeouts"]["connect_seconds"]
+    global_read = out["timeouts"]["read_seconds"]
+    for t in out.get("targets") or []:
+        if not isinstance(t, dict):
+            continue
+        target_connect = t.get("connect_timeout_seconds") or t.get("connect_timeout")
+        target_read = t.get("read_timeout_seconds") or t.get("read_timeout")
+        single = t.get("timeout")
+        if single is not None:
+            try:
+                single = max(1, int(single))
+            except (TypeError, ValueError):
+                single = None
+        if single is not None:
+            if target_connect is None:
+                target_connect = single
+            if target_read is None:
+                target_read = single
+        for _name, _val in (("connect_timeout_seconds", target_connect), ("read_timeout_seconds", target_read)):
+            if _val is not None:
+                try:
+                    _val = max(1, int(_val))
+                except (TypeError, ValueError):
+                    _val = global_connect if _name == "connect_timeout_seconds" else global_read
+            else:
+                _val = global_connect if _name == "connect_timeout_seconds" else global_read
+            t[_name] = _val
+
     # Parallel/sequential
     out["scan"] = data.get("scan", {})
     if "max_workers" not in out["scan"]:
