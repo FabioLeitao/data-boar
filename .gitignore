@@ -4,7 +4,9 @@ audit_results.db-journal
 *.db-journal
 Relatorio_Auditoria_*.xlsx
 heatmap*.png
+config.yaml
 config.local.yaml
+*.vault
 .env.local
 .env.*.local
 
