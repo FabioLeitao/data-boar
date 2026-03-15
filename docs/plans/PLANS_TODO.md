@@ -224,6 +224,12 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 
 ---
 
+## Readiness and operations (meta)
+
+For a step-back view—“see the forest”—and recommendations on MCP, workflow automation, release/changelog, security response, runbooks, compliance evidence, onboarding, and dependency policy, see **[PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md)**. It is a checklist and discovery doc, not a delivery plan; use it to decide what to formalise next.
+
+---
+
 ## How to use this list
 
 1. **Execute to-dos** in the recommended sequence (or in dependency order within a plan).
