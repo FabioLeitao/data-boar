@@ -1,0 +1,59 @@
+# APPI – sample compliance profile (Japan; Act on the Protection of Personal Information)
+#
+# Target audience: Japan and APAC deployments. ML terms in English and Japanese (個人情報,
+# 保有個人データ) so column names in either language are detected.
+#
+# How to use:
+#   1. Set in your main config:
+#        regex_overrides_file: path/to/compliance-sample-appi.yaml
+#        ml_patterns_file: path/to/compliance-sample-appi.yaml
+#   2. Merge the recommendation_overrides list below into your config under report.recommendation_overrides.
+#
+# APPI: Personal Information Protection Commission (PPC); "personal information", "retained personal data".
+
+regex:
+  - name: "MY_NUMBER_JP"
+    pattern: "\\b\\d{4}\\s?\\d{4}\\s?\\d{4}\\s?\\d{4}\\b"
+    norm_tag: "APPI"
+  - name: "JP_POSTAL"
+    pattern: "\\b\\d{3}-?\\d{4}\\b"
+    norm_tag: "APPI"
+
+# ML terms: English and Japanese (personal information, retained personal data, PPC).
+terms:
+  - text: "personal information"
+    label: sensitive
+  - text: "個人情報"
+    label: sensitive
+  - text: "retained personal data"
+    label: sensitive
+  - text: "保有個人データ"
+    label: sensitive
+  - text: "data subject"
+    label: sensitive
+  - text: "本人"
+    label: sensitive
+  - text: "personal information protection commission"
+    label: sensitive
+  - text: "ppc"
+    label: sensitive
+  - text: "appi"
+    label: sensitive
+  - text: "business operator"
+    label: sensitive
+  - text: "利用目的"
+    label: sensitive
+  - text: "purpose of use"
+    label: sensitive
+  - text: "my number"
+    label: sensitive
+  - text: "マイナンバー"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "APPI"
+    base_legal: "APPI (Act on the Protection of Personal Information); PPC"
+    risk: "Personal information / retained personal data; purpose of use and consent."
+    recommendation: "Comply with APPI; specify purpose of use; obtain consent where required; follow PPC guidelines."
+    priority: "ALTA"
+    relevant_for: "DPO, Personal Information Protection Commission (PPC)"
