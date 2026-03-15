@@ -309,7 +309,7 @@ O arquivo deve conter uma **lista de objetos**, cada um com:
 | `pattern`  | Sim         | Expressão regular (sintaxe Python `re`). É aplicada ao nome da coluna + amostra. Use strings cruas; prefira `\b` para limites de palavra.                                                                                                                                                                                                             |
 | `norm_tag` | Não         | Rótulo para conformidade/relatório (ex.: `LGPD Art. 5`, `Custom`). Padrão: `"Custom"`. Você pode definir qualquer rótulo de framework (ex.: "UK GDPR", "PIPEDA s. 2", "APPI", "POPIA") para os achados aparecerem sob essa norma nos relatórios e recomendações; veja [Frameworks de conformidade e extensibilidade](COMPLIANCE_FRAMEWORKS.pt_BR.md). |
 
-Você pode usar uma lista na raiz ou uma chave `patterns` ou `regex` com a lista. Você pode copiar de [regex_overrides.example.yaml](regex_overrides.example.yaml) e editar.
+Você pode usar uma lista na raiz ou uma chave `patterns` ou `regex` com a lista. Você pode copiar de [regex_overrides.example.yaml](regex_overrides.example.yaml) e editar. Use YAML em **aspas duplas** para os valores de `pattern` com **barras invertidas escapadas** (ex.: `"\\b\\d{5}"`) para que linters e loaders não reportem sequências de escape inválidas; veja `.cursor/rules/yaml-regex-patterns.mdc`.
 
 ## Exemplo YAML (regex overrides)
 

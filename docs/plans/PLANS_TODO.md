@@ -114,13 +114,13 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 
 ### Additional compliance samples – [PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md](PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md)
 
-| #       | To-do                                                                   | Status    |
-| -       | -----                                                                   | ------    |
-| 1.1     | Create docs/compliance-samples/ (or deploy/); README                    | Done      |
-| 1.2–1.6 | UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS sample files                      | ⬜ Pending |
-| 2.1–2.4 | README pitch; compliance-frameworks/samples doc; USAGE/TECH_GUIDE/index | ⬜ Pending |
-| 3.1–3.2 | Test sample YAML structure; doc existence test                          | ⬜ Pending |
-| 4.1     | No regressions; full test suite                                         | ⬜ Pending |
+| #       | To-do                                                                   | Status                    |
+| -       | -----                                                                   | ------                    |
+| 1.1     | Create docs/compliance-samples/ (or deploy/); README                    | Done                      |
+| 1.2–1.6 | UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS sample files                      | 1.2 Done; 1.3–1.6 Pending |
+| 2.1–2.4 | README pitch; compliance-frameworks/samples doc; USAGE/TECH_GUIDE/index | ⬜ Pending                 |
+| 3.1–3.2 | Test sample YAML structure; doc existence test                          | ⬜ Pending                 |
+| 4.1     | No regressions; full test suite                                         | ⬜ Pending                 |
 
 ---
 
