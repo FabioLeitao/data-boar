@@ -123,7 +123,7 @@ def test_usage_internal_links_resolve():
         file_part = link.split("#")[0].strip()
         if not file_part:
             continue
-        # Resolve from docs/ (e.g. sensitivity-detection.md) or from repo root (e.g. ../SECURITY.md)
+        # Resolve from docs/ (e.g. SENSITIVITY_DETECTION.md) or from repo root (e.g. ../SECURITY.md)
         found = False
         for base in (root / "docs", root):
             target = (base / file_part).resolve()

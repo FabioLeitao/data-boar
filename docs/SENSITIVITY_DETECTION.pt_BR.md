@@ -8,9 +8,9 @@ A aplicação usa um pipeline **híbrido** para classificar nomes de colunas e c
 
 Você pode **definir as palavras de treino para ML e DL** no arquivo de config principal (inline) ou em arquivos YAML/JSON separados.
 
-**English:** [sensitivity-detection.md](sensitivity-detection.md)
+**English:** [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md)
 
-**Detecção de dados de menores:** A aplicação pode sinalizar possíveis dados de menores (colunas de DOB/idade) e aplicar tratamento diferenciado nos relatórios (LGPD Art. 14, GDPR Art. 8). O limite de idade (padrão 18) é configurável no arquivo de config externo. Consulte [minor-detection.pt_BR.md](minor-detection.pt_BR.md) para configuração e ajuste fino.
+**Detecção de dados de menores:** A aplicação pode sinalizar possíveis dados de menores (colunas de DOB/idade) e aplicar tratamento diferenciado nos relatórios (LGPD Art. 14, GDPR Art. 8). O limite de idade (padrão 18) é configurável no arquivo de config externo. Consulte [MINOR_DETECTION.pt_BR.md](MINOR_DETECTION.pt_BR.md) para configuração e ajuste fino.
 
 **Risco de identificação agregada / cruzada:** Quando várias categorias de quasi-identificadores (ex.: gênero, cargo, saúde, endereço, telefone) aparecem na **mesma tabela ou arquivo**, o gerador de relatório sinaliza isso como **caso especial** para DPO e compliance (LGPD Art. 5, GDPR Recital 26 – identificabilidade pela combinação de dados). O relatório Excel inclui a aba **"Cross-ref data – ident. risk"** listando cada caso (alvo, tabela/arquivo, colunas envolvidas, categorias, explicação) e uma recomendação de alta prioridade. Isso é opcional e configurável via `detection.aggregated_identification_enabled`, `aggregated_min_categories` e `quasi_identifier_mapping`. Consulte [PLAN_AGGREGATED_IDENTIFICATION.md](completed/PLAN_AGGREGATED_IDENTIFICATION.md) para o desenho e detalhes de config.
 
@@ -307,7 +307,7 @@ O arquivo deve conter uma **lista de objetos**, cada um com:
 | ---        | ---         | ---                                                                                                                                                                                                                                                                                                                                                   |
 | `name`     | Sim         | Identificador curto do padrão (ex.: `RG_BR`, `PLATE_BR`). Aparece nos relatórios como `pattern_detected`.                                                                                                                                                                                                                                             |
 | `pattern`  | Sim         | Expressão regular (sintaxe Python `re`). É aplicada ao nome da coluna + amostra. Use strings cruas; prefira `\b` para limites de palavra.                                                                                                                                                                                                             |
-| `norm_tag` | Não         | Rótulo para conformidade/relatório (ex.: `LGPD Art. 5`, `Custom`). Padrão: `"Custom"`. Você pode definir qualquer rótulo de framework (ex.: "UK GDPR", "PIPEDA s. 2", "APPI", "POPIA") para os achados aparecerem sob essa norma nos relatórios e recomendações; veja [Frameworks de conformidade e extensibilidade](compliance-frameworks.pt_BR.md). |
+| `norm_tag` | Não         | Rótulo para conformidade/relatório (ex.: `LGPD Art. 5`, `Custom`). Padrão: `"Custom"`. Você pode definir qualquer rótulo de framework (ex.: "UK GDPR", "PIPEDA s. 2", "APPI", "POPIA") para os achados aparecerem sob essa norma nos relatórios e recomendações; veja [Frameworks de conformidade e extensibilidade](COMPLIANCE_FRAMEWORKS.pt_BR.md). |
 
 Você pode usar uma lista na raiz ou uma chave `patterns` ou `regex` com a lista. Você pode copiar de [regex_overrides.example.yaml](regex_overrides.example.yaml) e editar.
 

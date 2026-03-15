@@ -1,7 +1,7 @@
 # Plan: Synthetic and true-like data sources, confidence scoring, and operator guidance
 
 **Status:** Not started
-**Synced with:** [docs/PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
+**Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
 
@@ -70,7 +70,7 @@ Ground truth: for each fixture (file, table/column, API response), a **manifest*
 - **Probably nothing serious:** LOW sensitivity, or MEDIUM with low confidence and weak pattern (e.g. GENERAL). Guidance: “Better safe than sorry. Manually verify: [link or steps to open target and spot-check]. If confirmed non-sensitive, consider adding to ML non-sensitive terms or excluding path in config.”
 - **Better safe than sorry:** MEDIUM sensitivity or HIGH with moderate confidence. Guidance: “Manually access and verify: [steps]. If PII confirmed, apply remediation; if false positive, tune regex_overrides or ml_patterns_file to reduce noise.”
 - **High risk – verify and remediate:** HIGH sensitivity and high confidence. Guidance: “Treat as potential violation. Manually verify: [steps]. Remediate (mask, delete, or document base legal).”
-- **High risk but ML/DL may be struggling:** HIGH sensitivity but low/borderline confidence, or pattern_detected = ML_DETECTED / ML_POTENTIAL with many FNs in validation. Guidance: “Manual verification strongly recommended. Consider tuning: (1) Add examples to ml_patterns_file / dl_patterns_file; (2) Adjust regex_overrides_file for your domain; (3) Increase sample_limit or review min_sensitivity; (4) See docs/sensitivity-detection.md for options.”
+- **High risk but ML/DL may be struggling:** HIGH sensitivity but low/borderline confidence, or pattern_detected = ML_DETECTED / ML_POTENTIAL with many FNs in validation. Guidance: “Manual verification strongly recommended. Consider tuning: (1) Add examples to ml_patterns_file / dl_patterns_file; (2) Adjust regex_overrides_file for your domain; (3) Increase sample_limit or review min_sensitivity; (4) See docs/SENSITIVITY_DETECTION.md for options.”
 - **Report:** Add a column or section “Discovery confidence” and “Operator guidance” (short text or link to doc). Recommendations sheet can be extended with these messages per finding or per band.
 
 ---

@@ -9,7 +9,7 @@ Esta pasta centraliza a **documentação da aplicação**. A raiz do repositóri
 - **Local:** A documentação da aplicação (guias para o usuário, referência, marca, planos, releases) fica em **docs/**. A raiz do repositório mantém apenas o que o GitHub e a automação esperam: README, SECURITY, CONTRIBUTING, CODE_OF_CONDUCT, LICENSE, NOTICE. Não mova esses arquivos. READMEs de módulo que são apenas ponteiros (ex.: [deploy/README.md](../deploy/README.md), [tests/README.md](../tests/README.md)) ou avisos de obsoleto ao lado do código (ex.: database/, scanners/) podem permanecer ao lado do código. **.github/** e **.cursor/** permanecem onde o GitHub e o Cursor esperam. Novos docs substantivos (ex.: mascote, candidatos a logo, guias de funcionalidade) ficam em **docs/** e devem ser linkados neste índice.
 - **Inglês (EN)** é a **fonte canônica**: representa as capacidades, funcionalidades, argumentos, config e comportamento reais da aplicação. Quando o comportamento ou as opções mudarem, atualize primeiro o doc em inglês.
 - **Português brasileiro (pt-BR)** deve ser **mantido em sincronia** com a versão em inglês. Cada arquivo pt-BR é a tradução do seu par em inglês (mesma estrutura e cobertura).
-- **Nova documentação:** Qualquer **novo** arquivo de documentação (guias para o usuário, referência, legal/direitos autorais, deploy, testes, etc.) deve existir em **inglês e português brasileiro**. Exceção: **arquivos de plano** (ex.: em `docs/`, `docs/completed/` ou `.cursor/plans/`) podem ser **apenas em inglês** para manter o histórico e o progresso; quando um plano gerar mudanças na aplicação, atualize as **demais docs** (README, USAGE, etc.) nos **dois idiomas** para refletir o novo comportamento.
+- **Nova documentação:** Qualquer **novo** arquivo de documentação (guias para o usuário, referência, legal/direitos autorais, deploy, testes, etc.) deve existir em **inglês e português brasileiro**. Exceção: **arquivos de plano** (ex.: em `docs/plans/`, `docs/plans/completed/` ou `.cursor/plans/`) podem ser **apenas em inglês** para manter o histórico e o progresso; quando um plano gerar mudanças na aplicação, atualize as **demais docs** (README, USAGE, etc.) nos **dois idiomas** para refletir o novo comportamento.
 - **Ao atualizar docs** para refletir mudanças na aplicação, **sincronize o outro idioma**: edite primeiro o doc em EN, depois atualize o arquivo pt-BR correspondente para manter estrutura e cobertura alinhadas.
 - **Seletor de idioma:** Todo arquivo de documentação que tiver tradução deve ter no **topo** (logo após o título ou na primeira linha) um link claro para o outro idioma, ex.:
 - Nos arquivos EN: `**Português (Brasil):** [Nome.pt_BR.md](Nome.pt_BR.md)`
@@ -35,12 +35,12 @@ Estes permanecem na raiz do repositório para o GitHub e a automação:
 | --------------------                                     | --------------------------                           | ------------------------------                                   |
 | Guia técnico (instalação, execução, CLI/API, conectores) | [TECH_GUIDE.md](TECH_GUIDE.md)                       | [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md)                       |
 | Uso (CLI, API)                                           | [USAGE.md](USAGE.md)                                 | [USAGE.pt_BR.md](USAGE.pt_BR.md)                                 |
-| Sensibilidade (ML/DL)                                    | [sensitivity-detection.md](sensitivity-detection.md) | [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md) |
-| Detecção minor                                           | [minor-detection.md](minor-detection.md)             | [minor-detection.pt_BR.md](minor-detection.pt_BR.md)             |
-| Segurança (correções, testes, orientações ao técnico)    | [security.md](security.md)                           | [security.pt_BR.md](security.pt_BR.md)                           |
+| Sensibilidade (ML/DL)                                    | [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) | [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md) |
+| Detecção minor                                           | [MINOR_DETECTION.md](MINOR_DETECTION.md)             | [MINOR_DETECTION.pt_BR.md](MINOR_DETECTION.pt_BR.md)             |
+| Segurança (correções, testes, orientações ao técnico)    | [SECURITY.md](SECURITY.md)                           | [SECURITY.pt_BR.md](SECURITY.pt_BR.md)                           |
 | Versionamento                                            | [VERSIONING.md](VERSIONING.md)                       | [VERSIONING.pt_BR.md](VERSIONING.pt_BR.md)                       |
 | Adicionar conectores                                     | [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md)         | [ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md)         |
-| Conformidade                                             | [compliance-frameworks.md](compliance-frameworks.md) | [compliance-frameworks.pt_BR.md](compliance-frameworks.pt_BR.md) |
+| Conformidade                                             | [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) | [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) |
 
 ## Deploy e Docker
 
@@ -55,8 +55,8 @@ Os artefatos de deploy (Compose, Kubernetes, exemplos de config) ficam na pasta 
 
 | Tópico            | English                                              |
 | ------            | ---------------------------------------------------- |
-| Ativos do mascote | [mascot.md](mascot.md)                               |
-| Candidatos a logo | [logo-candidates.md](logo-candidates.md)             |
+| Ativos do mascote | [MASCOT.md](MASCOT.md)                               |
+| Candidatos a logo | [LOGO_CANDIDATES.md](LOGO_CANDIDATES.md)             |
 
 ## Esses docs são apenas em inglês (referência para recursos em api/static/)
 
@@ -71,8 +71,8 @@ Os artefatos de deploy (Compose, Kubernetes, exemplos de config) ficam na pasta 
 | Resolução de problemas    | [TROUBLESHOOTING.md](TROUBLESHOOTING.md)                 | [TROUBLESHOOTING.pt_BR.md](TROUBLESHOOTING.pt_BR.md)                 |
 | Direitos autorais e marca | [COPYRIGHT_AND_TRADEMARK.md](COPYRIGHT_AND_TRADEMARK.md) | [COPYRIGHT_AND_TRADEMARK.pt_BR.md](COPYRIGHT_AND_TRADEMARK.pt_BR.md) |
 
-- [PLANS_TODO.md](PLANS_TODO.md) — Status dos planos e estado atual da aplicação (fonte única de verdade para os to-dos dos planos abertos). *Arquivos de plano são apenas em inglês para histórico; a documentação para o operador é EN + pt-BR.*
+- [plans/PLANS_TODO.md](plans/PLANS_TODO.md) — Status dos planos e estado atual da aplicação (fonte única de verdade para os to-dos dos planos abertos). *Arquivos de plano são apenas em inglês para histórico; a documentação para o operador é EN + pt-BR.*
 - [releases/](releases/) — Notas de release (ex.: 1.5.2, 1.5.1, 1.5.0, 1.4.3).
-- [completed/](completed/) — Planos concluídos arquivados e o checklist de implementação ([NEXT_STEPS.md](completed/NEXT_STEPS.md)), todos os itens Feitos.
+- [plans/completed/](plans/completed/) — Planos concluídos arquivados e o checklist de implementação ([NEXT_STEPS.md](plans/completed/NEXT_STEPS.md)), todos os itens Feitos.
 
 Man pages: `docs/lgpd_crawler.1` (comando), `docs/lgpd_crawler.5` (config e formatos de arquivo). Instale com symlinks para que os dois nomes funcionem; visualize com `man data_boar` ou `man lgpd_crawler`, e `man 5 data_boar` ou `man 5 lgpd_crawler` (veja o README na raiz).

@@ -1,7 +1,7 @@
 # Plan: Security hardening and vulnerability closure
 
 **Status:** In progress (2.1–2.3, 5.1–5.3, 7.1 done; 1.1–1.3, 3.x, 6.x, 7.2–7.3 pending)
-**Synced with:** [docs/PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
+**Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
 
@@ -91,11 +91,11 @@ All steps are **additive or configurable** where possible; avoid breaking existi
 
 ## 7. Documentation and checklist
 
-| #   | To-do                                                                                                                                                                                 | Status     | Notes                                                                                |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------                                                 | ---------- | -----                                                                                |
-| 7.1 | **Release checklist:** Add a “Security” section: run `pip-audit`, fix any high/critical findings, ensure SECURITY.md and docs/security.md are up to date, confirm no secrets in logs. | ✅ Done     | Added in CONTRIBUTING.md and CONTRIBUTING.pt_BR.md ("Release checklist (Security)"). |
-| 7.2 | **docs/security.md:** After implementing 1.1–1.3, add one line each for tenant/technician validation, body size, and logging policy so technicians know what is enforced.             | ⬜ Pending  | Keeps technician guidance in sync.                                                   |
-| 7.3 | **SECURITY.md:** Ensure “Resistance to common vulnerabilities” and “Keeping dependencies up to date” reflect current state and reference this plan where appropriate.                 | ⬜ Pending  | Optional: add “See also docs/PLAN_SECURITY_HARDENING.md for planned hardening.”      |
+| #   | To-do                                                                                                                                                                                 | Status     | Notes                                                                                 |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------                                                 | ---------- | -----                                                                                 |
+| 7.1 | **Release checklist:** Add a “Security” section: run `pip-audit`, fix any high/critical findings, ensure SECURITY.md and docs/security.md are up to date, confirm no secrets in logs. | ✅ Done     | Added in CONTRIBUTING.md and CONTRIBUTING.pt_BR.md ("Release checklist (Security)").  |
+| 7.2 | **docs/security.md:** After implementing 1.1–1.3, add one line each for tenant/technician validation, body size, and logging policy so technicians know what is enforced.             | ⬜ Pending  | Keeps technician guidance in sync.                                                    |
+| 7.3 | **SECURITY.md:** Ensure “Resistance to common vulnerabilities” and “Keeping dependencies up to date” reflect current state and reference this plan where appropriate.                 | ⬜ Pending  | Optional: add “See also docs/plans/PLAN_SECURITY_HARDENING.md for planned hardening.” |
 
 ---
 

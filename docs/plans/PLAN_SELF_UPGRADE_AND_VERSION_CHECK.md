@@ -1,7 +1,7 @@
 # Plan: Version check and self-upgrade (with container-aware behaviour)
 
 **Status:** Not started
-**Synced with:** [docs/PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
+**Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
 
