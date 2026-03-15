@@ -10,7 +10,7 @@ This project enforces quality and security via **tests** (CI) and **CodeQL** (Gi
 
 ## After editing Python
 
-1. **Run Ruff** (style and common issues): `uv run ruff check .` (optional: `uv run ruff format --check .` or `ruff format .`). Fix or adjust config so CI lint job passes. Optionally use pre-commit: `uv run pre-commit install` so Ruff runs on commit.
+1. **Run Ruff** (style and format): `uv run ruff check .` and `uv run ruff format --check .` (fix format with `uv run ruff format .`). Fix so CI lint job passes. **Recommended:** `uv run pre-commit install` so Ruff (check + format) runs on every commit; see rule **pre-commit-ruff**.
 
 1. **Run SonarQube-style and security tests:**
 

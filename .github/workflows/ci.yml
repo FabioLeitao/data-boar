@@ -59,7 +59,9 @@ jobs:
 
       - name: Ruff check
         run: uv run ruff check .
-        # extend-exclude in pyproject.toml skips db, scanners, utils, logging_custom; add "ruff format --check" when ready.
+      - name: Ruff format
+        run: uv run ruff format --check .
+        # extend-exclude in pyproject.toml applies to both check and format; same as pre-commit.
 
   audit:
     name: Dependency audit
