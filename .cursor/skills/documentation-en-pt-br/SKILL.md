@@ -50,8 +50,23 @@ For all other new docs (guides, reference, deploy, testing, observability, etc.)
 ## Plan files (location and completion)
 
 - **Open plans** live in `docs/plans/` (`PLANS_TODO.md` and `PLAN_*.md`). **Completed plans** live in `docs/plans/completed/`.
-- When you **complete** a plan: mark to-dos done in the plan and in `PLANS_TODO.md`, then **move** the plan file to `docs/plans/completed/`, update `PLANS_TODO.md` and any cross-references (USAGE, sensitivity-detection, etc.) to the new path.
+- When you **complete** a plan: mark to-dos done in the plan and in `PLANS_TODO.md`, then **move** the plan file to `docs/plans/completed/`, update `PLANS_TODO.md` and any cross-references (USAGE, SENSITIVITY_DETECTION, etc.) to the new path. **Update the pitch** (README and README.pt_BR): remove the item from the Roadmap sentence and reflect the new capability so the pitch stays in sync (see pitch–roadmap rule below).
 - **Rule:** `.cursor/rules/docs-plans.mdc` – full workflow for plan location and completion.
+
+## Pitch and roadmap (keep in sync with plans)
+
+The README "For decision-makers" section (the **pitch**) must stay in sync with what we have accomplished and what we are working on:
+
+- **When you create a new plan:** Add the new roadmap goal to the **Roadmap** sentence in README and README.pt_BR (e.g. in "Why it holds up") so the pitch mentions what we are working toward.
+- **When you complete a plan:** Remove that item from the Roadmap sentence and, if useful, add or strengthen wording in "What we surface" or "Why it holds up" to describe the **new capability** and why prospects should consider the product. Update both EN and pt-BR.
+- **When you remove, cancel, or substitute a plan:** Update the pitch so the Roadmap no longer mentions the dropped goal (or replace with the substitute). Reduce "future development" wording so the pitch does not promise work that is no longer planned. Sync README.pt_BR.
+- **Rule:** `.cursor/rules/pitch-roadmap-sync.mdc` – full guidance for pitch and roadmap sync.
+
+## Documentation and code naming
+
+- **Documentation .md** (docs/, root): Use **UPPERCASE subject** names (e.g. `SENSITIVITY_DETECTION.md`, `SENSITIVITY_DETECTION.pt_BR.md`). Do not capitalize the `.md` extension or the language hint (e.g. `.pt_BR.md`).
+- **Code, config, rules, skills:** Keep **lowercase** (e.g. `config.yaml`, `regex_overrides.example.yaml`, `markdown-lint.mdc`).
+- **Rule:** `.cursor/rules/doc-and-code-naming.mdc` – full convention for doc vs code/config naming.
 
 ## Alignment with project
 

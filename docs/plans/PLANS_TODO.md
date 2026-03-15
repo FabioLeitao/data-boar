@@ -6,7 +6,7 @@ This document is the **single source of truth** for the project's plan status an
 
 **Policy:** When implementing a plan step, **update documentation** (USAGE, TECH_GUIDE, SECURITY, or dedicated docs) and **add or run tests** as the feature is implemented. After completing or adding to-dos, **update this file and the plan file** so progress is tracked in one place. All steps are intended to be **non-destructive**, **non-regression**, and **tested** before marking done.
 
-**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ⬜ Not started · **Secrets/vault** ⬜ Not started · **Configurable timeouts** ⬜ Not started · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ⬜ Not started · **Compressed files** ⬜ Not started · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ⬜ Not started · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration
+**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ⬜ Not started · **Secrets/vault** ⬜ Not started · **Configurable timeouts** ⬜ Not started · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ⬜ Not started · **Compressed files** ⬜ Not started · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ⬜ Not started · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started
 
 ---
 
@@ -27,6 +27,7 @@ This document is the **single source of truth** for the project's plan status an
 | Synthetic data & confidence validation   | —                         | None           | Fixtures (files, SQL, NoSQL, shares); FP/FN + ground truth; confidence bands + operator guidance; timeouts/connectivity docs. |
 | Configurable timeouts                    | —                         | None           | Global + per-target connect/read timeouts; sane defaults; connector wiring; recommendations (avoid DoS, too-fast).            |
 | Notifications (off-band + scan-complete) | Optional: Secrets Phase A | None           | Webhook notifier; scan-complete brief to operator/tenant (Slack, Teams, Telegram, etc.); recommendations.                     |
+| SAP connector                            | Optional: Configurable timeouts | None    | Add SAP (HANA/OData/RFC) to data soup; same discovery/sample/finding flow; optional [sap] extra. See PLAN_SAP_CONNECTOR.     |
 
 **Regression and tests:** No plan modifies wipe behaviour, SQLite schema (except Self-upgrade adds optional upgrade_log, Data source versions adds data_source_inventory, Strong crypto adds optional crypto_controls_audit or extends inventory), or existing config keys in a breaking way. New tests per plan must pass together with the full suite (`uv run pytest -v -W error`). Document each new feature in the relevant docs (EN + pt-BR where applicable).
 
@@ -44,7 +45,7 @@ The recommended order below is chosen to:
 ## Tier summary (for planning):
 
 - **Tier 1 – Foundation:** 1 Security hardening, 2 Configurable timeouts, 3 Secrets Phase A.
-- **Tier 2 – Scan and report:** 4 Compliance samples, 5 Compressed files, 6 Data source versions & hardening, 7 Strong crypto & controls.
+- **Tier 2 – Scan and report:** 4 Compliance samples, 5 Compressed files, 6 Data source versions & hardening, 7 Strong crypto & controls, 8 SAP connector.
 - **Tier 3 – Secrets and upgrade:** 8 Secrets Phase B, 9 Version check & self-upgrade.
 - **Tier 4 – Validation and ops:** 10 CNPJ alphanumeric, 11 Selenium QA, 12 Synthetic data & confidence, 13 Notifications, 14 Dashboard i18n.
 
@@ -67,6 +68,7 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 1. **Selenium QA test suite** – on-demand robot QA (navigation, functional, API, report/heatmap downloads, stress); short report and recommendations.
 1. **Synthetic data & confidence validation** – fixtures (all formats, SQL, NoSQL, shares), FP/FN + ground truth, confidence bands + operator guidance, timeouts/connectivity docs.
 1. **Notifications (off-band + scan-complete)** – webhook notifier, scan-complete brief to operator/tenant, how to download report; optional Part A (task/milestone) from CI or script.
+1. **SAP connector** – add SAP (HANA/OData or RFC) to data soup; discovery, sampling, findings; optional [sap] extra; docs and tests. See [PLAN_SAP_CONNECTOR.md](PLAN_SAP_CONNECTOR.md).
 1. **Dashboard i18n** – after approach is decided; add to-dos to this file and plan then.
 
 ---
@@ -216,6 +218,16 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 | 3.1–3.3 | Shares fixtures or doc; Troubleshooting (timeouts, connectivity); optional timeout fixture   | ⬜ Pending |
 | 4.1–4.5 | Confidence bands + operator guidance; report column/section; docs EN + pt_BR; tests          | ⬜ Pending |
 | 5.1–5.3 | Optional validation scoring script; tune doc; PLANS_TODO update                              | ⬜ Pending |
+
+---
+
+### SAP connector – [PLAN_SAP_CONNECTOR.md](PLAN_SAP_CONNECTOR.md)
+
+| Phase   | To-do                                                                                                                                    | Status    |
+| -----   | -----                                                                                                                                    | ------    |
+| 1.1–1.3 | Research SAP access (HANA/OData/RFC); decide primary path; define config shape                                                           | ⬜ Pending |
+| 2.1–2.3 | Connector module (discovery, sampling, scan_column, save_finding); register; optional [sap] extra                                         | ⬜ Pending |
+| 3.1–3.3 | USAGE/TECH_GUIDE (EN + pt-BR); tests; pitch/roadmap update in README                                                                     | ⬜ Pending |
 
 ---
 
