@@ -1,6 +1,6 @@
 # Frameworks de compliance e extensibilidade
 
-**English:** [compliance-frameworks.md](compliance-frameworks.md)
+**English:** [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md)
 
 A aplicação auxilia times de DPO, segurança e compliance a descobrir e mapear dados pessoais ou sensíveis em linha com múltiplas regulamentações. Este documento descreve quais frameworks são referenciados explicitamente hoje e como estender o suporte a outros (ex.: UK GDPR, PIPEDA, APPI, POPIA) sem alterar código.
 
@@ -21,7 +21,7 @@ Os achados são armazenados com **`norm_tag`** e **`pattern_detected`** em forma
 ## Extensibilidade
 
 - **`norm_tag`** e **`pattern_detected`** são abertos: você pode defini-los para qualquer framework ou rótulo interno.
-- **Overrides de regex:** Use [regex_overrides_file](sensitivity-detection.pt_BR.md) para adicionar padrões e definir `norm_tag` para ex. `"UK GDPR"`, `"PIPEDA s. 2"`, `"APPI"`, `"POPIA"` para que apareçam nos relatórios e recomendações.
+- **Overrides de regex:** Use [regex_overrides_file](SENSITIVITY_DETECTION.pt_BR.md) para adicionar padrões e definir `norm_tag` para ex. `"UK GDPR"`, `"PIPEDA s. 2"`, `"APPI"`, `"POPIA"` para que apareçam nos relatórios e recomendações.
 - **Overrides de recomendação (config):** Use `report.recommendation_overrides` no config para personalizar "Base legal", "Relevante para" e demais textos de recomendação por padrão de `norm_tag` — assim UK GDPR, PIPEDA, APPI, POPIA ou normas customizadas recebem os rótulos e textos corretos sem mudar código. Veja [USAGE.pt_BR.md](USAGE.pt_BR.md) (seção de relatório) para um exemplo.
 - **Conectores customizados:** Novas fontes de dados podem emitir achados com qualquer `norm_tag`; relatórios e recomendações usarão os overrides de config quando fornecidos, caso contrário os fallbacks embutidos.
 

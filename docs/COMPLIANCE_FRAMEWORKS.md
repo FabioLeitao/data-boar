@@ -2,7 +2,7 @@
 
 The application helps DPO, security, and compliance teams discover and map personal or sensitive data in line with multiple regulations. This document describes which frameworks are explicitly referenced today and how to extend support to others (e.g. UK GDPR, PIPEDA, APPI, POPIA) without code changes.
 
-**Português (Brasil):** [compliance-frameworks.pt_BR.md](compliance-frameworks.pt_BR.md)
+**Português (Brasil):** [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md)
 
 ---
 
@@ -25,7 +25,7 @@ Findings are stored with a free-form **`norm_tag`** and **`pattern_detected`**; 
 ## Extensibility
 
 - **`norm_tag`** and **`pattern_detected`** are open: you can set them to any framework or internal label.
-- **Regex overrides:** Use [regex_overrides_file](sensitivity-detection.md#custom-regex-patterns-detecting-new-personalsensitive-values) to add patterns and set `norm_tag` to e.g. `"UK GDPR"`, `"PIPEDA s. 2"`, `"APPI"`, `"POPIA"` so they appear in reports and recommendations.
+- **Regex overrides:** Use [regex_overrides_file](SENSITIVITY_DETECTION.md#custom-regex-patterns-detecting-new-personalsensitive-values) to add patterns and set `norm_tag` to e.g. `"UK GDPR"`, `"PIPEDA s. 2"`, `"APPI"`, `"POPIA"` so they appear in reports and recommendations.
 - **Recommendation overrides (config):** Use `report.recommendation_overrides` in config to tailor "Base legal", "Relevante para", and other recommendation text per `norm_tag` pattern—so UK GDPR, PIPEDA, APPI, POPIA, or custom norms get the right labels and text without changing code. See [USAGE.md](USAGE.md) (report section) for an example.
 - **Custom connectors:** New data sources can emit findings with any `norm_tag`; reporting and recommendations will use config overrides when provided, otherwise the built-in fallbacks.
 
