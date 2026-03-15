@@ -13,6 +13,8 @@ Regression tests for critical/high severity issues so they are not reintroduced:
 """
 
 import sqlite3
+import tempfile
+from pathlib import Path
 from urllib.parse import unquote, urlparse
 
 import pytest
@@ -204,6 +206,100 @@ def test_mongodb_connector_uri_encodes_password_special_chars():
     parsed = urlparse(uri)
     assert unquote(parsed.password) == "p@ss:word"
     assert unquote(parsed.username) == "admin"
+
+
+# --- Config endpoint protected when API key required ---
+
+
+# --- Tenant / technician validation (length and control chars) ---
+
+
+def test_sanitize_tenant_technician_returns_none_for_none_or_empty():
+    """sanitize_tenant_technician returns None for None and empty/whitespace-only strings."""
+    from core.validation import sanitize_tenant_technician
+
+    assert sanitize_tenant_technician(None) is None
+    assert sanitize_tenant_technician("") is None
+    assert sanitize_tenant_technician("   ") is None
+
+
+def test_sanitize_tenant_technician_strips_and_removes_control_chars():
+    """sanitize_tenant_technician strips whitespace and removes ASCII control characters."""
+    from core.validation import sanitize_tenant_technician
+
+    assert sanitize_tenant_technician("  Acme Corp  ") == "Acme Corp"
+    # Control chars (NULL, tab, newline, DEL) removed
+    assert sanitize_tenant_technician("Acme\x00Corp") == "AcmeCorp"
+    assert sanitize_tenant_technician("Alice\tSilva") == "AliceSilva"
+    assert sanitize_tenant_technician("Bob\nOperator") == "BobOperator"
+    assert sanitize_tenant_technician("Op\x7fname") == "Opname"
+    # Only control chars removed; printable kept
+    assert sanitize_tenant_technician("User (DPO)") == "User (DPO)"
+
+
+def test_sanitize_tenant_technician_truncates_to_max_length():
+    """sanitize_tenant_technician truncates to MAX_TENANT_TECHNICIAN_LENGTH (255)."""
+    from core.validation import sanitize_tenant_technician, MAX_TENANT_TECHNICIAN_LENGTH
+
+    long_str = "a" * 300
+    result = sanitize_tenant_technician(long_str)
+    assert result is not None
+    assert len(result) == MAX_TENANT_TECHNICIAN_LENGTH
+    assert result == "a" * MAX_TENANT_TECHNICIAN_LENGTH
+
+
+def test_sanitize_tenant_technician_all_control_chars_returns_none():
+    """If string is only control chars/whitespace after strip, return None."""
+    from core.validation import sanitize_tenant_technician
+
+    assert sanitize_tenant_technician("\x00\x01\t\n\x7f") is None
+
+
+def test_redact_secrets_for_log_masks_passwords_and_urls():
+    """redact_secrets_for_log masks passwords, API keys, and connection URLs in log content."""
+    from core.validation import redact_secrets_for_log
+
+    assert "***REDACTED***" in redact_secrets_for_log("postgresql://user:secret@host/db")
+    assert "secret" not in redact_secrets_for_log("postgresql://user:secret@host/db")
+    assert "***REDACTED***" in redact_secrets_for_log("password=mysecret")
+    assert "mysecret" not in redact_secrets_for_log("password=mysecret")
+    assert "***REDACTED***" in redact_secrets_for_log("api_key=abc123")
+    assert "abc123" not in redact_secrets_for_log("api_key=abc123")
+    assert redact_secrets_for_log(None) == ""
+    assert redact_secrets_for_log("no secrets here") == "no secrets here"
+
+
+def test_request_body_size_limit_returns_413_when_content_length_exceeds_1mb():
+    """API returns 413 when Content-Length exceeds 1 MB (DoS mitigation)."""
+    from fastapi.testclient import TestClient
+
+    import api.routes as routes
+
+    max_bytes = routes.MAX_REQUEST_BODY_BYTES
+    with tempfile.TemporaryDirectory() as tmp:
+        config_path = Path(tmp) / "config.yaml"
+        config_path.write_text(
+            "targets: []\nreport:\n  output_dir: .\napi:\n  port: 8088\nsqlite_path: audit.db\n",
+            encoding="utf-8",
+        )
+        orig_path = getattr(routes, "_config_path", None)
+        orig_cfg = getattr(routes, "_config", None)
+        orig_engine = getattr(routes, "_audit_engine", None)
+        try:
+            routes._config_path = str(config_path)
+            routes._config = None
+            routes._audit_engine = None
+            client = TestClient(routes.app)
+            # Send a body larger than 1 MB; client sets Content-Length automatically
+            big_body = b"x" * (max_bytes + 1)
+            resp = client.post("/scan", content=big_body)
+            assert resp.status_code == 413
+            assert "too large" in (resp.json().get("detail") or "").lower()
+        finally:
+            if orig_path is not None:
+                routes._config_path = orig_path
+            routes._config = orig_cfg
+            routes._audit_engine = orig_engine
 
 
 # --- Config endpoint protected when API key required ---

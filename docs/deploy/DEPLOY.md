@@ -42,7 +42,7 @@ The report is written under `report.output_dir` in config (e.g. `/data`); copy i
 
 You can run the application **without cloning the repository** by using the published image on Docker Hub:
 
-- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** and **`fabioleitao/data_boar:1.5.2`**
+- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** and **`fabioleitao/data_boar:1.5.3`**
 - **Legacy:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler) — `fabioleitao/python3-lgpd-crawler:latest` (same image may be published under both names)
 
 Example:
@@ -78,12 +78,12 @@ docker push ghcr.io/fabioleitao/python3-lgpd-crawler:latest
 
 ```bash
 # From repo root
-docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.5.2 .
+docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.5.3 .
 docker login
 # Username: fabioleitao (or your Docker Hub username)
 # Password: your Docker Hub password or Access Token
 docker push fabioleitao/data_boar:latest
-docker push fabioleitao/data_boar:1.5.2
+docker push fabioleitao/data_boar:1.5.3
 ```
 
 Then in `deploy/docker-compose.yml` set `image:` to your pushed image (e.g. `fabioleitao/data_boar:latest` or `ghcr.io/fabioleitao/...`).
@@ -92,10 +92,10 @@ Then in `deploy/docker-compose.yml` set `image:` to your pushed image (e.g. `fab
 
 ```bash
 uv run pytest -v -W error
-docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.5.2 .
+docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.5.3 .
 docker login              # username: fabioleitao, password: your token
 docker push fabioleitao/data_boar:latest
-docker push fabioleitao/data_boar:1.5.2
+docker push fabioleitao/data_boar:1.5.3
 ```
 
 Optional: push the same image under the legacy name for compatibility: `docker tag fabioleitao/data_boar:latest fabioleitao/python3-lgpd-crawler:latest` then `docker push fabioleitao/python3-lgpd-crawler:latest`. See also [DOCKER_SETUP.md](../DOCKER_SETUP.md).
