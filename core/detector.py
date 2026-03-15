@@ -48,7 +48,7 @@ DEFAULT_PATTERNS = {
 # Default ML training terms (sensitive=1, non_sensitive=0).
 # Includes LGPD/GDPR-relevant PII plus a subset of sensitive categories (health, religion, political,
 # gender, biometric, genetic, race, union, PEP, sex life) for out-of-the-box detection.
-# See docs/PLAN_SENSITIVE_CATEGORIES_ML_DL.md and docs/sensitivity_terms_sensitive_categories.example.yaml
+# See docs/plans/completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md and docs/sensitivity_terms_sensitive_categories.example.yaml
 # for the full list; override via ml_patterns_file or sensitivity_detection.ml_terms to customize.
 DEFAULT_ML_TERMS = [
     ("cpf", 1), ("email", 1), ("credit card", 1), ("password", 1), ("senha", 1),

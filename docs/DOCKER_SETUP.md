@@ -4,7 +4,7 @@
 
 Run these steps in a terminal where **Docker** is available (e.g. PowerShell or CMD after starting Docker Desktop).
 
-**Pre-built image:** The application is published on Docker Hub as `fabioleitao/python3-lgpd-crawler:latest` ([hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)). You can `docker pull` and run that image instead of building from source (see [README](../README.md) and [deploy/DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md))). The image includes the latest features (hybrid regex + ML + optional DL sensitivity detection; configurable ML/DL training terms via `ml_patterns_file`, `dl_patterns_file`, or `sensitivity_detection` in config — see [sensitivity-detection.md](sensitivity-detection.md)).
+**Pre-built image:** The application is published on Docker Hub as `fabioleitao/python3-lgpd-crawler:latest` ([hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)). You can `docker pull` and run that image instead of building from source (see [README](../README.md) and [deploy/DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md))). The image includes the latest features (hybrid regex + ML + optional DL sensitivity detection; configurable ML/DL training terms via `ml_patterns_file`, `dl_patterns_file`, or `sensitivity_detection` in config — see [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md)).
 
 **Upgrading your local image:** To refresh Docker Desktop with the current version from the repository, pull the image and restart your container(s):
 

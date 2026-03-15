@@ -8,11 +8,11 @@ The application uses a **hybrid** pipeline to classify column names and sampled 
 
 You can **set the training words for both ML and DL** in the main config file (inline) or in separate YAML/JSON files.
 
-**Português (Brasil):** [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md)
+**Português (Brasil):** [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md)
 
-**Minor data detection:** The application can flag possible data of minors (DOB/age columns) and apply differential treatment in reports (LGPD Art. 14, GDPR Art. 8). The age threshold (default 18) is configurable in the external config file. See [minor-detection.md](minor-detection.md) for configuration and fine-tuning.
+**Minor data detection:** The application can flag possible data of minors (DOB/age columns) and apply differential treatment in reports (LGPD Art. 14, GDPR Art. 8). The age threshold (default 18) is configurable in the external config file. See [MINOR_DETECTION.md](MINOR_DETECTION.md) for configuration and fine-tuning.
 
-**Aggregated / cross-referenced identification risk:** When multiple quasi-identifier categories (e.g. gender, job position, health, address, phone) appear in the **same table or file**, the report generator flags this as a **special case** for DPO and compliance (LGPD Art. 5, GDPR Recital 26 – identifiability from a combination of data). The Excel report includes a sheet **"Cross-ref data – ident. risk"** listing each case (target, table/file, columns involved, categories, explanation) and a high-priority recommendation. This is optional and configurable via `detection.aggregated_identification_enabled`, `aggregated_min_categories`, and `quasi_identifier_mapping`. See [PLAN_AGGREGATED_IDENTIFICATION.md](completed/PLAN_AGGREGATED_IDENTIFICATION.md) for design and config details.
+**Aggregated / cross-referenced identification risk:** When multiple quasi-identifier categories (e.g. gender, job position, health, address, phone) appear in the **same table or file**, the report generator flags this as a **special case** for DPO and compliance (LGPD Art. 5, GDPR Recital 26 – identifiability from a combination of data). The Excel report includes a sheet **"Cross-ref data – ident. risk"** listing each case (target, table/file, columns involved, categories, explanation) and a high-priority recommendation. This is optional and configurable via `detection.aggregated_identification_enabled`, `aggregated_min_categories`, and `quasi_identifier_mapping`. See [PLAN_AGGREGATED_IDENTIFICATION.md](plans/completed/PLAN_AGGREGATED_IDENTIFICATION.md) for design and config details.
 
 ---
 
@@ -276,7 +276,7 @@ dl_patterns_file: config/sensitivity_terms.yaml
 
 To detect **additional sensitive personal data** (LGPD Art. 5 II, 11; GDPR Art. 9)—such as CID/ICD (diagnosis codes), gender, religion, political affiliation, PEP, race/skin color, union affiliation, genetic/biometric data, sex life, health/disability—add training terms for those categories to your ML/DL term list.
 
-- **Plan and table of categories:** [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md)
+- **Plan and table of categories:** [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](plans/completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md)
 - **Ready-to-use example file:** [sensitivity_terms_sensitive_categories.example.yaml](sensitivity_terms_sensitive_categories.example.yaml)
 
 Copy that file (or merge its entries) into your `ml_patterns_file` / `dl_patterns_file`, or into `sensitivity_detection.ml_terms` / `sensitivity_detection.dl_terms`. You can use `report.recommendation_overrides` so findings in these categories get the right Base legal, Risk, and Priority in the report. A full example (health, religion, political, PEP, race, union, genetic, biometric, sex life) is in [USAGE.md](USAGE.md) (Global options); [USAGE.pt_BR.md](USAGE.pt_BR.md) (Português).
@@ -307,7 +307,7 @@ The file must contain a **list of objects**, each with:
 | ---        | ---      | ---                                                                                                                                                                                                                                                                                                                              |
 | `name`     | Yes      | Short identifier for the pattern (e.g. `RG_BR`, `PLATE_BR`). Appears in reports as `pattern_detected`.                                                                                                                                                                                                                           |
 | `pattern`  | Yes      | Regular expression (Python `re` syntax). Matched against column name + sample text. Use raw strings; prefer `\b` for word boundaries to avoid partial matches.                                                                                                                                                                   |
-| `norm_tag` | No       | Label for compliance/reporting (e.g. `LGPD Art. 5`, `Custom`). Default: `"Custom"`. You can set this to any framework label (e.g. `"UK GDPR"`, `"PIPEDA s. 2"`, `"APPI"`, `"POPIA"`) so findings appear under that norm in reports and recommendations; see [Compliance frameworks and extensibility](compliance-frameworks.md). |
+| `norm_tag` | No       | Label for compliance/reporting (e.g. `LGPD Art. 5`, `Custom`). Default: `"Custom"`. You can set this to any framework label (e.g. `"UK GDPR"`, `"PIPEDA s. 2"`, `"APPI"`, `"POPIA"`) so findings appear under that norm in reports and recommendations; see [Compliance frameworks and extensibility](COMPLIANCE_FRAMEWORKS.md). |
 
 You can use a root-level list or a key `patterns` or `regex` containing the list. You can copy from [regex_overrides.example.yaml](regex_overrides.example.yaml) and edit.
 

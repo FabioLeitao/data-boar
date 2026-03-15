@@ -1,6 +1,6 @@
 # Extended ML/DL terms for sensitive categories (LGPD Art. 5 II, 11; GDPR Art. 9).
 # Use as ml_patterns_file and/or dl_patterns_file, or copy into sensitivity_detection.ml_terms / dl_terms.
-# See PLAN_SENSITIVE_CATEGORIES_ML_DL.md and sensitivity-detection.md.
+# See PLAN_SENSITIVE_CATEGORIES_ML_DL.md and SENSITIVITY_DETECTION.md.
 # Label: sensitive (or 1) = sensitive personal data; non_sensitive (or 0) = not.
 
 # CID/ICD (medical diagnosis codes)
