@@ -1,0 +1,55 @@
+# UAE PDPL – sample compliance profile (Federal Decree-Law 45/2021, UAE DPA)
+#
+# Target audience: UAE and Middle East deployments. Personal data, sensitive data.
+# Terms: EN + optional Arabic (بيانات شخصية) for column names in Arabic data.
+#
+# How to use:
+#   1. Set in your main config:
+#        regex_overrides_file: path/to/compliance-sample-uae_pdpl.yaml
+#        ml_patterns_file: path/to/compliance-sample-uae_pdpl.yaml
+#   2. Merge the recommendation_overrides list below into your config under report.recommendation_overrides.
+#
+# UAE: Federal Decree-Law No. 45 of 2021; UAE Data Office (UAE DPA).
+
+regex:
+  - name: "UAE_ID"
+    pattern: "\\b784-?\\d{4}-?\\d{7}-?\\d\\b"
+    norm_tag: "UAE PDPL"
+  - name: "UAE_PASSPORT_ALT"
+    pattern: "\\b[A-Z]{1,2}\\d{6,9}\\b"
+    norm_tag: "UAE PDPL"
+
+# ML terms: English and optional Arabic (personal data, sensitive data).
+terms:
+  - text: "personal data"
+    label: sensitive
+  - text: "بيانات شخصية"
+    label: sensitive
+  - text: "sensitive data"
+    label: sensitive
+  - text: "بيانات حساسة"
+    label: sensitive
+  - text: "data controller"
+    label: sensitive
+  - text: "data processor"
+    label: sensitive
+  - text: "uae data office"
+    label: sensitive
+  - text: "federal decree-law 45"
+    label: sensitive
+  - text: "pdpl"
+    label: sensitive
+  - text: "data subject"
+    label: sensitive
+  - text: "consent"
+    label: sensitive
+  - text: "lawful basis"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "UAE PDPL"
+    base_legal: "Federal Decree-Law No. 45 of 2021 (UAE PDPL); UAE Data Office"
+    risk: "Personal data and sensitive data; controller/processor obligations."
+    recommendation: "Comply with UAE PDPL; register with UAE Data Office if required; implement lawful basis and consent."
+    priority: "ALTA"
+    relevant_for: "DPO, UAE Data Office, Data Controller"

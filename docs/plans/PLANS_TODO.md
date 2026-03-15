@@ -6,7 +6,7 @@ This document is the **single source of truth** for the project's plan status an
 
 **Policy:** When implementing a plan step, **update documentation** (USAGE, TECH_GUIDE, SECURITY, or dedicated docs) and **add or run tests** as the feature is implemented. After completing or adding to-dos, **update this file and the plan file** so progress is tracked in one place. All steps are intended to be **non-destructive**, **non-regression**, and **tested** before marking done.
 
-**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ⬜ Not started · **Compressed files** ⬜ Not started · **Content type & cloaking detection** ⬜ Not started · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ⬜ Not started · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started · **Additional data soup formats** ⬜ Backlog (catalogue)
+**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ⬜ Not started · **Additional detection techniques & FN reduction** ⬜ Not started · **Compressed files** ⬜ Not started · **Content type & cloaking detection** ⬜ Not started · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ⬜ Not started · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started · **Additional data soup formats** ⬜ Backlog (catalogue)
 
 ---
 
@@ -30,6 +30,7 @@ This document is the **single source of truth** for the project's plan status an
 | Notifications (off-band + scan-complete) | Optional: Secrets Phase A       | None           | Webhook notifier; scan-complete brief to operator/tenant (Slack, Teams, Telegram, etc.); recommendations.                     |
 | SAP connector                            | Optional: Configurable timeouts | None           | Add SAP (HANA/OData/RFC) to data soup; same discovery/sample/finding flow; optional [sap] extra. See PLAN_SAP_CONNECTOR.      |
 | Additional data soup formats             | Optional: Compressed, content-type | None        | Catalogue: epub, parquet, avro, dbf; rich media (images, audio, video) as stego containers; metadata-only or stego phase. See PLAN_ADDITIONAL_DATA_SOUP_FORMATS. |
+| Additional detection techniques & FN reduction | Optional: Synthetic data (for validation) | None        | Additive: optional engines (fuzzy, stemming, format hint, embedding prototype); config thresholds; “suggested review”; reduce false negatives. See PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION. |
 
 **Regression and tests:** No plan modifies wipe behaviour, SQLite schema (except Self-upgrade adds optional upgrade_log, Data source versions adds data_source_inventory, Strong crypto adds optional crypto_controls_audit or extends inventory), or existing config keys in a breaking way. New tests per plan must pass together with the full suite (`uv run pytest -v -W error`). Document each new feature in the relevant docs (EN + pt-BR where applicable).
 
@@ -79,6 +80,24 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 ---
 
 ## Open plans and to-dos (summary)
+
+### Additional detection techniques & false-negative reduction – [PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md](PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md)
+
+| Priority | To-do                                                                                                                       | Status    |
+| -------- | --------------------------------------------------------------------------------------------------------------------------- | ------    |
+| 1        | Configurable MEDIUM threshold; “suggested review” in report for ID-like columns classified LOW                               | ⬜ Pending |
+| 2        | Stemming/normalisation for column names in ML/term matching                                                                 | ⬜ Pending |
+| 3        | Optional fuzzy column name match (e.g. rapidfuzz) in confidence band 25–45 → MEDIUM + FUZZY_COLUMN_MATCH                   | ⬜ Pending |
+| 4        | Data type/length hint from connectors → optional format hint in detector; MEDIUM suggestion when format suggests ID        | ⬜ Pending |
+| 5        | Embedding prototype similarity (reuse DL embedder) as optional semantic hint                                               | ⬜ Pending |
+| 6        | Region-specific column dictionaries (config); FK/table context where connector exposes schema                              | ⬜ Pending |
+| 7        | Validation: ground-truth fixtures, baseline recall; per-technique FN/FP metrics; docs                                       | ⬜ Pending |
+| 8        | Aggregated/incomplete: report wording – state results based on sampled data, human confirmation recommended               | ⬜ Pending |
+| 9        | Aggregated/incomplete: verify MEDIUM and PII_AMBIGUOUS contribute to aggregation; document                                 | ⬜ Pending |
+| 10       | Aggregated/incomplete: optional "incomplete data" mode (lower min_categories, report note)                                 | ⬜ Pending |
+| 11       | Aggregated/incomplete: optional single high-risk category "suggested review"                                                | ⬜ Pending |
+
+---
 
 ### Notifications (off-band + scan-complete) – [PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md](PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md)
 
