@@ -10,7 +10,7 @@ Brief description of the change and why it is needed.
 
 ## Checklist
 - [ ] Tests pass locally (`uv run pytest`).
-- [ ] No new linter/format issues (if applicable).
+- [ ] Lint passes (`uv run ruff check .`) and no new linter/format issues.
 - [ ] Docs/README updated if behaviour or setup changed.
 - [ ] Security-sensitive changes: considered impact and SECURITY.md (e.g. dependency changes, config, auth).
 

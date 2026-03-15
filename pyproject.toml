@@ -94,11 +94,16 @@ dl = ["sentence-transformers>=3.0.0"]
 # Fail on any warning (DeprecationWarning, ResourceWarning, etc.) so the suite stays clean
 addopts = "-v -W error"
 
+[tool.ruff]
+# Dirs with many existing issues; main app (api, config, connectors, core, database, file_scan, report, scripts, tests) is linted in CI and pre-commit
+extend-exclude = ["db", "scanners", "utils", "logging_custom"]
+
 [tool.ruff.lint.per-file-ignores]
 # Connectors must register before we import connector_for_target; optional deps in try/except
 "core/engine.py" = ["E402"]
 
 [dependency-groups]
 dev = [
+    "pre-commit>=4.0.0",
     "ruff>=0.15.4",
 ]

@@ -143,7 +143,7 @@ The following are **optional** practices to harden deployments. They do not repl
 
 - **Non-root:** The image already runs as user `appuser` (UID 1000). To enforce at runtime: `docker run --user 1000 ...` (or keep the Dockerfile `USER appuser`).
 - **Resource limits:** Use `--cpus` and `--memory` for plain Docker (e.g. `--memory 1g`). In Compose, set `deploy.resources.limits` (e.g. `cpus: '1'`, `memory: 1G`).
-- **Healthchecks:** The image can be used with Docker `HEALTHCHECK`; for API mode, probe `GET /health`. Compose and Kubernetes examples in this repo already use `/health` for liveness/readiness.
+- **Healthchecks:** The image can be used with Docker `HEALTHCHECK`; for API mode, probe `GET /health`. Compose and Kubernetes examples in this repo already use `/health` for liveness/readiness. For observability, SLO/SLI/SLA, and SRE alignment (runbooks, error budgets, optional metrics), see [OBSERVABILITY_SRE.md](../OBSERVABILITY_SRE.md).
 - **DevSecOps:** Combine with API key (`api.require_api_key`), rate limiting (`rate_limit` in config), and CSP/security headers (see [SECURITY.md](../../SECURITY.md)). Run behind a reverse proxy with TLS and, when exposed externally, consider a WAF.
 
 ### Kubernetes (optional examples)

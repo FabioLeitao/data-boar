@@ -3,7 +3,7 @@
 **Status:** Under consideration (no approach decided yet)
 **Synced with:** [docs/PLANS_TODO.md](PLANS_TODO.md) (central plan status)
 
-*When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.*
+## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
 
 Goal: allow users to use the web dashboard (and related pages) in **Brazilian Portuguese** and, in the future, other languages — with a clear way to switch language (e.g. footer link, optional flag) and without breaking existing behaviour or tests.
 
