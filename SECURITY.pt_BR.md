@@ -53,7 +53,7 @@ Bibliotecas cliente adicionais podem ser necessárias dependendo de quais conect
 
 - Sempre que alterar dependências (incluindo ao aplicar Dependabot ou automação), edite primeiro o **`pyproject.toml`**, depois execute `uv lock` e `uv export --no-emit-package pyproject.toml -o requirements.txt` para que **uv.lock** e **requirements.txt** permaneçam em sincronia com o lockfile.
 
-Essa abordagem faz parte da linha de base de segurança do projeto. Para a lista completa de medidas de endurecimento e status, veja **`docs/plans/PLAN_SECURITY_HARDENING.md`**.
+Essa abordagem faz parte da linha de base de segurança do projeto. Para a lista completa de medidas de endurecimento e status, veja **`docs/plans/completed/PLAN_SECURITY_HARDENING.md`**.
 
 ## Resistência a vulnerabilidades comuns
 
@@ -67,7 +67,7 @@ Essa abordagem faz parte da linha de base de segurança do projeto. Para a lista
 - **Política de logging:** Chave de API, senhas e strings de conexão não devem aparecer em logs de auditoria ou da aplicação. Detalhes de falha e mensagens de exceção passam por **`core.validation.redact_secrets_for_log`** antes de serem gravados; URLs de conexão e valores no estilo `password=` / `api_key=` são mascarados. Veja **`core/database.py`** (save_failure) e **`tests/test_security.py`** (redact_secrets_for_log).
 - **Acesso a relatório e heatmap:** Os endpoints de relatório e heatmap validam o formato do `session_id` antes do uso; IDs inválidos retornam 400, sessões desconhecidas ou inexistentes retornam 404 (sem enumeração de sessões nem distinção 403/404 para IDs desconhecidos). Veja **`api/routes.py`** e **`docs/SECURITY.md`**.
 
-Para um **resumo orientado ao técnico** (o que observar, testes de regressão, recomendações), veja **`docs/SECURITY.md`** (EN) e **`docs/SECURITY.pt_BR.md`** (pt-BR). Para etapas de endurecimento concluídas e planejadas, veja **`docs/plans/PLAN_SECURITY_HARDENING.md`**.
+Para um **resumo orientado ao técnico** (o que observar, testes de regressão, recomendações), veja **`docs/SECURITY.md`** (EN) e **`docs/SECURITY.pt_BR.md`** (pt-BR). Para etapas de endurecimento concluídas e planejadas, veja **`docs/plans/completed/PLAN_SECURITY_HARDENING.md`**.
 
 ## Cabeçalhos HTTP de segurança (web e API)
 
