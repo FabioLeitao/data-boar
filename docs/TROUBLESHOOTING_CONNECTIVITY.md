@@ -22,10 +22,10 @@ This document helps you diagnose and fix **unreachable**, **timeout**, and **per
 ### 2.1 Checklist
 
 1. **Reachability from the audit host (or container):** Can you ping or connect from the same machine/container that runs Data Boar? If you run in Docker, test from inside the container (e.g. `docker exec <container> ping <db-host>` or `docker exec <container> nc -zv <host> <port>`).
-2. **DNS:** If config uses a hostname, resolve it from the audit host/container: `getent hosts <hostname>` or `nslookup <hostname>`. If it fails, fix DNS or use the target IP in config.
-3. **Firewall:** Outbound from audit host/container to target port (e.g. 5432 PostgreSQL, 445 SMB, 443 HTTPS). Inbound on the target server must allow the audit host/container IP (or network).
-4. **VPN:** If the target is only reachable over VPN, ensure the VPN is up on the host (or that the container uses host network if the VPN is on the host and you accept that setup).
-5. **Wrong host/port/path in config:** Typo in `host`, `port`, `base_url`, or `path`. Compare config to the target’s real address.
+1. **DNS:** If config uses a hostname, resolve it from the audit host/container: `getent hosts <hostname>` or `nslookup <hostname>`. If it fails, fix DNS or use the target IP in config.
+1. **Firewall:** Outbound from audit host/container to target port (e.g. 5432 PostgreSQL, 445 SMB, 443 HTTPS). Inbound on the target server must allow the audit host/container IP (or network).
+1. **VPN:** If the target is only reachable over VPN, ensure the VPN is up on the host (or that the container uses host network if the VPN is on the host and you accept that setup).
+1. **Wrong host/port/path in config:** Typo in `host`, `port`, `base_url`, or `path`. Compare config to the target’s real address.
 
 ### 2.2 Steps to fix
 
@@ -43,9 +43,9 @@ This document helps you diagnose and fix **unreachable**, **timeout**, and **per
 ### 3.1 Checklist
 
 1. **Target slow or overloaded:** High latency or load on DB/API; try again during off-peak.
-2. **Timeout too low in config:** REST/API targets support a `timeout` (seconds). Default is often 30; increase if the target is slow (e.g. `timeout: 60` or 120).
-3. **Network latency:** Cross-region or congested path; increase timeout or run the scanner closer to the target.
-4. **Large discovery:** Some connectors (e.g. Power BI, Dataverse) do many API calls; total time can exceed a single-request timeout. Increase timeout and/or reduce scope if possible.
+1. **Timeout too low in config:** REST/API targets support a `timeout` (seconds). Default is often 30; increase if the target is slow (e.g. `timeout: 60` or 120).
+1. **Network latency:** Cross-region or congested path; increase timeout or run the scanner closer to the target.
+1. **Large discovery:** Some connectors (e.g. Power BI, Dataverse) do many API calls; total time can exceed a single-request timeout. Increase timeout and/or reduce scope if possible.
 
 ### 3.2 Steps to fix
 
@@ -62,9 +62,9 @@ This document helps you diagnose and fix **unreachable**, **timeout**, and **per
 ### 4.1 Checklist
 
 1. **Credentials:** Wrong user/password or token; or token expired. See [TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md).
-2. **Read access:** The account used by the scanner must have **read** access to the resource (DB tables/views, share path, API endpoints). No write required.
-3. **Filesystem/share path:** On NFS/SMB, the mounted path or share path must be readable by the user running the app (or the container user). Check mount options and share permissions.
-4. **API scope:** OAuth or API key may need a scope that includes read for the endpoints you scan.
+1. **Read access:** The account used by the scanner must have **read** access to the resource (DB tables/views, share path, API endpoints). No write required.
+1. **Filesystem/share path:** On NFS/SMB, the mounted path or share path must be readable by the user running the app (or the container user). Check mount options and share permissions.
+1. **API scope:** OAuth or API key may need a scope that includes read for the endpoints you scan.
 
 ### 4.2 Steps to fix
 

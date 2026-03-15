@@ -51,9 +51,9 @@ Na raiz do repositório (PowerShell):
 - **`origin`** aponta para **FabioLeitao/data-boar** — é o **único** repositório para onde você faz push e abre PRs. Todo o trabalho novo e a identidade do projeto ficam aqui.
 - Um remote chamado **`python3-lgpd-crawler-legacy-and-history-only`** (o antigo repositório python3-lgpd-crawler) é mantido só para **histórico legado e fetch**. **Não** faça push para ele; o push está desabilitado para evitar envios acidentais.
 - Ao abrir o PR no navegador (página de compare ou `gh pr create --web`), confira:
-  - **Repositório base:** `FabioLeitao/data-boar`
-  - **Branch base:** `main`
-  - **Comparar/head:** seu branch (ex.: `2026-03-14-3i1y`) em **data-boar**
+- **Repositório base:** `FabioLeitao/data-boar`
+- **Branch base:** `main`
+- **Comparar/head:** seu branch (ex.: `2026-03-14-3i1y`) em **data-boar**
 - Se o GitHub sugerir “you may need to fork”, em geral o **base** está em outro repositório (ex.: o antigo). Altere o base para **data-boar** e o branch base para **main** para que o PR seja “mesmo repositório” e nenhum fork seja necessário.
 
 ## Requisitos
