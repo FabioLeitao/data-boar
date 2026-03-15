@@ -1,6 +1,6 @@
 # Next Steps – LGPD Audit Solution (archived)
 
-*This document is archived in [completed/](.) as the implementation-plan checklist; all items are Done. For current plan status and open to-dos, see [../PLANS_TODO.md](../PLANS_TODO.md).*
+*This document is archived in [plans/completed/](.) as the implementation-plan checklist; all items are Done. For current plan status and open to-dos, see [../PLANS_TODO.md](../PLANS_TODO.md).*
 
 Plan of next steps based on the [implementation plan](../../.cursor/plans/lgpd_audit_solution_full_implementation_4a673b9e.plan.md) and current codebase.
 

@@ -1,7 +1,7 @@
 # Dashboard i18n and multi-language web UI
 
 **Status:** Under consideration (no approach decided yet)
-**Synced with:** [docs/PLANS_TODO.md](PLANS_TODO.md) (central plan status)
+**Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central plan status)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
 

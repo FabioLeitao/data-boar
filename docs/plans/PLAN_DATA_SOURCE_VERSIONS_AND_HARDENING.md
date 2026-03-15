@@ -1,7 +1,7 @@
 # Plan: Data source version and protocol detection with CVE awareness and hardening guidance
 
 **Status:** Not started
-**Synced with:** [docs/PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
+**Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
 
@@ -27,7 +27,7 @@ This plan adds a **data-source inventory** and **hardening guidance** feature: w
 - **Findings:** Connectors call `save_finding(source_type, ...)` with metadata (target_name, server_ip, engine_details, schema, table, column, sensitivity, etc.). `engine_details` is a short string (e.g. `postgresql`, `redis`); **no product version or protocol version** is stored today.
 - **Failures:** `save_failure(target_name, reason, details)` records unreachable/auth/permission; no version is captured for failed targets.
 - **Report:** Excel sheets include Report info, Database/Filesystem findings, Scan failures (with hints), Recommendations, Trends, Aggregated identification. There is **no data-source inventory or hardening sheet**.
-- **Security:** [SECURITY.md](../SECURITY.md) and [docs/security.md](security.md) describe app security; there is no feature today that assesses **scanned targets’** versions or CVEs.
+- **Security:** [SECURITY.md](../SECURITY.md) and [docs/SECURITY.md](SECURITY.md) describe app security; there is no feature today that assesses **scanned targets’** versions or CVEs.
 
 ---
 
@@ -151,7 +151,7 @@ Alternatively, hardening rows can be **generated at report time** from inventory
 | --- | ---------------------------------------------------------------------                                                                         | ------ |
 | 4.1 | Add "Hardening summary" section or sheet in report (top actions, links)                                                                       | ⬜      |
 | 4.2 | Optional: generate or document template for standalone `Hardening_next_steps.md` (or similar) per run                                         | ⬜      |
-| 4.3 | docs/hardening-guide.md (or section in security.md): how the app uses versions, CVEs, and public docs; how to interpret report and next steps | ⬜      |
+| 4.3 | docs/hardening-guide.md (or section in SECURITY.md): how the app uses versions, CVEs, and public docs; how to interpret report and next steps | ⬜      |
 | 4.4 | Final regression: full test suite passes; mark plan steps done in PLANS_TODO.md                                                               | ⬜      |
 
 ---

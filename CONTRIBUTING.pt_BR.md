@@ -68,7 +68,7 @@ Obrigado por considerar contribuir. Este documento cobre a configuração local,
 Antes de marcar uma release, os mantenedores devem:
 
 - **Auditoria de dependências:** Execute `uv sync`, depois `uv run pip-audit`. Corrija ou atualize quaisquer achados altos/críticos antes do release.
-- **Documentação:** Garanta que [SECURITY.md](SECURITY.md) ([pt-BR](SECURITY.pt_BR.md)) e [docs/security.md](docs/security.md) ([pt-BR](docs/security.pt_BR.md)) reflitam o comportamento atual (validação, headers, API key, política de logs).
+- **Documentação:** Garanta que [SECURITY.md](SECURITY.md) ([pt-BR](SECURITY.pt_BR.md)) e [docs/SECURITY.md](docs/SECURITY.md) ([pt-BR](docs/security.pt_BR.md)) reflitam o comportamento atual (validação, headers, API key, política de logs).
 - **Segredos:** Confirme que não há API keys ou senhas em logs; permissões do arquivo de config e do ambiente restringem acesso a usuários confiáveis (veja [SECURITY.md](SECURITY.md) ([pt-BR](SECURITY.pt_BR.md))).
 
 ## Implantação e produção
@@ -81,7 +81,7 @@ Antes de marcar uma release, os mantenedores devem:
 - **[docs/TESTING.md](docs/TESTING.md)** ([pt-BR](docs/TESTING.pt_BR.md)) — Módulos de teste, CI, SonarQube.
 - **[docs/TOPOLOGY.md](docs/TOPOLOGY.md)** ([pt-BR](docs/TOPOLOGY.pt_BR.md)) — Topologia da aplicação (módulos, classes, fluxo de dados).
 - **[docs/COMMIT_AND_PR.md](docs/COMMIT_AND_PR.md)** ([pt-BR](docs/COMMIT_AND_PR.pt_BR.md)) — Automação de commit e PR.
-- **[docs/compliance-frameworks.md](docs/compliance-frameworks.md)** ([pt-BR](docs/compliance-frameworks.pt_BR.md)) — Rótulos de conformidade e extensibilidade.
+- **[docs/COMPLIANCE_FRAMEWORKS.md](docs/COMPLIANCE_FRAMEWORKS.md)** ([pt-BR](docs/COMPLIANCE_FRAMEWORKS.pt_BR.md)) — Rótulos de conformidade e extensibilidade.
 - **[docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md](docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md)** ([EN](docs/COPYRIGHT_AND_TRADEMARK.md)) — Direitos autorais e marca (tornar oficial, registros). [NOTICE](NOTICE) para o aviso do projeto.
 - Índice completo da documentação: [docs/README.pt_BR.md](docs/README.pt_BR.md) ([EN](docs/README.md)).
 
