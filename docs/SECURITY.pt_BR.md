@@ -1,6 +1,6 @@
 # Segurança: correções, testes e orientações para o técnico
 
-**English:** [security.md](security.md)
+**English:** [SECURITY.md](SECURITY.md)
 
 Este documento resume as **medidas de segurança de severidade crítica e alta** implementadas na aplicação, os **testes de regressão** que as protegem e **recomendações para técnicos**, para que você saiba o que observar ao configurar e operar a ferramenta de auditoria.
 

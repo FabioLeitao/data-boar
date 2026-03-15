@@ -22,7 +22,7 @@ All steps are **additive or configurable** where possible; avoid breaking existi
 
 ## Current state (summary)
 
-- **Already in place:** SQL injection resistance (identifier escaping, ORM), path traversal protection (session_id validation), credential encoding in URLs, `yaml.safe_load` for config, optional API key, rate limiting (concurrent + interval), security headers (CSP, X-Frame-Options, HSTS when HTTPS), config endpoint protected when API key required. See [SECURITY.md](../SECURITY.md) and [docs/security.md](security.md).
+- **Already in place:** SQL injection resistance (identifier escaping, ORM), path traversal protection (session_id validation), credential encoding in URLs, `yaml.safe_load` for config, optional API key, rate limiting (concurrent + interval), security headers (CSP, X-Frame-Options, HSTS when HTTPS), config endpoint protected when API key required. See [SECURITY.md](../SECURITY.md) and [docs/SECURITY.md](SECURITY.md).
 - **Gaps to consider:** Input validation/sanitization for tenant and technician (length, characters) when stored and later shown in reports/UI; request body size limits; ensuring no secrets in logs; dependency audit cadence and lockfile; optional stricter CSP; optional scan payload limits.
 
 ---
