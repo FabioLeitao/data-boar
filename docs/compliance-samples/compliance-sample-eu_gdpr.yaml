@@ -1,0 +1,59 @@
+# EU GDPR – sample compliance profile (EEA; EU 27 + EEA states)
+#
+# Target audience: EEA deployments; contracts requiring EU (not UK) alignment. Norm_tag
+# "EU GDPR" for EDPB and member-state DPA references. Optional EN + DE/FR terms for multilingual EU data.
+#
+# How to use:
+#   1. Set in your main config:
+#        regex_overrides_file: path/to/compliance-sample-eu_gdpr.yaml
+#        ml_patterns_file: path/to/compliance-sample-eu_gdpr.yaml
+#   2. Merge the recommendation_overrides list below into your config under report.recommendation_overrides.
+#
+# Regulation (EU) 2016/679; EDPB; member-state DPAs.
+
+regex:
+  - name: "EU_IBAN"
+    pattern: "\\b[A-Z]{2}\\d{2}\\s?\\d{4}\\s?\\d{4}\\s?\\d{4}\\s?\\d{4}\\s?\\d{0,4}\\b"
+    norm_tag: "EU GDPR"
+  - name: "EU_VAT"
+    pattern: "\\b[A-Z]{2}?\\s?[A-Z0-9]{8,12}\\b"
+    norm_tag: "EU GDPR"
+
+# ML terms: Art. 4(1) personal data, data subject; EN + DE/FR for multilingual EU.
+terms:
+  - text: "personal data"
+    label: sensitive
+  - text: "personenbezogene Daten"
+    label: sensitive
+  - text: "données personnelles"
+    label: sensitive
+  - text: "data subject"
+    label: sensitive
+  - text: "betroffene Person"
+    label: sensitive
+  - text: "personne concernée"
+    label: sensitive
+  - text: "eu gdpr"
+    label: sensitive
+  - text: "regulation 2016/679"
+    label: sensitive
+  - text: "edpb"
+    label: sensitive
+  - text: "lawful basis"
+    label: sensitive
+  - text: "legal basis"
+    label: sensitive
+  - text: "recital"
+    label: sensitive
+  - text: "controller"
+    label: sensitive
+  - text: "processor"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "EU GDPR"
+    base_legal: "Regulation (EU) 2016/679 Art. 4(1); Recitals; EDPB"
+    risk: "Identification of data subject; personal data as defined in EU GDPR."
+    recommendation: "Apply EU GDPR safeguards; ensure lawful basis and member-state DPA compliance; consider EDPB guidance."
+    priority: "ALTA"
+    relevant_for: "DPO, EU Representative, Lead DPA, EDPB"
