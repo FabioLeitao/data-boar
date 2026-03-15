@@ -114,12 +114,12 @@ Optionally extend `failure_hint("timeout")` with one line: "You can set timeouts
 
 | #   | To-do                                                                                                                                        | Status |
 | --- | ---------------------------------------------------------------------                                                                        | ------ |
-| 2.1 | SQL connector: pass connect_timeout (and optionally read/statement timeout) via create_engine connect_args from config/target.               | ⬜      |
-| 2.2 | REST connector: use global default when target.timeout not set; optionally split into connect/read via httpx.Timeout(connect=..., read=...). | ⬜      |
-| 2.3 | Power BI / Dataverse: create httpx client with timeout from config (connect + read).                                                         | ⬜      |
-| 2.4 | MongoDB: pass serverSelectionTimeoutMS, connectTimeoutMS, socketTimeoutMS from config.                                                       | ⬜      |
-| 2.5 | Redis: pass socket_connect_timeout and socket_timeout from config.                                                                           | ⬜      |
-| 2.6 | Other connectors (SMB, WebDAV, SharePoint, Snowflake): wire timeouts where the library supports; otherwise no change.                        | ⬜      |
+| 2.1 | SQL connector: pass connect_timeout (and optionally read/statement timeout) via create_engine connect_args from config/target.               | ✅      |
+| 2.2 | REST connector: use global default when target.timeout not set; optionally split into connect/read via httpx.Timeout(connect=..., read=...). | ✅      |
+| 2.3 | Power BI / Dataverse: create httpx client with timeout from config (connect + read).                                                         | ✅      |
+| 2.4 | MongoDB: pass serverSelectionTimeoutMS, connectTimeoutMS, socketTimeoutMS from config.                                                       | ✅      |
+| 2.5 | Redis: pass socket_connect_timeout and socket_timeout from config.                                                                           | ✅      |
+| 2.6 | Other connectors (SMB, WebDAV, SharePoint, Snowflake): wire timeouts where the library supports; otherwise no change.                        | ✅      |
 
 ### Phase 3: Pass config to connectors
 

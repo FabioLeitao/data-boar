@@ -137,7 +137,10 @@ class RESTConnector:
         if not _HTTPX_AVAILABLE:
             raise RuntimeError("httpx is required for REST connector. Install with: pip install httpx")
         base_url = (self.config.get("base_url") or self.config.get("url", "")).rstrip("/")
-        timeout = float(self.config.get("timeout", 30))
+        connect_s = float(self.config.get("connect_timeout_seconds", 25))
+        read_s = float(self.config.get("read_timeout_seconds", 90))
+        # Default (first arg) used for write/pool; connect and read set explicitly (httpx requires default or all four).
+        timeout = httpx.Timeout(read_s, connect=connect_s, read=read_s)
         self._client = httpx.Client(base_url=base_url, timeout=timeout)
         _build_auth(self._client, self.config)
         # Optional extra headers (e.g. API key, negotiated token)
