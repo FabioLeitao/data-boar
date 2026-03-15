@@ -77,6 +77,89 @@ class TestAuditLogic(unittest.TestCase):
         self.assertIn(result["sensitivity_level"], ("LOW", "MEDIUM"))
         self.assertNotEqual(result["sensitivity_level"], "HIGH")
 
+    def test_phone_column_names_flagged_sensitive(self):
+        """Phone-related column names (home phone, mobile, celular, téléphone, etc.) are recognised and flagged."""
+        scanner = DataScanner()
+        phone_columns = [
+            "celular",
+            "home_phone",
+            "mobile",
+            "telefone",
+            "téléphone",
+            "work phone",
+            "handynummer",
+        ]
+        for col in phone_columns:
+            with self.subTest(column=col):
+                result = scanner.scan_column(col, "sample value")
+                self.assertIn(
+                    result["sensitivity_level"],
+                    ("HIGH", "MEDIUM"),
+                    f"Column '{col}' should be flagged as sensitive (phone)",
+                )
+
+    def test_name_column_names_flagged_sensitive(self):
+        """Name-related column names (first name, surname, apellido, nachname, etc.) are recognised and flagged."""
+        scanner = DataScanner()
+        name_columns = [
+            "first_name",
+            "last_name",
+            "surname",
+            "full_name",
+            "birth name",
+            "nickname",
+            "sobrenome",
+            "apellido",
+            "prénom",
+            "nom de famille",
+            "vorname",
+            "nachname",
+        ]
+        for col in name_columns:
+            with self.subTest(column=col):
+                result = scanner.scan_column(col, "sample value")
+                self.assertIn(
+                    result["sensitivity_level"],
+                    ("HIGH", "MEDIUM"),
+                    f"Column '{col}' should be flagged as sensitive (name/identifier)",
+                )
+
+    def test_id_document_column_names_flagged_sensitive(self):
+        """ID/document column names (passport, ctps, documento oficial, green card, etc.) are recognised and flagged."""
+        scanner = DataScanner()
+        id_columns = [
+            "passaporte",
+            "passport",
+            "ctps",
+            "documento oficial",
+            "green card",
+            "cnh",
+            "driver license",
+            "identity document",
+            "id card",
+            "national id",
+            "document number",
+            "certidao",
+            "cartao cidadao",
+        ]
+        for col in id_columns:
+            with self.subTest(column=col):
+                result = scanner.scan_column(col, "sample value")
+                self.assertIn(
+                    result["sensitivity_level"],
+                    ("HIGH", "MEDIUM"),
+                    f"Column '{col}' should be flagged as sensitive (ID/document)",
+                )
+
+    def test_ambiguous_column_doc_id_returns_medium_and_pii_ambiguous(self):
+        """Generic column names (doc_id, document_id, etc.) return MEDIUM and PII_AMBIGUOUS for manual confirmation."""
+        scanner = DataScanner()
+        for col in ("doc_id", "document_id", "id_number"):
+            with self.subTest(column=col):
+                result = scanner.scan_column(col, "sample value")
+                self.assertEqual(result["sensitivity_level"], "MEDIUM", f"Column '{col}' should be MEDIUM (ambiguous)")
+                self.assertIn("PII_AMBIGUOUS", result.get("pattern_detected", ""), f"Column '{col}' should have PII_AMBIGUOUS")
+
 
 if __name__ == "__main__":
     unittest.main()

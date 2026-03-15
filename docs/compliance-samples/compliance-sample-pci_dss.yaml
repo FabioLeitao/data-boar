@@ -1,0 +1,56 @@
+# PCI-DSS – sample compliance profile (Payment Card Industry Data Security Standard)
+#
+# Target audience: Merchants and assessors; payment card data scanning. Bundles patterns
+# and recommendations so reports speak PCI-DSS language (scope, tokenization, cardholder data).
+#
+# How to use:
+#   1. Set in your main config:
+#        regex_overrides_file: path/to/compliance-sample-pci_dss.yaml
+#        ml_patterns_file: path/to/compliance-sample-pci_dss.yaml
+#   2. Merge the recommendation_overrides list below into your config under report.recommendation_overrides.
+#
+# Built-in detector already includes CREDIT_CARD; this sample adds norm_tag PCI-DSS and
+# recommendation text for assessors. Optional: add PAN, CVV, track data patterns if needed.
+
+regex:
+  - name: "PAN"
+    pattern: "\\b\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}\\b"
+    norm_tag: "PCI-DSS"
+  - name: "CARD_TRACK_ALT"
+    pattern: "\\b%?[B]?\\d{13,19}\\^[^\\^]+\\^\\d{4}"
+    norm_tag: "PCI-DSS"
+
+# ML terms: cardholder data, CHD, PCI scope.
+terms:
+  - text: "cardholder data"
+    label: sensitive
+  - text: "chd"
+    label: sensitive
+  - text: "pan"
+    label: sensitive
+  - text: "primary account number"
+    label: sensitive
+  - text: "cvv"
+    label: sensitive
+  - text: "cvc"
+    label: sensitive
+  - text: "card number"
+    label: sensitive
+  - text: "pci"
+    label: sensitive
+  - text: "pci-dss"
+    label: sensitive
+  - text: "tokenization"
+    label: sensitive
+  - text: "card expiry"
+    label: sensitive
+  - text: "expiration date"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "PCI-DSS"
+    base_legal: "PCI-DSS; cardholder data (CHD) scope"
+    risk: "Storage or processing of cardholder data; scope for PCI-DSS assessment."
+    recommendation: "Restrict storage of PAN/CVV; use tokenization or approved methods; ensure scope is documented for assessors."
+    priority: "CRÍTICA"
+    relevant_for: "QSA, ISA, Security, Compliance"

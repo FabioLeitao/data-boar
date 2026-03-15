@@ -53,6 +53,24 @@ terms:
     label: sensitive
   - text: "full name"
     label: sensitive
+  - text: "first name"
+    label: sensitive
+  - text: "last name"
+    label: sensitive
+  - text: "surname"
+    label: sensitive
+  - text: "nome"
+    label: sensitive
+  - text: "sobrenome"
+    label: sensitive
+  - text: "birth name"
+    label: sensitive
+  - text: "nickname"
+    label: sensitive
+  - text: "given name"
+    label: sensitive
+  - text: "family name"
+    label: sensitive
   - text: "endereço"
     label: sensitive
   - text: "address"
@@ -60,6 +78,18 @@ terms:
   - text: "telefone"
     label: sensitive
   - text: "phone"
+    label: sensitive
+  - text: "celular"
+    label: sensitive
+  - text: "mobile"
+    label: sensitive
+  - text: "fone"
+    label: sensitive
+  - text: "home phone"
+    label: sensitive
+  - text: "work phone"
+    label: sensitive
+  - text: "cell phone"
     label: sensitive
   - text: "identidade"
     label: sensitive
@@ -73,8 +103,92 @@ terms:
     label: sensitive
   - text: "identification number"
     label: sensitive
+  # ID / document – additional naming schemes (PT-BR + EN)
+  - text: "passaporte"
+    label: sensitive
+  - text: "passport"
+    label: sensitive
+  - text: "ctps"
+    label: sensitive
+  - text: "carteira de trabalho"
+    label: sensitive
+  - text: "distintivo"
+    label: sensitive
+  - text: "carteira sindical"
+    label: sensitive
+  - text: "certificado de reservista"
+    label: sensitive
+  - text: "título eleitoral"
+    label: sensitive
+  - text: "titulo eleitoral"
+    label: sensitive
+  - text: "pis"
+    label: sensitive
+  - text: "cartão cidadão"
+    label: sensitive
+  - text: "cartao cidadao"
+    label: sensitive
+  - text: "identidade de estrangeiro"
+    label: sensitive
+  - text: "certidão"
+    label: sensitive
+  - text: "certidao"
+    label: sensitive
+  - text: "green card"
+    label: sensitive
+  - text: "registro no conselho de classe"
+    label: sensitive
+  - text: "professional registration"
+    label: sensitive
+  - text: "documento de identidade"
+    label: sensitive
+  - text: "identity document"
+    label: sensitive
+  - text: "id card"
+    label: sensitive
+  - text: "national id"
+    label: sensitive
+  - text: "carteira de identidade"
+    label: sensitive
+  # Further PT-BR ID/document variations (RNE, RIC, certidões, OAB, CRM, etc.)
+  - text: "rne"
+    label: sensitive
+  - text: "ric"
+    label: sensitive
+  - text: "certidão de nascimento"
+    label: sensitive
+  - text: "certidão de casamento"
+    label: sensitive
+  - text: "certidão de óbito"
+    label: sensitive
+  - text: "certidao de nascimento"
+    label: sensitive
+  - text: "oab"
+    label: sensitive
+  - text: "crm"
+    label: sensitive
+  - text: "crc"
+    label: sensitive
+  - text: "crea"
+    label: sensitive
+  - text: "crq"
+    label: sensitive
+  - text: "registro profissional"
+    label: sensitive
+  - text: "employee badge number"
+    label: sensitive
+  - text: "membership number"
+    label: sensitive
+  - text: "license number"
+    label: sensitive
 
 recommendation_overrides:
+  - norm_tag_pattern: "PII_AMBIGUOUS"
+    base_legal: "Identificador genérico – confirmar manualmente"
+    risk: "Nome de coluna genérico (doc_id, document_id, id_number, etc.). Pode ser PII ou ID interno."
+    recommendation: "Confirmar manualmente: verificar se a coluna contém dado pessoal (PII) ou apenas identificador interno. Se for PII, aplicar controles e base legal; se interno, prioridade MÉDIA."
+    priority: "MÉDIA"
+    relevant_for: "Operador, DPO, Segurança da Informação"
   - norm_tag_pattern: "LGPD Art. 5"
     base_legal: "LGPD Art. 5 (dados pessoais); Lei 13.709/2018"
     risk: "Identificação de pessoa natural."
