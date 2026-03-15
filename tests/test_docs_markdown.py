@@ -53,6 +53,11 @@ def test_compliance_samples_folder_exists():
     assert (folder / "README.md").is_file(), "docs/compliance-samples/README.md should exist"
 
 
+def test_compliance_and_legal_doc_exists():
+    """docs/COMPLIANCE_AND_LEGAL.md must exist (summary for legal and compliance teams)."""
+    assert (_project_root() / "docs" / "COMPLIANCE_AND_LEGAL.md").is_file()
+
+
 # --- README structure (SonarQube-style doc quality) ---
 
 

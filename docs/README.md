@@ -41,6 +41,7 @@ These stay at repo root for GitHub and automation:
 | Versioning                                          | [VERSIONING.md](VERSIONING.md)                       | [VERSIONING.pt_BR.md](VERSIONING.pt_BR.md)                       |
 | Adding connectors                                   | [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md)         | [ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md)         |
 | Compliance                                          | [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) | [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) |
+| Compliance and legal (for legal teams and DPOs)     | [COMPLIANCE_AND_LEGAL.md](COMPLIANCE_AND_LEGAL.md)   | [COMPLIANCE_AND_LEGAL.pt_BR.md](COMPLIANCE_AND_LEGAL.pt_BR.md)   |
 | Compliance samples (UK GDPR, EU GDPR, PIPEDA, etc.) | [compliance-samples/](compliance-samples/) · [COMPLIANCE_FRAMEWORKS.md#compliance-samples](COMPLIANCE_FRAMEWORKS.md#compliance-samples) | [compliance-samples/](compliance-samples/) · [COMPLIANCE_FRAMEWORKS.pt_BR.md#amostras-de-conformidade](COMPLIANCE_FRAMEWORKS.pt_BR.md#amostras-de-conformidade) |
 | Operator / IT requirements (minimal permissions)     | [OPERATOR_IT_REQUIREMENTS.md](OPERATOR_IT_REQUIREMENTS.md) | [OPERATOR_IT_REQUIREMENTS.pt_BR.md](OPERATOR_IT_REQUIREMENTS.pt_BR.md) |
 | Glossary (terms)                                    | [GLOSSARY.md](GLOSSARY.md)                           | [GLOSSARY.pt_BR.md](GLOSSARY.pt_BR.md)                           |
