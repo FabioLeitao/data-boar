@@ -43,9 +43,54 @@
   label: sensitive
 - text: "mobilnummer"
   label: sensitive
-- text: "data de nascimento"
+# Name / identifier – multiple naming schemes and languages (column names and labels)
+- text: "first name"
+  label: sensitive
+- text: "last name"
+  label: sensitive
+- text: "surname"
+  label: sensitive
+- text: "full name"
+  label: sensitive
+- text: "birth name"
+  label: sensitive
+- text: "christian name"
+  label: sensitive
+- text: "nickname"
+  label: sensitive
+- text: "given name"
+  label: sensitive
+- text: "family name"
+  label: sensitive
+- text: "middle name"
+  label: sensitive
+- text: "nome"
+  label: sensitive
+- text: "sobrenome"
   label: sensitive
 - text: "nome completo"
+  label: sensitive
+- text: "nombre"
+  label: sensitive
+- text: "apellido"
+  label: sensitive
+- text: "nombre completo"
+  label: sensitive
+- text: "prénom"
+  label: sensitive
+- text: "nom de famille"
+  label: sensitive
+- text: "nom complet"
+  label: sensitive
+- text: "vorname"
+  label: sensitive
+- text: "nachname"
+  label: sensitive
+- text: "geburtsname"
+  label: sensitive
+- text: "familienname"
+  label: sensitive
+- text: "data de nascimento"
   label: sensitive
 - text: "senha"
   label: sensitive

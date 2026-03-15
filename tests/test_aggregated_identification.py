@@ -54,6 +54,41 @@ class TestCategoryMapping(unittest.TestCase):
                 cats = map_finding_to_categories({"column_name": col, "pattern_detected": ""})
                 self.assertIn("phone", cats, f"Column '{col}' should map to category 'phone'")
 
+    def test_name_column_names_multilingual(self):
+        """Name/identifier category (other): multiple naming schemes and languages (first name, surname, apellido, etc.)."""
+        name_columns = [
+            "first name",
+            "first_name",
+            "last name",
+            "last_name",
+            "surname",
+            "full name",
+            "full_name",
+            "birth name",
+            "nickname",
+            "given name",
+            "family name",
+            "middle name",
+            "nome",
+            "sobrenome",
+            "nome completo",
+            "nombre",
+            "apellido",
+            "nombre completo",
+            "prénom",
+            "nom de famille",
+            "nom complet",
+            "vorname",
+            "nachname",
+            "geburtsname",
+            "familienname",
+            "cognome",
+        ]
+        for col in name_columns:
+            with self.subTest(column=col):
+                cats = map_finding_to_categories({"column_name": col, "pattern_detected": ""})
+                self.assertIn("other", cats, f"Column '{col}' should map to category 'other'")
+
     def test_pattern_detected_maps_to_category(self):
         self.assertIn("phone", map_finding_to_categories({"column_name": "x", "pattern_detected": "PHONE_BR"}))
         self.assertIn("other", map_finding_to_categories({"column_name": "x", "pattern_detected": "EMAIL"}))
