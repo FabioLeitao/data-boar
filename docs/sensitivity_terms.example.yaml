@@ -10,7 +10,38 @@
   label: sensitive
 - text: "email"
   label: sensitive
+# Phone / contact – multiple naming schemes and languages (column names and labels)
 - text: "telefone"
+  label: sensitive
+- text: "phone"
+  label: sensitive
+- text: "celular"
+  label: sensitive
+- text: "mobile"
+  label: sensitive
+- text: "fone"
+  label: sensitive
+- text: "home phone"
+  label: sensitive
+- text: "work phone"
+  label: sensitive
+- text: "cell phone"
+  label: sensitive
+- text: "contact number"
+  label: sensitive
+- text: "téléphone"
+  label: sensitive
+- text: "teléfono"
+  label: sensitive
+- text: "telefono"
+  label: sensitive
+- text: "móvil"
+  label: sensitive
+- text: "handy"
+  label: sensitive
+- text: "handynummer"
+  label: sensitive
+- text: "mobilnummer"
   label: sensitive
 - text: "data de nascimento"
   label: sensitive

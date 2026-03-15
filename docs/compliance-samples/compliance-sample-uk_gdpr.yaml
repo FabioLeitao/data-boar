@@ -39,6 +39,23 @@ terms:
     label: sensitive
   - text: "uk gdpr"
     label: sensitive
+  # Phone / contact (multiple naming schemes for column names)
+  - text: "phone"
+    label: sensitive
+  - text: "telephone"
+    label: sensitive
+  - text: "mobile"
+    label: sensitive
+  - text: "home phone"
+    label: sensitive
+  - text: "work phone"
+    label: sensitive
+  - text: "cell phone"
+    label: sensitive
+  - text: "contact number"
+    label: sensitive
+  - text: "phone number"
+    label: sensitive
 
 # Merge this list into config.report.recommendation_overrides.
 recommendation_overrides:
