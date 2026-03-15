@@ -83,6 +83,23 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
             })
 
     # File scan defaults: all compatible extensions when not specified (see connectors.filesystem_connector.SUPPORTED_EXTENSIONS)
+    def _normalize_file_passwords(pw: Any) -> dict[str, str]:
+        """Normalize file_passwords to dict mapping extension or 'default' to password string. Used for password-protected PDF/ZIP/PPTX."""
+        if not pw or not isinstance(pw, dict):
+            return {}
+        out: dict[str, str] = {}
+        for k, v in pw.items():
+            if v is None or not isinstance(v, str):
+                continue
+            key = (k or "").strip().lower()
+            if key == "default":
+                out["default"] = v
+            elif key.startswith("."):
+                out[key] = v
+            else:
+                out[f".{key}"] = v
+        return out
+
     _default_extensions = [
         ".txt", ".csv", ".pdf", ".doc", ".docx", ".odt", ".ods", ".odp", ".xls", ".xlsx", ".xlsm", ".ppt", ".pptx",
         ".sqlite", ".sqlite3", ".db", ".json", ".jsonl", ".xml", ".html", ".htm", ".md", ".yml", ".yaml",
@@ -93,6 +110,7 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         "recursive": data.get("file_scan", {}).get("recursive", True),
         "scan_sqlite_as_db": data.get("file_scan", {}).get("scan_sqlite_as_db", True),
         "sample_limit": data.get("file_scan", {}).get("sample_limit", 5),
+        "file_passwords": _normalize_file_passwords(data.get("file_scan", {}).get("file_passwords")),
     }
     # Normalize extensions to list of suffixes (e.g. "*.pdf" -> ".pdf")
     exts = out["file_scan"]["extensions"]

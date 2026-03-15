@@ -159,22 +159,26 @@ class AuditEngine:
         fs_config = self.config.get("file_scan", {})
         scan_sqlite_as_db = fs_config.get("scan_sqlite_as_db", True)
         sample_limit = fs_config.get("sample_limit", 5)
+        file_passwords = fs_config.get("file_passwords") or {}
         ext = fs_config.get("extensions")
         if t == "filesystem":
             if ext is not None:
                 connector = connector_class(
                     target, self.scanner, self.db_manager,
                     extensions=ext, scan_sqlite_as_db=scan_sqlite_as_db, sample_limit=sample_limit,
+                    file_passwords=file_passwords,
                 )
             else:
                 connector = connector_class(
                     target, self.scanner, self.db_manager,
                     scan_sqlite_as_db=scan_sqlite_as_db, sample_limit=sample_limit,
+                    file_passwords=file_passwords,
                 )
         elif t in ("sharepoint", "webdav", "smb", "cifs", "nfs"):
             connector = connector_class(
                 target, self.scanner, self.db_manager,
                 extensions=ext, scan_sqlite_as_db=scan_sqlite_as_db, sample_limit=sample_limit,
+                file_passwords=file_passwords,
             )
         elif t in ("powerbi", "dataverse", "powerapps"):
             connector = connector_class(target, self.scanner, self.db_manager, sample_limit=sample_limit)

@@ -96,6 +96,8 @@ This avoids crashes and accidental misuse when extension is wrong or file is cor
 
 - Optional: **`file_scan.scan_compressed_extensions`** (list) to restrict which archive types to open (e.g. only `[".zip", ".tar.gz", ".7z"]`). If absent, use the full Tier 1 + Tier 2 list.
 
+- **Password-protected archives:** When opening zip, 7z, or other archives that may be password-protected, support **optional passwords** so the boar can scan locked archives when the user supplies them. Reuse or extend the existing **`file_scan.file_passwords`** mechanism (see USAGE): e.g. keys like `".zip"`, `".7z"`, or `"default"` mapping to password strings. Document how to supply archive passwords in config and in this plan’s docs so users who discover they need it can enable it without breaking the app.
+
 ### CLI
 
 - **`--scan-compressed`** (flag).
@@ -107,6 +109,19 @@ This avoids crashes and accidental misuse when extension is wrong or file is cor
 
 - **POST /scan (and /start) body:** add optional **`scan_compressed`** (boolean). If `true`, merge into config for that run (e.g. engine or loader applies override for the single run). If omitted, use config.
 - **Dashboard:** add a **checkbox** “Also scan inside compressed files (zip, tar, 7z, …)” next to tenant/technician. When checked, send `scan_compressed: true` in the JSON body when starting the scan. When unchecked, omit (config wins). Optional: show a short note that this may increase run time and I/O.
+
+---
+
+## Resource exhaustion and user warning
+
+When implementing **scan inside compressed files**, ensure we do **not** run into resource exhaustion and that users understand the risks when they enable the option.
+
+- **Filesystem and disk:** Extracting archives (especially large or many) can consume significant **disk space** (temp directories) and **inode / filesystem limits** on some systems. Use configurable `scan_compressed_max_inner_size` and, if extracting to temp files, consider a **max total temp usage** or cleanup policy so one run does not fill the disk.
+- **Memory:** Prefer in-memory extraction only for members under a size limit; for larger members use a temp file or skip, to avoid memory spikes and OOM.
+- **Time and I/O:** Scanning inside archives is more **compute- and I/O-intensive**. Document this clearly and, in the dashboard/CLI, **explain the risk** when the user enables the option: e.g. "Scanning inside compressed files may significantly increase run time, disk usage, and I/O; enable only when needed and ensure sufficient disk space and memory."
+- **Documentation:** In USAGE, TECH_GUIDE, and dashboard help, state that enabling scan-inside-compressed can lead to higher resource use and that users should ensure adequate disk space and consider running during off-peak or with limited scope first.
+
+**Reminder:** Before marking this plan complete, add guards (max inner size, optional max temp usage) and user-facing text that explains these risks so operators can make an informed choice.
 
 ---
 
@@ -227,6 +242,7 @@ This avoids crashes and accidental misuse when extension is wrong or file is cor
 | 9   | Share connectors (SMB, WebDAV, SharePoint, NFS): when scan_compressed true, apply same “open archive and scan members” logic for downloaded files with compressed extension (or document “filesystem only” for v1)            | ⬜          |   |
 | 10  | Tests: magic detection; scan_compressed=false no archive opening; scan_compressed=true findings from inside zip/tar; no regression in full suite                                                                              | ⬜          |   |
 | 11  | Docs: USAGE, TECH_GUIDE, man pages, help.html, README (EN and pt-BR) for scan_compressed and --scan-compressed                                                                                                                | ⬜          |   |
+| 12  | Resource exhaustion: enforce max_inner_size and optional temp caps; document and show user warning (dashboard + docs) when enabling scan-inside-compressed (disk, I/O, run time risks)                                          | ⬜          |   |
 
 **Sync:** When a step is done, mark **✅ Done** in this table and in [PLANS_TODO.md](PLANS_TODO.md) so both stay in sync.
 
