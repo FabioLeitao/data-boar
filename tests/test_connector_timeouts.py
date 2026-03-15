@@ -3,10 +3,16 @@ Tests for configurable timeouts: connector wiring uses connect_timeout_seconds a
 read_timeout_seconds from target config (normalized by config loader with global + per-target).
 No live connections; mocks used where needed.
 """
+import importlib.util
 import pytest
 from unittest.mock import MagicMock, patch
 
 from config.loader import normalize_config
+
+
+def _has_module(name: str) -> bool:
+    """Return True if the named module can be imported (used for pytest.skip when optional)."""
+    return importlib.util.find_spec(name) is not None
 
 
 def test_normalized_targets_have_timeout_seconds():
@@ -27,10 +33,9 @@ def test_normalized_targets_have_timeout_seconds():
 
 def test_rest_connector_uses_httpx_timeout_from_config():
     """REST connector connect() builds httpx.Timeout(connect=..., read=...) from target config."""
-    try:
-        import httpx
-    except ImportError:
+    if not _has_module("httpx"):
         pytest.skip("httpx not installed")
+    import httpx
     from connectors.rest_connector import RESTConnector
 
     target = {
@@ -54,9 +59,7 @@ def test_rest_connector_uses_httpx_timeout_from_config():
 
 def test_rest_connector_timeout_defaults_when_not_in_config():
     """REST connector uses defaults 25/90 when timeout keys missing from target."""
-    try:
-        import httpx
-    except ImportError:
+    if not _has_module("httpx"):
         pytest.skip("httpx not installed")
     from connectors.rest_connector import RESTConnector
 
@@ -74,9 +77,7 @@ def test_rest_connector_timeout_defaults_when_not_in_config():
 
 def test_mongodb_connector_receives_timeout_params():
     """MongoDB connector connect() passes serverSelectionTimeoutMS, connectTimeoutMS, socketTimeoutMS."""
-    try:
-        from pymongo import MongoClient
-    except ImportError:
+    if not _has_module("pymongo"):
         pytest.skip("pymongo not installed")
     from connectors.mongodb_connector import MongoDBConnector
 
@@ -104,9 +105,7 @@ def test_mongodb_connector_receives_timeout_params():
 
 def test_redis_connector_receives_socket_timeouts():
     """Redis connector connect() passes socket_connect_timeout and socket_timeout."""
-    try:
-        import redis
-    except ImportError:
+    if not _has_module("redis"):
         pytest.skip("redis not installed")
     from connectors.redis_connector import RedisConnector
 
