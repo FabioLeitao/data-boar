@@ -320,6 +320,8 @@ ml_patterns_file: docs/compliance-samples/compliance-sample-pipeda.yaml
 
 To keep secrets **out of the config file**, use **`*_from_env`** keys so the application reads values from environment variables at load time. This is the recommended pattern for production and for config files that may be shared or versioned.
 
+**Requesting access from IT:** When you need to ask the IT team for permissions (e.g. shared folders, database accounts, API tokens), use the **minimal** access required. See [OPERATOR_IT_REQUIREMENTS.md](OPERATOR_IT_REQUIREMENTS.md) for a per-source checklist of what to ask for (read-only, no admin), what we do *not* need, and a short justification so the request aligns with zero-trust or strict IAM. ([pt-BR](OPERATOR_IT_REQUIREMENTS.pt_BR.md))
+
 - **API key:** `api.api_key_from_env: "AUDIT_API_KEY"` (see Authentication above).
 - **Targets (databases, REST, Power BI, etc.):**
 - **Password:** `pass_from_env: "DB_PASS"` or `password_from_env: "DB_PASS"` — the app reads the password from the named env var.
@@ -658,7 +660,7 @@ Install optional deps: `uv pip install -e ".[shares]"`.
     path: "/mnt/nfs_data"   # local mount point
 ```
 
-All share types use the same `file_scan` settings (extensions, recursive, scan_sqlite_as_db, sample_limit). Findings appear in the **Filesystem findings** sheet.
+All share types use the same `file_scan` settings (extensions, recursive, scan_sqlite_as_db, sample_limit, file_passwords). Findings appear in the **Filesystem findings** sheet.
 
 ### Global options (excerpt)
 
@@ -668,7 +670,19 @@ file_scan:
   recursive: true
   scan_sqlite_as_db: true
   sample_limit: 5
+  # Optional: passwords for password-protected files (PDF, ZIP-based e.g. .docx/.pptx)
+  # Keys: extension with leading dot (e.g. ".pdf", ".pptx") or "default"; values: password string.
+  # Without a matching password, encrypted files are skipped (no content extracted).
+  # file_passwords:
+  #   ".pdf": "my-pdf-secret"
+  #   ".pptx": "presentation-pass"
+  #   default: "fallback-for-any-encrypted"
 
+```
+
+**Password-protected files (`file_passwords`):** Some PDFs and ZIP-based documents (e.g. `.docx`, `.pptx`) can be encrypted with a password. If you need to scan such files, set **`file_scan.file_passwords`** to a dict mapping extension keys (e.g. `".pdf"`, `".pptx"`) or `"default"` to the password string. Keys are normalized to lowercase with a leading dot. Without a matching password, encrypted files are skipped (no content is extracted). **Limitations:** Workbook-level encrypted Excel (`.xlsx`/`.xlsm`) is not supported; the standard library `zipfile` only supports ZipCrypto for ZIP-based formats (AES-encrypted ZIP may require additional support). Use environment variables or a secrets manager for production so passwords are not stored in the config file.
+
+```yaml
 report:
   output_dir: .    # directory for Excel and heatmap PNG
   # Optional: custom recommendation text per norm/framework (UK GDPR, PIPEDA, or sensitive categories)
