@@ -29,7 +29,7 @@ Use this skill when implementing or reviewing **Python** or **markdown** changes
 
 ### 2. Avoid CodeQL-relevant patterns
 
-- **Secrets:** Do not log API keys, passwords, or connection strings (see SECURITY.md, docs/security.md).
+- **Secrets:** Do not log API keys, passwords, or connection strings (see SECURITY.md, docs/SECURITY.md).
 - **Injection:** Use parameterized queries and safe APIs; never concatenate user input into SQL or shell commands.
 - **Crypto:** Prefer TLS 1.2+ and standard libraries; avoid weak or deprecated algorithms.
 
