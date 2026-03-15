@@ -90,6 +90,69 @@
   label: sensitive
 - text: "familienname"
   label: sensitive
+# ID / document – multiple naming schemes and languages (column names and labels)
+- text: "rg"
+  label: sensitive
+- text: "passaporte"
+  label: sensitive
+- text: "passport"
+  label: sensitive
+- text: "ctps"
+  label: sensitive
+- text: "carteira de trabalho"
+  label: sensitive
+- text: "documento oficial"
+  label: sensitive
+- text: "official document"
+  label: sensitive
+- text: "distintivo"
+  label: sensitive
+- text: "carteira sindical"
+  label: sensitive
+- text: "certificado de reservista"
+  label: sensitive
+- text: "título eleitoral"
+  label: sensitive
+- text: "titulo eleitoral"
+  label: sensitive
+- text: "pis"
+  label: sensitive
+- text: "cartão cidadão"
+  label: sensitive
+- text: "cartao cidadao"
+  label: sensitive
+- text: "identidade de estrangeiro"
+  label: sensitive
+- text: "certidão"
+  label: sensitive
+- text: "certidao"
+  label: sensitive
+- text: "green card"
+  label: sensitive
+- text: "registro no conselho de classe"
+  label: sensitive
+- text: "cnh"
+  label: sensitive
+- text: "driver license"
+  label: sensitive
+- text: "driving licence"
+  label: sensitive
+- text: "documento de identidade"
+  label: sensitive
+- text: "identity document"
+  label: sensitive
+- text: "id card"
+  label: sensitive
+- text: "national id"
+  label: sensitive
+- text: "document number"
+  label: sensitive
+- text: "carte d'identité"
+  label: sensitive
+- text: "pasaporte"
+  label: sensitive
+- text: "passeport"
+  label: sensitive
 - text: "data de nascimento"
   label: sensitive
 - text: "senha"
