@@ -14,4 +14,6 @@ Sample configuration files to enable **additional compliance frameworks** with t
 | **compliance-sample-appi.yaml**    | APPI (Japan): personal information and retained personal data; terms and overrides for PPC alignment.          |
 | **compliance-sample-pci_dss.yaml** | PCI-DSS (payment card data): card/financial patterns and recommendation overrides for merchants and assessors. |
 
-These files will be added in the next phases. Each sample is self-contained (regex overrides, ML terms, recommendation overrides) so you can enable one framework by including that file’s blocks in your config.
+**compliance-sample-uk_gdpr.yaml** is available now; the others will be added in the next phases. Each sample is self-contained (regex overrides, ML terms, recommendation overrides) so you can enable one framework by including that file's blocks in your config.
+
+**For authors:** Use **double-quoted** YAML for regex `pattern` values with **escaped backslashes** (e.g. `pattern: "\\b[A-Z]{2}\\s?\\d{6}\\s?[A-D]\\b"`). This avoids "Invalid escape sequence" linter errors and loads correctly; the value passed to the regex engine is `\b`, `\s`, `\d` as intended. Do not use single-quoted or unescaped `\d`/`\s` in double quotes. Tests in `tests/test_compliance_samples.py` validate structure and that the detector loads each sample.
