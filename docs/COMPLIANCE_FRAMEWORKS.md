@@ -16,12 +16,68 @@ The application helps DPO, security, and compliance teams discover and map perso
 - **Recommendation overrides** – in [USAGE.md](USAGE.md) (report section) you will find `report.recommendation_overrides`: list of `norm_tag_pattern`, `base_legal`, `risk`, `recommendation`, `priority`, `relevant_for`. Use this to tailor report text for any regulation (UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS, or internal norms).
 - **ML/DL terms** – [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) and the main config support `ml_patterns_file`, `dl_patterns_file`, or inline `sensitivity_detection.ml_terms` / `dl_terms` so you can add framework-specific terms (e.g. “personal information”, “data subject”, “responsible party”) for better detection and labelling.
 
-**Compliance samples (one profile per regulation):** Sample configs for **LGPD** (Brazil), **UK GDPR**, **PIPEDA**, **POPIA**, **APPI**, and **PCI-DSS** are in [compliance-samples/](compliance-samples/). Each sample is a single YAML file with regex patterns, ML terms, and recommendation overrides for that framework. Use them as follows:
+**Compliance samples (one profile per regulation):** Sample configs for **UK GDPR**, **EU GDPR**, **Benelux**, **PIPEDA**, **POPIA**, **APPI**, **PCI-DSS**, and other regions are in [compliance-samples/](compliance-samples/). Each sample is a single YAML file with regex patterns, ML terms, and recommendation overrides for that framework. See the [Compliance samples](#compliance-samples) section below for the full list, what goes in which file, and how to use them. For **language and target audience** (e.g. PIPEDA → EN + FR for Canada), see the [compliance-samples README](compliance-samples/README.md).
 
-1. **Regex and ML terms:** Set `regex_overrides_file` and `ml_patterns_file` in your main config to the sample file path (the same file can be used for both; samples use keys `regex` and `terms`).
-1. **Recommendation overrides:** Copy the `recommendation_overrides` list from the sample into your config under `report.recommendation_overrides` (merge with any existing overrides).
+---
 
-**Available samples:** [compliance-sample-lgpd.yaml](compliance-samples/compliance-sample-lgpd.yaml) – LGPD (Brazil); **bilingual PT-BR + EN** terms (e.g. "documento oficial" / "official document", "CNH" / "Driver License") for Brazilian deployments. [compliance-sample-uk_gdpr.yaml](compliance-samples/compliance-sample-uk_gdpr.yaml) – UK GDPR (UK post-Brexit, ICO-aligned). More samples (EU GDPR, Benelux, PIPEDA, POPIA, APPI, PCI-DSS, and optional regional ones) will be added in the same format. For **language and target audience** (e.g. PIPEDA → EN + FR for Canada), see the [compliance-samples README](compliance-samples/README.md).
+## Compliance samples
+
+Sample configuration files for **UK GDPR**, **EU GDPR**, **Benelux**, **PIPEDA**, **POPIA**, **APPI**, **PCI-DSS**, and optional regional frameworks are in [compliance-samples/](compliance-samples/). Each file is self-contained (regex overrides, ML terms, recommendation overrides) so you can enable one framework by pointing your config at that file and merging its overrides.
+
+### List of samples and links
+
+| Regulation / region | Sample file | Purpose |
+| ------------------- | ----------- | ------- |
+| **LGPD (Brazil)** | [compliance-sample-lgpd.yaml](compliance-samples/compliance-sample-lgpd.yaml) | Bilingual PT-BR + EN terms; RG/CEP regex; Brazilian deployments. |
+| **UK GDPR** | [compliance-sample-uk_gdpr.yaml](compliance-samples/compliance-sample-uk_gdpr.yaml) | UK post-Brexit, ICO-aligned; norm_tag and recommendation overrides. |
+| **EU GDPR (EEA)** | [compliance-sample-eu_gdpr.yaml](compliance-samples/compliance-sample-eu_gdpr.yaml) | EU 2016/679 Art. 4(1), EDPB, member-state DPAs; optional EN + DE/FR terms. |
+| **Benelux (BE, NL, LU)** | [compliance-sample-benelux.yaml](compliance-samples/compliance-sample-benelux.yaml) | EU GDPR base + national IDs (BSN, NISS, LU); national DPA overrides; EN + NL/FR. |
+| **PIPEDA (Canada)** | [compliance-sample-pipeda.yaml](compliance-samples/compliance-sample-pipeda.yaml) | Personal information, consent; Canadian identifiers (e.g. SIN); EN + FR. |
+| **POPIA (South Africa)** | [compliance-sample-popia.yaml](compliance-samples/compliance-sample-popia.yaml) | Responsible party, personal information; SA identifiers. |
+| **APPI (Japan)** | [compliance-sample-appi.yaml](compliance-samples/compliance-sample-appi.yaml) | Personal information, retained personal data; PPC alignment. |
+| **PCI-DSS** | [compliance-sample-pci_dss.yaml](compliance-samples/compliance-sample-pci_dss.yaml) | Payment card patterns and recommendation overrides for merchants/assessors. |
+| **Philippines (DPA)** | [compliance-sample-philippines_dpa.yaml](compliance-samples/compliance-sample-philippines_dpa.yaml) | RA 10173, NPC; personal/sensitive personal information. |
+| **Australia (Privacy Act)** | [compliance-sample-australia_privacy.yaml](compliance-samples/compliance-sample-australia_privacy.yaml) | Privacy Act 1988, OAIC, APPs; optional TFN regex. |
+| **Singapore (PDPA)** | [compliance-sample-singapore_pdpa.yaml](compliance-samples/compliance-sample-singapore_pdpa.yaml) | PDPA 2012, PDPC; personal data, DNC; NRIC regex. |
+| **UAE (PDPL)** | [compliance-sample-uae_pdpl.yaml](compliance-samples/compliance-sample-uae_pdpl.yaml) | Decree-Law 45/2021; personal/sensitive data; EN + optional AR. |
+| **Argentina (PDPA)** | [compliance-sample-argentina_pdpa.yaml](compliance-samples/compliance-sample-argentina_pdpa.yaml) | Ley 25.326, DNPDP; datos personales; ES + EN; CUIT/CUIL/DNI regex. |
+| **Kenya (DPA)** | [compliance-sample-kenya_dpa.yaml](compliance-samples/compliance-sample-kenya_dpa.yaml) | Data Protection Act 2019, ODPC; personal data, data controller. |
+| **India (DPDP)** | [compliance-sample-india_dpdp.yaml](compliance-samples/compliance-sample-india_dpdp.yaml) | DPDP Act 2023, DPBI; Aadhaar/PAN regex; EN. |
+| **Turkey (KVKK)** | [compliance-sample-turkey_kvkk.yaml](compliance-samples/compliance-sample-turkey_kvkk.yaml) | Law 6698, KVKK Board; kişisel veri; EN + TR; TC Kimlik regex. |
+| **New Zealand (Privacy Act)** | [compliance-sample-new_zealand_privacy.yaml](compliance-samples/compliance-sample-new_zealand_privacy.yaml) | Privacy Act 2020, OPC; personal information, IPPs. |
+| **Saudi (PDPL)** | [compliance-sample-saudi_pdpl.yaml](compliance-samples/compliance-sample-saudi_pdpl.yaml) | Royal Decree M/19, SDAIA; personal/sensitive data. |
+| **Israel (PPL)** | [compliance-sample-israel_ppl.yaml](compliance-samples/compliance-sample-israel_ppl.yaml) | Privacy Protection Law, PPA; personal information, database registrar. |
+| **Colombia (Law 1581)** | [compliance-sample-colombia_1581.yaml](compliance-samples/compliance-sample-colombia_1581.yaml) | Ley 1581/2012, SIC; datos personales; ES + EN; CC/NIT regex. |
+| **Chile (Privacy)** | [compliance-sample-chile_privacy.yaml](compliance-samples/compliance-sample-chile_privacy.yaml) | Law 19.628; datos personales; ES + EN; RUT regex. |
+| **Nigeria (NDPR)** | [compliance-sample-nigeria_ndpr.yaml](compliance-samples/compliance-sample-nigeria_ndpr.yaml) | NDPR 2019, NITDA; personal data, data controller. |
+| **Morocco (Law 09-08)** | [compliance-sample-morocco_09_08.yaml](compliance-samples/compliance-sample-morocco_09_08.yaml) | Law 09-08, CNDP; données à caractère personnel; FR + EN; CIN regex. |
+| **Switzerland (FADP)** | [compliance-sample-switzerland_fadp.yaml](compliance-samples/compliance-sample-switzerland_fadp.yaml) | Revised FADP, FDPIC; personal data; EN + optional DE/FR/IT; AHV/UID regex. |
+
+### What goes in which file
+
+Each sample can provide up to three kinds of content. Your **main config** references or merges them as follows:
+
+| Config key / file | Purpose | What the sample provides |
+| ----------------- | ------- | ------------------------- |
+| **`regex_overrides_file`** | Custom regex patterns; match → finding with HIGH and given `norm_tag`. | A list of `{ name, pattern, norm_tag }` (e.g. UK NIN, Canadian SIN, SA ID). Samples may use key `regex` or `patterns`. |
+| **`ml_patterns_file`** / **`sensitivity_detection.ml_terms`** | ML (and DL) training terms; column names and sample text classified as sensitive/non_sensitive. | A list of `{ text, label }` with framework-specific terms (e.g. “data subject”, “personal information”, “responsible party”). Samples may use key `terms` or `ml_terms`. |
+| **`report.recommendation_overrides`** | Override “Base legal”, “Risco”, “Recomendação”, “Prioridade”, “Relevante para” per `norm_tag`. | A list of `{ norm_tag_pattern, base_legal, risk, recommendation, priority, relevant_for }` to merge into your config. |
+
+The same YAML file can contain **regex**, **terms**, and **recommendation_overrides**; you set `regex_overrides_file` and `ml_patterns_file` to that file path, and copy the `recommendation_overrides` block into your main config under `report.recommendation_overrides`.
+
+### How to use a sample
+
+1. **Choose the sample** for your regulation from the table above (or from [compliance-samples/README.md](compliance-samples/README.md)).
+2. **Set paths in your main config** (e.g. `config.yaml`):
+
+   ```yaml
+   regex_overrides_file: docs/compliance-samples/compliance-sample-pipeda.yaml
+   ml_patterns_file: docs/compliance-samples/compliance-sample-pipeda.yaml
+   ```
+
+   Use the same file for both if the sample contains both `regex` and `terms`.
+3. **Merge recommendation overrides:** Copy the `recommendation_overrides` list from the sample file into your config under `report.recommendation_overrides` (merge with any overrides you already have). See [USAGE.md](USAGE.md) (report section) for the structure.
+4. **Run the scan** (CLI or API). Findings will use the norm tags and recommendation text from the sample; the Excel report will show the framework-specific Base legal, Risco, Recomendação, and Prioridade.
 
 ---
 
