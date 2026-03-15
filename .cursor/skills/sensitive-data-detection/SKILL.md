@@ -16,18 +16,18 @@ Guidance for building or reviewing tools that find possible personal or sensitiv
 
 ## Core Stack
 
-| Concern | Preferred approach | Notes |
-|--------|--------------------|--------|
-| **Regex** | `re` with compiled patterns for hot paths | Prefer `re.compile()` when same pattern is used repeatedly |
-| **DB access** | Parameterized queries only; never concatenate user input into SQL | Use DB-API placeholders or ORM |
-| **Filesystem** | `pathlib` for paths; stream large files; avoid loading entire file into memory when unnecessary |
-| **ML** | TF-IDF + classifier (e.g. RandomForest) or similar for semantic “is this field name/context sensitive?” | Use for labels/column names/context; combine with regex for value checks |
+| Concern        | Preferred approach                                                                                      | Notes                                                                    |
+| --------       | --------------------                                                                                    | --------                                                                 |
+| **Regex**      | `re` with compiled patterns for hot paths                                                               | Prefer `re.compile()` when same pattern is used repeatedly               |
+| **DB access**  | Parameterized queries only; never concatenate user input into SQL                                       | Use DB-API placeholders or ORM                                           |
+| **Filesystem** | `pathlib` for paths; stream large files; avoid loading entire file into memory when unnecessary         |                                                                          |
+| **ML**         | TF-IDF + classifier (e.g. RandomForest) or similar for semantic “is this field name/context sensitive?” | Use for labels/column names/context; combine with regex for value checks |
 
 ## Detection Strategy
 
 1. **Regex first** for known formats (CPF, CNPJ, email, phone, SSN, credit card, dates of birth). Use patterns that match *structure*; validate checksum when required (e.g. CPF).
-2. **ML second** for context: column names, field labels, file names, log messages. Train or prompt on “sensitive vs non-sensitive” examples (e.g. LGPD/GDPR taxonomy).
-3. **Classify and tag** each finding with a *data category* and, when possible, a *legal basis* (e.g. “personal data – LGPD Art. 5”, “sensitive – LGPD Art. 5 II”) so reports support compliance.
+1. **ML second** for context: column names, field labels, file names, log messages. Train or prompt on “sensitive vs non-sensitive” examples (e.g. LGPD/GDPR taxonomy).
+1. **Classify and tag** each finding with a *data category* and, when possible, a *legal basis* (e.g. “personal data – LGPD Art. 5”, “sensitive – LGPD Art. 5 II”) so reports support compliance.
 
 ## Regex Conventions
 

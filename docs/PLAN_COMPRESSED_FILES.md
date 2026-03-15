@@ -3,7 +3,7 @@
 **Status:** Not started
 **Synced with:** [docs/PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
-*When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.*
+## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
 
 This plan adds an **optional** capability to **identify, open, and scan content inside compressed files** (zip, tar, gz, 7z, etc.). Because this can require significantly more **compute, I/O, and time**, it is **off by default** and must be explicitly enabled via **config**, **CLI argument**, and/or **web dashboard checkbox**. Findings inside archives are reported so that IT, compliance, and DPOs can see possible violations in packed data (e.g. backups, exports, shared bundles) as part of the “data soup” the Data Boar roots through.
 

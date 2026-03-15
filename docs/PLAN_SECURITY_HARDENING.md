@@ -1,9 +1,9 @@
 # Plan: Security hardening and vulnerability closure
 
-**Status:** Not started
+**Status:** In progress (2.1–2.3, 5.1–5.3, 7.1 done; 1.1–1.3, 3.x, 6.x, 7.2–7.3 pending)
 **Synced with:** [docs/PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
-*When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.*
+## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
 
 This plan recommends steps to close security gaps, reduce abuse and data-extraction risk, keep dependencies secure, and follow best practices—**without causing regressions or breaking the app**. Each step should be tested and validated before marking done.
 
@@ -39,12 +39,12 @@ All steps are **additive or configurable** where possible; avoid breaking existi
 
 ## 2. Dependencies (secure and up-to-date libraries)
 
-| #   | To-do                                                                                                                                                                      | Status     | Notes                                                                                           |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------                                      | ---------- | -----                                                                                           |
-| 2.1 | **pip-audit in CI:** Confirm `uv run pip-audit` runs on every push/PR (already in `.github/workflows/ci.yml`). Fix any new findings before release.                        | ⬜ Pending  | Verify audit job runs and document that PRs must resolve audit failures.                        |
-| 2.2 | **Dependabot:** Keep weekly pip and github-actions updates enabled; when merging, update `pyproject.toml` first, then `uv pip compile pyproject.toml -o requirements.txt`. | ⬜ Pending  | Already configured; add a short “Release checklist” item: run audit and resolve before tagging. |
-| 2.3 | **Minimum versions:** Prefer `>=` in pyproject.toml for security patches; pin `==` only where necessary for reproducibility. Document in SECURITY.md or CONTRIBUTING.      | ⬜ Pending  | Already the case; document as policy so new deps follow.                                        |
-| 2.4 | **Optional: lockfile audit:** If introducing a lockfile (e.g. `uv.lock`), run `pip-audit` against the locked environment in CI so upgrades are audited before merge.       | ⬜ Pending  | Only if project adopts lockfile; otherwise current approach (sync + audit) is sufficient.       |
+| #   | To-do                                                                                                                                                                      | Status     | Notes                                                                                     |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------                                      | ---------- | -----                                                                                     |
+| 2.1 | **pip-audit in CI:** Confirm `uv run pip-audit` runs on every push/PR (already in `.github/workflows/ci.yml`). Fix any new findings before release.                        | ✅ Done     | CI verified; CONTRIBUTING now states PRs must resolve audit failures.                     |
+| 2.2 | **Dependabot:** Keep weekly pip and github-actions updates enabled; when merging, update `pyproject.toml` first, then `uv pip compile pyproject.toml -o requirements.txt`. | ✅ Done     | Release checklist added in CONTRIBUTING (audit, docs, no secrets in logs).                |
+| 2.3 | **Minimum versions:** Prefer `>=` in pyproject.toml for security patches; pin `==` only where necessary for reproducibility. Document in SECURITY.md or CONTRIBUTING.      | ✅ Done     | SECURITY.md and CONTRIBUTING now state prefer >=, pin == only when needed.                |
+| 2.4 | **Optional: lockfile audit:** If introducing a lockfile (e.g. `uv.lock`), run `pip-audit` against the locked environment in CI so upgrades are audited before merge.       | ⬜ Pending  | Only if project adopts lockfile; otherwise current approach (sync + audit) is sufficient. |
 
 ---
 
@@ -71,11 +71,11 @@ All steps are **additive or configurable** where possible; avoid breaking existi
 
 ## 5. Deployment and operations
 
-| #   | To-do                                                                                                                                                                                                                           | Status     | Notes                                                                                                           |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------                                                                                           | ---------- | -----                                                                                                           |
-| 5.1 | **Deploy hardening:** DEPLOY.md already includes optional securityContext, NetworkPolicy, PDB. Ensure SECURITY.md and USAGE reference “Security and hardening” in deploy docs.                                                  | ⬜ Pending  | Cross-check links; add one line in SECURITY.md if missing.                                                      |
-| 5.2 | **Secrets:** Config and env may contain DB passwords and API keys. Document that config file permissions and env handling must restrict access to trusted users; never commit secrets.                                          | ⬜ Pending  | SECURITY.md and docs already mention this; reinforce in “Release checklist” or OPERATIONS if such a doc exists. |
-| 5.3 | **WAF / reverse proxy:** State explicitly that for internet-facing deployments, a reverse proxy with TLS and (optionally) WAF is recommended; app-level API key and rate limiting complement but do not replace proxy security. | ⬜ Pending  | Already in SECURITY.md; confirm and leave as is.                                                                |
+| #   | To-do                                                                                                                                                                                                                           | Status     | Notes                                                                                            |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------                                                                                           | ---------- | -----                                                                                            |
+| 5.1 | **Deploy hardening:** DEPLOY.md already includes optional securityContext, NetworkPolicy, PDB. Ensure SECURITY.md and USAGE reference “Security and hardening” in deploy docs.                                                  | ✅ Done     | SECURITY.md now references USAGE and DEPLOY for operator-facing hardening.                       |
+| 5.2 | **Secrets:** Config and env may contain DB passwords and API keys. Document that config file permissions and env handling must restrict access to trusted users; never commit secrets.                                          | ✅ Done     | Reinforced in CONTRIBUTING Release checklist (secrets, config permissions).                      |
+| 5.3 | **WAF / reverse proxy:** State explicitly that for internet-facing deployments, a reverse proxy with TLS and (optionally) WAF is recommended; app-level API key and rate limiting complement but do not replace proxy security. | ✅ Done     | Confirmed present in SECURITY.md (“reverse proxy with TLS… WAF… complement but do not replace”). |
 
 ---
 
@@ -91,11 +91,11 @@ All steps are **additive or configurable** where possible; avoid breaking existi
 
 ## 7. Documentation and checklist
 
-| #   | To-do                                                                                                                                                                                 | Status     | Notes                                                                           |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------                                                 | ---------- | -----                                                                           |
-| 7.1 | **Release checklist:** Add a “Security” section: run `pip-audit`, fix any high/critical findings, ensure SECURITY.md and docs/security.md are up to date, confirm no secrets in logs. | ⬜ Pending  | Can live in CONTRIBUTING.md, docs/TESTING.md, or a short RELEASE.md.            |
-| 7.2 | **docs/security.md:** After implementing 1.1–1.3, add one line each for tenant/technician validation, body size, and logging policy so technicians know what is enforced.             | ⬜ Pending  | Keeps technician guidance in sync.                                              |
-| 7.3 | **SECURITY.md:** Ensure “Resistance to common vulnerabilities” and “Keeping dependencies up to date” reflect current state and reference this plan where appropriate.                 | ⬜ Pending  | Optional: add “See also docs/PLAN_SECURITY_HARDENING.md for planned hardening.” |
+| #   | To-do                                                                                                                                                                                 | Status     | Notes                                                                                |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------                                                 | ---------- | -----                                                                                |
+| 7.1 | **Release checklist:** Add a “Security” section: run `pip-audit`, fix any high/critical findings, ensure SECURITY.md and docs/security.md are up to date, confirm no secrets in logs. | ✅ Done     | Added in CONTRIBUTING.md and CONTRIBUTING.pt_BR.md ("Release checklist (Security)"). |
+| 7.2 | **docs/security.md:** After implementing 1.1–1.3, add one line each for tenant/technician validation, body size, and logging policy so technicians know what is enforced.             | ⬜ Pending  | Keeps technician guidance in sync.                                                   |
+| 7.3 | **SECURITY.md:** Ensure “Resistance to common vulnerabilities” and “Keeping dependencies up to date” reflect current state and reference this plan where appropriate.                 | ⬜ Pending  | Optional: add “See also docs/PLAN_SECURITY_HARDENING.md for planned hardening.”      |
 
 ---
 
@@ -112,6 +112,24 @@ All steps are **additive or configurable** where possible; avoid breaking existi
 - **Authentication beyond API key:** Full OAuth2/OIDC or per-user auth is out of scope; proxy or IdP remains the recommended place for that.
 - **Code signing / SBOM:** Not in this plan; can be a separate improvement.
 - **Penetration testing:** Recommended for production deployments but not part of this implementation plan.
+
+---
+
+---
+
+## Execution log (progress and history)
+
+| Date       | Step | Action                                                                                                               |
+| ---------- | ---- | ------                                                                                                               |
+| 2026-03    | 2.1  | Verified pip-audit in CI (`.github/workflows/ci.yml`); added CONTRIBUTING sentence: PRs must resolve audit failures. |
+| 2026-03    | 2.2  | Added CONTRIBUTING “Release checklist (Security)”: audit, docs, no secrets in logs.                                  |
+| 2026-03    | 2.3  | Documented min versions (>=) in SECURITY.md and CONTRIBUTING.                                                        |
+| 2026-03    | 5.1  | SECURITY.md now references USAGE and DEPLOY for operator hardening.                                                  |
+| 2026-03    | 5.2  | Secrets/config reinforced in Release checklist.                                                                      |
+| 2026-03    | 5.3  | Confirmed WAF/reverse proxy text in SECURITY.md; no change.                                                          |
+| 2026-03    | 7.1  | Release checklist (Security) added in CONTRIBUTING.md and CONTRIBUTING.pt_BR.md.                                     |
+
+## Update this table when completing each step; keep Status cells in the tables above in sync.
 
 ---
 

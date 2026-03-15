@@ -37,8 +37,8 @@ If that is not enough, use the sections below.
 ### 2.3 Steps to fix
 
 1. Choose **one** auth method per target: either `headers` with the key, or the target’s `auth` / `bearer` / `api_key` option (see [USAGE.md](USAGE.md)).
-2. Remove the duplicate from the other place and re-run.
-3. If the API requires a key in a specific header (e.g. `X-API-Key`), use only that in config; do not add the same value to the body.
+1. Remove the duplicate from the other place and re-run.
+1. If the API requires a key in a specific header (e.g. `X-API-Key`), use only that in config; do not add the same value to the body.
 
 ---
 

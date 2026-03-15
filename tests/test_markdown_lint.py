@@ -1,7 +1,7 @@
 """
 Markdown lint tests aligned with SonarQube / markdownlint rules.
 
-Checks project .md files for:
+Checks project .md and .mdc files for:
 - MD009: No trailing spaces at end of line
 - MD012: No multiple consecutive blank lines (max 1)
 - MD024: No duplicate heading text in the same file (sibling headings)
@@ -12,7 +12,7 @@ Checks project .md files for:
 - MD034: No bare URLs (wrap in angle brackets or use [text](url); skip inside code blocks)
 - Table (compact): No space to the left of pipe (e.g. |col not | col)
 
-Excludes: .cursor/ (optional tooling), and any path listed in MARKDOWN_LINT_EXCLUDE.
+Excludes: paths in MARKDOWN_LINT_EXCLUDE only (.git, node_modules, .venv, etc.). .cursor/ is included so rules and skills (.mdc, SKILL.md) comply with MD031, MD060, etc.
 """
 
 import re
@@ -24,22 +24,23 @@ def _project_root() -> Path:
 
 
 def _collect_md_files(root: Path, exclude_dirs: frozenset[str]) -> list[Path]:
-    """Return all .md files under root, excluding given dir names."""
+    """Return all .md and .mdc files under root, excluding given dir names."""
     out: list[Path] = []
-    for path in root.rglob("*.md"):
-        try:
-            rel = path.relative_to(root)
-        except ValueError:
-            continue
-        if any(part in exclude_dirs for part in rel.parts):
-            continue
-        out.append(path)
-    return sorted(out)
+    for ext in ("*.md", "*.mdc"):
+        for path in root.rglob(ext):
+            try:
+                rel = path.relative_to(root)
+            except ValueError:
+                continue
+            if any(part in exclude_dirs for part in rel.parts):
+                continue
+            out.append(path)
+    return sorted(set(out))
 
 
-# Only lint project-owned markdown; exclude tooling and dependencies.
+# Exclude only tooling/dependency dirs; .cursor is included so rules/skills pass MD031, MD060, etc.
 MARKDOWN_LINT_EXCLUDE_DIRS = frozenset({
-    ".cursor", ".git", "node_modules", "__pycache__", ".venv", "venv", ".tox", "build", "dist",
+    ".git", "node_modules", "__pycache__", ".venv", "venv", ".tox", "build", "dist",
 })
 
 

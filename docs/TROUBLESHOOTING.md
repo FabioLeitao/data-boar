@@ -19,13 +19,13 @@ The application maps failure **reasons** to a **Suggested next step** in the rep
 
 ## Quick hints by failure reason
 
-| Reason (in report) | What to check first | Deep-dive doc |
-|--------------------|---------------------|----------------|
-| **unreachable**    | Network from audit host/container to target: DNS, routing, firewall, VPN. For Docker: see [TROUBLESHOOTING_DOCKER_DEPLOYMENT.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.md). | [Connectivity](TROUBLESHOOTING_CONNECTIVITY.md) · [Docker](TROUBLESHOOTING_DOCKER_DEPLOYMENT.md) |
-| **auth_failed** / **authentication_failed** | Credentials (user/pass, token, OAuth client_id/secret). Avoid sending the same credential in both header and body. | [Credentials and auth](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md) |
-| **permission_denied** | Scanner needs read access to the resource (share path, DB, API). Run as a user/service account that has access, or adjust permissions. | [Connectivity](TROUBLESHOOTING_CONNECTIVITY.md) |
-| **timeout**        | Target slow or unreachable; timeout value too low. Increase timeout in config (per target or global); retry during off-peak. | [Connectivity](TROUBLESHOOTING_CONNECTIVITY.md) |
-| **error** (generic) | See **Details** in the report. Often config (missing host, port, URL) or missing optional dependency (e.g. `.[shares]` for SMB). | [Connectivity](TROUBLESHOOTING_CONNECTIVITY.md) · [Credentials](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md) |
+| Reason (in report)                          | What to check first                                                                                                                                                     | Deep-dive doc                                                                                            |
+| --------------------                        | ---------------------                                                                                                                                                   | ----------------                                                                                         |
+| **unreachable**                             | Network from audit host/container to target: DNS, routing, firewall, VPN. For Docker: see [TROUBLESHOOTING_DOCKER_DEPLOYMENT.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.md). | [Connectivity](TROUBLESHOOTING_CONNECTIVITY.md) · [Docker](TROUBLESHOOTING_DOCKER_DEPLOYMENT.md)         |
+| **auth_failed** / **authentication_failed** | Credentials (user/pass, token, OAuth client_id/secret). Avoid sending the same credential in both header and body.                                                      | [Credentials and auth](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md)                                          |
+| **permission_denied**                       | Scanner needs read access to the resource (share path, DB, API). Run as a user/service account that has access, or adjust permissions.                                  | [Connectivity](TROUBLESHOOTING_CONNECTIVITY.md)                                                          |
+| **timeout**                                 | Target slow or unreachable; timeout value too low. Increase timeout in config (per target or global); retry during off-peak.                                            | [Connectivity](TROUBLESHOOTING_CONNECTIVITY.md)                                                          |
+| **error** (generic)                         | See **Details** in the report. Often config (missing host, port, URL) or missing optional dependency (e.g. `.[shares]` for SMB).                                        | [Connectivity](TROUBLESHOOTING_CONNECTIVITY.md) · [Credentials](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md) |
 
 ---
 
@@ -49,10 +49,10 @@ Many deployments use the **Docker image**. The container must be able to reach y
 
 ## Deep-dive documentation (root cause and fix steps)
 
-| Topic | Description | English | Português (pt-BR) |
-|-------|-------------|---------|-------------------|
-| **Connectivity** | Network, DNS, firewall, timeouts; DB/API/share unreachable; permission_denied | [TROUBLESHOOTING_CONNECTIVITY.md](TROUBLESHOOTING_CONNECTIVITY.md) | [TROUBLESHOOTING_CONNECTIVITY.pt_BR.md](TROUBLESHOOTING_CONNECTIVITY.pt_BR.md) |
-| **Credentials and auth** | API key in header vs body; Basic/Bearer/OAuth; conflicting credentials; lockouts | [TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md) | [TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md) |
-| **Docker deployment** | Running in container; NFS/SMB from container; remote DB from container; DNS; volumes | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.md) | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md) |
+| Topic                    | Description                                                                          | English                                                                            | Português (pt-BR)                                                                              |
+| -------                  | -------------                                                                        | ---------                                                                          | -------------------                                                                            |
+| **Connectivity**         | Network, DNS, firewall, timeouts; DB/API/share unreachable; permission_denied        | [TROUBLESHOOTING_CONNECTIVITY.md](TROUBLESHOOTING_CONNECTIVITY.md)                 | [TROUBLESHOOTING_CONNECTIVITY.pt_BR.md](TROUBLESHOOTING_CONNECTIVITY.pt_BR.md)                 |
+| **Credentials and auth** | API key in header vs body; Basic/Bearer/OAuth; conflicting credentials; lockouts     | [TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md) | [TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md) |
+| **Docker deployment**    | Running in container; NFS/SMB from container; remote DB from container; DNS; volumes | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.md)       | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md)       |
 
 **Documentation index:** [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
