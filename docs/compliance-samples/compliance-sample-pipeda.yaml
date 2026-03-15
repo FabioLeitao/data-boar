@@ -69,6 +69,29 @@ terms:
     label: sensitive
   - text: "contact number"
     label: sensitive
+  # Name / identifier (EN + FR for Canadian data)
+  - text: "first name"
+    label: sensitive
+  - text: "last name"
+    label: sensitive
+  - text: "surname"
+    label: sensitive
+  - text: "full name"
+    label: sensitive
+  - text: "birth name"
+    label: sensitive
+  - text: "nickname"
+    label: sensitive
+  - text: "given name"
+    label: sensitive
+  - text: "family name"
+    label: sensitive
+  - text: "prénom"
+    label: sensitive
+  - text: "nom de famille"
+    label: sensitive
+  - text: "nom complet"
+    label: sensitive
 
 recommendation_overrides:
   - norm_tag_pattern: "PIPEDA"

@@ -98,6 +98,32 @@ class TestAuditLogic(unittest.TestCase):
                     f"Column '{col}' should be flagged as sensitive (phone)",
                 )
 
+    def test_name_column_names_flagged_sensitive(self):
+        """Name-related column names (first name, surname, apellido, nachname, etc.) are recognised and flagged."""
+        scanner = DataScanner()
+        name_columns = [
+            "first_name",
+            "last_name",
+            "surname",
+            "full_name",
+            "birth name",
+            "nickname",
+            "sobrenome",
+            "apellido",
+            "prénom",
+            "nom de famille",
+            "vorname",
+            "nachname",
+        ]
+        for col in name_columns:
+            with self.subTest(column=col):
+                result = scanner.scan_column(col, "sample value")
+                self.assertIn(
+                    result["sensitivity_level"],
+                    ("HIGH", "MEDIUM"),
+                    f"Column '{col}' should be flagged as sensitive (name/identifier)",
+                )
+
 
 if __name__ == "__main__":
     unittest.main()
