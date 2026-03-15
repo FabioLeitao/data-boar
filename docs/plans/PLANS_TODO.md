@@ -46,8 +46,8 @@ The recommended order below is chosen to:
 
 - **Tier 1 – Foundation:** 1 Security hardening, 2 Configurable timeouts, 3 Secrets Phase A.
 - **Tier 2 – Scan and report:** 4 Compliance samples, 5 Compressed files, 6 Data source versions & hardening, 7 Strong crypto & controls, 8 SAP connector.
-- **Tier 3 – Secrets and upgrade:** 8 Secrets Phase B, 9 Version check & self-upgrade.
-- **Tier 4 – Validation and ops:** 10 CNPJ alphanumeric, 11 Selenium QA, 12 Synthetic data & confidence, 13 Notifications, 14 Dashboard i18n.
+- **Tier 3 – Secrets and upgrade:** 9 Secrets Phase B, 10 Version check & self-upgrade.
+- **Tier 4 – Validation and ops:** 11 CNPJ alphanumeric, 12 Selenium QA, 13 Synthetic data & confidence, 14 Notifications, 15 Dashboard i18n.
 
 Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). Within a plan, execute phases in order.
 
