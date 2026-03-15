@@ -1,0 +1,63 @@
+# Turkey KVKK – sample compliance profile (Law 6698, KVKK Board)
+#
+# Target audience: Turkey deployments. Kişisel Verileri Koruma Kurumu (KVKK).
+# Terms in Turkish and English (kişisel veri / personal data).
+#
+# How to use:
+#   1. Set in your main config:
+#        regex_overrides_file: path/to/compliance-sample-turkey_kvkk.yaml
+#        ml_patterns_file: path/to/compliance-sample-turkey_kvkk.yaml
+#   2. Merge the recommendation_overrides list below into your config under report.recommendation_overrides.
+#
+# Turkey: Law 6698 (KVKK); KVKK Board; data controller/processor.
+
+regex:
+  - name: "TC_KIMLIK"
+    pattern: "\\b[1-9]\\d{10}\\b"
+    norm_tag: "Turkey KVKK"
+  - name: "TC_KIMLIK_ALT"
+    pattern: "\\b\\d{11}\\b"
+    norm_tag: "Turkey KVKK"
+
+# ML terms: Turkish and English (kişisel veri, personal data, KVKK).
+terms:
+  - text: "kişisel veri"
+    label: sensitive
+  - text: "personal data"
+    label: sensitive
+  - text: "veri sorumlusu"
+    label: sensitive
+  - text: "data controller"
+    label: sensitive
+  - text: "veri işleyen"
+    label: sensitive
+  - text: "data processor"
+    label: sensitive
+  - text: "ilgili kişi"
+    label: sensitive
+  - text: "data subject"
+    label: sensitive
+  - text: "kvkk"
+    label: sensitive
+  - text: "kişisel verileri koruma kurumu"
+    label: sensitive
+  - text: "law 6698"
+    label: sensitive
+  - text: "kanun 6698"
+    label: sensitive
+  - text: "açık rıza"
+    label: sensitive
+  - text: "explicit consent"
+    label: sensitive
+  - text: "veri kayıt sistemi"
+    label: sensitive
+  - text: "data subject application"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "Turkey KVKK"
+    base_legal: "Law 6698 (KVKK); Kişisel Verileri Koruma Kurumu"
+    risk: "Kişisel veri; veri sorumlusu ve veri işleyen yükümlülükleri; açık rıza."
+    recommendation: "Comply with KVKK; register with KVKK Board if required; obtain explicit consent; fulfil data subject rights."
+    priority: "ALTA"
+    relevant_for: "DPO, Veri Sorumlusu, KVKK Board"
