@@ -101,6 +101,20 @@ def _get_config_raw() -> str:
     return _default_config_yaml()
 
 
+def _get_config_yaml_for_display() -> str:
+    """Return config YAML safe for display: secret values redacted so the UI never shows them."""
+    from config.redact_config import redact_config_for_display
+    raw = _get_config_raw()
+    try:
+        data = yaml.safe_load(raw)
+        if isinstance(data, dict):
+            redacted = redact_config_for_display(data)
+            return yaml.dump(redacted, default_flow_style=False, allow_unicode=True, sort_keys=False)
+    except Exception:
+        pass
+    return raw
+
+
 def _default_config_yaml() -> str:
     return """# LGPD Audit configuration
 targets: []
@@ -135,6 +149,27 @@ def _save_config_yaml(yaml_content: str) -> None:
     global _config, _audit_engine
     _config = None
     _audit_engine = None
+
+
+def _merge_and_save_config_yaml(submitted_yaml: str) -> None:
+    """Merge submitted YAML with current config so redacted/placeholder secret values do not overwrite real secrets, then save."""
+    from config.redact_config import merge_config_on_save
+    current_raw = _get_config_raw()
+    try:
+        current_data = yaml.safe_load(current_raw)
+    except Exception:
+        current_data = {}
+    if not isinstance(current_data, dict):
+        current_data = {}
+    try:
+        submitted_data = yaml.safe_load(submitted_yaml)
+    except Exception as e:
+        raise ValueError(f"Invalid YAML: {e}") from e
+    if not isinstance(submitted_data, dict):
+        raise ValueError("Config must be a YAML object")
+    merged = merge_config_on_save(submitted_data, current_data)
+    merged_yaml = yaml.dump(merged, default_flow_style=False, allow_unicode=True, sort_keys=False)
+    _save_config_yaml(merged_yaml)
 
 
 def _get_config():
@@ -438,7 +473,7 @@ async def dashboard(request: Request):
 
 @app.get("/config", response_class=HTMLResponse)
 async def config_page(request: Request):
-    """Configuration editor (YAML). Query: saved=1 or error=... for feedback after POST."""
+    """Configuration editor (YAML). Secret values are redacted so the UI never displays them. Query: saved=1 or error=... for feedback after POST."""
     saved = request.query_params.get("saved") == "1"
     error = request.query_params.get("error")
     return templates.TemplateResponse(
@@ -446,7 +481,7 @@ async def config_page(request: Request):
         name=_TEMPLATE_CONFIG,
         context={
             "config_path": _get_config_path(),
-            "config_yaml": _get_config_raw(),
+            "config_yaml": _get_config_yaml_for_display(),
             "config_saved": saved,
             "config_save_error": error,
         },
@@ -455,7 +490,7 @@ async def config_page(request: Request):
 
 @app.post("/config", response_class=HTMLResponse)
 async def config_save(request: Request):
-    """Save configuration (form body: yaml=...). Redirects back to GET /config with success or error."""
+    """Save configuration (form body: yaml=...). Redacted/placeholder secrets are merged with current so they are not overwritten. Redirects back to GET /config with success or error."""
     form = await request.form()
     yaml_content = form.get("yaml", "")
     if not yaml_content:
@@ -464,13 +499,13 @@ async def config_save(request: Request):
             name=_TEMPLATE_CONFIG,
             context={
                 "config_path": _get_config_path(),
-                "config_yaml": _get_config_raw(),
+                "config_yaml": _get_config_yaml_for_display(),
                 "config_saved": False,
                 "config_save_error": "No YAML content provided.",
             },
         )
     try:
-        _save_config_yaml(yaml_content)
+        _merge_and_save_config_yaml(yaml_content)
         return RedirectResponse(url="/config?saved=1", status_code=303)
     except ValueError as e:
         return templates.TemplateResponse(
