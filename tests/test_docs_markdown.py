@@ -40,6 +40,19 @@ def test_contributing_exists():
     assert (_project_root() / "CONTRIBUTING.md").is_file()
 
 
+def test_compliance_frameworks_doc_exists():
+    """docs/COMPLIANCE_FRAMEWORKS.md must exist (compliance samples and frameworks)."""
+    assert (_project_root() / "docs" / "COMPLIANCE_FRAMEWORKS.md").is_file()
+
+
+def test_compliance_samples_folder_exists():
+    """docs/compliance-samples/ must exist and contain README (compliance sample configs)."""
+    root = _project_root()
+    folder = root / "docs" / "compliance-samples"
+    assert folder.is_dir(), "docs/compliance-samples/ should exist"
+    assert (folder / "README.md").is_file(), "docs/compliance-samples/README.md should exist"
+
+
 # --- README structure (SonarQube-style doc quality) ---
 
 
