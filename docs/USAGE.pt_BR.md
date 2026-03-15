@@ -236,6 +236,7 @@ Esse endpoint procura, entre os arquivos `audit_YYYYMMDD.log` disponíveis (do m
 - `api` – porta da API; opcionalmente `require_api_key`, `api_key` ou `api_key_from_env` para exigir chave de API (cabeçalho X-API-Key ou Authorization: Bearer); GET /health permanece público. Ver [SECURITY.md](../SECURITY.md).
 - `sqlite_path` – caminho do banco SQLite com resultados.
 - `scan` – `max_workers` para paralelismo.
+- `timeouts` – timeouts globais para conexões (ex.: `connect_seconds`, `read_seconds`); cada alvo pode sobrescrever com `connect_timeout`, `read_timeout` ou `timeout`. Ver abaixo.
 - `api.workers` – número de workers uvicorn (padrão 1; 2+ para mais requisições concorrentes).
 - Opcionais: `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection` (termos ML/DL inline), `learned_patterns` (export de termos classificados).
 
@@ -271,6 +272,40 @@ rate_limit:
 
 - A CLI usa a mesma lógica apenas para imprimir **avisos** (não muda o código de saída), de forma a manter scripts existentes funcionando enquanto você enxerga quando sua política bloquearia chamadas via API/dashboard.
 - É possível sobrescrever os valores via variáveis de ambiente: `RATE_LIMIT_ENABLED`, `RATE_LIMIT_MAX_CONCURRENT_SCANS`, `RATE_LIMIT_MIN_INTERVAL_SECONDS`, `RATE_LIMIT_GRACE_FOR_RUNNING_STATUS`.
+
+### Timeouts para conexões com fontes de dados
+
+É possível configurar timeouts de conexão e de leitura (em segundos) usados ao abrir e ler bancos, APIs ou outros alvos. Os padrões globais valem para todos os alvos; cada alvo pode sobrescrevê-los.
+
+```yaml
+timeouts:
+  connect_seconds: 25   # padrão 25 — tempo máximo para estabelecer conexão
+  read_seconds: 90      # padrão 90 — tempo máximo de espera para leitura/resposta
+```
+
+- **Sobrescrita por alvo:** Em qualquer alvo você pode definir `connect_timeout`, `read_timeout` ou um único `timeout` (usado para connect e read quando o outro não for definido). Os valores do alvo sobrescrevem os timeouts globais quando presentes. Valores em segundos; mínimo 1.
+
+Exemplo (padrões globais e um alvo mais lento):
+
+```yaml
+timeouts:
+  connect_seconds: 25
+  read_seconds: 90
+
+targets:
+  - name: fast-db
+    type: database
+    # usa 25 / 90
+  - name: slow-api
+    type: api
+    connect_timeout: 60
+    read_timeout: 120
+  - name: legacy
+    type: database
+    timeout: 45   # 45 para connect e read
+```
+
+Os conectores usam os valores mesclados (global ou por alvo) ao abrir conexões e fazer I/O; veja o esquema do config e a documentação dos conectores.
 
 ### API e segurança (CSP, cabeçalhos)
 
