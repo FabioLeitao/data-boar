@@ -298,7 +298,7 @@ CLI uses the path you pass with `--config` (e.g. `config.yaml`). For the **web s
 ### Config file location and shape
 
 - **Location:** Any path; typical names: `config.yaml`, `config/config.json`. Legacy `config/config.json` with `databases` and `file_scan.directories` is normalized automatically.
-- **Root keys:** `targets`, `file_scan`, `report`, `api`, `sqlite_path`, `scan`, **`rate_limit`**, optional `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection`, `learned_patterns`.
+- **Root keys:** `targets`, `file_scan`, `report`, `api`, `sqlite_path`, `scan`, **`rate_limit`**, **`timeouts`**, optional `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection`, `learned_patterns`.
 
 ### Sensitivity detection: ML and DL training terms
 
@@ -342,6 +342,40 @@ rate_limit:
 
 - The CLI uses the same logic only to print **warnings** (it never exits with 429). This lets you keep existing scripts working while seeing when your policies would reject extra scans if called via API or dashboard.
 - Settings can also be overridden with environment variables: `RATE_LIMIT_ENABLED`, `RATE_LIMIT_MAX_CONCURRENT_SCANS`, `RATE_LIMIT_MIN_INTERVAL_SECONDS`, `RATE_LIMIT_GRACE_FOR_RUNNING_STATUS`.
+
+### Timeouts for data source connections
+
+You can configure connection and read timeouts (in seconds) used when opening and reading from databases, APIs, or other targets. Global defaults apply to all targets; individual targets can override them.
+
+```yaml
+timeouts:
+  connect_seconds: 25   # default: 25 — max time to establish a connection
+  read_seconds: 90      # default: 90 — max time to wait for read/response
+```
+
+- **Per-target overrides:** On any target you can set `connect_timeout`, `read_timeout`, or a single `timeout` (used for both connect and read when the other is not set). Target values override the global timeouts when present. Values are in seconds and are clamped to at least 1.
+
+Example (global defaults plus one slower target):
+
+```yaml
+timeouts:
+  connect_seconds: 25
+  read_seconds: 90
+
+targets:
+  - name: fast-db
+    type: database
+    # uses 25 / 90
+  - name: slow-api
+    type: api
+    connect_timeout: 60
+    read_timeout: 120
+  - name: legacy
+    type: database
+    timeout: 45   # 45 for both connect and read
+```
+
+Connectors use the merged values (global or per-target) when opening connections and performing I/O; see the config schema and connector documentation for details.
 
 ### API and security (CSP, headers)
 
