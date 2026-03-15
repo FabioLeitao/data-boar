@@ -53,6 +53,24 @@ terms:
     label: sensitive
   - text: "full name"
     label: sensitive
+  - text: "first name"
+    label: sensitive
+  - text: "last name"
+    label: sensitive
+  - text: "surname"
+    label: sensitive
+  - text: "nome"
+    label: sensitive
+  - text: "sobrenome"
+    label: sensitive
+  - text: "birth name"
+    label: sensitive
+  - text: "nickname"
+    label: sensitive
+  - text: "given name"
+    label: sensitive
+  - text: "family name"
+    label: sensitive
   - text: "endereço"
     label: sensitive
   - text: "address"
