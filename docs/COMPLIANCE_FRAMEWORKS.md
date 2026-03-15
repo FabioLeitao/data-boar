@@ -37,13 +37,13 @@ Whatever the **language**, **encoding**, or **region** of your data soup, the ap
 
 ### How to enable and operate
 
-1. **Choose the right sample for your region**  
+1. **Choose the right sample for your region**
    See the [compliance-samples README](compliance-samples/README.md) table and the “Language and target audience” section. For example: Brazil → LGPD (PT-BR+EN); Canada → PIPEDA (EN+FR); UK → UK GDPR; EEA → EU GDPR; Benelux → Benelux sample; Japan → APPI; South Africa → POPIA.
 
-2. **Save config and sample files in UTF-8 (recommended)**  
+2. **Save config and sample files in UTF-8 (recommended)**
    Saving everything in **UTF-8** avoids encoding issues with multilingual terms. The main config file will still load if it is in another encoding (auto-detection).
 
-3. **Set paths and encoding in your config**  
+3. **Set paths and encoding in your config**
    In your main `config.yaml` (or `config.json`):
 
    ```yaml
@@ -56,7 +56,7 @@ Whatever the **language**, **encoding**, or **region** of your data soup, the ap
 
    Then merge the sample’s **`recommendation_overrides`** into your config under `report.recommendation_overrides` (see [USAGE](USAGE.md) report section).
 
-4. **Run the scan**  
+4. **Run the scan**
    Use the CLI or API as usual. Findings will use the norm tags and recommendation text from the sample; the Excel report will show Unicode correctly.
 
 For full encoding options and examples, see [USAGE – File encoding](USAGE.md#file-encoding-config-and-pattern-files) (EN) and [USAGE.pt_BR – Encoding de arquivos](USAGE.pt_BR.md#file-encoding-config-and-pattern-files) (pt-BR).
