@@ -41,7 +41,7 @@ O relatório é escrito em `report.output_dir` do config (ex.: `/data`). **Não*
 
 Você pode executar a aplicação **sem clonar o repositório** usando a imagem publicada no Docker Hub:
 
-- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** e **`fabioleitao/data_boar:1.5.2`**
+- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** e **`fabioleitao/data_boar:1.5.3`**
 - **Legado:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler) — `fabioleitao/python3-lgpd-crawler:latest`
 
 Exemplo:
@@ -71,10 +71,10 @@ docker push ghcr.io/fabioleitao/python3-lgpd-crawler:latest
 ### Opção B – Docker Hub (imagem branded Data Boar)
 
 ```bash
-docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.5.2 .
+docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.5.3 .
 docker login
 docker push fabioleitao/data_boar:latest
-docker push fabioleitao/data_boar:1.5.2
+docker push fabioleitao/data_boar:1.5.3
 ```
 
 Opcional: publicar a mesma imagem com o nome legado: `docker tag fabioleitao/data_boar:latest fabioleitao/python3-lgpd-crawler:latest` e `docker push ...`. Veja também [DOCKER_SETUP.md](../DOCKER_SETUP.md).

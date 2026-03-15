@@ -65,7 +65,7 @@ class DatabaseScanner(BaseScanner):
         """Scan a specific database"""
         try:
             # Test connection
-            self.logger.info(f"Testing connection to {connection_string}")
+            self.logger.info("Testing connection to database")
 
             # Scan tables
             tables = self._list_tables(connection_string)
