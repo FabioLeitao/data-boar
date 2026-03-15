@@ -104,7 +104,8 @@ def failure_hint(reason: str) -> str:
     if r == "timeout":
         return (
             "Operation timed out. Check for high latency, overloaded target, or too strict timeouts. "
-            "Consider increasing timeout values and re-running during off-peak hours."
+            "Consider increasing timeout values and re-running during off-peak hours. "
+            "You can set timeouts in config (timeouts.connect_seconds, timeouts.read_seconds) or per target; see USAGE.md."
         )
     return (
         "Unexpected error. Review the detailed message and audit log, verify the target configuration "
