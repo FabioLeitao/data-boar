@@ -41,7 +41,14 @@ class MongoDBConnector:
             uri = f"mongodb://{user_enc}:{password_enc}@{host}:{port}/{database}"
         else:
             uri = f"mongodb://{host}:{port}"
-        self._client = MongoClient(uri)
+        connect_s = max(1, int(self.config.get("connect_timeout_seconds", 25)))
+        read_s = max(1, int(self.config.get("read_timeout_seconds", 90)))
+        self._client = MongoClient(
+            uri,
+            serverSelectionTimeoutMS=connect_s * 1000,
+            connectTimeoutMS=connect_s * 1000,
+            socketTimeoutMS=read_s * 1000,
+        )
         self._db = self._client[database]
 
     def close(self) -> None:

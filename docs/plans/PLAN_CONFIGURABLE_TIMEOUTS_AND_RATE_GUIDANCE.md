@@ -1,6 +1,6 @@
 # Plan: Configurable timeouts for data soup access (sane defaults and recommendations)
 
-**Status:** Not started
+**Status:** In progress (Phases 1–2 and 3 done; Phase 4 pending)
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
@@ -106,27 +106,27 @@ Optionally extend `failure_hint("timeout")` with one line: "You can set timeouts
 
 | #   | To-do                                                                                                                                                | Status |
 | --- | ---------------------------------------------------------------------                                                                                | ------ |
-| 1.1 | Add `timeouts` (or `scan.connect_timeout_seconds` / `scan.read_timeout_seconds`) to config loader with sane defaults (e.g. connect 25, read 90).     | ⬜      |
-| 1.2 | Normalize per-target overrides: `target.connect_timeout`, `target.read_timeout`, `target.timeout`; merge with global when building connector config. | ⬜      |
-| 1.3 | Document new keys in USAGE (config schema) and in example config.yaml or docs.                                                                       | ⬜      |
+| 1.1 | Add `timeouts` (or `scan.connect_timeout_seconds` / `scan.read_timeout_seconds`) to config loader with sane defaults (e.g. connect 25, read 90).     | ✅      |
+| 1.2 | Normalize per-target overrides: `target.connect_timeout`, `target.read_timeout`, `target.timeout`; merge with global when building connector config. | ✅      |
+| 1.3 | Document new keys in USAGE (config schema) and in example config.yaml or docs.                                                                       | ✅      |
 
 ### Phase 2: Wire connectors
 
 | #   | To-do                                                                                                                                        | Status |
 | --- | ---------------------------------------------------------------------                                                                        | ------ |
-| 2.1 | SQL connector: pass connect_timeout (and optionally read/statement timeout) via create_engine connect_args from config/target.               | ⬜      |
-| 2.2 | REST connector: use global default when target.timeout not set; optionally split into connect/read via httpx.Timeout(connect=..., read=...). | ⬜      |
-| 2.3 | Power BI / Dataverse: create httpx client with timeout from config (connect + read).                                                         | ⬜      |
-| 2.4 | MongoDB: pass serverSelectionTimeoutMS, connectTimeoutMS, socketTimeoutMS from config.                                                       | ⬜      |
-| 2.5 | Redis: pass socket_connect_timeout and socket_timeout from config.                                                                           | ⬜      |
-| 2.6 | Other connectors (SMB, WebDAV, SharePoint, Snowflake): wire timeouts where the library supports; otherwise no change.                        | ⬜      |
+| 2.1 | SQL connector: pass connect_timeout (and optionally read/statement timeout) via create_engine connect_args from config/target.               | ✅      |
+| 2.2 | REST connector: use global default when target.timeout not set; optionally split into connect/read via httpx.Timeout(connect=..., read=...). | ✅      |
+| 2.3 | Power BI / Dataverse: create httpx client with timeout from config (connect + read).                                                         | ✅      |
+| 2.4 | MongoDB: pass serverSelectionTimeoutMS, connectTimeoutMS, socketTimeoutMS from config.                                                       | ✅      |
+| 2.5 | Redis: pass socket_connect_timeout and socket_timeout from config.                                                                           | ✅      |
+| 2.6 | Other connectors (SMB, WebDAV, SharePoint, Snowflake): wire timeouts where the library supports; otherwise no change.                        | ✅      |
 
 ### Phase 3: Pass config to connectors
 
 | #   | To-do                                                                                                                                                                                                                       | Status |
 | --- | ---------------------------------------------------------------------                                                                                                                                                       | ------ |
-| 3.1 | Ensure engine or connector instantiation receives global config (or merged timeout values) so connectors can read defaults. (Today some connectors only get target_config; may need to pass config or pre-merged timeouts.) | ⬜      |
-| 3.2 | Use consistent source: e.g. target.timeout or target.read_timeout override config.timeouts.read_seconds.                                                                                                                    | ⬜      |
+| 3.1 | Ensure engine or connector instantiation receives global config (or merged timeout values) so connectors can read defaults. (Today some connectors only get target_config; may need to pass config or pre-merged timeouts.) | ✅ (loader merges onto each target; engine passes target.) |
+| 3.2 | Use consistent source: e.g. target.timeout or target.read_timeout override config.timeouts.read_seconds.                                                                                                                    | ✅      |
 
 ### Phase 4: Recommendations and failure hint
 

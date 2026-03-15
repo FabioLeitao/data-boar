@@ -77,6 +77,31 @@ def test_normalize_config_rate_limit_and_scan_max_workers(monkeypatch):
     assert cfg.get("scan", {}).get("max_workers") <= 32
 
 
+def test_normalize_config_timeouts_and_per_target():
+    """Config loader adds global timeouts (defaults 25/90) and merges per-target overrides."""
+    out = normalize_config({
+        "targets": [
+            {"name": "defaults", "type": "database", "driver": "postgresql", "host": "h", "database": "d"},
+            {"name": "overrides", "type": "api", "base_url": "http://x", "connect_timeout": 10, "read_timeout": 60},
+            {"name": "single", "type": "database", "driver": "mysql", "host": "h", "database": "d", "timeout": 45},
+        ],
+        "timeouts": {"connect_seconds": 20, "read_seconds": 80},
+    })
+    assert out.get("timeouts", {}).get("connect_seconds") == 20
+    assert out.get("timeouts", {}).get("read_seconds") == 80
+    targets = out["targets"]
+    t0 = next(t for t in targets if t.get("name") == "defaults")
+    assert t0.get("connect_timeout_seconds") == 20 and t0.get("read_timeout_seconds") == 80
+    t1 = next(t for t in targets if t.get("name") == "overrides")
+    assert t1.get("connect_timeout_seconds") == 10 and t1.get("read_timeout_seconds") == 60
+    t2 = next(t for t in targets if t.get("name") == "single")
+    assert t2.get("connect_timeout_seconds") == 45 and t2.get("read_timeout_seconds") == 45
+    # Empty config: defaults 25/90
+    out2 = normalize_config({"targets": []})
+    assert out2.get("timeouts", {}).get("connect_seconds") == 25
+    assert out2.get("timeouts", {}).get("read_seconds") == 90
+
+
 def test_local_db_manager(tmp_path):
     db_path = str(tmp_path / "test_audit.db")
     mgr = LocalDBManager(db_path)
