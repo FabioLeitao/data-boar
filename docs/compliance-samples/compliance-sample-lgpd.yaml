@@ -61,6 +61,18 @@ terms:
     label: sensitive
   - text: "phone"
     label: sensitive
+  - text: "celular"
+    label: sensitive
+  - text: "mobile"
+    label: sensitive
+  - text: "fone"
+    label: sensitive
+  - text: "home phone"
+    label: sensitive
+  - text: "work phone"
+    label: sensitive
+  - text: "cell phone"
+    label: sensitive
   - text: "identidade"
     label: sensitive
   - text: "identity"

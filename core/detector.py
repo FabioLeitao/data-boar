@@ -56,6 +56,11 @@ DEFAULT_ML_TERMS = [
     ("health record", 1), ("saude", 1), ("data de nascimento", 1), ("birth date", 1),
     ("ethnic origin", 1), ("political opinion", 1), ("religion", 1), ("gender", 1),
     ("nome completo", 1), ("rg", 1), ("ssn", 1), ("salary", 1), ("salário", 1),
+    # Phone / contact (multiple naming schemes and languages for column-name detection)
+    ("phone", 1), ("telefone", 1), ("celular", 1), ("mobile", 1), ("fone", 1),
+    ("home phone", 1), ("work phone", 1), ("cell phone", 1), ("contact number", 1), ("phone number", 1),
+    ("téléphone", 1), ("tél", 1), ("teléfono", 1), ("telefono", 1), ("móvil", 1), ("cel", 1),
+    ("handy", 1), ("handynummer", 1), ("mobilnummer", 1), ("telefon", 1), ("número de telefone", 1),
     # Sensitive categories (LGPD Art. 5 II, 11; GDPR Art. 9) – additive subset for out-of-the-box
     ("religious affiliation", 1), ("religiao", 1), ("political affiliation", 1), ("filiacao politica", 1),
     ("biometric data", 1), ("genetic data", 1), ("union affiliation", 1), ("sindicato", 1),

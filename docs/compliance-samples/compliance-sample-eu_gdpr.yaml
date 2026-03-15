@@ -49,6 +49,29 @@ terms:
     label: sensitive
   - text: "processor"
     label: sensitive
+  # Phone / contact (EN + DE/FR for multilingual EU data)
+  - text: "phone"
+    label: sensitive
+  - text: "telephone"
+    label: sensitive
+  - text: "mobile"
+    label: sensitive
+  - text: "home phone"
+    label: sensitive
+  - text: "work phone"
+    label: sensitive
+  - text: "cell phone"
+    label: sensitive
+  - text: "téléphone"
+    label: sensitive
+  - text: "Telefon"
+    label: sensitive
+  - text: "handynummer"
+    label: sensitive
+  - text: "mobilnummer"
+    label: sensitive
+  - text: "contact number"
+    label: sensitive
 
 recommendation_overrides:
   - norm_tag_pattern: "EU GDPR"

@@ -50,6 +50,25 @@ terms:
     label: sensitive
   - text: "nas"
     label: sensitive
+  # Phone / contact (EN + FR for Canadian data)
+  - text: "phone"
+    label: sensitive
+  - text: "telephone"
+    label: sensitive
+  - text: "téléphone"
+    label: sensitive
+  - text: "mobile"
+    label: sensitive
+  - text: "home phone"
+    label: sensitive
+  - text: "work phone"
+    label: sensitive
+  - text: "cell phone"
+    label: sensitive
+  - text: "numéro de téléphone"
+    label: sensitive
+  - text: "contact number"
+    label: sensitive
 
 recommendation_overrides:
   - norm_tag_pattern: "PIPEDA"
