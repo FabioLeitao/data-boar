@@ -117,3 +117,14 @@ If you believe you have found a security vulnerability in this project:
    - Investigate and, if confirmed, work on a fix and coordinate disclosure.
 
 If you are unsure whether something is security-sensitive, err on the side of caution and use the private channel (or a minimal public issue) so we can triage it safely.
+
+## Security response (optional SLAs)
+
+These are **targets** for maintainers and reporters, not contractual obligations. Adjust to your capacity.
+
+| Area | Optional target |
+|------|-----------------|
+| **Vulnerability reports** | We aim to **acknowledge** within **5 working days** and, for **high/critical** findings, to **fix or document** (e.g. advisory, mitigation, or “won’t fix” with rationale) within **30 days**. |
+| **Dependabot security PRs** | We treat Dependabot **security** PRs as **P0**: aim to **merge or respond** (e.g. merge, close with comment, or defer with rationale) within **5 working days**. Non-security dependency PRs follow the usual review cycle. |
+
+See **CONTRIBUTING** for how to apply dependency updates and run `pip-audit`; see **`.github/dependabot.yml`** for Dependabot configuration.

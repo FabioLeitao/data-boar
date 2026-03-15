@@ -20,9 +20,9 @@
 | Item | Status / suggestion |
 |------|---------------------|
 | **Ruff in CI** | Done (lint job in `ci.yml`). |
-| **Pre-commit** | Present (Ruff). Optional: add `ruff format --check` or markdown lint if you want format enforced on commit. |
+| **Pre-commit** | Present: Ruff check (--fix) and Ruff format (--check) run on commit. See `.pre-commit-config.yaml` and rule `pre-commit-ruff`. Optional: add markdown lint to pre-commit if desired. |
 | **Single “check-all” script** | Optional: a script (e.g. `scripts/check_all.sh` or `make check`) that runs `uv sync`, `uv run ruff check .`, `uv run pytest -v -W error`, `uv run pip-audit` so one command approximates CI locally. Reduces “it passed on my machine” gaps. |
-| **Release checklist** | In CONTRIBUTING (audit, docs, secrets, lockfile). Optional: add “Update CHANGELOG or release notes” if you introduce a CHANGELOG. |
+| **Release checklist** | In CONTRIBUTING (audit, docs, secrets, lockfile). Release history = git + `docs/releases/`; no separate CHANGELOG required. |
 | **QUALITY_WORKFLOW_RECOMMENDATIONS.md** | Already lists Bandit, Semgrep, mypy, SBOM. Adopt incrementally when you want an extra safety layer; not required for “being set.” |
 
 ---
@@ -33,13 +33,13 @@ These are areas that often get less attention than feature plans but matter for 
 
 ### 3.1 Release and versioning
 
-- **Changelog / release notes:** You have `docs/releases/` with versioned notes. Is there a single CHANGELOG.md (or “releases” as the changelog) and a habit of updating it on every release? If not, consider a lightweight rule: “every tagged release has an entry in docs/releases/ or CHANGELOG.”
+- **Changelog / release notes:** Release history is **git commit/PR history** plus **versioned notes in `docs/releases/`** (e.g. per-version release notes). A separate CHANGELOG file is **not required**; use “every tagged release has an entry in `docs/releases/`” as the lightweight discipline. See CONTRIBUTING for the same.
 - **Compatibility and deprecation:** When you change config or API, do you document “since when” and “replacement”? Optional: a short “Compatibility” section in CONTRIBUTING or USAGE (e.g. “we avoid breaking config keys; when we deprecate, we document for at least one minor version”).
 
 ### 3.2 Security response
 
-- **Vulnerability reporting:** SECURITY.md already explains “do not open public issue with exploit” and “maintainers will acknowledge and investigate.” Optional: add an explicit expectation (e.g. “we aim to acknowledge within 5 working days and to fix or document within 30 days for high/critical”) if you want a clear SLA for yourselves and reporters.
-- **Dependency alerts:** Dependabot + pip-audit + lockfile already reduce risk. Optional: document in CONTRIBUTING or SECURITY “we treat Dependabot security PRs as P0 and aim to merge or respond within X days.”
+- **Vulnerability reporting:** SECURITY.md explains “do not open public issue with exploit” and maintainer response. **Optional SLAs** are in SECURITY.md (“Security response (optional SLAs)”): e.g. acknowledge within 5 working days; for high/critical, fix or document within 30 days.
+- **Dependency alerts:** Dependabot + pip-audit + lockfile reduce risk. SECURITY.md documents the optional SLA for **Dependabot security PRs** (P0; aim to merge or respond within 5 working days). CONTRIBUTING points to SECURITY for that.
 
 ### 3.3 Operations and runbooks
 
