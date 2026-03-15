@@ -320,6 +320,8 @@ ml_patterns_file: docs/compliance-samples/compliance-sample-pipeda.yaml
 
 To keep secrets **out of the config file**, use **`*_from_env`** keys so the application reads values from environment variables at load time. This is the recommended pattern for production and for config files that may be shared or versioned.
 
+**Requesting access from IT:** When you need to ask the IT team for permissions (e.g. shared folders, database accounts, API tokens), use the **minimal** access required. See [OPERATOR_IT_REQUIREMENTS.md](OPERATOR_IT_REQUIREMENTS.md) for a per-source checklist of what to ask for (read-only, no admin), what we do *not* need, and a short justification so the request aligns with zero-trust or strict IAM. ([pt-BR](OPERATOR_IT_REQUIREMENTS.pt_BR.md))
+
 - **API key:** `api.api_key_from_env: "AUDIT_API_KEY"` (see Authentication above).
 - **Targets (databases, REST, Power BI, etc.):**
 - **Password:** `pass_from_env: "DB_PASS"` or `password_from_env: "DB_PASS"` — the app reads the password from the named env var.
