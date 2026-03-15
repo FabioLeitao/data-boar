@@ -104,6 +104,28 @@ def _build_url(target: dict[str, Any]) -> str:
     return f"{drivername}://{user}:{password}@{host}:{port}/{database}"
 
 
+def _connect_args_from_target(target: dict[str, Any]) -> dict[str, Any]:
+    """
+    Build SQLAlchemy connect_args from target timeouts (config loader merges global + per-target).
+    Uses connect_timeout_seconds for connect; read_timeout_seconds for statement_timeout (PostgreSQL)
+    or SQLite lock timeout.
+    """
+    connect_s = int(target.get("connect_timeout_seconds", 25))
+    read_s = int(target.get("read_timeout_seconds", 90))
+    driver = (target.get("driver") or "postgresql").split("+")[0].lower()
+    connect_s = max(1, connect_s)
+    read_s = max(1, read_s)
+    if driver == "sqlite":
+        return {"timeout": read_s}
+    if driver == "postgresql":
+        # statement_timeout in PostgreSQL is in milliseconds
+        return {"connect_timeout": connect_s, "options": f"-c statement_timeout={read_s * 1000}"}
+    if driver in ("mysql", "mariadb"):
+        return {"connect_timeout": connect_s}
+    # mssql, oracle, others: pass connect_timeout when driver supports it
+    return {"connect_timeout": connect_s}
+
+
 class SQLConnector:
     """
     Connect to a SQL database, discover tables/columns, sample content, run sensitivity detection,
@@ -128,7 +150,8 @@ class SQLConnector:
 
     def connect(self) -> None:
         url = _build_url(self.config)
-        self.engine = create_engine(url, pool_pre_ping=True)
+        connect_args = _connect_args_from_target(self.config)
+        self.engine = create_engine(url, pool_pre_ping=True, connect_args=connect_args)
         self._connection = self.engine.connect()
 
     def close(self) -> None:

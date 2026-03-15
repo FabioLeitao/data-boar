@@ -62,10 +62,14 @@ class SnowflakeConnector:
         database = cfg.get("database")
         schema = cfg.get("schema")
         role = cfg.get("role")
+        connect_s = max(1, int(cfg.get("connect_timeout_seconds", 25)))
+        read_s = max(1, int(cfg.get("read_timeout_seconds", 90)))
         params: dict[str, Any] = {
             "user": user,
             "password": password,
             "account": account,
+            "connection_timeout": connect_s,
+            "network_timeout": read_s,
         }
         if warehouse:
             params["warehouse"] = warehouse
