@@ -67,10 +67,12 @@ O mesmo arquivo YAML pode conter **regex**, **terms** e **recommendation_overrid
 
 1. **Escolha a amostra** do seu regulamento na tabela acima (ou em [compliance-samples/README.pt_BR.md](compliance-samples/README.pt_BR.md)).
 2. **Defina os caminhos no config principal** (ex.: `config.yaml`):
+
    ```yaml
    regex_overrides_file: docs/compliance-samples/compliance-sample-pipeda.yaml
    ml_patterns_file: docs/compliance-samples/compliance-sample-pipeda.yaml
    ```
+
    Use o mesmo arquivo para ambos se a amostra tiver `regex` e `terms`.
 3. **Mescle os recommendation overrides:** Copie a lista `recommendation_overrides` do arquivo da amostra para o config em `report.recommendation_overrides` (mescle com overrides que você já tiver). Veja [USAGE.pt_BR.md](USAGE.pt_BR.md) (seção de relatório) para a estrutura.
 4. **Execute a varredura** (CLI ou API). Os achados usarão as norm tags e o texto de recomendação da amostra; o relatório Excel exibirá Base legal, Risco, Recomendação e Prioridade do framework.
