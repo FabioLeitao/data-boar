@@ -21,8 +21,8 @@ This document helps when Data Boar runs **inside a Docker container** and must c
 ### 1.2 Checklist
 
 1. From the **host**, test: `psql -h <host> -p 5432 -U <user> -d <db>` (or equivalent). If it fails, fix DB and firewall on the host first.
-2. From **inside the container**: `docker exec <container> sh -c 'command -v nc && nc -zv <db-host> <port>'` (or use a small image with `nc`/`curl`). If this fails, the container cannot reach the DB (network/DNS/firewall).
-3. **DNS:** If config uses a hostname, the container must resolve it. Use the same DNS as the host (`--dns 8.8.8.8` or host’s DNS) or run with `--network host` (Linux) so the container shares the host’s network (and DNS).
+1. From **inside the container**: `docker exec <container> sh -c 'command -v nc && nc -zv <db-host> <port>'` (or use a small image with `nc`/`curl`). If this fails, the container cannot reach the DB (network/DNS/firewall).
+1. **DNS:** If config uses a hostname, the container must resolve it. Use the same DNS as the host (`--dns 8.8.8.8` or host’s DNS) or run with `--network host` (Linux) so the container shares the host’s network (and DNS).
 
 ### 1.3 Steps to fix
 
@@ -84,12 +84,12 @@ This document helps when Data Boar runs **inside a Docker container** and must c
 
 ## 5. Summary table
 
-| Goal | Recommended approach | Doc reference |
-|------|----------------------|---------------|
-| Scan DB on host from container | Use `host.docker.internal` (or host IP) as DB host; ensure DB listens and firewall allows container. | § 1 |
-| Scan files on NFS/SMB | A) Mount share on host, bind-mount into container, use filesystem target. B) Use NFS/SMB target in config; image with `.[shares]`; container network to server. | § 2 |
-| Container cannot resolve hostname | Set `--dns` or use IP in config. | § 3 |
-| Config or reports not found | Mount volume at `/data`; set `CONFIG_PATH=/data/config.yaml`; set sqlite_path and report.output_dir under `/data`. | § 4 |
+| Goal                              | Recommended approach                                                                                                                                            | Doc reference   |
+| ------                            | ----------------------                                                                                                                                          | --------------- |
+| Scan DB on host from container    | Use `host.docker.internal` (or host IP) as DB host; ensure DB listens and firewall allows container.                                                            | § 1             |
+| Scan files on NFS/SMB             | A) Mount share on host, bind-mount into container, use filesystem target. B) Use NFS/SMB target in config; image with `.[shares]`; container network to server. | § 2             |
+| Container cannot resolve hostname | Set `--dns` or use IP in config.                                                                                                                                | § 3             |
+| Config or reports not found       | Mount volume at `/data`; set `CONFIG_PATH=/data/config.yaml`; set sqlite_path and report.output_dir under `/data`.                                              | § 4             |
 
 ---
 

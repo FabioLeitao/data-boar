@@ -19,13 +19,13 @@ A aplicação mapeia **reasons** de falha para um **Suggested next step** no rel
 
 ## Dicas rápidas por motivo de falha
 
-| Reason (no relatório) | O que verificar primeiro | Documento de aprofundamento |
-|----------------------|--------------------------|-----------------------------|
-| **unreachable**      | Rede do host/container de auditoria até o alvo: DNS, roteamento, firewall, VPN. Para Docker: veja [TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md). | [Conectividade](TROUBLESHOOTING_CONNECTIVITY.pt_BR.md) · [Docker](TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md) |
-| **auth_failed** / **authentication_failed** | Credenciais (usuário/senha, token, OAuth client_id/secret). Evite enviar a mesma credencial no header e no body. | [Credenciais e autenticação](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md) |
-| **permission_denied** | O scanner precisa de acesso de leitura ao recurso (share, DB, API). Execute como usuário/conta de serviço com permissão ou ajuste permissões. | [Conectividade](TROUBLESHOOTING_CONNECTIVITY.pt_BR.md) |
-| **timeout**          | Alvo lento ou inacessível; valor de timeout muito baixo. Aumente o timeout no config (por alvo ou global); tente em horário de menor uso. | [Conectividade](TROUBLESHOOTING_CONNECTIVITY.pt_BR.md) |
-| **error** (genérico) | Veja **Details** no relatório. Frequentemente config (host, port, URL ausentes) ou dependência opcional ausente (ex.: `.[shares]` para SMB). | [Conectividade](TROUBLESHOOTING_CONNECTIVITY.pt_BR.md) · [Credenciais](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md) |
+| Reason (no relatório)                       | O que verificar primeiro                                                                                                                                                                    | Documento de aprofundamento                                                                                           |
+| ----------------------                      | --------------------------                                                                                                                                                                  | -----------------------------                                                                                         |
+| **unreachable**                             | Rede do host/container de auditoria até o alvo: DNS, roteamento, firewall, VPN. Para Docker: veja [TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md). | [Conectividade](TROUBLESHOOTING_CONNECTIVITY.pt_BR.md) · [Docker](TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md)         |
+| **auth_failed** / **authentication_failed** | Credenciais (usuário/senha, token, OAuth client_id/secret). Evite enviar a mesma credencial no header e no body.                                                                            | [Credenciais e autenticação](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md)                                           |
+| **permission_denied**                       | O scanner precisa de acesso de leitura ao recurso (share, DB, API). Execute como usuário/conta de serviço com permissão ou ajuste permissões.                                               | [Conectividade](TROUBLESHOOTING_CONNECTIVITY.pt_BR.md)                                                                |
+| **timeout**                                 | Alvo lento ou inacessível; valor de timeout muito baixo. Aumente o timeout no config (por alvo ou global); tente em horário de menor uso.                                                   | [Conectividade](TROUBLESHOOTING_CONNECTIVITY.pt_BR.md)                                                                |
+| **error** (genérico)                        | Veja **Details** no relatório. Frequentemente config (host, port, URL ausentes) ou dependência opcional ausente (ex.: `.[shares]` para SMB).                                                | [Conectividade](TROUBLESHOOTING_CONNECTIVITY.pt_BR.md) · [Credenciais](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md) |
 
 ---
 
@@ -49,10 +49,10 @@ Muitas implantações usam a **imagem Docker**. O container precisa conseguir al
 
 ## Documentação de aprofundamento (causa raiz e passos de correção)
 
-| Tópico | Descrição | English | Português (pt-BR) |
-|--------|-----------|---------|-------------------|
-| **Conectividade** | Rede, DNS, firewall, timeouts; DB/API/share inacessível; permission_denied | [TROUBLESHOOTING_CONNECTIVITY.md](TROUBLESHOOTING_CONNECTIVITY.md) | [TROUBLESHOOTING_CONNECTIVITY.pt_BR.md](TROUBLESHOOTING_CONNECTIVITY.pt_BR.md) |
-| **Credenciais e autenticação** | API key no header vs body; Basic/Bearer/OAuth; credenciais conflitantes; lockouts | [TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md) | [TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md) |
-| **Implantação Docker** | Rodar em container; NFS/SMB a partir do container; DB remoto a partir do container; DNS; volumes | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.md) | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md) |
+| Tópico                         | Descrição                                                                                        | English                                                                            | Português (pt-BR)                                                                              |
+| --------                       | -----------                                                                                      | ---------                                                                          | -------------------                                                                            |
+| **Conectividade**              | Rede, DNS, firewall, timeouts; DB/API/share inacessível; permission_denied                       | [TROUBLESHOOTING_CONNECTIVITY.md](TROUBLESHOOTING_CONNECTIVITY.md)                 | [TROUBLESHOOTING_CONNECTIVITY.pt_BR.md](TROUBLESHOOTING_CONNECTIVITY.pt_BR.md)                 |
+| **Credenciais e autenticação** | API key no header vs body; Basic/Bearer/OAuth; credenciais conflitantes; lockouts                | [TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md) | [TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md) |
+| **Implantação Docker**         | Rodar em container; NFS/SMB a partir do container; DB remoto a partir do container; DNS; volumes | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.md)       | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md)       |
 
 **Índice da documentação:** [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
