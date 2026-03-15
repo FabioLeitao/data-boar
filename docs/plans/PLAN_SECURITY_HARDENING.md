@@ -1,6 +1,6 @@
 # Plan: Security hardening and vulnerability closure
 
-**Status:** In progress (1.1–1.3, 2.1–2.3, 3.1–3.4, 5.1–5.3, 6.1, 7.1 done; 2.4, 6.3, 7.2–7.3 pending)
+**Status:** In progress (1.1–1.3, 2.1–2.3, 3.1–3.4, 5.1–5.3, 6.1, 7.1–7.3 done; 2.4, 6.3 pending)
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
@@ -94,8 +94,8 @@ All steps are **additive or configurable** where possible; avoid breaking existi
 | #   | To-do                                                                                                                                                                                 | Status     | Notes                                                                                 |
 | --- | -------------------------------------------------------------------------------------------------------------------------------------                                                 | ---------- | -----                                                                                 |
 | 7.1 | **Release checklist:** Add a “Security” section: run `pip-audit`, fix any high/critical findings, ensure SECURITY.md and docs/security.md are up to date, confirm no secrets in logs. | ✅ Done     | Added in CONTRIBUTING.md and CONTRIBUTING.pt_BR.md ("Release checklist (Security)").  |
-| 7.2 | **docs/security.md:** After implementing 1.1–1.3, add one line each for tenant/technician validation, body size, and logging policy so technicians know what is enforced.             | ⬜ Pending  | Keeps technician guidance in sync.                                                    |
-| 7.3 | **SECURITY.md:** Ensure “Resistance to common vulnerabilities” and “Keeping dependencies up to date” reflect current state and reference this plan where appropriate.                 | ⬜ Pending  | Optional: add “See also docs/plans/PLAN_SECURITY_HARDENING.md for planned hardening.” |
+| 7.2 | **docs/security.md:** After implementing 1.1–1.3, add one line each for tenant/technician validation, body size, and logging policy so technicians know what is enforced.             | ✅ Done     | docs/SECURITY.md and docs/SECURITY.pt_BR.md: three bullets added in Recommendations.   |
+| 7.3 | **SECURITY.md:** Ensure “Resistance to common vulnerabilities” and “Keeping dependencies up to date” reflect current state and reference this plan where appropriate.                 | ✅ Done     | Root SECURITY.md and SECURITY.pt_BR.md: added tenant/technician, report/heatmap; plan ref in both sections. |
 
 ---
 
