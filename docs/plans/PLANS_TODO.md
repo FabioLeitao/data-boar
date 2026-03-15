@@ -79,9 +79,9 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 
 | #        | To-do                                                               | Status                                       |
 | -        | -----                                                               | ------                                       |
-| 1.1      | Tenant/technician validation (length, chars); tests                 | ⬜ Pending                                    |
-| 1.2      | Request body size limit; document SECURITY.md                       | ⬜ Pending                                    |
-| 1.3      | Logging audit (no secrets in logs); test/checklist                  | ⬜ Pending                                    |
+| 1.1      | Tenant/technician validation (length, chars); tests                 | ✅ Done                                       |
+| 1.2      | Request body size limit; document SECURITY.md                       | ✅ Done                                       |
+| 1.3      | Logging audit (no secrets in logs); test/checklist                  | ✅ Done                                       |
 | 2.1–2.3  | pip-audit in CI, Dependabot/release checklist, min versions         | ✅ Done                                       |
 | 2.4      | Optional lockfile audit (only if lockfile adopted)                  | ⬜ Pending                                    |
 | 3.1–3.4  | Rate limit/API key/report access docs; optional scan payload limits | ⬜ Pending                                    |

@@ -13,6 +13,6 @@ class DBConnector:
         try:
             self.engine = create_engine(db_url)
             self.connections["main"] = self.engine
-            self.logger.info(f"Conexão estabelecida com o banco de dados: {db_url}")
+            self.logger.info("Conexão estabelecida com o banco de dados")
         except SQLAlchemyError as e:
             self.logger.error(f"Erro ao conectar com o banco de dados: {str(e)}")
