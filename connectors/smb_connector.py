@@ -50,6 +50,7 @@ class SMBConnector:
         extensions: set[str] | list[str] | None = None,
         scan_sqlite_as_db: bool = True,
         sample_limit: int = 5,
+        file_passwords: dict[str, str] | None = None,
     ):
         self.config = target_config
         self.scanner = scanner
@@ -57,6 +58,7 @@ class SMBConnector:
         self.scan_sqlite_as_db = scan_sqlite_as_db
         self.sample_limit = sample_limit
         self.extensions = _normalize_extensions(extensions)
+        self.file_passwords = file_passwords or {}
         self._session_registered = False
 
     def _unc_path(self, *parts: str) -> str:
@@ -149,7 +151,7 @@ class SMBConnector:
                 try:
                     os.write(fd, content)
                     os.close(fd)
-                    text = _read_text_sample(Path(temp_path), ext)
+                    text = _read_text_sample(Path(temp_path), ext, self.sample_limit, self.file_passwords)
                     res = self.scanner.scan_file_content(text, Path(unc_file))
                     if res is None:
                         continue

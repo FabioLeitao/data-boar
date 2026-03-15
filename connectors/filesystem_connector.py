@@ -48,8 +48,17 @@ EXTENSION_MIME = {
 }
 
 
-def _read_text_sample(path: Path, ext: str, max_chars: int = 10000) -> str:
-    """Extract text from file for sensitivity scan; return empty on error. No content stored after return."""
+def _read_text_sample(
+    path: Path,
+    ext: str,
+    max_chars: int = 10000,
+    file_passwords: dict[str, str] | None = None,
+) -> str:
+    """Extract text from file for sensitivity scan; return empty on error. No content stored after return.
+    When file_passwords is provided (e.g. {'.pdf': 'secret', 'default': 'fallback'}), use it to open
+    password-protected PDF and ZIP-based (e.g. .pptx) files. Unsupported or wrong password yields empty string.
+    """
+    pw = file_passwords or {}
     try:
         # Plain text and markup: read as text
         if ext in _TEXT_EXTENSIONS:
@@ -59,6 +68,12 @@ def _read_text_sample(path: Path, ext: str, max_chars: int = 10000) -> str:
         if ext == ".pdf":
             from pypdf import PdfReader
             reader = PdfReader(path)
+            if reader.is_encrypted:
+                password = pw.get(ext) or pw.get("default")
+                if password:
+                    reader.decrypt(password)
+                else:
+                    return ""
             return " ".join(p.extract_text() or "" for p in reader.pages[:5])[:max_chars]
         if ext == ".docx":
             from docx import Document
@@ -108,6 +123,9 @@ def _read_text_sample(path: Path, ext: str, max_chars: int = 10000) -> str:
         if ext == ".pptx":
             try:
                 with zipfile.ZipFile(path, "r") as z:
+                    password = pw.get(ext) or pw.get("default")
+                    if password:
+                        z.setpassword(password.encode("utf-8") if isinstance(password, str) else password)
                     parts = []
                     for name in z.namelist():
                         if name.startswith("ppt/slides/slide") and name.endswith(".xml"):
@@ -210,12 +228,14 @@ class FilesystemConnector:
         extensions: set[str] | list[str] | None = None,
         scan_sqlite_as_db: bool = True,
         sample_limit: int = 5,
+        file_passwords: dict[str, str] | None = None,
     ):
         self.config = target_config
         self.scanner = scanner
         self.db_manager = db_manager
         self.scan_sqlite_as_db = scan_sqlite_as_db
         self.sample_limit = sample_limit
+        self.file_passwords = file_passwords or {}
         # "*" or "all" in list => use full SUPPORTED_EXTENSIONS; else use provided list or default
         use_all = False
         if extensions:
@@ -272,7 +292,7 @@ class FilesystemConnector:
                     except Exception:
                         pass
                 continue
-            content = _read_text_sample(file_path, ext)
+            content = _read_text_sample(file_path, ext, self.sample_limit, self.file_passwords)
             res = self.scanner.scan_file_content(content, file_path)
             if res is None:
                 continue
