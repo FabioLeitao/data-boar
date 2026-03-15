@@ -300,6 +300,19 @@ CLI uses the path you pass with `--config` (e.g. `config.yaml`). For the **web s
 - **Location:** Any path; typical names: `config.yaml`, `config/config.json`. Legacy `config/config.json` with `databases` and `file_scan.directories` is normalized automatically.
 - **Root keys:** `targets`, `file_scan`, `report`, `api`, `sqlite_path`, `scan`, **`rate_limit`**, **`timeouts`**, optional `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection`, `learned_patterns`.
 
+### Credentials from environment (secrets not in config)
+
+To keep secrets **out of the config file**, use **`*_from_env`** keys so the application reads values from environment variables at load time. This is the recommended pattern for production and for config files that may be shared or versioned.
+
+- **API key:** `api.api_key_from_env: "AUDIT_API_KEY"` (see Authentication above).
+- **Targets (databases, REST, Power BI, etc.):**
+  - **Password:** `pass_from_env: "DB_PASS"` or `password_from_env: "DB_PASS"` — the app reads the password from the named env var.
+  - **User:** `user_from_env: "DB_USER"` — username from env.
+  - **REST / OAuth:** In the target’s `auth` block: `token_from_env: "REST_TOKEN"`, `client_secret_from_env: "CLIENT_SECRET"`.
+  - **Power BI / Dataverse:** At target level: `client_secret_from_env: "PBI_SECRET"`, or in `auth`: `client_secret_from_env: "PBI_SECRET"`.
+
+When a `*_from_env` key is set, the resolved value is used for the connection; the config file can omit the literal secret. Restrict config file permissions and **do not commit** config files that contain credentials; see [SECURITY.md](../SECURITY.md) (Config file and secrets).
+
 ### Sensitivity detection: ML and DL training terms
 
 You can set the **training words for ML and DL** in the main config (inline) or in separate YAML/JSON files. The pipeline is **hybrid**: regex → ML (TF-IDF + RandomForest) → optional DL (sentence embeddings + classifier). ML/DL terms use the same format: a list of `{ text, label }` with `label` = `sensitive` or `non_sensitive`.
