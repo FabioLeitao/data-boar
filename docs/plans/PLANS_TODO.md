@@ -226,7 +226,19 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 
 ## Readiness and operations (meta)
 
-For a step-back view—“see the forest”—and recommendations on MCP, workflow automation, release/changelog, security response, runbooks, compliance evidence, onboarding, and dependency policy, see **[PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md)**. It is a checklist and discovery doc, not a delivery plan; use it to decide what to formalise next.
+Goal categories (so we don’t forget). **Full prioritised checklist and to-dos:** [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md). Status is updated only there.
+
+| Category | One-line summary | Status |
+|----------|------------------|--------|
+| **Release** | Checklist in CONTRIBUTING; history = git + `docs/releases/`. | Done |
+| **Security response** | Vulnerability and Dependabot security PR SLAs in SECURITY.md. | Done |
+| **Runbooks** | Operator runbook one-pager; backup and restore in USAGE/deploy. | Not started |
+| **Compliance evidence** | “Compliance and evidence” in SECURITY or doc; data retention mention. | Not started |
+| **Onboarding** | Short onboarding checklist in CONTRIBUTING. | Not started |
+| **Dependency policy** | Python/platform support sentence; optional lockfile refresh policy. | Not started |
+| **Check-all script** | One command (uv sync, ruff, pytest, pip-audit) approximates CI locally. | Not started |
+
+See PLAN_READINESS for MCP recommendation, workflow automation, and when to revisit (release, onboarding, audit).
 
 ---
 
