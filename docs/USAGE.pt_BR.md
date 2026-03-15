@@ -231,7 +231,7 @@ Esse endpoint procura, entre os arquivos `audit_YYYYMMDD.log` disponíveis (do m
 
 - A aplicação utiliza um único arquivo de configuração (YAML/JSON) com as chaves principais:
 - `targets` – alvos a escanear (bancos, diretórios, APIs, compartilhamentos). Não há limite rígido de alvos por varredura; listas muito grandes (ex.: centenas de bancos ou APIs) podem aumentar tempo e uso de memória—considere um escopo razoável por varredura.
-- `file_scan` – extensões, recursividade, `scan_sqlite_as_db`, `sample_limit`.
+- `file_scan` – extensões, recursividade, `scan_sqlite_as_db`, `sample_limit`, opcionalmente `file_passwords` (senhas para PDFs e documentos ZIP protegidos por senha; ver [USAGE.md](USAGE.md), seção Global options, para exemplo YAML e limitações).
 - `report` – `output_dir` para relatórios/heatmaps; opcionalmente `recommendation_overrides` (lista de mapeamentos por `norm_tag` para Base legal, Risco, Recomendação, Prioridade, Relevante para). Exemplo completo em [USAGE.md](USAGE.md) (seção 4, Global options); exemplo para categorias sensíveis (saúde, religião, política, PEP, raça, sindicato, genético, biométrico, vida sexual) em [USAGE.md#recommendation_overrides](USAGE.md) e abaixo em pt-BR (ver também [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](plans/completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md)).
 - `api` – porta da API; opcionalmente `require_api_key`, `api_key` ou `api_key_from_env` para exigir chave de API (cabeçalho X-API-Key ou Authorization: Bearer); GET /health permanece público. **Em produção recomenda-se** `require_api_key: true` e chave forte via variável de ambiente (ex.: `api.api_key_from_env: "AUDIT_API_KEY"`) para não armazenar a chave no config. Ver [SECURITY.md](../SECURITY.md).
 - `sqlite_path` – caminho do banco SQLite com resultados.
@@ -239,6 +239,7 @@ Esse endpoint procura, entre os arquivos `audit_YYYYMMDD.log` disponíveis (do m
 - `timeouts` – timeouts globais para conexões (ex.: `connect_seconds`, `read_seconds`); cada alvo pode sobrescrever com `connect_timeout`, `read_timeout` ou `timeout`. Ver abaixo.
 - `api.workers` – número de workers uvicorn (padrão 1; 2+ para mais requisições concorrentes).
 - Opcionais: `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection` (termos ML/DL inline), `learned_patterns` (export de termos classificados), **`pattern_files_encoding`** (encoding dos arquivos de padrões; ver abaixo).
+- **Pedindo acesso à TI:** Quando for preciso solicitar permissões à equipe de TI (ex.: pastas compartilhadas, contas de banco, tokens de API), solicite o **mínimo** necessário. Veja [OPERATOR_IT_REQUIREMENTS.pt_BR.md](OPERATOR_IT_REQUIREMENTS.pt_BR.md) para o checklist por fonte (somente leitura, sem admin), o que não precisamos e uma breve justificativa, alinhada a zero-trust ou IAM restrito. ([EN](OPERATOR_IT_REQUIREMENTS.md))
 
 ### Encoding de arquivos (config e arquivos de padrões) {#file-encoding-config-and-pattern-files}
 
