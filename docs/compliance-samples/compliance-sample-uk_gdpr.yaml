@@ -56,6 +56,27 @@ terms:
     label: sensitive
   - text: "phone number"
     label: sensitive
+  # Name / identifier (multiple naming schemes for column names)
+  - text: "first name"
+    label: sensitive
+  - text: "last name"
+    label: sensitive
+  - text: "surname"
+    label: sensitive
+  - text: "full name"
+    label: sensitive
+  - text: "birth name"
+    label: sensitive
+  - text: "christian name"
+    label: sensitive
+  - text: "nickname"
+    label: sensitive
+  - text: "given name"
+    label: sensitive
+  - text: "family name"
+    label: sensitive
+  - text: "middle name"
+    label: sensitive
 
 # Merge this list into config.report.recommendation_overrides.
 recommendation_overrides:
