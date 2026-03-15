@@ -4,17 +4,13 @@ Ensures refactored helpers _get_skip_schemas, _should_skip_schema, _tables_from_
 _discover_fallback_no_schemas preserve behavior so discover() returns expected tables/columns.
 """
 import sqlite3
-from pathlib import Path
 from unittest.mock import MagicMock
-
-import pytest
 
 from connectors.sql_connector import (
     SQLConnector,
     _discover_fallback_no_schemas,
     _get_skip_schemas,
     _should_skip_schema,
-    _tables_from_schema,
 )
 from sqlalchemy import create_engine, inspect
 

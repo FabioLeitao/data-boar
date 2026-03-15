@@ -59,13 +59,21 @@ Obrigado por considerar contribuir. Este documento cobre a configuração local,
 
 ## CI e higiene de dependências
 
-- **CI:** O GitHub Actions executa testes e `uv pip audit` em push/PR para `main` (ou `master`). Quando o SonarQube/SonarCloud estiver habilitado (veja [docs/TESTING.md](docs/TESTING.md) ([pt-BR](docs/TESTING.pt_BR.md))), trate os problemas reportados para que o quality gate permaneça verde.
-- **Dependências:** A fonte de verdade das bibliotecas é o **`pyproject.toml`** (toolchain uv); pip e **`requirements.txt`** são derivados. Declare todas as dependências de runtime e de desenvolvimento em **`pyproject.toml`**. Ao adicionar ou alterar dependências, execute `uv sync` e regenere o lockfile com `uv pip compile pyproject.toml -o requirements.txt`. Não edite o `requirements.txt` à mão para mudanças de versão.
+- **CI:** O GitHub Actions executa testes e **auditoria de dependências** (`uv run pip-audit`) em todo push/PR para `main` (ou `master`). Os PRs devem resolver qualquer falha de auditoria (corrigir ou atualizar dependências vulneráveis) antes do merge. Quando o SonarQube/SonarCloud estiver habilitado (veja [docs/TESTING.md](docs/TESTING.md) ([pt-BR](docs/TESTING.pt_BR.md))), trate os problemas reportados para que o quality gate permaneça verde.
+- **Dependências:** A fonte de verdade das bibliotecas é o **`pyproject.toml`** (toolchain uv); pip e **`requirements.txt`** são derivados. Declare todas as dependências de runtime e de desenvolvimento em **`pyproject.toml`**. Prefira **versões mínimas (`>=`)** para que correções de segurança se apliquem; use pin exato (`==`) apenas quando necessário para reprodutibilidade. Ao adicionar ou alterar dependências, execute `uv sync` e regenere o lockfile com `uv pip compile pyproject.toml -o requirements.txt`. Não edite o `requirements.txt` à mão para mudanças de versão.
 - **Dependabot / automação:** Ao aplicar uma atualização de dependência (ex.: de um PR do Dependabot), atualize primeiro o **`pyproject.toml`** (suba a versão mínima do pacote), execute `uv pip compile pyproject.toml -o requirements.txt` e faça commit dos dois arquivos. Faça merge dos PRs de dependência somente após o CI (testes e auditoria) passar.
+
+## Checklist de release (segurança)
+
+Antes de marcar uma release, os mantenedores devem:
+
+- **Auditoria de dependências:** Execute `uv sync`, depois `uv run pip-audit`. Corrija ou atualize quaisquer achados altos/críticos antes do release.
+- **Documentação:** Garanta que [SECURITY.md](SECURITY.md) ([pt-BR](SECURITY.pt_BR.md)) e [docs/security.md](docs/security.md) ([pt-BR](docs/security.pt_BR.md)) reflitam o comportamento atual (validação, headers, API key, política de logs).
+- **Segredos:** Confirme que não há API keys ou senhas em logs; permissões do arquivo de config e do ambiente restringem acesso a usuários confiáveis (veja [SECURITY.md](SECURITY.md) ([pt-BR](SECURITY.pt_BR.md))).
 
 ## Implantação e produção
 
-- Use um arquivo de configuração dedicado (ex.: via `CONFIG_PATH`) e nunca faça commit dele. Execute `uv pip audit` antes de implantar.
+- Use um arquivo de configuração dedicado (ex.: via `CONFIG_PATH`) e nunca faça commit dele. Execute `uv run pip-audit` antes de implantar.
 - Para uso público ou multi-tenant, coloque a API atrás de um proxy reverso (HTTPS, rate limiting, autenticação) conforme descrito no README.
 
 ## Ver também

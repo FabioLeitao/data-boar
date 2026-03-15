@@ -3,7 +3,7 @@
 **Status:** Not started
 **Synced with:** [docs/PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
-*When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.*
+## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
 
 This plan adds a way for the app to **check for a stable new release** (GitHub), optionally **self-upgrade** when run on bare metal or in a venv, and when running inside **Docker or Kubernetes** to **inform the operator** with upgrade instructions and release notes instead of modifying the container. It ensures **no loss of scan data, reports, or heatmaps**; **no downgrades** unless explicitly forced; and an **audit trail** of upgrades (who, when, from/to version, config scope) similar to the existing wipe log.
 

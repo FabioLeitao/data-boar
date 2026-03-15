@@ -1,0 +1,12 @@
+# Pre-commit hooks: run before each commit to catch issues early.
+# Install: uv sync && uv run pre-commit install
+# Run manually: uv run pre-commit run --all-files
+# See https://pre-commit.com and docs/QUALITY_WORKFLOW_RECOMMENDATIONS.md
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.4
+    hooks:
+      - id: ruff
+        args: [--fix]
+        # Ruff config (extend-exclude, etc.) is in pyproject.toml; same as CI.

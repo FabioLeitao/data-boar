@@ -44,7 +44,7 @@ Thank you for considering contributing. This document covers local setup, workfl
 
 - **Bugs and features:** Open an issue using the [Bug report](.github/ISSUE_TEMPLATE/bug_report.md) or [Feature request](.github/ISSUE_TEMPLATE/feature_request.md) templates.
 - **Security:** Do not post exploit details publicly. Use the [Security issue](.github/ISSUE_TEMPLATE/security.md) template (high-level only) or the process in [SECURITY.md](SECURITY.md).
-- **Pull requests:** Use the [PR template](.github/PULL_REQUEST_TEMPLATE.md). Ensure tests pass (`uv run pytest -v -W error`; see [docs/TESTING.md](docs/TESTING.md)) and that docs/README are updated when behaviour or setup changes.
+- **Pull requests:** Use the [PR template](.github/PULL_REQUEST_TEMPLATE.md). Ensure tests pass (`uv run pytest -v -W error`; see [docs/TESTING.md](docs/TESTING.md)), the lint job passes (`uv run ruff check .`), and that docs/README are updated when behaviour or setup changes.
 
 ### Reducing merge conflicts
 
@@ -53,19 +53,27 @@ Thank you for considering contributing. This document covers local setup, workfl
 
 ## Code and docs
 
-- **Style:** The repo uses [EditorConfig](.editorconfig) (indent, charset, line endings). Keeping Python style consistent (e.g. with Ruff or Black) is encouraged.
-- **Docs:** Keep [README.md](README.md) and [docs/USAGE.md](docs/USAGE.md) in sync with behaviour; update [README.pt_BR.md](README.pt_BR.md) and [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md) for Portuguese. All **new** user-facing documentation must exist in **English (canonical)** and **Brazilian Portuguese**; **plan files** may be English-only. When you change docs to reflect application updates, **sync the other language** (EN first, then pt-BR). Use a language switcher at the top of each doc and cross-links that offer both languages (see [docs/README.md](docs/README.md) — Documentation policy). **After editing any .md file:** run `uv run python scripts/fix_markdown_sonar.py` and `uv run pytest tests/test_markdown_lint.py -v -W error` so SonarQube/markdownlint rules (e.g. MD060 table style) pass.
+- **Style:** The repo uses [EditorConfig](.editorconfig) (indent, charset, line endings). Run `uv run ruff check .` before PR so the CI lint job passes. Optionally install [pre-commit](https://pre-commit.com/) hooks so Ruff runs on commit: `uv sync` then `uv run pre-commit install`; see `.pre-commit-config.yaml`.
+- **Docs:** Keep [README.md](README.md) and [docs/USAGE.md](docs/USAGE.md) in sync with behaviour; update [README.pt_BR.md](README.pt_BR.md) and [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md) for Portuguese. All **new** user-facing documentation must exist in **English (canonical)** and **Brazilian Portuguese**; **plan files** may be English-only. When you change docs to reflect application updates, **sync the other language** (EN first, then pt-BR). Use a language switcher at the top of each doc and cross-links that offer both languages (see [docs/README.md](docs/README.md) — Documentation policy). **After editing any .md file:** run `uv run python scripts/fix_markdown_sonar.py` and `uv run pytest tests/test_markdown_lint.py -v -W error` so SonarQube/markdownlint rules (e.g. MD060 table style) pass. The fix script applies MD029 (ordered list style 1/1/1); if a doc uses **semantic step numbers** (1. 2. 3.), restore them by hand after running the script so the list still reads correctly.
 - **Secrets:** Never commit credentials or real PII. Use `.env` or `config.local.yaml` (both are in `.gitignore`) and redact in issues/PRs.
 
 ## CI and dependency hygiene
 
-- **CI:** GitHub Actions run tests and `uv pip audit` on push/PR to `main` (or `master`). When SonarQube/SonarCloud is enabled (see [docs/TESTING.md](docs/TESTING.md)), address reported issues so the quality gate stays green.
-- **Dependencies:** The source of truth for libraries is **`pyproject.toml`** (uv toolchain); pip and **`requirements.txt`** are derivative. Declare all runtime and dev dependencies in **`pyproject.toml`**. When you add or change deps, run `uv sync` and regenerate the lockfile with `uv pip compile pyproject.toml -o requirements.txt`. Do not edit `requirements.txt` by hand for version changes.
+- **CI:** GitHub Actions run tests and **dependency audit** (`uv run pip-audit`) on every push/PR to `main` (or `master`). PRs must resolve any audit failures (fix or upgrade vulnerable dependencies) before merge. When SonarQube/SonarCloud is enabled (see [docs/TESTING.md](docs/TESTING.md)), address reported issues so the quality gate stays green.
+- **Dependencies:** The source of truth for libraries is **`pyproject.toml`** (uv toolchain); pip and **`requirements.txt`** are derivative. Declare all runtime and dev dependencies in **`pyproject.toml`**. Prefer **minimum versions (`>=`)** so security patches apply; use exact pins (`==`) only when required for reproducibility. When you add or change deps, run `uv sync` and regenerate the lockfile with `uv pip compile pyproject.toml -o requirements.txt`. Do not edit `requirements.txt` by hand for version changes.
 - **Dependabot / automation:** When applying a dependency update (e.g. from a Dependabot PR), update **`pyproject.toml`** first (bump the minimum version for that package), then run `uv pip compile pyproject.toml -o requirements.txt` and commit both files. Merge dependency PRs only after CI (tests and audit) pass.
+
+## Release checklist (Security)
+
+Before tagging a release, maintainers should:
+
+- **Dependency audit:** Run `uv sync`, then `uv run pip-audit`. Fix or upgrade any high/critical findings before release.
+- **Docs:** Ensure [SECURITY.md](SECURITY.md) and [docs/security.md](docs/security.md) reflect current behaviour (validation, headers, API key, logging policy).
+- **Secrets:** Confirm no API keys or passwords in logs; config file and env handling restrict access to trusted users (see [SECURITY.md](SECURITY.md)).
 
 ## Deployment and production
 
-- Use a dedicated config file (e.g. via `CONFIG_PATH`) and never commit it. Run `uv pip audit` before deploying.
+- Use a dedicated config file (e.g. via `CONFIG_PATH`) and never commit it. Run `uv run pip-audit` before deploying.
 - For public or multi-tenant use, put the API behind a reverse proxy (HTTPS, rate limiting, auth) as described in the README.
 
 ## See also

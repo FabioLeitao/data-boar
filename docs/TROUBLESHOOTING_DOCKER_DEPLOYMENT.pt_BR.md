@@ -44,12 +44,12 @@ O config deve estar disponível **dentro** do container. Setup típico: diretór
 
 ## 5. Resumo
 
-| Objetivo | Abordagem recomendada |
-|----------|------------------------|
-| Varrer DB no host a partir do container | Use `host.docker.internal` (ou IP do host) como host do DB; garanta que o DB escute e o firewall permita o container. |
-| Varrer arquivos em NFS/SMB | A) Monte o share no host, bind mount no container, alvo filesystem. B) Alvo NFS/SMB no config; imagem com `.[shares]`; rede do container até o servidor. |
-| Container não resolve hostname | Defina `--dns` ou use IP no config. |
-| Config ou relatórios não encontrados | Monte volume em `/data`; CONFIG_PATH=/data/config.yaml; sqlite_path e report.output_dir em `/data`. |
+| Objetivo                                | Abordagem recomendada                                                                                                                                    |
+| ----------                              | ------------------------                                                                                                                                 |
+| Varrer DB no host a partir do container | Use `host.docker.internal` (ou IP do host) como host do DB; garanta que o DB escute e o firewall permita o container.                                    |
+| Varrer arquivos em NFS/SMB              | A) Monte o share no host, bind mount no container, alvo filesystem. B) Alvo NFS/SMB no config; imagem com `.[shares]`; rede do container até o servidor. |
+| Container não resolve hostname          | Defina `--dns` ou use IP no config.                                                                                                                      |
+| Config ou relatórios não encontrados    | Monte volume em `/data`; CONFIG_PATH=/data/config.yaml; sqlite_path e report.output_dir em `/data`.                                                      |
 
 ---
 

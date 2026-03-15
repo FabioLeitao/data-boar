@@ -22,10 +22,10 @@ Este documento ajuda a diagnosticar e corrigir falhas **unreachable**, **timeout
 ### 2.1 Checklist
 
 1. **Alcance do host (ou container) de auditoria:** É possível pingar ou conectar na mesma máquina/container que roda o Data Boar? Em Docker, teste de dentro do container (`docker exec <container> ping <db-host>` ou `nc -zv <host> <port>`).
-2. **DNS:** Se o config usa hostname, resolva no host/container: `getent hosts <hostname>` ou `nslookup <hostname>`. Se falhar, corrija DNS ou use o IP no config.
-3. **Firewall:** Saída do host/container para a porta do alvo (ex.: 5432 PostgreSQL, 445 SMB, 443 HTTPS). Entrada no servidor alvo deve permitir o IP do host/container.
-4. **VPN:** Se o alvo só é acessível por VPN, a VPN deve estar ativa no host (ou o container usar rede do host, se aplicável).
-5. **Host/porta/caminho errado no config:** Erro de digitação em `host`, `port`, `base_url` ou `path`. Confira com o endereço real do alvo.
+1. **DNS:** Se o config usa hostname, resolva no host/container: `getent hosts <hostname>` ou `nslookup <hostname>`. Se falhar, corrija DNS ou use o IP no config.
+1. **Firewall:** Saída do host/container para a porta do alvo (ex.: 5432 PostgreSQL, 445 SMB, 443 HTTPS). Entrada no servidor alvo deve permitir o IP do host/container.
+1. **VPN:** Se o alvo só é acessível por VPN, a VPN deve estar ativa no host (ou o container usar rede do host, se aplicável).
+1. **Host/porta/caminho errado no config:** Erro de digitação em `host`, `port`, `base_url` ou `path`. Confira com o endereço real do alvo.
 
 ### 2.2 Passos para corrigir
 
@@ -40,8 +40,8 @@ Corrija DNS (use IP ou servidor DNS correto); abra firewall para a porta necess�
 ### 3.1 Checklist
 
 1. **Alvo lento ou sobrecarregado:** Alta latência ou carga no DB/API; tente em horário de menor uso.
-2. **Timeout baixo no config:** Alvos REST/API aceitam `timeout` (segundos). Aumente (ex.: 60 ou 120) se o alvo for lento.
-3. **Latência de rede:** Caminho entre regiões ou congestionado; aumente timeout ou rode o scanner mais perto do alvo.
+1. **Timeout baixo no config:** Alvos REST/API aceitam `timeout` (segundos). Aumente (ex.: 60 ou 120) se o alvo for lento.
+1. **Latência de rede:** Caminho entre regiões ou congestionado; aumente timeout ou rode o scanner mais perto do alvo.
 
 ### 3.2 Passos para corrigir
 
