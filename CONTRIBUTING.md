@@ -68,7 +68,7 @@ Thank you for considering contributing. This document covers local setup, workfl
 Before tagging a release, maintainers should:
 
 - **Dependency audit:** Run `uv sync`, then `uv run pip-audit`. Fix or upgrade any high/critical findings before release.
-- **Docs:** Ensure [SECURITY.md](SECURITY.md) and [docs/security.md](docs/security.md) reflect current behaviour (validation, headers, API key, logging policy).
+- **Docs:** Ensure [SECURITY.md](SECURITY.md) and [docs/SECURITY.md](docs/SECURITY.md) reflect current behaviour (validation, headers, API key, logging policy).
 - **Secrets:** Confirm no API keys or passwords in logs; config file and env handling restrict access to trusted users (see [SECURITY.md](SECURITY.md)).
 
 ## Deployment and production
@@ -81,7 +81,7 @@ Before tagging a release, maintainers should:
 - **[docs/TESTING.md](docs/TESTING.md)** ([pt-BR](docs/TESTING.pt_BR.md)) — Test modules, CI, SonarQube.
 - **[docs/TOPOLOGY.md](docs/TOPOLOGY.md)** ([pt-BR](docs/TOPOLOGY.pt_BR.md)) — Application topology (modules, classes, data flow).
 - **[docs/COMMIT_AND_PR.md](docs/COMMIT_AND_PR.md)** ([pt-BR](docs/COMMIT_AND_PR.pt_BR.md)) — Commit and PR automation.
-- **[docs/compliance-frameworks.md](docs/compliance-frameworks.md)** ([pt-BR](docs/compliance-frameworks.pt_BR.md)) — Compliance labels and extensibility.
+- **[docs/COMPLIANCE_FRAMEWORKS.md](docs/COMPLIANCE_FRAMEWORKS.md)** ([pt-BR](docs/COMPLIANCE_FRAMEWORKS.pt_BR.md)) — Compliance labels and extensibility.
 - **[docs/COPYRIGHT_AND_TRADEMARK.md](docs/COPYRIGHT_AND_TRADEMARK.md)** ([pt-BR](docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md)) — Copyright and trademark (making it official, registries). [NOTICE](NOTICE) for project notice.
 - Full doc index: [docs/README.md](docs/README.md) ([pt-BR](docs/README.pt_BR.md)).
 

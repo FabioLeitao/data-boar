@@ -2,7 +2,7 @@
 
 Plan files are kept in **English only** for history and progress tracking. Operator-facing documentation (how to use, config, deploy, etc.) exists in both EN and pt-BR; see [README.md](README.md) ([pt-BR](README.pt_BR.md)).
 
-This document is the **single source of truth** for the project's plan status and remains in **`docs/`** at all times. It lists **incomplete goals** from active plans and the **recommended sequential to-dos** to achieve them. Completed plan documents are archived in **`docs/completed/`** for reference; links below point to those files.
+This document is the **single source of truth** for the project's plan status and remains in **`docs/plans/`** at all times. It lists **incomplete goals** from active plans and the **recommended sequential to-dos** to achieve them. Completed plan documents are archived in **`docs/plans/completed/`** for reference; links below point to those files.
 
 **Policy:** When implementing a plan step, **update documentation** (USAGE, TECH_GUIDE, SECURITY, or dedicated docs) and **add or run tests** as the feature is implemented. After completing or adding to-dos, **update this file and the plan file** so progress is tracked in one place. All steps are intended to be **non-destructive**, **non-regression**, and **tested** before marking done.
 
@@ -85,7 +85,7 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 | 3.1–3.4  | Rate limit/API key/report access docs; optional scan payload limits | ⬜ Pending                                    |
 | 5.1–5.3  | Deploy hardening, secrets, WAF docs                                 | ✅ Done                                       |
 | 6.1, 6.3 | Security tests for new validation; no regressions                   | ⬜ Pending                                    |
-| 7.1–7.3  | Release checklist, docs/security.md, SECURITY.md                    | 7.1 ✅ (checklist in CONTRIBUTING); 7.2–7.3 ⬜ |
+| 7.1–7.3  | Release checklist, docs/SECURITY.md, SECURITY.md                    | 7.1 ✅ (checklist in CONTRIBUTING); 7.2–7.3 ⬜ |
 
 ---
 
@@ -189,7 +189,7 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 
 | Phase   | To-do                                                                                                                 | Status    |
 | -----   | -----                                                                                                                 | ------    |
-| 1.1–1.4 | Research and specify alphanumeric CNPJ format; propose regex; document in sensitivity-detection (EN + pt_BR)          | ⬜ Pending |
+| 1.1–1.4 | Research and specify alphanumeric CNPJ format; propose regex; document in SENSITIVITY_DETECTION (EN + pt_BR)          | ⬜ Pending |
 | 2.1–2.3 | Example regex_overrides + ML term; verify scan detects both legacy and alphanumeric; USAGE docs                       | ⬜ Pending |
 | 3.1–3.4 | Decide built-in vs flag vs override-only; optional built-in/flag; optional "CNPJ format compatibility" report summary | ⬜ Pending |
 | 4.1–4.3 | "How to get there" recommendations; update PLANS_TODO and plan; full regression                                       | ⬜ Pending |
