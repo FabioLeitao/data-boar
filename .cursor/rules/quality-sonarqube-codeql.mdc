@@ -1,0 +1,64 @@
+---
+description: When editing Python or markdown, avoid SonarQube and CodeQL violations; run the project quality tests after changes so CI stays green.
+globs: ["**/*.py", "**/*.md", ".cursor/**/*.mdc"]
+alwaysApply: false
+---
+
+# Quality: SonarQube and CodeQL
+
+This project enforces quality and security via **tests** (CI) and **CodeQL** (GitHub code scanning). When you create or edit **Python** or **markdown** files, follow the rules below and run the relevant tests so we do not introduce regressions.
+
+## After editing Python
+
+1. **Run Ruff** (style and common issues): `uv run ruff check .` (optional: `uv run ruff format --check .` or `ruff format .`). Fix or adjust config so CI lint job passes. Optionally use pre-commit: `uv run pre-commit install` so Ruff runs on commit.
+
+1. **Run SonarQube-style and security tests:**
+
+   ```bash
+   uv run pytest tests/test_sonarqube_python.py tests/test_security.py -v -W error
+   ```
+
+   Fix any failure before committing.
+
+1. **Avoid these SonarQube patterns** (guarded by tests or CI):
+   - **S3981:** Do not use `len(...) >= 0` (length is never negative). Use `== 0` or `> 0` instead, or drop the assertion if both are acceptable.
+   - **S3776:** Keep cognitive complexity ≤ 15 per function (especially in `tests/test_sonarqube_python.py`). Extract helpers if a function grows too many branches/loops.
+   - **S4423:** Any `ssl.create_default_context()` must set `minimum_version = ssl.TLSVersion.TLSv1_2` (or stronger).
+   - **S5706:** Do not use bare `except:` in api/routes, core/engine, or config/loader.
+   - **S1192:** Use constants for repeated string literals (session_id pattern, template names, response codes); see test_sonarqube_python and api/routes.
+
+1. **Avoid CodeQL-relevant patterns** (CI runs CodeQL on push/PR):
+   - Do not log secrets (API keys, passwords, connection strings). See SECURITY.md and docs/security.md.
+   - Do not build SQL or shell commands by concatenating user input; use parameterized queries and safe APIs.
+   - Prefer strong crypto (e.g. TLS 1.2+); avoid weak or deprecated algorithms for sensitive data.
+
+## After editing markdown
+
+1. Run the **markdown lint** flow (see rule **markdown-lint**): `uv run python scripts/fix_markdown_sonar.py` then `uv run pytest tests/test_markdown_lint.py -v -W error`.
+
+## Full regression (recommended before PR)
+
+```bash
+uv run pytest -v -W error
+```
+
+This runs all tests including SonarQube, security, and markdown lint. Resolve any failure; CodeQL results appear under the repository’s Security > Code scanning after push.
+
+## Extending the list
+
+When you add a **new** SonarQube or CodeQL rule that the project should follow:
+
+1. **Add a test** that enforces it (e.g. in `tests/test_sonarqube_python.py` or `tests/test_security.py`), so CI and local runs catch regressions.
+1. **Update this rule** (and `.cursor/skills/quality-sonarqube-codeql/SKILL.md`) with the rule id and what to avoid / use instead.
+1. **Update docs/TESTING.md** so the new rule is documented in the quality section.
+
+The full suite (`uv run pytest -v -W error`) is the regression gate: keep all tests green and free of warnings during development so the app keeps doing what it is supposed to do.
+
+## References
+
+- **tests/test_sonarqube_python.py** – S3981, S3776, S4423, S5706, S1192, S5856, S8415.
+- **tests/test_security.py** – SQL injection, path traversal, safe_load, config endpoint.
+- **tests/test_markdown_lint.py** – MD009, MD012, MD060, etc.
+- **docs/TESTING.md** – Full test module list and quality section.
+- **.github/workflows/codeql.yml** – CodeQL runs on push/PR; fix findings in Security tab.
+- **docs/QUALITY_WORKFLOW_RECOMMENDATIONS.md** – Extra layers (pre-commit, Bandit, mypy, MD029, ADRs, etc.) to adopt over time.

@@ -14,7 +14,7 @@ Rules addressed:
 - MD047: File ends with single newline
 - MD060: Table column style "aligned" (pad cells so pipes align with header)
 
-Excludes: .cursor, .git, node_modules, .venv, etc. (same as test_markdown_lint).
+Excludes: .git, node_modules, .venv, etc. .cursor is included so rules/skills (.md, .mdc) pass MD031, MD060, etc.
 
 Code quality (SonarQube): avoid S6326 (prefer simple string checks over regex where possible),
 S3776 (keep functions simple; extract helpers to reduce cognitive complexity), S1481 (remove
@@ -27,20 +27,21 @@ import re
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-EXCLUDE_DIRS = frozenset({".cursor", ".git", "node_modules", "__pycache__", ".venv", "venv", ".tox", "build", "dist"})
+EXCLUDE_DIRS = frozenset({".git", "node_modules", "__pycache__", ".venv", "venv", ".tox", "build", "dist"})
 
 
 def collect_md_files() -> list[Path]:
     out: list[Path] = []
-    for path in REPO_ROOT.rglob("*.md"):
-        try:
-            rel = path.relative_to(REPO_ROOT)
-        except ValueError:
-            continue
-        if any(part in EXCLUDE_DIRS for part in rel.parts):
-            continue
-        out.append(path)
-    return sorted(out)
+    for ext in ("*.md", "*.mdc"):
+        for path in REPO_ROOT.rglob(ext):
+            try:
+                rel = path.relative_to(REPO_ROOT)
+            except ValueError:
+                continue
+            if any(part in EXCLUDE_DIRS for part in rel.parts):
+                continue
+            out.append(path)
+    return sorted(set(out))
 
 
 def fix_md009(line: str) -> str:

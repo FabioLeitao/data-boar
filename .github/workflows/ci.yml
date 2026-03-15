@@ -38,6 +38,29 @@ jobs:
         run: uv run pytest -v -W error
         # addopts in pyproject.toml also set -W error; explicit in CI so tests pass without warnings.
 
+  lint:
+    name: Lint (Ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Ruff check
+        run: uv run ruff check .
+        # extend-exclude in pyproject.toml skips db, scanners, utils, logging_custom; add "ruff format --check" when ready.
+
   audit:
     name: Dependency audit
     runs-on: ubuntu-latest

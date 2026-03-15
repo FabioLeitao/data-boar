@@ -3,7 +3,7 @@
 **Status:** Not started
 **Synced with:** [docs/PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
-*When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.*
+## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
 
 This plan aims to **reduce risk** around passwords and other secrets used for data sources (databases, file shares, dashboards, APIs) in a **compliance and data-mapping** context: keep secrets off config files where possible, support optional import into a vault with references, and allow re-import from config via a flag (CLI and web). If a full vault is not feasible in all environments, **alternatives** are proposed to still improve protection.
 
