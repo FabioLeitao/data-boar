@@ -153,6 +153,49 @@
   label: sensitive
 - text: "passeport"
   label: sensitive
+# French document nicknames and regional (carte bleue, carte rose, carte vitale, etc.)
+- text: "carte bleue"
+  label: sensitive
+- text: "carte rose"
+  label: sensitive
+- text: "carte vitale"
+  label: sensitive
+- text: "titre de séjour"
+  label: sensitive
+- text: "carte de séjour"
+  label: sensitive
+- text: "numéro de sécurité sociale"
+  label: sensitive
+# Further regional ID (PT-BR, EN, ES, DE)
+- text: "rne"
+  label: sensitive
+- text: "ric"
+  label: sensitive
+- text: "certidão de nascimento"
+  label: sensitive
+- text: "oab"
+  label: sensitive
+- text: "crm"
+  label: sensitive
+- text: "employee badge number"
+  label: sensitive
+- text: "license number"
+  label: sensitive
+- text: "nie"
+  label: sensitive
+- text: "libro de familia"
+  label: sensitive
+- text: "Aufenthaltserlaubnis"
+  label: sensitive
+- text: "Sozialversicherungsnummer"
+  label: sensitive
+# Generic/ambiguous (doc_id, document_id) → detector returns MEDIUM + PII_AMBIGUOUS; operator should confirm manually
+- text: "doc_id"
+  label: sensitive
+- text: "document_id"
+  label: sensitive
+- text: "id_number"
+  label: sensitive
 - text: "data de nascimento"
   label: sensitive
 - text: "senha"

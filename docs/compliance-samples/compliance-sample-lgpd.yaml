@@ -150,8 +150,45 @@ terms:
     label: sensitive
   - text: "carteira de identidade"
     label: sensitive
+  # Further PT-BR ID/document variations (RNE, RIC, certidões, OAB, CRM, etc.)
+  - text: "rne"
+    label: sensitive
+  - text: "ric"
+    label: sensitive
+  - text: "certidão de nascimento"
+    label: sensitive
+  - text: "certidão de casamento"
+    label: sensitive
+  - text: "certidão de óbito"
+    label: sensitive
+  - text: "certidao de nascimento"
+    label: sensitive
+  - text: "oab"
+    label: sensitive
+  - text: "crm"
+    label: sensitive
+  - text: "crc"
+    label: sensitive
+  - text: "crea"
+    label: sensitive
+  - text: "crq"
+    label: sensitive
+  - text: "registro profissional"
+    label: sensitive
+  - text: "employee badge number"
+    label: sensitive
+  - text: "membership number"
+    label: sensitive
+  - text: "license number"
+    label: sensitive
 
 recommendation_overrides:
+  - norm_tag_pattern: "PII_AMBIGUOUS"
+    base_legal: "Identificador genérico – confirmar manualmente"
+    risk: "Nome de coluna genérico (doc_id, document_id, id_number, etc.). Pode ser PII ou ID interno."
+    recommendation: "Confirmar manualmente: verificar se a coluna contém dado pessoal (PII) ou apenas identificador interno. Se for PII, aplicar controles e base legal; se interno, prioridade MÉDIA."
+    priority: "MÉDIA"
+    relevant_for: "Operador, DPO, Segurança da Informação"
   - norm_tag_pattern: "LGPD Art. 5"
     base_legal: "LGPD Art. 5 (dados pessoais); Lei 13.709/2018"
     risk: "Identificação de pessoa natural."
