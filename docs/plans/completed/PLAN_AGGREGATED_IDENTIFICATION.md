@@ -1,6 +1,6 @@
 # Plan: Cross-referenced and aggregated data – identification risk
 
-**Português (Brasil):** [sensitivity-detection.pt_BR.md](sensitivity-detection.pt_BR.md) (overview and configuration examples for this feature).
+**Português (Brasil):** [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md) (overview and configuration examples for this feature).
 
 ## Goal
 

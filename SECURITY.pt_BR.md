@@ -63,7 +63,7 @@ Bibliotecas cliente adicionais podem ser necessárias dependendo de quais conect
 - **Config e serialização:** O config YAML é carregado com `yaml.safe_load` (sem deserialização de objetos Python arbitrários). Veja **`tests/test_security.py`** para um teste que rejeita tags YAML inseguras.
 - **Exposição do endpoint de config:** Quando `api.require_api_key` é true, GET `/config` retorna 401 sem uma chave de API válida, de modo que o config bruto (que pode conter segredos) não fique exposto. Veja **`tests/test_security.py`** `test_config_endpoint_requires_api_key_when_required`.
 
-Para um **resumo orientado ao técnico** (o que observar, testes de regressão, recomendações), veja **`docs/security.md`** (EN) e **`docs/security.pt_BR.md`** (pt-BR).
+Para um **resumo orientado ao técnico** (o que observar, testes de regressão, recomendações), veja **`docs/SECURITY.md`** (EN) e **`docs/SECURITY.pt_BR.md`** (pt-BR).
 
 ## Cabeçalhos HTTP de segurança (web e API)
 
