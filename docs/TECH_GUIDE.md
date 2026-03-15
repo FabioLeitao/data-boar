@@ -519,7 +519,7 @@ You can run the API as a **single container** (`docker run`), with **Docker Comp
 
 Docker images are available on **Docker Hub** so you can run the application without cloning the repository:
 
-- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` and `fabioleitao/data_boar:1.5.2`
+- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` and `fabioleitao/data_boar:1.5.3`
 - **Legacy:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler) — `fabioleitao/python3-lgpd-crawler:latest` (same image may be published under both names)
 
 The image includes regex + ML + optional DL sensitivity detection; you can set ML/DL training terms in config (see [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) and [deploy/config.example.yaml](../deploy/config.example.yaml)).

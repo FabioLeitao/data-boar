@@ -519,7 +519,7 @@ Você pode executar a API como **um único container** (`docker run`), com **Doc
 
 Imagens Docker estão disponíveis no **Docker Hub** para você executar a aplicação sem clonar o repositório:
 
-- **Com marca (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` e `fabioleitao/data_boar:1.5.2`
+- **Com marca (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` e `fabioleitao/data_boar:1.5.3`
 - **Legado:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler) — `fabioleitao/python3-lgpd-crawler:latest` (a mesma imagem pode ser publicada sob os dois nomes)
 
 A imagem inclui detecção de sensibilidade por regex + ML + DL opcional; você pode definir termos de treinamento ML/DL na config (veja [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) e [deploy/config.example.yaml](../deploy/config.example.yaml)).
