@@ -103,6 +103,53 @@ terms:
     label: sensitive
   - text: "identification number"
     label: sensitive
+  # ID / document – additional naming schemes (PT-BR + EN)
+  - text: "passaporte"
+    label: sensitive
+  - text: "passport"
+    label: sensitive
+  - text: "ctps"
+    label: sensitive
+  - text: "carteira de trabalho"
+    label: sensitive
+  - text: "distintivo"
+    label: sensitive
+  - text: "carteira sindical"
+    label: sensitive
+  - text: "certificado de reservista"
+    label: sensitive
+  - text: "título eleitoral"
+    label: sensitive
+  - text: "titulo eleitoral"
+    label: sensitive
+  - text: "pis"
+    label: sensitive
+  - text: "cartão cidadão"
+    label: sensitive
+  - text: "cartao cidadao"
+    label: sensitive
+  - text: "identidade de estrangeiro"
+    label: sensitive
+  - text: "certidão"
+    label: sensitive
+  - text: "certidao"
+    label: sensitive
+  - text: "green card"
+    label: sensitive
+  - text: "registro no conselho de classe"
+    label: sensitive
+  - text: "professional registration"
+    label: sensitive
+  - text: "documento de identidade"
+    label: sensitive
+  - text: "identity document"
+    label: sensitive
+  - text: "id card"
+    label: sensitive
+  - text: "national id"
+    label: sensitive
+  - text: "carteira de identidade"
+    label: sensitive
 
 recommendation_overrides:
   - norm_tag_pattern: "LGPD Art. 5"
