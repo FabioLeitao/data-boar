@@ -55,17 +55,21 @@ Additional client libraries may be required depending on which connectors you us
 
 - Whenever you change dependencies (including when applying Dependabot or automation recommendations), edit **`pyproject.toml`** first, then regenerate `requirements.txt` with `uv pip compile pyproject.toml -o requirements.txt` so both files stay in sync.
 
+This approach is part of the project’s security baseline. For the full list of hardening measures and status, see **`docs/plans/PLAN_SECURITY_HARDENING.md`**.
+
 ## Resistance to common vulnerabilities
 
 - **SQL injection:** Table and column names used in dynamic SQL (connectors) come from the database inspector (discover), not from user input. Identifiers are escaped per dialect: double-quote for SQLite/Postgres/Oracle (`"` → `""`), backtick for MySQL (`` ` `` → ` `` `). The local audit database (SQLite) uses SQLAlchemy ORM and parameterized queries only; `session_id` and other user-supplied values are never concatenated into raw SQL. See **`tests/test_security.py`** for regression tests.
 - **Path traversal:** `session_id` in API paths is validated with a strict pattern (alphanumeric and underscore, 12–64 chars) before use in file paths or lookups; invalid values return HTTP 400. See **`api/routes.py`** `_validate_session_id` and **`tests/test_security.py`**.
+- **Input validation (tenant/technician):** Tenant and technician values (scan start body, session PATCH, config-driven scan) are validated for length and allowed characters (printable, no control chars), then sanitized before storage so reports and the dashboard never display unsanitized input. See **`core/validation.py`** `sanitize_tenant_technician` and **`tests/test_security.py`**.
 - **Credential injection in connection URLs:** User and password are URL-encoded when building database connection URLs (SQL connector, MongoDB connector) so that special characters (`@`, `:`, `/`, `#`) in credentials do not break URL parsing or be misinterpreted as host/path. See **`connectors/sql_connector.py`** `_quote_userinfo` / `_build_url`, **`connectors/mongodb_connector.py`** `connect()`, and **`tests/test_security.py`** (e.g. `test_sql_connector_build_url_encodes_password_special_chars`, `test_mongodb_connector_uri_encodes_password_special_chars`).
 - **Config and serialization:** YAML config is loaded with `yaml.safe_load` (no arbitrary Python object deserialization). See **`tests/test_security.py`** for a test that unsafe YAML tags are rejected.
 - **Config endpoint exposure:** When `api.require_api_key` is true, GET `/config` returns 401 without a valid API key, so raw config (which may contain secrets) is not exposed. See **`tests/test_security.py`** `test_config_endpoint_requires_api_key_when_required`.
 - **Request body size limit:** The API rejects requests whose **Content-Length** exceeds **1 MB** (e.g. POST `/config`, POST `/scan`, POST `/scan_database`) with **HTTP 413 Payload Too Large** to reduce DoS via huge JSON or form bodies. See **`api/routes.py`** `request_body_size_middleware` and **`tests/test_security.py`** for regression tests.
 - **Logging policy:** API key, passwords, and connection strings must not appear in audit or application logs. Failure details and exception messages are passed through **`core.validation.redact_secrets_for_log`** before being written to the log; connection URLs and `password=` / `api_key=`-style values are masked. Do not log raw config, request bodies, or driver exception messages that might contain credentials. See **`core/database.py`** (save_failure) and **`tests/test_security.py`** (redact_secrets_for_log).
+- **Report and heatmap access:** Report and heatmap endpoints validate `session_id` format before use; invalid IDs return 400, unknown or missing sessions return 404 (no session enumeration or 403/404 distinction for unknown IDs). See **`api/routes.py`** and **`docs/SECURITY.md`**.
 
-For a **technician-oriented summary** (what to watch for, regression tests, recommendations), see **`docs/security.md`** (EN) and **`docs/security.pt_BR.md`** (pt-BR).
+For a **technician-oriented summary** (what to watch for, regression tests, recommendations), see **`docs/SECURITY.md`** (EN) and **`docs/SECURITY.pt_BR.md`** (pt-BR). For completed and planned hardening steps, see **`docs/plans/PLAN_SECURITY_HARDENING.md`**.
 
 ## HTTP security headers (web and API)
 
