@@ -21,7 +21,7 @@ scan:
   # Parallel targets: 1 = sequential (minimal), 2–4 for many DB/FS targets (I/O-bound; network/disk are the bottleneck)
   max_workers: 1
 
-# Optional: ML/DL training terms for sensitivity detection (see docs/sensitivity-detection.md).
+# Optional: ML/DL training terms for sensitivity detection (see docs/SENSITIVITY_DETECTION.md).
 # Uncomment and set paths, or use inline sensitivity_detection.ml_terms / dl_terms.
 # ml_patterns_file: /data/config/ml_terms.yaml
 # dl_patterns_file: /data/config/dl_terms.yaml
