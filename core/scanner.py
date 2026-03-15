@@ -20,6 +20,7 @@ class DataScanner:
         dl_patterns_path: str | None = None,
         dl_terms_inline: list | None = None,
         detection_config: dict | None = None,
+        file_encoding: str = "utf-8",
     ):
         self.detector = SensitivityDetector(
             regex_overrides_path=regex_overrides_path,
@@ -28,6 +29,7 @@ class DataScanner:
             dl_patterns_path=dl_patterns_path,
             dl_terms_inline=dl_terms_inline,
             detection_config=detection_config,
+            file_encoding=file_encoding or "utf-8",
         )
 
     def scan_column(self, column_name: str, sample_content: str) -> dict[str, Any]:

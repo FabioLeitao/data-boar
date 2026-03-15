@@ -89,6 +89,7 @@ class AuditEngine:
             dl_patterns_path=config.get("dl_patterns_file") or None,
             dl_terms_inline=sens.get("dl_terms") or None,
             detection_config=detection,
+            file_encoding=config.get("pattern_files_encoding", "utf-8"),
         )
         self._is_running = False
         self._last_report_path: str | None = None
