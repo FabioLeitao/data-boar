@@ -6,7 +6,7 @@ This document is the **single source of truth** for the project's plan status an
 
 **Policy:** When implementing a plan step, **update documentation** (USAGE, TECH_GUIDE, SECURITY, or dedicated docs) and **add or run tests** as the feature is implemented. After completing or adding to-dos, **update this file and the plan file** so progress is tracked in one place. All steps are intended to be **non-destructive**, **non-regression**, and **tested** before marking done.
 
-**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ⬜ Not started · **Additional detection techniques & FN reduction** ⬜ Not started · **Compressed files** ⬜ Not started · **Content type & cloaking detection** ⬜ Not started · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ⬜ Not started · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started · **Additional data soup formats** ⬜ Backlog (catalogue)
+**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ✅ Done · **Additional detection techniques & FN reduction** ⬜ Not started · **Compressed files** ⬜ Not started · **Content type & cloaking detection** ⬜ Not started · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ⬜ Not started · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started · **Additional data soup formats** ⬜ Backlog (catalogue)
 
 ---
 
@@ -136,19 +136,6 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 
 ---
 
-### Additional compliance samples – [PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md](PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md)
-
-| #       | To-do                                                                   | Status                    |
-| -       | -----                                                                   | ------                    |
-| 1.1     | Create docs/compliance-samples/ (or deploy/); README                    | Done                      |
-| 1.2–1.8 | UK GDPR, EU GDPR, Benelux, PIPEDA, POPIA, APPI, PCI-DSS sample files   | 1.2 Done; 1.3–1.8 Pending |
-| 1.9–1.17 | Optional regional samples (Philippines, Australia, Singapore, UAE, Argentina, Kenya, India, Turkey, + others) | ⬜ Optional |
-| 2.1–2.4 | README pitch; compliance-frameworks/samples doc; USAGE/TECH_GUIDE/index | ⬜ Pending                 |
-| 3.1–3.2 | Test sample YAML structure; doc existence test                          | ⬜ Pending                 |
-| 4.1     | No regressions; full test suite                                         | ⬜ Pending                 |
-
----
-
 ### Compressed files (scan inside archives) – [PLAN_COMPRESSED_FILES.md](PLAN_COMPRESSED_FILES.md)
 
 | #    | To-do                                                                    | Status    |           |
@@ -260,6 +247,7 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 - **Logo and naming** – [completed/PLAN_LOGO_AND_NAMING.md](completed/PLAN_LOGO_AND_NAMING.md)
 - **Security hardening** – [completed/PLAN_SECURITY_HARDENING.md](completed/PLAN_SECURITY_HARDENING.md)
 - **Configurable timeouts** – [completed/PLAN_CONFIGURABLE_TIMEOUTS_AND_RATE_GUIDANCE.md](completed/PLAN_CONFIGURABLE_TIMEOUTS_AND_RATE_GUIDANCE.md)
+- **Additional compliance samples** – [completed/PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md](completed/PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md)
 
 ---
 

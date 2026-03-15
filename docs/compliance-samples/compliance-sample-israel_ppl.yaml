@@ -1,0 +1,55 @@
+# Israel PPL – sample compliance profile (Privacy Protection Law, PPA)
+#
+# Target audience: Israel deployments. Privacy Protection Authority (PPA); database registrar.
+# Terms: personal information (EN); often used alongside EU GDPR for international deals.
+#
+# How to use:
+#   1. Set in your main config:
+#        regex_overrides_file: path/to/compliance-sample-israel_ppl.yaml
+#        ml_patterns_file: path/to/compliance-sample-israel_ppl.yaml
+#   2. Merge the recommendation_overrides list below into your config under report.recommendation_overrides.
+#
+# Israel: Privacy Protection Law 5741-1981; PPA; database registration.
+
+regex:
+  - name: "ISRAEL_ID"
+    pattern: "\\b\\d{9}\\b"
+    norm_tag: "Israel PPL"
+  - name: "ISRAEL_ID_ALT"
+    pattern: "\\b\\d{1,2}\\s?\\d{6}\\s?\\d\\b"
+    norm_tag: "Israel PPL"
+
+# ML terms: personal information, database registrar, PPA.
+terms:
+  - text: "personal information"
+    label: sensitive
+  - text: "privacy protection law"
+    label: sensitive
+  - text: "ppa"
+    label: sensitive
+  - text: "privacy protection authority"
+    label: sensitive
+  - text: "database registrar"
+    label: sensitive
+  - text: "database registration"
+    label: sensitive
+  - text: "data subject"
+    label: sensitive
+  - text: "database owner"
+    label: sensitive
+  - text: "consent"
+    label: sensitive
+  - text: "sensitive information"
+    label: sensitive
+  - text: "israel id"
+    label: sensitive
+  - text: "teudat zehut"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "Israel PPL"
+    base_legal: "Privacy Protection Law 5741-1981; Privacy Protection Authority (PPA)"
+    risk: "Personal information; database registration and lawful processing."
+    recommendation: "Comply with PPL; register databases with PPA where required; implement consent and data subject rights."
+    priority: "ALTA"
+    relevant_for: "DPO, PPA, Database Owner"
