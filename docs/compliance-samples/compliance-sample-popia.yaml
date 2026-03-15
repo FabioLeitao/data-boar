@@ -1,0 +1,53 @@
+# POPIA – sample compliance profile (South Africa; Protection of Personal Information Act)
+#
+# Target audience: South African deployments and POPIA compliance. Terms align with
+# "personal information", "responsible party", Information Regulator.
+#
+# How to use:
+#   1. Set in your main config:
+#        regex_overrides_file: path/to/compliance-sample-popia.yaml
+#        ml_patterns_file: path/to/compliance-sample-popia.yaml
+#   2. Merge the recommendation_overrides list below into your config under report.recommendation_overrides.
+#
+# POPIA: Act 4 of 2013; Information Regulator (South Africa).
+
+regex:
+  - name: "SA_ID"
+    pattern: "\\b\\d{6}\\s?\\d{4}\\s?\\d{3}\\b"
+    norm_tag: "POPIA"
+  - name: "SA_ID_ALT"
+    pattern: "\\b\\d{13}\\b"
+    norm_tag: "POPIA"
+
+# ML terms: POPIA terminology (personal information, responsible party, data subject).
+terms:
+  - text: "personal information"
+    label: sensitive
+  - text: "responsible party"
+    label: sensitive
+  - text: "operator"
+    label: sensitive
+  - text: "data subject"
+    label: sensitive
+  - text: "information regulator"
+    label: sensitive
+  - text: "popia"
+    label: sensitive
+  - text: "processing limitation"
+    label: sensitive
+  - text: "purpose specification"
+    label: sensitive
+  - text: "prior authorisation"
+    label: sensitive
+  - text: "id number"
+    label: sensitive
+  - text: "identity number"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "POPIA"
+    base_legal: "POPIA (Act 4 of 2013); Information Regulator"
+    risk: "Personal information; conditions for lawful processing."
+    recommendation: "Comply with POPIA conditions; register with Information Regulator if required; apply purpose specification and processing limitation."
+    priority: "ALTA"
+    relevant_for: "DPO, Information Officer, Information Regulator"
