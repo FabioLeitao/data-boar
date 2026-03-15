@@ -93,7 +93,7 @@ Pre-built images are on Docker Hub: **branded** `fabioleitao/data_boar:latest` (
 - **OpenAPI docs (interactive):**
 - Swagger UI: `<http://localhost:8088/doc>s`
 - ReDoc: `<http://localhost:8088/redo>c`
-- **Authentication:** By default the API does not require authentication; secure it at the reverse proxy or network level if exposed. You can optionally enable a shared API key: set `api.require_api_key: true` and `api.api_key` (or `api.api_key_from_env: "VAR"`) in config; then send **X-API-Key** or **Authorization: Bearer &lt;key&gt;** on each request (GET /health remains public). See [SECURITY.md](../SECURITY.md#optional-api-key-enterprise) and the Configuration section below.
+- **Authentication:** By default the API does not require authentication; secure it at the reverse proxy or network level if exposed. You can optionally enable a shared API key: set `api.require_api_key: true` and `api.api_key` (or `api.api_key_from_env: "VAR"`) in config; then send **X-API-Key** or **Authorization: Bearer &lt;key&gt;** on each request (GET /health remains public). **For production deployments we recommend setting `require_api_key: true` and using a strong key from an environment variable** (e.g. `api.api_key_from_env: "AUDIT_API_KEY"`) so the key is not stored in the config file. See [SECURITY.md](../SECURITY.md#optional-api-key-enterprise) and the Configuration section below.
 
 ### Web dashboard
 
@@ -342,6 +342,7 @@ rate_limit:
 
 - The CLI uses the same logic only to print **warnings** (it never exits with 429). This lets you keep existing scripts working while seeing when your policies would reject extra scans if called via API or dashboard.
 - Settings can also be overridden with environment variables: `RATE_LIMIT_ENABLED`, `RATE_LIMIT_MAX_CONCURRENT_SCANS`, `RATE_LIMIT_MIN_INTERVAL_SECONDS`, `RATE_LIMIT_GRACE_FOR_RUNNING_STATUS`.
+- **Production:** Rate limiting is the first line of defense against scan abuse and overload. Disabling or relaxing rate limits (e.g. high `max_concurrent_scans` or zero `min_interval_seconds`) increases the risk of abuse and resource exhaustion; keep limits enabled with conservative values in production.
 
 ### Timeouts for data source connections
 
@@ -377,6 +378,16 @@ targets:
 
 Connectors use the merged values (global or per-target) when opening connections and performing I/O; see the config schema and connector documentation for details.
 
+### Timeouts and load
+
+Recommendations so scans stay robust without overloading targets or waiting forever:
+
+1. **Don’t wait forever:** Set connect and read timeouts so one stuck target does not block the whole scan. Use report failure hints to spot timeout failures and which target failed.
+2. **Don’t be too aggressive:** Too-low timeouts cause false timeouts on busy or slow networks (e.g. during backup). If you see many timeouts, **increase** `connect_seconds` and `read_seconds` (or per-target `connect_timeout` / `read_timeout`) and consider re-running during off-peak.
+3. **Avoid DoS and "too much, too fast":** Use **rate_limit** (e.g. `max_concurrent_scans: 1`, `min_interval_seconds: 5`) and **scan.max_workers: 1** (or 2) so the scanner does not open many connections at once. This reduces load on targets and avoids amplifying slowness or causing DoS.
+4. **Backup or maintenance windows:** If scans run during backup or maintenance, increase timeouts and keep parallelism low; or schedule scans outside those windows.
+5. **Per-target overrides:** For one slow database or API, set `connect_timeout` / `read_timeout` (or `timeout`) on that target instead of raising global defaults for everyone.
+
 ### API and security (CSP, headers)
 
 The web API and dashboard send **security headers** on every response (see [SECURITY.md](../SECURITY.md)): X-Content-Type-Options, X-Frame-Options, **Content-Security-Policy (CSP)**, Referrer-Policy, Permissions-Policy, and HSTS when the request is considered HTTPS.
@@ -386,7 +397,7 @@ The web API and dashboard send **security headers** on every response (see [SECU
 
 ### Targets: databases
 
-Each target is an object in `targets` with at least `name` and `type`. For SQL databases use `type: database` and the appropriate `driver`.
+Each target is an object in `targets` with at least `name` and `type`. For SQL databases use `type: database` and the appropriate `driver`. **Scan payload:** There is no hard limit on the number of targets per scan; very large lists (e.g. hundreds of databases or APIs) may increase scan duration and memory use. Consider a reasonable scope per scan for your environment to avoid resource exhaustion.
 
 ```yaml
 targets:
