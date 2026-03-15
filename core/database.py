@@ -254,13 +254,16 @@ class LocalDBManager:
         try:
             from utils.logger import get_logger
 
+            from core.validation import redact_secrets_for_log
+
             logger = get_logger()
+            safe_details = redact_secrets_for_log((details or "").strip())
             logger.error(
                 "Scan failure: session=%s target=%s reason=%s details=%s",
                 sid,
                 target_name,
                 reason,
-                (details or "").strip(),
+                safe_details,
             )
         except Exception:
             # Logging must not break persistence.
