@@ -2,7 +2,7 @@
 
 A aplicação pode detectar quando os dados coletados podem se referir a **menores de idade** (por exemplo, idade ou data de nascimento em colunas) e tratá-los com **máxima sensibilidade**, com tratamento diferenciado nos relatórios (LGPD Art. 14, GDPR Art. 8). Esta página descreve como **configurar e ajustar** a funcionalidade pelo **arquivo de configuração externo**, sem alterar código da aplicação.
 
-**English:** [minor-detection.md](MINOR_DETECTION.md)
+**English:** [MINOR_DETECTION.md](MINOR_DETECTION.md)
 
 ---
 
@@ -138,5 +138,5 @@ No relatório Excel, a aba **Recommendations** inclui uma linha dedicada a poss�
 
 - **Índice da documentação** (todos os tópicos, ambos os idiomas): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
 - [PLAN_MINOR_DATA_DETECTION.md](completed/PLAN_MINOR_DATA_DETECTION.md) – Plano, desenho e status dos to-dos.
-- [sensitivity-detection.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md) ([EN](SENSITIVITY_DETECTION.md)) – Detecção de sensibilidade ML/DL e regex.
+- [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md) ([EN](SENSITIVITY_DETECTION.md)) – Detecção de sensibilidade ML/DL e regex.
 - [USAGE.pt_BR.md](USAGE.pt_BR.md) ([EN](USAGE.md)) – Configuração geral e uso da API.

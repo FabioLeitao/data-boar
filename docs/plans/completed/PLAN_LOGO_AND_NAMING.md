@@ -29,7 +29,7 @@ Mark items done here and in [PLANS_TODO.md](../PLANS_TODO.md) when actually comp
 ## Current state
 
 - **Package / display name:** `python3-lgpd-crawler` ([core/about.py](../../core/about.py), [pyproject.toml](../../pyproject.toml)). **Display name:** Data Boar. The name "Data Boar" is a descriptive phrase (common words) used as the product display name; the package name is unchanged. **Availability (step 5):** PyPI returns 404 for `data-boar` and `data_boar` (available if we ever publish under that name); web search found no existing "Data Boar" compliance/LGPD product. A formal trademark search has not been run; use as a project/brand name is low risk.
-- **Mascot assets:** [api/static/mascot/](../../api/static/mascot/) contains the Data Boar mascot (color and B&W, SVG and PNG, translucent and full backgrounds). Used in base.html (favicon), about.html, dashboard.html, reports.html, **config.html**, **help.html**, and README (EN/pt-BR). See [mascot.md](../mascot.md) for which file to use where.
+- **Mascot assets:** [api/static/mascot/](../../api/static/mascot/) contains the Data Boar mascot (color and B&W, SVG and PNG, translucent and full backgrounds). Used in base.html (favicon), about.html, dashboard.html, reports.html, **config.html**, **help.html**, and README (EN/pt-BR). See [MASCOT.md](../MASCOT.md) for which file to use where.
 - **Report:** "Report info" sheet is a Field/Value table (no embedded image yet); heatmap PNG footer is text-only ([report/generator.py](../../report/generator.py) `_build_report_info`, `_create_heatmap`). Optional: embed mascot in Report info sheet and/or heatmap image.
 - **Audience and scope:** DPO/compliance teams; PII/sensitive data auditing across DBs and filesystems; LGPD, GDPR, CCPA, HIPAA, GLBA; scanning, mapping, reporting.
 - **Retired:** The former `api/static/logo.svg` (Concept C – abstract "C" / Compliance Crawler mark) was removed; branding is now the Data Boar mascot in [api/static/mascot/](../../api/static/mascot/).
@@ -81,7 +81,7 @@ Mark items done here and in [PLANS_TODO.md](../PLANS_TODO.md) when actually comp
 ## Where to place files (after creation)
 
 - Favicon: `api/static/favicon.ico` (and/or `api/static/favicon-32.png`).
-- Web logo: mascot SVG/PNG in `api/static/mascot/` (see [mascot.md](../mascot.md)).
+- Web logo: mascot SVG/PNG in `api/static/mascot/` (see [MASCOT.md](../MASCOT.md)).
 - Report logo (optional): e.g. mascot 48×48 PNG or under `report/` if you prefer to keep report assets separate.
 
 ---

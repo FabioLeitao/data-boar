@@ -1,12 +1,28 @@
 # Compliance frameworks and extensibility
 
-The application helps DPO, security, and compliance teams discover and map personal or sensitive data in line with multiple regulations. This document describes which frameworks are explicitly referenced today and how to extend support to others (e.g. UK GDPR, PIPEDA, APPI, POPIA) without code changes.
+The application helps DPO, security, and compliance teams discover and map personal or sensitive data in line with multiple regulations. This document describes which frameworks are explicitly referenced today, where to find sample configuration, and how to extend support to others (e.g. UK GDPR, PIPEDA, APPI, POPIA) without code changes.
 
 **Português (Brasil):** [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md)
 
 ---
 
-## Explicitly referenced today
+## Regulations we support today (built-in and config examples)
+
+**Built-in (out of the box):** The detector and reports explicitly reference **LGPD** (Brazil), **GDPR** (EU), **CCPA** (California), **HIPAA** (US health), and **GLBA** (US financial). Findings use these norm tags and recommendation text by default.
+
+**Sample configuration and examples:** We provide config-file examples so you can align with more regulations without changing code:
+
+- **[regex_overrides.example.yaml](regex_overrides.example.yaml)** – custom regex patterns with `norm_tag` (e.g. LGPD Art. 5, CCPA). Copy and extend for other identifiers (e.g. UK NIN, Canadian SIN) and set `norm_tag` to your framework.
+- **Recommendation overrides** – in [USAGE.md](USAGE.md) (report section) you will find `report.recommendation_overrides`: list of `norm_tag_pattern`, `base_legal`, `risk`, `recommendation`, `priority`, `relevant_for`. Use this to tailor report text for any regulation (UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS, or internal norms).
+- **ML/DL terms** – [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) and the main config support `ml_patterns_file`, `dl_patterns_file`, or inline `sensitivity_detection.ml_terms` / `dl_terms` so you can add framework-specific terms (e.g. “personal information”, “data subject”, “responsible party”) for better detection and labelling.
+
+Additional **compliance sample configs** (one profile per regulation: UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS) are planned and will be documented in the same way. Until then, you can combine the examples above to achieve compatibility with those or other frameworks.
+
+**Assistance with tuning:** If your organization needs **further or better compatibility** with a specific regulation or compliance scope (e.g. VCDPA, CPA, sector-specific rules), we can assist—by **creating tailored configuration files** or making **slight code-side adjustments**—when you reach out. This helps potential customers adopt the tool for their jurisdiction or auditor expectations without starting from scratch.
+
+---
+
+## Explicitly referenced today (built-in labels)
 
 The built-in regex patterns and report labels refer to these frameworks (with example `norm_tag` values):
 
@@ -31,4 +47,4 @@ Findings are stored with a free-form **`norm_tag`** and **`pattern_detected`**; 
 
 No change to detector logic or thresholds is required; extensibility is via config and optional override files.
 
-**Documentation index** (all topics, both languages): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
+**Documentation index** (all topics, both languages): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md). For configuration schema and report options, see [USAGE.md](USAGE.md) ([pt-BR](USAGE.pt_BR.md)) and [TECH_GUIDE.md](TECH_GUIDE.md) ([pt-BR](TECH_GUIDE.pt_BR.md)).
