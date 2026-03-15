@@ -12,18 +12,18 @@ Este documento descreve quais versões da aplicação são suportadas, qual linh
 
 ## Dependências e ambiente
 
-O **`pyproject.toml`** é a fonte de verdade para a toolchain **uv**; **pip** e **`requirements.txt`** são derivados (o requirements.txt é gerado a partir do pyproject.toml para ambientes que usam pip ou legados). As dependências são declaradas em **`pyproject.toml`** e gerenciadas principalmente via **uv**:
+O **`pyproject.toml`** é a fonte de verdade para a toolchain **uv**. O arquivo **`uv.lock`** fixa a árvore exata de dependências resolvidas para que as instalações sejam reproduzíveis e os usuários fiquem protegidos de quebras acidentais quando uma dependência atualiza (“funcionou ontem”). **pip** e **`requirements.txt`** são derivados (o requirements.txt é exportado do lockfile para ambientes pip ou legados). As dependências são declaradas em **`pyproject.toml`** e gerenciadas via **uv**:
 
-- Para instalar em um ambiente limpo:
+- Para instalar em um ambiente limpo (usa o **uv.lock** para versões reproduzíveis):
 
   ```bash
   uv sync
   ```
 
-- Para gerar um `requirements.txt` bloqueado para ambientes legados que usam pip puro:
+- Para exportar um **requirements.txt** bloqueado para ambientes que usam **pip** puro (mesmas versões do **uv.lock**):
 
   ```bash
-  uv pip compile pyproject.toml -o requirements.txt
+  uv export --no-emit-package pyproject.toml -o requirements.txt
   ```
 
 ### Pré-requisitos de runtime (exemplo Linux)
@@ -41,9 +41,9 @@ Bibliotecas cliente adicionais podem ser necessárias dependendo de quais conect
 
 ## Manter as dependências atualizadas
 
-- As dependências em **`pyproject.toml`** usam versões mínimas (`>=`) para permitir correções de segurança; o **Dependabot** (veja `.github/dependabot.yml`) abre PRs semanais para pip e GitHub Actions. Ao aplicar uma atualização de dependência pip (do Dependabot ou de outra fonte), atualize primeiro o **`pyproject.toml`** (suba a versão mínima do pacote), execute `uv pip compile pyproject.toml -o requirements.txt` e faça commit dos dois arquivos; não faça merge de uma alteração que edite apenas o `requirements.txt`. Prefira fazer merge dos PRs de dependência após o CI (testes e auditoria) passar.
+- As dependências em **`pyproject.toml`** usam versões mínimas (`>=`) para permitir correções de segurança. O **lockfile (`uv.lock`)** é commitado para que todos (e o CI) instalem a mesma árvore; ele é atualizado quando as dependências mudam ou antes de uma release estável, mantendo o app atualizado, compatível e seguro. O **Dependabot** (veja `.github/dependabot.yml`) abre PRs semanais para pip e GitHub Actions e ajuda a sinalizar quando agir: ao aplicar uma atualização (ou antes de uma release), atualize primeiro o **`pyproject.toml`**, execute `uv lock` e `uv export --no-emit-package pyproject.toml -o requirements.txt`, e faça commit de **pyproject.toml**, **uv.lock** e **requirements.txt**. Não faça merge de alteração que edite só `requirements.txt` ou `uv.lock` sem atualizar o outro. Faça merge dos PRs de dependência somente após o CI (testes e auditoria) passar.
 
-- Localmente, instale e execute uma auditoria de dependências:
+- Localmente, instale e execute uma auditoria de dependências (o CI faz o mesmo em todo push/PR):
 
   ```bash
   uv sync
@@ -51,9 +51,7 @@ Bibliotecas cliente adicionais podem ser necessárias dependendo de quais conect
   uv run pip-audit
   ```
 
-  O CI executa a mesma auditoria em todo push/PR.
-
-- Sempre que alterar dependências (incluindo ao aplicar recomendações do Dependabot ou de automação), edite primeiro o **`pyproject.toml`** e depois regenere o `requirements.txt` com `uv pip compile pyproject.toml -o requirements.txt` para que ambos os arquivos permaneçam em sincronia.
+- Sempre que alterar dependências (incluindo ao aplicar Dependabot ou automação), edite primeiro o **`pyproject.toml`**, depois execute `uv lock` e `uv export --no-emit-package pyproject.toml -o requirements.txt` para que **uv.lock** e **requirements.txt** permaneçam em sincronia com o lockfile.
 
 Essa abordagem faz parte da linha de base de segurança do projeto. Para a lista completa de medidas de endurecimento e status, veja **`docs/plans/PLAN_SECURITY_HARDENING.md`**.
 
