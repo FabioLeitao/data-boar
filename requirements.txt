@@ -1143,9 +1143,9 @@ pyparsing==3.3.2 \
     #   matplotlib
     #   oletools
     #   python3-lgpd-crawler
-pypdf==6.7.4 \
-    --hash=sha256:527d6da23274a6c70a9cb59d1986d93946ba8e36a6bc17f3f7cce86331492dda \
-    --hash=sha256:9edd1cd47938bb35ec87795f61225fd58a07cfaf0c5699018ae1a47d6f8ab0e3
+pypdf==6.8.0 \
+    --hash=sha256:2a025080a8dd73f48123c89c57174a5ff3806c71763ee4e49572dc90454943c7 \
+    --hash=sha256:cb7eaeaa4133ce76f762184069a854e03f4d9a08568f0e0623f7ea810407833b
     # via python3-lgpd-crawler
 pypdf2==3.0.1 \
     --hash=sha256:a74408f69ba6271f71b9352ef4ed03dc53a31aa404d29b5d31f53bfecfee1440 \
