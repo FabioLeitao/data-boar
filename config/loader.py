@@ -2,11 +2,18 @@
 Unified configuration loader for the LGPD/GDPR/CCPA audit application.
 Loads YAML or JSON config; validates required keys; returns normalized dict.
 Used by both CLI (main.py) and API.
+
+Encoding: config file is read with auto-detection (UTF-8, UTF-8-sig, cp1252, latin_1)
+so it works in multilingual and legacy Windows environments. Pattern files
+(regex_overrides_file, ml_patterns_file, dl_patterns_file) use the optional
+pattern_files_encoding key (default utf-8) with errors=replace to avoid crashes.
 """
 from pathlib import Path
 from typing import Any
 
 import yaml
+
+from utils.file_encoding import read_text_auto_encoding
 
 # Optional JSON support without requiring top-level json for YAML-first flow
 try:
@@ -26,7 +33,7 @@ def load_config(path: str | Path) -> dict[str, Any]:
     if not path.exists():
         raise FileNotFoundError(f"Config file not found: {path}")
 
-    raw = path.read_text(encoding="utf-8")
+    raw = read_text_auto_encoding(path)
     suffix = path.suffix.lower()
 
     if suffix in (".yaml", ".yml"):
@@ -150,6 +157,11 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
     out["ml_patterns_file"] = data.get("ml_patterns_file") or ""
     out["regex_overrides_file"] = data.get("regex_overrides_file") or ""
     out["dl_patterns_file"] = data.get("dl_patterns_file") or ""
+
+    # Encoding for pattern files (regex_overrides_file, ml_patterns_file, dl_patterns_file). Default utf-8.
+    # Use utf-8, utf-8-sig, cp1252, latin_1, or iso-8859-1 for legacy/multilingual environments.
+    _enc = (data.get("pattern_files_encoding") or data.get("file_encoding") or "utf-8").strip().lower()
+    out["pattern_files_encoding"] = _enc if _enc else "utf-8"
 
     # Inline sensitivity-detection terms (override or supplement file-based terms when provided)
     sens = data.get("sensitivity_detection") or {}

@@ -1,0 +1,50 @@
+# UK GDPR – sample compliance profile (UK post-Brexit + EU-like)
+#
+# How to use:
+#   1. Set in your main config:
+#        regex_overrides_file: path/to/compliance-sample-uk_gdpr.yaml
+#        ml_patterns_file: path/to/compliance-sample-uk_gdpr.yaml
+#   2. Merge the recommendation_overrides list below into your config under report.recommendation_overrides.
+#
+# This file uses keys "regex" and "terms" so the same file can be used for both regex_overrides_file and
+# ml_patterns_file. Paths are typically relative to the working directory or absolute.
+
+# Custom regex patterns; matches get norm_tag "UK GDPR" in the report.
+# Use double-quoted YAML with escaped backslashes (\\b, \\s, \\d) so linters and loaders accept; value is literal \b \s \d for regex.
+regex:
+  - name: "UK_NIN"
+    pattern: "\\b[A-Z]{2}\\s?\\d{6}\\s?[A-D]\\b"
+    norm_tag: "UK GDPR"
+  - name: "UK_NINO_ALT"
+    pattern: "\\b[A-Z]{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}\\s?[A-D]\\b"
+    norm_tag: "UK GDPR"
+
+# ML training terms for column/sample classification (UK / data subject terminology).
+terms:
+  - text: "data subject"
+    label: sensitive
+  - text: "personal data"
+    label: sensitive
+  - text: "data subject rights"
+    label: sensitive
+  - text: "uk representative"
+    label: sensitive
+  - text: "ico"
+    label: sensitive
+  - text: "information commissioner"
+    label: sensitive
+  - text: "lawful basis"
+    label: sensitive
+  - text: "legitimate interest"
+    label: sensitive
+  - text: "uk gdpr"
+    label: sensitive
+
+# Merge this list into config.report.recommendation_overrides.
+recommendation_overrides:
+  - norm_tag_pattern: "UK GDPR"
+    base_legal: "UK GDPR Art. 4(1); ICO guidance"
+    risk: "Identification of data subject."
+    recommendation: "Apply UK GDPR safeguards; consider DPA registration with ICO if required."
+    priority: "ALTA"
+    relevant_for: "DPO, UK Representative, ICO"

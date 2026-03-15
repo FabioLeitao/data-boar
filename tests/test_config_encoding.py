@@ -1,0 +1,81 @@
+"""
+Tests for config and pattern file encoding: UTF-8, auto-detect fallback, pattern_files_encoding.
+
+Ensures we do not regress when config or compliance samples use different character sets
+(UTF-8, UTF-8 BOM, cp1252, Latin-1) in production.
+"""
+import tempfile
+from pathlib import Path
+
+import pytest
+import yaml
+
+from config.loader import load_config, normalize_config
+from utils.file_encoding import read_text_auto_encoding
+
+
+def test_load_config_utf8_with_unicode():
+    """load_config loads YAML with Unicode comments and values (UTF-8)."""
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".yaml", encoding="utf-8", delete=False
+    ) as f:
+        yaml.dump(
+            {
+                "targets": [{"name": "Test", "type": "filesystem", "path": ".", "recursive": True}],
+                "report": {"output_dir": "."},
+                "file_scan": {},
+                # Comment in content: 日本語 and café
+            },
+            f,
+            default_flow_style=False,
+            allow_unicode=True,
+        )
+        path = Path(f.name)
+    try:
+        # Overwrite with content that has Unicode in key/comment
+        path.write_text(
+            "# Config with 日本語 and café\n"
+            "targets:\n  - name: Test\n    type: filesystem\n    path: .\n    recursive: true\n"
+            "report:\n  output_dir: .\n"
+            "pattern_files_encoding: utf-8\n",
+            encoding="utf-8",
+        )
+        config = load_config(path)
+        assert config.get("targets")
+        assert config.get("pattern_files_encoding", "").lower() in ("utf-8", "")
+    finally:
+        path.unlink(missing_ok=True)
+
+
+def test_load_config_auto_encoding_latin1_content():
+    """load_config loads YAML saved as Latin-1 (auto-detection fallback)."""
+    with tempfile.NamedTemporaryFile(mode="wb", suffix=".yaml", delete=False) as f:
+        # Minimal valid config with one Latin-1 character in comment
+        f.write(
+            b"# Caf\xe9\n"
+            b"targets:\n  - name: Test\n    type: filesystem\n    path: .\n    recursive: true\n"
+            b"report:\n  output_dir: .\n"
+        )
+        path = Path(f.name)
+    try:
+        config = load_config(path)
+        assert config.get("targets")
+        assert config.get("report", {}).get("output_dir") == "."
+    finally:
+        path.unlink(missing_ok=True)
+
+
+def test_normalize_config_includes_pattern_files_encoding():
+    """normalize_config sets pattern_files_encoding (default utf-8)."""
+    out = normalize_config({
+        "targets": [],
+        "report": {"output_dir": "."},
+    })
+    assert out.get("pattern_files_encoding") == "utf-8"
+
+    out2 = normalize_config({
+        "targets": [],
+        "report": {"output_dir": "."},
+        "pattern_files_encoding": "cp1252",
+    })
+    assert out2.get("pattern_files_encoding") == "cp1252"
