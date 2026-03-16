@@ -1,5 +1,5 @@
-.\" lgpd_crawler.5 - file formats and configuration for Data Boar (python3-lgpd-crawler engine)
-.\" View as: man 5 data_boar, man 5 lgpd_crawler
+.\" data_boar.5 - file formats and configuration for Data Boar (engine: python3-lgpd-crawler)
+.\" View as: man 5 data_boar or man 5 lgpd_crawler (symlink for compatibility)
 .TH DATA_BOAR 5 "March 2026" "Data Boar 1.5.4" "File Formats"
 .SH NAME
 data_boar config, lgpd_crawler config \- configuration and pattern file formats for Data Boar (LGPD audit application)
@@ -490,18 +490,18 @@ section in
 (or
 .BR lgpd_crawler (1))
 for the full sequence (copy
-.I docs/lgpd_crawler.1
+.I docs/data_boar.1
 and
-.I docs/lgpd_crawler.5
+.I docs/data_boar.5
 into
 .I man1
 and
 .IR man5 ,
-then
-.B "ln -sf lgpd_crawler.1 data_boar.1"
+then optionally
+.B "ln -sf data_boar.1 lgpd_crawler.1"
 and
-.B "ln -sf lgpd_crawler.5 data_boar.5"
-in the respective directories,
+.B "ln -sf data_boar.5 lgpd_crawler.5"
+in the respective directories for backward compatibility,
 .BR mandb ).
 .PP
 After installation, view this page with:
