@@ -678,7 +678,8 @@ file_scan:
   # findings as e.g. "backup.zip|inner/path/file.csv". This may significantly increase run time,
   # disk I/O and temporary space usage; enable only when needed.
   scan_compressed: false
-  # Optional: limit total inner bytes processed per archive (to avoid archive bombs)
+  # Optional: max uncompressed size per archive member (bytes). Valid range 1 MB–500 MB; default 10 MB if omitted.
+  # Members larger than this are skipped to reduce memory and I/O. Alias: scan_compressed_max_inner_size.
   # max_inner_size: 50_000_000   # e.g. 50 MB
   # Optional: restrict which archive types to open; if omitted, a sensible default list is used.
   # compressed_extensions: [".zip", ".tar", ".gz", ".tgz", ".bz2", ".xz", ".7z"]
@@ -692,6 +693,8 @@ file_scan:
   #   default: "fallback-for-any-encrypted"
 
 ```
+
+**Scan inside compressed files (`scan_compressed`, `max_inner_size`):** Enabling **`scan_compressed: true`** may **significantly increase run time, disk I/O and temporary space**. Use it only when you need to inspect contents of archives; when first enabling it, consider a smaller target scope (e.g. one directory or a limited set of paths). The **`max_inner_size`** value is validated and clamped to 1 MB–500 MB; if invalid or omitted, a safe default (10 MB) is used so that very large inner members are skipped.
 
 **Password-protected files (`file_passwords`):** Some PDFs and ZIP-based documents (e.g. `.docx`, `.pptx`) can be encrypted with a password. If you need to scan such files, set **`file_scan.file_passwords`** to a dict mapping extension keys (e.g. `".pdf"`, `".pptx"`) or `"default"` to the password string. Keys are normalized to lowercase with a leading dot. Without a matching password, encrypted files are skipped (no content is extracted). **Limitations:** Workbook-level encrypted Excel (`.xlsx`/`.xlsm`) is not supported; the standard library `zipfile` only supports ZipCrypto for ZIP-based formats (AES-encrypted ZIP may require additional support). Use environment variables or a secrets manager for production so passwords are not stored in the config file.
 
