@@ -10,7 +10,6 @@ repos:
       - id: ruff
         args: [--fix]
         # Ruff config (extend-exclude, etc.) is in pyproject.toml; same as CI.
-      - id: ruff
-        name: ruff-format
-        args: [format, --check]
+      - id: ruff-format
+        args: [--check]
         # Enforce format on commit; fix with: uv run ruff format .
