@@ -3,11 +3,13 @@ Optional MongoDB connector: connect, list collections, sample documents, run det
 Register as type 'mongodb'. Install: pip install pymongo
 Config target: type: database, driver: mongodb, host, port, database (and optional user/pass).
 """
+
 from typing import Any
 from urllib.parse import quote
 
 try:
     from pymongo import MongoClient
+
     _MONGO_AVAILABLE = True
 except ImportError:
     _MONGO_AVAILABLE = False
@@ -19,7 +21,13 @@ from core.connector_registry import register
 class MongoDBConnector:
     """Scan MongoDB: list collections, sample docs, detect sensitive field names and sample values."""
 
-    def __init__(self, target_config: dict[str, Any], scanner: Any, db_manager: Any, sample_limit: int = 5):
+    def __init__(
+        self,
+        target_config: dict[str, Any],
+        scanner: Any,
+        db_manager: Any,
+        sample_limit: int = 5,
+    ):
         self.config = target_config
         self.scanner = scanner
         self.db_manager = db_manager
@@ -28,7 +36,9 @@ class MongoDBConnector:
 
     def connect(self) -> None:
         if not _MONGO_AVAILABLE:
-            raise RuntimeError("pymongo is not installed. Install with: pip install pymongo")
+            raise RuntimeError(
+                "pymongo is not installed. Install with: pip install pymongo"
+            )
         host = self.config.get("host", "localhost")
         port = int(self.config.get("port", 27017))
         user = self.config.get("user") or self.config.get("username")
@@ -68,6 +78,7 @@ class MongoDBConnector:
             return
         try:
             from utils.logger import log_connection
+
             log_connection(target_name, "mongodb", self.config.get("host", "localhost"))
             for coll_name in self._db.list_collection_names():
                 coll = self._db[coll_name]
@@ -105,7 +116,14 @@ class MongoDBConnector:
                     )
                     try:
                         from utils.logger import log_finding
-                        log_finding("database", target_name, f"{coll_name}.{key}", res["sensitivity_level"], res["pattern_detected"])
+
+                        log_finding(
+                            "database",
+                            target_name,
+                            f"{coll_name}.{key}",
+                            res["sensitivity_level"],
+                            res["pattern_detected"],
+                        )
                     except Exception:
                         pass
         except Exception as e:

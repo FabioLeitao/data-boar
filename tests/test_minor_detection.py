@@ -4,6 +4,7 @@ Covers EN and PT-BR column names, acronyms (DOB, DDN, NASC, idade), date formats
 and numeric age; ensures DOB_POSSIBLE_MINOR and LGPD Art. 14 / GDPR Art. 8 appear when appropriate
 and are not set for adults or non-DOB/age columns.
 """
+
 import tempfile
 import unittest
 from pathlib import Path

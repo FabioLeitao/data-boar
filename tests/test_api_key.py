@@ -21,6 +21,7 @@ sqlite_path: {tmp_path}/audit.db
     config_path.write_text(config_yaml, encoding="utf-8")
 
     import api.routes as routes
+
     orig_path = routes._config_path
     orig_cfg = routes._config
     orig_engine = routes._audit_engine
@@ -53,6 +54,7 @@ sqlite_path: {tmp_path}/audit.db
     config_path.write_text(config_yaml, encoding="utf-8")
 
     import api.routes as routes
+
     orig_path = routes._config_path
     orig_cfg = routes._config
     orig_engine = routes._audit_engine
@@ -85,6 +87,7 @@ sqlite_path: {tmp_path}/audit.db
     config_path.write_text(config_yaml, encoding="utf-8")
 
     import api.routes as routes
+
     orig_path = routes._config_path
     orig_cfg = routes._config
     orig_engine = routes._audit_engine
@@ -116,6 +119,7 @@ sqlite_path: {tmp_path}/audit.db
     config_path.write_text(config_yaml, encoding="utf-8")
 
     import api.routes as routes
+
     orig_path = routes._config_path
     orig_cfg = routes._config
     orig_engine = routes._audit_engine
@@ -147,6 +151,7 @@ sqlite_path: {tmp_path}/audit.db
     config_path.write_text(config_yaml, encoding="utf-8")
 
     import api.routes as routes
+
     orig_path = routes._config_path
     orig_cfg = routes._config
     orig_engine = routes._audit_engine
@@ -176,6 +181,7 @@ sqlite_path: {tmp_path}/audit.db
     config_path.write_text(config_yaml, encoding="utf-8")
 
     import api.routes as routes
+
     orig_path = routes._config_path
     orig_cfg = routes._config
     orig_engine = routes._audit_engine

@@ -2,6 +2,7 @@
 """
 CLI entry point: load config (YAML/JSON), run audit and report (optionally tagged with tenant/customer and technician/operator), or start API (--web) on --port (default 8088).
 """
+
 import argparse
 import sys
 from pathlib import Path
@@ -33,7 +34,7 @@ def main() -> None:
             "  python main.py --config config.yaml\n"
             "\n"
             "  # One-shot audit tagging tenant/customer and technician/operator\n"
-            "  python main.py --config config.yaml --tenant \"ACME Corp\" --technician \"Alice\"\n"
+            '  python main.py --config config.yaml --tenant "ACME Corp" --technician "Alice"\n'
             "\n"
             "  # Wipe all collected data and generated reports (dangerous, see SECURITY.md)\n"
             "  python main.py --config config.yaml --reset-data\n"
@@ -119,6 +120,7 @@ def main() -> None:
     if args.web and not args.reset_data:
         import uvicorn
         from api.routes import app
+
         api_cfg = config.get("api", {})
         port = api_cfg.get("port", args.port)
         workers = int(api_cfg.get("workers", 1))
@@ -133,14 +135,22 @@ def main() -> None:
         print("*** WIPE ALL GATHERED DATA ***")
         print()
         print("This will permanently:")
-        print("  - Remove all scan sessions, findings and failures from the SQLite database")
-        print("  - Delete all generated Excel reports and heatmap PNGs under report.output_dir")
+        print(
+            "  - Remove all scan sessions, findings and failures from the SQLite database"
+        )
+        print(
+            "  - Delete all generated Excel reports and heatmap PNGs under report.output_dir"
+        )
         print()
         print("There is NO going back after this step. There is NO undo button.")
         print("Only a log entry in the database will record that a wipe was performed.")
         print()
         try:
-            answer = input("Type 'yes' to confirm and proceed, or anything else to abort: ").strip().lower()
+            answer = (
+                input("Type 'yes' to confirm and proceed, or anything else to abort: ")
+                .strip()
+                .lower()
+            )
         except (EOFError, KeyboardInterrupt):
             answer = ""
         if answer != "yes":
@@ -159,8 +169,12 @@ def main() -> None:
                 except OSError:
                     pass
         print("All scan sessions, findings and failures were wiped from SQLite.")
-        print("Existing Excel reports and heatmap PNGs under report.output_dir were deleted where possible.")
-        print("An audit entry was recorded in the data_wipe_log table for transparency.")
+        print(
+            "Existing Excel reports and heatmap PNGs under report.output_dir were deleted where possible."
+        )
+        print(
+            "An audit entry was recorded in the data_wipe_log table for transparency."
+        )
         return
 
     # Optional: warn when configured rate limits would block API scans for this config.
@@ -195,9 +209,12 @@ def main() -> None:
             print("[rate_limit] WARNING:")
             for ln in warn_lines:
                 print("  - " + ln)
-            print("CLI will continue, but consider adjusting rate_limit settings if this is unexpected.")
+            print(
+                "CLI will continue, but consider adjusting rate_limit settings if this is unexpected."
+            )
 
     from core.validation import sanitize_tenant_technician
+
     tenant = sanitize_tenant_technician(args.tenant)
     technician = sanitize_tenant_technician(args.technician)
     session_id = engine.start_audit(tenant_name=tenant, technician_name=technician)

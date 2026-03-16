@@ -1,12 +1,21 @@
 """Tests for core.learned_patterns: collect_learned_entries and write_learned_patterns."""
+
 from core.learned_patterns import collect_learned_entries, write_learned_patterns
 
 
 def test_collect_includes_high_with_pattern():
     db = [
-        {"column_name": "cpf_cliente", "sensitivity_level": "HIGH", "pattern_detected": "LGPD_CPF", "norm_tag": "LGPD", "ml_confidence": 85},
+        {
+            "column_name": "cpf_cliente",
+            "sensitivity_level": "HIGH",
+            "pattern_detected": "LGPD_CPF",
+            "norm_tag": "LGPD",
+            "ml_confidence": 85,
+        },
     ]
-    entries = collect_learned_entries(db, [], min_sensitivity="HIGH", min_confidence=70, require_pattern=True)
+    entries = collect_learned_entries(
+        db, [], min_sensitivity="HIGH", min_confidence=70, require_pattern=True
+    )
     assert len(entries) == 1
     assert entries[0]["text"] == "cpf_cliente"
     assert entries[0]["label"] == "sensitive"
@@ -14,7 +23,13 @@ def test_collect_includes_high_with_pattern():
 
 def test_collect_excludes_low():
     db = [
-        {"column_name": "item_count", "sensitivity_level": "LOW", "pattern_detected": "GENERAL", "norm_tag": "", "ml_confidence": 10},
+        {
+            "column_name": "item_count",
+            "sensitivity_level": "LOW",
+            "pattern_detected": "GENERAL",
+            "norm_tag": "",
+            "ml_confidence": 10,
+        },
     ]
     entries = collect_learned_entries(db, [], min_sensitivity="HIGH")
     assert len(entries) == 0
@@ -22,34 +37,66 @@ def test_collect_excludes_low():
 
 def test_collect_excludes_generic_term():
     db = [
-        {"column_name": "id", "sensitivity_level": "HIGH", "pattern_detected": "ML_DETECTED", "norm_tag": "LGPD", "ml_confidence": 80},
+        {
+            "column_name": "id",
+            "sensitivity_level": "HIGH",
+            "pattern_detected": "ML_DETECTED",
+            "norm_tag": "LGPD",
+            "ml_confidence": 80,
+        },
     ]
-    entries = collect_learned_entries(db, [], min_sensitivity="HIGH", exclude_generic=True)
+    entries = collect_learned_entries(
+        db, [], min_sensitivity="HIGH", exclude_generic=True
+    )
     assert len(entries) == 0
 
 
 def test_collect_excludes_when_require_pattern_and_general():
     db = [
-        {"column_name": "custom_field", "sensitivity_level": "HIGH", "pattern_detected": "GENERAL", "norm_tag": "", "ml_confidence": 90},
+        {
+            "column_name": "custom_field",
+            "sensitivity_level": "HIGH",
+            "pattern_detected": "GENERAL",
+            "norm_tag": "",
+            "ml_confidence": 90,
+        },
     ]
-    entries = collect_learned_entries(db, [], min_sensitivity="HIGH", require_pattern=True)
+    entries = collect_learned_entries(
+        db, [], min_sensitivity="HIGH", require_pattern=True
+    )
     assert len(entries) == 0
-    entries2 = collect_learned_entries(db, [], min_sensitivity="HIGH", require_pattern=False)
+    entries2 = collect_learned_entries(
+        db, [], min_sensitivity="HIGH", require_pattern=False
+    )
     assert len(entries2) == 1
 
 
 def test_collect_medium_when_min_sensitivity_medium():
     db = [
-        {"column_name": "possible_pii", "sensitivity_level": "MEDIUM", "pattern_detected": "ML_POTENTIAL", "norm_tag": "Potential", "ml_confidence": 55},
+        {
+            "column_name": "possible_pii",
+            "sensitivity_level": "MEDIUM",
+            "pattern_detected": "ML_POTENTIAL",
+            "norm_tag": "Potential",
+            "ml_confidence": 55,
+        },
     ]
-    entries = collect_learned_entries(db, [], min_sensitivity="MEDIUM", min_confidence=50, require_pattern=True)
+    entries = collect_learned_entries(
+        db, [], min_sensitivity="MEDIUM", min_confidence=50, require_pattern=True
+    )
     assert len(entries) == 1
     assert entries[0]["text"] == "possible_pii"
 
 
 def test_collect_filesystem_extracts_table_column():
     fs = [
-        {"file_name": "/path/to/data.db | users.cpf", "sensitivity_level": "HIGH", "pattern_detected": "LGPD_CPF", "norm_tag": "LGPD", "ml_confidence": 82},
+        {
+            "file_name": "/path/to/data.db | users.cpf",
+            "sensitivity_level": "HIGH",
+            "pattern_detected": "LGPD_CPF",
+            "norm_tag": "LGPD",
+            "ml_confidence": 82,
+        },
     ]
     entries = collect_learned_entries([], fs, min_sensitivity="HIGH")
     assert len(entries) == 1
@@ -59,7 +106,20 @@ def test_collect_filesystem_extracts_table_column():
 def test_write_learned_patterns_disabled_returns_none(tmp_path):
     class MockDB:
         def get_findings(self, session_id):
-            return [{"column_name": "cpf", "sensitivity_level": "HIGH", "pattern_detected": "CPF", "norm_tag": "LGPD", "ml_confidence": 90}], [], []
+            return (
+                [
+                    {
+                        "column_name": "cpf",
+                        "sensitivity_level": "HIGH",
+                        "pattern_detected": "CPF",
+                        "norm_tag": "LGPD",
+                        "ml_confidence": 90,
+                    }
+                ],
+                [],
+                [],
+            )
+
     config = {"learned_patterns": {"enabled": False}, "ml_patterns_file": ""}
     out = write_learned_patterns(MockDB(), "s1", config)
     assert out is None
@@ -68,9 +128,29 @@ def test_write_learned_patterns_disabled_returns_none(tmp_path):
 def test_write_learned_patterns_writes_yaml(tmp_path):
     class MockDB:
         def get_findings(self, session_id):
-            return [{"column_name": "cpf_cliente", "sensitivity_level": "HIGH", "pattern_detected": "LGPD_CPF", "norm_tag": "LGPD", "ml_confidence": 88}], [], []
+            return (
+                [
+                    {
+                        "column_name": "cpf_cliente",
+                        "sensitivity_level": "HIGH",
+                        "pattern_detected": "LGPD_CPF",
+                        "norm_tag": "LGPD",
+                        "ml_confidence": 88,
+                    }
+                ],
+                [],
+                [],
+            )
+
     out_file = tmp_path / "learned.yaml"
-    config = {"learned_patterns": {"enabled": True, "output_file": str(out_file), "append": False}, "ml_patterns_file": ""}
+    config = {
+        "learned_patterns": {
+            "enabled": True,
+            "output_file": str(out_file),
+            "append": False,
+        },
+        "ml_patterns_file": "",
+    }
     out = write_learned_patterns(MockDB(), "s1", config)
     assert out == str(out_file)
     assert out_file.exists()

@@ -4,6 +4,7 @@ so placeholders do not overwrite real secrets (POST /config).
 
 Used by Phase A of the secrets plan: UI never shows or writes plain secrets.
 """
+
 from __future__ import annotations
 
 import copy
@@ -28,10 +29,16 @@ def _walk_redact(obj: Any, in_api: bool = False) -> Any:
         out = {}
         for k, v in obj.items():
             key_lower = k.lower() if isinstance(k, str) else ""
-            if key_lower in _SECRET_KEYS and isinstance(v, str) and (v.strip() or not in_api):
+            if (
+                key_lower in _SECRET_KEYS
+                and isinstance(v, str)
+                and (v.strip() or not in_api)
+            ):
                 out[k] = REDACTED_PLACEHOLDER
             else:
-                out[k] = _walk_redact(v, in_api=(in_api or (isinstance(k, str) and k == "api")))
+                out[k] = _walk_redact(
+                    v, in_api=(in_api or (isinstance(k, str) and k == "api"))
+                )
         return out
     if isinstance(obj, list):
         return [_walk_redact(i, in_api) for i in obj]

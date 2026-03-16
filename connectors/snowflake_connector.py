@@ -16,6 +16,7 @@ Target config (type: database, driver: snowflake):
     warehouse: "AUDIT_WH"
     role: "ANALYST"           # optional
 """
+
 from typing import Any
 
 from core.connector_registry import register
@@ -52,7 +53,7 @@ class SnowflakeConnector:
         if not _SNOWFLAKE_AVAILABLE:
             raise RuntimeError(
                 "snowflake-connector-python is required for Snowflake targets. "
-                "Install with: uv pip install -e \".[bigdata]\""
+                'Install with: uv pip install -e ".[bigdata]"'
             )
         cfg = self.config
         user = cfg.get("user") or cfg.get("username", "")
@@ -144,6 +145,7 @@ class SnowflakeConnector:
         """
         if self._conn is None:
             return ""
+
         # Simple identifier quoting; names come from information_schema, not user input.
         def _q(identifier: str) -> str:
             return '"' + identifier.replace('"', '""') + '"'
@@ -211,8 +213,18 @@ class SnowflakeConnector:
                     try:
                         from utils.logger import log_finding
 
-                        location = f"{schema}.{table}.{cname}" if schema else f"{table}.{cname}"
-                        log_finding("database", target_name, location, res.get("sensitivity_level", ""), res.get("pattern_detected", ""))
+                        location = (
+                            f"{schema}.{table}.{cname}"
+                            if schema
+                            else f"{table}.{cname}"
+                        )
+                        log_finding(
+                            "database",
+                            target_name,
+                            location,
+                            res.get("sensitivity_level", ""),
+                            res.get("pattern_detected", ""),
+                        )
                     except Exception:
                         pass
         except Exception as e:
@@ -222,5 +234,8 @@ class SnowflakeConnector:
 
 
 if _SNOWFLAKE_AVAILABLE:
-    register("snowflake", SnowflakeConnector, ["name", "type", "account", "user", "database", "warehouse"])
-
+    register(
+        "snowflake",
+        SnowflakeConnector,
+        ["name", "type", "account", "user", "database", "warehouse"],
+    )

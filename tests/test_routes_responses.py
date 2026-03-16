@@ -106,13 +106,19 @@ def test_openapi_documents_429_for_scan_endpoints():
 
     schema = app.openapi()
     paths = schema.get("paths", {})
-    for path_key, method in [("/scan", "post"), ("/start", "post"), ("/scan_database", "post")]:
+    for path_key, method in [
+        ("/scan", "post"),
+        ("/start", "post"),
+        ("/scan_database", "post"),
+    ]:
         path_item = paths.get(path_key)
         assert path_item is not None, f"Path {path_key} not in OpenAPI"
         op = path_item.get(method)
         assert op is not None, f"{method.upper()} {path_key} not in OpenAPI"
         responses = op.get("responses", {})
-        assert "429" in responses, f"429 must be documented for {method.upper()} {path_key} (SonarQube S8415)"
+        assert "429" in responses, (
+            f"429 must be documented for {method.upper()} {path_key} (SonarQube S8415)"
+        )
 
 
 def test_openapi_documents_400_and_404_for_session_endpoints():
@@ -134,8 +140,12 @@ def test_openapi_documents_400_and_404_for_session_endpoints():
         op = path_item.get(method)
         assert op is not None, f"{method.upper()} {path_key} not in OpenAPI"
         responses = op.get("responses", {})
-        assert "400" in responses, f"400 must be documented for {method.upper()} {path_key}"
-        assert "404" in responses, f"404 must be documented for {method.upper()} {path_key}"
+        assert "400" in responses, (
+            f"400 must be documented for {method.upper()} {path_key}"
+        )
+        assert "404" in responses, (
+            f"404 must be documented for {method.upper()} {path_key}"
+        )
 
 
 def test_openapi_documents_404_for_report_heatmap_logs():

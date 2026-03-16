@@ -6,6 +6,7 @@ groups by table or file, and flags when multiple categories in the same group ma
 identification (LGPD Art. 5, GDPR Recital 26). Used at report time to produce the
 "Cross-referenced data – possible identification" sheet and recommendation.
 """
+
 from __future__ import annotations
 
 from collections import defaultdict
@@ -299,16 +300,18 @@ def run_aggregation(
             table_display = f"{schema}.{table}" if schema else table
             explanation = _build_explanation(all_cats, "table")
             sensitivity = "CRITICAL" if "health" in all_cats else "HIGH"
-            out.append({
-                "session_id": session_id,
-                "target_name": target,
-                "source_type": "database",
-                "table_or_file": table_display,
-                "columns_involved": ", ".join(columns_involved[:50]) or "-",
-                "categories": ", ".join(sorted(all_cats)),
-                "explanation": explanation,
-                "sensitivity_level": sensitivity,
-            })
+            out.append(
+                {
+                    "session_id": session_id,
+                    "target_name": target,
+                    "source_type": "database",
+                    "table_or_file": table_display,
+                    "columns_involved": ", ".join(columns_involved[:50]) or "-",
+                    "categories": ", ".join(sorted(all_cats)),
+                    "explanation": explanation,
+                    "sensitivity_level": sensitivity,
+                }
+            )
 
     # Filesystem: group by (target_name, path, file_name)
     fs_groups: dict[tuple, list[dict]] = defaultdict(list)
@@ -333,16 +336,18 @@ def run_aggregation(
             table_display = file_name or path or "-"
             explanation = _build_explanation(all_cats, "file")
             sensitivity = "CRITICAL" if "health" in all_cats else "HIGH"
-            out.append({
-                "session_id": session_id,
-                "target_name": target,
-                "source_type": "filesystem",
-                "table_or_file": table_display,
-                "columns_involved": ", ".join(columns_involved[:50]) or "-",
-                "categories": ", ".join(sorted(all_cats)),
-                "explanation": explanation,
-                "sensitivity_level": sensitivity,
-            })
+            out.append(
+                {
+                    "session_id": session_id,
+                    "target_name": target,
+                    "source_type": "filesystem",
+                    "table_or_file": table_display,
+                    "columns_involved": ", ".join(columns_involved[:50]) or "-",
+                    "categories": ", ".join(sorted(all_cats)),
+                    "explanation": explanation,
+                    "sensitivity_level": sensitivity,
+                }
+            )
 
     return out
 

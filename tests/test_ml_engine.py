@@ -5,6 +5,7 @@ Includes tests that encode SonarQube rules so regressions are caught:
 - S6973: Scikit-learn estimator must have min_samples_leaf and max_features
 - S117: local variable names must match ^[_a-z][a-z0-9_]*$ (lowercase + underscores)
 """
+
 import ast
 import re
 from pathlib import Path
