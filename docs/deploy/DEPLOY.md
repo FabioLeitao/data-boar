@@ -42,8 +42,7 @@ The report is written under `report.output_dir` in config (e.g. `/data`); copy i
 
 You can run the application **without cloning the repository** by using the published image on Docker Hub:
 
-- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** and **`fabioleitao/data_boar:1.5.4`**
-- **Legacy:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler) — `fabioleitao/python3-lgpd-crawler:latest` (same image may be published under both names)
+- **Docker Hub:** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** and **`fabioleitao/data_boar:1.5.4`**
 
 Example:
 
@@ -58,7 +57,7 @@ Ensure `/data/config.yaml` exists (e.g. copy from `deploy/config.example.yaml` i
 
 ## Image (build from source)
 
-- **Dockerfile** at repo root. Build: `docker build -t python3-lgpd-crawler:latest .`
+- **Dockerfile** at repo root. Build (Data Boar branding): `docker build -t fabioleitao/data_boar:latest .` or a local tag: `docker build -t data_boar:latest .`
 - **Public image**: You can also push to GitHub Container Registry (ghcr.io) or your own Docker Hub account and use that name in Compose/Swarm/Kubernetes.
 
 **Image footprint:** The Dockerfile uses a **multi-stage build**. The first stage installs build tools (gcc, dev headers) and compiles Python extensions; the final stage copies only the installed packages and app code and installs **runtime** libraries (e.g. `libpq5`, `libffi8`, `unixodbc`, `libmariadb3`). Build tools and `-dev` packages are not included in the final image, reducing size and attack surface while keeping the same behaviour (all DB connectors, reports, API).
@@ -68,10 +67,10 @@ Ensure `/data/config.yaml` exists (e.g. copy from `deploy/config.example.yaml` i
 ### Option A – GitHub Container Registry (ghcr.io)
 
 ```bash
-# From repo root
-docker build -t ghcr.io/fabioleitao/python3-lgpd-crawler:latest .
+# From repo root (Data Boar image name)
+docker build -t ghcr.io/fabioleitao/data_boar:latest .
 docker login ghcr.io   # Use a GitHub Personal Access Token with read:packages, write:packages
-docker push ghcr.io/fabioleitao/python3-lgpd-crawler:latest
+docker push ghcr.io/fabioleitao/data_boar:latest
 ```
 
 ### Option B – Docker Hub (e.g. fabioleitao)
@@ -98,7 +97,7 @@ docker push fabioleitao/data_boar:latest
 docker push fabioleitao/data_boar:1.5.4
 ```
 
-Optional: push the same image under the legacy name for compatibility: `docker tag fabioleitao/data_boar:latest fabioleitao/python3-lgpd-crawler:latest` then `docker push fabioleitao/python3-lgpd-crawler:latest`. See also [DOCKER_SETUP.md](../DOCKER_SETUP.md).
+See also [DOCKER_SETUP.md](../DOCKER_SETUP.md).
 
 ## 2. Prepare config
 
@@ -184,22 +183,22 @@ The image runs as UID 1000 (`appuser`). Use a writable volume for `/data` (e.g. 
 ## 3. Run as a single container (docker run)
 
 ```bash
-# From repo root; image built locally
-docker build -t python3-lgpd-crawler:latest .
+# From repo root; image built locally (Data Boar)
+docker build -t data_boar:latest .
 
 # Run with a bind mount for /data (config.yaml must be in ./data)
 mkdir -p data
 cp deploy/config.example.yaml data/config.yaml
 # Edit data/config.yaml as needed
 
-docker run -d --name lgpd-audit \
+docker run -d --name data-boar-audit \
   -p 8088:8088 \
   -v "$(pwd)/data:/data" \
   -e CONFIG_PATH=/data/config.yaml \
-  python3-lgpd-crawler:latest
+  data_boar:latest
 ```
 
-Access: <http://localhost:8088/> (dashboard), <http://localhost:8088/docs> (API). To stop: `docker stop lgpd-audit && docker rm lgpd-audit`.
+Access: <http://localhost:8088/> (dashboard), <http://localhost:8088/docs> (API). To stop: `docker stop data-boar-audit && docker rm data-boar-audit`.
 
 ## 4. Run with Docker Compose
 
@@ -374,9 +373,9 @@ To run a single audit from the CLI in the cluster, use a **Job** that overrides 
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | Default (API + frontend) | Run image with no command override: `docker run`, Compose, Swarm, or Kubernetes                                                            |
 | CLI one-shot             | Override command: `docker run ... --entrypoint python IMAGE main.py --config /data/config.yaml`                                            |
-| Build image              | `docker build -t python3-lgpd-crawler:latest .`                                                                                            |
+| Build image              | `docker build -t data_boar:latest .` or `docker build -t fabioleitao/data_boar:latest .`                                                    |
 | Push to registry         | `docker tag ... fabioleitao/data_boar:latest` then `docker login` and `docker push fabioleitao/data_boar:latest`                           |
-| **Single container**     | `docker run -d -p 8088:8088 -v ./data:/data python3-lgpd-crawler:latest` (section 3)                                                       |
+| **Single container**     | `docker run -d -p 8088:8088 -v ./data:/data data_boar:latest` (section 3)                                                                   |
 | **Docker Compose**       | `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d` — prepare `./data/config.yaml` first (section 4) |
 | **Docker Swarm**         | `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit` (section 5)                            |
 | **Kubernetes**           | `kubectl apply -f deploy/kubernetes/` — see `deploy/kubernetes/README.md` for image and config (section 6)                                 |

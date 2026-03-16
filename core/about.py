@@ -18,7 +18,7 @@ def get_about_info() -> dict:
     return {
         "name": "Data Boar",
         "version": ver,
-        "description": "Data Boar audits personal and sensitive data across databases and filesystems, aligned with LGPD, GDPR, CCPA, HIPAA, and GLBA. It is powered by the python3-lgpd-crawler engine.",
+        "description": "Data Boar — based on lgpd_crawler technology. Audits personal and sensitive data across databases and filesystems, aligned with LGPD, GDPR, CCPA, HIPAA, and GLBA.",
         "author": "Fabio Leitao",
         "license": "BSD 3-Clause License",
         "license_url": "https://opensource.org/licenses/BSD-3-Clause",
