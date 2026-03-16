@@ -1,5 +1,7 @@
 # Data Boar
 
+**Data Boar — based on lgpd_crawler technology.** Compliance-aware discovery and mapping of personal and sensitive data across your data soup.
+
 ![Data Boar mascot](api/static/mascot/data_boar_mascote_color.svg)
 
 **Português (Brasil):** [README.pt_BR.md](README.pt_BR.md) · [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md)

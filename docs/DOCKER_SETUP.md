@@ -4,16 +4,16 @@
 
 Run these steps in a terminal where **Docker** is available (e.g. PowerShell or CMD after starting Docker Desktop).
 
-**Pre-built image:** The application is published on Docker Hub as `fabioleitao/python3-lgpd-crawler:latest` ([hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)). You can `docker pull` and run that image instead of building from source (see [README](../README.md) and [deploy/DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md))). The image includes the latest features (hybrid regex + ML + optional DL sensitivity detection; configurable ML/DL training terms via `ml_patterns_file`, `dl_patterns_file`, or `sensitivity_detection` in config — see [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md)).
+**Pre-built image:** The application is published on Docker Hub as `fabioleitao/data_boar:latest` ([hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar)). You can `docker pull` and run that image instead of building from source (see [README](../README.md) and [deploy/DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md))). The image includes the latest features (hybrid regex + ML + optional DL sensitivity detection; configurable ML/DL training terms via `ml_patterns_file`, `dl_patterns_file`, or `sensitivity_detection` in config — see [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md)).
 
 **Upgrading your local image:** To refresh Docker Desktop with the current version from the repository, pull the image and restart your container(s):
 
 ```powershell
-docker pull fabioleitao/python3-lgpd-crawler:latest
+docker pull fabioleitao/data_boar:latest
 # If you run a single container
-docker stop lgpd-audit
-docker rm lgpd-audit
-docker run -d --name lgpd-audit -p 8088:8088 -v "${PWD}/data:/data" -e CONFIG_PATH=/data/config.yaml fabioleitao/python3-lgpd-crawler:latest
+docker stop data-boar-audit
+docker rm data-boar-audit
+docker run -d --name data-boar-audit -p 8088:8088 -v "${PWD}/data:/data" -e CONFIG_PATH=/data/config.yaml fabioleitao/data_boar:latest
 
 # If you use Compose
 docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml pull
@@ -59,7 +59,7 @@ The Dockerfile uses a multi-stage build (minimal runtime image; build tools only
 ```powershell
 cd c:\Users\<username>\Documents\dev\python3-lgpd-crawler
 
-docker build -t python3-lgpd-crawler:latest .
+docker build -t data_boar:latest .
 ```
 
 Default: web API + frontend. CLI remains available via `--entrypoint` override (see [deploy/DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md))).
@@ -72,7 +72,7 @@ Use your Docker Hub credentials (username `fabioleitao` and password or Access T
 
 ```powershell
 # Tag for Docker Hub
-docker tag python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:latest
+docker tag data_boar:latest fabioleitao/data_boar:latest
 
 # Log in (use your Docker Hub username and Access Token as password)
 docker login
@@ -80,21 +80,21 @@ docker login
 # Password: <your password or Access Token>
 
 # Push
-docker push fabioleitao/python3-lgpd-crawler:latest
+docker push fabioleitao/data_boar:latest
 ```
 
-Optional: push a version tag (e.g. 1.0.9):
+Optional: push a version tag (e.g. 1.5.4):
 
 ```powershell
-docker tag python3-lgpd-crawler:latest fabioleitao/python3-lgpd-crawler:1.0.9
-docker push fabioleitao/python3-lgpd-crawler:1.0.9
+docker tag data_boar:latest fabioleitao/data_boar:1.5.4
+docker push fabioleitao/data_boar:1.5.4
 ```
 
 Non-interactive login with token:
 
 ```powershell
 echo YOUR_ACCESS_TOKEN | docker login -u fabioleitao --password-stdin
-docker push fabioleitao/python3-lgpd-crawler:latest
+docker push fabioleitao/data_boar:latest
 ```
 
 ---
@@ -106,11 +106,11 @@ Config is in `data/config.yaml`. Run:
 ```powershell
 cd c:\Users\<username>\Documents\dev\python3-lgpd-crawler
 
-docker run -d --name lgpd-audit `
+docker run -d --name data-boar-audit `
   -p 8088:8088 `
   -v "${PWD}/data:/data" `
   -e CONFIG_PATH=/data/config.yaml `
-  python3-lgpd-crawler:latest
+  data_boar:latest
 ```
 
 Or with **Docker Compose** (alternative to single-container run):
@@ -135,8 +135,8 @@ docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.ym
 ## 6. Stop and remove
 
 ```powershell
-docker stop lgpd-audit
-docker rm lgpd-audit
+docker stop data-boar-audit
+docker rm data-boar-audit
 ```
 
 Or with Compose: `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml down`
