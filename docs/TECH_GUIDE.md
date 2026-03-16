@@ -117,6 +117,12 @@ file_scan:
   recursive: true
   scan_sqlite_as_db: true   # open .sqlite/.db files as DBs and scan tables/columns
   sample_limit: 5
+  # Optional: scan inside compressed files (zip, tar, gz, bz2, xz, 7z, …)
+  # When true, candidate archives are opened and inner members with supported extensions
+  # are scanned as regular files. This may increase run time and I/O; see PLAN_COMPRESSED_FILES.md.
+  scan_compressed: false
+  # max_inner_size: 50_000_000   # optional limit for total inner bytes per archive
+  # compressed_extensions: [".zip", ".tar", ".gz", ".tgz", ".bz2", ".xz", ".7z"]
 
 report:
   output_dir: .
