@@ -66,28 +66,28 @@ The list below is ordered for the current billing cycle, with a focus on:
 
 ### A. Near-term focus (current billing cycle)
 
-1. **CNPJ alphanumeric format validation** *(AI-assisted research + manual wiring)*  
-   - Use AI for: research/spec for alphanumeric format, regex proposal, EN + pt-BR doc wording.  
+1. **CNPJ alphanumeric format validation** *(AI-assisted research + manual wiring)*
+   - Use AI for: research/spec for alphanumeric format, regex proposal, EN + pt-BR doc wording.
    - Do manually: integrate regex/overrides, wire to existing detection/reporting, add tests.
 
-2. **Compressed files – minimal viable slice** *(AI-assisted design, manual wiring)*  
-   - Use AI for: config key names/defaults, archive helper API, resource-exhaustion warning text.  
+2. **Compressed files – minimal viable slice** *(AI-assisted design, manual wiring)*
+   - Use AI for: config key names/defaults, archive helper API, resource-exhaustion warning text.
    - Do manually: Filesystem connector wiring, CLI flag, optional `[compressed]` extra, core tests.
 
-3. **Data source versions & hardening – schema and report design** *(AI-heavy design, light implementation)*  
-   - Use AI for: `data_source_inventory` schema, inventory/report sheet layout, design for one reference connector.  
+3. **Data source versions & hardening – schema and report design** *(AI-heavy design, light implementation)*
+   - Use AI for: `data_source_inventory` schema, inventory/report sheet layout, design for one reference connector.
    - Do manually: implement that connector incrementally; add others in later cycles.
 
-4. **Strong crypto & controls validation – criteria + wording** *(AI-heavy criteria/report, manual plumbing)*  
-   - Use AI for: strong-crypto matrix per connector type, “Crypto & controls” sheet layout, disclaimers.  
+4. **Strong crypto & controls validation – criteria + wording** *(AI-heavy criteria/report, manual plumbing)*
+   - Use AI for: strong-crypto matrix per connector type, “Crypto & controls” sheet layout, disclaimers.
    - Do manually: add CLI/config flag, implement persistence for one connector, basic tests.
 
-5. **Additional detection techniques & FN reduction – simple thresholds + wording** *(mixed)*  
-   - Use AI for: “suggested review” and aggregation wording, simple stemming/normalisation/fuzzy strategy.  
+5. **Additional detection techniques & FN reduction – simple thresholds + wording** *(mixed)*
+   - Use AI for: “suggested review” and aggregation wording, simple stemming/normalisation/fuzzy strategy.
    - Do manually: add MEDIUM threshold config, wiring for 1–2 techniques, unit tests, docs tweaks.
 
-6. **Notifications (off-band + scan-complete) – Phase 1 only** *(AI for schema/templates, manual implementation)*  
-   - Use AI for: notifications config shape, notifier interface, initial message templates for CI/script usage.  
+6. **Notifications (off-band + scan-complete) – Phase 1 only** *(AI for schema/templates, manual implementation)*
+   - Use AI for: notifications config shape, notifier interface, initial message templates for CI/script usage.
    - Do manually: notifier module, config parsing, basic docs and examples; later phases after reset.
 
 ### B. Deferred to after billing reset (or if on-demand spend is enabled)
@@ -166,14 +166,14 @@ The list below is ordered for the current billing cycle, with a focus on:
 
 | #    | To-do                                                                    | Status    |           |
 | -    | -----                                                                    | ------    |           |
-| 1    | Config: file_scan.scan_compressed, max_inner_size, compressed_extensions | ⬜ Pending |           |
-| 2    | CLI --scan-compressed                                                    | ⬜ Pending |           |
-| 3    | Archive detection (magic bytes: zip, gz, 7z, tar, bz2, xz)               | ⬜ Pending |           |
-| 4    | Open-archive helper (zipfile, tarfile, py7zr optional)                   | ⬜ Pending |           |
-| 5    | FilesystemConnector: scan inside archives; path like archive\            | inner     | ⬜ Pending |
-| 6    | Optional [compressed] extra; graceful skip if py7zr missing              | ⬜ Pending |           |
-| 7–11 | Engine/API/dashboard; share connectors; tests; docs (EN + pt-BR)         | ⬜ Pending |           |
-| 12   | Resource exhaustion: max_inner_size, temp caps; user warning when enabling (disk, I/O, run time) | ⬜ Pending |           |
+| 1    | Config: file_scan.scan_compressed, max_inner_size, compressed_extensions | ✅ Done   |           |
+| 2    | CLI --scan-compressed                                                    | ✅ Done   |           |
+| 3    | Archive detection (magic bytes: zip, gz, 7z, tar, bz2, xz)               | ✅ Done   |           |
+| 4    | Open-archive helper (zipfile, tarfile, py7zr optional)                   | ✅ Done   |           |
+| 5    | FilesystemConnector: scan inside archives; path like archive\            | inner     | ✅ Done   |
+| 6    | Optional [compressed] extra; graceful skip if py7zr missing              | ✅ Done   |           |
+| 7–11 | Engine/API/dashboard; share connectors; tests; docs (EN + pt-BR)         | ✅ Done   |           |
+| 12   | Resource exhaustion: max_inner_size, temp caps; user warning when enabling (disk, I/O, run time) | ✅ Done   |           |
 | 13   | Follow-up: password-protected archive sample (or programmatic test) to validate file_passwords for ZIP/7z | ⬜ Pending |           |
 | 14   | Follow-up: optional max members per archive (e.g. 1000) as extra guard | ⬜ Pending |           |
 

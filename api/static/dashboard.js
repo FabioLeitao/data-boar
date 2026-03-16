@@ -97,6 +97,7 @@
   function initScanControls() {
     var btn = document.getElementById('btn-start-scan');
     var feedback = document.getElementById('scan-feedback');
+    var feedbackGuide = document.getElementById('scan-feedback-guide');
     var statusRunning = document.getElementById('status-running');
     var statusSession = document.getElementById('status-session');
     var statusFindings = document.getElementById('status-findings');
@@ -133,11 +134,16 @@
         var technician = (techInput && techInput.value && techInput.value.trim())
           ? techInput.value.trim()
           : null;
+        var scanCompressedEl = document.getElementById('scan-compressed');
+        var scanCompressed = scanCompressedEl && scanCompressedEl.checked;
 
         if (feedback) feedback.textContent = 'Starting…';
+        if (feedbackGuide) { feedbackGuide.textContent = ''; feedbackGuide.style.display = 'none'; }
+        if (btn) btn.disabled = true;
         var body = {};
         if (tenant != null) body.tenant = tenant;
         if (technician != null) body.technician = technician;
+        if (scanCompressed) body.scan_compressed = true;
 
         var opts = {
           method: 'POST',
@@ -146,16 +152,65 @@
         };
 
         fetch('/scan', opts)
-          .then(function (r) { return r.json(); })
+          .then(function (r) {
+            if (!r.ok) {
+              var err = new Error('Request failed: ' + r.status + ' ' + (r.statusText || ''));
+              err.status = r.status;
+              err.response = r;
+              throw err;
+            }
+            return r.json();
+          })
           .then(function (d) {
             if (feedback) {
               var sid = (d.session_id || '').slice(0, 16);
               feedback.textContent = 'Started: ' + (sid ? sid + '…' : '');
             }
+            if (feedbackGuide) { feedbackGuide.textContent = ''; feedbackGuide.style.display = 'none'; }
             pollStatus();
           })
           .catch(function (e) {
-            if (feedback) feedback.textContent = 'Error: ' + e.message;
+            if (btn) btn.disabled = false;
+            var msg = e.message || String(e);
+            var guide = '';
+            if (e.status === 409) {
+              msg = 'Scan already in progress.';
+              guide = 'Wait for the current scan to finish, or restart the API if it is stuck.';
+            } else if (e.status === 429) {
+              msg = 'Rate limited; try again shortly.';
+              guide = 'Wait and try again, or adjust rate_limit.max_concurrent_scans and min_interval_seconds in config.';
+            } else if (e.status === 401 || e.status === 403) {
+              msg = 'Not authorized (' + e.status + ').';
+              guide = 'Check API key or auth configuration if the API is protected.';
+            } else if (!e.status && !e.response) {
+              guide = 'Request did not reach the server. Check network, CORS, or ad-blockers; ensure the API is running.';
+            } else if (e.status >= 500) {
+              guide = 'Server error. Check API logs and try again.';
+            }
+            function showError(displayMsg, displayGuide) {
+              if (feedback) feedback.textContent = 'Error: ' + (displayMsg || msg);
+              if (feedbackGuide) {
+                feedbackGuide.textContent = displayGuide || guide ? 'What to do: ' + (displayGuide || guide) : '';
+                feedbackGuide.style.display = (displayGuide || guide) ? 'block' : 'none';
+              }
+            }
+            if (e.response) {
+              e.response.text().then(function (t) {
+                var displayMsg = msg;
+                var displayGuide = guide;
+                try {
+                  var j = JSON.parse(t);
+                  if (j.detail) {
+                    if (typeof j.detail === 'string') displayMsg = j.detail;
+                    else if (j.detail.reason) { displayMsg = j.detail.reason; if (j.detail.retry_after_seconds != null) displayGuide = 'Retry after ' + j.detail.retry_after_seconds + ' seconds, or adjust rate_limit in config.'; }
+                    else displayMsg = JSON.stringify(j.detail);
+                  }
+                } catch (_) {}
+                showError(displayMsg, displayGuide);
+              }).catch(function () { showError(msg, guide); });
+            } else {
+              showError(msg, guide);
+            }
           });
       });
     }
@@ -166,7 +221,11 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    initChart();
+    try {
+      initChart();
+    } catch (e) {
+      // Chart.js may fail to load (CDN/blocker); ensure scan controls still work
+    }
     initScanControls();
   });
 })();
