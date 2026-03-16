@@ -162,6 +162,8 @@ class AuditEngine:
         connector_class, _ = resolved
         t = target.get("type")
         fs_config = self.config.get("file_scan", {})
+        # Inject file_scan into target so connectors (filesystem, shares) see scan_compressed, etc.
+        target_with_fs = {**target, "file_scan": fs_config}
         scan_sqlite_as_db = fs_config.get("scan_sqlite_as_db", True)
         sample_limit = fs_config.get("sample_limit", 5)
         file_passwords = fs_config.get("file_passwords") or {}
@@ -169,7 +171,7 @@ class AuditEngine:
         if t == "filesystem":
             if ext is not None:
                 connector = connector_class(
-                    target,
+                    target_with_fs,
                     self.scanner,
                     self.db_manager,
                     extensions=ext,
@@ -179,7 +181,7 @@ class AuditEngine:
                 )
             else:
                 connector = connector_class(
-                    target,
+                    target_with_fs,
                     self.scanner,
                     self.db_manager,
                     scan_sqlite_as_db=scan_sqlite_as_db,
@@ -188,7 +190,7 @@ class AuditEngine:
                 )
         elif t in ("sharepoint", "webdav", "smb", "cifs", "nfs"):
             connector = connector_class(
-                target,
+                target_with_fs,
                 self.scanner,
                 self.db_manager,
                 extensions=ext,
