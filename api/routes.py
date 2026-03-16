@@ -757,10 +757,27 @@ async def download_report_by_session(session_id: str):
     _validate_session_id(session_id)
     engine = _get_engine()
     path = engine.generate_final_reports(session_id)
-    if path and Path(path).exists():
+    if path:
+        # Normalise and restrict the report path to the configured report output_dir.
+        # This guards against any accidental path traversal or misconfiguration.
+        out_dir = Path(engine.config.get("report", {}).get("output_dir", ".")).resolve()
+        candidate = Path(path).resolve()
+        try:
+            candidate.relative_to(out_dir)
+        except ValueError:
+            # Path is outside configured report directory; do not serve it.
+            raise HTTPException(
+                status_code=403,
+                detail="Report path is outside the configured report directory.",
+            )
+        if not candidate.exists():
+            raise HTTPException(
+                status_code=404,
+                detail=f"No data for session {session_id} or report generation failed.",
+            )
         return FileResponse(
-            path,
-            filename=Path(path).name,
+            candidate,
+            filename=candidate.name,
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
     raise HTTPException(
