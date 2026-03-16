@@ -4,6 +4,7 @@ REST/API connector: call remote HTTP(S) endpoints with configurable authenticati
 and scan response payloads for personal or sensitive data.
 Optional: register only when httpx is available. Used for type "api" or "rest" targets.
 """
+
 import os
 from typing import Any
 
@@ -11,6 +12,7 @@ from core.connector_registry import register
 
 try:
     import httpx
+
     _HTTPX_AVAILABLE = True
 except ImportError:
     _HTTPX_AVAILABLE = False
@@ -34,7 +36,11 @@ def _build_auth(client: "httpx.Client", target: dict[str, Any]) -> None:
         return
 
     if auth_type == "bearer":
-        token = auth.get("token") or (os.environ.get(auth.get("token_from_env", "")) if auth.get("token_from_env") else None)
+        token = auth.get("token") or (
+            os.environ.get(auth.get("token_from_env", ""))
+            if auth.get("token_from_env")
+            else None
+        )
         if token:
             client.headers["Authorization"] = f"Bearer {token}"
         return
@@ -43,7 +49,11 @@ def _build_auth(client: "httpx.Client", target: dict[str, Any]) -> None:
         token_url = auth.get("token_url")
         client_id = auth.get("client_id", "")
         client_secret = auth.get("client_secret", "")
-        if isinstance(client_secret, str) and client_secret.startswith("${") and client_secret.endswith("}"):
+        if (
+            isinstance(client_secret, str)
+            and client_secret.startswith("${")
+            and client_secret.endswith("}")
+        ):
             client_secret = os.environ.get(client_secret[2:-1], "")
         scope = auth.get("scope", "")
         if token_url and client_id and client_secret:
@@ -79,7 +89,9 @@ def _build_auth(client: "httpx.Client", target: dict[str, Any]) -> None:
         client.auth = httpx.BasicAuth(user, password)
 
 
-def _flatten_sample(obj: Any, prefix: str = "", max_len: int = 500) -> list[tuple[str, str]]:
+def _flatten_sample(
+    obj: Any, prefix: str = "", max_len: int = 500
+) -> list[tuple[str, str]]:
     """
     Recursively flatten JSON-like structure into (key_path, string_value) for scanning.
     Stops at first level of nesting for arrays (sample first element) to avoid huge payloads.
@@ -99,7 +111,9 @@ def _flatten_sample(obj: Any, prefix: str = "", max_len: int = 500) -> list[tupl
         return out
     if isinstance(obj, list):
         for i, item in enumerate(obj[:3]):  # sample first 3
-            out.extend(_flatten_sample(item, f"{prefix}[{i}]" if prefix else f"[{i}]", max_len))
+            out.extend(
+                _flatten_sample(item, f"{prefix}[{i}]" if prefix else f"[{i}]", max_len)
+            )
         return out
     if isinstance(obj, dict):
         for k, v in obj.items():
@@ -135,8 +149,12 @@ class RESTConnector:
 
     def connect(self) -> None:
         if not _HTTPX_AVAILABLE:
-            raise RuntimeError("httpx is required for REST connector. Install with: pip install httpx")
-        base_url = (self.config.get("base_url") or self.config.get("url", "")).rstrip("/")
+            raise RuntimeError(
+                "httpx is required for REST connector. Install with: pip install httpx"
+            )
+        base_url = (self.config.get("base_url") or self.config.get("url", "")).rstrip(
+            "/"
+        )
         connect_s = float(self.config.get("connect_timeout_seconds", 25))
         read_s = float(self.config.get("read_timeout_seconds", 90))
         # Default (first arg) used for write/pool; connect and read set explicitly (httpx requires default or all four).
@@ -174,13 +192,18 @@ class RESTConnector:
                     r.raise_for_status()
                     data = r.json()
                     if isinstance(data, list):
-                        paths = [p if isinstance(p, str) else p.get("path", p.get("url", "")) for p in data]
+                        paths = [
+                            p if isinstance(p, str) else p.get("path", p.get("url", ""))
+                            for p in data
+                        ]
                     elif isinstance(data, dict) and "paths" in data:
                         paths = data["paths"]
                     elif isinstance(data, dict) and "endpoints" in data:
                         paths = data["endpoints"]
                 except Exception as e:
-                    self.db_manager.save_failure(self.config.get("name", "api"), "error", f"Discover failed: {e}")
+                    self.db_manager.save_failure(
+                        self.config.get("name", "api"), "error", f"Discover failed: {e}"
+                    )
                     return
             if not paths:
                 self.db_manager.save_failure(
@@ -190,9 +213,15 @@ class RESTConnector:
                 )
                 return
             target_name = self.config.get("name", "API")
-            seen_path_key: set[tuple[str, str]] = set()  # (path_str, key) to avoid duplicate findings per field
+            seen_path_key: set[tuple[str, str]] = (
+                set()
+            )  # (path_str, key) to avoid duplicate findings per field
             for path in paths:
-                path_str = path if isinstance(path, str) else path.get("path", path.get("url", ""))
+                path_str = (
+                    path
+                    if isinstance(path, str)
+                    else path.get("path", path.get("url", ""))
+                )
                 if not path_str:
                     continue
                 path_str = path_str if path_str.startswith("/") else "/" + path_str
@@ -200,12 +229,15 @@ class RESTConnector:
                     r = self._client.get(path_str)
                     r.raise_for_status()
                 except Exception as e:
-                    self.db_manager.save_failure(target_name, "error", f"GET {path_str}: {e}")
+                    self.db_manager.save_failure(
+                        target_name, "error", f"GET {path_str}: {e}"
+                    )
                     continue
                 try:
                     payload = r.json()
                 except Exception:
                     payload = {"_raw": r.text[:2000]}
+
                 def _save_if_sensitive(key: str, sample: str) -> None:
                     if (path_str, key) in seen_path_key:
                         return
@@ -227,10 +259,14 @@ class RESTConnector:
                 if isinstance(payload, list):
                     for item in payload[: self.sample_limit]:
                         if isinstance(item, dict):
-                            for key, sample in _flatten_sample(item, prefix="", max_len=500):
+                            for key, sample in _flatten_sample(
+                                item, prefix="", max_len=500
+                            ):
                                 _save_if_sensitive(key, sample)
                     if not payload:
-                        for key, sample in _flatten_sample({}, prefix="(empty)", max_len=500):
+                        for key, sample in _flatten_sample(
+                            {}, prefix="(empty)", max_len=500
+                        ):
                             _save_if_sensitive(key, sample)
                 else:
                     for key, sample in _flatten_sample(payload, max_len=500):

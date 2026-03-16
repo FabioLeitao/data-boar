@@ -12,6 +12,7 @@ def get_about_info() -> dict:
     """
     try:
         from importlib.metadata import version
+
         ver = version("python3-lgpd-crawler")
     except Exception:
         ver = "1.5.4"

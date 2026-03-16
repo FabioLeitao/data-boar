@@ -2,6 +2,7 @@
 SQL connector: connect via SQLAlchemy, discover schemas/tables/columns, sample rows (no raw storage),
 run detector, save_finding. Supports PostgreSQL, MySQL, MariaDB, SQLite, MSSQL, Oracle via driver.
 """
+
 from collections.abc import Set
 from typing import Any
 from urllib.parse import quote
@@ -21,14 +22,44 @@ DRIVER_MAP = {
 }
 
 # Oracle system schemas to skip when discovering (credential sees only accessible schemas; skip Oracle-maintained)
-ORACLE_SYSTEM_SCHEMAS = frozenset({
-    "SYS", "SYSTEM", "OUTLN", "DBSNMP", "DIP", "ORACLE_OCM", "APPQOSSYS", "WMSYS",
-    "EXFSYS", "CTXSYS", "XDB", "ANONYMOUS", "MDSYS", "OLAPSYS", "ORDSYS", "ORDDATA",
-    "SI_INFORMTN_SCHEMA", "LBACSYS", "DVF", "DVSYS", "GSMADMIN_INTERNAL", "OJVMSYS",
-    "GSMCATUSER", "GSMUSER", "MDDATA", "REMOTE_SCHEDULER_AGENT", "DBSFWUSER",
-})
+ORACLE_SYSTEM_SCHEMAS = frozenset(
+    {
+        "SYS",
+        "SYSTEM",
+        "OUTLN",
+        "DBSNMP",
+        "DIP",
+        "ORACLE_OCM",
+        "APPQOSSYS",
+        "WMSYS",
+        "EXFSYS",
+        "CTXSYS",
+        "XDB",
+        "ANONYMOUS",
+        "MDSYS",
+        "OLAPSYS",
+        "ORDSYS",
+        "ORDDATA",
+        "SI_INFORMTN_SCHEMA",
+        "LBACSYS",
+        "DVF",
+        "DVSYS",
+        "GSMADMIN_INTERNAL",
+        "OJVMSYS",
+        "GSMCATUSER",
+        "GSMUSER",
+        "MDDATA",
+        "REMOTE_SCHEDULER_AGENT",
+        "DBSFWUSER",
+    }
+)
 
-_DEFAULT_SKIP_SCHEMAS = {"information_schema", "sys", "pg_catalog", "performance_schema"}
+_DEFAULT_SKIP_SCHEMAS = {
+    "information_schema",
+    "sys",
+    "pg_catalog",
+    "performance_schema",
+}
 
 
 def _get_skip_schemas(dialect: str) -> Set[str]:
@@ -36,7 +67,9 @@ def _get_skip_schemas(dialect: str) -> Set[str]:
     return ORACLE_SYSTEM_SCHEMAS if dialect == "oracle" else _DEFAULT_SKIP_SCHEMAS
 
 
-def _should_skip_schema(schema: str | None, dialect: str, skip_schemas: Set[str]) -> bool:
+def _should_skip_schema(
+    schema: str | None, dialect: str, skip_schemas: Set[str]
+) -> bool:
     """True if schema should be skipped (empty or in skip_schemas)."""
     if not schema:
         return True
@@ -50,11 +83,15 @@ def _tables_from_schema(inspector: Any, schema: str) -> list[dict[str, Any]]:
     try:
         for table in inspector.get_table_names(schema=schema):
             columns = inspector.get_columns(table, schema=schema)
-            out.append({
-                "schema": schema or "",
-                "table": table,
-                "columns": [{"name": c["name"], "type": str(c["type"])} for c in columns],
-            })
+            out.append(
+                {
+                    "schema": schema or "",
+                    "table": table,
+                    "columns": [
+                        {"name": c["name"], "type": str(c["type"])} for c in columns
+                    ],
+                }
+            )
     except Exception:
         pass
     return out
@@ -68,11 +105,15 @@ def _discover_fallback_no_schemas(inspector: Any) -> list[dict[str, Any]]:
     try:
         for table in inspector.get_table_names():
             columns = inspector.get_columns(table)
-            out.append({
-                "schema": "",
-                "table": table,
-                "columns": [{"name": c["name"], "type": str(c["type"])} for c in columns],
-            })
+            out.append(
+                {
+                    "schema": "",
+                    "table": table,
+                    "columns": [
+                        {"name": c["name"], "type": str(c["type"])} for c in columns
+                    ],
+                }
+            )
     except Exception:
         pass
     return out
@@ -100,7 +141,9 @@ def _build_url(target: dict[str, Any]) -> str:
     port = target.get("port", 5432)
     database = target.get("database", "")
     if "oracle" in drivername:
-        return f"{drivername}://{user}:{password}@{host}:{port}/?service_name={database}"
+        return (
+            f"{drivername}://{user}:{password}@{host}:{port}/?service_name={database}"
+        )
     return f"{drivername}://{user}:{password}@{host}:{port}/{database}"
 
 
@@ -119,7 +162,10 @@ def _connect_args_from_target(target: dict[str, Any]) -> dict[str, Any]:
         return {"timeout": read_s}
     if driver == "postgresql":
         # statement_timeout in PostgreSQL is in milliseconds
-        return {"connect_timeout": connect_s, "options": f"-c statement_timeout={read_s * 1000}"}
+        return {
+            "connect_timeout": connect_s,
+            "options": f"-c statement_timeout={read_s * 1000}",
+        }
     if driver in ("mysql", "mariadb"):
         return {"connect_timeout": connect_s}
     # mssql, oracle, others: pass connect_timeout when driver supports it
@@ -195,17 +241,18 @@ class SQLConnector:
         if res["sensitivity_level"] == "LOW":
             return
         norm_tag = res.get("norm_tag", "")
-        if (
-            "DOB_POSSIBLE_MINOR" in (res.get("pattern_detected") or "")
-            and self.detection_config.get("minor_full_scan")
-        ):
+        if "DOB_POSSIBLE_MINOR" in (
+            res.get("pattern_detected") or ""
+        ) and self.detection_config.get("minor_full_scan"):
             full_scan_limit = self.detection_config.get("minor_full_scan_limit", 100)
             full_sample = self.sample(schema, table, cname, limit=full_scan_limit)
             full_res = self.scanner.scan_column(cname, full_sample)
             if "DOB_POSSIBLE_MINOR" in (full_res.get("pattern_detected") or ""):
                 res = full_res
                 suffix = " (full-scan confirmed)"
-                norm_tag = (norm_tag or "").rstrip() + suffix if norm_tag else suffix.lstrip()
+                norm_tag = (
+                    (norm_tag or "").rstrip() + suffix if norm_tag else suffix.lstrip()
+                )
         self.db_manager.save_finding(
             source_type="database",
             target_name=target_name,
@@ -222,11 +269,20 @@ class SQLConnector:
         )
         try:
             from utils.logger import log_finding
-            log_finding("database", target_name, f"{schema}.{table}.{cname}", res["sensitivity_level"], res["pattern_detected"])
+
+            log_finding(
+                "database",
+                target_name,
+                f"{schema}.{table}.{cname}",
+                res["sensitivity_level"],
+                res["pattern_detected"],
+            )
         except Exception:
             pass
 
-    def sample(self, schema: str, table: str, column_name: str, limit: int | None = None) -> str:
+    def sample(
+        self, schema: str, table: str, column_name: str, limit: int | None = None
+    ) -> str:
         """Fetch up to limit (or sample_limit) values from column; return concatenated string for detection (not stored)."""
         use_limit = limit if limit is not None else self.sample_limit
         dialect = self.engine.dialect.name if self.engine else ""
@@ -242,8 +298,13 @@ class SQLConnector:
                 # MySQL uses backticks; escape backtick inside identifiers to prevent injection.
                 def _bk(s: str) -> str:
                     return s.replace("`", "``")
-                t = f'`{_bk(safe_schema)}`.`{_bk(safe_table)}`' if schema else f'`{_bk(safe_table)}`'
-                q = text(f'SELECT `{_bk(safe_col)}` FROM {t} LIMIT {use_limit}')
+
+                t = (
+                    f"`{_bk(safe_schema)}`.`{_bk(safe_table)}`"
+                    if schema
+                    else f"`{_bk(safe_table)}`"
+                )
+                q = text(f"SELECT `{_bk(safe_col)}` FROM {t} LIMIT {use_limit}")
             elif dialect == "oracle":
                 # Oracle: quoted identifiers; use ROWNUM for limit (no LIMIT)
                 t = f'"{safe_schema}"."{safe_table}"' if schema else f'"{safe_table}"'
@@ -270,6 +331,7 @@ class SQLConnector:
             return
         try:
             from utils.logger import log_connection
+
             log_connection(target_name, "database", server_ip or "local")
             engine_name = self.engine.dialect.name if self.engine else "sql"
             for item in self.discover():
@@ -277,8 +339,13 @@ class SQLConnector:
                 table = item["table"]
                 for col in item["columns"]:
                     self._process_one_finding(
-                        target_name, server_ip, engine_name,
-                        schema, table, col["name"], col["type"],
+                        target_name,
+                        server_ip,
+                        engine_name,
+                        schema,
+                        table,
+                        col["name"],
+                        col["type"],
                     )
         except Exception as e:
             self.db_manager.save_failure(target_name, "error", str(e))

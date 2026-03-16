@@ -4,6 +4,7 @@ extract text (pypdf, docx, openpyxl, etc.), run detector, save filesystem_findin
 On permission error: save_failure with reason permission_denied.
 Scans all compatible/supported file types by extension; unknown types get path/name-only analysis.
 """
+
 import os
 import zipfile
 from pathlib import Path
@@ -13,20 +14,98 @@ from core.connector_registry import register
 
 # Plain text and markup (read as text with errors=replace)
 _TEXT_EXTENSIONS = {
-    ".txt", ".csv", ".tsv", ".tab", ".json", ".jsonl", ".ndjson", ".xml", ".html", ".htm", ".xhtml",
-    ".md", ".markdown", ".rst", ".log", ".ini", ".cfg", ".conf", ".config",
-    ".yml", ".yaml", ".toml", ".env", ".properties", ".sql", ".sh", ".bat", ".ps1",
-    ".py", ".js", ".ts", ".mjs", ".cjs", ".vue", ".rb", ".php", ".pl", ".pm",
-    ".java", ".kt", ".kts", ".scala", ".go", ".rs", ".c", ".h", ".cpp", ".hpp",
-    ".cs", ".vb", ".r", ".R", ".graphql", ".gql", ".tex", ".bib",
-    ".rtf", ".rtfd", ".rdf", ".owl", ".ttl", ".n3", ".svg", ".svgz", ".diff", ".patch",
+    ".txt",
+    ".csv",
+    ".tsv",
+    ".tab",
+    ".json",
+    ".jsonl",
+    ".ndjson",
+    ".xml",
+    ".html",
+    ".htm",
+    ".xhtml",
+    ".md",
+    ".markdown",
+    ".rst",
+    ".log",
+    ".ini",
+    ".cfg",
+    ".conf",
+    ".config",
+    ".yml",
+    ".yaml",
+    ".toml",
+    ".env",
+    ".properties",
+    ".sql",
+    ".sh",
+    ".bat",
+    ".ps1",
+    ".py",
+    ".js",
+    ".ts",
+    ".mjs",
+    ".cjs",
+    ".vue",
+    ".rb",
+    ".php",
+    ".pl",
+    ".pm",
+    ".java",
+    ".kt",
+    ".kts",
+    ".scala",
+    ".go",
+    ".rs",
+    ".c",
+    ".h",
+    ".cpp",
+    ".hpp",
+    ".cs",
+    ".vb",
+    ".r",
+    ".R",
+    ".graphql",
+    ".gql",
+    ".tex",
+    ".bib",
+    ".rtf",
+    ".rtfd",
+    ".rdf",
+    ".owl",
+    ".ttl",
+    ".n3",
+    ".svg",
+    ".svgz",
+    ".diff",
+    ".patch",
 }
 
 # Binary/document formats with dedicated extractors
 _DOCUMENT_EXTENSIONS = {
-    ".pdf", ".doc", ".docx", ".odt", ".ods", ".odp", ".odm", ".odg", ".odf", ".odb",
-    ".xls", ".xlsx", ".xlsm", ".xlsb", ".ppt", ".pptx", ".pps", ".ppsx",
-    ".msg", ".eml", ".mht", ".mhtml",
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".odt",
+    ".ods",
+    ".odp",
+    ".odm",
+    ".odg",
+    ".odf",
+    ".odb",
+    ".xls",
+    ".xlsx",
+    ".xlsm",
+    ".xlsb",
+    ".ppt",
+    ".pptx",
+    ".pps",
+    ".ppsx",
+    ".msg",
+    ".eml",
+    ".mht",
+    ".mhtml",
 }
 
 # Database / structured (sample or path-only)
@@ -37,14 +116,27 @@ SUPPORTED_EXTENSIONS = _TEXT_EXTENSIONS | _DOCUMENT_EXTENSIONS | _DATA_EXTENSION
 
 # Optional: extension -> MIME (for reference; scanning is extension-based)
 EXTENSION_MIME = {
-    ".txt": "text/plain", ".csv": "text/csv", ".json": "application/json",
-    ".pdf": "application/pdf", ".doc": "application/msword", ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ".xls": "application/vnd.ms-excel", ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    ".odt": "application/vnd.oasis.opendocument.text", ".ods": "application/vnd.oasis.opendocument.spreadsheet", ".odp": "application/vnd.oasis.opendocument.presentation",
-    ".xml": "application/xml", ".html": "text/html", ".htm": "text/html",
-    ".eml": "message/rfc822", ".msg": "application/vnd.ms-outlook",
+    ".txt": "text/plain",
+    ".csv": "text/csv",
+    ".json": "application/json",
+    ".pdf": "application/pdf",
+    ".doc": "application/msword",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ".xls": "application/vnd.ms-excel",
+    ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ".odt": "application/vnd.oasis.opendocument.text",
+    ".ods": "application/vnd.oasis.opendocument.spreadsheet",
+    ".odp": "application/vnd.oasis.opendocument.presentation",
+    ".xml": "application/xml",
+    ".html": "text/html",
+    ".htm": "text/html",
+    ".eml": "message/rfc822",
+    ".msg": "application/vnd.ms-outlook",
     ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    ".rtf": "application/rtf", ".sqlite": "application/vnd.sqlite3", ".yml": "text/yaml", ".yaml": "text/yaml",
+    ".rtf": "application/rtf",
+    ".sqlite": "application/vnd.sqlite3",
+    ".yml": "text/yaml",
+    ".yaml": "text/yaml",
 }
 
 
@@ -67,6 +159,7 @@ def _read_text_sample(
 
         if ext == ".pdf":
             from pypdf import PdfReader
+
             reader = PdfReader(path)
             if reader.is_encrypted:
                 password = pw.get(ext) or pw.get("default")
@@ -74,9 +167,12 @@ def _read_text_sample(
                     reader.decrypt(password)
                 else:
                     return ""
-            return " ".join(p.extract_text() or "" for p in reader.pages[:5])[:max_chars]
+            return " ".join(p.extract_text() or "" for p in reader.pages[:5])[
+                :max_chars
+            ]
         if ext == ".docx":
             from docx import Document
+
             doc = Document(path)
             return " ".join(p.text for p in doc.paragraphs[:50])[:max_chars]
         if ext == ".doc":
@@ -86,8 +182,11 @@ def _read_text_sample(
             try:
                 from odf.opendocument import load
                 from odf import text as odf_text, teletype
+
                 doc = load(path)
-                parts = [teletype.extractText(el) for el in doc.getElementsByType(odf_text.P)]
+                parts = [
+                    teletype.extractText(el) for el in doc.getElementsByType(odf_text.P)
+                ]
                 return " ".join(parts)[:max_chars]
             except Exception:
                 return ""
@@ -95,8 +194,11 @@ def _read_text_sample(
             try:
                 from odf.opendocument import load
                 from odf import text as odf_text, teletype
+
                 doc = load(path)
-                parts = [teletype.extractText(el) for el in doc.getElementsByType(odf_text.P)]
+                parts = [
+                    teletype.extractText(el) for el in doc.getElementsByType(odf_text.P)
+                ]
                 return " ".join(parts)[:max_chars]
             except Exception:
                 return ""
@@ -104,18 +206,23 @@ def _read_text_sample(
             try:
                 from odf.opendocument import load
                 from odf import text as odf_text, teletype
+
                 doc = load(path)
-                parts = [teletype.extractText(el) for el in doc.getElementsByType(odf_text.P)]
+                parts = [
+                    teletype.extractText(el) for el in doc.getElementsByType(odf_text.P)
+                ]
                 return " ".join(parts)[:max_chars]
             except Exception:
                 return ""
         if ext in (".xlsx", ".xls", ".xlsm"):
             import pandas as pd
+
             df = pd.read_excel(path, nrows=20, header=None)
             return " ".join(df.astype(str).stack().tolist())[:max_chars]
         if ext == ".xlsb":
             try:
                 import pandas as pd
+
                 df = pd.read_excel(path, engine="pyxlsb", nrows=20, header=None)
                 return " ".join(df.astype(str).stack().tolist())[:max_chars]
             except Exception:
@@ -125,12 +232,19 @@ def _read_text_sample(
                 with zipfile.ZipFile(path, "r") as z:
                     password = pw.get(ext) or pw.get("default")
                     if password:
-                        z.setpassword(password.encode("utf-8") if isinstance(password, str) else password)
+                        z.setpassword(
+                            password.encode("utf-8")
+                            if isinstance(password, str)
+                            else password
+                        )
                     parts = []
                     for name in z.namelist():
-                        if name.startswith("ppt/slides/slide") and name.endswith(".xml"):
+                        if name.startswith("ppt/slides/slide") and name.endswith(
+                            ".xml"
+                        ):
                             data = z.read(name).decode("utf-8", errors="replace")
                             import re
+
                             parts.append(re.sub(r"<[^>]+>", " ", data))
                     return " ".join(parts)[:max_chars]
             except Exception:
@@ -138,6 +252,7 @@ def _read_text_sample(
         if ext == ".msg":
             try:
                 import extract_msg
+
                 msg = extract_msg.Message(path)
                 body = (msg.body or "") + " " + (msg.subject or "")
                 for att in (msg.attachments or [])[:3]:
@@ -166,6 +281,7 @@ def _scan_sqlite_file_as_db(
     No raw content stored.
     """
     from sqlalchemy import create_engine, inspect, text
+
     findings = []
     try:
         engine = create_engine(f"sqlite:///{file_path.resolve()}", pool_pre_ping=True)
@@ -186,7 +302,11 @@ def _scan_sqlite_file_as_db(
                     try:
                         safe_table = table.replace('"', '""')
                         safe_col = cname.replace('"', '""')
-                        row = conn.execute(text(f'SELECT "{safe_col}" FROM "{safe_table}" LIMIT {sample_limit}'))
+                        row = conn.execute(
+                            text(
+                                f'SELECT "{safe_col}" FROM "{safe_table}" LIMIT {sample_limit}'
+                            )
+                        )
                         for r in row:
                             if r[0] is not None:
                                 sample_parts.append(str(r[0])[:200])
@@ -196,15 +316,17 @@ def _scan_sqlite_file_as_db(
                     res = scanner.scan_column(cname, sample)
                     if res["sensitivity_level"] == "LOW":
                         continue
-                    findings.append({
-                        "path": str(file_path.parent),
-                        "file_name": f"{file_path.name} | {table}.{cname}",
-                        "data_type": ctype,
-                        "sensitivity_level": res["sensitivity_level"],
-                        "pattern_detected": res["pattern_detected"],
-                        "norm_tag": res.get("norm_tag", ""),
-                        "ml_confidence": res.get("ml_confidence", 0),
-                    })
+                    findings.append(
+                        {
+                            "path": str(file_path.parent),
+                            "file_name": f"{file_path.name} | {table}.{cname}",
+                            "data_type": ctype,
+                            "sensitivity_level": res["sensitivity_level"],
+                            "pattern_detected": res["pattern_detected"],
+                            "norm_tag": res.get("norm_tag", ""),
+                            "ml_confidence": res.get("ml_confidence", 0),
+                        }
+                    )
     except Exception:
         pass
     finally:
@@ -239,11 +361,19 @@ class FilesystemConnector:
         # "*" or "all" in list => use full SUPPORTED_EXTENSIONS; else use provided list or default
         use_all = False
         if extensions:
-            exts = list(extensions) if isinstance(extensions, (list, set)) else [extensions]
+            exts = (
+                list(extensions)
+                if isinstance(extensions, (list, set))
+                else [extensions]
+            )
             use_all = any(str(x).strip().lower() in ("*", "all", ".*") for x in exts)
-        self.extensions = SUPPORTED_EXTENSIONS if use_all else set(extensions or SUPPORTED_EXTENSIONS)
+        self.extensions = (
+            SUPPORTED_EXTENSIONS if use_all else set(extensions or SUPPORTED_EXTENSIONS)
+        )
         # Normalize to lowercase with dot
-        self.extensions = {e if e.startswith(".") else f".{e.lstrip('*')}" for e in self.extensions}
+        self.extensions = {
+            e if e.startswith(".") else f".{e.lstrip('*')}" for e in self.extensions
+        }
 
     def run(self) -> None:
         """Walk target path, check permission, read sample, detect, save_finding or save_failure."""
@@ -252,13 +382,18 @@ class FilesystemConnector:
         recursive = self.config.get("recursive", True)
         path = Path(root)
         if not path.exists():
-            self.db_manager.save_failure(target_name, "unreachable", f"Path does not exist: {root}")
+            self.db_manager.save_failure(
+                target_name, "unreachable", f"Path does not exist: {root}"
+            )
             return
         if not path.is_dir():
-            self.db_manager.save_failure(target_name, "error", "Path is not a directory")
+            self.db_manager.save_failure(
+                target_name, "error", "Path is not a directory"
+            )
             return
         try:
             from utils.logger import log_connection
+
             log_connection(target_name, "filesystem", str(path))
         except Exception:
             pass
@@ -269,12 +404,16 @@ class FilesystemConnector:
             if file_path.suffix.lower() not in self.extensions:
                 continue
             if not os.access(file_path, os.R_OK):
-                self.db_manager.save_failure(target_name, "permission_denied", str(file_path))
+                self.db_manager.save_failure(
+                    target_name, "permission_denied", str(file_path)
+                )
                 continue
             ext = file_path.suffix.lower()
             # 2.6: treat .sqlite/.sqlite3/.db as DBs when scan_sqlite_as_db is True
             if self.scan_sqlite_as_db and ext in self.SQLITE_EXTENSIONS:
-                for finding in _scan_sqlite_file_as_db(file_path, self.scanner, self.sample_limit):
+                for finding in _scan_sqlite_file_as_db(
+                    file_path, self.scanner, self.sample_limit
+                ):
                     self.db_manager.save_finding(
                         source_type="filesystem",
                         target_name=target_name,
@@ -288,11 +427,20 @@ class FilesystemConnector:
                     )
                     try:
                         from utils.logger import log_finding
-                        log_finding("filesystem", target_name, finding["file_name"], finding["sensitivity_level"], finding["pattern_detected"])
+
+                        log_finding(
+                            "filesystem",
+                            target_name,
+                            finding["file_name"],
+                            finding["sensitivity_level"],
+                            finding["pattern_detected"],
+                        )
                     except Exception:
                         pass
                 continue
-            content = _read_text_sample(file_path, ext, self.sample_limit, self.file_passwords)
+            content = _read_text_sample(
+                file_path, ext, self.sample_limit, self.file_passwords
+            )
             res = self.scanner.scan_file_content(content, file_path)
             if res is None:
                 continue
@@ -309,7 +457,14 @@ class FilesystemConnector:
             )
             try:
                 from utils.logger import log_finding
-                log_finding("filesystem", target_name, str(file_path), res["sensitivity_level"], res["pattern_detected"])
+
+                log_finding(
+                    "filesystem",
+                    target_name,
+                    str(file_path),
+                    res["sensitivity_level"],
+                    res["pattern_detected"],
+                )
             except Exception:
                 pass
 

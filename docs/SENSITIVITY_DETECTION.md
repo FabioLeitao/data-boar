@@ -16,6 +16,19 @@ You can **set the training words for both ML and DL** in the main config file (i
 
 ---
 
+## CNPJ formats (Brazil): legacy numeric and alphanumeric
+
+Brazilian **CNPJ** (company identifier) historically used a **numeric-only** format:
+
+- 14 digits, optionally formatted as `XX.XXX.XXX/XXXX-XX` (dots, slash, hyphen).
+
+The project now recognises **both**:
+
+- `LGPD_CNPJ` – legacy numeric format only.
+- `LGPD_CNPJ_ALNUM` – an **alphanumeric** format where the first 12 positions may contain `A–Z` or `0–9`, and the last two positions remain numeric check digits.
+
+Both patterns share the same `norm_tag` (`LGPD Art. 5`) so they are treated as identifiers under LGPD. At this stage the detector performs **format compatibility checks only** (regex match); **checksum validation** for CNPJ (numeric or alphanumeric) and other Brazilian identifiers (e.g. CPF, PIS/PASEP) is intentionally left to a **future detector-logic phase** so the regex layer stays simple and easy to extend.
+
 ## Config keys
 
 | Key                              | Description                                                                                                                         |                                                                              |

@@ -3,6 +3,7 @@ Unified scanner that uses core.detector only (regex + ML + optional DL).
 Interface: scan_column(label, sample) and scan_file_content(content, path) returning
 structured result for LocalDBManager.save_finding.
 """
+
 from pathlib import Path
 from typing import Any
 
@@ -37,7 +38,9 @@ class DataScanner:
         Analyze a DB column (name + sample). Returns dict with sensitivity_level, pattern_detected, norm_tag, ml_confidence.
         Sample content is not stored.
         """
-        level, pattern, norm, conf = self.detector.analyze(column_name, sample_content or "")
+        level, pattern, norm, conf = self.detector.analyze(
+            column_name, sample_content or ""
+        )
         return {
             "sensitivity_level": level,
             "pattern_detected": pattern,
@@ -45,7 +48,9 @@ class DataScanner:
             "ml_confidence": conf,
         }
 
-    def scan_file_content(self, content: str, file_path: str | Path) -> dict[str, Any] | None:
+    def scan_file_content(
+        self, content: str, file_path: str | Path
+    ) -> dict[str, Any] | None:
         """
         Analyze file content (and path for context). Returns same shape as scan_column if sensitivity != LOW; else None.
         """
