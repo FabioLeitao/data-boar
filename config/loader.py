@@ -142,14 +142,24 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         ".tex",
         ".bib",
     ]
+    fs_cfg = data.get("file_scan", {}) or {}
     out["file_scan"] = {
-        "extensions": data.get("file_scan", {}).get("extensions", _default_extensions),
-        "recursive": data.get("file_scan", {}).get("recursive", True),
-        "scan_sqlite_as_db": data.get("file_scan", {}).get("scan_sqlite_as_db", True),
-        "sample_limit": data.get("file_scan", {}).get("sample_limit", 5),
-        "file_passwords": _normalize_file_passwords(
-            data.get("file_scan", {}).get("file_passwords")
-        ),
+        "extensions": fs_cfg.get("extensions", _default_extensions),
+        "recursive": fs_cfg.get("recursive", True),
+        "scan_sqlite_as_db": fs_cfg.get("scan_sqlite_as_db", True),
+        "sample_limit": fs_cfg.get("sample_limit", 5),
+        # Optional: scan inside compressed files (zip, tar, gz, bz2, xz, 7z, …)
+        # This flag is deliberately conservative: default False so existing configs
+        # keep current behaviour until explicitly opted-in.
+        "scan_compressed": bool(fs_cfg.get("scan_compressed", False)),
+        # Optional: per-archive inner-bytes safety cap to avoid archive bombs.
+        # None means "use engine default".
+        "max_inner_size": fs_cfg.get("max_inner_size")
+        or fs_cfg.get("scan_compressed_max_inner_size"),
+        # Optional: restrict which archive types to open; if omitted, engine/connector
+        # will use a sensible default Tier 1 + Tier 2 list (see PLAN_COMPRESSED_FILES.md).
+        "compressed_extensions": fs_cfg.get("compressed_extensions"),
+        "file_passwords": _normalize_file_passwords(fs_cfg.get("file_passwords")),
     }
     # Normalize extensions to list of suffixes (e.g. "*.pdf" -> ".pdf")
     exts = out["file_scan"]["extensions"]
