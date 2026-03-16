@@ -1,83 +1,94 @@
 # LGPD – sample compliance profile (Brazil; Lei Geral de Proteção de Dados)
 #
-# Target audience: Brazilian deployments and LGPD compliance. This sample adds
-# bilingual (Portuguese BR + English) ML terms so column names in either language
-# are detected (e.g. "documento oficial" / "official document", "RG" / "ID",
-# "CNH" / "Driver License"). Use when scanning data that may have PT-BR or EN labels.
+# Target audience: Brazilian deployments and LGPD compliance. This sample includes
+# the same regex and ML terms as the app's built-in defaults (so using this file
+# as regex_overrides_file and ml_patterns_file does not reduce coverage), plus
+# extra Brazilian regex (RG, CEP, PIS/PASEP) and bilingual (PT-BR + EN) terms.
 #
 # How to use:
 #   1. Set in your main config:
 #        regex_overrides_file: path/to/compliance-sample-lgpd.yaml
 #        ml_patterns_file: path/to/compliance-sample-lgpd.yaml
-#   2. Merge the recommendation_overrides list below into your config under report.recommendation_overrides.
+#   2. Merge the recommendation_overrides list below into report.recommendation_overrides.
 #
-# Built-in detector already includes CPF, CNPJ, PHONE_BR; this sample adds RG, CEP and
-# bilingual terms for document/identifier vocabulary. Use double-quoted YAML with
-# escaped backslashes for regex (see .cursor/rules/yaml-regex-patterns.mdc).
+# Regex: built-in LGPD-relevant patterns (CPF, CNPJ, phone, email, card, date) are
+# included explicitly so the sample matches the detector; RG, CEP and PIS/PASEP add
+# high-confidence Brazilian identifiers so we don't rely only on ML/DL in hybrid mode.
+# Use double-quoted YAML with escaped backslashes for regex (see .cursor/rules/yaml-regex-patterns.mdc).
 
 regex:
+  # Built-in patterns (same as core/detector.py DEFAULT_PATTERNS) – LGPD-relevant
+  - name: "LGPD_CPF"
+    pattern: "\\b\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2}\\b"
+    norm_tag: "LGPD Art. 5"
+  - name: "LGPD_CNPJ"
+    pattern: "\\b\\d{2}\\.?\\d{3}\\.?\\d{3}/?\\d{4}-?\\d{2}\\b"
+    norm_tag: "LGPD Art. 5"
+  - name: "PHONE_BR"
+    pattern: "\\b(?:\\+55\\s?)?(?:\\(?\\d{2}\\)?\\s?)?\\d{4,5}-?\\d{4}\\b"
+    norm_tag: "LGPD Art. 5"
+  - name: "EMAIL"
+    pattern: "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b"
+    norm_tag: "LGPD Art. 5"
+  - name: "CREDIT_CARD"
+    pattern: "\\b\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}\\b"
+    norm_tag: "LGPD Art. 5"
+  - name: "DATE_DMY"
+    pattern: "\\b\\d{1,2}/\\d{1,2}/\\d{2,4}\\b"
+    norm_tag: "LGPD Art. 5"
+  # Brazilian identifiers (high-confidence regex in addition to built-in)
   - name: "RG_BR"
     pattern: "\\b\\d{1,2}\\.?\\d{3}\\.?\\d{3}-?[0-9Xx]\\b"
     norm_tag: "LGPD Art. 5"
   - name: "CEP_BR"
     pattern: "\\b\\d{5}-?\\d{3}\\b"
     norm_tag: "LGPD Art. 5"
+  - name: "PIS_PASEP_BR"
+    pattern: "\\b\\d{3}\\.?\\d{5}\\.?\\d{2}-?\\d\\b"
+    norm_tag: "LGPD Art. 5"
 
-# ML/DL terms: Portuguese (BR) and English for LGPD-relevant document and identifier names.
+# ML/DL terms: full set matching app defaults (core/detector.py DEFAULT_ML_TERMS) plus
+# LGPD-specific extras. When this file is used as ml_patterns_file, coverage is at least
+# as good as the built-in; sensitive categories (health, religion, political, etc.) and
+# non_sensitive (lyrics, system_log, etc.) are included so the classifier behaves correctly.
 terms:
-  - text: "documento oficial"
-    label: sensitive
-  - text: "official document"
-    label: sensitive
-  - text: "rg"
-    label: sensitive
-  - text: "id"
-    label: sensitive
   - text: "cpf"
     label: sensitive
-  - text: "cnpj"
+  - text: "email"
     label: sensitive
-  - text: "cnh"
+  - text: "credit card"
     label: sensitive
-  - text: "carteira de motorista"
+  - text: "password"
     label: sensitive
-  - text: "driver license"
+  - text: "senha"
     label: sensitive
-  - text: "carteira nacional de habilitação"
+  - text: "health record"
+    label: sensitive
+  - text: "saude"
     label: sensitive
   - text: "data de nascimento"
     label: sensitive
-  - text: "date of birth"
+  - text: "birth date"
     label: sensitive
-  - text: "nome completo"
+  - text: "ethnic origin"
     label: sensitive
-  - text: "full name"
+  - text: "political opinion"
     label: sensitive
-  - text: "first name"
+  - text: "religion"
     label: sensitive
-  - text: "last name"
+  - text: "gender"
     label: sensitive
-  - text: "surname"
+  - text: "rg"
     label: sensitive
-  - text: "nome"
+  - text: "ssn"
     label: sensitive
-  - text: "sobrenome"
+  - text: "salary"
     label: sensitive
-  - text: "birth name"
-    label: sensitive
-  - text: "nickname"
-    label: sensitive
-  - text: "given name"
-    label: sensitive
-  - text: "family name"
-    label: sensitive
-  - text: "endereço"
-    label: sensitive
-  - text: "address"
-    label: sensitive
-  - text: "telefone"
+  - text: "salário"
     label: sensitive
   - text: "phone"
+    label: sensitive
+  - text: "telefone"
     label: sensitive
   - text: "celular"
     label: sensitive
@@ -91,48 +102,153 @@ terms:
     label: sensitive
   - text: "cell phone"
     label: sensitive
-  - text: "identidade"
+  - text: "contact number"
     label: sensitive
-  - text: "identity"
+  - text: "phone number"
     label: sensitive
-  - text: "número do documento"
+  - text: "téléphone"
     label: sensitive
-  - text: "document number"
+  - text: "tél"
     label: sensitive
-  - text: "número de identificação"
+  - text: "teléfono"
     label: sensitive
-  - text: "identification number"
+  - text: "telefono"
     label: sensitive
-  # ID / document – additional naming schemes (PT-BR + EN)
+  - text: "móvil"
+    label: sensitive
+  - text: "cel"
+    label: sensitive
+  - text: "handy"
+    label: sensitive
+  - text: "handynummer"
+    label: sensitive
+  - text: "mobilnummer"
+    label: sensitive
+  - text: "telefon"
+    label: sensitive
+  - text: "número de telefone"
+    label: sensitive
+  - text: "first name"
+    label: sensitive
+  - text: "last name"
+    label: sensitive
+  - text: "surname"
+    label: sensitive
+  - text: "full name"
+    label: sensitive
+  - text: "birth name"
+    label: sensitive
+  - text: "christian name"
+    label: sensitive
+  - text: "nickname"
+    label: sensitive
+  - text: "given name"
+    label: sensitive
+  - text: "family name"
+    label: sensitive
+  - text: "middle name"
+    label: sensitive
+  - text: "nome"
+    label: sensitive
+  - text: "sobrenome"
+    label: sensitive
+  - text: "nome do meio"
+    label: sensitive
+  - text: "nome completo"
+    label: sensitive
+  - text: "nombre"
+    label: sensitive
+  - text: "apellido"
+    label: sensitive
+  - text: "nombre completo"
+    label: sensitive
+  - text: "segundo nombre"
+    label: sensitive
+  - text: "prénom"
+    label: sensitive
+  - text: "nom de famille"
+    label: sensitive
+  - text: "nom de naissance"
+    label: sensitive
+  - text: "nom complet"
+    label: sensitive
+  - text: "vorname"
+    label: sensitive
+  - text: "nachname"
+    label: sensitive
+  - text: "geburtsname"
+    label: sensitive
+  - text: "familienname"
+    label: sensitive
+  - text: "rufname"
+    label: sensitive
+  - text: "cognome"
+    label: sensitive
+  - text: "nome di battesimo"
+    label: sensitive
+  - text: "cnpj"
+    label: sensitive
   - text: "passaporte"
     label: sensitive
   - text: "passport"
+    label: sensitive
+  - text: "pasaporte"
+    label: sensitive
+  - text: "passeport"
+    label: sensitive
+  - text: "Reisepass"
     label: sensitive
   - text: "ctps"
     label: sensitive
   - text: "carteira de trabalho"
     label: sensitive
+  - text: "work permit"
+    label: sensitive
+  - text: "residence permit"
+    label: sensitive
   - text: "distintivo"
+    label: sensitive
+  - text: "badge"
+    label: sensitive
+  - text: "documento oficial"
+    label: sensitive
+  - text: "official document"
     label: sensitive
   - text: "carteira sindical"
     label: sensitive
+  - text: "union card"
+    label: sensitive
   - text: "certificado de reservista"
+    label: sensitive
+  - text: "reservist certificate"
     label: sensitive
   - text: "título eleitoral"
     label: sensitive
   - text: "titulo eleitoral"
     label: sensitive
+  - text: "voter id"
+    label: sensitive
+  - text: "voter registration"
+    label: sensitive
   - text: "pis"
+    label: sensitive
+  - text: "pasep"
     label: sensitive
   - text: "cartão cidadão"
     label: sensitive
   - text: "cartao cidadao"
     label: sensitive
+  - text: "citizen card"
+    label: sensitive
   - text: "identidade de estrangeiro"
+    label: sensitive
+  - text: "foreigner id"
     label: sensitive
   - text: "certidão"
     label: sensitive
   - text: "certidao"
+    label: sensitive
+  - text: "birth certificate"
     label: sensitive
   - text: "green card"
     label: sensitive
@@ -140,17 +256,70 @@ terms:
     label: sensitive
   - text: "professional registration"
     label: sensitive
+  - text: "conselho de classe"
+    label: sensitive
+  - text: "cnh"
+    label: sensitive
+  - text: "carteira de motorista"
+    label: sensitive
+  - text: "driver license"
+    label: sensitive
+  - text: "driving licence"
+    label: sensitive
   - text: "documento de identidade"
+    label: sensitive
+  - text: "documento de identidad"
     label: sensitive
   - text: "identity document"
     label: sensitive
   - text: "id card"
     label: sensitive
-  - text: "national id"
-    label: sensitive
   - text: "carteira de identidade"
     label: sensitive
-  # Further PT-BR ID/document variations (RNE, RIC, certidões, OAB, CRM, etc.)
+  - text: "cédula"
+    label: sensitive
+  - text: "cedula"
+    label: sensitive
+  - text: "national id"
+    label: sensitive
+  - text: "national id number"
+    label: sensitive
+  - text: "número do documento"
+    label: sensitive
+  - text: "document number"
+    label: sensitive
+  - text: "identification number"
+    label: sensitive
+  - text: "carte d'identité"
+    label: sensitive
+  - text: "document d'identité"
+    label: sensitive
+  - text: "Personalausweis"
+    label: sensitive
+  - text: "Ausweisnummer"
+    label: sensitive
+  - text: "tax id"
+    label: sensitive
+  - text: "tax identification number"
+    label: sensitive
+  - text: "cadastro de pessoa física"
+    label: sensitive
+  - text: "carte bleue"
+    label: sensitive
+  - text: "carte rose"
+    label: sensitive
+  - text: "carte vitale"
+    label: sensitive
+  - text: "titre de séjour"
+    label: sensitive
+  - text: "carte de séjour"
+    label: sensitive
+  - text: "numéro de sécurité sociale"
+    label: sensitive
+  - text: "numero de securite sociale"
+    label: sensitive
+  - text: "n° sécu"
+    label: sensitive
   - text: "rne"
     label: sensitive
   - text: "ric"
@@ -180,6 +349,132 @@ terms:
   - text: "membership number"
     label: sensitive
   - text: "license number"
+    label: sensitive
+  - text: "permit number"
+    label: sensitive
+  - text: "alien registration number"
+    label: sensitive
+  - text: "visa number"
+    label: sensitive
+  - text: "nie"
+    label: sensitive
+  - text: "libro de familia"
+    label: sensitive
+  - text: "carnet de conducir"
+    label: sensitive
+  - text: "titulo de residencia"
+    label: sensitive
+  - text: "Aufenthaltserlaubnis"
+    label: sensitive
+  - text: "Sozialversicherungsnummer"
+    label: sensitive
+  - text: "doc_id"
+    label: sensitive
+  - text: "document_id"
+    label: sensitive
+  - text: "id_number"
+    label: sensitive
+  - text: "doc_number"
+    label: sensitive
+  - text: "doc_ref"
+    label: sensitive
+  - text: "document_ref"
+    label: sensitive
+  - text: "identifier"
+    label: sensitive
+  - text: "religious affiliation"
+    label: sensitive
+  - text: "religiao"
+    label: sensitive
+  - text: "political affiliation"
+    label: sensitive
+  - text: "filiacao politica"
+    label: sensitive
+  - text: "biometric data"
+    label: sensitive
+  - text: "genetic data"
+    label: sensitive
+  - text: "union affiliation"
+    label: sensitive
+  - text: "sindicato"
+    label: sensitive
+  - text: "politically exposed person"
+    label: sensitive
+  - text: "PEP"
+    label: sensitive
+  - text: "race"
+    label: sensitive
+  - text: "skin color"
+    label: sensitive
+  - text: "sexual orientation"
+    label: sensitive
+  - text: "disability"
+    label: sensitive
+  - text: "deficiencia"
+    label: sensitive
+  - text: "condicao de saude"
+    label: sensitive
+  - text: "health condition"
+    label: sensitive
+  # Non-sensitive (reduce false positives)
+  - text: "system_log"
+    label: non_sensitive
+  - text: "item_count"
+    label: non_sensitive
+  - text: "config_file"
+    label: non_sensitive
+  - text: "temp_data"
+    label: non_sensitive
+  - text: "id_interno"
+    label: non_sensitive
+  - text: "quantidade_estoque"
+    label: non_sensitive
+  - text: "lyrics"
+    label: non_sensitive
+  - text: "verse"
+    label: non_sensitive
+  - text: "chorus"
+    label: non_sensitive
+  - text: "bridge"
+    label: non_sensitive
+  - text: "refrão"
+    label: non_sensitive
+  - text: "estrofe"
+    label: non_sensitive
+  - text: "letra"
+    label: non_sensitive
+  - text: "cifra"
+    label: non_sensitive
+  - text: "tab"
+    label: non_sensitive
+  - text: "tablature"
+    label: non_sensitive
+  - text: "chord"
+    label: non_sensitive
+  - text: "guitar"
+    label: non_sensitive
+  - text: "intro"
+    label: non_sensitive
+  - text: "outro"
+    label: non_sensitive
+  - text: "riff"
+    label: non_sensitive
+  - text: "bass"
+    label: non_sensitive
+  - text: "capo"
+    label: non_sensitive
+  - text: "tuning"
+    label: non_sensitive
+  # LGPD sample extra: generic "id" column name (ambiguous; detector may treat as PII_AMBIGUOUS)
+  - text: "id"
+    label: sensitive
+  - text: "endereço"
+    label: sensitive
+  - text: "address"
+    label: sensitive
+  - text: "identidade"
+    label: sensitive
+  - text: "identity"
     label: sensitive
 
 recommendation_overrides:
