@@ -1,4 +1,5 @@
 """Tests for sensitivity detection using core.scanner.DataScanner and core.detector."""
+
 from core.scanner import DataScanner
 
 
@@ -6,7 +7,9 @@ def test_cpf_detection():
     scanner = DataScanner()
     result = scanner.scan_column("cpf", "123.456.789-00")
     assert result["sensitivity_level"] == "HIGH"
-    assert "LGPD_CPF" in result.get("pattern_detected", "") or "CPF" in result.get("pattern_detected", "")
+    assert "LGPD_CPF" in result.get("pattern_detected", "") or "CPF" in result.get(
+        "pattern_detected", ""
+    )
 
 
 def test_email_detection():
@@ -14,6 +17,22 @@ def test_email_detection():
     result = scanner.scan_column("email", "user@example.com")
     assert result["sensitivity_level"] == "HIGH"
     assert "EMAIL" in result.get("pattern_detected", "")
+
+
+def test_cnpj_numeric_and_alnum_detection():
+    scanner = DataScanner()
+
+    # Legacy numeric CNPJ
+    numeric = "12.345.678/0001-99"
+    numeric_result = scanner.scan_column("cnpj", numeric)
+    assert numeric_result["sensitivity_level"] == "HIGH"
+    assert "CNPJ" in numeric_result.get("pattern_detected", "")
+
+    # New alphanumeric CNPJ format: first 12 positions A–Z/0–9, last 2 digits
+    alnum = "AB.CDE.F12/GH34-56"
+    alnum_result = scanner.scan_column("cnpj_alnum", alnum)
+    assert alnum_result["sensitivity_level"] == "HIGH"
+    assert "CNPJ" in alnum_result.get("pattern_detected", "")
 
 
 def test_low_sensitivity():
@@ -36,6 +55,8 @@ def test_religion_classified_as_sensitive():
 def test_political_affiliation_classified_as_sensitive():
     """With default ML terms (including 'political affiliation'), columns/samples with that phrase are sensitive."""
     scanner = DataScanner()
-    result = scanner.scan_column("political_affiliation", "political affiliation registered")
+    result = scanner.scan_column(
+        "political_affiliation", "political affiliation registered"
+    )
     assert result["sensitivity_level"] in ("HIGH", "MEDIUM")
     assert "pattern_detected" in result
