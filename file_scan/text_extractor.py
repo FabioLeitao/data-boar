@@ -1,4 +1,5 @@
 """Legacy: prefer core.detector.SensitivityDetector and connectors.filesystem_connector for new code."""
+
 import re
 from typing import List, Dict
 

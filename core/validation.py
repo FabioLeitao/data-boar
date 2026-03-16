@@ -5,11 +5,14 @@ Used for tenant/technician and other operator-supplied values that are stored
 or displayed in reports/UI. Keeps values within length limits and strips
 control characters to reduce abuse and injection risk.
 """
+
 # Match DB column size (core.database.ScanSession.tenant_name / technician_name)
 MAX_TENANT_TECHNICIAN_LENGTH = 255
 
 
-def sanitize_tenant_technician(value: str | None, max_length: int = MAX_TENANT_TECHNICIAN_LENGTH) -> str | None:
+def sanitize_tenant_technician(
+    value: str | None, max_length: int = MAX_TENANT_TECHNICIAN_LENGTH
+) -> str | None:
     """
     Sanitize an optional tenant or technician string for storage and display.
 
@@ -45,9 +48,15 @@ def redact_secrets_for_log(text: str | None) -> str:
     if not text:
         return ""
     import re
+
     out = text
     # Connection URL with user:password@ (e.g. postgresql://u:secret@host/db)
-    out = re.sub(r"([a-z][a-z0-9+.-]*://)([^@\s]+)(@[^\s]+)", r"\1***REDACTED***\3", out, flags=re.IGNORECASE)
+    out = re.sub(
+        r"([a-z][a-z0-9+.-]*://)([^@\s]+)(@[^\s]+)",
+        r"\1***REDACTED***\3",
+        out,
+        flags=re.IGNORECASE,
+    )
     # password=, pass=, api_key=, client_secret=, token= (key=value)
     out = re.sub(
         r"(password|pass|api_key|client_secret|token)(\s*=\s*)([^\s&]+)",

@@ -4,14 +4,13 @@ Tests for config and pattern file encoding: UTF-8, auto-detect fallback, pattern
 Ensures we do not regress when config or compliance samples use different character sets
 (UTF-8, UTF-8 BOM, cp1252, Latin-1) in production.
 """
+
 import tempfile
 from pathlib import Path
 
-import pytest
 import yaml
 
 from config.loader import load_config, normalize_config
-from utils.file_encoding import read_text_auto_encoding
 
 
 def test_load_config_utf8_with_unicode():
@@ -21,7 +20,14 @@ def test_load_config_utf8_with_unicode():
     ) as f:
         yaml.dump(
             {
-                "targets": [{"name": "Test", "type": "filesystem", "path": ".", "recursive": True}],
+                "targets": [
+                    {
+                        "name": "Test",
+                        "type": "filesystem",
+                        "path": ".",
+                        "recursive": True,
+                    }
+                ],
                 "report": {"output_dir": "."},
                 "file_scan": {},
                 # Comment in content: 日本語 and café
@@ -67,15 +73,19 @@ def test_load_config_auto_encoding_latin1_content():
 
 def test_normalize_config_includes_pattern_files_encoding():
     """normalize_config sets pattern_files_encoding (default utf-8)."""
-    out = normalize_config({
-        "targets": [],
-        "report": {"output_dir": "."},
-    })
+    out = normalize_config(
+        {
+            "targets": [],
+            "report": {"output_dir": "."},
+        }
+    )
     assert out.get("pattern_files_encoding") == "utf-8"
 
-    out2 = normalize_config({
-        "targets": [],
-        "report": {"output_dir": "."},
-        "pattern_files_encoding": "cp1252",
-    })
+    out2 = normalize_config(
+        {
+            "targets": [],
+            "report": {"output_dir": "."},
+            "pattern_files_encoding": "cp1252",
+        }
+    )
     assert out2.get("pattern_files_encoding") == "cp1252"

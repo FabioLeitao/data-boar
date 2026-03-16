@@ -16,6 +16,19 @@ Você pode **definir as palavras de treino para ML e DL** no arquivo de config p
 
 ---
 
+## Formatos de CNPJ (Brasil): numérico legado e alfanumérico
+
+O **CNPJ** brasileiro (identificador de pessoa jurídica) usou historicamente um formato **apenas numérico**:
+
+- 14 dígitos, opcionalmente formatados como `XX.XXX.XXX/XXXX-XX` (pontos, barra, hífen).
+
+O projeto agora reconhece **ambos**:
+
+- `LGPD_CNPJ` – formato legado, apenas numérico.
+- `LGPD_CNPJ_ALNUM` – formato **alfanumérico** em que as 12 primeiras posições podem conter `A–Z` ou `0–9`, e as duas últimas posições permanecem como dígitos (check digits).
+
+Ambos os padrões usam o mesmo `norm_tag` (`LGPD Art. 5`), portanto são tratados como identificadores sob a LGPD. Nesta etapa, o detector faz apenas **verificação de compatibilidade de formato** (regex); a **validação de dígito verificador** para CNPJ (numérico ou alfanumérico) e outros identificadores brasileiros (ex.: CPF, PIS/PASEP) é deixada propositalmente para uma **fase futura na lógica do detector**, para manter a camada de regex simples e fácil de estender.
+
 ## Chaves de config
 
 | Chave                            | Descrição                                                                                                                                             |                                                                                |

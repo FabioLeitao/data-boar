@@ -4,6 +4,7 @@ run sensitivity detection on column names and sample values. Uses Azure AD OAuth
 (client credentials). Optional: register only when httpx is available.
 Target type: powerbi. Required: name, tenant_id, client_id, client_secret (or auth block).
 """
+
 import os
 from typing import Any
 
@@ -11,13 +12,16 @@ from core.connector_registry import register
 
 try:
     import httpx
+
     _HTTPX_AVAILABLE = True
 except ImportError:
     _HTTPX_AVAILABLE = False
     httpx = None
 
 _PBI_BASE = "https://api.powerbi.com/v1.0"
-_AZURE_TOKEN_URL_TMPL = "https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
+_AZURE_TOKEN_URL_TMPL = (
+    "https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
+)
 _PBI_SCOPE = "https://analysis.windows.net/powerbi/api/.default"
 
 
@@ -27,11 +31,17 @@ def _get_access_token(target: dict[str, Any]) -> str | None:
     tenant_id = auth.get("tenant_id") or target.get("tenant_id", "")
     client_id = auth.get("client_id") or target.get("client_id", "")
     client_secret = auth.get("client_secret") or target.get("client_secret", "")
-    if isinstance(client_secret, str) and client_secret.startswith("${") and client_secret.endswith("}"):
+    if (
+        isinstance(client_secret, str)
+        and client_secret.startswith("${")
+        and client_secret.endswith("}")
+    ):
         client_secret = os.environ.get(client_secret[2:-1], "")
     if not tenant_id or not client_id or not client_secret:
         return None
-    token_url = auth.get("token_url") or _AZURE_TOKEN_URL_TMPL.format(tenant_id=tenant_id)
+    token_url = auth.get("token_url") or _AZURE_TOKEN_URL_TMPL.format(
+        tenant_id=tenant_id
+    )
     resp = httpx.post(
         token_url,
         data={
@@ -71,10 +81,14 @@ class PowerBIConnector:
 
     def connect(self) -> None:
         if not _HTTPX_AVAILABLE:
-            raise RuntimeError("httpx is required for Power BI connector. Install with: pip install httpx")
+            raise RuntimeError(
+                "httpx is required for Power BI connector. Install with: pip install httpx"
+            )
         self._token = _get_access_token(self.config)
         if not self._token:
-            raise ValueError("Power BI auth failed: provide tenant_id, client_id, client_secret (or auth block)")
+            raise ValueError(
+                "Power BI auth failed: provide tenant_id, client_id, client_secret (or auth block)"
+            )
         connect_s = float(self.config.get("connect_timeout_seconds", 25))
         read_s = float(self.config.get("read_timeout_seconds", 90))
         timeout = httpx.Timeout(read_s, connect=connect_s, read=read_s)
@@ -98,7 +112,9 @@ class PowerBIConnector:
 
     def _get_workspace_ids(self) -> list[str]:
         """Return list of group (workspace) IDs; empty means use 'myorg' only."""
-        workspace_ids = self.config.get("workspace_ids") or self.config.get("group_ids") or []
+        workspace_ids = (
+            self.config.get("workspace_ids") or self.config.get("group_ids") or []
+        )
         if workspace_ids:
             return list(workspace_ids)
         try:
@@ -123,7 +139,9 @@ class PowerBIConnector:
     def _get_tables(self, dataset_id: str, group_id: str | None) -> list[dict]:
         """Get tables for a dataset. Works for push datasets; others may return empty."""
         if group_id:
-            r = self._client.get(f"/myorg/groups/{group_id}/datasets/{dataset_id}/tables")
+            r = self._client.get(
+                f"/myorg/groups/{group_id}/datasets/{dataset_id}/tables"
+            )
         else:
             r = self._client.get(f"/myorg/datasets/{dataset_id}/tables")
         if r.status_code != 200:
@@ -131,13 +149,18 @@ class PowerBIConnector:
         data = r.json()
         return data.get("value", [])
 
-    def _execute_dax(self, dataset_id: str, group_id: str | None, dax_query: str) -> list[dict]:
+    def _execute_dax(
+        self, dataset_id: str, group_id: str | None, dax_query: str
+    ) -> list[dict]:
         """Execute a DAX query; returns list of rows (dicts). One table per query."""
         if group_id:
             url = f"/myorg/groups/{group_id}/datasets/{dataset_id}/executeQueries"
         else:
             url = f"/myorg/datasets/{dataset_id}/executeQueries"
-        payload = {"queries": [{"query": dax_query}], "serializerSettings": {"includeNulls": True}}
+        payload = {
+            "queries": [{"query": dax_query}],
+            "serializerSettings": {"includeNulls": True},
+        }
         r = self._client.post(url, json=payload)
         if r.status_code != 200:
             return []
@@ -185,13 +208,19 @@ class PowerBIConnector:
                         if not columns:
                             try:
                                 rows = self._execute_dax(
-                                    ds_id, group_id,
+                                    ds_id,
+                                    group_id,
                                     f"EVALUATE TOPN({self.sample_limit}, {tname})",
                                 )
                                 if rows:
                                     for key in rows[0].keys():
-                                        sample = " ".join(str(r.get(key, ""))[:200] for r in rows[: self.sample_limit])
-                                        res = self.scanner.scan_column(key.split("[")[-1].rstrip("]"), sample)
+                                        sample = " ".join(
+                                            str(r.get(key, ""))[:200]
+                                            for r in rows[: self.sample_limit]
+                                        )
+                                        res = self.scanner.scan_column(
+                                            key.split("[")[-1].rstrip("]"), sample
+                                        )
                                         if res.get("sensitivity_level") == "LOW":
                                             continue
                                         self.db_manager.save_finding(
@@ -203,8 +232,12 @@ class PowerBIConnector:
                                             table_name=tname,
                                             column_name=key.split("[")[-1].rstrip("]"),
                                             data_type="",
-                                            sensitivity_level=res.get("sensitivity_level", "MEDIUM"),
-                                            pattern_detected=res.get("pattern_detected", ""),
+                                            sensitivity_level=res.get(
+                                                "sensitivity_level", "MEDIUM"
+                                            ),
+                                            pattern_detected=res.get(
+                                                "pattern_detected", ""
+                                            ),
                                             norm_tag=res.get("norm_tag", ""),
                                             ml_confidence=res.get("ml_confidence", 0),
                                         )
@@ -212,7 +245,8 @@ class PowerBIConnector:
                                 pass
                             continue
                         sample_rows = self._execute_dax(
-                            ds_id, group_id,
+                            ds_id,
+                            group_id,
                             f"EVALUATE TOPN({self.sample_limit}, {tname})",
                         )
                         for col in columns:
@@ -223,7 +257,10 @@ class PowerBIConnector:
                             if sample_rows:
                                 full_key = f"{tname}[{cname}]"
                                 for row in sample_rows[: self.sample_limit]:
-                                    sample += str(row.get(full_key, row.get(cname, "")))[:200] + " "
+                                    sample += (
+                                        str(row.get(full_key, row.get(cname, "")))[:200]
+                                        + " "
+                                    )
                             res = self.scanner.scan_column(cname, sample)
                             if res.get("sensitivity_level") == "LOW":
                                 continue
@@ -236,7 +273,9 @@ class PowerBIConnector:
                                 table_name=tname,
                                 column_name=cname,
                                 data_type=str(col.get("dataType", "")),
-                                sensitivity_level=res.get("sensitivity_level", "MEDIUM"),
+                                sensitivity_level=res.get(
+                                    "sensitivity_level", "MEDIUM"
+                                ),
                                 pattern_detected=res.get("pattern_detected", ""),
                                 norm_tag=res.get("norm_tag", ""),
                                 ml_confidence=res.get("ml_confidence", 0),
@@ -248,4 +287,6 @@ class PowerBIConnector:
 
 
 if _HTTPX_AVAILABLE:
-    register("powerbi", PowerBIConnector, ["name", "tenant_id", "client_id", "client_secret"])
+    register(
+        "powerbi", PowerBIConnector, ["name", "tenant_id", "client_id", "client_secret"]
+    )
