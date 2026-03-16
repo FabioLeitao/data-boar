@@ -194,7 +194,7 @@ rate_limit:
   grace_for_running_status: 0
 ```
 
-When `enabled` is true, API endpoints that start scans (`POST /scan`, `/start`, `/scan_database`) may respond with **HTTP 429** and a JSON payload describing the reason (e.g. too many running scans or minimum interval not elapsed). The CLI only prints warnings using the same logic, so existing scripts keep working. See [USAGE.md](USAGE.md) and [lgpd_crawler.5](lgpd_crawler.5) for full configuration details and examples.
+When `enabled` is true, API endpoints that start scans (`POST /scan`, `/start`, `/scan_database`) may respond with **HTTP 429** and a JSON payload describing the reason (e.g. too many running scans or minimum interval not elapsed). The CLI only prints warnings using the same logic, so existing scripts keep working. See [USAGE.md](USAGE.md) and [data_boar.5](data_boar.5) for full configuration details and examples.
 
 ## Run
 
@@ -485,10 +485,10 @@ To support a new data source (e.g. another database driver or API), see **[ADDIN
 
 For systems that use the traditional `man` interface, two manual pages are provided:
 
-- **Section 1 (command):** [lgpd_crawler.1](lgpd_crawler.1) — describes the program, its options, the web API, and curl examples. View with `man data_boar` or `man lgpd_crawler` (or `man 1 data_boar`, `man 1 lgpd_crawler`).
-- **Section 5 (file formats):** [lgpd_crawler.5](lgpd_crawler.5) — describes the main config file topology and optional files (regex overrides, ML/DL pattern files, learned patterns), with examples. View with `man 5 data_boar` or `man 5 lgpd_crawler`.
+- **Section 1 (command):** [data_boar.1](data_boar.1) — describes the program, its options, the web API, and curl examples. View with `man data_boar` (or `man lgpd_crawler` if you installed the compatibility symlink).
+- **Section 5 (file formats):** [data_boar.5](data_boar.5) — describes the main config file topology and optional files (regex overrides, ML/DL pattern files, learned patterns), with examples. View with `man 5 data_boar` (or `man 5 lgpd_crawler` with compatibility symlink).
 
-On Linux/BSD, section 1 is for executable commands; section 5 is for configuration and file format conventions. Install both pages and add symlinks (see below) so that both **data_boar** and **lgpd_crawler** work: `man data_boar` / `man lgpd_crawler` for the command, `man 5 data_boar` / `man 5 lgpd_crawler` for config and file formats.
+On Linux/BSD, section 1 is for executable commands; section 5 is for configuration and file format conventions. Install the **Data Boar** man pages and, for backward compatibility, optional symlinks so `man lgpd_crawler` also works (see below).
 
 **Install both pages** (create the target directories first so the copy does not fail if they are missing). Right after creating the directories, run `chmod 755` on them so that all users can access the man pages; depending on your default umask, new directories may otherwise be 750 and only root could traverse them. After copying, run `chmod 644` on the installed files so that all users can read the pages (copied files may otherwise be 640).
 
@@ -496,22 +496,23 @@ On Linux/BSD, section 1 is for executable commands; section 5 is for configurati
 sudo mkdir -p /usr/local/share/man/man1/
 sudo mkdir -p /usr/local/share/man/man5/
 sudo chmod 755 /usr/local/share/man/man1/ /usr/local/share/man/man5/
-sudo cp docs/lgpd_crawler.1 /usr/local/share/man/man1/
-sudo cp docs/lgpd_crawler.5 /usr/local/share/man/man5/
-sudo chmod 644 /usr/local/share/man/man1/lgpd_crawler.1 /usr/local/share/man/man5/lgpd_crawler.5
-sudo ln -sf lgpd_crawler.1 /usr/local/share/man/man1/data_boar.1
-sudo ln -sf lgpd_crawler.5 /usr/local/share/man/man5/data_boar.5
+sudo cp docs/data_boar.1 /usr/local/share/man/man1/
+sudo cp docs/data_boar.5 /usr/local/share/man/man5/
+sudo chmod 644 /usr/local/share/man/man1/data_boar.1 /usr/local/share/man/man5/data_boar.5
+# Optional: compatibility with legacy name (based on python3-lgpd-crawler)
+sudo ln -sf data_boar.1 /usr/local/share/man/man1/lgpd_crawler.1
+sudo ln -sf data_boar.5 /usr/local/share/man/man5/lgpd_crawler.5
 sudo mandb    # or: sudo makewhatis   # depends on distro
 ```
 
-The symlinks make both **data_boar** and **lgpd_crawler** resolve to the same pages. After that:
+After installation, `man data_boar` and `man 5 data_boar` show the command and config formats. If you added the compatibility symlinks, `man lgpd_crawler` and `man 5 lgpd_crawler` show the same pages (legacy name from the python3-lgpd-crawler project).
 
 ```bash
-man data_boar        # or: man lgpd_crawler     # command and options (section 1)
-man 5 data_boar      # or: man 5 lgpd_crawler   # config and file formats (section 5)
+man data_boar        # command and options (section 1)
+man 5 data_boar      # config and file formats (section 5)
 ```
 
-When adding new CLI options or API capabilities, update [lgpd_crawler.1](lgpd_crawler.1); when adding or changing config keys or pattern file formats, update [lgpd_crawler.5](lgpd_crawler.5) and the root [README](../README.md) so the man pages continue to reflect the current behaviour. The same files are viewed as both `man data_boar` and `man lgpd_crawler` (section 1 and 5) via symlinks at install time. For **version bumps** (major.minor.build convention and where to update the version number), see [VERSIONING.md](VERSIONING.md).
+When adding new CLI options or API capabilities, update [data_boar.1](data_boar.1); when adding or changing config keys or pattern file formats, update [data_boar.5](data_boar.5) and the root [README](../README.md). For **version bumps** (major.minor.build convention and where to update the version number), see [VERSIONING.md](VERSIONING.md).
 
 ## Deploy with Docker
 
@@ -521,8 +522,7 @@ You can run the API as a **single container** (`docker run`), with **Docker Comp
 
 Docker images are available on **Docker Hub** so you can run the application without cloning the repository:
 
-- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` and `fabioleitao/data_boar:1.5.4`
-- **Legacy:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler) — `fabioleitao/python3-lgpd-crawler:latest` (same image may be published under both names)
+- **Docker Hub:** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` and `fabioleitao/data_boar:1.5.4`
 
 The image includes regex + ML + optional DL sensitivity detection; you can set ML/DL training terms in config (see [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) and [deploy/config.example.yaml](../deploy/config.example.yaml)).
 
@@ -537,7 +537,7 @@ Prepare `/data/config.yaml` from `deploy/config.example.yaml` (see [deploy/DEPLO
 
 ### Build from source
 
-- **Build:** `docker build -t python3-lgpd-crawler:latest .`
+- **Build:** `docker build -t data_boar:latest .` (or `docker build -t fabioleitao/data_boar:latest .` to push to Docker Hub; see [deploy/DEPLOY.md](deploy/DEPLOY.md)).
 - **Run:** Mount config at `/data/config.yaml` (see `deploy/config.example.yaml`). Expose port 8088.
 - **Compose:** `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d` (prepare `./data/config.yaml` first).
 - **Swarm:** `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit`.

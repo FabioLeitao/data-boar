@@ -80,4 +80,4 @@ Deploy assets (Compose, Kubernetes, config examples) remain in the [deploy/](../
 - [releases/](releases/) — Release notes (e.g. 1.5.4, 1.5.3, 1.5.2, 1.5.1, 1.5.0, 1.4.3).
 - [plans/completed/](plans/completed/) — Archived completed plans and the implementation checklist ([NEXT_STEPS.md](plans/completed/NEXT_STEPS.md)), all items Done.
 
-Man pages: `docs/lgpd_crawler.1` (command), `docs/lgpd_crawler.5` (config and file formats). Install with symlinks so both names work; view with `man data_boar` or `man lgpd_crawler`, and `man 5 data_boar` or `man 5 lgpd_crawler` (see root README).
+Man pages: `docs/data_boar.1` (command), `docs/data_boar.5` (config and file formats). Install and optionally add compatibility symlinks so `man lgpd_crawler` also works (see root README and [TECH_GUIDE.md](TECH_GUIDE.md)).

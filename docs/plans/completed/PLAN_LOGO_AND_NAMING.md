@@ -128,7 +128,7 @@ Past candidates included names like **compliance_crawler** or **privacy_crawler*
 1. **Web / GitHub:** Search "Compliance Crawler" and "compliance_crawler" to avoid conflicting with an existing product or trademark.
 1. If you keep **python3-lgpd-crawler** as the package name for backward compatibility, you can still use a **display name** like "Compliance Crawler" in the UI and docs (e.g. in [core/about.py](../../core/about.py) `"name": "Compliance Crawler"` while keeping the package as `python3-lgpd-crawler`). That way installs and imports stay unchanged.
 
-**If you rename the package** (e.g. to `python3-compliance-crawler`), the checklist is the same as in [docs/VERSIONING.md](../VERSIONING.md): update `pyproject.toml` `name`, [core/about.py](../../core/about.py) (name + fallback `version()` call), all references in docs (README, USAGE, man pages `lgpd_crawler.1` / `lgpd_crawler.5` and their filenames if you rename to `compliance_crawler.1` etc.), and any scripts or deploy configs that reference the package name.
+**If you rename the package** (e.g. to `python3-compliance-crawler`), the checklist is the same as in [docs/VERSIONING.md](../VERSIONING.md): update `pyproject.toml` `name`, [core/about.py](../../core/about.py) (name + fallback `version()` call), all references in docs (README, USAGE, man pages `data_boar.1` / `data_boar.5` and their filenames if you rename), and any scripts or deploy configs that reference the package name.
 
 ---
 
