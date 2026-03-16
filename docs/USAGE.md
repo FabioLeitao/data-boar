@@ -672,6 +672,17 @@ file_scan:
   recursive: true
   scan_sqlite_as_db: true
   sample_limit: 5
+  # Optional: scan inside compressed files (off by default)
+  # When true, candidate archives (zip, tar, gz, bz2, xz, 7z, etc.) are opened and inner members
+  # with supported extensions are scanned as if they were regular files. Inner paths appear in
+  # findings as e.g. "backup.zip|inner/path/file.csv". This may significantly increase run time,
+  # disk I/O and temporary space usage; enable only when needed.
+  scan_compressed: false
+  # Optional: limit total inner bytes processed per archive (to avoid archive bombs)
+  # max_inner_size: 50_000_000   # e.g. 50 MB
+  # Optional: restrict which archive types to open; if omitted, a sensible default list is used.
+  # compressed_extensions: [".zip", ".tar", ".gz", ".tgz", ".bz2", ".xz", ".7z"]
+  # For .7z support install the optional extra: pip install -e ".[compressed]" (or uv sync --extra compressed).
   # Optional: passwords for password-protected files (PDF, ZIP-based e.g. .docx/.pptx)
   # Keys: extension with leading dot (e.g. ".pdf", ".pptx") or "default"; values: password string.
   # Without a matching password, encrypted files are skipped (no content extracted).

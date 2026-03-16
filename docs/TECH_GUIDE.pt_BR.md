@@ -117,6 +117,13 @@ file_scan:
   recursive: true
   scan_sqlite_as_db: true   # open .sqlite/.db files as DBs and scan tables/columns
   sample_limit: 5
+  # Opcional: varrer dentro de arquivos compactados (zip, tar, gz, bz2, xz, 7z, …)
+  # Quando true, arquivos candidatos são abertos como arquivos compactados e os membros internos
+  # com extensões suportadas são varridos como arquivos normais. Isso pode aumentar tempo de
+  # execução e I/O; veja PLAN_COMPRESSED_FILES.md para detalhes e limites recomendados.
+  scan_compressed: false
+  # max_inner_size: 50_000_000   # limite opcional de bytes internos por arquivo compactado
+  # compressed_extensions: [".zip", ".tar", ".gz", ".tgz", ".bz2", ".xz", ".7z"]
 
 report:
   output_dir: .
