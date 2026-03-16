@@ -166,14 +166,14 @@ The list below is ordered for the current billing cycle, with a focus on:
 
 | #    | To-do                                                                    | Status    |           |
 | -    | -----                                                                    | ------    |           |
-| 1    | Config: file_scan.scan_compressed, max_inner_size, compressed_extensions | ⬜ Pending |           |
-| 2    | CLI --scan-compressed                                                    | ⬜ Pending |           |
-| 3    | Archive detection (magic bytes: zip, gz, 7z, tar, bz2, xz)               | ⬜ Pending |           |
-| 4    | Open-archive helper (zipfile, tarfile, py7zr optional)                   | ⬜ Pending |           |
-| 5    | FilesystemConnector: scan inside archives; path like archive\            | inner     | ⬜ Pending |
-| 6    | Optional [compressed] extra; graceful skip if py7zr missing              | ⬜ Pending |           |
-| 7–11 | Engine/API/dashboard; share connectors; tests; docs (EN + pt-BR)         | ⬜ Pending |           |
-| 12   | Resource exhaustion: max_inner_size, temp caps; user warning when enabling (disk, I/O, run time) | ⬜ Pending |           |
+| 1    | Config: file_scan.scan_compressed, max_inner_size, compressed_extensions | ✅ Done   |           |
+| 2    | CLI --scan-compressed                                                    | ✅ Done   |           |
+| 3    | Archive detection (magic bytes: zip, gz, 7z, tar, bz2, xz)               | ✅ Done   |           |
+| 4    | Open-archive helper (zipfile, tarfile, py7zr optional)                   | ✅ Done   |           |
+| 5    | FilesystemConnector: scan inside archives; path like archive\            | inner     | ✅ Done   |
+| 6    | Optional [compressed] extra; graceful skip if py7zr missing              | ✅ Done   |           |
+| 7–11 | Engine/API/dashboard; share connectors; tests; docs (EN + pt-BR)         | ✅ Done   |           |
+| 12   | Resource exhaustion: max_inner_size, temp caps; user warning when enabling (disk, I/O, run time) | ✅ Done   |           |
 | 13   | Follow-up: password-protected archive sample (or programmatic test) to validate file_passwords for ZIP/7z | ⬜ Pending |           |
 | 14   | Follow-up: optional max members per archive (e.g. 1000) as extra guard | ⬜ Pending |           |
 

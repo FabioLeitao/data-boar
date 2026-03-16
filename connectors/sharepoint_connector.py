@@ -10,11 +10,17 @@ from pathlib import Path
 from typing import Any
 
 from core.connector_registry import register
+from core.archives import (
+    default_compressed_extensions,
+    is_supported_archive,
+    normalize_compressed_extensions,
+)
 
 from connectors.filesystem_connector import (
     SUPPORTED_EXTENSIONS,
     _read_text_sample,
     _scan_sqlite_file_as_db,
+    scan_archive_at_path,
 )
 
 try:
@@ -63,6 +69,12 @@ class SharePointConnector:
         self.sample_limit = sample_limit
         self.extensions = _normalize_extensions(extensions)
         self.file_passwords = file_passwords or {}
+        fs_opts = target_config.get("file_scan") or {}
+        self.scan_compressed = bool(fs_opts.get("scan_compressed"))
+        self.max_inner_size = fs_opts.get("max_inner_size")
+        self.compressed_extensions = normalize_compressed_extensions(
+            fs_opts.get("compressed_extensions") or default_compressed_extensions()
+        )
 
     def run(self) -> None:
         if not _REQUESTS_NTLM_AVAILABLE:
@@ -121,7 +133,9 @@ class SharePointConnector:
             if not name:
                 continue
             ext = Path(name).suffix.lower()
-            if ext not in self.extensions:
+            if ext not in self.extensions and not (
+                self.scan_compressed and ext in self.compressed_extensions
+            ):
                 continue
             server_relative_url = item.get(
                 "ServerRelativeUrl", item.get("serverRelativeUrl", "")
@@ -142,7 +156,22 @@ class SharePointConnector:
                 tmp.write(content)
                 temp_path = tmp.name
             try:
-                if self.scan_sqlite_as_db and ext in SQLITE_EXTENSIONS:
+                if self.scan_compressed and ext in self.compressed_extensions and is_supported_archive(
+                    Path(temp_path), exts=self.compressed_extensions
+                ):
+                    scan_archive_at_path(
+                        archive_path=Path(temp_path),
+                        archive_display_name=name,
+                        target_name=target_name,
+                        path_display=server_relative_url,
+                        scanner=self.scanner,
+                        db_manager=self.db_manager,
+                        extensions=self.extensions,
+                        max_inner_size=self.max_inner_size,
+                        file_passwords=self.file_passwords,
+                        sample_limit=self.sample_limit,
+                    )
+                elif self.scan_sqlite_as_db and ext in SQLITE_EXTENSIONS:
                     for finding in _scan_sqlite_file_as_db(
                         Path(temp_path), self.scanner, self.sample_limit
                     ):
