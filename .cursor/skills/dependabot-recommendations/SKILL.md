@@ -37,9 +37,11 @@ Use this skill when updating dependencies, reviewing Dependabot PRs, or preparin
 ### 4. Validate (mandatory)
 
 - Run the **full test suite** so everything stays green with no errors or warnings:
+
   ```bash
   uv run pytest -v -W error --tb=short
   ```
+
 - Fix any failing or warning-emitting tests; do not commit with a red or noisy suite.
 - If the project uses pre-commit / Ruff: run `uv run pre-commit run --all-files` (or equivalent) so the change is PR-ready.
 
