@@ -78,10 +78,11 @@ class DatabaseConfig(BaseModel):
 
 
 class ScanStartBody(BaseModel):
-    """Optional body for POST /scan to associate the scan with a tenant/customer and technician/operator."""
+    """Optional body for POST /scan: tenant/customer, technician/operator, and scan_compressed override."""
 
     tenant: str | None = None
     technician: str | None = None
+    scan_compressed: bool | None = None  # when True, merge into file_scan for this run only
 
 
 # Load config and create engine at import time (or on startup event)
@@ -586,7 +587,7 @@ _SESSION_RESPONSES = {
 async def start_scan(
     background_tasks: BackgroundTasks, body: ScanStartBody | None = None
 ):
-    """Start audit in background. Optional body.tenant and body.technician to tag the scan. Returns session_id."""
+    """Start audit in background. Optional body: tenant, technician, scan_compressed. Returns session_id."""
     engine = _get_engine()
     if engine.is_running:
         raise HTTPException(status_code=409, detail="Audit already in progress.")
@@ -605,8 +606,22 @@ async def start_scan(
         technician_name=technician,
     )
 
+    # Run-local override: merge scan_compressed into config for this run only; restore after.
+    fs = engine.config.get("file_scan") or {}
+    prev_scan_compressed = fs.get("scan_compressed")
+
+    if body and getattr(body, "scan_compressed", None) is True:
+        engine.config.setdefault("file_scan", {})["scan_compressed"] = True
+
     def run_targets():
-        engine._run_audit_targets()
+        try:
+            engine._run_audit_targets()
+        finally:
+            if "file_scan" in engine.config:
+                if prev_scan_compressed is None:
+                    engine.config["file_scan"].pop("scan_compressed", None)
+                else:
+                    engine.config["file_scan"]["scan_compressed"] = prev_scan_compressed
 
     background_tasks.add_task(run_targets)
     _invalidate_sessions_cache()
