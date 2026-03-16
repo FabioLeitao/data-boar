@@ -174,6 +174,8 @@ The list below is ordered for the current billing cycle, with a focus on:
 | 6    | Optional [compressed] extra; graceful skip if py7zr missing              | ⬜ Pending |           |
 | 7–11 | Engine/API/dashboard; share connectors; tests; docs (EN + pt-BR)         | ⬜ Pending |           |
 | 12   | Resource exhaustion: max_inner_size, temp caps; user warning when enabling (disk, I/O, run time) | ⬜ Pending |           |
+| 13   | Follow-up: password-protected archive sample (or programmatic test) to validate file_passwords for ZIP/7z | ⬜ Pending |           |
+| 14   | Follow-up: optional max members per archive (e.g. 1000) as extra guard | ⬜ Pending |           |
 
 ---
 

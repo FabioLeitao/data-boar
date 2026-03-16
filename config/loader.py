@@ -105,6 +105,23 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
                 out[f".{key}"] = v
         return out
 
+    # Per-archive inner size cap: valid range 1 MB–500 MB; invalid/missing -> None.
+    _MIN_MAX_INNER = 1_000_000
+    _MAX_MAX_INNER = 500_000_000
+
+    def _normalize_max_inner_size(val: Any) -> int | None:
+        if val is None:
+            return None
+        try:
+            n = int(val)
+        except (TypeError, ValueError):
+            return None
+        if n < _MIN_MAX_INNER:
+            return _MIN_MAX_INNER
+        if n > _MAX_MAX_INNER:
+            return _MAX_MAX_INNER
+        return n
+
     _default_extensions = [
         ".txt",
         ".csv",
@@ -152,10 +169,11 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         # This flag is deliberately conservative: default False so existing configs
         # keep current behaviour until explicitly opted-in.
         "scan_compressed": bool(fs_cfg.get("scan_compressed", False)),
-        # Optional: per-archive inner-bytes safety cap to avoid archive bombs.
-        # None means "use engine default".
-        "max_inner_size": fs_cfg.get("max_inner_size")
-        or fs_cfg.get("scan_compressed_max_inner_size"),
+        # Optional: per-archive inner-bytes safety cap (bytes). Valid range 1 MB–500 MB;
+        # invalid or missing -> None (connector uses default).
+        "max_inner_size": _normalize_max_inner_size(
+            fs_cfg.get("max_inner_size") or fs_cfg.get("scan_compressed_max_inner_size")
+        ),
         # Optional: restrict which archive types to open; if omitted, engine/connector
         # will use a sensible default Tier 1 + Tier 2 list (see PLAN_COMPRESSED_FILES.md).
         "compressed_extensions": fs_cfg.get("compressed_extensions"),
