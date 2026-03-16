@@ -1,5 +1,7 @@
 # Data Boar
 
+**Data Boar — baseado na tecnologia lgpd_crawler.** Descoberta e mapeamento de dados pessoais e sensíveis com consciência de conformidade na sua sopa de dados.
+
 ![Data Boar mascot](api/static/mascot/data_boar_mascote_color.svg)
 
 **English:** [README.md](README.md) · [docs/USAGE.md](docs/USAGE.md)

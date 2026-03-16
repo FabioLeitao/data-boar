@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: lgpd-audit
-          image: YOUR_DOCKERHUB_USER/python3-lgpd-crawler:latest
+          image: fabioleitao/data_boar:latest
           ports:
             - containerPort: 8088
           env:

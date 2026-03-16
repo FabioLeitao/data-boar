@@ -41,8 +41,7 @@ O relatório é escrito em `report.output_dir` do config (ex.: `/data`). **Não*
 
 Você pode executar a aplicação **sem clonar o repositório** usando a imagem publicada no Docker Hub:
 
-- **Branded (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** e **`fabioleitao/data_boar:1.5.4`**
-- **Legado:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler) — `fabioleitao/python3-lgpd-crawler:latest`
+- **Docker Hub:** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** e **`fabioleitao/data_boar:1.5.4`**
 
 Exemplo:
 
@@ -55,7 +54,7 @@ Garanta que `/data/config.yaml` exista (ex.: copie de `deploy/config.example.yam
 
 ## Imagem (build a partir do código)
 
-- **Dockerfile** na raiz do repositório. Build: `docker build -t python3-lgpd-crawler:latest .`
+- **Dockerfile** na raiz do repositório. Build (marca Data Boar): `docker build -t fabioleitao/data_boar:latest .` ou tag local: `docker build -t data_boar:latest .`
 - O Dockerfile usa **multi-stage build**: a etapa final contém apenas bibliotecas de runtime e o código da aplicação (sem ferramentas de build), reduzindo tamanho e superfície de ataque.
 
 ## 1. Build e push da imagem
@@ -63,9 +62,9 @@ Garanta que `/data/config.yaml` exista (ex.: copie de `deploy/config.example.yam
 ### Opção A – GitHub Container Registry (ghcr.io)
 
 ```bash
-docker build -t ghcr.io/fabioleitao/python3-lgpd-crawler:latest .
+docker build -t ghcr.io/fabioleitao/data_boar:latest .
 docker login ghcr.io
-docker push ghcr.io/fabioleitao/python3-lgpd-crawler:latest
+docker push ghcr.io/fabioleitao/data_boar:latest
 ```
 
 ### Opção B – Docker Hub (imagem branded Data Boar)
@@ -77,7 +76,7 @@ docker push fabioleitao/data_boar:latest
 docker push fabioleitao/data_boar:1.5.4
 ```
 
-Opcional: publicar a mesma imagem com o nome legado: `docker tag fabioleitao/data_boar:latest fabioleitao/python3-lgpd-crawler:latest` e `docker push ...`. Veja também [DOCKER_SETUP.md](../DOCKER_SETUP.md).
+Veja também [DOCKER_SETUP.md](../DOCKER_SETUP.md).
 
 ## 2. Preparar o config
 
@@ -98,14 +97,15 @@ mkdir -p data
 cp deploy/config.example.yaml data/config.yaml
 # Edite data/config.yaml
 
-docker run -d --name lgpd-audit \
+docker build -t data_boar:latest .
+docker run -d --name data-boar-audit \
   -p 8088:8088 \
   -v "$(pwd)/data:/data" \
   -e CONFIG_PATH=/data/config.yaml \
-  python3-lgpd-crawler:latest
+  data_boar:latest
 ```
 
-Acesso: <http://localhost:8088/> (dashboard), <http://localhost:8088/docs> (API). Parar: `docker stop lgpd-audit && docker rm lgpd-audit`.
+Acesso: <http://localhost:8088/> (dashboard), <http://localhost:8088/docs> (API). Parar: `docker stop data-boar-audit && docker rm data-boar-audit`.
 
 ## 4. Executar com Docker Compose
 
@@ -145,7 +145,7 @@ Detalhes (NodePort, LoadBalancer, Ingress, persistência) em `deploy/kubernetes/
 
 ## 7. Usar a imagem pública (sem build local)
 
-Em `deploy/docker-compose.yml` defina `image: fabioleitao/python3-lgpd-crawler:latest` e remova ou comente o bloco `build:`. Prepare `/data/config.yaml` como na seção 2 e use docker run, Compose, Swarm ou Kubernetes como acima.
+Em `deploy/docker-compose.yml` defina `image: fabioleitao/data_boar:latest` e remova ou comente o bloco `build:`. Prepare `/data/config.yaml` como na seção 2 e use docker run, Compose, Swarm ou Kubernetes como acima.
 
 ## Resumo
 
@@ -153,9 +153,9 @@ Em `deploy/docker-compose.yml` defina `image: fabioleitao/python3-lgpd-crawler:l
 | --------------------- | -------------------------------------------------------------------------------                     |
 | Padrão (API + front)  | Executar imagem sem sobrescrever comando                                                            |
 | CLI one-shot          | `docker run ... --entrypoint python IMAGE main.py --config /data/config.yaml`                       |
-| Build                 | `docker build -t python3-lgpd-crawler:latest .`                                                     |
-| Push                  | `docker tag ... fabioleitao/python3-lgpd-crawler:latest` e `docker push ...`                        |
-| **Container único**   | `docker run -d -p 8088:8088 -v ./data:/data python3-lgpd-crawler:latest`                            |
+| Build                 | `docker build -t data_boar:latest .` ou `docker build -t fabioleitao/data_boar:latest .`            |
+| Push                  | `docker tag ... fabioleitao/data_boar:latest` e `docker push ...`                                   |
+| **Container único**   | `docker run -d -p 8088:8088 -v ./data:/data data_boar:latest`                                       |
 | **Compose**           | `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d`           |
 | **Swarm**             | `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit` |
 | **Kubernetes**        | `kubectl apply -f deploy/kubernetes/`                                                               |

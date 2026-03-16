@@ -42,8 +42,8 @@ Ao dar bump na versão, atualize **todos** os itens abaixo para manter o número
 
 | Local                     | O que alterar                                                                      |
 | ---                       | ---                                                                                |
-| **`docs/lgpd_crawler.1`** | Na linha `.TH` (ex.: `"python3-lgpd-crawler 1.3.0"`), defina a versão para a nova. |
-| **`docs/lgpd_crawler.5`** | Idem: atualize a versão na linha `.TH`.                                            |
+| **`docs/data_boar.1`** | Na linha `.TH` (ex.: `"Data Boar 1.5.4"`), defina a versão para a nova. |
+| **`docs/data_boar.5`** | Idem: atualize a versão na linha `.TH`. (Legado: `lgpd_crawler` é symlink de compatibilidade.) |
 
 ### 4. Deploy e Docker
 
@@ -82,6 +82,6 @@ Depois de atualizar o `pyproject.toml` (e opcionalmente `core/about.py`), reinst
 - **Bump major:** `X.Y.Z` → `(X+1).0.0`
 - **Bump minor:** `X.Y.Z` → `X.(Y+1).0`
 - **Bump build:** `X.Y.Z` → `X.Y.(Z+1)`
-- **Checklist:** pyproject.toml → core/about.py → docs/lgpd_crawler.1, lgpd_crawler.5 → docs/deploy/DEPLOY.md → README (EN/PT-BR), USAGE (EN/PT-BR), PLANS_TODO → buscar no repositório pela string da versão antiga.
+- **Checklist:** pyproject.toml → core/about.py → docs/data_boar.1, data_boar.5 → docs/deploy/DEPLOY.md → README (EN/PT-BR), USAGE (EN/PT-BR), PLANS_TODO → buscar no repositório pela string da versão antiga.
 
 **English:** [VERSIONING.md](VERSIONING.md)
