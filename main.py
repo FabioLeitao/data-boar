@@ -106,16 +106,31 @@ def main() -> None:
             "Also stored in session metadata and shown in the report header."
         ),
     )
+    parser.add_argument(
+        "--scan-compressed",
+        action="store_true",
+        help=(
+            "When set, act as if file_scan.scan_compressed is true for this run: "
+            "scan inside supported archives (zip, tar, 7z, etc.). May increase run time and I/O."
+        ),
+    )
     args = parser.parse_args()
 
     try:
         config = load_config(args.config)
     except FileNotFoundError as e:
         print(f"Config not found: {e}")
+        print("Probable cause: The config file path is wrong or the file was moved.")
+        print("What to do: Check the path, use --config to point to your YAML/JSON, or create config.yaml in the current directory.")
         sys.exit(1)
     except Exception as e:
         print(f"Config error: {e}")
+        print("Probable cause: Invalid YAML/JSON syntax or a required key is missing.")
+        print("What to do: Validate your config against docs/USAGE.md; check indentation and quoted strings.")
         sys.exit(1)
+
+    if args.scan_compressed:
+        config.setdefault("file_scan", {})["scan_compressed"] = True
 
     if args.web and not args.reset_data:
         import uvicorn
@@ -217,13 +232,40 @@ def main() -> None:
 
     tenant = sanitize_tenant_technician(args.tenant)
     technician = sanitize_tenant_technician(args.technician)
-    session_id = engine.start_audit(tenant_name=tenant, technician_name=technician)
-    print(f"Scan session: {session_id}")
-    report_path = engine.generate_final_reports(session_id)
-    if report_path:
-        print(f"Report written: {report_path}")
-    else:
-        print("No findings to report.")
+    # scan_compressed already merged into config above when --scan-compressed was passed
+    try:
+        session_id = engine.start_audit(tenant_name=tenant, technician_name=technician)
+        print(f"Scan session: {session_id}")
+        report_path = engine.generate_final_reports(session_id)
+        if report_path:
+            print(f"Report written: {report_path}")
+        else:
+            print("No findings to report.")
+    except FileNotFoundError as e:
+        print(f"Error: {e}")
+        print("Probable cause: A target path or file (e.g. DB, report output dir) is missing.")
+        print("What to do: Ensure paths in config exist; create report.output_dir if needed.")
+        sys.exit(1)
+    except (ConnectionError, OSError) as e:
+        print(f"Error: {e}")
+        print("Probable cause: Cannot access a resource (DB, disk, network target).")
+        print("What to do: Check permissions, disk space, and that no other process locks the DB or files.")
+        sys.exit(1)
+    except ModuleNotFoundError as e:
+        print(f"Error: {e}")
+        print("Probable cause: An optional dependency (e.g. for 7z or a connector) is not installed.")
+        print("What to do: Install the optional extra, e.g. uv sync --extra compressed for 7z support.")
+        sys.exit(1)
+    except (ValueError, KeyError) as e:
+        print(f"Error: {e}")
+        print("Probable cause: Configuration or target definition is invalid.")
+        print("What to do: Check config against docs/USAGE.md and ensure all required keys are set.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error: {e}")
+        print("Probable cause: Unexpected failure during scan or report generation.")
+        print("What to do: Check logs and config; run with a minimal config to isolate the failing target.")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

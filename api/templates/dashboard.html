@@ -18,9 +18,17 @@
     <label for="scan-technician" class="muted" style="display: block; margin-bottom: 0.25rem;">Technician / operator (optional)</label>
     <input type="text" id="scan-technician" placeholder="e.g. João Silva" maxlength="255" style="width: 100%; max-width: 280px; padding: 0.4rem 0.5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 0.9rem;">
   </div>
+  <div class="form-group" style="margin-bottom: 0.75rem;">
+    <label class="checkbox-label" style="display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer;">
+      <input type="checkbox" id="scan-compressed" name="scan_compressed" value="1" style="margin-top: 0.25rem;">
+      <span>Also scan inside compressed files (zip, tar, 7z, …)</span>
+    </label>
+    <p class="muted" style="margin: 0.25rem 0 0 0; font-size: 0.85rem;">May significantly increase run time and I/O. Use only when you need to inspect contents of archives.</p>
+  </div>
   <div class="actions">
     <button type="button" class="btn btn-primary" id="btn-start-scan" {% if status.running %}disabled{% endif %}>Start scan</button>
     <span id="scan-feedback" class="feedback"></span>
+    <span id="scan-feedback-guide" class="feedback muted" style="display: block; margin-top: 0.25rem; font-size: 0.9rem;"></span>
   </div>
 </section>
 
