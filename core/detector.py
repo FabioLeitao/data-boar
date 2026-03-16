@@ -15,6 +15,7 @@ To reduce false positives on song lyrics and music tablature/chord sheets:
   is penalized so borderline cases stay MEDIUM/LOW. Strong PII (CPF, EMAIL, CREDIT_CARD, SSN)
   still reports HIGH.
 """
+
 from pathlib import Path
 from typing import Any
 
@@ -28,6 +29,7 @@ try:
     import pandas as pd
     from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.ensemble import RandomForestClassifier
+
     _ML_AVAILABLE = True
 except ImportError:
     _ML_AVAILABLE = False
@@ -36,9 +38,18 @@ except ImportError:
     RandomForestClassifier = None
 
 # Built-in regex patterns (LGPD/GDPR/CCPA/HIPAA/GLBA relevant)
+# Notes on Brazilian identifiers:
+# - LGPD_CNPJ matches the legacy numeric-only format (14 digits, optional ./-/ punctuation).
+# - LGPD_CNPJ_ALNUM matches the newer alphanumeric format where the first 12 positions may
+#   contain A–Z or 0–9 and the last two positions remain numeric check digits. We intentionally
+#   do not enforce checksum validation here; that belongs to a later detector-logic phase.
 DEFAULT_PATTERNS = {
     "LGPD_CPF": (r"\b\d{3}\.?\d{3}\.?\d{3}-?\d{2}\b", "LGPD Art. 5"),
     "LGPD_CNPJ": (r"\b\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2}\b", "LGPD Art. 5"),
+    "LGPD_CNPJ_ALNUM": (
+        r"\b[A-Z0-9]{2}\.?[A-Z0-9]{3}\.?[A-Z0-9]{3}/?[A-Z0-9]{4}-?\d{2}\b",
+        "LGPD Art. 5",
+    ),
     "EMAIL": (r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b", "GDPR Art. 4(1)"),
     "CREDIT_CARD": (r"\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b", "PCI/GLBA"),
     "PHONE_BR": (r"\b(?:\+55\s?)?(?:\(?\d{2}\)?\s?)?\d{4,5}-?\d{4}\b", "LGPD Art. 5"),
@@ -52,61 +63,220 @@ DEFAULT_PATTERNS = {
 # See docs/plans/completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md and docs/sensitivity_terms_sensitive_categories.example.yaml
 # for the full list; override via ml_patterns_file or sensitivity_detection.ml_terms to customize.
 DEFAULT_ML_TERMS = [
-    ("cpf", 1), ("email", 1), ("credit card", 1), ("password", 1), ("senha", 1),
-    ("health record", 1), ("saude", 1), ("data de nascimento", 1), ("birth date", 1),
-    ("ethnic origin", 1), ("political opinion", 1), ("religion", 1), ("gender", 1),
-    ("rg", 1), ("ssn", 1), ("salary", 1), ("salário", 1),
+    ("cpf", 1),
+    ("email", 1),
+    ("credit card", 1),
+    ("password", 1),
+    ("senha", 1),
+    ("health record", 1),
+    ("saude", 1),
+    ("data de nascimento", 1),
+    ("birth date", 1),
+    ("ethnic origin", 1),
+    ("political opinion", 1),
+    ("religion", 1),
+    ("gender", 1),
+    ("rg", 1),
+    ("ssn", 1),
+    ("salary", 1),
+    ("salário", 1),
     # Phone / contact (multiple naming schemes and languages for column-name detection)
-    ("phone", 1), ("telefone", 1), ("celular", 1), ("mobile", 1), ("fone", 1),
-    ("home phone", 1), ("work phone", 1), ("cell phone", 1), ("contact number", 1), ("phone number", 1),
-    ("téléphone", 1), ("tél", 1), ("teléfono", 1), ("telefono", 1), ("móvil", 1), ("cel", 1),
-    ("handy", 1), ("handynummer", 1), ("mobilnummer", 1), ("telefon", 1), ("número de telefone", 1),
+    ("phone", 1),
+    ("telefone", 1),
+    ("celular", 1),
+    ("mobile", 1),
+    ("fone", 1),
+    ("home phone", 1),
+    ("work phone", 1),
+    ("cell phone", 1),
+    ("contact number", 1),
+    ("phone number", 1),
+    ("téléphone", 1),
+    ("tél", 1),
+    ("teléfono", 1),
+    ("telefono", 1),
+    ("móvil", 1),
+    ("cel", 1),
+    ("handy", 1),
+    ("handynummer", 1),
+    ("mobilnummer", 1),
+    ("telefon", 1),
+    ("número de telefone", 1),
     # Name / identifier (multiple naming schemes and languages for column-name detection)
-    ("first name", 1), ("last name", 1), ("surname", 1), ("full name", 1), ("birth name", 1),
-    ("christian name", 1), ("nickname", 1), ("given name", 1), ("family name", 1), ("middle name", 1),
-    ("nome", 1), ("sobrenome", 1), ("nome do meio", 1), ("nome completo", 1),
-    ("nombre", 1), ("apellido", 1), ("nombre completo", 1), ("segundo nombre", 1),
-    ("prénom", 1), ("nom de famille", 1), ("nom de naissance", 1), ("nom complet", 1),
-    ("vorname", 1), ("nachname", 1), ("geburtsname", 1), ("familienname", 1), ("rufname", 1),
-    ("cognome", 1), ("nome di battesimo", 1),
+    ("first name", 1),
+    ("last name", 1),
+    ("surname", 1),
+    ("full name", 1),
+    ("birth name", 1),
+    ("christian name", 1),
+    ("nickname", 1),
+    ("given name", 1),
+    ("family name", 1),
+    ("middle name", 1),
+    ("nome", 1),
+    ("sobrenome", 1),
+    ("nome do meio", 1),
+    ("nome completo", 1),
+    ("nombre", 1),
+    ("apellido", 1),
+    ("nombre completo", 1),
+    ("segundo nombre", 1),
+    ("prénom", 1),
+    ("nom de famille", 1),
+    ("nom de naissance", 1),
+    ("nom complet", 1),
+    ("vorname", 1),
+    ("nachname", 1),
+    ("geburtsname", 1),
+    ("familienname", 1),
+    ("rufname", 1),
+    ("cognome", 1),
+    ("nome di battesimo", 1),
     # ID / document (multiple naming schemes and languages for column-name detection)
     ("cnpj", 1),
-    ("passaporte", 1), ("passport", 1), ("pasaporte", 1), ("passeport", 1), ("Reisepass", 1),
-    ("ctps", 1), ("carteira de trabalho", 1), ("work permit", 1), ("residence permit", 1),
-    ("distintivo", 1), ("badge", 1), ("documento oficial", 1), ("official document", 1),
-    ("carteira sindical", 1), ("union card", 1), ("certificado de reservista", 1), ("reservist certificate", 1),
-    ("título eleitoral", 1), ("titulo eleitoral", 1), ("voter id", 1), ("voter registration", 1),
-    ("pis", 1), ("pasep", 1), ("cartão cidadão", 1), ("cartao cidadao", 1), ("citizen card", 1),
-    ("identidade de estrangeiro", 1), ("foreigner id", 1), ("certidão", 1), ("certidao", 1), ("birth certificate", 1),
-    ("green card", 1), ("registro no conselho de classe", 1), ("professional registration", 1), ("conselho de classe", 1),
-    ("cnh", 1), ("carteira de motorista", 1), ("driver license", 1), ("driving licence", 1),
-    ("documento de identidade", 1), ("documento de identidad", 1), ("identity document", 1), ("id card", 1),
-    ("carteira de identidade", 1), ("cédula", 1), ("cedula", 1), ("national id", 1), ("national id number", 1),
-    ("número do documento", 1), ("document number", 1), ("identification number", 1),
-    ("carte d'identité", 1), ("document d'identité", 1), ("Personalausweis", 1), ("Ausweisnummer", 1),
-    ("tax id", 1), ("tax identification number", 1), ("cadastro de pessoa física", 1),
+    ("passaporte", 1),
+    ("passport", 1),
+    ("pasaporte", 1),
+    ("passeport", 1),
+    ("Reisepass", 1),
+    ("ctps", 1),
+    ("carteira de trabalho", 1),
+    ("work permit", 1),
+    ("residence permit", 1),
+    ("distintivo", 1),
+    ("badge", 1),
+    ("documento oficial", 1),
+    ("official document", 1),
+    ("carteira sindical", 1),
+    ("union card", 1),
+    ("certificado de reservista", 1),
+    ("reservist certificate", 1),
+    ("título eleitoral", 1),
+    ("titulo eleitoral", 1),
+    ("voter id", 1),
+    ("voter registration", 1),
+    ("pis", 1),
+    ("pasep", 1),
+    ("cartão cidadão", 1),
+    ("cartao cidadao", 1),
+    ("citizen card", 1),
+    ("identidade de estrangeiro", 1),
+    ("foreigner id", 1),
+    ("certidão", 1),
+    ("certidao", 1),
+    ("birth certificate", 1),
+    ("green card", 1),
+    ("registro no conselho de classe", 1),
+    ("professional registration", 1),
+    ("conselho de classe", 1),
+    ("cnh", 1),
+    ("carteira de motorista", 1),
+    ("driver license", 1),
+    ("driving licence", 1),
+    ("documento de identidade", 1),
+    ("documento de identidad", 1),
+    ("identity document", 1),
+    ("id card", 1),
+    ("carteira de identidade", 1),
+    ("cédula", 1),
+    ("cedula", 1),
+    ("national id", 1),
+    ("national id number", 1),
+    ("número do documento", 1),
+    ("document number", 1),
+    ("identification number", 1),
+    ("carte d'identité", 1),
+    ("document d'identité", 1),
+    ("Personalausweis", 1),
+    ("Ausweisnummer", 1),
+    ("tax id", 1),
+    ("tax identification number", 1),
+    ("cadastro de pessoa física", 1),
     # French document nicknames and regional variants (carte bleue, carte rose, etc.)
-    ("carte bleue", 1), ("carte rose", 1), ("carte vitale", 1), ("titre de séjour", 1), ("carte de séjour", 1),
-    ("numéro de sécurité sociale", 1), ("numero de securite sociale", 1), ("n° sécu", 1),
+    ("carte bleue", 1),
+    ("carte rose", 1),
+    ("carte vitale", 1),
+    ("titre de séjour", 1),
+    ("carte de séjour", 1),
+    ("numéro de sécurité sociale", 1),
+    ("numero de securite sociale", 1),
+    ("n° sécu", 1),
     # Further regional ID/document variations (PT-BR, EN, ES, FR, DE)
-    ("rne", 1), ("ric", 1), ("certidão de nascimento", 1), ("certidão de casamento", 1), ("certidão de óbito", 1),
-    ("certidao de nascimento", 1), ("oab", 1), ("crm", 1), ("crc", 1), ("crea", 1), ("crq", 1), ("registro profissional", 1),
-    ("employee badge number", 1), ("membership number", 1), ("license number", 1), ("permit number", 1),
-    ("alien registration number", 1), ("visa number", 1), ("nie", 1), ("libro de familia", 1), ("carnet de conducir", 1),
-    ("titulo de residencia", 1), ("Aufenthaltserlaubnis", 1), ("Sozialversicherungsnummer", 1),
+    ("rne", 1),
+    ("ric", 1),
+    ("certidão de nascimento", 1),
+    ("certidão de casamento", 1),
+    ("certidão de óbito", 1),
+    ("certidao de nascimento", 1),
+    ("oab", 1),
+    ("crm", 1),
+    ("crc", 1),
+    ("crea", 1),
+    ("crq", 1),
+    ("registro profissional", 1),
+    ("employee badge number", 1),
+    ("membership number", 1),
+    ("license number", 1),
+    ("permit number", 1),
+    ("alien registration number", 1),
+    ("visa number", 1),
+    ("nie", 1),
+    ("libro de familia", 1),
+    ("carnet de conducir", 1),
+    ("titulo de residencia", 1),
+    ("Aufenthaltserlaubnis", 1),
+    ("Sozialversicherungsnummer", 1),
     # Generic/ambiguous identifiers → flagged but treated as MEDIUM + "confirm manually" (see AMBIGUOUS_COLUMN_TOKENS)
-    ("doc_id", 1), ("document_id", 1), ("id_number", 1), ("doc_number", 1), ("doc_ref", 1), ("document_ref", 1), ("identifier", 1),
+    ("doc_id", 1),
+    ("document_id", 1),
+    ("id_number", 1),
+    ("doc_number", 1),
+    ("doc_ref", 1),
+    ("document_ref", 1),
+    ("identifier", 1),
     # Sensitive categories (LGPD Art. 5 II, 11; GDPR Art. 9) – additive subset for out-of-the-box
-    ("religious affiliation", 1), ("religiao", 1), ("political affiliation", 1), ("filiacao politica", 1),
-    ("biometric data", 1), ("genetic data", 1), ("union affiliation", 1), ("sindicato", 1),
-    ("politically exposed person", 1), ("PEP", 1), ("race", 1), ("skin color", 1), ("sexual orientation", 1),
-    ("disability", 1), ("deficiencia", 1), ("condicao de saude", 1), ("health condition", 1),
-    ("system_log", 0), ("item_count", 0), ("config_file", 0), ("temp_data", 0),
-    ("id_interno", 0), ("quantidade_estoque", 0),
+    ("religious affiliation", 1),
+    ("religiao", 1),
+    ("political affiliation", 1),
+    ("filiacao politica", 1),
+    ("biometric data", 1),
+    ("genetic data", 1),
+    ("union affiliation", 1),
+    ("sindicato", 1),
+    ("politically exposed person", 1),
+    ("PEP", 1),
+    ("race", 1),
+    ("skin color", 1),
+    ("sexual orientation", 1),
+    ("disability", 1),
+    ("deficiencia", 1),
+    ("condicao de saude", 1),
+    ("health condition", 1),
+    ("system_log", 0),
+    ("item_count", 0),
+    ("config_file", 0),
+    ("temp_data", 0),
+    ("id_interno", 0),
+    ("quantidade_estoque", 0),
     # Lyrics and music notation context → reduce false positives
-    ("lyrics", 0), ("verse", 0), ("chorus", 0), ("bridge", 0), ("refrão", 0), ("estrofe", 0),
-    ("letra", 0), ("cifra", 0), ("tab", 0), ("tablature", 0), ("chord", 0), ("guitar", 0),
-    ("intro", 0), ("outro", 0), ("riff", 0), ("bass", 0), ("capo", 0), ("tuning", 0),
+    ("lyrics", 0),
+    ("verse", 0),
+    ("chorus", 0),
+    ("bridge", 0),
+    ("refrão", 0),
+    ("estrofe", 0),
+    ("letra", 0),
+    ("cifra", 0),
+    ("tab", 0),
+    ("tablature", 0),
+    ("chord", 0),
+    ("guitar", 0),
+    ("intro", 0),
+    ("outro", 0),
+    ("riff", 0),
+    ("bass", 0),
+    ("capo", 0),
+    ("tuning", 0),
 ]
 
 # Regex patterns that often match in lyrics/tabs without real PII (dates in lyrics, digits in tabs)
@@ -123,7 +293,9 @@ AMBIGUOUS_COLUMN_TOKENS = (
     "document_ref",
     "identifier",
 )
-PII_AMBIGUOUS_NORM_TAG = "Generic identifier – confirm manually (doc_id, document_id, etc.)"
+PII_AMBIGUOUS_NORM_TAG = (
+    "Generic identifier – confirm manually (doc_id, document_id, etc.)"
+)
 
 
 def _looks_like_lyrics(sample: str) -> bool:
@@ -135,8 +307,20 @@ def _looks_like_lyrics(sample: str) -> bool:
         return False
     lower = sample.lower()
     keywords = (
-        "verse", "chorus", "bridge", "refrão", "estrofe", "letra", "lyrics",
-        "intro", "outro", "la la", "na na", "oh oh", "yeah yeah", "repeat",
+        "verse",
+        "chorus",
+        "bridge",
+        "refrão",
+        "estrofe",
+        "letra",
+        "lyrics",
+        "intro",
+        "outro",
+        "la la",
+        "na na",
+        "oh oh",
+        "yeah yeah",
+        "repeat",
     )
     if any(k in lower for k in keywords):
         return True
@@ -170,7 +354,20 @@ def _looks_like_music_tab(sample: str) -> bool:
     if tab_score >= 2 or chord_score >= 2:
         return True
     lower = sample.lower()
-    if any(k in lower for k in ("tab", "tablature", "cifra", "chord", "capo", "tuning", "e|---", "a|---", "b|---")):
+    if any(
+        k in lower
+        for k in (
+            "tab",
+            "tablature",
+            "cifra",
+            "chord",
+            "capo",
+            "tuning",
+            "e|---",
+            "a|---",
+            "b|---",
+        )
+    ):
         return True
     return False
 
@@ -186,14 +383,18 @@ def _load_regex_overrides(
     raw = read_text_with_encoding(path, encoding=encoding, errors=errors)
     if Path(path).suffix.lower() in (".yaml", ".yml"):
         import yaml
+
         data = yaml.safe_load(raw)
     else:
         import json
+
         data = json.loads(raw)
     if not isinstance(data, (list, dict)):
         return {}
     out = {}
-    items = data if isinstance(data, list) else data.get("patterns", data.get("regex", []))
+    items = (
+        data if isinstance(data, list) else data.get("patterns", data.get("regex", []))
+    )
     for item in items:
         if isinstance(item, dict):
             name = item.get("name", "")
@@ -215,13 +416,17 @@ def _load_ml_patterns(
     raw = read_text_with_encoding(path, encoding=encoding, errors=errors)
     if Path(path).suffix.lower() in (".yaml", ".yml"):
         import yaml
+
         data = yaml.safe_load(raw)
     else:
         import json
+
         data = json.loads(raw)
     if not isinstance(data, (list, dict)):
         return []
-    items = data if isinstance(data, list) else data.get("patterns", data.get("terms", []))
+    items = (
+        data if isinstance(data, list) else data.get("patterns", data.get("terms", []))
+    )
     out = []
     for item in items:
         if isinstance(item, dict):
@@ -282,7 +487,9 @@ def _load_dl_terms(
     return _load_ml_patterns(path, encoding=encoding, errors=errors)
 
 
-def _detect_possible_minor(column_name: str, sample_text: str, minor_age_threshold: int) -> bool:
+def _detect_possible_minor(
+    column_name: str, sample_text: str, minor_age_threshold: int
+) -> bool:
     """
     Heuristic detection of possible minor data based on column name (including PT-BR variants/acronyms)
     and sample values (dates of birth or numeric ages).
@@ -329,7 +536,11 @@ def _detect_possible_minor(column_name: str, sample_text: str, minor_age_thresho
         try:
             today = date.today()
             dob = date(y, m, d)
-            years = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+            years = (
+                today.year
+                - dob.year
+                - ((today.month, today.day) < (dob.month, dob.day))
+            )
             return years
         except Exception:
             return None
@@ -414,10 +625,14 @@ class SensitivityDetector:
         over = _load_regex_overrides(regex_overrides_path, encoding=enc, errors=err)
         for k, v in over.items():
             self.patterns[k] = v
-        self._compiled = {name: re.compile(pat) for name, (pat, _) in self.patterns.items()}
+        self._compiled = {
+            name: re.compile(pat) for name, (pat, _) in self.patterns.items()
+        }
 
         # ML terms: inline overrides file; file overrides default
-        ml_terms = _ml_terms_from_inline_or_file(ml_terms_inline, ml_patterns_path, encoding=enc, errors=err)
+        ml_terms = _ml_terms_from_inline_or_file(
+            ml_terms_inline, ml_patterns_path, encoding=enc, errors=err
+        )
         self._ml_available = False
         self._vectorizer = None
         self._model = None
@@ -431,7 +646,9 @@ class SensitivityDetector:
             self._ml_available = True
 
         # DL terms: inline or from dl_patterns_path (same file format as ML)
-        dl_terms = _load_dl_terms(dl_patterns_path, dl_terms_inline, encoding=enc, errors=err)
+        dl_terms = _load_dl_terms(
+            dl_patterns_path, dl_terms_inline, encoding=enc, errors=err
+        )
         self._dl_classifier: DLClassifier | None = None
         if dl_terms and dl_available():
             self._dl_classifier = DLClassifier(dl_terms)
@@ -453,10 +670,14 @@ class SensitivityDetector:
         """
         combined = f"{column_name} {sample_text}"
         sample_only = sample_text or ""
-        entertainment_context = _looks_like_lyrics(sample_only) or _looks_like_music_tab(sample_only)
+        entertainment_context = _looks_like_lyrics(
+            sample_only
+        ) or _looks_like_music_tab(sample_only)
 
         # Heuristic: possible minor data based on DOB/age (EN + PT-BR)
-        possible_minor = _detect_possible_minor(column_name, sample_only, self._minor_age_threshold)
+        possible_minor = _detect_possible_minor(
+            column_name, sample_only, self._minor_age_threshold
+        )
 
         found_patterns: list[tuple[str, str]] = []
         for name, (_, norm_tag) in self.patterns.items():
@@ -489,12 +710,19 @@ class SensitivityDetector:
                 if only_weak and not possible_minor:
                     names = ", ".join(p[0] for p in found_patterns)
                     norms = ", ".join(p[1] for p in found_patterns)
-                    return "MEDIUM", names + " (lyrics/tabs context)", norms, min(combined_confidence, 55)
+                    return (
+                        "MEDIUM",
+                        names + " (lyrics/tabs context)",
+                        norms,
+                        min(combined_confidence, 55),
+                    )
                 names = ", ".join(p[0] for p in found_patterns)
                 norms = ", ".join(p[1] for p in found_patterns)
                 if possible_minor:
                     names = f"DOB_POSSIBLE_MINOR, {names}"
-                    norms = "LGPD Art. 14 – possible minor data; GDPR Art. 8" + (", " + norms if norms else "")
+                    norms = "LGPD Art. 14 – possible minor data; GDPR Art. 8" + (
+                        ", " + norms if norms else ""
+                    )
                 return "HIGH", names, norms, max(combined_confidence, 70)
         else:
             if found_patterns:
@@ -502,23 +730,45 @@ class SensitivityDetector:
                 norms = ", ".join(p[1] for p in found_patterns)
                 if possible_minor:
                     names = f"DOB_POSSIBLE_MINOR, {names}"
-                    norms = "LGPD Art. 14 – possible minor data; GDPR Art. 8" + (", " + norms if norms else "")
+                    norms = "LGPD Art. 14 – possible minor data; GDPR Art. 8" + (
+                        ", " + norms if norms else ""
+                    )
                 return "HIGH", names, norms, max(combined_confidence, 80)
         if possible_minor:
             # Minor indication even without strong ML/regex confidence → treat as HIGH with dedicated norm_tag.
-            return "HIGH", "DOB_POSSIBLE_MINOR", "LGPD Art. 14 – possible minor data; GDPR Art. 8", max(combined_confidence, 80)
+            return (
+                "HIGH",
+                "DOB_POSSIBLE_MINOR",
+                "LGPD Art. 14 – possible minor data; GDPR Art. 8",
+                max(combined_confidence, 80),
+            )
         # Ambiguous column names (doc_id, document_id, etc.): flag for review but MEDIUM priority and ask operator to confirm.
         col_lower = (column_name or "").lower().strip()
         if not found_patterns and combined_confidence >= 40:
             for token in AMBIGUOUS_COLUMN_TOKENS:
                 if token in col_lower or col_lower == token:
-                    return "MEDIUM", "PII_AMBIGUOUS", PII_AMBIGUOUS_NORM_TAG, combined_confidence
+                    return (
+                        "MEDIUM",
+                        "PII_AMBIGUOUS",
+                        PII_AMBIGUOUS_NORM_TAG,
+                        combined_confidence,
+                    )
         if combined_confidence >= 70:
             if entertainment_context:
                 # ML-only confidence in entertainment context (lyrics/tabs) → cap at MEDIUM so that
                 # these cases surface for human review without overwhelming the report with HIGH.
-                return "MEDIUM", "ML_POTENTIAL_ENTERTAINMENT", "Potential personal data in entertainment context", combined_confidence
+                return (
+                    "MEDIUM",
+                    "ML_POTENTIAL_ENTERTAINMENT",
+                    "Potential personal data in entertainment context",
+                    combined_confidence,
+                )
             return "HIGH", "ML_DETECTED", "LGPD/GDPR/CCPA context", combined_confidence
         if combined_confidence >= 40:
-            return "MEDIUM", "ML_POTENTIAL", "Potential personal data", combined_confidence
+            return (
+                "MEDIUM",
+                "ML_POTENTIAL",
+                "Potential personal data",
+                combined_confidence,
+            )
         return "LOW", "GENERAL", "Non-personal", combined_confidence

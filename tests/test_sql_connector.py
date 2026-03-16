@@ -3,6 +3,7 @@
 Ensures refactored helpers _get_skip_schemas, _should_skip_schema, _tables_from_schema,
 _discover_fallback_no_schemas preserve behavior so discover() returns expected tables/columns.
 """
+
 import sqlite3
 from unittest.mock import MagicMock
 
@@ -38,7 +39,10 @@ def test_should_skip_schema_empty():
 
 def test_should_skip_schema_when_in_set():
     """_should_skip_schema returns True when schema is in skip_schemas."""
-    assert _should_skip_schema("information_schema", "postgresql", {"information_schema"}) is True
+    assert (
+        _should_skip_schema("information_schema", "postgresql", {"information_schema"})
+        is True
+    )
     assert _should_skip_schema("SYS", "oracle", {"SYS"}) is True
 
 
@@ -56,7 +60,12 @@ def test_sql_connector_discover_sqlite_in_memory(tmp_path):
     conn.commit()
     conn.close()
 
-    target = {"type": "database", "driver": "sqlite", "database": str(db_path), "name": "TestDB"}
+    target = {
+        "type": "database",
+        "driver": "sqlite",
+        "database": str(db_path),
+        "name": "TestDB",
+    }
     scanner = MagicMock()
     db_manager = MagicMock()
     connector = SQLConnector(target, scanner, db_manager)
@@ -89,7 +98,11 @@ def test_discover_fallback_no_schemas_returns_list():
 
 def test_connect_args_from_target_postgresql():
     """_connect_args_from_target returns connect_timeout and statement_timeout for PostgreSQL."""
-    target = {"driver": "postgresql", "connect_timeout_seconds": 15, "read_timeout_seconds": 120}
+    target = {
+        "driver": "postgresql",
+        "connect_timeout_seconds": 15,
+        "read_timeout_seconds": 120,
+    }
     args = _connect_args_from_target(target)
     assert args["connect_timeout"] == 15
     assert "options" in args
@@ -98,7 +111,11 @@ def test_connect_args_from_target_postgresql():
 
 def test_connect_args_from_target_mysql():
     """_connect_args_from_target returns connect_timeout for MySQL."""
-    target = {"driver": "mysql", "connect_timeout_seconds": 10, "read_timeout_seconds": 60}
+    target = {
+        "driver": "mysql",
+        "connect_timeout_seconds": 10,
+        "read_timeout_seconds": 60,
+    }
     args = _connect_args_from_target(target)
     assert args["connect_timeout"] == 10
     assert "options" not in args
@@ -121,6 +138,10 @@ def test_connect_args_from_target_defaults():
 
 def test_connect_args_from_target_clamped():
     """_connect_args_from_target clamps timeouts to at least 1."""
-    target = {"driver": "mysql", "connect_timeout_seconds": 0, "read_timeout_seconds": -1}
+    target = {
+        "driver": "mysql",
+        "connect_timeout_seconds": 0,
+        "read_timeout_seconds": -1,
+    }
     args = _connect_args_from_target(target)
     assert args["connect_timeout"] >= 1

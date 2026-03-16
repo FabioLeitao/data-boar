@@ -14,6 +14,7 @@ in-memory for a short TTL when no scan is running to reduce SQLite reads on repe
 Security: default middleware adds X-Content-Type-Options, X-Frame-Options, Content-Security-Policy,
 Referrer-Policy, Permissions-Policy, and Strict-Transport-Security (only when served over HTTPS).
 """
+
 import os
 import re
 import time
@@ -64,6 +65,7 @@ def _validate_session_id(session_id: str) -> None:
 
 class DatabaseConfig(BaseModel):
     """Single database target for one-off scan via POST /scan_database."""
+
     name: str
     host: str
     port: int
@@ -77,8 +79,10 @@ class DatabaseConfig(BaseModel):
 
 class ScanStartBody(BaseModel):
     """Optional body for POST /scan to associate the scan with a tenant/customer and technician/operator."""
+
     tenant: str | None = None
     technician: str | None = None
+
 
 # Load config and create engine at import time (or on startup event)
 _config_path = os.environ.get("CONFIG_PATH", "config.yaml")
@@ -104,12 +108,15 @@ def _get_config_raw() -> str:
 def _get_config_yaml_for_display() -> str:
     """Return config YAML safe for display: secret values redacted so the UI never shows them."""
     from config.redact_config import redact_config_for_display
+
     raw = _get_config_raw()
     try:
         data = yaml.safe_load(raw)
         if isinstance(data, dict):
             redacted = redact_config_for_display(data)
-            return yaml.dump(redacted, default_flow_style=False, allow_unicode=True, sort_keys=False)
+            return yaml.dump(
+                redacted, default_flow_style=False, allow_unicode=True, sort_keys=False
+            )
     except Exception:
         pass
     return raw
@@ -136,6 +143,7 @@ scan:
 def _save_config_yaml(yaml_content: str) -> None:
     """Validate and save config file; reset in-memory config and engine so next request reloads."""
     from config.loader import normalize_config
+
     p = Path(_config_path)
     try:
         data = yaml.safe_load(yaml_content)
@@ -154,6 +162,7 @@ def _save_config_yaml(yaml_content: str) -> None:
 def _merge_and_save_config_yaml(submitted_yaml: str) -> None:
     """Merge submitted YAML with current config so redacted/placeholder secret values do not overwrite real secrets, then save."""
     from config.redact_config import merge_config_on_save
+
     current_raw = _get_config_raw()
     try:
         current_data = yaml.safe_load(current_raw)
@@ -168,7 +177,9 @@ def _merge_and_save_config_yaml(submitted_yaml: str) -> None:
     if not isinstance(submitted_data, dict):
         raise ValueError("Config must be a YAML object")
     merged = merge_config_on_save(submitted_data, current_data)
-    merged_yaml = yaml.dump(merged, default_flow_style=False, allow_unicode=True, sort_keys=False)
+    merged_yaml = yaml.dump(
+        merged, default_flow_style=False, allow_unicode=True, sort_keys=False
+    )
     _save_config_yaml(merged_yaml)
 
 
@@ -176,10 +187,16 @@ def _get_config():
     global _config
     if _config is None:
         from config.loader import load_config
+
         if Path(_config_path).exists():
             _config = load_config(_config_path)
         else:
-            _config = {"targets": [], "sqlite_path": "audit_results.db", "report": {"output_dir": "."}, "api": {"port": 8088}}
+            _config = {
+                "targets": [],
+                "sqlite_path": "audit_results.db",
+                "report": {"output_dir": "."},
+                "api": {"port": 8088},
+            }
     return _config
 
 
@@ -187,6 +204,7 @@ def _get_engine():
     global _audit_engine
     if _audit_engine is None:
         from core.engine import AuditEngine
+
         _audit_engine = AuditEngine(_get_config())
     return _audit_engine
 
@@ -215,7 +233,10 @@ def _list_sessions_cached() -> list[dict]:
         _sessions_cache = None
         return engine.db_manager.list_sessions()
     now = time.monotonic()
-    if _sessions_cache is not None and (now - _sessions_cache_time) < _SESSIONS_CACHE_TTL:
+    if (
+        _sessions_cache is not None
+        and (now - _sessions_cache_time) < _SESSIONS_CACHE_TTL
+    ):
         return _sessions_cache
     _sessions_cache = engine.db_manager.list_sessions()
     _sessions_cache_time = now
@@ -245,7 +266,9 @@ def _raise_if_concurrent_limit_exceeded(dbm, max_concurrent: int, source: str) -
     )
 
 
-def _raise_if_interval_limit_exceeded(dbm, min_interval: int, grace: int, source: str) -> None:
+def _raise_if_interval_limit_exceeded(
+    dbm, min_interval: int, grace: int, source: str
+) -> None:
     """Raise HTTPException(429) when last scan started too recently (min_interval or grace)."""
     if min_interval <= 0:
         return
@@ -285,7 +308,7 @@ def _check_rate_limit(source: str) -> None:
     Raises HTTPException(429) when limits are exceeded.
     """
     cfg = _get_config()
-    rl = (cfg.get("rate_limit") or {})
+    rl = cfg.get("rate_limit") or {}
     if not rl.get("enabled"):
         return
     engine = _get_engine()
@@ -370,7 +393,9 @@ async def optional_api_key_middleware(request: Request, call_next):
         if auth.lower().startswith("bearer "):
             provided = auth[7:].strip()
     if not provided or provided != expected:
-        return JSONResponse(status_code=401, content={"detail": "Missing or invalid API key"})
+        return JSONResponse(
+            status_code=401, content={"detail": "Missing or invalid API key"}
+        )
     return await call_next(request)
 
 
@@ -442,7 +467,14 @@ def _build_chart_data(sessions: list[dict]) -> list[dict]:
         started = s.get("started_at") or ""
         # Short label for axis (date only if ISO format)
         label = started[:10] if len(started) >= 10 else started or "—"
-        out.append({"label": label, "started_at": started, "total_findings": total, "score": round(score, 1)})
+        out.append(
+            {
+                "label": label,
+                "started_at": started,
+                "total_findings": total,
+                "score": round(score, 1),
+            }
+        )
     return out
 
 
@@ -537,14 +569,23 @@ async def reports_page(request: Request):
     )
 
 
-_RATE_LIMIT_429 = {429: {"description": "Rate limit exceeded (too many concurrent scans or scans started too frequently)."}}
+_RATE_LIMIT_429 = {
+    429: {
+        "description": "Rate limit exceeded (too many concurrent scans or scans started too frequently)."
+    }
+}
 _NOT_FOUND_404 = {404: {"description": "Resource not found."}}
-_SESSION_RESPONSES = {400: {"description": "Invalid session_id (empty or invalid format)."}, 404: {"description": "Session or resource not found."}}
+_SESSION_RESPONSES = {
+    400: {"description": "Invalid session_id (empty or invalid format)."},
+    404: {"description": "Session or resource not found."},
+}
 
 
 @app.post("/scan", responses=_RATE_LIMIT_429)
 @app.post("/start", responses=_RATE_LIMIT_429)
-async def start_scan(background_tasks: BackgroundTasks, body: ScanStartBody | None = None):
+async def start_scan(
+    background_tasks: BackgroundTasks, body: ScanStartBody | None = None
+):
     """Start audit in background. Optional body.tenant and body.technician to tag the scan. Returns session_id."""
     engine = _get_engine()
     if engine.is_running:
@@ -553,6 +594,7 @@ async def start_scan(background_tasks: BackgroundTasks, body: ScanStartBody | No
     _check_rate_limit(source="scan")
     from core.session import new_session_id
     from core.validation import sanitize_tenant_technician
+
     session_id = new_session_id()
     tenant = sanitize_tenant_technician((body.tenant if body else None) or None)
     technician = sanitize_tenant_technician((body.technician if body else None) or None)
@@ -562,8 +604,10 @@ async def start_scan(background_tasks: BackgroundTasks, body: ScanStartBody | No
         tenant_name=tenant,
         technician_name=technician,
     )
+
     def run_targets():
         engine._run_audit_targets()
+
     background_tasks.add_task(run_targets)
     _invalidate_sessions_cache()
     return {"status": "started", "session_id": session_id}
@@ -595,8 +639,14 @@ async def download_report():
             if sessions:
                 path = engine.generate_final_reports(sessions[0]["session_id"])
     if path and Path(path).exists():
-        return FileResponse(path, filename=Path(path).name, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    raise HTTPException(status_code=404, detail="Report not available. Run a scan first.")
+        return FileResponse(
+            path,
+            filename=Path(path).name,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+    raise HTTPException(
+        status_code=404, detail="Report not available. Run a scan first."
+    )
 
 
 @app.get("/heatmap", responses=_NOT_FOUND_404)
@@ -613,11 +663,15 @@ async def download_heatmap():
             if sessions:
                 sid = sessions[0]["session_id"]
         if not sid:
-            raise HTTPException(status_code=404, detail="Heatmap not available. Run a scan first.")
+            raise HTTPException(
+                status_code=404, detail="Heatmap not available. Run a scan first."
+            )
         path = engine.generate_final_reports(sid)
     # At this point we have a report path and can infer session_id if needed
     if not path or not Path(path).exists():
-        raise HTTPException(status_code=404, detail="Heatmap not available. Run a scan first.")
+        raise HTTPException(
+            status_code=404, detail="Heatmap not available. Run a scan first."
+        )
     report_path = Path(path)
     if not sid:
         # Recover session prefix from report filename: Relatorio_Auditoria_<session_prefix>.xlsx
@@ -627,8 +681,13 @@ async def download_heatmap():
     out_dir = report_path.parent
     heatmap_path = out_dir / f"heatmap_{sid[:12]}.png"
     if heatmap_path.exists():
-        return FileResponse(heatmap_path, filename=heatmap_path.name, media_type="image/png")
-    raise HTTPException(status_code=404, detail="Heatmap not available. Run a scan first or ensure the report was generated.")
+        return FileResponse(
+            heatmap_path, filename=heatmap_path.name, media_type="image/png"
+        )
+    raise HTTPException(
+        status_code=404,
+        detail="Heatmap not available. Run a scan first or ensure the report was generated.",
+    )
 
 
 @app.get("/list")
@@ -642,11 +701,13 @@ async def list_sessions_api(sort: str = "date_desc"):
 
 class SessionTenantUpdate(BaseModel):
     """Body for PATCH /sessions/{session_id}: set tenant/customer name for a session."""
+
     tenant: str | None = None
 
 
 class SessionTechnicianUpdate(BaseModel):
     """Body for PATCH /sessions/{session_id}/technician: set technician/operator name for a session."""
+
     technician: str | None = None
 
 
@@ -655,10 +716,15 @@ async def update_session_tenant(session_id: str, body: SessionTenantUpdate):
     """Set or clear the tenant/customer name for an existing scan session."""
     _validate_session_id(session_id)
     engine = _get_engine()
-    sessions = [s for s in engine.db_manager.list_sessions() if s.get("session_id") == session_id]
+    sessions = [
+        s
+        for s in engine.db_manager.list_sessions()
+        if s.get("session_id") == session_id
+    ]
     if not sessions:
         raise HTTPException(status_code=404, detail=f"Session {session_id} not found.")
     from core.validation import sanitize_tenant_technician
+
     tenant = sanitize_tenant_technician(body.tenant)
     engine.db_manager.update_session_tenant(session_id, tenant)
     _invalidate_sessions_cache()
@@ -670,10 +736,15 @@ async def update_session_technician(session_id: str, body: SessionTechnicianUpda
     """Set or clear the technician/operator name for an existing scan session."""
     _validate_session_id(session_id)
     engine = _get_engine()
-    sessions = [s for s in engine.db_manager.list_sessions() if s.get("session_id") == session_id]
+    sessions = [
+        s
+        for s in engine.db_manager.list_sessions()
+        if s.get("session_id") == session_id
+    ]
     if not sessions:
         raise HTTPException(status_code=404, detail=f"Session {session_id} not found.")
     from core.validation import sanitize_tenant_technician
+
     technician = sanitize_tenant_technician(body.technician)
     engine.db_manager.update_session_technician(session_id, technician)
     _invalidate_sessions_cache()
@@ -686,9 +757,33 @@ async def download_report_by_session(session_id: str):
     _validate_session_id(session_id)
     engine = _get_engine()
     path = engine.generate_final_reports(session_id)
-    if path and Path(path).exists():
-        return FileResponse(path, filename=Path(path).name, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    raise HTTPException(status_code=404, detail=f"No data for session {session_id} or report generation failed.")
+    if path:
+        # Normalise and restrict the report path to the configured report output_dir.
+        # This guards against any accidental path traversal or misconfiguration.
+        out_dir = Path(engine.config.get("report", {}).get("output_dir", ".")).resolve()
+        candidate = Path(path).resolve()
+        try:
+            candidate.relative_to(out_dir)
+        except ValueError:
+            # Path is outside configured report directory; do not serve it.
+            raise HTTPException(
+                status_code=403,
+                detail="Report path is outside the configured report directory.",
+            )
+        if not candidate.exists():
+            raise HTTPException(
+                status_code=404,
+                detail=f"No data for session {session_id} or report generation failed.",
+            )
+        return FileResponse(
+            candidate,
+            filename=candidate.name,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+    raise HTTPException(
+        status_code=404,
+        detail=f"No data for session {session_id} or report generation failed.",
+    )
 
 
 @app.get("/heatmap/{session_id}", responses=_SESSION_RESPONSES)
@@ -698,14 +793,22 @@ async def download_heatmap_by_session(session_id: str):
     engine = _get_engine()
     path = engine.generate_final_reports(session_id)
     if not path or not Path(path).exists():
-        raise HTTPException(status_code=404, detail=f"No data for session {session_id} or report generation failed.")
+        raise HTTPException(
+            status_code=404,
+            detail=f"No data for session {session_id} or report generation failed.",
+        )
     out_dir = Path(path).parent
     # session_id already validated; safe for path segment (no ".." or slashes)
     safe_prefix = session_id[:12]
     heatmap_path = out_dir / f"heatmap_{safe_prefix}.png"
     if heatmap_path.exists():
-        return FileResponse(heatmap_path, filename=heatmap_path.name, media_type="image/png")
-    raise HTTPException(status_code=404, detail=f"Heatmap not available for session {session_id}. Run a scan and ensure findings exist.")
+        return FileResponse(
+            heatmap_path, filename=heatmap_path.name, media_type="image/png"
+        )
+    raise HTTPException(
+        status_code=404,
+        detail=f"Heatmap not available for session {session_id}. Run a scan and ensure findings exist.",
+    )
 
 
 @app.get("/logs", responses=_NOT_FOUND_404)
@@ -715,7 +818,9 @@ async def download_latest_log():
     This file contains connection and finding logs for recent scan sessions.
     """
     log_dir = Path(".")
-    candidates = sorted(log_dir.glob("audit_*.log"), key=lambda p: p.stat().st_mtime, reverse=True)
+    candidates = sorted(
+        log_dir.glob("audit_*.log"), key=lambda p: p.stat().st_mtime, reverse=True
+    )
     if not candidates:
         raise HTTPException(status_code=404, detail="No log files found.")
     latest = candidates[0]
@@ -731,7 +836,9 @@ async def download_log_for_session(session_id: str):
     """
     _validate_session_id(session_id)
     log_dir = Path(".")
-    candidates = sorted(log_dir.glob("audit_*.log"), key=lambda p: p.stat().st_mtime, reverse=True)
+    candidates = sorted(
+        log_dir.glob("audit_*.log"), key=lambda p: p.stat().st_mtime, reverse=True
+    )
     if not candidates:
         raise HTTPException(status_code=404, detail="No log files found.")
     for p in candidates:
@@ -741,7 +848,9 @@ async def download_log_for_session(session_id: str):
             continue
         if session_id in text:
             return FileResponse(p, filename=p.name, media_type="text/plain")
-    raise HTTPException(status_code=404, detail=f"No log file contains session_id {session_id}.")
+    raise HTTPException(
+        status_code=404, detail=f"No log file contains session_id {session_id}."
+    )
 
 
 @app.post("/scan_database", responses=_RATE_LIMIT_429)
@@ -764,6 +873,7 @@ async def scan_database(config: DatabaseConfig, background_tasks: BackgroundTask
     }
     from core.session import new_session_id
     from core.validation import sanitize_tenant_technician
+
     session_id = new_session_id()
     tenant = sanitize_tenant_technician(config.tenant)
     technician = sanitize_tenant_technician(config.technician)
@@ -773,6 +883,7 @@ async def scan_database(config: DatabaseConfig, background_tasks: BackgroundTask
         tenant_name=tenant,
         technician_name=technician,
     )
+
     def run_one_target():
         engine._is_running = True
         try:
@@ -780,6 +891,7 @@ async def scan_database(config: DatabaseConfig, background_tasks: BackgroundTask
         finally:
             engine._is_running = False
             engine.db_manager.finish_session(session_id, "completed")
+
     background_tasks.add_task(run_one_target)
     _invalidate_sessions_cache()
     return {"status": "started", "session_id": session_id}

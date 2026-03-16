@@ -1,4 +1,5 @@
 """Tests for config loader and database layer (no live DB required)."""
+
 import os
 import pytest
 from pathlib import Path
@@ -16,10 +17,21 @@ def test_normalize_config_empty():
 
 def test_normalize_config_legacy_databases():
     # Use placeholder for password field; test only verifies normalization (no real credentials).
-    out = normalize_config({
-        "databases": [{"name": "x", "host": "h", "port": 5432, "user": "u", "password": os.environ.get("TEST_DB_PASSWORD", "test-placeholder"), "database": "d"}],
-        "file_scan": {"directories": [], "extensions": [".txt"]},
-    })
+    out = normalize_config(
+        {
+            "databases": [
+                {
+                    "name": "x",
+                    "host": "h",
+                    "port": 5432,
+                    "user": "u",
+                    "password": os.environ.get("TEST_DB_PASSWORD", "test-placeholder"),
+                    "database": "d",
+                }
+            ],
+            "file_scan": {"directories": [], "extensions": [".txt"]},
+        }
+    )
     assert len(out["targets"]) >= 1
     db_target = next(t for t in out["targets"] if t.get("type") == "database")
     assert db_target["name"] == "x"
@@ -29,17 +41,19 @@ def test_normalize_config_legacy_databases():
 
 def test_normalize_config_detection_aggregated_identification():
     """Config loader normalizes detection.aggregated_identification_enabled, aggregated_min_categories, quasi_identifier_mapping."""
-    out = normalize_config({
-        "targets": [],
-        "detection": {
-            "aggregated_identification_enabled": False,
-            "aggregated_min_categories": 3,
-            "quasi_identifier_mapping": [
-                {"column_pattern": "cargo", "category": "job_position"},
-                {"pattern_detected": "PHONE_BR", "category": "phone"},
-            ],
-        },
-    })
+    out = normalize_config(
+        {
+            "targets": [],
+            "detection": {
+                "aggregated_identification_enabled": False,
+                "aggregated_min_categories": 3,
+                "quasi_identifier_mapping": [
+                    {"column_pattern": "cargo", "category": "job_position"},
+                    {"pattern_detected": "PHONE_BR", "category": "phone"},
+                ],
+            },
+        }
+    )
     det = out.get("detection", {})
     assert det.get("aggregated_identification_enabled") is False
     assert det.get("aggregated_min_categories") == 3
@@ -58,16 +72,18 @@ def test_normalize_config_detection_aggregated_identification():
 def test_normalize_config_rate_limit_and_scan_max_workers(monkeypatch):
     """Config loader normalizes rate_limit block and clamps scan.max_workers."""
     # No env overrides
-    cfg = normalize_config({
-        "targets": [],
-        "scan": {"max_workers": 100},
-        "rate_limit": {
-            "enabled": True,
-            "max_concurrent_scans": 0,   # should be clamped to >= 1
-            "min_interval_seconds": -10, # should be clamped to >= 0
-            "grace_for_running_status": -5,  # should be clamped to >= 0
-        },
-    })
+    cfg = normalize_config(
+        {
+            "targets": [],
+            "scan": {"max_workers": 100},
+            "rate_limit": {
+                "enabled": True,
+                "max_concurrent_scans": 0,  # should be clamped to >= 1
+                "min_interval_seconds": -10,  # should be clamped to >= 0
+                "grace_for_running_status": -5,  # should be clamped to >= 0
+            },
+        }
+    )
     rl = cfg.get("rate_limit", {})
     assert rl.get("enabled") is True
     assert rl.get("max_concurrent_scans") >= 1
@@ -79,23 +95,50 @@ def test_normalize_config_rate_limit_and_scan_max_workers(monkeypatch):
 
 def test_normalize_config_timeouts_and_per_target():
     """Config loader adds global timeouts (defaults 25/90) and merges per-target overrides."""
-    out = normalize_config({
-        "targets": [
-            {"name": "defaults", "type": "database", "driver": "postgresql", "host": "h", "database": "d"},
-            {"name": "overrides", "type": "api", "base_url": "http://x", "connect_timeout": 10, "read_timeout": 60},
-            {"name": "single", "type": "database", "driver": "mysql", "host": "h", "database": "d", "timeout": 45},
-        ],
-        "timeouts": {"connect_seconds": 20, "read_seconds": 80},
-    })
+    out = normalize_config(
+        {
+            "targets": [
+                {
+                    "name": "defaults",
+                    "type": "database",
+                    "driver": "postgresql",
+                    "host": "h",
+                    "database": "d",
+                },
+                {
+                    "name": "overrides",
+                    "type": "api",
+                    "base_url": "http://x",
+                    "connect_timeout": 10,
+                    "read_timeout": 60,
+                },
+                {
+                    "name": "single",
+                    "type": "database",
+                    "driver": "mysql",
+                    "host": "h",
+                    "database": "d",
+                    "timeout": 45,
+                },
+            ],
+            "timeouts": {"connect_seconds": 20, "read_seconds": 80},
+        }
+    )
     assert out.get("timeouts", {}).get("connect_seconds") == 20
     assert out.get("timeouts", {}).get("read_seconds") == 80
     targets = out["targets"]
     t0 = next(t for t in targets if t.get("name") == "defaults")
-    assert t0.get("connect_timeout_seconds") == 20 and t0.get("read_timeout_seconds") == 80
+    assert (
+        t0.get("connect_timeout_seconds") == 20 and t0.get("read_timeout_seconds") == 80
+    )
     t1 = next(t for t in targets if t.get("name") == "overrides")
-    assert t1.get("connect_timeout_seconds") == 10 and t1.get("read_timeout_seconds") == 60
+    assert (
+        t1.get("connect_timeout_seconds") == 10 and t1.get("read_timeout_seconds") == 60
+    )
     t2 = next(t for t in targets if t.get("name") == "single")
-    assert t2.get("connect_timeout_seconds") == 45 and t2.get("read_timeout_seconds") == 45
+    assert (
+        t2.get("connect_timeout_seconds") == 45 and t2.get("read_timeout_seconds") == 45
+    )
     # Empty config: defaults 25/90
     out2 = normalize_config({"targets": []})
     assert out2.get("timeouts", {}).get("connect_seconds") == 25
@@ -112,10 +155,16 @@ def test_failure_hint_timeout_includes_config_guidance():
 
 def test_failure_hint_other_reasons():
     """failure_hint returns sensible hints for unreachable, auth_failed, permission_denied."""
-    assert "connectivity" in failure_hint("unreachable").lower() or "network" in failure_hint("unreachable").lower()
+    assert (
+        "connectivity" in failure_hint("unreachable").lower()
+        or "network" in failure_hint("unreachable").lower()
+    )
     assert "auth" in failure_hint("auth_failed").lower()
     assert "permission" in failure_hint("permission_denied").lower()
-    assert "unexpected" in failure_hint("unknown").lower() or "error" in failure_hint("unknown").lower()
+    assert (
+        "unexpected" in failure_hint("unknown").lower()
+        or "error" in failure_hint("unknown").lower()
+    )
 
 
 def test_local_db_manager(tmp_path):
@@ -124,7 +173,19 @@ def test_local_db_manager(tmp_path):
     try:
         mgr.set_current_session_id("test-session-123")
         mgr.create_session_record("test-session-123")
-        mgr.save_finding("database", target_name="T", server_ip="127.0.0.1", schema_name="s", table_name="t", column_name="c", data_type="VARCHAR", sensitivity_level="HIGH", pattern_detected="CPF", norm_tag="LGPD", ml_confidence=90)
+        mgr.save_finding(
+            "database",
+            target_name="T",
+            server_ip="127.0.0.1",
+            schema_name="s",
+            table_name="t",
+            column_name="c",
+            data_type="VARCHAR",
+            sensitivity_level="HIGH",
+            pattern_detected="CPF",
+            norm_tag="LGPD",
+            ml_confidence=90,
+        )
         db_findings, _, _ = mgr.get_findings("test-session-123")
         assert len(db_findings) == 1
         assert db_findings[0]["column_name"] == "c"
@@ -142,11 +203,29 @@ def test_get_previous_session(tmp_path):
     try:
         mgr.set_current_session_id("session-first")
         mgr.create_session_record("session-first")
-        mgr.save_finding("database", target_name="T", session_id="session-first", column_name="c1", sensitivity_level="HIGH", pattern_detected="CPF", norm_tag="LGPD", ml_confidence=80)
+        mgr.save_finding(
+            "database",
+            target_name="T",
+            session_id="session-first",
+            column_name="c1",
+            sensitivity_level="HIGH",
+            pattern_detected="CPF",
+            norm_tag="LGPD",
+            ml_confidence=80,
+        )
         mgr.finish_session("session-first")
         mgr.set_current_session_id("session-second")
         mgr.create_session_record("session-second")
-        mgr.save_finding("database", target_name="T", session_id="session-second", column_name="c2", sensitivity_level="HIGH", pattern_detected="EMAIL", norm_tag="GDPR", ml_confidence=85)
+        mgr.save_finding(
+            "database",
+            target_name="T",
+            session_id="session-second",
+            column_name="c2",
+            sensitivity_level="HIGH",
+            pattern_detected="EMAIL",
+            norm_tag="GDPR",
+            ml_confidence=85,
+        )
         mgr.finish_session("session-second")
         prev = mgr.get_previous_session("session-second")
         assert prev is not None
@@ -197,12 +276,34 @@ def test_wipe_all_data_logs_and_clears(tmp_path):
         # Create two sessions with findings
         mgr.set_current_session_id("s1")
         mgr.create_session_record("s1")
-        mgr.save_finding("database", target_name="T1", schema_name="s", table_name="t", column_name="c1", data_type="VARCHAR", sensitivity_level="HIGH", pattern_detected="CPF", norm_tag="LGPD", ml_confidence=90)
+        mgr.save_finding(
+            "database",
+            target_name="T1",
+            schema_name="s",
+            table_name="t",
+            column_name="c1",
+            data_type="VARCHAR",
+            sensitivity_level="HIGH",
+            pattern_detected="CPF",
+            norm_tag="LGPD",
+            ml_confidence=90,
+        )
         mgr.finish_session("s1")
 
         mgr.set_current_session_id("s2")
         mgr.create_session_record("s2")
-        mgr.save_finding("database", target_name="T2", schema_name="s", table_name="t", column_name="c2", data_type="VARCHAR", sensitivity_level="HIGH", pattern_detected="EMAIL", norm_tag="GDPR", ml_confidence=85)
+        mgr.save_finding(
+            "database",
+            target_name="T2",
+            schema_name="s",
+            table_name="t",
+            column_name="c2",
+            data_type="VARCHAR",
+            sensitivity_level="HIGH",
+            pattern_detected="EMAIL",
+            norm_tag="GDPR",
+            ml_confidence=85,
+        )
         mgr.finish_session("s2")
 
         # Sanity check: we have sessions and findings

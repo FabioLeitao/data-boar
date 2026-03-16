@@ -50,7 +50,9 @@ def test_compliance_samples_folder_exists():
     root = _project_root()
     folder = root / "docs" / "compliance-samples"
     assert folder.is_dir(), "docs/compliance-samples/ should exist"
-    assert (folder / "README.md").is_file(), "docs/compliance-samples/README.md should exist"
+    assert (folder / "README.md").is_file(), (
+        "docs/compliance-samples/README.md should exist"
+    )
 
 
 def test_compliance_and_legal_doc_exists():
@@ -101,7 +103,11 @@ def _collect_relative_links_from_md(text: str) -> list[str]:
     links = []
     for _label, path in pattern.findall(text):
         path = path.strip()
-        if path.startswith("http") or path.startswith("mailto:") or path.startswith("#"):
+        if (
+            path.startswith("http")
+            or path.startswith("mailto:")
+            or path.startswith("#")
+        ):
             continue
         if "://" in path:
             continue
@@ -163,4 +169,6 @@ def test_security_has_content():
     """SECURITY.md should not be empty and mention security."""
     text = _read_md(_project_root() / "SECURITY.md")
     assert len(text.strip()) > 100
-    assert "security" in text.lower() or "http" in text.lower() or "header" in text.lower()
+    assert (
+        "security" in text.lower() or "http" in text.lower() or "header" in text.lower()
+    )

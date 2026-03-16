@@ -3,6 +3,7 @@ Tests for configurable timeouts: connector wiring uses connect_timeout_seconds a
 read_timeout_seconds from target config (normalized by config loader with global + per-target).
 No live connections; mocks used where needed.
 """
+
 import importlib.util
 import pytest
 from unittest.mock import MagicMock, patch
@@ -17,13 +18,21 @@ def _has_module(name: str) -> bool:
 
 def test_normalized_targets_have_timeout_seconds():
     """After normalization, each target has connect_timeout_seconds and read_timeout_seconds."""
-    cfg = normalize_config({
-        "targets": [
-            {"name": "a", "type": "database", "driver": "postgresql", "host": "h", "database": "d"},
-            {"name": "b", "type": "api", "base_url": "http://x"},
-        ],
-        "timeouts": {"connect_seconds": 20, "read_seconds": 80},
-    })
+    cfg = normalize_config(
+        {
+            "targets": [
+                {
+                    "name": "a",
+                    "type": "database",
+                    "driver": "postgresql",
+                    "host": "h",
+                    "database": "d",
+                },
+                {"name": "b", "type": "api", "base_url": "http://x"},
+            ],
+            "timeouts": {"connect_seconds": 20, "read_seconds": 80},
+        }
+    )
     for t in cfg["targets"]:
         assert "connect_timeout_seconds" in t
         assert "read_timeout_seconds" in t

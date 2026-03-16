@@ -3,13 +3,18 @@ Connector registry: map target type (postgresql, mysql, filesystem, etc.) to con
 Each connector implements: connect(), discover(), sample() where applicable, close(),
 and reports findings via a callback (save_finding/save_failure) passed by the engine.
 """
+
 from typing import Any, Type
 
 # Registry: type string -> (connector_class, requires_config_keys)
 _REGISTRY: dict[str, tuple[Type[Any], list[str]]] = {}
 
 
-def register(connector_type: str, connector_class: Type[Any], required_keys: list[str] | None = None):
+def register(
+    connector_type: str,
+    connector_class: Type[Any],
+    required_keys: list[str] | None = None,
+):
     """Register a connector class for a given type (e.g. postgresql, mysql, filesystem)."""
     _REGISTRY[connector_type] = (connector_class, required_keys or [])
 
@@ -32,7 +37,9 @@ def _try_get_connector(connector_type: str) -> tuple[Type[Any], list[str]] | Non
         return None
 
 
-def _resolve_database_connector(target: dict[str, Any]) -> tuple[Type[Any], list[str]] | None:
+def _resolve_database_connector(
+    target: dict[str, Any],
+) -> tuple[Type[Any], list[str]] | None:
     """Resolve SQL connector from target with type='database' and driver."""
     driver = target.get("driver", "")
     engine = driver.split("+")[0].lower() if driver else ""
@@ -41,7 +48,11 @@ def _resolve_database_connector(target: dict[str, Any]) -> tuple[Type[Any], list
     if driver and driver in _REGISTRY:
         return get_connector(driver)
     for alias in ("postgresql", "mysql", "sqlite", "mssql", "oracle"):
-        if alias in driver or driver in (alias, f"{alias}+psycopg2", f"{alias}+pymysql"):
+        if alias in driver or driver in (
+            alias,
+            f"{alias}+psycopg2",
+            f"{alias}+pymysql",
+        ):
             if alias in _REGISTRY:
                 return get_connector(alias)
     return None
