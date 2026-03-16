@@ -106,6 +106,14 @@ def main() -> None:
             "Also stored in session metadata and shown in the report header."
         ),
     )
+    parser.add_argument(
+        "--scan-compressed",
+        action="store_true",
+        help=(
+            "When set, act as if file_scan.scan_compressed is true for this run: "
+            "scan inside supported archives (zip, tar, 7z, etc.). May increase run time and I/O."
+        ),
+    )
     args = parser.parse_args()
 
     try:
@@ -116,6 +124,9 @@ def main() -> None:
     except Exception as e:
         print(f"Config error: {e}")
         sys.exit(1)
+
+    if args.scan_compressed:
+        config.setdefault("file_scan", {})["scan_compressed"] = True
 
     if args.web and not args.reset_data:
         import uvicorn
@@ -217,6 +228,7 @@ def main() -> None:
 
     tenant = sanitize_tenant_technician(args.tenant)
     technician = sanitize_tenant_technician(args.technician)
+    # scan_compressed already merged into config above when --scan-compressed was passed
     session_id = engine.start_audit(tenant_name=tenant, technician_name=technician)
     print(f"Scan session: {session_id}")
     report_path = engine.generate_final_reports(session_id)

@@ -133,11 +133,15 @@
         var technician = (techInput && techInput.value && techInput.value.trim())
           ? techInput.value.trim()
           : null;
+        var scanCompressedEl = document.getElementById('scan-compressed');
+        var scanCompressed = scanCompressedEl && scanCompressedEl.checked;
 
         if (feedback) feedback.textContent = 'Starting…';
+        if (btn) btn.disabled = true;
         var body = {};
         if (tenant != null) body.tenant = tenant;
         if (technician != null) body.technician = technician;
+        if (scanCompressed) body.scan_compressed = true;
 
         var opts = {
           method: 'POST',
@@ -146,7 +150,15 @@
         };
 
         fetch('/scan', opts)
-          .then(function (r) { return r.json(); })
+          .then(function (r) {
+            if (!r.ok) {
+              var err = new Error('Request failed: ' + r.status + ' ' + (r.statusText || ''));
+              err.status = r.status;
+              err.response = r;
+              throw err;
+            }
+            return r.json();
+          })
           .then(function (d) {
             if (feedback) {
               var sid = (d.session_id || '').slice(0, 16);
@@ -155,7 +167,25 @@
             pollStatus();
           })
           .catch(function (e) {
-            if (feedback) feedback.textContent = 'Error: ' + e.message;
+            if (btn) btn.disabled = false;
+            var msg = e.message || String(e);
+            if (e.status === 409) msg = 'Scan already in progress.';
+            else if (e.status === 429) msg = 'Rate limited; try again shortly.';
+            else if (e.status === 401 || e.status === 403) msg = 'Not authorized (' + e.status + ').';
+            function showError() {
+              if (feedback) feedback.textContent = 'Error: ' + msg;
+            }
+            if (e.response) {
+              e.response.text().then(function (t) {
+                try {
+                  var j = JSON.parse(t);
+                  if (j.detail) msg = typeof j.detail === 'string' ? j.detail : JSON.stringify(j.detail);
+                } catch (_) {}
+                showError();
+              }).catch(showError);
+            } else {
+              showError();
+            }
           });
       });
     }
@@ -166,7 +196,11 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    initChart();
+    try {
+      initChart();
+    } catch (e) {
+      // Chart.js may fail to load (CDN/blocker); ensure scan controls still work
+    }
     initScanControls();
   });
 })();

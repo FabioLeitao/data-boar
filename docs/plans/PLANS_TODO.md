@@ -66,28 +66,28 @@ The list below is ordered for the current billing cycle, with a focus on:
 
 ### A. Near-term focus (current billing cycle)
 
-1. **CNPJ alphanumeric format validation** *(AI-assisted research + manual wiring)*  
-   - Use AI for: research/spec for alphanumeric format, regex proposal, EN + pt-BR doc wording.  
+1. **CNPJ alphanumeric format validation** *(AI-assisted research + manual wiring)*
+   - Use AI for: research/spec for alphanumeric format, regex proposal, EN + pt-BR doc wording.
    - Do manually: integrate regex/overrides, wire to existing detection/reporting, add tests.
 
-2. **Compressed files – minimal viable slice** *(AI-assisted design, manual wiring)*  
-   - Use AI for: config key names/defaults, archive helper API, resource-exhaustion warning text.  
+2. **Compressed files – minimal viable slice** *(AI-assisted design, manual wiring)*
+   - Use AI for: config key names/defaults, archive helper API, resource-exhaustion warning text.
    - Do manually: Filesystem connector wiring, CLI flag, optional `[compressed]` extra, core tests.
 
-3. **Data source versions & hardening – schema and report design** *(AI-heavy design, light implementation)*  
-   - Use AI for: `data_source_inventory` schema, inventory/report sheet layout, design for one reference connector.  
+3. **Data source versions & hardening – schema and report design** *(AI-heavy design, light implementation)*
+   - Use AI for: `data_source_inventory` schema, inventory/report sheet layout, design for one reference connector.
    - Do manually: implement that connector incrementally; add others in later cycles.
 
-4. **Strong crypto & controls validation – criteria + wording** *(AI-heavy criteria/report, manual plumbing)*  
-   - Use AI for: strong-crypto matrix per connector type, “Crypto & controls” sheet layout, disclaimers.  
+4. **Strong crypto & controls validation – criteria + wording** *(AI-heavy criteria/report, manual plumbing)*
+   - Use AI for: strong-crypto matrix per connector type, “Crypto & controls” sheet layout, disclaimers.
    - Do manually: add CLI/config flag, implement persistence for one connector, basic tests.
 
-5. **Additional detection techniques & FN reduction – simple thresholds + wording** *(mixed)*  
-   - Use AI for: “suggested review” and aggregation wording, simple stemming/normalisation/fuzzy strategy.  
+5. **Additional detection techniques & FN reduction – simple thresholds + wording** *(mixed)*
+   - Use AI for: “suggested review” and aggregation wording, simple stemming/normalisation/fuzzy strategy.
    - Do manually: add MEDIUM threshold config, wiring for 1–2 techniques, unit tests, docs tweaks.
 
-6. **Notifications (off-band + scan-complete) – Phase 1 only** *(AI for schema/templates, manual implementation)*  
-   - Use AI for: notifications config shape, notifier interface, initial message templates for CI/script usage.  
+6. **Notifications (off-band + scan-complete) – Phase 1 only** *(AI for schema/templates, manual implementation)*
+   - Use AI for: notifications config shape, notifier interface, initial message templates for CI/script usage.
    - Do manually: notifier module, config parsing, basic docs and examples; later phases after reset.
 
 ### B. Deferred to after billing reset (or if on-demand spend is enabled)
