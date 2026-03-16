@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
 
+
 class MLSensitivityScanner:
     def __init__(self):
         self.vectorizer = TfidfVectorizer(ngram_range=(1, 2), min_df=1)
@@ -18,17 +19,29 @@ class MLSensitivityScanner:
         """Treina um modelo base com exemplos de LGPD/GDPR/CCPA."""
         # Dados de treino sintéticos (em um cenário real, carregar de um dataset)
         data = {
-            'text': [
-                'cpf', 'cadastro pessoa fisica', 'social security number', 'credit card',
-                'email address', 'nome completo', 'data de nascimento', 'birth date',
-                'medical record', 'prontuario medico', 'religion', 'political opinion',
-                'id_interno', 'quantidade_estoque', 'cor_carro', 'log_sistema'
+            "text": [
+                "cpf",
+                "cadastro pessoa fisica",
+                "social security number",
+                "credit card",
+                "email address",
+                "nome completo",
+                "data de nascimento",
+                "birth date",
+                "medical record",
+                "prontuario medico",
+                "religion",
+                "political opinion",
+                "id_interno",
+                "quantidade_estoque",
+                "cor_carro",
+                "log_sistema",
             ],
-            'label': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0] 
+            "label": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
         }
         df = pd.DataFrame(data)
-        x = self.vectorizer.fit_transform(df['text'])
-        self.model.fit(x, df['label'])
+        x = self.vectorizer.fit_transform(df["text"])
+        self.model.fit(x, df["label"])
         self.is_trained = True
 
     def predict_sensitivity(self, text):

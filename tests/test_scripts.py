@@ -46,7 +46,9 @@ def test_prep_audit_sh_has_shebang_and_exit_code():
         return
     text = script.read_text(encoding="utf-8", errors="replace")
     assert text.startswith("#!/bin/bash"), "Script should have bash shebang"
-    assert "exit 1" in text, "Script should use explicit exit code (e.g. exit 1 when not root)"
+    assert "exit 1" in text, (
+        "Script should use explicit exit code (e.g. exit 1 when not root)"
+    )
 
 
 # --- PowerShell: commit-or-pr.ps1 syntax (Parser::ParseFile) ---
@@ -76,7 +78,9 @@ def test_commit_or_pr_ps1_syntax():
             )
         except FileNotFoundError:
             continue
-        assert proc.returncode == 0, f"commit-or-pr.ps1 parse failed with {pw}: {proc.stderr or proc.stdout}"
+        assert proc.returncode == 0, (
+            f"commit-or-pr.ps1 parse failed with {pw}: {proc.stderr or proc.stdout}"
+        )
         return
 
 

@@ -27,7 +27,9 @@ import re
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-EXCLUDE_DIRS = frozenset({".git", "node_modules", "__pycache__", ".venv", "venv", ".tox", "build", "dist"})
+EXCLUDE_DIRS = frozenset(
+    {".git", "node_modules", "__pycache__", ".venv", "venv", ".tox", "build", "dist"}
+)
 
 
 def collect_md_files() -> list[Path]:
@@ -220,10 +222,12 @@ def fix_md034_line(line: str, in_fence: bool) -> str:
         return line
     if "<http" in line or "](http" in line:
         return line
+
     # Do not modify inline code (backtick-wrapped)
     def repl(m: re.Match[str]) -> str:
         url = m.group(1)
         return f"<{url}>"
+
     return _BARE_URL_RE.sub(repl, line)
 
 

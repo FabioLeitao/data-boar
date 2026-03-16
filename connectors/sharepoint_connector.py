@@ -3,6 +3,7 @@ SharePoint connector: connect to SharePoint (on-prem or URL) by site_url (FQDN),
 download to temp, run same text extraction and sensitivity detection as filesystem.
 Uses REST API with NTLM or basic auth. Requires optional: requests_ntlm (or uv pip install -e ".[shares]").
 """
+
 import os
 import tempfile
 from pathlib import Path
@@ -19,6 +20,7 @@ from connectors.filesystem_connector import (
 try:
     import requests
     from requests_ntlm import HttpNtlmAuth
+
     _REQUESTS_NTLM_AVAILABLE = True
 except ImportError:
     _REQUESTS_NTLM_AVAILABLE = False
@@ -67,18 +69,32 @@ class SharePointConnector:
             self.db_manager.save_failure(
                 self.config.get("name", "SharePoint"),
                 "error",
-                "requests and requests_ntlm required. Install with: pip install requests requests_ntlm or uv pip install -e \".[shares]\"",
+                'requests and requests_ntlm required. Install with: pip install requests requests_ntlm or uv pip install -e ".[shares]"',
             )
             return
         target_name = self.config.get("name", "SharePoint")
-        site_url = (self.config.get("site_url") or self.config.get("base_url") or self.config.get("url", "")).rstrip("/")
+        site_url = (
+            self.config.get("site_url")
+            or self.config.get("base_url")
+            or self.config.get("url", "")
+        ).rstrip("/")
         if not site_url:
-            self.db_manager.save_failure(target_name, "error", "Missing site_url (e.g. https://host/sites/sitename)")
+            self.db_manager.save_failure(
+                target_name,
+                "error",
+                "Missing site_url (e.g. https://host/sites/sitename)",
+            )
             return
         user = self.config.get("user", self.config.get("username", ""))
         password = self.config.get("pass", self.config.get("password", ""))
-        path_in_site = (self.config.get("path", "") or self.config.get("path_in_site", "Shared Documents")).strip("/")
-        use_ntlm = self.config.get("auth", {}).get("type", "ntlm").lower() in ("ntlm", "")
+        path_in_site = (
+            self.config.get("path", "")
+            or self.config.get("path_in_site", "Shared Documents")
+        ).strip("/")
+        use_ntlm = self.config.get("auth", {}).get("type", "ntlm").lower() in (
+            "ntlm",
+            "",
+        )
         verify_ssl = self.config.get("verify_ssl", True)
         session = requests.Session()
         session.verify = verify_ssl
@@ -87,7 +103,9 @@ class SharePointConnector:
         elif user and password:
             session.auth = (user, password)
         session.headers["Accept"] = "application/json;odata=verbose"
-        list_files_url = f"{site_url}/_api/web/GetFolderByServerRelativeUrl('{path_in_site}')/Files"
+        list_files_url = (
+            f"{site_url}/_api/web/GetFolderByServerRelativeUrl('{path_in_site}')/Files"
+        )
         try:
             r = session.get(list_files_url)
             r.raise_for_status()
@@ -105,7 +123,9 @@ class SharePointConnector:
             ext = Path(name).suffix.lower()
             if ext not in self.extensions:
                 continue
-            server_relative_url = item.get("ServerRelativeUrl", item.get("serverRelativeUrl", ""))
+            server_relative_url = item.get(
+                "ServerRelativeUrl", item.get("serverRelativeUrl", "")
+            )
             if not server_relative_url:
                 server_relative_url = f"/{path_in_site}/{name}".replace("//", "/")
             file_value_url = f"{site_url}/_api/web/GetFileByServerRelativeUrl('{server_relative_url}')/$value"
@@ -114,14 +134,18 @@ class SharePointConnector:
                 r2.raise_for_status()
                 content = r2.content
             except Exception as e:
-                self.db_manager.save_failure(target_name, "permission_denied", f"{name}: {e}")
+                self.db_manager.save_failure(
+                    target_name, "permission_denied", f"{name}: {e}"
+                )
                 continue
             with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp:
                 tmp.write(content)
                 temp_path = tmp.name
             try:
                 if self.scan_sqlite_as_db and ext in SQLITE_EXTENSIONS:
-                    for finding in _scan_sqlite_file_as_db(Path(temp_path), self.scanner, self.sample_limit):
+                    for finding in _scan_sqlite_file_as_db(
+                        Path(temp_path), self.scanner, self.sample_limit
+                    ):
                         self.db_manager.save_finding(
                             "filesystem",
                             target_name=target_name,
@@ -134,7 +158,9 @@ class SharePointConnector:
                             ml_confidence=finding["ml_confidence"],
                         )
                 else:
-                    text = _read_text_sample(Path(temp_path), ext, self.sample_limit, self.file_passwords)
+                    text = _read_text_sample(
+                        Path(temp_path), ext, self.sample_limit, self.file_passwords
+                    )
                     res = self.scanner.scan_file_content(text, Path(name))
                     if res is not None:
                         self.db_manager.save_finding(

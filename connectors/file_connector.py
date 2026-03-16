@@ -2,6 +2,7 @@
 Backward-compatible alias: FileScanner and scan_directory delegate to FilesystemConnector.
 Prefer using connectors.filesystem_connector.FilesystemConnector and the connector registry.
 """
+
 from connectors.filesystem_connector import FilesystemConnector
 
 
@@ -17,6 +18,7 @@ class FileScanner:
         """Run filesystem scan; requires target config with name and path. Use AuditEngine for full flow."""
         # Caller may pass db_session=None; we need a target dict and db_manager from engine
         from core.database import LocalDBManager
+
         if self._db is None:
             return
         target = {"name": "filesystem", "path": root_path, "recursive": recursive}
