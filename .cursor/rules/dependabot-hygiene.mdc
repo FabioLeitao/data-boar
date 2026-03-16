@@ -1,0 +1,18 @@
+---
+description: When touching dependencies or opportunistically, check Dependabot recommendations; validate and apply only if safe, tests green, and consider adding a regression test.
+globs: ["pyproject.toml", "uv.lock", "requirements.txt", ".github/dependabot.yml", ".github/workflows/*.yml"]
+alwaysApply: false
+---
+
+# Dependabot recommendation hygiene
+
+When working with **dependencies** (pyproject.toml, uv.lock, requirements.txt) or when the user asks about updates:
+
+1. **Check Dependabot** (e.g. `gh pr list` or GitHub PRs) for open/closed dependency-update PRs.
+2. **Verify viability**: Apply recommended version bumps only if they are compatible (no known breaking changes for this project).
+3. **Apply safely**: Update constraints in pyproject.toml, run `uv lock`, refresh requirements.txt if used; do not merge Dependabot branches blindly—prefer applying the same change locally and validating.
+4. **Validate**: Run the full test suite with `uv run pytest -v -W error`; all tests must pass with no errors or warnings.
+5. **Regression guard**: If the update fixes a bug or enforces a contract (e.g. minimum version), add or extend a test so future changes do not reintroduce the issue.
+6. **PR-ready**: After applying, the tree should be ready for a PR (tests green, pre-commit / Ruff clean).
+
+For the full step-by-step workflow, use the **dependabot-recommendations** skill when performing dependency updates.
