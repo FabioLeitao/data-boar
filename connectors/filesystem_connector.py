@@ -23,6 +23,9 @@ from core.archives import (
 
 # Default cap for total uncompressed bytes per member when scanning inside archives.
 DEFAULT_MAX_INNER_SIZE = 10_000_000
+# Clamp range for max_inner_size (config may be validated in loader; this is defense-in-depth).
+MIN_MAX_INNER_SIZE = 1_000_000  # 1 MB
+MAX_MAX_INNER_SIZE = 500_000_000  # 500 MB
 
 # Plain text and markup (read as text with errors=replace)
 _TEXT_EXTENSIONS = {
@@ -378,8 +381,7 @@ class FilesystemConnector:
         # max_inner_size may be None -> meaning "use engine/connector default" in later phases
         self.max_inner_size = fs_opts.get("max_inner_size")
         self.compressed_extensions = normalize_compressed_extensions(
-            fs_opts.get("compressed_extensions")
-            or default_compressed_extensions()
+            fs_opts.get("compressed_extensions") or default_compressed_extensions()
         )
         # "*" or "all" in list => use full SUPPORTED_EXTENSIONS; else use provided list or default
         use_all = False
@@ -405,11 +407,8 @@ class FilesystemConnector:
             return
         try:
             raw_max = self.max_inner_size
-            max_size = (
-                int(raw_max)
-                if raw_max is not None
-                else DEFAULT_MAX_INNER_SIZE
-            )
+            max_size = int(raw_max) if raw_max is not None else DEFAULT_MAX_INNER_SIZE
+            max_size = max(MIN_MAX_INNER_SIZE, min(MAX_MAX_INNER_SIZE, max_size))
         except (TypeError, ValueError):
             max_size = DEFAULT_MAX_INNER_SIZE
         try:
@@ -423,9 +422,7 @@ class FilesystemConnector:
                 ext = Path(member_name).suffix.lower()
                 tmp_path: Path | None = None
                 try:
-                    with tempfile.NamedTemporaryFile(
-                        delete=False, suffix=ext
-                    ) as tmp:
+                    with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
                         tmp.write(data)
                         tmp_path = Path(tmp.name)
                     content = _read_text_sample(

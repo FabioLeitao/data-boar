@@ -119,8 +119,10 @@ file_scan:
   sample_limit: 5
   # Optional: scan inside compressed files (zip, tar, gz, bz2, xz, 7z, …)
   # When true, candidate archives are opened and inner members with supported extensions
-  # are scanned as regular files. This may increase run time and I/O; see PLAN_COMPRESSED_FILES.md.
+  # are scanned as regular files. This may significantly increase run time, disk I/O and temp usage;
+  # enable only when needed and consider a smaller scope when first enabling. See PLAN_COMPRESSED_FILES.md.
   scan_compressed: false
+  # max_inner_size: valid range 1 MB–500 MB (default 10 MB); members larger than this are skipped.
   # max_inner_size: 50_000_000   # optional limit for total inner bytes per archive
   # compressed_extensions: [".zip", ".tar", ".gz", ".tgz", ".bz2", ".xz", ".7z"]
 

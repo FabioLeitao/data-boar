@@ -89,3 +89,45 @@ def test_normalize_config_includes_pattern_files_encoding():
         }
     )
     assert out2.get("pattern_files_encoding") == "cp1252"
+
+
+def test_normalize_config_max_inner_size_validation():
+    """max_inner_size is clamped to 1 MB–500 MB; invalid or missing -> None."""
+    out = normalize_config({"targets": [], "report": {"output_dir": "."}})
+    assert out["file_scan"].get("max_inner_size") is None
+
+    out2 = normalize_config(
+        {
+            "targets": [],
+            "report": {"output_dir": "."},
+            "file_scan": {"max_inner_size": 50_000_000},
+        }
+    )
+    assert out2["file_scan"]["max_inner_size"] == 50_000_000
+
+    out3 = normalize_config(
+        {
+            "targets": [],
+            "report": {"output_dir": "."},
+            "file_scan": {"max_inner_size": 500},  # below 1 MB
+        }
+    )
+    assert out3["file_scan"]["max_inner_size"] == 1_000_000
+
+    out4 = normalize_config(
+        {
+            "targets": [],
+            "report": {"output_dir": "."},
+            "file_scan": {"max_inner_size": 999_000_000},  # above 500 MB
+        }
+    )
+    assert out4["file_scan"]["max_inner_size"] == 500_000_000
+
+    out5 = normalize_config(
+        {
+            "targets": [],
+            "report": {"output_dir": "."},
+            "file_scan": {"max_inner_size": "not a number"},
+        }
+    )
+    assert out5["file_scan"]["max_inner_size"] is None
