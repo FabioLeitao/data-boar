@@ -4,6 +4,7 @@ Legacy entry point: thin wrapper around main.py flow.
 Uses config.loader and core.engine.AuditEngine; for --web uses api.routes.app on port 8088.
 Prefer: python main.py --config config.yaml [--web] [--port 8088]
 """
+
 import argparse
 import sys
 from pathlib import Path
@@ -16,7 +17,9 @@ from core.engine import AuditEngine
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", default="config.yaml", help="Path to YAML or JSON config")
+    parser.add_argument(
+        "--config", default="config.yaml", help="Path to YAML or JSON config"
+    )
     parser.add_argument("--web", action="store_true", help="Start REST API (port 8088)")
     parser.add_argument("--port", type=int, default=8088, help="API port when --web")
     args = parser.parse_args()
@@ -24,10 +27,26 @@ def main():
     try:
         config = load_config(args.config)
     except FileNotFoundError:
-        example = {"targets": [{"name": "Local_Files", "type": "filesystem", "path": "./", "recursive": True}]}
+        example = {
+            "targets": [
+                {
+                    "name": "Local_Files",
+                    "type": "filesystem",
+                    "path": "./",
+                    "recursive": True,
+                }
+            ]
+        }
         import yaml
+
         with open(args.config, "w", encoding="utf-8") as f:
-            yaml.dump(example, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+            yaml.dump(
+                example,
+                f,
+                default_flow_style=False,
+                allow_unicode=True,
+                sort_keys=False,
+            )
         config = load_config(args.config)
     except Exception as e:
         print(f"Config error: {e}")
@@ -38,6 +57,7 @@ def main():
     if args.web:
         import uvicorn
         from api.routes import app
+
         port = config.get("api", {}).get("port", args.port)
         uvicorn.run(app, host="0.0.0.0", port=port)
     else:

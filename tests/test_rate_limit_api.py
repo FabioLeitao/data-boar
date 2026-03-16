@@ -1,4 +1,5 @@
 """Tests for rate limiting on scan-triggering API endpoints."""
+
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -97,4 +98,3 @@ def test_rate_limit_disabled_by_default_for_legacy_configs(tmp_path):
         assert resp.status_code == 200
     finally:
         _teardown_routes(routes, orig_path, orig_cfg, orig_engine)
-

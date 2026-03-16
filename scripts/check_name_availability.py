@@ -2,6 +2,7 @@
 One-off script: check PyPI and (optionally) web for chosen name availability.
 Used to complete Logo and naming plan step 5. Safe: timeouts, no crashes.
 """
+
 from __future__ import annotations
 
 import json

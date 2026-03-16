@@ -32,6 +32,7 @@ scan:
 
     # Patch the API module to use our temp config and DB path in normalized config
     import api.routes as routes
+
     original_config_path = routes._config_path
     original_config = routes._config
     original_engine = routes._audit_engine

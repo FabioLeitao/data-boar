@@ -1,4 +1,5 @@
 """Tests for report trends / session comparison sheet."""
+
 import pandas as pd
 from pathlib import Path
 
@@ -15,13 +16,37 @@ def test_report_includes_trends_sheet(tmp_path):
         # First session: 2 DB findings
         mgr.set_current_session_id("s1")
         mgr.create_session_record("s1")
-        mgr.save_finding("database", target_name="T1", column_name="cpf", sensitivity_level="HIGH", pattern_detected="CPF", norm_tag="LGPD", ml_confidence=90)
-        mgr.save_finding("database", target_name="T1", column_name="email", sensitivity_level="HIGH", pattern_detected="EMAIL", norm_tag="GDPR", ml_confidence=88)
+        mgr.save_finding(
+            "database",
+            target_name="T1",
+            column_name="cpf",
+            sensitivity_level="HIGH",
+            pattern_detected="CPF",
+            norm_tag="LGPD",
+            ml_confidence=90,
+        )
+        mgr.save_finding(
+            "database",
+            target_name="T1",
+            column_name="email",
+            sensitivity_level="HIGH",
+            pattern_detected="EMAIL",
+            norm_tag="GDPR",
+            ml_confidence=88,
+        )
         mgr.finish_session("s1")
         # Second session: 1 DB finding (improvement)
         mgr.set_current_session_id("s2")
         mgr.create_session_record("s2")
-        mgr.save_finding("database", target_name="T1", column_name="cpf", sensitivity_level="HIGH", pattern_detected="CPF", norm_tag="LGPD", ml_confidence=90)
+        mgr.save_finding(
+            "database",
+            target_name="T1",
+            column_name="cpf",
+            sensitivity_level="HIGH",
+            pattern_detected="CPF",
+            norm_tag="LGPD",
+            ml_confidence=90,
+        )
         mgr.finish_session("s2")
         path = generate_report(mgr, "s2", output_dir=out_dir)
         assert path is not None
@@ -29,10 +54,15 @@ def test_report_includes_trends_sheet(tmp_path):
             assert "Trends - Session comparison" in xl.sheet_names
             df = pd.read_excel(xl, sheet_name="Trends - Session comparison")
         assert len(df) == 4
-        assert "Metric" in df.columns and "Note" in df.columns and "Change" in df.columns
+        assert (
+            "Metric" in df.columns and "Note" in df.columns and "Change" in df.columns
+        )
         # Total findings: 1 this run vs 2 previous -> improvement
         total_row = df[df["Metric"] == "Total findings (DB + filesystem)"].iloc[0]
-        assert "Improvement" in str(total_row["Note"]) or "reduced" in str(total_row["Note"]).lower()
+        assert (
+            "Improvement" in str(total_row["Note"])
+            or "reduced" in str(total_row["Note"]).lower()
+        )
     finally:
         mgr.dispose()
 
@@ -45,8 +75,18 @@ def test_report_includes_report_info_tenant_and_technician(tmp_path):
     mgr = LocalDBManager(db_path)
     try:
         mgr.set_current_session_id("s-tenant-tech")
-        mgr.create_session_record("s-tenant-tech", tenant_name="Acme Corp", technician_name="Maria Silva")
-        mgr.save_finding("database", target_name="T1", column_name="email", sensitivity_level="HIGH", pattern_detected="EMAIL", norm_tag="GDPR", ml_confidence=80)
+        mgr.create_session_record(
+            "s-tenant-tech", tenant_name="Acme Corp", technician_name="Maria Silva"
+        )
+        mgr.save_finding(
+            "database",
+            target_name="T1",
+            column_name="email",
+            sensitivity_level="HIGH",
+            pattern_detected="EMAIL",
+            norm_tag="GDPR",
+            ml_confidence=80,
+        )
         mgr.finish_session("s-tenant-tech")
         path = generate_report(mgr, "s-tenant-tech", output_dir=out_dir)
         assert path is not None
@@ -71,7 +111,15 @@ def test_report_excel_and_heatmap_data_sheet_no_regression(tmp_path):
     try:
         mgr.set_current_session_id("s-hm")
         mgr.create_session_record("s-hm")
-        mgr.save_finding("database", target_name="T1", column_name="cpf", sensitivity_level="HIGH", pattern_detected="CPF", norm_tag="LGPD", ml_confidence=90)
+        mgr.save_finding(
+            "database",
+            target_name="T1",
+            column_name="cpf",
+            sensitivity_level="HIGH",
+            pattern_detected="CPF",
+            norm_tag="LGPD",
+            ml_confidence=90,
+        )
         mgr.finish_session("s-hm")
         path = generate_report(mgr, "s-hm", output_dir=str(out_dir))
         assert path is not None
@@ -82,7 +130,9 @@ def test_report_excel_and_heatmap_data_sheet_no_regression(tmp_path):
         # Heatmap data is target x sensitivity counts; has index (target) and at least one sensitivity column
         assert df.shape[1] >= 1
         # Heatmap PNG in output_dir when matplotlib available (0 if missing, 1 if present)
-        list(out_dir.glob("heatmap_*.png"))  # no assertion: count is environment-dependent
+        list(
+            out_dir.glob("heatmap_*.png")
+        )  # no assertion: count is environment-dependent
     finally:
         mgr.dispose()
 
@@ -99,7 +149,15 @@ def test_trends_sheet_shows_up_to_three_previous_runs(tmp_path):
             mgr.set_current_session_id(sid)
             mgr.create_session_record(sid)
             for _ in range(count):
-                mgr.save_finding("database", target_name="T1", column_name="c", sensitivity_level="HIGH", pattern_detected="CPF", norm_tag="LGPD", ml_confidence=90)
+                mgr.save_finding(
+                    "database",
+                    target_name="T1",
+                    column_name="c",
+                    sensitivity_level="HIGH",
+                    pattern_detected="CPF",
+                    norm_tag="LGPD",
+                    ml_confidence=90,
+                )
             mgr.finish_session(sid)
         path = generate_report(mgr, "s4", output_dir=out_dir)
         assert path is not None
@@ -113,6 +171,11 @@ def test_trends_sheet_shows_up_to_three_previous_runs(tmp_path):
         assert total_row["Prev run 2 (count)"] == 2
         assert total_row["Prev run 3 (count)"] == 3
         note = str(total_row["Note"])
-        assert "Improvement" in note or "reduced" in note.lower() or "stable" in note.lower() or "change" in note.lower()
+        assert (
+            "Improvement" in note
+            or "reduced" in note.lower()
+            or "stable" in note.lower()
+            or "change" in note.lower()
+        )
     finally:
         mgr.dispose()

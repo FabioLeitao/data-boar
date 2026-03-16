@@ -3,6 +3,7 @@ WebDAV connector: connect to WebDAV server by URL (FQDN or IP), list files, down
 run same text extraction and sensitivity detection as filesystem.
 Requires optional dependency: pip install webdavclient3 (or uv pip install -e ".[shares]").
 """
+
 import os
 import tempfile
 from pathlib import Path
@@ -18,6 +19,7 @@ from connectors.filesystem_connector import (
 
 try:
     from webdav3.client import Client as WebDAVClient
+
     _WEBDAV_AVAILABLE = True
 except ImportError:
     _WEBDAV_AVAILABLE = False
@@ -99,13 +101,19 @@ class WebDAVConnector:
             self.db_manager.save_failure(
                 self.config.get("name", "WebDAV"),
                 "error",
-                "webdavclient3 not installed. Install with: pip install webdavclient3 or uv pip install -e \".[shares]\"",
+                'webdavclient3 not installed. Install with: pip install webdavclient3 or uv pip install -e ".[shares]"',
             )
             return
         target_name = self.config.get("name", "WebDAV")
-        base_url = (self.config.get("base_url") or self.config.get("url") or self.config.get("host", "")).rstrip("/")
+        base_url = (
+            self.config.get("base_url")
+            or self.config.get("url")
+            or self.config.get("host", "")
+        ).rstrip("/")
         if not base_url:
-            self.db_manager.save_failure(target_name, "error", "Missing base_url or url (e.g. https://host/path)")
+            self.db_manager.save_failure(
+                target_name, "error", "Missing base_url or url (e.g. https://host/path)"
+            )
             return
         user = self.config.get("user", self.config.get("username", ""))
         password = self.config.get("pass", self.config.get("password", ""))
@@ -156,7 +164,9 @@ class WebDAVConnector:
             try:
                 client.download(remote, temp_path)
             except Exception as e:
-                self.db_manager.save_failure(target_name, "permission_denied", f"{remote}: {e}")
+                self.db_manager.save_failure(
+                    target_name, "permission_denied", f"{remote}: {e}"
+                )
                 try:
                     os.unlink(temp_path)
                 except Exception:
@@ -164,7 +174,9 @@ class WebDAVConnector:
                 continue
             try:
                 if self.scan_sqlite_as_db and ext in SQLITE_EXTENSIONS:
-                    for finding in _scan_sqlite_file_as_db(Path(temp_path), self.scanner, self.sample_limit):
+                    for finding in _scan_sqlite_file_as_db(
+                        Path(temp_path), self.scanner, self.sample_limit
+                    ):
                         self.db_manager.save_finding(
                             "filesystem",
                             target_name=target_name,
@@ -177,7 +189,9 @@ class WebDAVConnector:
                             ml_confidence=finding["ml_confidence"],
                         )
                 else:
-                    text = _read_text_sample(Path(temp_path), ext, self.sample_limit, self.file_passwords)
+                    text = _read_text_sample(
+                        Path(temp_path), ext, self.sample_limit, self.file_passwords
+                    )
                     res = self.scanner.scan_file_content(text, Path(remote))
                     if res is not None:
                         self.db_manager.save_finding(

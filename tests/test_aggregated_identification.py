@@ -1,4 +1,5 @@
 """Tests for aggregated identification risk: category mapping, aggregation rule, and report sheet/recommendation."""
+
 import unittest
 from pathlib import Path
 
@@ -15,11 +16,36 @@ class TestCategoryMapping(unittest.TestCase):
     """Unit tests for map_finding_to_categories."""
 
     def test_column_name_maps_to_category(self):
-        self.assertIn("gender", map_finding_to_categories({"column_name": "gender", "pattern_detected": ""}))
-        self.assertIn("job_position", map_finding_to_categories({"column_name": "department", "pattern_detected": ""}))
-        self.assertIn("health", map_finding_to_categories({"column_name": "health_status", "pattern_detected": ""}))
-        self.assertIn("address", map_finding_to_categories({"column_name": "user_address", "pattern_detected": ""}))
-        self.assertIn("phone", map_finding_to_categories({"column_name": "telefone", "pattern_detected": ""}))
+        self.assertIn(
+            "gender",
+            map_finding_to_categories(
+                {"column_name": "gender", "pattern_detected": ""}
+            ),
+        )
+        self.assertIn(
+            "job_position",
+            map_finding_to_categories(
+                {"column_name": "department", "pattern_detected": ""}
+            ),
+        )
+        self.assertIn(
+            "health",
+            map_finding_to_categories(
+                {"column_name": "health_status", "pattern_detected": ""}
+            ),
+        )
+        self.assertIn(
+            "address",
+            map_finding_to_categories(
+                {"column_name": "user_address", "pattern_detected": ""}
+            ),
+        )
+        self.assertIn(
+            "phone",
+            map_finding_to_categories(
+                {"column_name": "telefone", "pattern_detected": ""}
+            ),
+        )
 
     def test_phone_column_names_multilingual(self):
         """Phone category: multiple naming schemes and languages (home phone, mobile, celular, téléphone, etc.)."""
@@ -51,8 +77,12 @@ class TestCategoryMapping(unittest.TestCase):
         ]
         for col in phone_columns:
             with self.subTest(column=col):
-                cats = map_finding_to_categories({"column_name": col, "pattern_detected": ""})
-                self.assertIn("phone", cats, f"Column '{col}' should map to category 'phone'")
+                cats = map_finding_to_categories(
+                    {"column_name": col, "pattern_detected": ""}
+                )
+                self.assertIn(
+                    "phone", cats, f"Column '{col}' should map to category 'phone'"
+                )
 
     def test_name_column_names_multilingual(self):
         """Name/identifier category (other): multiple naming schemes and languages (first name, surname, apellido, etc.)."""
@@ -86,8 +116,12 @@ class TestCategoryMapping(unittest.TestCase):
         ]
         for col in name_columns:
             with self.subTest(column=col):
-                cats = map_finding_to_categories({"column_name": col, "pattern_detected": ""})
-                self.assertIn("other", cats, f"Column '{col}' should map to category 'other'")
+                cats = map_finding_to_categories(
+                    {"column_name": col, "pattern_detected": ""}
+                )
+                self.assertIn(
+                    "other", cats, f"Column '{col}' should map to category 'other'"
+                )
 
     def test_id_document_column_names_multilingual(self):
         """ID/document columns (passport, ctps, documento oficial, green card, etc.) map to category 'other'."""
@@ -118,16 +152,37 @@ class TestCategoryMapping(unittest.TestCase):
         ]
         for col in id_columns:
             with self.subTest(column=col):
-                cats = map_finding_to_categories({"column_name": col, "pattern_detected": ""})
-                self.assertIn("other", cats, f"Column '{col}' should map to category 'other'")
+                cats = map_finding_to_categories(
+                    {"column_name": col, "pattern_detected": ""}
+                )
+                self.assertIn(
+                    "other", cats, f"Column '{col}' should map to category 'other'"
+                )
 
     def test_pattern_detected_maps_to_category(self):
-        self.assertIn("phone", map_finding_to_categories({"column_name": "x", "pattern_detected": "PHONE_BR"}))
-        self.assertIn("other", map_finding_to_categories({"column_name": "x", "pattern_detected": "EMAIL"}))
-        self.assertIn("other", map_finding_to_categories({"column_name": "x", "pattern_detected": "PII_AMBIGUOUS"}))
+        self.assertIn(
+            "phone",
+            map_finding_to_categories(
+                {"column_name": "x", "pattern_detected": "PHONE_BR"}
+            ),
+        )
+        self.assertIn(
+            "other",
+            map_finding_to_categories(
+                {"column_name": "x", "pattern_detected": "EMAIL"}
+            ),
+        )
+        self.assertIn(
+            "other",
+            map_finding_to_categories(
+                {"column_name": "x", "pattern_detected": "PII_AMBIGUOUS"}
+            ),
+        )
 
     def test_file_name_used_for_filesystem(self):
-        cats = map_finding_to_categories({"file_name": "contacts_phone.csv", "pattern_detected": ""})
+        cats = map_finding_to_categories(
+            {"file_name": "contacts_phone.csv", "pattern_detected": ""}
+        )
         self.assertIn("phone", cats)
 
     def test_config_mapping_override(self):
@@ -153,10 +208,32 @@ class TestRunAggregation(unittest.TestCase):
 
     def test_same_table_two_categories_above_threshold(self):
         db_rows = [
-            {"target_name": "T1", "schema_name": "public", "table_name": "users", "column_name": "gender", "pattern_detected": ""},
-            {"target_name": "T1", "schema_name": "public", "table_name": "users", "column_name": "department", "pattern_detected": ""},
+            {
+                "target_name": "T1",
+                "schema_name": "public",
+                "table_name": "users",
+                "column_name": "gender",
+                "pattern_detected": "",
+            },
+            {
+                "target_name": "T1",
+                "schema_name": "public",
+                "table_name": "users",
+                "column_name": "department",
+                "pattern_detected": "",
+            },
         ]
-        records = run_aggregation(db_rows, [], "sess1", {"detection": {"aggregated_identification_enabled": True, "aggregated_min_categories": 2}})
+        records = run_aggregation(
+            db_rows,
+            [],
+            "sess1",
+            {
+                "detection": {
+                    "aggregated_identification_enabled": True,
+                    "aggregated_min_categories": 2,
+                }
+            },
+        )
         self.assertEqual(len(records), 1)
         self.assertIn("gender", records[0]["categories"])
         self.assertIn("job_position", records[0]["categories"])
@@ -165,25 +242,64 @@ class TestRunAggregation(unittest.TestCase):
 
     def test_same_table_one_category_below_threshold(self):
         db_rows = [
-            {"target_name": "T1", "schema_name": "", "table_name": "t", "column_name": "gender", "pattern_detected": ""},
+            {
+                "target_name": "T1",
+                "schema_name": "",
+                "table_name": "t",
+                "column_name": "gender",
+                "pattern_detected": "",
+            },
         ]
-        records = run_aggregation(db_rows, [], "sess1", {"detection": {"aggregated_min_categories": 2}})
+        records = run_aggregation(
+            db_rows, [], "sess1", {"detection": {"aggregated_min_categories": 2}}
+        )
         self.assertEqual(len(records), 0)
 
     def test_disabled_returns_empty(self):
         db_rows = [
-            {"target_name": "T1", "schema_name": "", "table_name": "t", "column_name": "gender", "pattern_detected": ""},
-            {"target_name": "T1", "schema_name": "", "table_name": "t", "column_name": "phone", "pattern_detected": "PHONE_BR"},
+            {
+                "target_name": "T1",
+                "schema_name": "",
+                "table_name": "t",
+                "column_name": "gender",
+                "pattern_detected": "",
+            },
+            {
+                "target_name": "T1",
+                "schema_name": "",
+                "table_name": "t",
+                "column_name": "phone",
+                "pattern_detected": "PHONE_BR",
+            },
         ]
-        records = run_aggregation(db_rows, [], "sess1", {"detection": {"aggregated_identification_enabled": False}})
+        records = run_aggregation(
+            db_rows,
+            [],
+            "sess1",
+            {"detection": {"aggregated_identification_enabled": False}},
+        )
         self.assertEqual(len(records), 0)
 
     def test_filesystem_grouping(self):
         fs_rows = [
-            {"target_name": "FS1", "path": "/data", "file_name": "contacts.csv", "column_name": "", "pattern_detected": "PHONE_BR"},
-            {"target_name": "FS1", "path": "/data", "file_name": "contacts.csv", "column_name": "", "pattern_detected": "EMAIL"},
+            {
+                "target_name": "FS1",
+                "path": "/data",
+                "file_name": "contacts.csv",
+                "column_name": "",
+                "pattern_detected": "PHONE_BR",
+            },
+            {
+                "target_name": "FS1",
+                "path": "/data",
+                "file_name": "contacts.csv",
+                "column_name": "",
+                "pattern_detected": "EMAIL",
+            },
         ]
-        records = run_aggregation([], fs_rows, "sess1", {"detection": {"aggregated_min_categories": 2}})
+        records = run_aggregation(
+            [], fs_rows, "sess1", {"detection": {"aggregated_min_categories": 2}}
+        )
         self.assertEqual(len(records), 1)
         self.assertEqual(records[0]["source_type"], "filesystem")
         self.assertIn("contacts.csv", records[0]["table_or_file"])
@@ -198,22 +314,68 @@ def test_report_contains_aggregated_sheet_and_recommendation(tmp_path):
     try:
         mgr.set_current_session_id("agg-sess")
         mgr.create_session_record("agg-sess")
-        mgr.save_finding("database", target_name="DB1", schema_name="public", table_name="staff", column_name="gender", sensitivity_level="MEDIUM", pattern_detected="TEXT", norm_tag="", ml_confidence=0)
-        mgr.save_finding("database", target_name="DB1", schema_name="public", table_name="staff", column_name="department", sensitivity_level="MEDIUM", pattern_detected="TEXT", norm_tag="", ml_confidence=0)
-        mgr.save_finding("database", target_name="DB1", schema_name="public", table_name="staff", column_name="health", sensitivity_level="HIGH", pattern_detected="TEXT", norm_tag="", ml_confidence=0)
+        mgr.save_finding(
+            "database",
+            target_name="DB1",
+            schema_name="public",
+            table_name="staff",
+            column_name="gender",
+            sensitivity_level="MEDIUM",
+            pattern_detected="TEXT",
+            norm_tag="",
+            ml_confidence=0,
+        )
+        mgr.save_finding(
+            "database",
+            target_name="DB1",
+            schema_name="public",
+            table_name="staff",
+            column_name="department",
+            sensitivity_level="MEDIUM",
+            pattern_detected="TEXT",
+            norm_tag="",
+            ml_confidence=0,
+        )
+        mgr.save_finding(
+            "database",
+            target_name="DB1",
+            schema_name="public",
+            table_name="staff",
+            column_name="health",
+            sensitivity_level="HIGH",
+            pattern_detected="TEXT",
+            norm_tag="",
+            ml_confidence=0,
+        )
         mgr.finish_session("agg-sess")
-        config = {"detection": {"aggregated_identification_enabled": True, "aggregated_min_categories": 2}}
+        config = {
+            "detection": {
+                "aggregated_identification_enabled": True,
+                "aggregated_min_categories": 2,
+            }
+        }
         path = generate_report(mgr, "agg-sess", output_dir=out_dir, config=config)
         assert path is not None
         import pandas as pd
+
         with pd.ExcelFile(path) as xl:
             assert "Cross-ref data – ident. risk" in xl.sheet_names
             df_agg = pd.read_excel(xl, sheet_name="Cross-ref data – ident. risk")
             assert len(df_agg) >= 1
-            assert "Target" in df_agg.columns and "Categories" in df_agg.columns and "Explanation" in df_agg.columns
+            assert (
+                "Target" in df_agg.columns
+                and "Categories" in df_agg.columns
+                and "Explanation" in df_agg.columns
+            )
             recs = pd.read_excel(xl, sheet_name="Recommendations")
-        agg_rec = recs[recs["Data / Pattern"].astype(str).str.contains("AGGREGATED_IDENTIFICATION", na=False)]
+        agg_rec = recs[
+            recs["Data / Pattern"]
+            .astype(str)
+            .str.contains("AGGREGATED_IDENTIFICATION", na=False)
+        ]
         assert len(agg_rec) >= 1
-        assert "LGPD" in str(agg_rec.iloc[0]["Base legal"]) or "GDPR" in str(agg_rec.iloc[0]["Base legal"])
+        assert "LGPD" in str(agg_rec.iloc[0]["Base legal"]) or "GDPR" in str(
+            agg_rec.iloc[0]["Base legal"]
+        )
     finally:
         mgr.dispose()
