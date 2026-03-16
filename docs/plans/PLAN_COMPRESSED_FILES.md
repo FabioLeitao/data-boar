@@ -80,6 +80,19 @@ This avoids crashes and accidental misuse when extension is wrong or file is cor
 
 ---
 
+## Strategy: list-first, then decompress only selected members (no full expand)
+
+We **do not** expand the whole archive to disk or memory first. The flow is:
+
+1. **Open** the archive (read header/directory only).
+2. **List** members (names, uncompressed sizes, type) — metadata only; no decompression yet.
+3. **Filter** by extension (allowed content types) and `max_inner_size`; skip directories and oversized members.
+4. **Decompress only** the members that passed the filter; scan each in turn (temp or memory), then discard.
+
+So we first **evaluate** what’s inside (names and extensions) and only **dig deeper** (decompress and ingest) for members we intend to scan. This is safer for resource use and archive bombs: we never materialise the full archive at once. Implemented in `core/archives.iter_archive_members` (ZIP: `namelist` + `getinfo` then `read(name)` per member; TAR: `getmembers` then `extractfile(member)`; 7z: `files_list` then `read(targets=[...])`).
+
+---
+
 ## Design: config, CLI, API, dashboard
 
 ### Config
@@ -215,7 +228,9 @@ When implementing **scan inside compressed files**, ensure we do **not** run int
 
 ## Possible future extensions (more “data soup” ingredients)
 
-- **Test data (samples):** `tests/data/compressed/` holds sample archives (e.g. sample1.zip, sample2.7z). Optional later: small .tar.gz for CI; RAR/ARJ only when/if support is added. Keep set small for test time/resources.
+- **Test data (samples):** `tests/data/compressed/` holds sample archives (e.g. sample1.zip, sample2.7z, sample3.tgz, sample4.tar.bz2). Optional later: small .tar.gz for CI; RAR/ARJ only when/if support is added. Keep set small for test time/resources.
+- **Password-protected archive sample:** Add at least one password-protected compressed file (or create one programmatically in tests) to validate `file_scan.file_passwords` for archives (e.g. ZIP/7z with password) in a future test.
+- **Max members per archive:** Optional cap (e.g. 1000 members per archive) as an extra guard in a follow-up to tighten resource limits and mitigate archive bombs.
 - **Tier 3 archives:** LHA, ARJ, ZOO, PAK, ARC, ACE — via patool + external tools or dedicated libs; document and gate behind same option.
 - **Nested archives:** Zip-inside-zip (and tar inside zip, etc.) with a depth limit and size limit to avoid bombs.
 - **Other data sources not yet aimed for:**
