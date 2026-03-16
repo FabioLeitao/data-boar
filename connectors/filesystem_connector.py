@@ -6,11 +6,23 @@ Scans all compatible/supported file types by extension; unknown types get path/n
 """
 
 import os
+import tempfile
 import zipfile
 from pathlib import Path
 from typing import Any
 
 from core.connector_registry import register
+from core.archives import (
+    ArchiveUnsupportedError,
+    default_compressed_extensions,
+    detect_archive_type,
+    iter_archive_members,
+    is_supported_archive,
+    normalize_compressed_extensions,
+)
+
+# Default cap for total uncompressed bytes per member when scanning inside archives.
+DEFAULT_MAX_INNER_SIZE = 10_000_000
 
 # Plain text and markup (read as text with errors=replace)
 _TEXT_EXTENSIONS = {
@@ -358,6 +370,17 @@ class FilesystemConnector:
         self.scan_sqlite_as_db = scan_sqlite_as_db
         self.sample_limit = sample_limit
         self.file_passwords = file_passwords or {}
+        # Optional: scan inside compressed files (archives) – wiring only; extraction handled later.
+        fs_opts = target_config.get("file_scan") or {}
+        self.scan_compressed = bool(
+            fs_opts.get("scan_compressed")
+        )  # default False when not present
+        # max_inner_size may be None -> meaning "use engine/connector default" in later phases
+        self.max_inner_size = fs_opts.get("max_inner_size")
+        self.compressed_extensions = normalize_compressed_extensions(
+            fs_opts.get("compressed_extensions")
+            or default_compressed_extensions()
+        )
         # "*" or "all" in list => use full SUPPORTED_EXTENSIONS; else use provided list or default
         use_all = False
         if extensions:
@@ -374,6 +397,75 @@ class FilesystemConnector:
         self.extensions = {
             e if e.startswith(".") else f".{e.lstrip('*')}" for e in self.extensions
         }
+
+    def _scan_archive_contents(self, file_path: Path, target_name: str) -> None:
+        """Open archive and scan inner members with supported extensions; save findings with path like archive.zip|inner/path.txt."""
+        archive_type = detect_archive_type(file_path)
+        if not archive_type:
+            return
+        try:
+            raw_max = self.max_inner_size
+            max_size = (
+                int(raw_max)
+                if raw_max is not None
+                else DEFAULT_MAX_INNER_SIZE
+            )
+        except (TypeError, ValueError):
+            max_size = DEFAULT_MAX_INNER_SIZE
+        try:
+            for member_name, data in iter_archive_members(
+                file_path,
+                archive_type,
+                max_size,
+                self.extensions,
+                self.file_passwords,
+            ):
+                ext = Path(member_name).suffix.lower()
+                tmp_path: Path | None = None
+                try:
+                    with tempfile.NamedTemporaryFile(
+                        delete=False, suffix=ext
+                    ) as tmp:
+                        tmp.write(data)
+                        tmp_path = Path(tmp.name)
+                    content = _read_text_sample(
+                        tmp_path, ext, self.sample_limit, self.file_passwords
+                    )
+                    res = self.scanner.scan_file_content(content, tmp_path)
+                    if res is None:
+                        continue
+                    self.db_manager.save_finding(
+                        source_type="filesystem",
+                        target_name=target_name,
+                        path=str(file_path.parent),
+                        file_name=f"{file_path.name}|{member_name}",
+                        data_type=ext.replace(".", "").upper() if ext else "BIN",
+                        sensitivity_level=res["sensitivity_level"],
+                        pattern_detected=res["pattern_detected"],
+                        norm_tag=res.get("norm_tag", ""),
+                        ml_confidence=res.get("ml_confidence", 0),
+                    )
+                    try:
+                        from utils.logger import log_finding
+
+                        log_finding(
+                            "filesystem",
+                            target_name,
+                            f"{file_path.name}|{member_name}",
+                            res["sensitivity_level"],
+                            res["pattern_detected"],
+                        )
+                    except Exception:
+                        pass
+                finally:
+                    if tmp_path and tmp_path.exists():
+                        tmp_path.unlink(missing_ok=True)
+        except ArchiveUnsupportedError as e:
+            self.db_manager.save_failure(
+                target_name,
+                "archive_unsupported",
+                f"{file_path.name}: {e}",
+            )
 
     def run(self) -> None:
         """Walk target path, check permission, read sample, detect, save_finding or save_failure."""
@@ -409,6 +501,12 @@ class FilesystemConnector:
                 )
                 continue
             ext = file_path.suffix.lower()
+            # When scan_compressed is enabled, open archive and scan inner members.
+            if self.scan_compressed and is_supported_archive(
+                file_path, exts=self.compressed_extensions
+            ):
+                self._scan_archive_contents(file_path, target_name)
+                continue
             # 2.6: treat .sqlite/.sqlite3/.db as DBs when scan_sqlite_as_db is True
             if self.scan_sqlite_as_db and ext in self.SQLITE_EXTENSIONS:
                 for finding in _scan_sqlite_file_as_db(

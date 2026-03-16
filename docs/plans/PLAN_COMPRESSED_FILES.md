@@ -176,7 +176,7 @@ When implementing **scan inside compressed files**, ensure we do **not** run int
 - **Tier 1:** No new dependencies (stdlib only).
 - **Tier 2:** Add **py7zr** as optional dependency. Option A: add to main `dependencies` in pyproject.toml (small, pure Python where possible). Option B: add under optional extra, e.g. `[project.optional-dependencies] compressed = ["py7zr>=0.20.0"]`, and document that installing `.[compressed]` enables 7z support.
 
-  Recommendation: **optional extra** so default install stays minimal; when py7zr is missing and we encounter a .7z file, skip with a clear log or save_failure reason (“7z support not installed”).
+  Recommendation: **optional extra** so default install stays minimal; when py7zr is missing and we encounter a .7z file, skip with a clear log or save_failure reason (“7z support not installed”). **Implemented:** `pip install -e ".[compressed]"` or `uv sync --extra compressed` enables 7z; see pyproject.toml.
 
 ---
 
@@ -215,6 +215,7 @@ When implementing **scan inside compressed files**, ensure we do **not** run int
 
 ## Possible future extensions (more “data soup” ingredients)
 
+- **Test data (samples):** `tests/data/compressed/` holds sample archives (e.g. sample1.zip, sample2.7z). Optional later: small .tar.gz for CI; RAR/ARJ only when/if support is added. Keep set small for test time/resources.
 - **Tier 3 archives:** LHA, ARJ, ZOO, PAK, ARC, ACE — via patool + external tools or dedicated libs; document and gate behind same option.
 - **Nested archives:** Zip-inside-zip (and tar inside zip, etc.) with a depth limit and size limit to avoid bombs.
 - **Other data sources not yet aimed for:**
