@@ -78,4 +78,4 @@ Os artefatos de deploy (Compose, Kubernetes, exemplos de config) ficam na pasta 
 - [releases/](releases/) — Notas de release (ex.: 1.5.4, 1.5.3, 1.5.2, 1.5.1, 1.5.0, 1.4.3).
 - [plans/completed/](plans/completed/) — Planos concluídos arquivados e o checklist de implementação ([NEXT_STEPS.md](plans/completed/NEXT_STEPS.md)), todos os itens Feitos.
 
-Man pages: `docs/lgpd_crawler.1` (comando), `docs/lgpd_crawler.5` (config e formatos de arquivo). Instale com symlinks para que os dois nomes funcionem; visualize com `man data_boar` ou `man lgpd_crawler`, e `man 5 data_boar` ou `man 5 lgpd_crawler` (veja o README na raiz).
+Man pages: `docs/data_boar.1` (comando), `docs/data_boar.5` (config e formatos de arquivo). Instale e opcionalmente crie symlinks de compatibilidade para `man lgpd_crawler` (veja o README na raiz e [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md)).

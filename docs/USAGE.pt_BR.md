@@ -1,6 +1,6 @@
 # Como usar o Data Boar (aplicação de auditoria LGPD) — pt-BR
 
-**Data Boar** é o nome da aplicação (motor python3-lgpd-crawler). Este documento complementa o `docs/USAGE.md` em inglês e descreve, em português, como:
+**Data Boar** é o nome da aplicação (baseado na tecnologia lgpd_crawler; motor: python3-lgpd-crawler). Este documento complementa o `docs/USAGE.md` em inglês e descreve, em português, como:
 
 - Executar a aplicação via **CLI** e **API web**;
 - Entender os parâmetros (`--config`, `--web`, `--port`, `--tenant`, `--technician`);
@@ -64,7 +64,7 @@ python main.py --config config.yaml --web --port 8088
 
 ## Opção: executar via Docker (sem clonar o Git)
 
-Uma imagem pré-construída está disponível no Docker Hub: `fabioleitao/python3-lgpd-crawler:latest` ([hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler)). Faça pull e execute com um config montado em `/data/config.yaml` (veja o README “Deploy com Docker” e [docs/deploy/DEPLOY.pt_BR.md](deploy/DEPLOY.pt_BR.md) ([EN](deploy/DEPLOY.md))). Você pode usar esse container em vez de instalar a partir do código.
+Imagens pré-construídas estão no Docker Hub: `fabioleitao/data_boar:latest` ([hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar)). Faça pull e execute com um config montado em `/data/config.yaml` (veja o README “Deploy com Docker” e [docs/deploy/DEPLOY.pt_BR.md](deploy/DEPLOY.pt_BR.md) ([EN](deploy/DEPLOY.md))). Você pode usar esse container em vez de instalar a partir do código.
 
 ### URLs principais
 

@@ -194,7 +194,7 @@ rate_limit:
   grace_for_running_status: 0
 ```
 
-Quando `enabled` é true, os endpoints da API que iniciam varreduras (`POST /scan`, `/start`, `/scan_database`) podem responder com **HTTP 429** e um payload JSON descrevendo o motivo (ex.: muitas varreduras em execução ou intervalo mínimo não decorrido). A CLI apenas imprime avisos com a mesma lógica, então scripts existentes continuam funcionando. Veja [USAGE.md](USAGE.md) e [lgpd_crawler.5](lgpd_crawler.5) para detalhes e exemplos completos de configuração.
+Quando `enabled` é true, os endpoints da API que iniciam varreduras (`POST /scan`, `/start`, `/scan_database`) podem responder com **HTTP 429** e um payload JSON descrevendo o motivo (ex.: muitas varreduras em execução ou intervalo mínimo não decorrido). A CLI apenas imprime avisos com a mesma lógica, então scripts existentes continuam funcionando. Veja [USAGE.md](USAGE.md) e [data_boar.5](data_boar.5) para detalhes e exemplos completos de configuração.
 
 ## Executar
 
@@ -485,10 +485,10 @@ Para suportar uma nova fonte de dados (ex.: outro driver de banco ou API), veja 
 
 Para sistemas que usam a interface tradicional `man`, duas páginas de manual são fornecidas:
 
-- **Seção 1 (comando):** [lgpd_crawler.1](lgpd_crawler.1) — descreve o programa, suas opções, a API web e exemplos com curl. Visualize com `man data_boar` ou `man lgpd_crawler` (ou `man 1 data_boar`, `man 1 lgpd_crawler`).
-- **Seção 5 (formatos de arquivo):** [lgpd_crawler.5](lgpd_crawler.5) — descreve a topologia do arquivo de config principal e arquivos opcionais (regex overrides, arquivos de padrões ML/DL, padrões aprendidos), com exemplos. Visualize com `man 5 data_boar` ou `man 5 lgpd_crawler`.
+- **Seção 1 (comando):** [data_boar.1](data_boar.1) — descreve o programa, suas opções, a API web e exemplos com curl. Visualize com `man data_boar` (ou `man lgpd_crawler` com symlink de compatibilidade).
+- **Seção 5 (formatos de arquivo):** [data_boar.5](data_boar.5) — descreve a topologia do arquivo de config principal e arquivos opcionais (regex overrides, arquivos de padrões ML/DL, padrões aprendidos), com exemplos. Visualize com `man 5 data_boar` (ou `man 5 lgpd_crawler` com symlink).
 
-No Linux/BSD, a seção 1 é para comandos executáveis; a seção 5 é para configuração e convenções de formato de arquivo. Instale ambas as páginas e crie symlinks (veja abaixo) para que **data_boar** e **lgpd_crawler** funcionem: `man data_boar` / `man lgpd_crawler` para o comando, `man 5 data_boar` / `man 5 lgpd_crawler` para config e formatos de arquivo.
+No Linux/BSD, a seção 1 é para comandos executáveis; a seção 5 é para configuração e convenções de formato de arquivo. Instale as páginas **Data Boar** e, para compatibilidade, opcionalmente crie symlinks para `man lgpd_crawler` (veja abaixo).
 
 **Instale ambas as páginas** (crie os diretórios de destino antes para a cópia não falhar se estiverem ausentes). Logo após criar os diretórios, execute `chmod 755` neles para que todos os usuários possam acessar as páginas man; dependendo do umask padrão, diretórios novos podem ficar 750 e só root conseguir percorrê-los. Após copiar, execute `chmod 644` nos arquivos instalados para que todos possam ler as páginas (arquivos copiados podem ficar 640).
 
@@ -496,22 +496,23 @@ No Linux/BSD, a seção 1 é para comandos executáveis; a seção 5 é para con
 sudo mkdir -p /usr/local/share/man/man1/
 sudo mkdir -p /usr/local/share/man/man5/
 sudo chmod 755 /usr/local/share/man/man1/ /usr/local/share/man/man5/
-sudo cp docs/lgpd_crawler.1 /usr/local/share/man/man1/
-sudo cp docs/lgpd_crawler.5 /usr/local/share/man/man5/
-sudo chmod 644 /usr/local/share/man/man1/lgpd_crawler.1 /usr/local/share/man/man5/lgpd_crawler.5
-sudo ln -sf lgpd_crawler.1 /usr/local/share/man/man1/data_boar.1
-sudo ln -sf lgpd_crawler.5 /usr/local/share/man/man5/data_boar.5
+sudo cp docs/data_boar.1 /usr/local/share/man/man1/
+sudo cp docs/data_boar.5 /usr/local/share/man/man5/
+sudo chmod 644 /usr/local/share/man/man1/data_boar.1 /usr/local/share/man/man5/data_boar.5
+# Opcional: compatibilidade com o nome legado (projeto python3-lgpd-crawler)
+sudo ln -sf data_boar.1 /usr/local/share/man/man1/lgpd_crawler.1
+sudo ln -sf data_boar.5 /usr/local/share/man/man5/lgpd_crawler.5
 sudo mandb    # or: sudo makewhatis   # depends on distro
 ```
 
-Os symlinks fazem **data_boar** e **lgpd_crawler** apontarem para as mesmas páginas. Depois:
+Depois da instalação, `man data_boar` e `man 5 data_boar` mostram o comando e os formatos de config. Com os symlinks de compatibilidade, `man lgpd_crawler` e `man 5 lgpd_crawler` mostram as mesmas páginas (nome legado do projeto python3-lgpd-crawler).
 
 ```bash
-man data_boar        # or: man lgpd_crawler     # command and options (section 1)
-man 5 data_boar      # or: man 5 lgpd_crawler   # config and file formats (section 5)
+man data_boar        # comando e opções (seção 1)
+man 5 data_boar      # config e formatos de arquivo (seção 5)
 ```
 
-Ao adicionar novas opções de CLI ou capacidades da API, atualize [lgpd_crawler.1](lgpd_crawler.1); ao adicionar ou alterar chaves de config ou formatos de arquivo de padrões, atualize [lgpd_crawler.5](lgpd_crawler.5) e o [README](../README.md) raiz para que as páginas man continuem refletindo o comportamento atual. Os mesmos arquivos são visualizados como `man data_boar` e `man lgpd_crawler` (seções 1 e 5) via symlinks na instalação. Para **alterações de versão** (convenção major.minor.build e onde atualizar o número de versão), veja [VERSIONING.md](VERSIONING.md).
+Ao adicionar novas opções de CLI ou capacidades da API, atualize [data_boar.1](data_boar.1); ao adicionar ou alterar chaves de config ou formatos de arquivo de padrões, atualize [data_boar.5](data_boar.5) e o [README](../README.md) raiz. Para **alterações de versão** (convenção major.minor.build e onde atualizar o número de versão), veja [VERSIONING.md](VERSIONING.md).
 
 ## Implantar com Docker
 
@@ -521,8 +522,7 @@ Você pode executar a API como **um único container** (`docker run`), com **Doc
 
 Imagens Docker estão disponíveis no **Docker Hub** para você executar a aplicação sem clonar o repositório:
 
-- **Com marca (Data Boar):** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` e `fabioleitao/data_boar:1.5.4`
-- **Legado:** [hub.docker.com/r/fabioleitao/python3-lgpd-crawler](https://hub.docker.com/r/fabioleitao/python3-lgpd-crawler) — `fabioleitao/python3-lgpd-crawler:latest` (a mesma imagem pode ser publicada sob os dois nomes)
+- **Docker Hub:** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` e `fabioleitao/data_boar:1.5.4`
 
 A imagem inclui detecção de sensibilidade por regex + ML + DL opcional; você pode definir termos de treinamento ML/DL na config (veja [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) e [deploy/config.example.yaml](../deploy/config.example.yaml)).
 
@@ -537,7 +537,7 @@ Prepare `/data/config.yaml` a partir de `deploy/config.example.yaml` (veja [depl
 
 ### Construir a partir do código
 
-- **Build:** `docker build -t python3-lgpd-crawler:latest .`
+- **Build:** `docker build -t data_boar:latest .` (ou `docker build -t fabioleitao/data_boar:latest .` para push no Docker Hub; veja [deploy/DEPLOY.md](deploy/DEPLOY.md)).
 - **Run:** Monte a config em `/data/config.yaml` (veja `deploy/config.example.yaml`). Exponha a porta 8088.
 - **Compose:** `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d` (prepare `./data/config.yaml` antes).
 - **Swarm:** `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit`.

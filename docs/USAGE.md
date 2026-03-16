@@ -1,6 +1,6 @@
 # How to Use Data Boar (LGPD Audit Application)
 
-**Data Boar** is the application name (powered by the python3-lgpd-crawler engine). This guide covers **command-line arguments and outcomes**, **deploying and using the web API**, **configuration (targets and credentials)**, and **downloading reports** (current and previous sessions). Operators can use it to learn how to run, configure, and navigate the app.
+**Data Boar** is the application name (based on lgpd_crawler technology; engine: python3-lgpd-crawler). This guide covers **command-line arguments and outcomes**, **deploying and using the web API**, **configuration (targets and credentials)**, and **downloading reports** (current and previous sessions). Operators can use it to learn how to run, configure, and navigate the app.
 
 **Português (Brasil):** [USAGE.pt_BR.md](USAGE.pt_BR.md)
 
@@ -61,7 +61,7 @@ python main.py --config config.yaml --web --port 8088
 ### Deploying the server
 
 ## Option: run from Docker (no Git clone)
-Pre-built images are on Docker Hub: **branded** `fabioleitao/data_boar:latest` ([hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar)); legacy `fabioleitao/python3-lgpd-crawler:latest` also available. Pull and run with a mounted config at `/data/config.yaml` (see README “Deploy with Docker” and [docs/deploy/DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md))). You can use this instanced container instead of installing from source.
+Pre-built images are on Docker Hub: `fabioleitao/data_boar:latest` ([hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar)). Pull and run with a mounted config at `/data/config.yaml` (see README “Deploy with Docker” and [docs/deploy/DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md))). You can use this instanced container instead of installing from source.
 
 1. **Install** the application and optional dependencies (e.g. `.[nosql]`, `.[shares]`) as in the README.
 1. **Prepare** a config file (e.g. `config.yaml`) with `targets`, `file_scan`, `report`, and optionally `api.port`.
