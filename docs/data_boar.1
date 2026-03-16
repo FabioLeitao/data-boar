@@ -1,5 +1,5 @@
-.\" lgpd_crawler.1 - man page for Data Boar (python3-lgpd-crawler engine)
-.\" View as: man data_boar, man lgpd_crawler, man 1 data_boar, man 1 lgpd_crawler
+.\" data_boar.1 - man page for Data Boar (application; engine: python3-lgpd-crawler)
+.\" View as: man data_boar or man lgpd_crawler (symlink for compatibility)
 .TH DATA_BOAR 1 "March 2026" "Data Boar 1.5.4" "User Commands"
 .SH NAME
 data_boar, lgpd_crawler \- audit databases and filesystems for personal and sensitive data (Data Boar)
@@ -424,24 +424,24 @@ work, then update the man index:
 .nf
 sudo mkdir \-p /usr/local/share/man/man1/ /usr/local/share/man/man5/
 sudo chmod 755 /usr/local/share/man/man1/ /usr/local/share/man/man5/
-sudo cp docs/lgpd_crawler.1 /usr/local/share/man/man1/
-sudo cp docs/lgpd_crawler.5 /usr/local/share/man/man5/
-sudo chmod 644 /usr/local/share/man/man1/lgpd_crawler.1 /usr/local/share/man/man5/lgpd_crawler.5
-sudo ln \-sf lgpd_crawler.1 /usr/local/share/man/man1/data_boar.1
-sudo ln \-sf lgpd_crawler.5 /usr/local/share/man/man5/data_boar.5
+sudo cp docs/data_boar.1 /usr/local/share/man/man1/
+sudo cp docs/data_boar.5 /usr/local/share/man/man5/
+sudo chmod 644 /usr/local/share/man/man1/data_boar.1 /usr/local/share/man/man5/data_boar.5
+sudo ln \-sf data_boar.1 /usr/local/share/man/man1/lgpd_crawler.1
+sudo ln \-sf data_boar.5 /usr/local/share/man/man5/lgpd_crawler.5
 sudo mandb
 .fi
 .RE
 .PP
-The symlinks make
+After installation,
 .B "man data_boar"
 and
 .B "man 5 data_boar"
-show the same pages as
+work; the optional symlinks make
 .B "man lgpd_crawler"
 and
 .B "man 5 lgpd_crawler"
-(backward compatibility).
+show the same pages (legacy name from the python3-lgpd-crawler project).
 .PP
 The
 .B chmod 755
