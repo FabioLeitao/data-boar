@@ -3,6 +3,7 @@ Single SQLite schema for audit results: sessions, database_findings, filesystem_
 LocalDBManager: save_finding(source_type, **kwargs), save_failure, get_findings, list_sessions.
 Session id comes from core.session (UUID + timestamp); set via set_current_session_id.
 """
+
 from datetime import datetime, timezone
 from typing import Any
 
@@ -23,19 +24,27 @@ class ScanSession(Base):
     One scan run: UUID + timestamp, status.
     Optional tenant_name for customer/tenant attribution and technician_name for operator identification.
     """
+
     __tablename__ = "scan_sessions"
     id = Column(Integer, primary_key=True, autoincrement=True)
     session_id = Column(String(64), unique=True, nullable=False, index=True)
     started_at = Column(DateTime, default=_utc_now)
     finished_at = Column(DateTime, nullable=True)
     status = Column(String(20), default="running")  # running, completed, failed
-    tenant_name = Column(String(255), nullable=True)  # optional customer/tenant for this scan
-    technician_name = Column(String(255), nullable=True)  # optional technician/operator for this scan
-    config_scope_hash = Column(String(64), nullable=True)  # optional SHA-256 of scan scope (targets, types, extensions) for audit evidence
+    tenant_name = Column(
+        String(255), nullable=True
+    )  # optional customer/tenant for this scan
+    technician_name = Column(
+        String(255), nullable=True
+    )  # optional technician/operator for this scan
+    config_scope_hash = Column(
+        String(64), nullable=True
+    )  # optional SHA-256 of scan scope (targets, types, extensions) for audit evidence
 
 
 class DatabaseFinding(Base):
     """A single finding from a database target (metadata only, no raw content)."""
+
     __tablename__ = "database_findings"
     id = Column(Integer, primary_key=True, autoincrement=True)
     session_id = Column(String(64), nullable=False, index=True)
@@ -55,6 +64,7 @@ class DatabaseFinding(Base):
 
 class FilesystemFinding(Base):
     """A single finding from a filesystem target."""
+
     __tablename__ = "filesystem_findings"
     id = Column(Integer, primary_key=True, autoincrement=True)
     session_id = Column(String(64), nullable=False, index=True)
@@ -71,11 +81,14 @@ class FilesystemFinding(Base):
 
 class ScanFailure(Base):
     """Record of a target that could not be scanned (unreachable, auth, permission)."""
+
     __tablename__ = "scan_failures"
     id = Column(Integer, primary_key=True, autoincrement=True)
     session_id = Column(String(64), nullable=False, index=True)
     target_name = Column(String(100))
-    reason = Column(String(50))  # unreachable, auth_failed, permission_denied, timeout, error
+    reason = Column(
+        String(50)
+    )  # unreachable, auth_failed, permission_denied, timeout, error
     details = Column(Text, nullable=True)
     created_at = Column(DateTime, default=_utc_now)
 
@@ -119,6 +132,7 @@ class DataWipeLog(Base):
     Rows in this table are preserved when wipe_all_data() is called so that there is a trace
     of when and why previous history was cleared.
     """
+
     __tablename__ = "data_wipe_log"
     id = Column(Integer, primary_key=True, autoincrement=True)
     wiped_at = Column(DateTime, default=_utc_now)
@@ -131,6 +145,7 @@ class AggregatedIdentificationRisk(Base):
     categories (gender, job_position, health, address, phone, etc.) were found together,
     indicating possible identification or re-identification risk (LGPD Art. 5, GDPR Recital 26).
     """
+
     __tablename__ = "aggregated_identification_risk"
     id = Column(Integer, primary_key=True, autoincrement=True)
     session_id = Column(String(64), nullable=False, index=True)
@@ -161,25 +176,49 @@ class LocalDBManager:
     def _ensure_tenant_column(self) -> None:
         """Add tenant_name column to scan_sessions if missing (migration for existing DBs)."""
         with self.engine.connect() as conn:
-            r = conn.execute(text("SELECT 1 FROM pragma_table_info('scan_sessions') WHERE name='tenant_name'"))
+            r = conn.execute(
+                text(
+                    "SELECT 1 FROM pragma_table_info('scan_sessions') WHERE name='tenant_name'"
+                )
+            )
             if r.fetchone() is None:
-                conn.execute(text("ALTER TABLE scan_sessions ADD COLUMN tenant_name VARCHAR(255)"))
+                conn.execute(
+                    text(
+                        "ALTER TABLE scan_sessions ADD COLUMN tenant_name VARCHAR(255)"
+                    )
+                )
                 conn.commit()
 
     def _ensure_technician_column(self) -> None:
         """Add technician_name column to scan_sessions if missing (migration for existing DBs)."""
         with self.engine.connect() as conn:
-            r = conn.execute(text("SELECT 1 FROM pragma_table_info('scan_sessions') WHERE name='technician_name'"))
+            r = conn.execute(
+                text(
+                    "SELECT 1 FROM pragma_table_info('scan_sessions') WHERE name='technician_name'"
+                )
+            )
             if r.fetchone() is None:
-                conn.execute(text("ALTER TABLE scan_sessions ADD COLUMN technician_name VARCHAR(255)"))
+                conn.execute(
+                    text(
+                        "ALTER TABLE scan_sessions ADD COLUMN technician_name VARCHAR(255)"
+                    )
+                )
                 conn.commit()
 
     def _ensure_config_scope_hash_column(self) -> None:
         """Add config_scope_hash column to scan_sessions if missing (migration for existing DBs)."""
         with self.engine.connect() as conn:
-            r = conn.execute(text("SELECT 1 FROM pragma_table_info('scan_sessions') WHERE name='config_scope_hash'"))
+            r = conn.execute(
+                text(
+                    "SELECT 1 FROM pragma_table_info('scan_sessions') WHERE name='config_scope_hash'"
+                )
+            )
             if r.fetchone() is None:
-                conn.execute(text("ALTER TABLE scan_sessions ADD COLUMN config_scope_hash VARCHAR(64)"))
+                conn.execute(
+                    text(
+                        "ALTER TABLE scan_sessions ADD COLUMN config_scope_hash VARCHAR(64)"
+                    )
+                )
                 conn.commit()
 
     def _ensure_aggregated_table(self) -> None:
@@ -199,7 +238,11 @@ class LocalDBManager:
         """Return the number of sessions currently marked as running."""
         session = self._session_factory()
         try:
-            return session.query(ScanSession).filter(ScanSession.status == "running").count()
+            return (
+                session.query(ScanSession)
+                .filter(ScanSession.status == "running")
+                .count()
+            )
         finally:
             session.close()
 
@@ -233,11 +276,15 @@ class LocalDBManager:
         try:
             if source_type == "database":
                 kwargs["session_id"] = sid
-                finding = DatabaseFinding(**{k: v for k, v in kwargs.items() if hasattr(DatabaseFinding, k)})
+                finding = DatabaseFinding(
+                    **{k: v for k, v in kwargs.items() if hasattr(DatabaseFinding, k)}
+                )
                 session.add(finding)
             elif source_type == "filesystem":
                 kwargs["session_id"] = sid
-                finding = FilesystemFinding(**{k: v for k, v in kwargs.items() if hasattr(FilesystemFinding, k)})
+                finding = FilesystemFinding(
+                    **{k: v for k, v in kwargs.items() if hasattr(FilesystemFinding, k)}
+                )
                 session.add(finding)
             session.commit()
         except Exception:
@@ -246,7 +293,9 @@ class LocalDBManager:
         finally:
             session.close()
 
-    def save_failure(self, target_name: str, reason: str, details: str | None = None) -> None:
+    def save_failure(
+        self, target_name: str, reason: str, details: str | None = None
+    ) -> None:
         sid = self._current_session_id
         if not sid:
             return
@@ -271,7 +320,14 @@ class LocalDBManager:
             pass
         session = self._session_factory()
         try:
-            session.add(ScanFailure(session_id=sid, target_name=target_name, reason=reason, details=details))
+            session.add(
+                ScanFailure(
+                    session_id=sid,
+                    target_name=target_name,
+                    reason=reason,
+                    details=details,
+                )
+            )
             session.commit()
         except Exception:
             session.rollback()
@@ -279,18 +335,37 @@ class LocalDBManager:
         finally:
             session.close()
 
-    def get_findings(self, session_id: str | None = None) -> tuple[list[dict], list[dict], list[dict]]:
+    def get_findings(
+        self, session_id: str | None = None
+    ) -> tuple[list[dict], list[dict], list[dict]]:
         """Return (database_findings, filesystem_findings, failures) for session_id or current."""
         sid = session_id or self._current_session_id
         if not sid:
             return [], [], []
         session = self._session_factory()
         try:
-            db_rows = session.query(DatabaseFinding).filter(DatabaseFinding.session_id == sid).all()
-            fs_rows = session.query(FilesystemFinding).filter(FilesystemFinding.session_id == sid).all()
-            fail_rows = session.query(ScanFailure).filter(ScanFailure.session_id == sid).all()
-            def db_to_dict(r): return {c.key: getattr(r, c.key) for c in r.__table__.columns}
-            return ([db_to_dict(r) for r in db_rows], [db_to_dict(r) for r in fs_rows], [db_to_dict(r) for r in fail_rows])
+            db_rows = (
+                session.query(DatabaseFinding)
+                .filter(DatabaseFinding.session_id == sid)
+                .all()
+            )
+            fs_rows = (
+                session.query(FilesystemFinding)
+                .filter(FilesystemFinding.session_id == sid)
+                .all()
+            )
+            fail_rows = (
+                session.query(ScanFailure).filter(ScanFailure.session_id == sid).all()
+            )
+
+            def db_to_dict(r):
+                return {c.key: getattr(r, c.key) for c in r.__table__.columns}
+
+            return (
+                [db_to_dict(r) for r in db_rows],
+                [db_to_dict(r) for r in fs_rows],
+                [db_to_dict(r) for r in fail_rows],
+            )
         finally:
             session.close()
 
@@ -324,17 +399,29 @@ class LocalDBManager:
         finally:
             sess.close()
 
-    def get_aggregated_identification_risks(self, session_id: str | None = None) -> list[dict]:
+    def get_aggregated_identification_risks(
+        self, session_id: str | None = None
+    ) -> list[dict]:
         """Return aggregated identification risk rows for session_id or current session."""
         sid = session_id or self._current_session_id
         if not sid:
             return []
         sess = self._session_factory()
         try:
-            rows = sess.query(AggregatedIdentificationRisk).filter(
-                AggregatedIdentificationRisk.session_id == sid,
-            ).all()
-            return [{c.key: getattr(r, c.key) for c in AggregatedIdentificationRisk.__table__.columns} for r in rows]
+            rows = (
+                sess.query(AggregatedIdentificationRisk)
+                .filter(
+                    AggregatedIdentificationRisk.session_id == sid,
+                )
+                .all()
+            )
+            return [
+                {
+                    c.key: getattr(r, c.key)
+                    for c in AggregatedIdentificationRisk.__table__.columns
+                }
+                for r in rows
+            ]
         finally:
             sess.close()
 
@@ -342,24 +429,44 @@ class LocalDBManager:
         """List all scan sessions with summary (session_id, started_at, status, counts including scan_failures)."""
         session = self._session_factory()
         try:
-            sessions = session.query(ScanSession).order_by(ScanSession.started_at.desc()).all()
+            sessions = (
+                session.query(ScanSession).order_by(ScanSession.started_at.desc()).all()
+            )
             out = []
             for s in sessions:
-                db_count = session.query(DatabaseFinding).filter(DatabaseFinding.session_id == s.session_id).count()
-                fs_count = session.query(FilesystemFinding).filter(FilesystemFinding.session_id == s.session_id).count()
-                fail_count = session.query(ScanFailure).filter(ScanFailure.session_id == s.session_id).count()
-                out.append({
-                    "session_id": s.session_id,
-                    "started_at": s.started_at.isoformat() if s.started_at else None,
-                    "finished_at": s.finished_at.isoformat() if s.finished_at else None,
-                    "status": s.status,
-                    "tenant_name": getattr(s, "tenant_name", None),
-                    "technician_name": getattr(s, "technician_name", None),
-                    "config_scope_hash": getattr(s, "config_scope_hash", None),
-                    "database_findings": db_count,
-                    "filesystem_findings": fs_count,
-                    "scan_failures": fail_count,
-                })
+                db_count = (
+                    session.query(DatabaseFinding)
+                    .filter(DatabaseFinding.session_id == s.session_id)
+                    .count()
+                )
+                fs_count = (
+                    session.query(FilesystemFinding)
+                    .filter(FilesystemFinding.session_id == s.session_id)
+                    .count()
+                )
+                fail_count = (
+                    session.query(ScanFailure)
+                    .filter(ScanFailure.session_id == s.session_id)
+                    .count()
+                )
+                out.append(
+                    {
+                        "session_id": s.session_id,
+                        "started_at": s.started_at.isoformat()
+                        if s.started_at
+                        else None,
+                        "finished_at": s.finished_at.isoformat()
+                        if s.finished_at
+                        else None,
+                        "status": s.status,
+                        "tenant_name": getattr(s, "tenant_name", None),
+                        "technician_name": getattr(s, "technician_name", None),
+                        "config_scope_hash": getattr(s, "config_scope_hash", None),
+                        "database_findings": db_count,
+                        "filesystem_findings": fs_count,
+                        "scan_failures": fail_count,
+                    }
+                )
             return out
         finally:
             session.close()
@@ -410,11 +517,17 @@ class LocalDBManager:
         finally:
             session.close()
 
-    def update_session_config_scope_hash(self, session_id: str, config_scope_hash: str | None) -> None:
+    def update_session_config_scope_hash(
+        self, session_id: str, config_scope_hash: str | None
+    ) -> None:
         """Set or clear config_scope_hash for an existing session."""
         session = self._session_factory()
         try:
-            rec = session.query(ScanSession).filter(ScanSession.session_id == session_id).first()
+            rec = (
+                session.query(ScanSession)
+                .filter(ScanSession.session_id == session_id)
+                .first()
+            )
             if rec and hasattr(rec, "config_scope_hash"):
                 rec.config_scope_hash = config_scope_hash or None
                 session.commit()
@@ -428,7 +541,11 @@ class LocalDBManager:
         """Set or clear tenant_name for an existing session."""
         session = self._session_factory()
         try:
-            rec = session.query(ScanSession).filter(ScanSession.session_id == session_id).first()
+            rec = (
+                session.query(ScanSession)
+                .filter(ScanSession.session_id == session_id)
+                .first()
+            )
             if rec:
                 rec.tenant_name = tenant_name or None
                 session.commit()
@@ -438,11 +555,17 @@ class LocalDBManager:
         finally:
             session.close()
 
-    def update_session_technician(self, session_id: str, technician_name: str | None) -> None:
+    def update_session_technician(
+        self, session_id: str, technician_name: str | None
+    ) -> None:
         """Set or clear technician_name for an existing session."""
         session = self._session_factory()
         try:
-            rec = session.query(ScanSession).filter(ScanSession.session_id == session_id).first()
+            rec = (
+                session.query(ScanSession)
+                .filter(ScanSession.session_id == session_id)
+                .first()
+            )
             if rec:
                 rec.technician_name = technician_name or None
                 session.commit()
@@ -455,7 +578,11 @@ class LocalDBManager:
     def finish_session(self, session_id: str, status: str = "completed") -> None:
         session = self._session_factory()
         try:
-            rec = session.query(ScanSession).filter(ScanSession.session_id == session_id).first()
+            rec = (
+                session.query(ScanSession)
+                .filter(ScanSession.session_id == session_id)
+                .first()
+            )
             if rec:
                 rec.finished_at = datetime.now(timezone.utc)
                 rec.status = status
@@ -472,8 +599,16 @@ class LocalDBManager:
             return 0
         session = self._session_factory()
         try:
-            db_c = session.query(DatabaseFinding).filter(DatabaseFinding.session_id == sid).count()
-            fs_c = session.query(FilesystemFinding).filter(FilesystemFinding.session_id == sid).count()
+            db_c = (
+                session.query(DatabaseFinding)
+                .filter(DatabaseFinding.session_id == sid)
+                .count()
+            )
+            fs_c = (
+                session.query(FilesystemFinding)
+                .filter(FilesystemFinding.session_id == sid)
+                .count()
+            )
             return db_c + fs_c
         finally:
             session.close()
@@ -489,7 +624,9 @@ class LocalDBManager:
             # Delete findings and failures for all sessions
             session.query(DatabaseFinding).delete(synchronize_session=False)
             session.query(FilesystemFinding).delete(synchronize_session=False)
-            session.query(AggregatedIdentificationRisk).delete(synchronize_session=False)
+            session.query(AggregatedIdentificationRisk).delete(
+                synchronize_session=False
+            )
             session.query(ScanFailure).delete(synchronize_session=False)
             # Delete all scan session rows
             session.query(ScanSession).delete(synchronize_session=False)

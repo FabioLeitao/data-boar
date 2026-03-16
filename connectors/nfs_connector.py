@@ -4,6 +4,7 @@ Config: host (FQDN or IP), export_path (for reporting), path (local mount point)
 No NFS client library required; the path must be a local directory (mount point).
 Uses the same file scan logic as the filesystem connector.
 """
+
 from pathlib import Path
 from typing import Any
 
@@ -60,7 +61,9 @@ class NFSConnector:
             )
             return
         if not Path(path).is_dir():
-            self.db_manager.save_failure(target_name, "error", "path is not a directory")
+            self.db_manager.save_failure(
+                target_name, "error", "path is not a directory"
+            )
             return
         self._fs.run()
 

@@ -84,7 +84,11 @@ def _short_component(component: str, project_key: str) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Fetch Sonar issues for this project.")
     parser.add_argument("--json", action="store_true", help="Print full JSON response.")
-    parser.add_argument("--branch", default=os.environ.get("SONAR_BRANCH"), help="Branch to filter (optional).")
+    parser.add_argument(
+        "--branch",
+        default=os.environ.get("SONAR_BRANCH"),
+        help="Branch to filter (optional).",
+    )
     args = parser.parse_args()
 
     token = os.environ.get("SONAR_TOKEN")

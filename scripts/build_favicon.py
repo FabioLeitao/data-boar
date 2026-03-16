@@ -21,7 +21,13 @@ from PIL import Image
 
 def main() -> None:
     repo_root = Path(__file__).resolve().parent.parent
-    src = repo_root / "api" / "static" / "mascot" / "data_boar_mascote_color_translucent.png"
+    src = (
+        repo_root
+        / "api"
+        / "static"
+        / "mascot"
+        / "data_boar_mascote_color_translucent.png"
+    )
     out = repo_root / "api" / "static" / "favicon.ico"
 
     if not src.exists():

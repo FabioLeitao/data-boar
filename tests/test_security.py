@@ -128,7 +128,9 @@ def test_config_loader_uses_safe_load_not_load(tmp_path):
     import yaml
 
     malicious = tmp_path / "bad.yaml"
-    malicious.write_text("!!python/object/apply:os.system ['echo pwned']", encoding="utf-8")
+    malicious.write_text(
+        "!!python/object/apply:os.system ['echo pwned']", encoding="utf-8"
+    )
     from config.loader import load_config
 
     with pytest.raises(yaml.YAMLError):
@@ -196,6 +198,7 @@ def test_mongodb_connector_uri_encodes_password_special_chars():
         "password": "p@ss:word",
     }
     from connectors.mongodb_connector import MongoDBConnector
+
     connector = MongoDBConnector(config, MagicMock(), MagicMock())
     # Patch MongoClient so we don't need pymongo installed and we can assert the URI passed
     with patch("connectors.mongodb_connector.MongoClient") as mongo_mock:
@@ -259,7 +262,9 @@ def test_redact_secrets_for_log_masks_passwords_and_urls():
     """redact_secrets_for_log masks passwords, API keys, and connection URLs in log content."""
     from core.validation import redact_secrets_for_log
 
-    assert "***REDACTED***" in redact_secrets_for_log("postgresql://user:secret@host/db")
+    assert "***REDACTED***" in redact_secrets_for_log(
+        "postgresql://user:secret@host/db"
+    )
     assert "secret" not in redact_secrets_for_log("postgresql://user:secret@host/db")
     assert "***REDACTED***" in redact_secrets_for_log("password=mysecret")
     assert "mysecret" not in redact_secrets_for_log("password=mysecret")
@@ -313,6 +318,7 @@ def test_config_endpoint_requires_api_key_when_required(tmp_path):
         encoding="utf-8",
     )
     import api.routes as routes
+
     orig_path = routes._config_path
     orig_cfg = routes._config
     orig_engine = routes._audit_engine
@@ -321,6 +327,7 @@ def test_config_endpoint_requires_api_key_when_required(tmp_path):
         routes._config = None
         routes._audit_engine = None
         from fastapi.testclient import TestClient
+
         client = TestClient(routes.app)
         resp = client.get("/config")
         assert resp.status_code == 401
@@ -338,6 +345,7 @@ def test_config_endpoint_requires_api_key_when_required(tmp_path):
 def test_redact_config_for_display_redacts_secrets():
     """GET /config shows redacted secrets; redact_config_for_display replaces pass, api_key, etc."""
     from config.redact_config import redact_config_for_display, REDACTED_PLACEHOLDER
+
     data = {
         "api": {"port": 8088, "api_key": "secret-key-123", "api_key_from_env": None},
         "targets": [
@@ -349,7 +357,9 @@ def test_redact_config_for_display_redacts_secrets():
     assert redacted["api"]["api_key"] == REDACTED_PLACEHOLDER
     assert redacted["api"].get("api_key_from_env") is None
     assert redacted["targets"][0]["pass"] == REDACTED_PLACEHOLDER
-    assert redacted["targets"][0]["user"] == "dbuser"  # user not in _SECRET_KEYS by default
+    assert (
+        redacted["targets"][0]["user"] == "dbuser"
+    )  # user not in _SECRET_KEYS by default
     assert redacted["targets"][1]["auth"]["token"] == REDACTED_PLACEHOLDER
     assert "secret-key-123" not in str(redacted)
     assert "dbpass" not in str(redacted)
@@ -358,12 +368,22 @@ def test_redact_config_for_display_redacts_secrets():
 def test_merge_config_on_save_preserves_secrets_when_submitted_is_placeholder():
     """POST /config merge keeps current secret when submitted value is placeholder or empty."""
     from config.redact_config import merge_config_on_save, REDACTED_PLACEHOLDER
-    current = {"api": {"api_key": "real-key"}, "targets": [{"name": "db1", "pass": "realpass"}]}
-    submitted = {"api": {"api_key": REDACTED_PLACEHOLDER}, "targets": [{"name": "db1", "pass": REDACTED_PLACEHOLDER}]}
+
+    current = {
+        "api": {"api_key": "real-key"},
+        "targets": [{"name": "db1", "pass": "realpass"}],
+    }
+    submitted = {
+        "api": {"api_key": REDACTED_PLACEHOLDER},
+        "targets": [{"name": "db1", "pass": REDACTED_PLACEHOLDER}],
+    }
     merged = merge_config_on_save(submitted, current)
     assert merged["api"]["api_key"] == "real-key"
     assert merged["targets"][0]["pass"] == "realpass"
-    submitted_new = {"api": {"api_key": "new-key"}, "targets": [{"name": "db1", "pass": "newpass"}]}
+    submitted_new = {
+        "api": {"api_key": "new-key"},
+        "targets": [{"name": "db1", "pass": "newpass"}],
+    }
     merged2 = merge_config_on_save(submitted_new, current)
     assert merged2["api"]["api_key"] == "new-key"
     assert merged2["targets"][0]["pass"] == "newpass"
@@ -372,12 +392,18 @@ def test_merge_config_on_save_preserves_secrets_when_submitted_is_placeholder():
 def test_normalize_config_resolves_pass_from_env_and_user_from_env(monkeypatch):
     """Loader resolves pass_from_env, password_from_env, user_from_env for targets."""
     from config.loader import normalize_config
+
     monkeypatch.setenv("DB_PASS", "env-pass")
     monkeypatch.setenv("DB_USER", "env-user")
     data = {
         "targets": [
             {"name": "db1", "type": "database", "pass_from_env": "DB_PASS"},
-            {"name": "db2", "type": "database", "password_from_env": "DB_PASS", "user_from_env": "DB_USER"},
+            {
+                "name": "db2",
+                "type": "database",
+                "password_from_env": "DB_PASS",
+                "user_from_env": "DB_USER",
+            },
         ],
         "api": {},
         "report": {"output_dir": "."},

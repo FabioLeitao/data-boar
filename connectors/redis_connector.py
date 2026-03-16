@@ -3,10 +3,12 @@ Optional Redis connector: connect, scan keys (or sample), run detector on key na
 Register as type 'redis'. Install: pip install redis
 Config target: type: database, driver: redis, host, port, (optional password).
 """
+
 from typing import Any
 
 try:
     import redis
+
     _REDIS_AVAILABLE = True
 except ImportError:
     _REDIS_AVAILABLE = False
@@ -18,7 +20,13 @@ from core.connector_registry import register
 class RedisConnector:
     """Scan Redis: sample keys (e.g. SCAN), detect sensitive key names; no value storage."""
 
-    def __init__(self, target_config: dict[str, Any], scanner: Any, db_manager: Any, sample_limit: int = 100):
+    def __init__(
+        self,
+        target_config: dict[str, Any],
+        scanner: Any,
+        db_manager: Any,
+        sample_limit: int = 100,
+    ):
         self.config = target_config
         self.scanner = scanner
         self.db_manager = db_manager
@@ -27,7 +35,9 @@ class RedisConnector:
 
     def connect(self) -> None:
         if not _REDIS_AVAILABLE:
-            raise RuntimeError("redis is not installed. Install with: pip install redis")
+            raise RuntimeError(
+                "redis is not installed. Install with: pip install redis"
+            )
         host = self.config.get("host", "localhost")
         port = int(self.config.get("port", 6379))
         password = self.config.get("pass") or self.config.get("password")
@@ -59,6 +69,7 @@ class RedisConnector:
             return
         try:
             from utils.logger import log_connection
+
             log_connection(target_name, "redis", self.config.get("host", "localhost"))
             keys = []
             for k in self._client.scan_iter(count=self.sample_limit):
@@ -86,7 +97,14 @@ class RedisConnector:
                 )
                 try:
                     from utils.logger import log_finding
-                    log_finding("database", target_name, f"keys.{key}", res["sensitivity_level"], res["pattern_detected"])
+
+                    log_finding(
+                        "database",
+                        target_name,
+                        f"keys.{key}",
+                        res["sensitivity_level"],
+                        res["pattern_detected"],
+                    )
                 except Exception:
                     pass
         except Exception as e:

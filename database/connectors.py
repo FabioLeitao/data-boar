@@ -1,4 +1,5 @@
 """Legacy: prefer config.loader + core.engine + connectors.sql_connector for new code."""
+
 from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from typing import Dict, Any

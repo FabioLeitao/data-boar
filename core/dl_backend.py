@@ -7,6 +7,7 @@ hybrid step together with regex and ML (TF-IDF + RandomForest).
 Training terms format: list of { text: str, label: "sensitive"|"non_sensitive" or 1|0 }.
 Same structure as ML terms; can share the same config file or use a separate dl_patterns_file.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -17,6 +18,7 @@ _SentenceTransformer = None
 
 try:
     from sentence_transformers import SentenceTransformer
+
     _SentenceTransformer = SentenceTransformer
     _DL_AVAILABLE = True
 except ImportError:
@@ -25,6 +27,7 @@ except ImportError:
 # sklearn used for training a small head on top of embeddings (already a project dep)
 try:
     from sklearn.linear_model import LogisticRegression
+
     _LogisticRegression = LogisticRegression
 except ImportError:
     _LogisticRegression = None
@@ -39,7 +42,9 @@ def is_available() -> bool:
     return bool(_DL_AVAILABLE and _SentenceTransformer and _LogisticRegression)
 
 
-def _normalize_terms(terms: list[tuple[str, int]] | list[dict[str, Any]]) -> list[tuple[str, int]]:
+def _normalize_terms(
+    terms: list[tuple[str, int]] | list[dict[str, Any]],
+) -> list[tuple[str, int]]:
     """Convert config-style terms to list of (text_lower, 1|0)."""
     out: list[tuple[str, int]] = []
     for t in terms or []:

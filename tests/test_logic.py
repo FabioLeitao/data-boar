@@ -1,4 +1,5 @@
 """Tests for audit logic: core.scanner.DataScanner scan_column and analyze_data."""
+
 import unittest
 from core.scanner import DataScanner
 
@@ -37,7 +38,11 @@ class TestAuditLogic(unittest.TestCase):
         # Should be MEDIUM or LOW due to lyrics context (DATE_DMY is weak in entertainment)
         self.assertIn(result["sensitivity_level"], ("LOW", "MEDIUM"))
         if result["sensitivity_level"] == "MEDIUM":
-            self.assertIn("lyrics", result.get("pattern_detected", "").lower() or "lyrics" in result.get("pattern_detected", ""))
+            self.assertIn(
+                "lyrics",
+                result.get("pattern_detected", "").lower()
+                or "lyrics" in result.get("pattern_detected", ""),
+            )
 
     def test_music_tab_with_digits_downgraded(self):
         """Digit sequences in guitar tabs should not be classified as HIGH (false positive)."""
@@ -157,8 +162,16 @@ class TestAuditLogic(unittest.TestCase):
         for col in ("doc_id", "document_id", "id_number"):
             with self.subTest(column=col):
                 result = scanner.scan_column(col, "sample value")
-                self.assertEqual(result["sensitivity_level"], "MEDIUM", f"Column '{col}' should be MEDIUM (ambiguous)")
-                self.assertIn("PII_AMBIGUOUS", result.get("pattern_detected", ""), f"Column '{col}' should have PII_AMBIGUOUS")
+                self.assertEqual(
+                    result["sensitivity_level"],
+                    "MEDIUM",
+                    f"Column '{col}' should be MEDIUM (ambiguous)",
+                )
+                self.assertIn(
+                    "PII_AMBIGUOUS",
+                    result.get("pattern_detected", ""),
+                    f"Column '{col}' should have PII_AMBIGUOUS",
+                )
 
 
 if __name__ == "__main__":
