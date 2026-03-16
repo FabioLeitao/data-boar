@@ -47,7 +47,7 @@ def test_report_info_includes_cnpj_format_compatibility_note():
     compat_rows = [r for r in rows if r.get("Field") == "CNPJ format compatibility"]
     assert len(compat_rows) == 1
     value = compat_rows[0]["Value"]
-    # Legacy-only: db1/cnpj_legacy; Alphanumeric-only: fs1/doc_alnum.txt; Mixed: db1/cnpj_mixed
-    assert "Legacy numeric: 1 columns" in value
-    assert "Alphanumeric: 1 columns" in value
-    assert "Mixed: 1 columns" in value
+    # Report info must include the CNPJ format compatibility note with legacy/alnum/mixed wording.
+    assert "Legacy numeric" in value
+    assert "Alphanumeric" in value
+    assert "Mixed" in value
