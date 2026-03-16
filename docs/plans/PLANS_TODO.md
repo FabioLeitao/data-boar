@@ -40,42 +40,68 @@ This document is the **single source of truth** for the project's plan status an
 
 The recommended order below is chosen to:
 
-- **Strengthen the base first:** Security hardening and Configurable timeouts reduce risk and improve robustness for all later work.
-- **Respect dependencies:** Secrets Phase A (redact, env) before Phase B (vault); Notifications can optionally use Secrets A for webhook URLs.
-- **Batch additive features:** Compliance samples, Compressed files, Data source versions, and Strong crypto add config/report/sheets without breaking existing flows.
-- **Defer optional or heavy work:** Version check, CNPJ, Selenium QA, Synthetic data, Notifications, and Dashboard i18n come after core security and scan/report features.
+- **Strengthen the base first:** Security hardening and Configurable timeouts reduce risk and improve robustness for all later work. **Both are already completed.**
+- **Respect dependencies:** Secrets Phase A (redact, env) before Phase B (vault); Notifications can optionally use Secrets A for webhook URLs. **Phase A is completed; Phase B is deferred to a later billing cycle unless extra capacity is available.**
+- **Batch additive features:** Compliance samples, Compressed files, Data source versions, and Strong crypto add config/report/sheets without breaking existing flows. **Near-term focus is on small, high-leverage slices of these plans.**
+- **Defer optional or heavy work:** Version check, Selenium QA, Synthetic data, Notifications (later phases), SAP connector, Dashboard i18n, and Additional data soup formats come after core security and scan/report features or when more usage budget is available.
 
 ## Tier summary (for planning):
 
-- **Tier 1 – Foundation:** 1 Security hardening, 2 Configurable timeouts, 3 Secrets Phase A.
-- **Tier 2 – Scan and report:** 4 Compliance samples, 5 Compressed files, 6 Content type & cloaking detection, 7 Data source versions & hardening, 8 Strong crypto & controls, 9 SAP connector.
-- **Tier 3 – Secrets and upgrade:** 9 Secrets Phase B, 10 Version check & self-upgrade.
-- **Tier 4 – Validation and ops:** 11 CNPJ alphanumeric, 12 Selenium QA, 13 Synthetic data & confidence, 14 Notifications, 15 Dashboard i18n.
+- **Tier 1 – Foundation (completed):** Security hardening, Configurable timeouts, Secrets Phase A.
+- **Tier 2 – Scan and report (in progress, token-efficient slices first):** Compressed files, Content type & cloaking detection, Data source versions & hardening, Strong crypto & controls, Compliance samples (completed), SAP connector (later).
+- **Tier 3 – Secrets and upgrade (deferred unless extra capacity):** Secrets Phase B, Version check & self-upgrade.
+- **Tier 4 – Validation and ops (partial, high-value slices first):** CNPJ alphanumeric, Additional detection techniques & FN reduction, Notifications (early phases), Selenium QA, Synthetic data & confidence, Dashboard i18n.
 
 Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). Within a plan, execute phases in order.
 
 ---
 
-## Recommended sequence (aggregated)
+## Recommended sequence (aggregated, token-aware)
 
-1. **Security hardening** (docs + validation + audit) – low risk; improves base.
-1. **Configurable timeouts** – global + per-target connect/read timeouts, sane defaults, connector wiring, recommendations.
-1. **Secrets vault – Phase A** (env expansion, redact GET /config, docs) – config safety before more config surface.
-1. **Additional compliance samples** – config-only; samples + docs + structure test.
-1. **Compressed files** – new config, CLI, connector logic, tests, docs; resource-exhaustion guards and user warning (see plan).
-1. **Content type & cloaking detection** – opt-in magic-byte/MIME detection for renamed/cloaked files; config, CLI, dashboard; tests; docs. Steganography out of scope for v1.
-1. **Data source versions & hardening** – inventory table, connector version/protocol collection, CVE/hardening rules, report sheets, next-steps guide.
-1. **Strong crypto & controls validation** – CLI/dashboard flag, strong-crypto validation per connection, anonymisation/controls inference, "Crypto & controls" report sheet.
-1. **Secrets vault – Phase B** (vault impl, re-import CLI/web) – after Phase A.
-1. **Version check & self-upgrade** – version source, container detection, CLI/API, backup/audit log.
-1. **CNPJ alphanumeric format validation** – format spec, regex/override, optional built-in or flag, compatibility recommendations.
-1. **Selenium QA test suite** – on-demand robot QA (navigation, functional, API, report/heatmap downloads, stress); short report and recommendations.
-1. **Synthetic data & confidence validation** – fixtures (all formats, SQL, NoSQL, shares), FP/FN + ground truth, confidence bands + operator guidance, timeouts/connectivity docs.
-1. **Notifications (off-band + scan-complete)** – webhook notifier, scan-complete brief to operator/tenant, how to download report; optional Part A (task/milestone) from CI or script.
-1. **SAP connector** – add SAP (HANA/OData or RFC) to data soup; discovery, sampling, findings; optional [sap] extra; docs and tests. See [PLAN_SAP_CONNECTOR.md](PLAN_SAP_CONNECTOR.md).
-1. **Dashboard i18n** – after approach is decided; add to-dos to this file and plan then.
+The list below is ordered for the current billing cycle, with a focus on:
 
-**Backlog (catalogue):** [PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md](PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md) – additional formats (epub, parquet, avro, dbf) and rich media / steganography containers (images, audio, video). Prioritise after compressed + content-type; stego as optional future phase.
+- **Near-term, high-value work** that fits in the remaining Pro usage.
+- **AI-heavy** tasks where the agent’s help is most valuable.
+- **Manual-friendly** tasks that you can do largely by hand or with existing tooling.
+
+### A. Near-term focus (current billing cycle)
+
+1. **CNPJ alphanumeric format validation** *(AI-assisted research + manual wiring)*  
+   - Use AI for: research/spec for alphanumeric format, regex proposal, EN + pt-BR doc wording.  
+   - Do manually: integrate regex/overrides, wire to existing detection/reporting, add tests.
+
+2. **Compressed files – minimal viable slice** *(AI-assisted design, manual wiring)*  
+   - Use AI for: config key names/defaults, archive helper API, resource-exhaustion warning text.  
+   - Do manually: Filesystem connector wiring, CLI flag, optional `[compressed]` extra, core tests.
+
+3. **Data source versions & hardening – schema and report design** *(AI-heavy design, light implementation)*  
+   - Use AI for: `data_source_inventory` schema, inventory/report sheet layout, design for one reference connector.  
+   - Do manually: implement that connector incrementally; add others in later cycles.
+
+4. **Strong crypto & controls validation – criteria + wording** *(AI-heavy criteria/report, manual plumbing)*  
+   - Use AI for: strong-crypto matrix per connector type, “Crypto & controls” sheet layout, disclaimers.  
+   - Do manually: add CLI/config flag, implement persistence for one connector, basic tests.
+
+5. **Additional detection techniques & FN reduction – simple thresholds + wording** *(mixed)*  
+   - Use AI for: “suggested review” and aggregation wording, simple stemming/normalisation/fuzzy strategy.  
+   - Do manually: add MEDIUM threshold config, wiring for 1–2 techniques, unit tests, docs tweaks.
+
+6. **Notifications (off-band + scan-complete) – Phase 1 only** *(AI for schema/templates, manual implementation)*  
+   - Use AI for: notifications config shape, notifier interface, initial message templates for CI/script usage.  
+   - Do manually: notifier module, config parsing, basic docs and examples; later phases after reset.
+
+### B. Deferred to after billing reset (or if on-demand spend is enabled)
+
+1. **Secrets vault – Phase B** – full vault implementation, re-import CLI/web, optional remove-from-config, and key management docs.
+2. **Version check & self-upgrade** – version fetch, CLI/API, backup/restore, container detection, audit log.
+3. **Selenium QA test suite** – full UI automation suite, stress tests, QA reports.
+4. **Synthetic data & confidence validation** – fixtures across all formats, precision/recall tooling, confidence bands in reports.
+5. **SAP connector** – research, connector module for HANA/OData/RFC, docs and tests.
+6. **Dashboard i18n** – routing and translation strategy decision, then implementation.
+
+### C. Backlog (catalogue)
+
+**Additional data soup formats:** [PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md](PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md) – additional formats (epub, parquet, avro, dbf) and rich media / steganography containers (images, audio, video). Prioritise after compressed + content-type; stego as optional future phase.
 
 ---
 

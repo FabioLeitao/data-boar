@@ -4,6 +4,7 @@ sample rows, run sensitivity detection. Uses Azure AD OAuth2 (client credentials
 Target type: dataverse or powerapps. Required: name, org_url (or environment_url),
 tenant_id, client_id, client_secret (or auth block).
 """
+
 import os
 from typing import Any
 
@@ -11,6 +12,7 @@ from core.connector_registry import register
 
 try:
     import httpx
+
     _HTTPX_AVAILABLE = True
 except ImportError:
     _HTTPX_AVAILABLE = False
@@ -25,19 +27,35 @@ def _dataverse_token(target: dict[str, Any]) -> str | None:
     tenant_id = auth.get("tenant_id") or target.get("tenant_id", "")
     client_id = auth.get("client_id") or target.get("client_id", "")
     client_secret = auth.get("client_secret") or target.get("client_secret", "")
-    if isinstance(client_secret, str) and client_secret.startswith("${") and client_secret.endswith("}"):
+    if (
+        isinstance(client_secret, str)
+        and client_secret.startswith("${")
+        and client_secret.endswith("}")
+    ):
         client_secret = os.environ.get(client_secret[2:-1], "")
-    org_url = (auth.get("org_url") or target.get("org_url") or target.get("environment_url") or "").rstrip("/")
+    org_url = (
+        auth.get("org_url")
+        or target.get("org_url")
+        or target.get("environment_url")
+        or ""
+    ).rstrip("/")
     if not org_url:
         return None
     if org_url.startswith(_HTTPS_PREFIX):
         resource = org_url.replace(_HTTPS_PREFIX, "").split("/")[0]
     else:
         resource = org_url
-    scope = f"{_HTTPS_PREFIX}{resource}/.default" if not resource.startswith("http") else f"{org_url}/.default"
+    scope = (
+        f"{_HTTPS_PREFIX}{resource}/.default"
+        if not resource.startswith("http")
+        else f"{org_url}/.default"
+    )
     if not tenant_id or not client_id or not client_secret:
         return None
-    token_url = auth.get("token_url") or f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
+    token_url = (
+        auth.get("token_url")
+        or f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
+    )
     resp = httpx.post(
         token_url,
         data={
@@ -89,13 +107,17 @@ class DataverseConnector:
 
     def connect(self) -> None:
         if not _HTTPX_AVAILABLE:
-            raise RuntimeError("httpx is required for Dataverse connector. Install with: pip install httpx")
+            raise RuntimeError(
+                "httpx is required for Dataverse connector. Install with: pip install httpx"
+            )
         org_url = self.config.get("org_url") or self.config.get("environment_url", "")
         if not org_url:
             raise ValueError("Dataverse requires org_url (or environment_url)")
         self._token = _dataverse_token(self.config)
         if not self._token:
-            raise ValueError("Dataverse auth failed: provide tenant_id, client_id, client_secret (or auth block)")
+            raise ValueError(
+                "Dataverse auth failed: provide tenant_id, client_id, client_secret (or auth block)"
+            )
         base = _api_base(org_url)
         connect_s = float(self.config.get("connect_timeout_seconds", 25))
         read_s = float(self.config.get("read_timeout_seconds", 90))
@@ -124,7 +146,10 @@ class DataverseConnector:
         """Return list of entity definitions (LogicalName, EntitySetName)."""
         r = self._client.get(
             "/EntityDefinitions",
-            params={"$select": "LogicalName,EntitySetName", "$filter": "IsValidForAdvancedFind eq true"},
+            params={
+                "$select": "LogicalName,EntitySetName",
+                "$filter": "IsValidForAdvancedFind eq true",
+            },
         )
         if r.status_code != 200:
             return []
@@ -174,8 +199,22 @@ class DataverseConnector:
                 columns_to_scan = []
                 if attrs:
                     for a in attrs:
-                        if a.get("AttributeType") in ("String", "Memo", "Integer", "DateTime", "Double", "Decimal", "Lookup", "Uniqueidentifier"):
-                            columns_to_scan.append((a.get("LogicalName", a.get("SchemaName", "")), str(a.get("AttributeType", ""))))
+                        if a.get("AttributeType") in (
+                            "String",
+                            "Memo",
+                            "Integer",
+                            "DateTime",
+                            "Double",
+                            "Decimal",
+                            "Lookup",
+                            "Uniqueidentifier",
+                        ):
+                            columns_to_scan.append(
+                                (
+                                    a.get("LogicalName", a.get("SchemaName", "")),
+                                    str(a.get("AttributeType", "")),
+                                )
+                            )
                 if not columns_to_scan and rows:
                     for key in rows[0].keys():
                         if key.startswith("@"):
@@ -196,7 +235,9 @@ class DataverseConnector:
                     self.db_manager.save_finding(
                         source_type="database",
                         target_name=target_name,
-                        server_ip=self.config.get("org_url", "").split("/")[0] if self.config.get("org_url") else "dataverse",
+                        server_ip=self.config.get("org_url", "").split("/")[0]
+                        if self.config.get("org_url")
+                        else "dataverse",
                         engine_details="Dataverse",
                         schema_name=logical,
                         table_name=entity_set,
@@ -214,5 +255,13 @@ class DataverseConnector:
 
 
 if _HTTPX_AVAILABLE:
-    register("dataverse", DataverseConnector, ["name", "org_url", "tenant_id", "client_id", "client_secret"])
-    register("powerapps", DataverseConnector, ["name", "org_url", "tenant_id", "client_id", "client_secret"])
+    register(
+        "dataverse",
+        DataverseConnector,
+        ["name", "org_url", "tenant_id", "client_id", "client_secret"],
+    )
+    register(
+        "powerapps",
+        DataverseConnector,
+        ["name", "org_url", "tenant_id", "client_id", "client_secret"],
+    )

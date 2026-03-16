@@ -3,6 +3,7 @@ AuditEngine: orchestrates targets from config via connector registry; uses Local
 Supports sequential or parallel (max_workers) scan; start_audit(), generate_final_reports(session_id).
 Exposes db_manager, is_running, get_current_findings_count() for API.
 """
+
 import hashlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
@@ -25,9 +26,11 @@ def _compute_config_scope_hash(config: dict[str, Any]) -> str:
     blob = "\n".join(sorted(parts)).encode("utf-8")
     return hashlib.sha256(blob).hexdigest()
 
+
 # Import connectors so they register themselves
 import connectors.sql_connector  # noqa: F401
 import connectors.filesystem_connector  # noqa: F401
+
 try:
     import connectors.mongodb_connector  # noqa: F401
 except ImportError:
@@ -133,7 +136,9 @@ class AuditEngine:
                 for target in targets:
                     self._run_target(target)
             else:
-                with ThreadPoolExecutor(max_workers=min(self._max_workers, len(targets) or 1)) as ex:
+                with ThreadPoolExecutor(
+                    max_workers=min(self._max_workers, len(targets) or 1)
+                ) as ex:
                     futures = {ex.submit(self._run_target, t): t for t in targets}
                     for fut in as_completed(futures):
                         try:
@@ -164,28 +169,43 @@ class AuditEngine:
         if t == "filesystem":
             if ext is not None:
                 connector = connector_class(
-                    target, self.scanner, self.db_manager,
-                    extensions=ext, scan_sqlite_as_db=scan_sqlite_as_db, sample_limit=sample_limit,
+                    target,
+                    self.scanner,
+                    self.db_manager,
+                    extensions=ext,
+                    scan_sqlite_as_db=scan_sqlite_as_db,
+                    sample_limit=sample_limit,
                     file_passwords=file_passwords,
                 )
             else:
                 connector = connector_class(
-                    target, self.scanner, self.db_manager,
-                    scan_sqlite_as_db=scan_sqlite_as_db, sample_limit=sample_limit,
+                    target,
+                    self.scanner,
+                    self.db_manager,
+                    scan_sqlite_as_db=scan_sqlite_as_db,
+                    sample_limit=sample_limit,
                     file_passwords=file_passwords,
                 )
         elif t in ("sharepoint", "webdav", "smb", "cifs", "nfs"):
             connector = connector_class(
-                target, self.scanner, self.db_manager,
-                extensions=ext, scan_sqlite_as_db=scan_sqlite_as_db, sample_limit=sample_limit,
+                target,
+                self.scanner,
+                self.db_manager,
+                extensions=ext,
+                scan_sqlite_as_db=scan_sqlite_as_db,
+                sample_limit=sample_limit,
                 file_passwords=file_passwords,
             )
         elif t in ("powerbi", "dataverse", "powerapps"):
-            connector = connector_class(target, self.scanner, self.db_manager, sample_limit=sample_limit)
+            connector = connector_class(
+                target, self.scanner, self.db_manager, sample_limit=sample_limit
+            )
         else:
             # Database targets (postgresql, mysql, sqlite, mssql, oracle, etc.): pass detection config for optional minor full-scan
             connector = connector_class(
-                target, self.scanner, self.db_manager,
+                target,
+                self.scanner,
+                self.db_manager,
                 detection_config=self.config.get("detection"),
             )
         try:
@@ -199,19 +219,27 @@ class AuditEngine:
         If learned_patterns.enabled, also writes learned_patterns.yaml from findings.
         """
         from report.generator import generate_report
+
         sid = session_id or self.db_manager.current_session_id
         if not sid:
             return None
         out_dir = self.config.get("report", {}).get("output_dir", ".")
-        path = generate_report(self.db_manager, sid, output_dir=out_dir, config=self.config)
+        path = generate_report(
+            self.db_manager, sid, output_dir=out_dir, config=self.config
+        )
         if path:
             self._last_report_path = path
         # Optional: write learned patterns for merging into ml_patterns_file (2.2)
         from core.learned_patterns import write_learned_patterns
+
         learned_path = write_learned_patterns(self.db_manager, sid, self.config)
         if learned_path:
             from utils.logger import get_logger
-            get_logger().info("Learned patterns written to %s (merge into ml_patterns_file for next run)", learned_path)
+
+            get_logger().info(
+                "Learned patterns written to %s (merge into ml_patterns_file for next run)",
+                learned_path,
+            )
         return path
 
     def get_last_report_path(self) -> str | None:

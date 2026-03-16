@@ -3,6 +3,7 @@ SMB/CIFS connector: connect to Windows or Samba shares by host (FQDN or IP), lis
 download to temp, run same text extraction and sensitivity detection as filesystem.
 Requires optional dependency: pip install smbprotocol (or uv pip install -e ".[shares]").
 """
+
 import os
 import tempfile
 from pathlib import Path
@@ -18,6 +19,7 @@ from connectors.filesystem_connector import (
 
 try:
     import smbclient
+
     _SMB_AVAILABLE = True
 except ImportError:
     _SMB_AVAILABLE = False
@@ -75,13 +77,15 @@ class SMBConnector:
             self.db_manager.save_failure(
                 self.config.get("name", "SMB"),
                 "error",
-                "smbprotocol not installed. Install with: pip install smbprotocol or uv pip install -e \".[shares]\"",
+                'smbprotocol not installed. Install with: pip install smbprotocol or uv pip install -e ".[shares]"',
             )
             return
         target_name = self.config.get("name", "SMB")
         host = self.config.get("host", "").strip()
         if not host:
-            self.db_manager.save_failure(target_name, "error", "Missing host (FQDN or IP)")
+            self.db_manager.save_failure(
+                target_name, "error", "Missing host (FQDN or IP)"
+            )
             return
         user = self.config.get("user", self.config.get("username", ""))
         password = self.config.get("pass", self.config.get("password", ""))
@@ -93,15 +97,21 @@ class SMBConnector:
         if not share:
             self.db_manager.save_failure(target_name, "error", "Missing share name")
             return
-        path_in_share = (self.config.get("path", "") or "").strip().replace("/", "\\").strip("\\")
+        path_in_share = (
+            (self.config.get("path", "") or "").strip().replace("/", "\\").strip("\\")
+        )
         recursive = self.config.get("recursive", True)
         try:
-            smbclient.register_session(host, username=user, password=password, port=port)
+            smbclient.register_session(
+                host, username=user, password=password, port=port
+            )
             self._session_registered = True
         except Exception as e:
             self.db_manager.save_failure(target_name, "auth_failed", str(e))
             return
-        root_unc = self._unc_path(path_in_share) if path_in_share else self._unc_path("")
+        root_unc = (
+            self._unc_path(path_in_share) if path_in_share else self._unc_path("")
+        )
         try:
             if recursive:
                 walker = smbclient.walk(root_unc)
@@ -122,14 +132,18 @@ class SMBConnector:
                     with smbclient.open_file(unc_file, mode="rb") as f:
                         content = f.read()
                 except Exception as e:
-                    self.db_manager.save_failure(target_name, "permission_denied", f"{unc_file}: {e}")
+                    self.db_manager.save_failure(
+                        target_name, "permission_denied", f"{unc_file}: {e}"
+                    )
                     continue
                 if self.scan_sqlite_as_db and ext in SQLITE_EXTENSIONS:
                     fd, temp_path = tempfile.mkstemp(suffix=ext)
                     try:
                         os.write(fd, content)
                         os.close(fd)
-                        for finding in _scan_sqlite_file_as_db(Path(temp_path), self.scanner, self.sample_limit):
+                        for finding in _scan_sqlite_file_as_db(
+                            Path(temp_path), self.scanner, self.sample_limit
+                        ):
                             self.db_manager.save_finding(
                                 "filesystem",
                                 target_name=target_name,
@@ -151,7 +165,9 @@ class SMBConnector:
                 try:
                     os.write(fd, content)
                     os.close(fd)
-                    text = _read_text_sample(Path(temp_path), ext, self.sample_limit, self.file_passwords)
+                    text = _read_text_sample(
+                        Path(temp_path), ext, self.sample_limit, self.file_passwords
+                    )
                     res = self.scanner.scan_file_content(text, Path(unc_file))
                     if res is None:
                         continue

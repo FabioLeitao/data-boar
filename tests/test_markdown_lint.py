@@ -39,9 +39,18 @@ def _collect_md_files(root: Path, exclude_dirs: frozenset[str]) -> list[Path]:
 
 
 # Exclude only tooling/dependency dirs; .cursor is included so rules/skills pass MD031, MD060, etc.
-MARKDOWN_LINT_EXCLUDE_DIRS = frozenset({
-    ".git", "node_modules", "__pycache__", ".venv", "venv", ".tox", "build", "dist",
-})
+MARKDOWN_LINT_EXCLUDE_DIRS = frozenset(
+    {
+        ".git",
+        "node_modules",
+        "__pycache__",
+        ".venv",
+        "venv",
+        ".tox",
+        "build",
+        "dist",
+    }
+)
 
 
 def _read_md(path: Path) -> str:
@@ -105,7 +114,12 @@ def _check_md024(text: str) -> list[tuple[int, str]]:
         content = m.group(1).strip()
         normalized = content.lower()
         if normalized in seen:
-            violations.append((i, f"MD024: duplicate heading (same as line {seen[normalized]}): {content!r}"))
+            violations.append(
+                (
+                    i,
+                    f"MD024: duplicate heading (same as line {seen[normalized]}): {content!r}",
+                )
+            )
         else:
             seen[normalized] = i
     return violations
@@ -114,7 +128,9 @@ def _check_md024(text: str) -> list[tuple[int, str]]:
 # --- MD036: Emphasis used instead of heading ---
 
 
-def _is_standalone_emphasis_heading(lines: list[str], idx: int, emphasis_only_re: re.Pattern[str]) -> bool:
+def _is_standalone_emphasis_heading(
+    lines: list[str], idx: int, emphasis_only_re: re.Pattern[str]
+) -> bool:
     """True if line at idx is a short emphasis-only line with blank before/after (or file boundary)."""
     s = lines[idx].strip()
     if not s or len(s) > 80 or not emphasis_only_re.match(s):
@@ -135,10 +151,16 @@ def _check_md036(text: str) -> list[tuple[int, str]]:
         s = line.strip()
         if not s or ":" in s or "|" in line:
             continue
-        if s.startswith(">") or re.match(r"^[\s]*[-*+]\s", line) or re.match(r"^[\s]*\d+\.\s", line):
+        if (
+            s.startswith(">")
+            or re.match(r"^[\s]*[-*+]\s", line)
+            or re.match(r"^[\s]*\d+\.\s", line)
+        ):
             continue
         if _is_standalone_emphasis_heading(lines, i, emphasis_only_re):
-            violations.append((i + 1, "MD036: emphasis used instead of heading (use ## instead)"))
+            violations.append(
+                (i + 1, "MD036: emphasis used instead of heading (use ## instead)")
+            )
     return violations
 
 
@@ -158,7 +180,9 @@ def _check_md051(text: str) -> list[tuple[int, str]]:
             if not fragment:
                 continue
             if " " in fragment or "\t" in fragment:
-                violations.append((i, f"MD051: link fragment contains spaces: {fragment!r}"))
+                violations.append(
+                    (i, f"MD051: link fragment contains spaces: {fragment!r}")
+                )
                 break
     return violations
 
@@ -178,14 +202,18 @@ def _check_md060(text: str) -> list[tuple[int, str]]:
         fence = m.group(2)
         fences.add(fence[0])  # '`' or '~'
     if len(fences) > 1:
-        violations.append((1, "MD060: use consistent fenced code block markers (all ``` or all ~~~)"))
+        violations.append(
+            (1, "MD060: use consistent fenced code block markers (all ``` or all ~~~)")
+        )
     return violations
 
 
 # --- MD031: Blanks around fences ---
 
 
-def _md031_violation_at(lines: list[str], idx: int, in_fence: bool) -> tuple[int, str] | None:
+def _md031_violation_at(
+    lines: list[str], idx: int, in_fence: bool
+) -> tuple[int, str] | None:
     """Return (line_no, message) if this fence line violates MD031, else None."""
     if not in_fence:
         if idx > 0 and lines[idx - 1].strip() != "":
@@ -231,7 +259,9 @@ def _check_md034(text: str) -> list[tuple[int, str]]:
             continue
         if re.search(r"`[^`]*https?://[^`]*`", line):
             continue
-        violations.append((i + 1, "MD034: bare URL used (wrap in <...> or [text](url))"))
+        violations.append(
+            (i + 1, "MD034: bare URL used (wrap in <...> or [text](url))")
+        )
     return violations
 
 

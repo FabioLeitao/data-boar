@@ -8,6 +8,7 @@ that the detector can load each sample without error.
 Encoding: detector must load samples with UTF-8 Unicode content (multilingual terms)
 without regression; see test_compliance_sample_unicode_terms_loadable.
 """
+
 import tempfile
 from pathlib import Path
 
@@ -35,7 +36,9 @@ def sample_files():
 def test_compliance_sample_yaml_files_exist():
     """At least one compliance sample YAML exists (UK GDPR or more)."""
     files = _compliance_sample_yaml_files()
-    assert len(files) >= 1, "Expected at least one docs/compliance-samples/compliance-sample-*.yaml"
+    assert len(files) >= 1, (
+        "Expected at least one docs/compliance-samples/compliance-sample-*.yaml"
+    )
 
 
 def _validate_regex_section(data: dict, sample_name: str) -> None:
@@ -43,23 +46,33 @@ def _validate_regex_section(data: dict, sample_name: str) -> None:
     regex_items = data.get("regex") or data.get("patterns")
     if regex_items is None:
         return
-    assert isinstance(regex_items, list), f"{sample_name}: regex/patterns must be a list"
+    assert isinstance(regex_items, list), (
+        f"{sample_name}: regex/patterns must be a list"
+    )
     for i, item in enumerate(regex_items):
         assert isinstance(item, dict), f"{sample_name}: regex item {i} must be a dict"
-        assert "name" in item and item.get("name"), f"{sample_name}: regex item {i} must have non-empty name"
-        assert "pattern" in item and item.get("pattern"), f"{sample_name}: regex item {i} must have non-empty pattern"
+        assert "name" in item and item.get("name"), (
+            f"{sample_name}: regex item {i} must have non-empty name"
+        )
+        assert "pattern" in item and item.get("pattern"), (
+            f"{sample_name}: regex item {i} must have non-empty pattern"
+        )
         assert "norm_tag" in item, f"{sample_name}: regex item {i} must have norm_tag"
 
 
 def _validate_terms_section(data: dict, sample_name: str) -> None:
     """Assert terms list has items with text and label."""
-    terms_items = data.get("terms") or (data.get("patterns") if "regex" in data else None)
+    terms_items = data.get("terms") or (
+        data.get("patterns") if "regex" in data else None
+    )
     if terms_items is None:
         return
     assert isinstance(terms_items, list), f"{sample_name}: terms must be a list"
     for i, item in enumerate(terms_items):
         assert isinstance(item, dict), f"{sample_name}: terms item {i} must be a dict"
-        assert "text" in item and (item.get("text") or "").strip(), f"{sample_name}: terms item {i} must have non-empty text"
+        assert "text" in item and (item.get("text") or "").strip(), (
+            f"{sample_name}: terms item {i} must have non-empty text"
+        )
         assert "label" in item, f"{sample_name}: terms item {i} must have label"
 
 
@@ -68,15 +81,30 @@ def _validate_recommendation_overrides_section(data: dict, sample_name: str) -> 
     overrides = data.get("recommendation_overrides")
     if overrides is None:
         return
-    assert isinstance(overrides, list), f"{sample_name}: recommendation_overrides must be a list"
-    required_keys = ("norm_tag_pattern", "base_legal", "risk", "recommendation", "priority", "relevant_for")
+    assert isinstance(overrides, list), (
+        f"{sample_name}: recommendation_overrides must be a list"
+    )
+    required_keys = (
+        "norm_tag_pattern",
+        "base_legal",
+        "risk",
+        "recommendation",
+        "priority",
+        "relevant_for",
+    )
     for i, item in enumerate(overrides):
-        assert isinstance(item, dict), f"{sample_name}: recommendation_overrides item {i} must be a dict"
+        assert isinstance(item, dict), (
+            f"{sample_name}: recommendation_overrides item {i} must be a dict"
+        )
         for key in required_keys:
-            assert key in item, f"{sample_name}: recommendation_overrides item {i} must have {key}"
+            assert key in item, (
+                f"{sample_name}: recommendation_overrides item {i} must have {key}"
+            )
 
 
-@pytest.mark.parametrize("sample_path", _compliance_sample_yaml_files(), ids=lambda p: p.name)
+@pytest.mark.parametrize(
+    "sample_path", _compliance_sample_yaml_files(), ids=lambda p: p.name
+)
 def test_compliance_sample_yaml_structure(sample_path):
     """
     Each compliance-sample-*.yaml has valid structure:
@@ -100,7 +128,9 @@ def test_compliance_sample_yaml_structure(sample_path):
     )
 
 
-@pytest.mark.parametrize("sample_path", _compliance_sample_yaml_files(), ids=lambda p: p.name)
+@pytest.mark.parametrize(
+    "sample_path", _compliance_sample_yaml_files(), ids=lambda p: p.name
+)
 def test_compliance_sample_loadable_by_detector(sample_path):
     """Detector can load each sample as regex_overrides_file and ml_patterns_file without error."""
     from core.scanner import DataScanner
@@ -143,7 +173,9 @@ def test_compliance_sample_unicode_terms_loadable():
         path = Path(f.name)
     try:
         path.write_text(
-            yaml.dump(sample, default_flow_style=False, allow_unicode=True, sort_keys=False),
+            yaml.dump(
+                sample, default_flow_style=False, allow_unicode=True, sort_keys=False
+            ),
             encoding="utf-8",
         )
         scanner = DataScanner(
