@@ -3,6 +3,7 @@
 Includes encoding: Excel report must correctly contain Unicode in recommendation text
 (multilingual compliance samples, base_legal, etc.) so we do not regress in production.
 """
+
 from pathlib import Path
 
 import pandas as pd
@@ -33,13 +34,17 @@ def test_recommendations_without_overrides_uses_builtin_logic(tmp_path):
         path = generate_report(mgr, "s1", output_dir=out_dir, config=None)
         assert path is not None
         import pandas as pd
+
         with pd.ExcelFile(path) as xl:
             assert "Recommendations" in xl.sheet_names
             df = pd.read_excel(xl, sheet_name="Recommendations")
         assert "Data / Pattern" in df.columns and "Base legal" in df.columns
         cpf_row = df[df["Data / Pattern"] == "CPF"].iloc[0]
         assert "CRÍTICA" in str(cpf_row["Prioridade"])
-        assert "LGPD" in str(cpf_row["Base legal"]) or "identificação" in str(cpf_row["Base legal"]).lower()
+        assert (
+            "LGPD" in str(cpf_row["Base legal"])
+            or "identificação" in str(cpf_row["Base legal"]).lower()
+        )
     finally:
         mgr.dispose()
 
@@ -81,11 +86,14 @@ def test_recommendations_with_overrides_uses_override_for_matching_norm_tag(tmp_
         path = generate_report(mgr, "s2", output_dir=out_dir, config=config)
         assert path is not None
         import pandas as pd
+
         with pd.ExcelFile(path) as xl:
             df = pd.read_excel(xl, sheet_name="Recommendations")
         uk_row = df[df["Data / Pattern"] == "UK_SSN"].iloc[0]
         assert "UK GDPR Art. 4(1)" in str(uk_row["Base legal"])
-        assert "UK GDPR safeguards" in str(uk_row["Recomendação"]) or "DPA" in str(uk_row["Recomendação"])
+        assert "UK GDPR safeguards" in str(uk_row["Recomendação"]) or "DPA" in str(
+            uk_row["Recomendação"]
+        )
         assert str(uk_row["Prioridade"]) == "ALTA"
     finally:
         mgr.dispose()
@@ -116,7 +124,10 @@ def test_pii_ambiguous_recommendation_row_medium_and_confirm_manually(tmp_path):
             df = pd.read_excel(xl, sheet_name="Recommendations")
         row = df[df["Data / Pattern"] == "PII_AMBIGUOUS"].iloc[0]
         assert "MÉDIA" in str(row["Prioridade"])
-        assert "Confirmar manualmente" in str(row["Recomendação"]) or "confirmar" in str(row["Recomendação"]).lower()
+        assert (
+            "Confirmar manualmente" in str(row["Recomendação"])
+            or "confirmar" in str(row["Recomendação"]).lower()
+        )
     finally:
         mgr.dispose()
 
@@ -153,10 +164,15 @@ def test_executive_summary_sheet_when_enabled(tmp_path):
         path = generate_report(mgr, "s-exec", output_dir=out_dir, config=config)
         assert path is not None
         import pandas as pd
+
         with pd.ExcelFile(path) as xl:
             assert "Executive summary" in xl.sheet_names
             df = pd.read_excel(xl, sheet_name="Executive summary")
-        assert "Metric" in df.columns and "Category" in df.columns and "Count" in df.columns
+        assert (
+            "Metric" in df.columns
+            and "Category" in df.columns
+            and "Count" in df.columns
+        )
         by_sens = df[df["Metric"] == "Findings by sensitivity"]
         assert len(by_sens) >= 3  # HIGH, MEDIUM, LOW
         high_row = by_sens[by_sens["Category"] == "HIGH"].iloc[0]
@@ -201,6 +217,7 @@ def test_min_sensitivity_filters_low_from_findings_sheets(tmp_path):
         path = generate_report(mgr, "s-min", output_dir=out_dir, config=config)
         assert path is not None
         import pandas as pd
+
         with pd.ExcelFile(path) as xl:
             assert "Database findings" in xl.sheet_names
             df = pd.read_excel(xl, sheet_name="Database findings")
@@ -243,17 +260,32 @@ def test_possible_minor_recommendation_row_and_priority(tmp_path):
         path = generate_report(mgr, "s-minor", output_dir=out_dir, config=None)
         assert path is not None
         import pandas as pd
+
         with pd.ExcelFile(path) as xl:
             df = pd.read_excel(xl, sheet_name="Recommendations")
-        minor_rows = df[df["Data / Pattern"].astype(str).str.contains("DOB_POSSIBLE_MINOR", na=False)]
+        minor_rows = df[
+            df["Data / Pattern"]
+            .astype(str)
+            .str.contains("DOB_POSSIBLE_MINOR", na=False)
+        ]
         assert len(minor_rows) >= 1
         row = minor_rows.iloc[0]
         assert "CRÍTICA" in str(row["Prioridade"])
-        assert "LGPD Art. 14" in str(row["Base legal"]) or "Art. 14" in str(row["Base legal"])
+        assert "LGPD Art. 14" in str(row["Base legal"]) or "Art. 14" in str(
+            row["Base legal"]
+        )
         rec_text = str(row["Recomendação"])
         assert "consentimento" in rec_text.lower() or "consent" in rec_text.lower()
-        assert "armazenamento" in rec_text.lower() or "storage" in rec_text.lower() or "retenção" in rec_text.lower()
-        assert "menor" in rec_text.lower() or "minor" in rec_text.lower() or "criança" in rec_text.lower()
+        assert (
+            "armazenamento" in rec_text.lower()
+            or "storage" in rec_text.lower()
+            or "retenção" in rec_text.lower()
+        )
+        assert (
+            "menor" in rec_text.lower()
+            or "minor" in rec_text.lower()
+            or "criança" in rec_text.lower()
+        )
         # Possible-minor recommendation should appear first (we sort minor recs to top)
         first_row = df.iloc[0]
         assert "DOB_POSSIBLE_MINOR" in str(first_row["Data / Pattern"])
@@ -289,6 +321,7 @@ def test_config_scope_hash_stored_and_in_report_info(tmp_path):
         path = generate_report(mgr, "s-hash", output_dir=out_dir, config={})
         assert path is not None
         import pandas as pd
+
         with pd.ExcelFile(path) as xl:
             df = pd.read_excel(xl, sheet_name="Report info")
         scope_row = df[df["Field"] == "Config scope hash"]
@@ -339,7 +372,11 @@ def test_report_recommendations_unicode_in_override(tmp_path):
             df = pd.read_excel(xl, sheet_name="Recommendations")
         appi_row = df[df["Data / Pattern"] == "APPI"].iloc[0]
         assert "APPI" in str(appi_row["Base legal"])
-        assert "個人" in str(appi_row["Base legal"]) or "Japan" in str(appi_row["Base legal"])
-        assert "safeguards" in str(appi_row["Recomendação"]) or "données" in str(appi_row["Recomendação"])
+        assert "個人" in str(appi_row["Base legal"]) or "Japan" in str(
+            appi_row["Base legal"]
+        )
+        assert "safeguards" in str(appi_row["Recomendação"]) or "données" in str(
+            appi_row["Recomendação"]
+        )
     finally:
         mgr.dispose()

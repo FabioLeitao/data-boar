@@ -8,6 +8,7 @@ so it works in multilingual and legacy Windows environments. Pattern files
 (regex_overrides_file, ml_patterns_file, dl_patterns_file) use the optional
 pattern_files_encoding key (default utf-8) with errors=replace to avoid crashes.
 """
+
 from pathlib import Path
 from typing import Any
 
@@ -63,24 +64,28 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
     else:
         out["targets"] = []
         for db in data.get("databases", []):
-            out["targets"].append({
-                "name": db.get("name", "unknown"),
-                "type": "database",
-                "driver": db.get("driver", "postgresql+psycopg2"),
-                "host": db.get("host", "localhost"),
-                "port": int(db.get("port", 5432)),
-                "user": db.get("user", ""),
-                "pass": db.get("password", db.get("pass", "")),
-                "database": db.get("database", ""),
-            })
+            out["targets"].append(
+                {
+                    "name": db.get("name", "unknown"),
+                    "type": "database",
+                    "driver": db.get("driver", "postgresql+psycopg2"),
+                    "host": db.get("host", "localhost"),
+                    "port": int(db.get("port", 5432)),
+                    "user": db.get("user", ""),
+                    "pass": db.get("password", db.get("pass", "")),
+                    "database": db.get("database", ""),
+                }
+            )
         fs = data.get("file_scan", {})
         for directory in fs.get("directories", []):
-            out["targets"].append({
-                "name": Path(directory).name or "filesystem",
-                "type": "filesystem",
-                "path": directory,
-                "recursive": fs.get("recursive", True),
-            })
+            out["targets"].append(
+                {
+                    "name": Path(directory).name or "filesystem",
+                    "type": "filesystem",
+                    "path": directory,
+                    "recursive": fs.get("recursive", True),
+                }
+            )
 
     # File scan defaults: all compatible extensions when not specified (see connectors.filesystem_connector.SUPPORTED_EXTENSIONS)
     def _normalize_file_passwords(pw: Any) -> dict[str, str]:
@@ -101,16 +106,50 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         return out
 
     _default_extensions = [
-        ".txt", ".csv", ".pdf", ".doc", ".docx", ".odt", ".ods", ".odp", ".xls", ".xlsx", ".xlsm", ".ppt", ".pptx",
-        ".sqlite", ".sqlite3", ".db", ".json", ".jsonl", ".xml", ".html", ".htm", ".md", ".yml", ".yaml",
-        ".log", ".ini", ".cfg", ".conf", ".env", ".sql", ".rtf", ".eml", ".msg", ".tex", ".bib",
+        ".txt",
+        ".csv",
+        ".pdf",
+        ".doc",
+        ".docx",
+        ".odt",
+        ".ods",
+        ".odp",
+        ".xls",
+        ".xlsx",
+        ".xlsm",
+        ".ppt",
+        ".pptx",
+        ".sqlite",
+        ".sqlite3",
+        ".db",
+        ".json",
+        ".jsonl",
+        ".xml",
+        ".html",
+        ".htm",
+        ".md",
+        ".yml",
+        ".yaml",
+        ".log",
+        ".ini",
+        ".cfg",
+        ".conf",
+        ".env",
+        ".sql",
+        ".rtf",
+        ".eml",
+        ".msg",
+        ".tex",
+        ".bib",
     ]
     out["file_scan"] = {
         "extensions": data.get("file_scan", {}).get("extensions", _default_extensions),
         "recursive": data.get("file_scan", {}).get("recursive", True),
         "scan_sqlite_as_db": data.get("file_scan", {}).get("scan_sqlite_as_db", True),
         "sample_limit": data.get("file_scan", {}).get("sample_limit", 5),
-        "file_passwords": _normalize_file_passwords(data.get("file_scan", {}).get("file_passwords")),
+        "file_passwords": _normalize_file_passwords(
+            data.get("file_scan", {}).get("file_passwords")
+        ),
     }
     # Normalize extensions to list of suffixes (e.g. "*.pdf" -> ".pdf")
     exts = out["file_scan"]["extensions"]
@@ -122,23 +161,45 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
     for t in out.get("targets") or []:
         if not isinstance(t, dict):
             continue
-        env_pass_key = (t.get("pass_from_env") or t.get("password_from_env") or "").strip()
+        env_pass_key = (
+            t.get("pass_from_env") or t.get("password_from_env") or ""
+        ).strip()
         if env_pass_key:
-            t["pass"] = (os.environ.get(env_pass_key) or "").strip() or t.get("pass") or t.get("password") or ""
+            t["pass"] = (
+                (os.environ.get(env_pass_key) or "").strip()
+                or t.get("pass")
+                or t.get("password")
+                or ""
+            )
         env_user_key = (t.get("user_from_env") or "").strip()
         if env_user_key:
-            t["user"] = (os.environ.get(env_user_key) or "").strip() or t.get("user") or t.get("username") or ""
+            t["user"] = (
+                (os.environ.get(env_user_key) or "").strip()
+                or t.get("user")
+                or t.get("username")
+                or ""
+            )
         auth = t.get("auth")
         if isinstance(auth, dict):
             token_env = (auth.get("token_from_env") or "").strip()
             if token_env:
-                auth["token"] = (os.environ.get(token_env) or "").strip() or auth.get("token") or ""
+                auth["token"] = (
+                    (os.environ.get(token_env) or "").strip() or auth.get("token") or ""
+                )
             cs_env = (auth.get("client_secret_from_env") or "").strip()
             if cs_env:
-                auth["client_secret"] = (os.environ.get(cs_env) or "").strip() or auth.get("client_secret") or ""
+                auth["client_secret"] = (
+                    (os.environ.get(cs_env) or "").strip()
+                    or auth.get("client_secret")
+                    or ""
+                )
         env_cs_key = (t.get("client_secret_from_env") or "").strip()
         if env_cs_key:
-            t["client_secret"] = (os.environ.get(env_cs_key) or "").strip() or t.get("client_secret") or ""
+            t["client_secret"] = (
+                (os.environ.get(env_cs_key) or "").strip()
+                or t.get("client_secret")
+                or ""
+            )
 
     # Report
     out["report"] = data.get("report", {})
@@ -146,23 +207,31 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         out["report"]["output_dir"] = "."
     # Optional: list of { norm_tag_pattern, base_legal, risk, recommendation, priority, relevant_for } for recommendations
     overrides = out["report"].get("recommendation_overrides")
-    out["report"]["recommendation_overrides"] = list(overrides) if isinstance(overrides, list) else []
+    out["report"]["recommendation_overrides"] = (
+        list(overrides) if isinstance(overrides, list) else []
+    )
     if "include_executive_summary" not in out["report"]:
         out["report"]["include_executive_summary"] = False
     else:
-        out["report"]["include_executive_summary"] = bool(out["report"]["include_executive_summary"])
+        out["report"]["include_executive_summary"] = bool(
+            out["report"]["include_executive_summary"]
+        )
     if "min_sensitivity" not in out["report"]:
         out["report"]["min_sensitivity"] = "LOW"
     else:
         v = (out["report"].get("min_sensitivity") or "LOW").upper()
-        out["report"]["min_sensitivity"] = v if v in ("HIGH", "MEDIUM", "LOW") else "LOW"
+        out["report"]["min_sensitivity"] = (
+            v if v in ("HIGH", "MEDIUM", "LOW") else "LOW"
+        )
 
     # API
     out["api"] = data.get("api", {})
     if "port" not in out["api"]:
         out["api"]["port"] = 8088
     if "workers" not in out["api"]:
-        out["api"]["workers"] = 1  # 1 = minimal footprint; 2+ for concurrent API traffic
+        out["api"]["workers"] = (
+            1  # 1 = minimal footprint; 2+ for concurrent API traffic
+        )
     # Optional API key (enterprise): when require_api_key is true, API checks X-API-Key or Authorization: Bearer
     out["api"]["require_api_key"] = bool(out["api"].get("require_api_key", False))
     out["api"]["api_key"] = (out["api"].get("api_key") or "").strip() or None
@@ -178,7 +247,11 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
 
     # Encoding for pattern files (regex_overrides_file, ml_patterns_file, dl_patterns_file). Default utf-8.
     # Use utf-8, utf-8-sig, cp1252, latin_1, or iso-8859-1 for legacy/multilingual environments.
-    _enc = (data.get("pattern_files_encoding") or data.get("file_encoding") or "utf-8").strip().lower()
+    _enc = (
+        (data.get("pattern_files_encoding") or data.get("file_encoding") or "utf-8")
+        .strip()
+        .lower()
+    )
     out["pattern_files_encoding"] = _enc if _enc else "utf-8"
 
     # Inline sensitivity-detection terms (override or supplement file-based terms when provided)
@@ -211,7 +284,9 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         "minor_full_scan": bool(detection_cfg.get("minor_full_scan", False)),
         "minor_full_scan_limit": minor_full_scan_limit,
         "minor_cross_reference": bool(detection_cfg.get("minor_cross_reference", True)),
-        "aggregated_identification_enabled": bool(detection_cfg.get("aggregated_identification_enabled", True)),
+        "aggregated_identification_enabled": bool(
+            detection_cfg.get("aggregated_identification_enabled", True)
+        ),
         "aggregated_min_categories": agg_min,
         "quasi_identifier_mapping": list(quasi) if isinstance(quasi, list) else [],
     }
@@ -302,14 +377,25 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
                 target_connect = single
             if target_read is None:
                 target_read = single
-        for _name, _val in (("connect_timeout_seconds", target_connect), ("read_timeout_seconds", target_read)):
+        for _name, _val in (
+            ("connect_timeout_seconds", target_connect),
+            ("read_timeout_seconds", target_read),
+        ):
             if _val is not None:
                 try:
                     _val = max(1, int(_val))
                 except (TypeError, ValueError):
-                    _val = global_connect if _name == "connect_timeout_seconds" else global_read
+                    _val = (
+                        global_connect
+                        if _name == "connect_timeout_seconds"
+                        else global_read
+                    )
             else:
-                _val = global_connect if _name == "connect_timeout_seconds" else global_read
+                _val = (
+                    global_connect
+                    if _name == "connect_timeout_seconds"
+                    else global_read
+                )
             t[_name] = _val
 
     # Parallel/sequential

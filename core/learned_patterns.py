@@ -4,14 +4,35 @@ write to a YAML file compatible with ml_patterns_file for use in future runs.
 Balances: (1) reducing false positives via thresholds and blocklist,
 (2) surfacing compliance-relevant terms that may be missing from default ML patterns.
 """
+
 from pathlib import Path
 from typing import Any
 
 # Terms that are too generic to learn (would cause false positives if added to ML)
-_GENERIC_TERMS = frozenset({
-    "id", "name", "key", "value", "data", "type", "date", "code", "num", "nr",
-    "no", "n", "x", "val", "txt", "desc", "comment", "remarks", "status", "flag",
-})
+_GENERIC_TERMS = frozenset(
+    {
+        "id",
+        "name",
+        "key",
+        "value",
+        "data",
+        "type",
+        "date",
+        "code",
+        "num",
+        "nr",
+        "no",
+        "n",
+        "x",
+        "val",
+        "txt",
+        "desc",
+        "comment",
+        "remarks",
+        "status",
+        "flag",
+    }
+)
 
 
 def _normalize_term(raw: str) -> str:
@@ -60,7 +81,9 @@ def collect_learned_entries(
     min_rank = _sensitivity_rank(min_sensitivity)
     seen: dict[str, dict] = {}  # normalized_term -> entry (with count)
 
-    for row, src in [(r, "database") for r in db_rows] + [(r, "filesystem") for r in fs_rows]:
+    for row, src in [(r, "database") for r in db_rows] + [
+        (r, "filesystem") for r in fs_rows
+    ]:
         level = (row.get("sensitivity_level") or "").strip()
         if _sensitivity_rank(level) < min_rank:
             continue
@@ -106,13 +129,17 @@ def _load_existing_ml_texts(path: str | Path | None) -> set[str]:
     raw = p.read_text(encoding="utf-8")
     if p.suffix.lower() in (".yaml", ".yml"):
         import yaml
+
         data = yaml.safe_load(raw)
     else:
         import json
+
         data = json.loads(raw)
     if not isinstance(data, (list, dict)):
         return set()
-    items = data if isinstance(data, list) else data.get("patterns", data.get("terms", []))
+    items = (
+        data if isinstance(data, list) else data.get("patterns", data.get("terms", []))
+    )
     out = set()
     for item in items:
         if isinstance(item, dict) and item.get("text"):
@@ -151,7 +178,8 @@ def write_learned_patterns(
 
     db_rows, fs_rows, _ = db_manager.get_findings(session_id)
     entries = collect_learned_entries(
-        db_rows, fs_rows,
+        db_rows,
+        fs_rows,
         min_sensitivity=min_sensitivity,
         min_confidence=min_confidence,
         min_term_length=min_term_length,
@@ -169,16 +197,32 @@ def write_learned_patterns(
         raw = out_path.read_text(encoding="utf-8")
         if out_path.suffix.lower() in (".yaml", ".yml"):
             import yaml
+
             existing_data = yaml.safe_load(raw) or []
         else:
             import json
+
             existing_data = json.loads(raw) if raw.strip() else []
-        existing_list = existing_data if isinstance(existing_data, list) else existing_data.get("patterns", [])
-        existing_by_text = {_normalize_term(item.get("text", "")): item for item in existing_list if isinstance(item, dict) and item.get("text")}
+        existing_list = (
+            existing_data
+            if isinstance(existing_data, list)
+            else existing_data.get("patterns", [])
+        )
+        existing_by_text = {
+            _normalize_term(item.get("text", "")): item
+            for item in existing_list
+            if isinstance(item, dict) and item.get("text")
+        }
         for e in entries:
             key = _normalize_term(e["text"])
             if key not in existing_by_text:
-                existing_by_text[key] = {"text": e["text"], "label": "sensitive", "pattern_detected": e.get("pattern_detected"), "norm_tag": e.get("norm_tag"), "count": e.get("count", 1)}
+                existing_by_text[key] = {
+                    "text": e["text"],
+                    "label": "sensitive",
+                    "pattern_detected": e.get("pattern_detected"),
+                    "norm_tag": e.get("norm_tag"),
+                    "count": e.get("count", 1),
+                }
         entries = list(existing_by_text.values())
 
     # Write YAML compatible with ml_patterns_file: list of { text, label } plus optional fields
@@ -195,6 +239,9 @@ def write_learned_patterns(
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     import yaml
+
     with open(out_path, "w", encoding="utf-8") as f:
-        yaml.safe_dump(out_list, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+        yaml.safe_dump(
+            out_list, f, default_flow_style=False, allow_unicode=True, sort_keys=False
+        )
     return str(out_path)
