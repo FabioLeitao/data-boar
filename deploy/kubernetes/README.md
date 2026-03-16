@@ -4,7 +4,7 @@ These manifests run the **image default**: web API and frontend on port 8088. No
 
 ## Prerequisites
 
-- **Image:** Edit `deployment.yaml` and set `containers[0].image` to your image (e.g. `YOUR_DOCKERHUB_USER/python3-lgpd-crawler:latest` or `ghcr.io/fabioleitao/python3-lgpd-crawler:latest`).
+- **Image:** Edit `deployment.yaml` and set `containers[0].image` to your image (e.g. `fabioleitao/data_boar:latest` or `ghcr.io/fabioleitao/data_boar:latest`).
 - **Config:** The provided ConfigMap supplies a minimal `config.yaml`. Replace or extend it for production (e.g. Secret or external config). Config is mounted at `/data/config.yaml`.
 - **Persistence:** The deployment uses `emptyDir` for `/data`, so SQLite and reports do not survive pod restart. For production, use a PersistentVolumeClaim and replace the `data` volume in `deployment.yaml`.
 - **Resources:** The deployment sets memory request/limit and a small CPU request; CPU limit is unset so I/O-bound workload and report-generation bursts are not throttled. See [docs/deploy/DEPLOY.md](../../docs/deploy/DEPLOY.md) ([pt-BR](../../docs/deploy/DEPLOY.pt_BR.md)) (§ Resource and I/O tuning) for production guidance.
@@ -15,8 +15,8 @@ From the **repository root**:
 
 ```bash
 # Set your image (e.g. Docker Hub or ghcr.io)
-export IMAGE=YOUR_DOCKERHUB_USER/python3-lgpd-crawler:latest
-# Or: export IMAGE=ghcr.io/fabioleitao/python3-lgpd-crawler:latest
+export IMAGE=fabioleitao/data_boar:latest
+# Or: export IMAGE=ghcr.io/fabioleitao/data_boar:latest
 
 # Optional: use image from env in deployment (or edit deploy/kubernetes/deployment.yaml image field)
 kubectl apply -f deploy/kubernetes/

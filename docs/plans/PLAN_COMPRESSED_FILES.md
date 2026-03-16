@@ -207,7 +207,7 @@ When implementing **scan inside compressed files**, ensure we do **not** run int
 
 - **USAGE.md / USAGE.pt_BR.md:** In “file_scan” section, add `scan_compressed`, optional `scan_compressed_max_inner_size` and `scan_compressed_extensions`; list supported archive formats (Tier 1 and 2) and note that validation uses magic bytes; mention that this can increase run time and I/O.
 - **TECH_GUIDE.md / TECH_GUIDE.pt_BR.md:** Same in the configuration section; add “Compressed files (optional)” subsection.
-- **Man pages (lgpd_crawler.1, lgpd_crawler.5):** Document `--scan-compressed` and config keys.
+- **Man pages (data_boar.1, data_boar.5):** Document `--scan-compressed` and config keys.
 - **Dashboard Help (help.html):** Short sentence that “Also scan inside compressed files” enables scanning inside zip, tar, 7z, etc., and may increase run time.
 - **README (root):** Optional one line in the “data soup” or technical overview: “Optionally scan inside compressed files (zip, tar, 7z, …) when enabled.”
 
