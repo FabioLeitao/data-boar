@@ -39,7 +39,9 @@ def test_filesystem_connector_reads_use_content_type_flag() -> None:
     assert connector.use_content_type is True
 
 
-def test_use_content_type_forces_pdf_extraction_when_enabled(tmp_path: Path, monkeypatch) -> None:
+def test_use_content_type_forces_pdf_extraction_when_enabled(
+    tmp_path: Path, monkeypatch
+) -> None:
     # Create a fake "PDF" file with .txt extension
     fake_pdf = tmp_path / "renamed.txt"
     fake_pdf.write_bytes(b"%PDF-1.4\n%mock\n")
@@ -96,7 +98,9 @@ def test_use_content_type_forces_pdf_extraction_when_enabled(tmp_path: Path, mon
     assert called_ext == [".pdf"]
 
 
-def test_use_content_type_keeps_extension_when_disabled(tmp_path: Path, monkeypatch) -> None:
+def test_use_content_type_keeps_extension_when_disabled(
+    tmp_path: Path, monkeypatch
+) -> None:
     fake_pdf = tmp_path / "renamed.txt"
     fake_pdf.write_bytes(b"%PDF-1.4\n%mock\n")
 
@@ -146,5 +150,3 @@ def test_use_content_type_keeps_extension_when_disabled(tmp_path: Path, monkeypa
 
     # With the toggle off we should keep the original extension (.txt)
     assert called_ext == [".txt"]
-
-

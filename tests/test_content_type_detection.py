@@ -30,4 +30,3 @@ def test_infer_from_temporary_pdf_file(tmp_path: Path) -> None:
     pdf_path = tmp_path / "sample_renamed_as_txt.txt"
     pdf_path.write_bytes(b"%PDF-1.4\n%mock\n")
     assert infer_content_type(pdf_path) == "pdf"
-
