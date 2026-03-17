@@ -31,6 +31,18 @@ O projeto agora suporta os dois formatos, mas a detecção alfanumérica é **op
 
 Ambos os padrões usam o mesmo `norm_tag` (`LGPD Art. 5`), portanto são tratados como identificadores sob a LGPD. Nesta etapa, o detector faz apenas **verificação de compatibilidade de formato** (regex); a **validação de dígito verificador** para CNPJ (numérico ou alfanumérico) e outros identificadores brasileiros (ex.: CPF, PIS/PASEP) é deixada propositalmente para uma **fase futura na lógica do detector**, para manter a camada de regex simples e fácil de estender.
 
+---
+
+## Detecção de content type e cloaking (futuro)
+
+O projeto tem um **plano** para detecção opcional de **tipo baseada em conteúdo** para ajudar com **arquivos renomeados** e **cloaking simples** (ex.: PDF salvo como `.txt`). Na versão 1.6.0:
+
+- **Etapa 1 (helper) está implementada:** um pequeno helper interno `infer_content_type(path_or_bytes)` usa **magic bytes e heurísticas simples** para inferir um rótulo de tipo de arquivo mais grosseiro (por exemplo: `pdf`, `zip`, `text`) a partir dos primeiros bytes de um arquivo ou buffer de bytes.
+- **Ainda sem ligação com conectores:** os conectores de sistema de arquivos e compartilhamentos ainda decidem o que escanear com base em **extensões** e regras atuais; o helper não é chamado nos fluxos de produção.
+- **Fase futura (opt-in):** uma fase posterior adicionará um **toggle opt-in** (config/CLI/dashboard) para que os conectores possam consultar esse helper antes de decidir como extrair e escanear conteúdo, melhorando a resistência a arquivos renomeados/cloaked ao custo de uma pequena leitura extra por arquivo.
+
+Para detalhes de desenho e etapas de rollout, consulte [PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md](plans/PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md).
+
 ## Chaves de config
 
 | Chave                            | Descrição                                                                                                                                             |                                                                                |
