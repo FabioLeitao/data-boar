@@ -22,6 +22,7 @@ from connectors.filesystem_connector import (
     _scan_sqlite_file_as_db,
     scan_archive_at_path,
 )
+from core.content_type import choose_effective_pdf_extension
 
 try:
     import smbclient
@@ -74,6 +75,10 @@ class SMBConnector:
         self.compressed_extensions = normalize_compressed_extensions(
             fs_opts.get("compressed_extensions") or default_compressed_extensions()
         )
+        # Planned: optional content-based type detection (magic bytes) to help
+        # with renamed/cloaked files. Currently just wired from config; behaviour
+        # remains extension-based until a future opt-in phase.
+        self.use_content_type = bool(fs_opts.get("use_content_type", False))
 
     def _unc_path(self, *parts: str) -> str:
         host = self.config.get("host", "").strip()
@@ -204,8 +209,16 @@ class SMBConnector:
                 try:
                     os.write(fd, content)
                     os.close(fd)
+                    # Optional: when use_content_type is enabled, use shared helper for the narrow
+                    # PDF-only slice (mirrors filesystem behaviour for renamed PDFs on shares).
+                    effective_ext = choose_effective_pdf_extension(
+                        ext, self.use_content_type, Path(temp_path)
+                    )
                     text = _read_text_sample(
-                        Path(temp_path), ext, self.sample_limit, self.file_passwords
+                        Path(temp_path),
+                        effective_ext,
+                        self.sample_limit,
+                        self.file_passwords,
                     )
                     res = self.scanner.scan_file_content(text, Path(unc_file))
                     if res is None:
