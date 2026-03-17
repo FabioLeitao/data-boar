@@ -927,7 +927,11 @@ def _build_report_info(
         legacy_only = len(cnpj_numeric_columns - cnpj_alnum_columns)
         alnum_only = len(cnpj_alnum_columns - cnpj_numeric_columns)
         mixed = len(cnpj_numeric_columns & cnpj_alnum_columns)
-        note = f"Legacy numeric: {legacy_only} columns; Alphanumeric: {alnum_only} columns; Mixed: {mixed} columns"
+        note = (
+            "CNPJ formats (legacy numeric vs alphanumeric) – "
+            f"Legacy numeric: {legacy_only} columns; "
+            f"Alphanumeric: {alnum_only} columns; Mixed: {mixed} columns"
+        )
         report_info.append({"Field": _REPORT_INFO_CNPJ_FORMAT_COMPAT, "Value": note})
 
     return report_info
