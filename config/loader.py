@@ -229,6 +229,17 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
                 or ""
             )
 
+    # Detection: configuration toggles for detector behaviour (regex/ML/DL options)
+    det_cfg = data.get("detection", {}) or {}
+    # CNPJ alphanumeric: when true, the detector keeps LGPD_CNPJ_ALNUM active as a built-in pattern.
+    # When false or omitted, only the legacy numeric LGPD_CNPJ pattern is used unless re-enabled via
+    # regex_overrides_file. This avoids surprising behaviour changes when operators have not yet
+    # reviewed or agreed with the newer format.
+    out["detection"] = {
+        **det_cfg,
+        "cnpj_alphanumeric": bool(det_cfg.get("cnpj_alphanumeric", False)),
+    }
+
     # Report
     out["report"] = data.get("report", {})
     if "output_dir" not in out["report"]:

@@ -20,7 +20,8 @@ def test_email_detection():
 
 
 def test_cnpj_numeric_and_alnum_detection():
-    scanner = DataScanner()
+    # Enable alphanumeric CNPJ so both legacy numeric and new alnum formats are detected by regex.
+    scanner = DataScanner(detection_config={"cnpj_alphanumeric": True})
 
     # Legacy numeric CNPJ
     numeric = "12.345.678/0001-99"
