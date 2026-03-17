@@ -178,6 +178,10 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         # will use a sensible default Tier 1 + Tier 2 list (see PLAN_COMPRESSED_FILES.md).
         "compressed_extensions": fs_cfg.get("compressed_extensions"),
         "file_passwords": _normalize_file_passwords(fs_cfg.get("file_passwords")),
+        # Planned: optional content-based type detection helper (magic bytes) to
+        # help with renamed/cloaked files. Currently an inert toggle; future
+        # phases will wire this into filesystem/share connectors behind an opt-in flag.
+        "use_content_type": bool(fs_cfg.get("use_content_type", False)),
     }
     # Normalize extensions to list of suffixes (e.g. "*.pdf" -> ".pdf")
     exts = out["file_scan"]["extensions"]
