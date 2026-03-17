@@ -16,8 +16,18 @@ if (-not $SkipPreCommit) {
     Write-Host "Running pre-commit (Ruff lint + format check)..." -ForegroundColor Cyan
     uv run pre-commit run --all-files
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "pre-commit failed. Fix issues above before committing or pushing." -ForegroundColor Red
-        exit $LASTEXITCODE
+        Write-Host "pre-commit failed. Attempting to auto-apply Ruff formatting and re-run pre-commit once..." -ForegroundColor Yellow
+        try {
+            # Best-effort: format the codebase with Ruff, then re-run pre-commit.
+            uv run ruff format .
+            uv run pre-commit run --all-files
+        } catch {
+            Write-Host "Auto-format step failed: $($_.Exception.Message)" -ForegroundColor Red
+        }
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "pre-commit still failing after auto-format. Fix issues above before committing or pushing." -ForegroundColor Red
+            exit $LASTEXITCODE
+        }
     }
 }
 
