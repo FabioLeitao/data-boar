@@ -82,7 +82,9 @@ class ScanStartBody(BaseModel):
 
     tenant: str | None = None
     technician: str | None = None
-    scan_compressed: bool | None = None  # when True, merge into file_scan for this run only
+    scan_compressed: bool | None = (
+        None  # when True, merge into file_scan for this run only
+    )
 
 
 # Load config and create engine at import time (or on startup event)
