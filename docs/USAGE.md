@@ -316,6 +316,8 @@ regex_overrides_file: docs/compliance-samples/compliance-sample-uk_gdpr.yaml
 ml_patterns_file: docs/compliance-samples/compliance-sample-pipeda.yaml
 ```
 
+> **Planned (future toggle):** The `file_scan` block will also gain an optional boolean `use_content_type` key. When enabled in a future release, this will let connectors consult a content-type helper (magic bytes) to better detect renamed or cloaked files. As of version 1.6.0 this flag is normalized in config but not yet wired into scan behaviour.
+
 ### Credentials from environment (secrets not in config)
 
 To keep secrets **out of the config file**, use **`*_from_env`** keys so the application reads values from environment variables at load time. This is the recommended pattern for production and for config files that may be shared or versioned.

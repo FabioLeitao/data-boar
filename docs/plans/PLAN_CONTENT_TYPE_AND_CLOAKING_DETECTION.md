@@ -1,6 +1,6 @@
 # Plan: Content-based type detection and cloaking resistance
 
-**Status:** Not started
+**Status:** Step 1 helper implemented; wiring and toggles not started
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
@@ -72,7 +72,7 @@ This keeps the default lightweight and lets operators who care about renamed fil
 
 | #   | To-do                                                                                                                                                                                                 | Status |
 | --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| 1   | Define magic-byte table for supported formats (PDF, ZIP, Office OOXML, plain text, etc.); implement `read_magic` and `infer_content_type`.                                                           | ⬜     |
+| 1   | Define magic-byte table for supported formats (PDF, ZIP, Office OOXML, plain text, etc.); implement `read_magic` and `infer_content_type`.                                                           | ✅ Done (helper `infer_content_type(path_or_bytes)` in `core/content_type.py`; basic PDF/ZIP/text coverage; uses existing `read_magic` and archive magic) |
 | 2   | Config: `file_scan.use_content_type` (default false); normalize in loader and pass to engine/connectors.                                                                                               | ⬜     |
 | 3   | FilesystemConnector: when `use_content_type` true, infer type from header and use it for extraction (fallback to extension). Share connectors: same when they use file-scan logic.                    | ⬜     |
 | 4   | CLI: `--content-type-check`; API/dashboard: optional `content_type_check` and checkbox with user warning (may increase I/O and run time).                                                            | ⬜     |
@@ -85,4 +85,4 @@ This keeps the default lightweight and lets operators who care about renamed fil
 
 ## Last updated
 
-Plan created. Update this doc when completing steps or when design decisions change.
+Plan updated for Step 1 helper implementation. Update this doc when completing further steps or when design decisions change.
