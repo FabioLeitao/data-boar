@@ -341,6 +341,24 @@ You can set the **training words for ML and DL** in the main config (inline) or 
 
 **Full description and examples:** [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) (English) · [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md) (Português – Brasil).
 
+#### CNPJ formats (legacy numeric and alphanumeric)
+
+For Brazilian **CNPJ**, the detector ships with two built-in regex patterns:
+
+- `LGPD_CNPJ` – legacy **numeric-only** format (14 digits, optional `./-/` punctuation: `XX.XXX.XXX/XXXX-XX`).
+- `LGPD_CNPJ_ALNUM` – an **alphanumeric** format where the first 12 positions may contain `A–Z` or `0–9`, and the last two positions remain numeric digits; punctuation is optional in the same places.
+
+Both patterns share the same `norm_tag` (`LGPD Art. 5`). At this stage detection is **format-based only** (no checksum); see [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md#cnpj-formats-brazil-legacy-numeric-and-alphanumeric) for details.
+
+By default only the legacy numeric pattern (`LGPD_CNPJ`) is active; to enable the alphanumeric pattern at runtime set:
+
+```yaml
+detection:
+  cnpj_alphanumeric: true
+```
+
+in your config. To **enable alphanumeric CNPJ via overrides only** (for example, on older installs or for experimentation), you can copy the `LGPD_CNPJ_ALNUM` example from `config/regex_overrides.example.yaml` or from [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md#yaml-example-regex-overrides) into your own `regex_overrides_file`.
+
 ### Custom regex patterns (new personal/sensitive values)
 
 To detect **new possibly personal or sensitive values** (e.g. RG, vehicle plate, health plan ID), add custom regex patterns. In the main config set **`regex_overrides_file`** to the path of a YAML or JSON file with a list of `{ name, pattern, norm_tag }`. The detector matches each pattern against the column name and sample text; any match is reported with HIGH sensitivity. Your file adds to or overrides built-in patterns (CPF, CNPJ, email, phone, SSN, credit card, dates). **Format and examples:** [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md#custom-regex-patterns-detecting-new-personalsensitive-values) (EN) · [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md#padrões-regex-customizados-detectar-novos-dados-pessoaissensíveis) (pt-BR). For **multiple regulations and sample configuration** (built-in: LGPD, GDPR, CCPA, HIPAA, GLBA; extensibility for UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS, or custom), and for assistance with tuning, see [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) ([pt-BR](COMPLIANCE_FRAMEWORKS.pt_BR.md)).
