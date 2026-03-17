@@ -21,24 +21,29 @@
 | ------                                  | ----------------                                                                                                                                                                                                                                                               |
 | **Ruff in CI**                          | Done (lint job in `ci.yml`).                                                                                                                                                                                                                                                   |
 | **Pre-commit**                          | Done: Ruff check (--fix) and Ruff format (--check) run on commit. See `.pre-commit-config.yaml` and rule `pre-commit-ruff`. Optional: add markdown lint to pre-commit if desired.                                                                                              |
-| **Check-all script**                    | **Not started.** Add `scripts/check_all.sh` (or `make check` / PowerShell equivalent) that runs `uv sync`, `uv run ruff check .`, `uv run ruff format --check .`, `uv run pytest -v -W error`, `uv run pip-audit` so one command approximates CI locally. See §4 for workflow. |
+| **Check-all script**                    | Done: `scripts/check-all.ps1` wraps `scripts/pre-commit-and-tests.ps1` so `.\scripts\check-all.ps1` runs lint/format (pre-commit) + full pytest in one command. Use as a local gate before Commit/PR when Agent Review is misbehaving.                                          |
 | **Release checklist**                   | Done: In CONTRIBUTING (audit, docs, secrets, lockfile). Release history = git + `docs/releases/`; no separate CHANGELOG required.                                                                                                                                              |
 | **QUALITY_WORKFLOW_RECOMMENDATIONS.md** | Done: Lists Bandit, Semgrep, mypy, SBOM. Adopt incrementally when you want an extra safety layer; not required for “being set.”                                                                                                                                                |
 
 ---
 
-## 3. Prioritised checklist (release, security, runbooks, compliance, onboarding, dependency policy)
+## 3. Cursor automation (rules and skills – reminders)
+
+- **Rules:** Later, add Cursor RULEs encoding production hardening defaults (loopback host for non-container runs; production profile requires API key; no new `try/except/pass` without logging; no plaintext passwords in tracked configs).
+- **Skills:** Later, add a “Security hardening checklist” skill that walks WABIX findings (host/auth/secrets/Excel formula escaping/parse gates) before marking a change as prod-ready.
+
+## 4. Prioritised checklist (release, security, runbooks, compliance, onboarding, dependency policy)
 
 Each item is a small doc update or script. Status: **Done** | **Not started** | **Optional**. When you implement one, do the change, update EN + pt-BR if docs, then set Status to Done in this file.
 
-### 3.1 Release and versioning
+### 4.1 Release and versioning
 
 | To-do                                                                                                                                                                                      | Status      |
 | -------                                                                                                                                                                                    | --------    |
 | Changelog discipline: release history = git + `docs/releases/`; every tagged release has an entry in `docs/releases/`. See CONTRIBUTING.                                                   | Done        |
 | Optional: add short “Compatibility and deprecation” sentence in CONTRIBUTING or USAGE (e.g. we avoid breaking config keys; when we deprecate, we document for at least one minor version). | Not started |
 
-### 3.2 Security response
+### 4.2 Security response
 
 | To-do                                                                                                                                                                                         | Status   |
 | -------                                                                                                                                                                                       | -------- |
@@ -46,28 +51,28 @@ Each item is a small doc update or script. Status: **Done** | **Not started** | 
 | Dependabot security PRs: optional SLA in SECURITY.md (P0; merge or respond within 5 working days). CONTRIBUTING points to SECURITY.                                                           | Done     |
 | Optional: “Review SLAs annually” or leave as-is.                                                                                                                                              | Optional |
 
-### 3.3 Operations and runbooks
+### 4.3 Operations and runbooks
 
 | To-do                                                                                                                                                                                             | Status      |
 | -------                                                                                                                                                                                           | --------    |
 | Operator runbook one-pager: if app is down → check /health and logs, config and CONFIG_PATH, disk and SQLite path, restart or scale; if scan hangs → … Place in docs or extend OBSERVABILITY_SRE. | Not started |
 | Backup and restore: minimal “what to backup” (config, SQLite, report dir) and “how to restore” in USAGE or deploy docs.                                                                           | Not started |
 
-### 3.4 Compliance and evidence (you are an audit/compliance tool)
+### 4.4 Compliance and evidence (you are an audit/compliance tool)
 
 | To-do                                                                                                                                                                                  | Status      |
 | -------                                                                                                                                                                                | --------    |
 | “Compliance and evidence” subsection in SECURITY or dedicated doc: how we prove our own compliance (access control to config/repo, audit trail, no secrets in logs, dependency audit). | Not started |
 | Data retention: mention in USAGE or deploy docs “consider retention policy for report.output_dir and sqlite_path” and who can delete.                                                  | Not started |
 
-### 3.5 Onboarding
+### 4.5 Onboarding
 
 | To-do                                                                                                                                                    | Status      |
 | -------                                                                                                                                                  | --------    |
 | Short “Onboarding” checklist in CONTRIBUTING (e.g. 1. Clone, 2. uv sync, 3. Copy config example, 4. uv run pytest, 5. Read PLANS_TODO for current work). | Not started |
 | Optional: handover or “key decisions” doc (why we chose X, where the traps are) for bus factor.                                                          | Optional    |
 
-### 3.6 Dependencies and upgrades
+### 4.6 Dependencies and upgrades
 
 | To-do                                                                                                                                                                                             | Status      |
 | -------                                                                                                                                                                                           | --------    |
@@ -76,7 +81,7 @@ Each item is a small doc update or script. Status: **Done** | **Not started** | 
 
 ---
 
-## 4. How to use this plan
+## 5. How to use this plan
 
 - **This file is the readiness checklist.** Items are small (doc update or script). No obligation to implement every to-do; “Optional” and “When needed” are valid.
 - **When you implement an item:** Do the change (doc or script). If it’s docs, update EN + pt-BR per the documentation policy. Then set the item’s Status to **Done** in §2 or §3 of this file.
@@ -85,4 +90,4 @@ Each item is a small doc update or script. Status: **Done** | **Not started** | 
 
 ---
 
-*Last updated: restructured §3 as prioritised checklist with explicit to-dos and Status; added check-all script to §2; updated §4 workflow.*
+*Last updated: restructured §4 as prioritised checklist with explicit to-dos and Status; added check-all script to §2; added §3 reminder for future Cursor rules/skills; updated §5 workflow.*
