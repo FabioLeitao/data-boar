@@ -354,4 +354,13 @@ Para detalhes de todos os campos e exemplos completos, consulte `README.md` e `d
 
 **Produção atrás de proxy reverso (nginx, Traefik, Caddy):** A aplicação se comporta corretamente atrás de NAT, load balancer ou proxy reverso. Quando o TLS for terminado no proxy, defina **X-Forwarded-Proto: https** para que os cabeçalhos de segurança (ex.: HSTS) funcionem. Veja [SECURITY.md](../SECURITY.md) para os cabeçalhos HTTP de segurança.
 
+#### Formatos de CNPJ (legado numérico e alfanumérico)
+
+Para o **CNPJ** brasileiro, o detector inclui dois padrões regex embutidos:
+
+- `LGPD_CNPJ` – formato **legado, apenas numérico** (14 dígitos, pontuação opcional `./-/`: `XX.XXX.XXX/XXXX-XX`).
+- `LGPD_CNPJ_ALNUM` – formato **alfanumérico** em que as 12 primeiras posições podem conter `A–Z` ou `0–9`, e as duas últimas posições permanecem dígitos (check digits); a pontuação é opcional nos mesmos lugares.
+
+Ambos usam o mesmo `norm_tag` (`LGPD Art. 5`). Nesta etapa a detecção é apenas por **compatibilidade de formato** (sem validação de dígito verificador); veja [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md#formatos-de-cnpj-brasil-numérico-legado-e-alfanumérico) para detalhes e para saber como estender/substituir padrões via `regex_overrides_file`.
+
 **Documentação relacionada:** Índice completo da documentação (todos os tópicos, ambos os idiomas): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md). Guia técnico: [TECH_GUIDE.md](TECH_GUIDE.md) · [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md). [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md) (termos de treino ML/DL; [inglês](SENSITIVITY_DETECTION.md)). Para `recommendation_overrides` cobrindo categorias sensíveis (saúde, religião, política, PEP, raça, sindicato, genético, biométrico, vida sexual), veja o exemplo acima (Notas sobre configuração) e [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](plans/completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md). Para adicionar um novo conector (banco, API, share), veja [ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md) ou [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md) (inglês). Deploy: [deploy/DEPLOY.pt_BR.md](deploy/DEPLOY.pt_BR.md) · [deploy/DEPLOY.md](deploy/DEPLOY.md). Mais: [TESTING.pt_BR.md](TESTING.pt_BR.md) ([EN](TESTING.md)), [TOPOLOGY.pt_BR.md](TOPOLOGY.pt_BR.md) ([EN](TOPOLOGY.md)), [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md) ([EN](COMMIT_AND_PR.md)), [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) ([EN](COMPLIANCE_FRAMEWORKS.md)). Em sistemas com `man`: `man data_boar` ou `man lgpd_crawler` (comando e API), e `man 5 data_boar` ou `man 5 lgpd_crawler` (config e formatos).

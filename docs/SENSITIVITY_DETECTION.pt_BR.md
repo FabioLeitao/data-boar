@@ -22,10 +22,12 @@ O **CNPJ** brasileiro (identificador de pessoa jurídica) usou historicamente um
 
 - 14 dígitos, opcionalmente formatados como `XX.XXX.XXX/XXXX-XX` (pontos, barra, hífen).
 
-O projeto agora reconhece **ambos**:
+O projeto agora suporta os dois formatos, mas a detecção alfanumérica é **opt-in** para evitar mudanças de comportamento inesperadas:
 
-- `LGPD_CNPJ` – formato legado, apenas numérico.
-- `LGPD_CNPJ_ALNUM` – formato **alfanumérico** em que as 12 primeiras posições podem conter `A–Z` ou `0–9`, e as duas últimas posições permanecem como dígitos (check digits).
+- `LGPD_CNPJ` – formato legado, apenas numérico (sempre ativo).
+- `LGPD_CNPJ_ALNUM` – formato **alfanumérico** em que as 12 primeiras posições podem conter `A–Z` ou `0–9`, e as duas últimas posições permanecem como dígitos (check digits). Fica ativo quando:
+  - `detection.cnpj_alphanumeric: true` é definido no config, ou
+  - um override para `LGPD_CNPJ_ALNUM` é adicionado via `regex_overrides_file`.
 
 Ambos os padrões usam o mesmo `norm_tag` (`LGPD Art. 5`), portanto são tratados como identificadores sob a LGPD. Nesta etapa, o detector faz apenas **verificação de compatibilidade de formato** (regex); a **validação de dígito verificador** para CNPJ (numérico ou alfanumérico) e outros identificadores brasileiros (ex.: CPF, PIS/PASEP) é deixada propositalmente para uma **fase futura na lógica do detector**, para manter a camada de regex simples e fácil de estender.
 
@@ -330,18 +332,25 @@ Você pode usar uma lista na raiz ou uma chave `patterns` ou `regex` com a lista
 # config/regex_overrides.yaml
 - name: "RG_BR"
 
-  pattern: "\b\d{1,2}\.?\d{3}\.?\d{3}-?[0-9Xx]\b"
+  pattern: "\\b\\d{1,2}\\.?\\d{3}\\.?\\d{3}-?[0-9Xx]\\b"
   norm_tag: "LGPD Art. 5"
 
 - name: "PLATE_BR"
 
-  pattern: "\b[A-Z]{3}-?\d{4}\b"
+  pattern: "\\b[A-Z]{3}-?\\d{4}\\b"
   norm_tag: "Personal data context"
 
 - name: "HEALTH_PLAN_ID"
 
-  pattern: "\b\d{6,14}\b"
+  pattern: "\\b\\d{6,14}\\b"
   norm_tag: "Health/insurance context"
+
+# Exemplo: padrão de CNPJ alfanumérico (mesma estrutura do LGPD_CNPJ_ALNUM embutido).
+
+- name: "LGPD_CNPJ_ALNUM"
+
+  pattern: "\\b[A-Z0-9]{2}\\.?[A-Z0-9]{3}\\.?[A-Z0-9]{3}/?[A-Z0-9]{4}-?\\d{2}\\b"
+  norm_tag: "LGPD Art. 5"
 ```
 
 ## Exemplo JSON (regex overrides)
