@@ -187,8 +187,12 @@ class WebDAVConnector:
                     pass
                 continue
             try:
-                if self.scan_compressed and ext in self.compressed_extensions and is_supported_archive(
-                    Path(temp_path), exts=self.compressed_extensions
+                if (
+                    self.scan_compressed
+                    and ext in self.compressed_extensions
+                    and is_supported_archive(
+                        Path(temp_path), exts=self.compressed_extensions
+                    )
                 ):
                     scan_archive_at_path(
                         archive_path=Path(temp_path),
