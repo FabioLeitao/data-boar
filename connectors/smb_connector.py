@@ -22,7 +22,7 @@ from connectors.filesystem_connector import (
     _scan_sqlite_file_as_db,
     scan_archive_at_path,
 )
-
+from core.content_type import choose_effective_pdf_extension
 try:
     import smbclient
 
@@ -208,8 +208,16 @@ class SMBConnector:
                 try:
                     os.write(fd, content)
                     os.close(fd)
+                    # Optional: when use_content_type is enabled, use shared helper for the narrow
+                    # PDF-only slice (mirrors filesystem behaviour for renamed PDFs on shares).
+                    effective_ext = choose_effective_pdf_extension(
+                        ext, self.use_content_type, Path(temp_path)
+                    )
                     text = _read_text_sample(
-                        Path(temp_path), ext, self.sample_limit, self.file_passwords
+                        Path(temp_path),
+                        effective_ext,
+                        self.sample_limit,
+                        self.file_passwords,
                     )
                     res = self.scanner.scan_file_content(text, Path(unc_file))
                     if res is None:
