@@ -10,6 +10,9 @@ config.local.yaml
 .env.local
 .env.*.local
 
+# Local-only security reviews / feedback (confidential; keep out of git)
+docs/feedbacks, reviews, comments and criticism/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
