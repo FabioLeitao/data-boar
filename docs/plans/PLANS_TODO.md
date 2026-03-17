@@ -6,7 +6,7 @@ This document is the **single source of truth** for the project's plan status an
 
 **Policy:** When implementing a plan step, **update documentation** (USAGE, TECH_GUIDE, SECURITY, or dedicated docs) and **add or run tests** as the feature is implemented. After completing or adding to-dos, **update this file and the plan file** so progress is tracked in one place. All steps are intended to be **non-destructive**, **non-regression**, and **tested** before marking done.
 
-**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ✅ Done · **Additional detection techniques & FN reduction** ⬜ Not started · **Compressed files** ⬜ Not started · **Content type & cloaking detection** ⬜ Not started · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ⬜ Not started · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started · **Additional data soup formats** ⬜ Backlog (catalogue)
+**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ✅ Done · **Additional detection techniques & FN reduction** ⬜ Not started · **Compressed files** ✅ Done (steps 1–12; follow-ups 13–14 optional) · **Content type & cloaking detection** ⬜ Not started · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ⬜ Not started · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started · **Additional data soup formats** ⬜ Backlog (catalogue)
 
 ---
 
@@ -64,15 +64,29 @@ The list below is ordered for the current billing cycle, with a focus on:
 - **AI-heavy** tasks where the agent’s help is most valuable.
 - **Manual-friendly** tasks that you can do largely by hand or with existing tooling.
 
+### What to start next (by recommended execution under token constraints)
+
+**Order = smallest-scope, high-value first.** Pick one when you're ready to implement; each can be done in one or a few sessions.
+
+| Order | Plan | Why this order (scope / value) |
+| ----- | ---- | ------------------------------ |
+| 1 | **CNPJ alphanumeric format validation** | Research + regex + doc (Phase 1); focused, no schema change; high value for BR compliance. |
+| 2 | **Content type & cloaking detection** | Step 1 only: magic-byte table + `infer_content_type`; reuses pattern from compressed; small, additive; catches renamed/cloaked files. |
+| 3 | **Additional detection techniques & FN reduction** | First slice: configurable MEDIUM threshold + "suggested review" in report; config + wording; small surface. |
+| 4 | **Strong crypto & controls validation** | Phase 1: CLI flag, config, API/dashboard checkbox, engine wiring (no criteria yet); then Phase 2 adds criteria. |
+| 5 | **Data source versions & hardening** | Phase 1: `data_source_inventory` schema + save + one connector (e.g. SQL) + report sheet; one clear slice. |
+| 6 | **Notifications (off-band + scan-complete)** | Phase 1: config shape + notifier module + one channel (e.g. webhook); docs and examples; medium scope. |
+
+**Deferred (larger or later):** Secrets Phase B, Version check & self-upgrade, Selenium QA, Synthetic data, SAP connector, Dashboard i18n. **Backlog:** Additional data soup formats.
+
 ### A. Near-term focus (current billing cycle)
 
 1. **CNPJ alphanumeric format validation** *(AI-assisted research + manual wiring)*
    - Use AI for: research/spec for alphanumeric format, regex proposal, EN + pt-BR doc wording.
    - Do manually: integrate regex/overrides, wire to existing detection/reporting, add tests.
 
-2. **Compressed files – minimal viable slice** *(AI-assisted design, manual wiring)*
-   - Use AI for: config key names/defaults, archive helper API, resource-exhaustion warning text.
-   - Do manually: Filesystem connector wiring, CLI flag, optional `[compressed]` extra, core tests.
+2. **Content type & cloaking detection – Step 1** *(small slice)*
+   - Magic-byte table + read_magic / infer_content_type for supported formats; no connector change yet.
 
 3. **Data source versions & hardening – schema and report design** *(AI-heavy design, light implementation)*
    - Use AI for: `data_source_inventory` schema, inventory/report sheet layout, design for one reference connector.
