@@ -7,13 +7,14 @@ def resolve_api_host(config: dict[str, Any], cli_host: str | None = None) -> str
     """
     Resolve the host/interface for the API server.
 
-    Phase 1 (no behaviour change): reproduce existing behaviour in one place.
+    Resolution order:
     - If cli_host is provided (future CLI flag), prefer it.
     - Else, if config.api.host is set, use it.
-    - Else, fall back to the historical default: "0.0.0.0".
+    - Else, fall back to a safer desktop default: "127.0.0.1".
 
-    Later phases can safely adjust the default (e.g. to 127.0.0.1 for desktop)
-    while tests assert the intended behaviour.
+    Containers and orchestrated deployments (Docker/Kubernetes) should set an
+    explicit api.host or use container-level port bindings when they need to
+    expose the service on 0.0.0.0.
     """
 
     if cli_host:
@@ -22,6 +23,6 @@ def resolve_api_host(config: dict[str, Any], cli_host: str | None = None) -> str
     host = (api_cfg.get("host") or "").strip()
     if host:
         return host
-    # Historical default: bind to all interfaces.
-    return "0.0.0.0"
+    # Safer default for desktop/CLI: bind only to loopback unless explicitly overridden.
+    return "127.0.0.1"
 
