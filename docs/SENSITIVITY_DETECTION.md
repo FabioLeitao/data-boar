@@ -31,6 +31,18 @@ The project now supports both formats, but alphanumeric detection is **opt-in** 
 
 Both patterns share the same `norm_tag` (`LGPD Art. 5`) so they are treated as identifiers under LGPD. At this stage the detector performs **format compatibility checks only** (regex match); **checksum validation** for CNPJ (numeric or alphanumeric) and other Brazilian identifiers (e.g. CPF, PIS/PASEP) is intentionally left to a **future detector-logic phase** so the regex layer stays simple and easy to extend.
 
+---
+
+## Content type & cloaking detection (future)
+
+The project has a **plan** for optional **content-based type detection** to help with **renamed files** and **simple cloaking** (e.g. PDF saved as `.txt`). As of version 1.6.0:
+
+- **Step 1 (helper) is implemented:** a small internal helper `infer_content_type(path_or_bytes)` uses **magic bytes and simple heuristics** to infer a coarse file type label (for example: `pdf`, `zip`, `text`) from the first bytes of a file or bytes buffer.
+- **No wiring to connectors yet:** filesystem and share connectors still decide what to scan based on **extensions** and existing rules; the helper is not called in production flows.
+- **Future phase (opt-in):** a later phase will add an **opt-in toggle** (config/CLI/dashboard) so connectors can consult this helper before deciding how to extract and scan content, improving resistance to renamed/cloaked files at the cost of a small extra read per file.
+
+For design details and rollout steps, see [PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md](plans/PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md).
+
 ## Config keys
 
 | Key                              | Description                                                                                                                         |                                                                              |

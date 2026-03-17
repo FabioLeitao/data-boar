@@ -79,6 +79,17 @@ The list below is ordered for the current billing cycle, with a focus on:
 
 **Deferred (larger or later):** Secrets Phase B, Version check & self-upgrade, Selenium QA, Synthetic data, SAP connector, Dashboard i18n. **Backlog:** Additional data soup formats.
 
+### Secure default host binding (Wabix P0/P1 follow-up – future release)
+
+Tighten runtime defaults for the API host without a large refactor. This builds on completed web hardening and security plans.
+
+| # | To-do                                                                                                                                                | Status    |
+| - | -----                                                                                                                                                | ------    |
+| 1 | Default host loopback for desktop: make the API bind to `127.0.0.1` by default when running as a normal process (CLI/desktop).                      | ⬜ Pending |
+| 2 | Explicit opt-in for `0.0.0.0`: only bind to all interfaces when explicitly requested in config/CLI, or in container entrypoints where it is fenced. | ⬜ Pending |
+| 3 | Docs: add a short note in `USAGE.md` / `USAGE.pt_BR.md` and `deploy/DEPLOY*.md` explaining the difference and safer recommended host settings.      | ⬜ Pending |
+| 4 | Tests: add 1–2 small tests around API startup config (host value chosen from config vs CLI) to avoid regressions in future releases.               | ⬜ Pending |
+
 ### A. Near-term focus (current billing cycle)
 
 1. **CNPJ alphanumeric format validation** *(AI-assisted research + manual wiring)*
