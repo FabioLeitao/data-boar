@@ -557,9 +557,7 @@ def scan_archive_at_path(
                 with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
                     tmp.write(data)
                     tmp_path = Path(tmp.name)
-                content = _read_text_sample(
-                    tmp_path, ext, sample_limit, file_passwords
-                )
+                content = _read_text_sample(tmp_path, ext, sample_limit, file_passwords)
                 res = scanner.scan_file_content(content, tmp_path)
                 if res is None:
                     continue
