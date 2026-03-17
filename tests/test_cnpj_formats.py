@@ -32,4 +32,3 @@ def test_mixed_cnpj_formats_can_surface_both_patterns():
     }
     assert any("LGPD_CNPJ" in p for p in patterns)
     assert any("LGPD_CNPJ_ALNUM" in p for p in patterns)
-
