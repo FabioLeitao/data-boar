@@ -139,11 +139,13 @@ def main() -> None:
     if args.web and not args.reset_data:
         import uvicorn
         from api.routes import app
+        from core.host_resolution import resolve_api_host
 
         api_cfg = config.get("api", {})
         port = api_cfg.get("port", args.port)
         workers = int(api_cfg.get("workers", 1))
-        uvicorn.run(app, host="0.0.0.0", port=port, workers=workers)
+        host = resolve_api_host(config, cli_host=None)
+        uvicorn.run(app, host=host, port=port, workers=workers)
         return
 
     engine = AuditEngine(config)
