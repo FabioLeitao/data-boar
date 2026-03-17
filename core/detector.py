@@ -24,6 +24,8 @@ import re
 from core.dl_backend import DLClassifier, is_available as dl_available
 from utils.file_encoding import read_text_with_encoding
 
+import copy
+
 # Optional ML deps (numpy/pandas/sklearn) - fail gracefully if not installed
 try:
     import pandas as pd
@@ -621,10 +623,15 @@ class SensitivityDetector:
     ):
         enc = file_encoding or "utf-8"
         err = "replace"
-        self.patterns = dict(DEFAULT_PATTERNS)
+        det = detection_config or {}
+        # Start from built-in patterns and optionally gate LGPD_CNPJ_ALNUM behind config.
+        patterns = copy.deepcopy(DEFAULT_PATTERNS)
+        if not bool(det.get("cnpj_alphanumeric", False)):
+            patterns.pop("LGPD_CNPJ_ALNUM", None)
         over = _load_regex_overrides(regex_overrides_path, encoding=enc, errors=err)
         for k, v in over.items():
-            self.patterns[k] = v
+            patterns[k] = v
+        self.patterns = patterns
         self._compiled = {
             name: re.compile(pat) for name, (pat, _) in self.patterns.items()
         }
@@ -656,7 +663,6 @@ class SensitivityDetector:
                 self._dl_classifier = None
 
         # Minor detection: threshold from config (default 18); other options (e.g. full_scan, cross_reference) are used by connectors/report
-        det = detection_config or {}
         try:
             self._minor_age_threshold = int(det.get("minor_age_threshold", 18))
         except (TypeError, ValueError):
