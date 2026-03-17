@@ -22,6 +22,7 @@ from connectors.filesystem_connector import (
     _scan_sqlite_file_as_db,
     scan_archive_at_path,
 )
+from core.content_type import choose_effective_pdf_extension
 
 try:
     import requests
@@ -75,6 +76,9 @@ class SharePointConnector:
         self.compressed_extensions = normalize_compressed_extensions(
             fs_opts.get("compressed_extensions") or default_compressed_extensions()
         )
+        # Planned: optional content-based type detection (magic bytes) for renamed/cloaked files.
+        # Wiring only; actual use in extraction will be controlled by a future opt-in toggle.
+        self.use_content_type = bool(fs_opts.get("use_content_type", False))
 
     def run(self) -> None:
         if not _REQUESTS_NTLM_AVAILABLE:
@@ -191,8 +195,17 @@ class SharePointConnector:
                             ml_confidence=finding["ml_confidence"],
                         )
                 else:
+                    # Optional: when use_content_type is enabled, mirror the filesystem narrow
+                    # PDF-only slice to SharePoint downloads so PDFs renamed as .txt are still
+                    # treated as PDF for extraction. Default remains extension-only.
+                    effective_ext = choose_effective_pdf_extension(
+                        ext, self.use_content_type, Path(temp_path)
+                    )
                     text = _read_text_sample(
-                        Path(temp_path), ext, self.sample_limit, self.file_passwords
+                        Path(temp_path),
+                        effective_ext,
+                        self.sample_limit,
+                        self.file_passwords,
                     )
                     res = self.scanner.scan_file_content(text, Path(name))
                     if res is not None:

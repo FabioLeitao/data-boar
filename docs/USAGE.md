@@ -316,6 +316,8 @@ regex_overrides_file: docs/compliance-samples/compliance-sample-uk_gdpr.yaml
 ml_patterns_file: docs/compliance-samples/compliance-sample-pipeda.yaml
 ```
 
+> **Optional (opt-in) toggle:** The `file_scan` block also accepts a boolean `use_content_type` key. When enabled, the scanner may consult a small content-type helper (magic bytes) to better detect renamed or cloaked files. As of version 1.6.0 this is a **narrow** feature: it helps catch PDFs renamed as `.txt` on filesystem and share targets (SMB/WebDAV/SharePoint) by treating them as PDF for extraction when the header looks like `%PDF-...`. The default remains extension-based; leave this off if you prefer the original behaviour and lowest I/O.
+
 ### Credentials from environment (secrets not in config)
 
 To keep secrets **out of the config file**, use **`*_from_env`** keys so the application reads values from environment variables at load time. This is the recommended pattern for production and for config files that may be shared or versioned.
