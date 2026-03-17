@@ -268,14 +268,14 @@ When implementing **scan inside compressed files**, ensure we do **not** run int
 
 ## Notes to remind later
 
-These are follow-ups or optional improvements to revisit when touching this area:
+Follow-ups or optional improvements, **ordered by recommended execution** under typical token/session constraints (smallest-scope, high-value first):
 
-- **Password-protected archives:** Add a test (and optionally sample data) that uses `file_scan.file_passwords` for ZIP/7z so we validate the config path end-to-end.
-- **Max members per archive:** Optional cap (e.g. 1000 members per archive) as an extra guard to limit resource use and mitigate archive bombs.
-- **Tier 3 archives:** LHA, ARJ, ZOO, PAK, ARC, ACE — via patool + external tools or dedicated libs; document and gate behind the same `scan_compressed` option.
-- **Nested archives:** Zip-inside-zip (and tar inside zip) with a depth limit and size limit; document “one level only” for v1 or add recursion with a cap.
-- **Optional max temp usage:** Consider a max total temp usage or cleanup policy when extracting to temp so one run does not fill the disk (in addition to `max_inner_size` per member).
-- **Test data:** RAR/ARJ samples only when/if support is added; keep test set small for CI.
+1. **Password-protected archives:** Add a test (and optionally sample data) that uses `file_scan.file_passwords` for ZIP/7z so we validate the config path end-to-end. (Focused change; existing config.)
+2. **Max members per archive:** Optional cap (e.g. 1000 members per archive) as an extra guard to limit resource use and mitigate archive bombs. (Single guard, small code surface.)
+3. **Optional max temp usage:** Consider a max total temp usage or cleanup policy when extracting to temp so one run does not fill the disk (in addition to `max_inner_size` per member). (Config/docs or small guard.)
+4. **Nested archives:** Zip-inside-zip (and tar inside zip) with a depth limit and size limit; document “one level only” for v1 or add recursion with a cap. (Larger design/code scope.)
+5. **Tier 3 archives:** LHA, ARJ, ZOO, PAK, ARC, ACE — via patool + external tools or dedicated libs; document and gate behind the same `scan_compressed` option. (New deps/formats.)
+6. **Test data:** RAR/ARJ samples only when/if support is added; keep test set small for CI. (Do when touching those formats.)
 
 ---
 
