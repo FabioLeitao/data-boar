@@ -74,6 +74,10 @@ class SMBConnector:
         self.compressed_extensions = normalize_compressed_extensions(
             fs_opts.get("compressed_extensions") or default_compressed_extensions()
         )
+        # Planned: optional content-based type detection (magic bytes) to help
+        # with renamed/cloaked files. Currently just wired from config; behaviour
+        # remains extension-based until a future opt-in phase.
+        self.use_content_type = bool(fs_opts.get("use_content_type", False))
 
     def _unc_path(self, *parts: str) -> str:
         host = self.config.get("host", "").strip()
