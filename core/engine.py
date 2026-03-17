@@ -110,6 +110,17 @@ class AuditEngine:
     def get_current_findings_count(self) -> int:
         return self.db_manager.get_current_findings_count()
 
+    @property
+    def crypto_signals(self) -> list[tuple[str, set[StrongCryptoSignal]]]:
+        """
+        Read-only view of best-effort strong-crypto signals collected for this run.
+
+        Each entry is (target_name, {StrongCryptoSignal, ...}). Currently populated
+        only for database-style targets and not persisted or exposed via API/CLI.
+        """
+
+        return list(self._crypto_signals)
+
     def start_audit(
         self,
         tenant_name: str | None = None,
