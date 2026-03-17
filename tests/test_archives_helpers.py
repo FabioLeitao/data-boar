@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from core.archives import (
     default_compressed_extensions,
     detect_archive_type,
