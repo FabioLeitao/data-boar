@@ -65,3 +65,30 @@ def infer_content_type(source: Union[Path, str, bytes, bytearray]) -> ContentTyp
     data = read_magic(path, n=64)
     return _infer_from_bytes(data, filename=str(path))
 
+
+def choose_effective_pdf_extension(
+    ext: str,
+    use_content_type: bool,
+    source: Union[Path, str, bytes, bytearray],
+) -> str:
+    """
+    Decide which extension to use for extraction for the narrow PDF-only slice.
+
+    - When use_content_type is false or ext is already '.pdf', return ext unchanged.
+    - Otherwise, call infer_content_type(source); when it yields 'pdf', return '.pdf',
+      else return the original ext.
+
+    This helper is intentionally small so connectors (filesystem and shares) can share
+    the same behaviour and tests without touching network code.
+    """
+
+    if not use_content_type or ext == ".pdf":
+        return ext
+    try:
+        label = infer_content_type(source)
+    except Exception:
+        return ext
+    if label == "pdf":
+        return ".pdf"
+    return ext
+

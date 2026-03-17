@@ -461,6 +461,8 @@ targets:
 
 All share types use the same **file_scan** settings (extensions, recursive, scan_sqlite_as_db, sample_limit) from config. Findings appear in the **Filesystem findings** sheet.
 
+When you enable `file_scan.use_content_type: true`, the share connectors also participate in the narrow content-type helper slice: PDFs that were renamed to `.txt` (or similar) but still start with a valid `%PDF-...` header are treated as PDF for text extraction, mirroring local filesystem behaviour. This remains an **opt-in** feature; with the flag disabled, all share scanning stays purely extension-based.
+
 ## Adding new connectors
 
 To support a new data source (e.g. another database driver or API), see **[ADDING_CONNECTORS.md](ADDING_CONNECTORS.md)** (English) or **[ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md)** (Português – Brasil). The guide describes the connector contract, how to register a new type (or driver), optional dependencies, and includes step-by-step instructions plus examples (database-style and API-style).
