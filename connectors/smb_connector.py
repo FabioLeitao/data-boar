@@ -23,6 +23,7 @@ from connectors.filesystem_connector import (
     scan_archive_at_path,
 )
 from core.content_type import choose_effective_pdf_extension
+
 try:
     import smbclient
 

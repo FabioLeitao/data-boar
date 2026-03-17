@@ -15,7 +15,9 @@ from typing import Union
 from core.archives import read_magic, is_zip_magic
 
 
-ContentType = str  # alias for clarity; values are small internal labels, not full MIME strings
+ContentType = (
+    str  # alias for clarity; values are small internal labels, not full MIME strings
+)
 
 
 def _infer_from_bytes(data: bytes, filename: str | None = None) -> ContentType | None:
@@ -48,7 +50,9 @@ def _infer_from_bytes(data: bytes, filename: str | None = None) -> ContentType |
     return None
 
 
-def infer_content_type(source: Union[Path, str, bytes, bytearray]) -> ContentType | None:
+def infer_content_type(
+    source: Union[Path, str, bytes, bytearray],
+) -> ContentType | None:
     """
     Infer a simple content-type label from a file path or bytes buffer.
 
@@ -91,4 +95,3 @@ def choose_effective_pdf_extension(
     if label == "pdf":
         return ".pdf"
     return ext
-
