@@ -22,7 +22,7 @@ from connectors.filesystem_connector import (
     _scan_sqlite_file_as_db,
     scan_archive_at_path,
 )
-
+from core.content_type import choose_effective_pdf_extension
 try:
     import requests
     from requests_ntlm import HttpNtlmAuth
@@ -194,8 +194,17 @@ class SharePointConnector:
                             ml_confidence=finding["ml_confidence"],
                         )
                 else:
+                    # Optional: when use_content_type is enabled, mirror the filesystem narrow
+                    # PDF-only slice to SharePoint downloads so PDFs renamed as .txt are still
+                    # treated as PDF for extraction. Default remains extension-only.
+                    effective_ext = choose_effective_pdf_extension(
+                        ext, self.use_content_type, Path(temp_path)
+                    )
                     text = _read_text_sample(
-                        Path(temp_path), ext, self.sample_limit, self.file_passwords
+                        Path(temp_path),
+                        effective_ext,
+                        self.sample_limit,
+                        self.file_passwords,
                     )
                     res = self.scanner.scan_file_content(text, Path(name))
                     if res is not None:

@@ -20,6 +20,7 @@ from core.archives import (
     is_supported_archive,
     normalize_compressed_extensions,
 )
+from core.content_type import choose_effective_pdf_extension
 
 # Default cap for total uncompressed bytes per member when scanning inside archives.
 DEFAULT_MAX_INNER_SIZE = 10_000_000
@@ -490,8 +491,13 @@ class FilesystemConnector:
                     except Exception:
                         pass
                 continue
+            # Optional: when use_content_type is enabled, use shared helper for the narrow PDF-only
+            # slice so renamed PDFs are treated as .pdf for extraction.
+            effective_ext = choose_effective_pdf_extension(
+                ext, self.use_content_type, file_path
+            )
             content = _read_text_sample(
-                file_path, ext, self.sample_limit, self.file_passwords
+                file_path, effective_ext, self.sample_limit, self.file_passwords
             )
             res = self.scanner.scan_file_content(content, file_path)
             if res is None:
