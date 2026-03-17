@@ -316,7 +316,7 @@ regex_overrides_file: docs/compliance-samples/compliance-sample-uk_gdpr.yaml
 ml_patterns_file: docs/compliance-samples/compliance-sample-pipeda.yaml
 ```
 
-> **Planned (future toggle):** The `file_scan` block will also gain an optional boolean `use_content_type` key. When enabled in a future release, this will let connectors consult a content-type helper (magic bytes) to better detect renamed or cloaked files. As of version 1.6.0 this flag is normalized in config but not yet wired into scan behaviour.
+> **Optional (opt-in) toggle:** The `file_scan` block also accepts a boolean `use_content_type` key. When enabled, the scanner may consult a small content-type helper (magic bytes) to better detect renamed or cloaked files. As of version 1.6.0 this is a **narrow** feature: it helps catch PDFs renamed as `.txt` on filesystem and share targets (SMB/WebDAV/SharePoint) by treating them as PDF for extraction when the header looks like `%PDF-...`. The default remains extension-based; leave this off if you prefer the original behaviour and lowest I/O.
 
 ### Credentials from environment (secrets not in config)
 

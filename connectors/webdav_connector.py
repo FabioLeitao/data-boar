@@ -22,7 +22,7 @@ from connectors.filesystem_connector import (
     _scan_sqlite_file_as_db,
     scan_archive_at_path,
 )
-
+from core.content_type import choose_effective_pdf_extension
 try:
     from webdav3.client import Client as WebDAVClient
 
@@ -225,8 +225,17 @@ class WebDAVConnector:
                             ml_confidence=finding["ml_confidence"],
                         )
                 else:
+                    # Optional: when use_content_type is enabled, run the same narrow PDF-only
+                    # content-type slice used for local filesystem and SMB. This helps detect PDFs
+                    # renamed as .txt (or similar) on WebDAV shares without changing default behaviour.
+                    effective_ext = choose_effective_pdf_extension(
+                        ext, self.use_content_type, Path(temp_path)
+                    )
                     text = _read_text_sample(
-                        Path(temp_path), ext, self.sample_limit, self.file_passwords
+                        Path(temp_path),
+                        effective_ext,
+                        self.sample_limit,
+                        self.file_passwords,
                     )
                     res = self.scanner.scan_file_content(text, Path(remote))
                     if res is not None:
