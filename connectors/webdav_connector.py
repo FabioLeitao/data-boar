@@ -107,6 +107,9 @@ class WebDAVConnector:
         self.compressed_extensions = normalize_compressed_extensions(
             fs_opts.get("compressed_extensions") or default_compressed_extensions()
         )
+        # Planned: optional content-based type detection (magic bytes) for renamed/cloaked files.
+        # This is just wiring; runtime behaviour is unchanged until a future phase enables it.
+        self.use_content_type = bool(fs_opts.get("use_content_type", False))
 
     def run(self) -> None:
         if not _WEBDAV_AVAILABLE:
