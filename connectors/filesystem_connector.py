@@ -383,6 +383,10 @@ class FilesystemConnector:
         self.compressed_extensions = normalize_compressed_extensions(
             fs_opts.get("compressed_extensions") or default_compressed_extensions()
         )
+        # Planned: optional content-based type detection helper (magic bytes) to help
+        # with renamed/cloaked files. Currently an inert toggle; future phases will
+        # consult this flag before choosing how to extract/scan content.
+        self.use_content_type = bool(fs_opts.get("use_content_type", False))
         # "*" or "all" in list => use full SUPPORTED_EXTENSIONS; else use provided list or default
         use_all = False
         if extensions:
