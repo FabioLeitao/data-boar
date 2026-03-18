@@ -73,8 +73,10 @@ The list below is ordered for the current billing cycle, with a focus on:
 
 | Order | Plan | Why this order (scope / value) |
 | ----- | ---- | ------------------------------ |
-| 0 | **Compliance standards alignment (ISO/IEC 27701, FELCA)** | Doc only: COMPLIANCE_FRAMEWORKS + roadmap; no code; smallest scope; supports pitch and audit narrative. |
-| 1 | **CNPJ alphanumeric format validation** | Research + regex + doc (Phase 1); focused, no schema change; high value for BR compliance. |
+| –1 | **Dependabot & GH bots (security/maintenance)** | **Do early:** Review [Security → Dependabot alerts](https://github.com/FabioLeitao/data-boar/security/dependabot) and open Dependabot PRs. Apply only safe updates: edit `pyproject.toml` (or accept Dependabot PR), then `uv lock`, `uv export --no-emit-package pyproject.toml -o requirements.txt`, commit all three, run `.\scripts\check-all.ps1`. Merge only after CI green. See SECURITY.md (Dependabot SLAs, dependency policy). |
+| –1b | **Docker Hub Scout (image CVEs)** | **Do early, after Dependabot:** Run `docker scout quickview fabioleitao/data_boar:latest` (or `:1.6.1`) locally, or use [Docker Hub → data_boar → Tags → Scout](https://hub.docker.com/r/fabioleitao/data_boar) for the image. Fix by: bump base image in Dockerfile (e.g. `python:3.12-slim` to a digest or newer tag), and/or apply dependency updates (Dependabot); rebuild, re-scan with Scout, run `.\scripts\check-all.ps1` and a quick container smoke test. Merge only when tests pass and Scout findings are acceptable or resolved. Token-aware: one session for Scout review + one round of fixes. |
+| 0 | **Compliance standards alignment (ISO/IEC 27701, FELCA)** | Doc only: COMPLIANCE_FRAMEWORKS + roadmap; no code; smallest scope; supports pitch and audit narrative. ✅ Done |
+| 1 | **CNPJ alphanumeric format validation** | Research + regex + doc (Phase 1); focused, no schema change; high value for BR compliance. ✅ Phase 4 done |
 | 2 | **Content type & cloaking detection** | Step 1 only: magic-byte table + `infer_content_type`; reuses pattern from compressed; small, additive; catches renamed/cloaked files. |
 | 3 | **Additional detection techniques & FN reduction** | First slice: configurable MEDIUM threshold + "suggested review" in report; config + wording; small surface. |
 | 4 | **Strong crypto & controls validation** | Phase 1: CLI flag, config, API/dashboard checkbox, engine wiring (no criteria yet); then Phase 2 adds criteria. |
@@ -82,6 +84,13 @@ The list below is ordered for the current billing cycle, with a focus on:
 | 6 | **Notifications (off-band + scan-complete)** | Phase 1: config shape + notifier module + one channel (e.g. webhook); docs and examples; medium scope. |
 
 **Deferred (larger or later):** Secrets Phase B, Version check & self-upgrade, Selenium QA, Synthetic data, SAP connector, Dashboard i18n. **Backlog:** Additional data soup formats.
+
+#### Resume next session (security/maintenance first, then feature work)
+
+1. **Dependabot (order –1):** On GitHub go to **Security → Dependabot**. There are open alerts (e.g. pyOpenSSL, PyJWT, pypdf, SonarQube action). For each: either merge an existing Dependabot PR after local `check-all` and CI pass, or update `pyproject.toml` (and Actions in `.github/workflows` if needed), then `uv lock`, `uv export --no-emit-package pyproject.toml -o requirements.txt`, commit `pyproject.toml` + `uv.lock` + `requirements.txt`, run `.\scripts\check-all.ps1`, push and merge. One PR per ecosystem (pip vs github-actions) is enough; batch non-security updates if desired.
+2. **Docker Hub Scout (order –1b):** Run **`docker scout quickview fabioleitao/data_boar:latest`** locally (or open Docker Hub → repo **data_boar** → Tags → Scout for the image). If there are CVEs: update Dockerfile base image (e.g. `python:3.12-slim` to a digest or newer tag) and/or rely on Dependabot dependency updates; rebuild image, run Scout again, then `.\scripts\check-all.ps1` and a quick container smoke test. Merge only when tests pass and Scout is acceptable. Do one Scout review + one round of fixes per session (token-aware).
+3. **CodeQL:** Runs on push/PR to main; weekly schedule. No action unless **Security → Code scanning** shows new findings; then fix and re-run.
+4. **After bots and Scout are green:** Continue with the next plan in the table (e.g. **Content type & cloaking** step 2, or **Additional detection** first slice, or **Data source versions** Phase 1).
 
 ### Compliance standards alignment (ISO/IEC 27701, FELCA) – [PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md](PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md)
 
