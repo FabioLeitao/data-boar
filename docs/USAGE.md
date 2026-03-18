@@ -300,6 +300,8 @@ CLI uses the path you pass with `--config` (e.g. `config.yaml`). For the **web s
 - **Location:** Any path; typical names: `config.yaml`, `config/config.json`. Legacy `config/config.json` with `databases` and `file_scan.directories` is normalized automatically.
 - **Root keys:** `targets`, `file_scan`, `report`, `api`, `sqlite_path`, `scan`, **`rate_limit`**, **`timeouts`**, optional `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection`, `learned_patterns`, **`pattern_files_encoding`**.
 
+By default the web API binds to **`127.0.0.1` (loopback)** when started via the CLI (`python main.py --web ...`) unless you explicitly set `api.host` in the config (for example, `0.0.0.0` when running behind a reverse proxy or inside a container). In container and Kubernetes deployments, the manifests and Docker examples already expose port 8088 via the orchestrator; we recommend keeping `api.host` at the default or at `0.0.0.0` only when the container is fenced by network policy, ingress or reverse proxy.
+
 ### File encoding (config and pattern files)
 
 Config and compliance sample files can use different character sets. The application supports this so multilingual terms (e.g. Japanese, Arabic, French) and legacy environments do not break in production.

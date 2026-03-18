@@ -119,6 +119,18 @@ Para todas as opções de encoding e exemplos, veja [USAGE – File encoding](US
 
 **Ajuda com ajuste fino:** Se sua organização precisar de **maior ou melhor compatibilidade** com uma regulamentação ou escopo de conformidade específico (ex.: VCDPA, CPA, regras setoriais), podemos ajudar—**criando arquivos de configuração sob medida** ou fazendo **pequenos ajustes no código**—quando você entrar em contato. Isso permite que potenciais clientes adotem a ferramenta para sua jurisdição ou expectativas de auditoria sem começar do zero.
 
+## Normas auditáveis e de gestão (papel de suporte)
+
+A aplicação **não** certifica organizações. Ela oferece **descoberta e mapeamento** de dados pessoais e sensíveis e relatórios **apenas de metadados**, o que apoia a prestação de contas baseada em evidências e a preparação para auditorias.
+
+- **ISO/IEC 27701 (PIMS):** A ISO/IEC 27701 exige que controladores e operadores de PII saibam onde os PII estão e documentem o escopo do tratamento. Nossas varreduras e relatórios (achados, norm tags, saída Excel) ajudam a produzir essa evidência e a alinhar com as regulamentações que você declara sob a ISO/IEC 27701 (ex.: LGPD, GDPR, CCPA). Veja [PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md](plans/PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md).
+- **SOC 2:** Ponto de pressão comum para corporações; o SOC 2 (Tipo I/II) exige controles documentados sobre segurança, disponibilidade e confidencialidade dos sistemas que processam dados sensíveis. Não realizamos auditorias SOC 2. Nossa **descoberta e mapeamento** de onde dados pessoais ou sensíveis estão, com relatórios apenas de metadados, apoiam o desenho de controles e a preparação para auditoria (ex.: evidência de inventário e escopo de dados). Norm tags e overrides de recomendação podem ser alinhados aos princípios e critérios de confiança que você utiliza. Veja [PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md](plans/PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md).
+- **FELCA (Lei 15.211/2025 – Estatuto Digital da Criança e do Adolescente):** Em vigor a partir de 17 de março de 2026, a FELCA se aplica a plataformas digitais dirigidas ou acessíveis por menores no Brasil. Não implementamos verificação de idade nem controles de plataforma. Nossa **detecção de dados de menores** (ex.: colunas de data de nascimento e idade, flags de “possível menor”) e os relatórios ajudam a mapear onde dados relativos a menores são processados e a apoiar transparência e prestação de contas (ex.: perante a ANPD). Veja [PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md](plans/PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md).
+
+**Outras conformidades a acompanhar:** Leis regionais de proteção à criança ou a plataformas (além da FELCA), regras setoriais (ex.: saúde, financeiro) e novas exigências de localização ou transferência internacional de dados podem afetar seu escopo. Ampliamos o suporte via config e [compliance-samples](compliance-samples/) conforme as normas se tornem relevantes; não é necessário alterar código para adicionar novos norm tags ou textos de recomendação.
+
+Outras normas auditáveis ou regionais podem ser atendidas via norm tags configuráveis e [compliance-samples](compliance-samples/); seguimos estendendo documentação e amostras conforme novos padrões se tornem relevantes.
+
 ## Referenciados explicitamente hoje (rótulos embutidos)
 
 Os padrões regex embutidos e rótulos do relatório referem-se a estes frameworks (com valores de exemplo de `norm_tag`):

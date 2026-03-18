@@ -18,18 +18,28 @@ Você pode **definir as palavras de treino para ML e DL** no arquivo de config p
 
 ## Formatos de CNPJ (Brasil): numérico legado e alfanumérico
 
-O **CNPJ** brasileiro (identificador de pessoa jurídica) usou historicamente um formato **apenas numérico**:
+O **CNPJ** (Cadastro Nacional da Pessoa Jurídica) é o identificador fiscal de empresas. Dois formatos são relevantes:
 
-- 14 dígitos, opcionalmente formatados como `XX.XXX.XXX/XXXX-XX` (pontos, barra, hífen).
+**Legado (apenas numérico):**
 
-O projeto agora suporta os dois formatos, mas a detecção alfanumérica é **opt-in** para evitar mudanças de comportamento inesperadas:
+- 14 dígitos, opcionalmente formatados como `XX.XXX.XXX/XXXX-XX` (pontos, barra, hífen). Continua válido; não há migração obrigatória.
+
+**Alfanumérico (formato oficial atual):**
+
+- Definido pela **Instrução Normativa RFB nº 2.229/2024** (Receita Federal). Mesmo comprimento de 14 caracteres; pontuação de exibição inalterada (`XX.XXX.XXX/XXXX-XX`).
+- **Posições 1–8 (raiz):** alfanumérico `0–9`, `A–Z` (maiúsculas).
+- **Posições 9–12 (ordem de inscrição):** alfanumérico `0–9`, `A–Z`.
+- **Posições 13–14 (dígitos verificadores):** apenas numérico `0–9`.
+- Novos registros de empresas receberão CNPJs alfanuméricos a partir de **julho de 2026**; CNPJs numéricos existentes permanecem válidos.
+
+O projeto suporta os dois formatos. A detecção alfanumérica é **opt-in** para não alterar o comportamento atual:
 
 - `LGPD_CNPJ` – formato legado, apenas numérico (sempre ativo).
-- `LGPD_CNPJ_ALNUM` – formato **alfanumérico** em que as 12 primeiras posições podem conter `A–Z` ou `0–9`, e as duas últimas posições permanecem como dígitos (check digits). Fica ativo quando:
-  - `detection.cnpj_alphanumeric: true` é definido no config, ou
+- `LGPD_CNPJ_ALNUM` – formato alfanumérico conforme IN RFB 2.229/2024 (12 primeiras posições `[0-9A-Z]`, duas últimas dígitos). Ativo quando:
+  - `detection.cnpj_alphanumeric: true` está definido no config, ou
   - um override para `LGPD_CNPJ_ALNUM` é adicionado via `regex_overrides_file`.
 
-Ambos os padrões usam o mesmo `norm_tag` (`LGPD Art. 5`), portanto são tratados como identificadores sob a LGPD. Nesta etapa, o detector faz apenas **verificação de compatibilidade de formato** (regex); a **validação de dígito verificador** para CNPJ (numérico ou alfanumérico) e outros identificadores brasileiros (ex.: CPF, PIS/PASEP) é deixada propositalmente para uma **fase futura na lógica do detector**, para manter a camada de regex simples e fácil de estender.
+Ambos os padrões usam o mesmo `norm_tag` (`LGPD Art. 5`). O detector faz apenas **compatibilidade de formato** (regex); **validação de dígito verificador** (ex.: Módulo 11 no alfanumérico) fica para uma fase futura do detector. Se seu setor usar variante (ex.: letras minúsculas), ajuste o regex no seu override.
 
 ---
 
