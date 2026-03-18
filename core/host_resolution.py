@@ -25,4 +25,3 @@ def resolve_api_host(config: dict[str, Any], cli_host: str | None = None) -> str
         return host
     # Safer default for desktop/CLI: bind only to loopback unless explicitly overridden.
     return "127.0.0.1"
-
