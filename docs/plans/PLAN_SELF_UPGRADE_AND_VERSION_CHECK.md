@@ -135,4 +135,47 @@ When the app detects it is running inside Docker or Kubernetes, **do not** perfo
 
 ---
 
-*Last updated: plan created. Update this doc when completing steps or when version/upgrade behaviour changes.*
+## 9. Alternative delivery: package-manager and signed artifacts (winget-like, .deb, apt)
+
+**Status:** Optional later phase. Fits the same goals (version check, safe upgrade, audit) with an extra **Linux/server delivery path** similar to how Microsoft uses **winget** (check for update, one command to upgrade). **Complexity/gain:** Medium–high complexity; high gain for Debian/Ubuntu and enterprise environments that standardise on apt.
+
+### 9.1 Does it make sense? Does it fit our goals?
+
+- **Yes.** A **.deb package** installable via **apt** and **dpkg** gives operators a familiar, auditable upgrade path: `apt update && apt upgrade data-boar` (or a dedicated package name). Version check can still use GitHub Releases (or a simple file in our repo); the *delivery* mechanism becomes apt instead of (or in addition to) pip/uv/git/tarball.
+- **Winget-like UX:** Same idea as winget: one place to check for updates, one command to upgrade, with optional automatic checks. Our existing version-check and self-upgrade design (sections 1–7) already supports "check then upgrade"; adding .deb is another *source* for the upgraded bits (like "download tarball" vs "apt install").
+
+### 9.2 Safety and signing
+
+- **Own apt repository:** We can host a small apt repo (e.g. on GitHub Pages, or a minimal server) with a **signed** package list and .deb files. **Signing .deb** (e.g. with GPG) and publishing the public key lets `apt` verify integrity and origin; this is standard and safe.
+- **HTTPS:** Serve the repo over HTTPS so transport is protected. No need to ship private keys; only the public key is distributed (e.g. in docs or a one-line setup script).
+
+### 9.3 Not shipping readable .py (bytecode / compiled artifact)
+
+- **Goal:** Avoid distributing plain `.py` source in the installed artifact so that the deployed app is not trivially human-readable. Options:
+  - **.pyc (bytecode):** Package only `.pyc` (and necessary resources) in the .deb. Python can run from bytecode. **Caveat:** .pyc is reversible (decompilers exist); it reduces casual reading and keeps source out of the default install path, but is not strong obfuscation.
+  - **Other abstraction:** PyInstaller/cx_Freeze produce a single executable or a tree of .pyc + runtime; we could build such an artifact and then package *that* in the .deb so the installed filesystem has no raw .py. Same caveat: determined users can still inspect.
+- **Fits our goals:** Yes—we can document that "the .deb install does not include plain .py source, only bytecode (or a built artifact)" for deployments that prefer not to expose source. Fits compliance and "controlled distribution" narrative; no change to open-source repo (source stays on GitHub).
+
+### 9.4 Where it sits in the plan and sequence
+
+- **Fits in this plan:** Version check & self-upgrade already defines *how* we check and *how* we upgrade (backup, replace code, restore, audit). Adding .deb is an **alternative delivery mechanism**: "upgrade" can mean "apt upgrade" when the app was installed from our apt repo. Version-check logic (GitHub API or well-known file) and container-aware behaviour stay the same.
+- **Token-aware / complexity–gain:** This is **higher complexity** (packaging, repo hosting, GPG, possibly CI to build .deb and publish). **High gain** for Linux/enterprise and for a "winget-like" story. So: **do core version check and self-upgrade first** (sections 1–7); then consider this as an **optional Phase 9** (or a separate "Delivery: .deb/apt" slice) when capacity allows, after the main upgrade flow is in place.
+
+### 9.5 Name availability and dependencies
+
+- **Package name:** Ensure the **deb package name is available** (e.g. `data-boar`): check that it is not already taken in Debian/Ubuntu official repos or in other well-known third-party repos we might conflict with. If we host our own repo only, we control the name; still document the chosen name and any naming rationale (e.g. matches Docker image, no clash with existing packages).
+- **Dependencies in the .deb:** The package can **declare dependencies** (e.g. Python 3.12+, `libpq5`, `libffi8`, etc.) so that `apt install data-boar` (or `apt upgrade data-boar`) pulls in required system libs. Optionally we can also bundle or depend on a fixed set of Python deps (e.g. via a virtualenv inside the package or declared as deb deps) for **easy deployment** in one step without separate pip/uv installs.
+
+### 9.6 To-dos (optional phase; implement after sections 1–7)
+
+| #   | To-do                                                                                                                                                                                                                                                                 | Status    |
+| --- | -----                                                                                                                                                                                                                                                                 | ------    |
+| 9.1 | **.deb packaging:** Define package name (e.g. `data-boar`); **confirm name is available** (not taken in Debian/Ubuntu or conflicting repos). Define dependencies (system and optionally Python) for easy deployment, install layout (e.g. `/usr/lib/data-boar` or FHS), and build .deb (e.g. with `dpkg-deb` / `dh` or a small script). Prefer shipping bytecode (.pyc) or a built artifact only—no raw .py in the package. | ⬜ Pending |
+| 9.2 | **Apt repository:** Host an apt repo (e.g. GitHub Pages or minimal server) with `dists/` and `pool/` (or flat structure); provide `Release` and `Packages` (and optionally `Packages.gz`). Document how to add the repo (e.g. `deb https://.../data-boar stable main`). | ⬜ Pending |
+| 9.3 | **Signing:** Sign the `Release` file (and optionally .deb) with GPG; publish the public key and document one-line setup (add repo + apt-key or signed-by). Ensure apt verification works on a clean Debian/Ubuntu system. | ⬜ Pending |
+| 9.4 | **Version check and upgrade UX:** When version check runs and a newer release is available, if the app was installed from .deb, show message: "Run `sudo apt update && sudo apt upgrade data-boar` (or equivalent)." Optionally detect install method (e.g. presence of a marker file or package database) to tailor the message. | ⬜ Pending |
+| 9.5 | **Docs and tests:** Document the .deb install path, repo URL, and signing in USAGE and DEPLOY; add a short "Package-manager install (apt)" section. Add CI or release-step to build and publish .deb when we cut a release. | ⬜ Pending |
+
+---
+
+*Last updated: plan created; section 9 added for optional .deb/apt/signing/bytecode. Update this doc when completing steps or when version/upgrade behaviour changes.*
