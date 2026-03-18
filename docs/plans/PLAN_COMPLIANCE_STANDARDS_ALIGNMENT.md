@@ -1,4 +1,4 @@
-# Plan: Compliance standards alignment (ISO 27701, FELCA, auditable norms)
+# Plan: Compliance standards alignment (ISO/IEC 27701, FELCA, auditable norms)
 
 **Status:** Done (documentation)
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
@@ -14,7 +14,7 @@ Document how the product **supports** (does not certify) alignment with **audita
 ### ISO/IEC 27701 (Privacy Information Management Systems – PIMS)
 
 - **What it is:** International standard (2019; 2025 standalone edition) for establishing and operating a Privacy Information Management System. It requires PII controllers and processors to demonstrate accountability, manage privacy risks, and provide evidence (e.g. documented processing, DPIAs, cross-border transfer documentation).
-- **Our role:** We do **not** certify organisations. We provide **discovery and mapping** of personal/sensitive data across sources (files, SQL, NoSQL, APIs, shares, etc.) and **metadata-only** reporting (where found, pattern type, sensitivity, norm tags). That supports **evidence-based accountability**: knowing where PII is and the scope of processing is a prerequisite for applying ISO 27701 controls and for audits. Our config-driven norm tags and recommendation overrides align with the regulations organisations declare under ISO 27701 (e.g. LGPD, GDPR, CCPA).
+- **Our role:** We do **not** certify organisations. We provide **discovery and mapping** of personal/sensitive data across sources (files, SQL, NoSQL, APIs, shares, etc.) and **metadata-only** reporting (where found, pattern type, sensitivity, norm tags). That supports **evidence-based accountability**: knowing where PII is and the scope of processing is a prerequisite for applying ISO/IEC 27701 controls and for audits. Our config-driven norm tags and recommendation overrides align with the regulations organisations declare under ISO/IEC 27701 (e.g. LGPD, GDPR, CCPA).
 
 ### SOC 2 (Service Organization Control 2)
 
@@ -28,7 +28,7 @@ Document how the product **supports** (does not certify) alignment with **audita
 
 ### Other auditable or regional norms
 
-- **Existing:** We already support many regional laws via [compliance-samples](compliance-samples/) and [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md) (e.g. LGPD, GDPR, CCPA, UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS, and others). Organisations can map our findings to SOC 2, ISO 27001/27002, or other control frameworks by using norm tags and recommendation overrides.
+- **Existing:** We already support many regional laws via [compliance-samples](compliance-samples/) and [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md) (e.g. LGPD, GDPR, CCPA, UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS, and others). Organisations can map our findings to SOC 2, ISO/IEC 27001/27002, or other control frameworks by using norm tags and recommendation overrides.
 - **Future:** As new norms emerge (e.g. other regional child-protection or platform rules), we extend via config and samples; the plan does not mandate code changes for each new law.
 
 ### Other compliance to watch
@@ -49,9 +49,9 @@ Document how the product **supports** (does not certify) alignment with **audita
 
 | # | To-do | Status |
 |---|--------|--------|
-| 1 | Add subsection “Auditable and management standards (supporting role)” in COMPLIANCE_FRAMEWORKS.md: ISO 27701 and FELCA paragraphs; link to this plan. | ✅ Done |
+| 1 | Add subsection “Auditable and management standards (supporting role)” in COMPLIANCE_FRAMEWORKS.md: ISO/IEC 27701 and FELCA paragraphs; link to this plan. | ✅ Done |
 | 2 | Add equivalent subsection in COMPLIANCE_FRAMEWORKS.pt_BR.md (natural pt-BR). | ✅ Done |
-| 3 | Update roadmap sentence in README.md (decision-makers / “Why it holds up”): mention alignment with ISO 27701 (PIMS) and FELCA (minor-data mapping) documented; we continue to extend support for auditable and regional standards. | ✅ Done |
+| 3 | Update roadmap sentence in README.md (decision-makers / “Why it holds up”): mention alignment with ISO/IEC 27701 (PIMS) and FELCA (minor-data mapping) documented; we continue to extend support for auditable and regional standards. | ✅ Done |
 | 4 | Update roadmap sentence in README.pt_BR.md equivalently (on-brand, minimal change). | ✅ Done |
 | 5 | In PLANS_TODO.md: add “Compliance standards alignment” to plan status and conflict/dependency table; add a short block with these to-dos; place in “What to start next” as smallest-scope (doc-only) so it can be done first under token constraints. | ✅ Done |
 
