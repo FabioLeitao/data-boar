@@ -21,4 +21,3 @@ def test_resolve_api_host_falls_back_to_loopback_default() -> None:
 def test_resolve_api_host_handles_missing_api_block() -> None:
     config = {}
     assert resolve_api_host(config, cli_host=None) == "127.0.0.1"
-
