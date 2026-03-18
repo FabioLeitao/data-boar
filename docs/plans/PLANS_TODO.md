@@ -18,7 +18,7 @@ This document is the **single source of truth** for the project's plan status an
 | ----                                     | ----------                      | -------------- | -----                                                                                                                         |
 | Security hardening                       | —                               | None           | Additive (validation, docs, audit). Do first to strengthen base.                                                              |
 | Secrets vault                            | —                               | None           | Phase A (redact, env) improves config safety before vault.                                                                    |
-| Version check / self-upgrade             | —                               | None           | Backup excludes secrets (manifest); compatible with Secrets A.                                                                |
+| Version check / self-upgrade             | —                               | None           | Backup excludes secrets (manifest); compatible with Secrets A. Optional Phase 9: .deb, apt repo, signing, bytecode-only (see plan §9). |
 | Additional compliance samples            | —                               | None           | Config-only; samples and docs additive.                                                                                       |
 | Compressed files                         | Config loader (new keys)        | None           | Additive feature; optional dependency py7zr.                                                                                  |
 | Content type & cloaking detection        | —                               | None           | Opt-in magic-byte/MIME detection for renamed/cloaked files; more I/O/CPU; steganography out of scope for v1.                   |
@@ -83,9 +83,11 @@ The list below is ordered for the current billing cycle, with a focus on:
 | 5 | **Data source versions & hardening** | Phase 1: `data_source_inventory` schema + save + one connector (e.g. SQL) + report sheet; one clear slice. |
 | 6 | **Notifications (off-band + scan-complete)** | Phase 1: config shape + notifier module + one channel (e.g. webhook); docs and examples; medium scope. |
 
-**Deferred (larger or later):** Secrets Phase B, Version check & self-upgrade, Selenium QA, Synthetic data, SAP connector, Dashboard i18n. **Backlog:** Additional data soup formats.
+**Deferred (larger or later):** Secrets Phase B, Version check & self-upgrade (incl. optional Phase 9: .deb/apt repo, signed packages, bytecode-only install, winget-like), Selenium QA, Synthetic data, SAP connector, Dashboard i18n. **Backlog:** Additional data soup formats.
 
 #### Resume next session (security/maintenance first, then feature work)
+
+**If you have an open PR** with the latest plan edits (Dependabot/Scout to-dos, self-upgrade §9 .deb/apt/bytecode, **deb name availability and deps for easy deployment**): merge when ready, then continue below.
 
 1. **Dependabot (order –1):** On GitHub go to **Security → Dependabot**. There are open alerts (e.g. pyOpenSSL, PyJWT, pypdf, SonarQube action). For each: either merge an existing Dependabot PR after local `check-all` and CI pass, or update `pyproject.toml` (and Actions in `.github/workflows` if needed), then `uv lock`, `uv export --no-emit-package pyproject.toml -o requirements.txt`, commit `pyproject.toml` + `uv.lock` + `requirements.txt`, run `.\scripts\check-all.ps1`, push and merge. One PR per ecosystem (pip vs github-actions) is enough; batch non-security updates if desired.
 2. **Docker Hub Scout (order –1b):** Run **`docker scout quickview fabioleitao/data_boar:latest`** locally (or open Docker Hub → repo **data_boar** → Tags → Scout for the image). If there are CVEs: update Dockerfile base image (e.g. `python:3.12-slim` to a digest or newer tag) and/or rely on Dependabot dependency updates; rebuild image, run Scout again, then `.\scripts\check-all.ps1` and a quick container smoke test. Merge only when tests pass and Scout is acceptable. Do one Scout review + one round of fixes per session (token-aware).
@@ -204,6 +206,8 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
 
 ### Version check and self-upgrade – [PLAN_SELF_UPGRADE_AND_VERSION_CHECK.md](PLAN_SELF_UPGRADE_AND_VERSION_CHECK.md)
 
+Core flow first (sections 1–7); then optional Phase 9 (complexity/gain: high complexity, high gain for Linux/enterprise).
+
 | #       | To-do                                                                              | Status    |
 | -       | -----                                                                              | ------    |
 | 1.1–1.3 | Repo URL, version fetch (GitHub API), expose current/latest/notes                  | ⬜ Pending |
@@ -213,6 +217,7 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
 | 5.1–5.2 | No downgrade; --force flag                                                         | ⬜ Pending |
 | 6.1–6.3 | No data loss; config/overrides backup; audit trail                                 | ⬜ Pending |
 | 7.1–7.3 | Tests; USAGE/DEPLOY docs; release notes                                            | ⬜ Pending |
+| 9.1–9.5 | **Optional (after 1–7):** .deb package (ensure package name available; include/bundle deps for easy deployment), own apt repo, GPG signing, bytecode-only install (no raw .py), winget-like UX; see plan §9. | ⬜ Pending |
 
 ---
 
