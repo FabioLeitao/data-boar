@@ -38,7 +38,8 @@ def _collect_md_files(root: Path, exclude_dirs: frozenset[str]) -> list[Path]:
     return sorted(set(out))
 
 
-# Exclude only tooling/dependency dirs; .cursor is included so rules/skills pass MD031, MD060, etc.
+# Exclude tooling/dependency dirs and docs/private (git-ignored user content; not part of repo lint).
+# .cursor is included so rules/skills pass MD031, MD060, etc.
 MARKDOWN_LINT_EXCLUDE_DIRS = frozenset(
     {
         ".git",
@@ -49,6 +50,7 @@ MARKDOWN_LINT_EXCLUDE_DIRS = frozenset(
         ".tox",
         "build",
         "dist",
+        "private",
     }
 )
 
