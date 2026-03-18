@@ -162,6 +162,6 @@ Em `deploy/docker-compose.yml` defina `image: fabioleitao/data_boar:latest` e re
 
 ## Atrás de NAT, load balancer ou proxy reverso
 
-A aplicação funciona corretamente atrás de **NAT**, **load balancer** ou **proxy reverso** (nginx, Traefik, Caddy). Se HTTPS for terminado no proxy, defina **X-Forwarded-Proto: https** nas requisições. Veja [SECURITY.md](../../SECURITY.md) para cabeçalhos de segurança HTTP.
+A aplicação funciona corretamente atrás de **NAT**, **load balancer** ou **proxy reverso** (nginx, Traefik, Caddy). Se HTTPS for terminado no proxy, defina **X-Forwarded-Proto: https** nas requisições. Veja [SECURITY.md](../../SECURITY.md) para cabeçalhos de segurança HTTP. Nos exemplos de Docker e Kubernetes, a porta 8088 é exposta via bindings do container/Service, então é seguro manter o bind interno da API em `0.0.0.0` **dentro do container**, enquanto, em estações de trabalho (CLI direto), o padrão recomendado é `127.0.0.1` (loopback), com `api.host: 0.0.0.0` usado apenas quando o ambiente estiver devidamente cercado por políticas de rede, Ingress ou proxy reverso.
 
 **Índice da documentação** (todos os tópicos, ambos os idiomas): [../README.md](../README.md) · [../README.pt_BR.md](../README.pt_BR.md). **Guia técnico:** [../TECH_GUIDE.md](../TECH_GUIDE.md) · [../TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md).
