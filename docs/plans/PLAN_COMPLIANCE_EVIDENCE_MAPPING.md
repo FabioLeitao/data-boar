@@ -11,7 +11,7 @@ This plan keeps a **structured mapping** between regulations/standards (LGPD, GD
 
 **Goal:** Decide which norms to include and how to represent the mapping.
 
-### To-dos
+### To-dos (Scope and structure)
 
 | # | To-do | Status |
 | - | ----- | ------ |
@@ -39,7 +39,7 @@ This plan keeps a **structured mapping** between regulations/standards (LGPD, GD
 | Art. 4(1) (personal data)              | Core detector (regex + ML/DL), norm tags `GDPR Art. 4(1)`      | Same detection engine; different norm tags and recommendation overrides. |
 | Records of processing (Art. 30, Rec. 82) | Session inventory across connectors + Excel reports             | Inputs for RoPA and data-mapping exercises, not a full RoPA tool. |
 
-### To-dos
+### To-dos (LGPD and GDPR mapping)
 
 | # | To-do | Status |
 | - | ----- | ------ |
@@ -52,7 +52,7 @@ This plan keeps a **structured mapping** between regulations/standards (LGPD, GD
 
 **Goal:** Clarify how the app **supports** (but does not replace) ISMS and trust-services controls.
 
-### To-dos
+### To-dos (ISO/IEC 27xxx and SOC 2)
 
 | # | To-do | Status |
 | - | ----- | ------ |
@@ -66,7 +66,7 @@ This plan keeps a **structured mapping** between regulations/standards (LGPD, GD
 
 **Goal:** Capture how minors’ data detection and related features support FELCA and similar laws.
 
-### To-dos
+### To-dos (FELCA and child-protection)
 
 | # | To-do | Status |
 | - | ----- | ------ |
@@ -79,7 +79,7 @@ This plan keeps a **structured mapping** between regulations/standards (LGPD, GD
 
 **Goal:** Reuse this mapping in product docs and thesis material without duplication.
 
-### To-dos
+### To-dos (Integration with docs and academic work)
 
 | # | To-do | Status |
 | - | ----- | ------ |
@@ -88,7 +88,16 @@ This plan keeps a **structured mapping** between regulations/standards (LGPD, GD
 
 ---
 
-## 6. Sync notes
+## 6. Artifacts and evidence sources
+
+When extending the mapping or writing evidence-focused docs:
+
+- **App and Docker:** This repo and image `fabioleitao/data_boar`; supporting artifacts in `docs/private/From Docker hub list of repositories.md` (wildfly_t1r, uptk for infra/observability narrative).
+- **Private docs:** CV, TCC, LinkedIn in `docs/private/` (git-ignored). See [TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md) §3.
+
+---
+
+## 7. Sync notes
 
 - Use this plan as your **single source of truth** for detailed mappings; product docs should only expose what is needed for operators and decision-makers.
 - Keep the tone careful: always “supports” or “provides evidence for”, never “fully complies” or “certifies”.
