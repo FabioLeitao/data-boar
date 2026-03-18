@@ -11,7 +11,7 @@ This plan turns the existing application and its plans into a **professionally o
 
 **Goal:** Define a clear, defensible thesis framing around **data discovery/mapping and compliance support** for LGPD + ISO/IEC 27xxx, using this codebase as the main artifact.
 
-### To-dos
+### To-dos (Framing and objectives)
 
 | # | To-do | Status |
 | - | ----- | ------ |
@@ -20,14 +20,13 @@ This plan turns the existing application and its plans into a **professionally o
 
 #### Candidate titles and abstracts (rascunho)
 
-- **Título 1 (mais jurídico/compliance):**  
-  *Mapeamento de dados e evidências de conformidade para LGPD e normas ISO/IEC 27xxx: projeto e avaliação de uma plataforma de descoberta de dados corporativos.*  
+- **Título 1 (mais jurídico/compliance):**
+  *Mapeamento de dados e evidências de conformidade para LGPD e normas ISO/IEC 27xxx: projeto e avaliação de uma plataforma de descoberta de dados corporativos.*
   **Resumo (rascunho):** O trabalho descreve o desenho e a implementação de uma aplicação de descoberta de dados (“Data Boar”) voltada a apoiar organizações na identificação de dados pessoais/sensíveis em múltiplas fontes (arquivos, bancos de dados, APIs, compartilhamentos) e na geração de evidências para LGPD, GDPR e normas ISO/IEC 27xxx. A partir de cenários inspirados em ambientes corporativos reais, avalia-se como os relatórios produzidos (inventário, menores, cripto/transporte, risco de identificação agregada) podem ser utilizados por DPOs e equipes de compliance como insumo para registros de operações, avaliações de risco e prestação de contas perante reguladores.
 
-- **Título 2 (mais técnico/engenharia):**  
-  *Uma arquitetura configurável para descoberta de dados e apoio à conformidade em ambientes legados sob LGPD e ISO/IEC 27xxx.*  
+- **Título 2 (mais técnico/engenharia):**
+  *Uma arquitetura configurável para descoberta de dados e apoio à conformidade em ambientes legados sob LGPD e ISO/IEC 27xxx.*
   **Resumo (rascunho):** Este trabalho apresenta uma arquitetura configurável, baseada em detecção híbrida (regex + ML/DL) e conectores para múltiplas fontes de dados, destinada a apoiar a conformidade com LGPD, GDPR e normas ISO/IEC 27xxx em ambientes corporativos heterogêneos. Detalham-se as decisões de projeto (metadados-only, on-premises, relatórios em Excel) e avalia-se, por meio de estudos de caso, em que medida a solução facilita o mapeamento de dados, a identificação de dados de menores, a visibilidade de criptografia/transporte e a geração de evidências para auditorias e avaliações de risco.
-
 
 ---
 
@@ -35,7 +34,7 @@ This plan turns the existing application and its plans into a **professionally o
 
 **Goal:** Show that the system is grounded in real requirements: LGPD, GDPR, FELCA, ISO/IEC 27701, ISO/IEC 27001/27002/27005, SOC 2.
 
-### To-dos
+### To-dos (Background and regulatory mapping)
 
 | # | To-do | Status |
 | - | ----- | ------ |
@@ -49,7 +48,7 @@ This plan turns the existing application and its plans into a **professionally o
 
 **Goal:** Reuse existing architecture and plan docs as the backbone of “System Design” and “Implementation” chapters.
 
-### To-dos
+### To-dos (System design and implementation)
 
 | # | To-do | Status |
 | - | ----- | ------ |
@@ -62,7 +61,7 @@ This plan turns the existing application and its plans into a **professionally o
 
 **Goal:** Design 1–3 realistic case studies to evaluate the system in the style expected for a lato sensu specialization (applied, not purely theoretical).
 
-### To-dos
+### To-dos (Case-study design and evaluation)
 
 | # | To-do | Status |
 | - | ----- | ------ |
@@ -76,7 +75,7 @@ This plan turns the existing application and its plans into a **professionally o
 
 **Goal:** Ensure the thesis has a clear methodology and is easy to defend.
 
-### To-dos
+### To-dos (Methodology and write-up)
 
 | # | To-do | Status |
 | - | ----- | ------ |
@@ -86,7 +85,17 @@ This plan turns the existing application and its plans into a **professionally o
 
 ---
 
-## 6. Sync notes
+## 6. Artifacts and evidence sources
+
+For the thesis narrative and case studies, use:
+
+- **Main artifact:** This repo (Data Boar) and Docker image `fabioleitao/data_boar`.
+- **Portfolio context:** `docs/private/From Docker hub list of repositories.md` (data_boar, wildfly_t1r, uptk) for infra/SRE/compliance narrative.
+- **Personal/academic:** CV, TCC, LinkedIn PDFs in `docs/private/` (git-ignored); reference by filename only. See [TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md) §3.
+
+---
+
+## 7. Sync notes
 
 - This plan is purely **documentation and academic framing**; it does not add runtime features.
 - When you complete a to-do, update this file and, if relevant, cross-link from `long-term-product-and-academic-roadmap`. No need to mention this plan in the public README roadmap.
