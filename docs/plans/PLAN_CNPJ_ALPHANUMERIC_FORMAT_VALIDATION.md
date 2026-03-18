@@ -1,6 +1,6 @@
 # Plan: CNPJ alphanumeric format – understanding, validation, and compatibility
 
-**Status:** Not started
+**Status:** In progress (Phase 1–3 done; Phase 4–5 pending)
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
@@ -42,14 +42,7 @@ The **legacy** CNPJ format is:
 - **Numeric only:** 14 digits, optionally formatted as `XX.XXX.XXX/XXXX-XX` (dots, slash, hyphen).
 - **Stored/formatted** in many systems as digits only or with punctuation.
 
-The **current Brazilian alphanumeric format** (as referred to in this plan) is the one that **allows letters** in addition to digits (and possibly punctuation). Exact specification depends on official or sector adoption:
-
-- **Possible interpretations (to be confirmed in Phase 1):**
-- A **base-32 or similar** encoding of the 14-digit number (fixed length, character set 0–9 and A–V or similar).
-- A **new identifier structure** with letters in fixed positions (e.g. prefix or suffix).
-- A **format with optional punctuation** but with letters allowed in certain segments.
-
-**Plan assumption:** Phase 1 will **research and document** the exact format (length, allowed character set, position rules). If no single official spec is found, the plan will define a **configurable pattern** (regex) and optionally a **validation checklist** (e.g. length, character set) so that:
+The **current Brazilian alphanumeric format** is defined by **Instrução Normativa RFB nº 2.229/2024** (Receita Federal; in force 25 Oct 2024). Same 14-character length; display punctuation unchanged (`XX.XXX.XXX/XXXX-XX`). **Positions 1–8 (root)** and **9–12 (registration order):** alphanumeric `0–9`, `A–Z`. **Positions 13–14:** numeric only (verification digits). New registrations receive alphanumeric CNPJs from **July 2026**; legacy numeric CNPJs remain valid. **Plan outcome:** Phase 1 researched and documented the format; we use a **configurable regex** so that:
 
 - The app can **detect** values that match the alphanumeric format.
 - The app can **distinguish** in reports between “legacy numeric CNPJ”, “alphanumeric CNPJ”, and “not compatible”.

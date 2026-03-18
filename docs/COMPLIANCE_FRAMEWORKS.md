@@ -123,6 +123,20 @@ For full encoding options and examples, see [USAGE – File encoding](USAGE.md#f
 
 ---
 
+## Auditable and management standards (supporting role)
+
+The application does **not** certify organisations. It provides **discovery and mapping** of personal and sensitive data and **metadata-only** reporting, which supports evidence-based accountability and audit preparation.
+
+- **ISO/IEC 27701 (PIMS):** ISO/IEC 27701 requires PII controllers and processors to know where PII is and to document the scope of processing. Our scans and reports (findings, norm tags, Excel output) help you produce that evidence and align with the regulations you declare under ISO/IEC 27701 (e.g. LGPD, GDPR, CCPA). See [PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md](plans/PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md).
+- **SOC 2:** A common pressure point for corporates; SOC 2 (Type I/II) expects documented controls over the security, availability, and confidentiality of systems that process sensitive data. We do not perform SOC 2 audits. Our **discovery and mapping** of where personal or sensitive data resides, plus metadata-only reporting, supports control design and audit preparation (e.g. evidence of data inventory and scope). Norm tags and recommendation overrides can be aligned to the trust principles and criteria you use. See [PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md](plans/PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md).
+- **FELCA (Lei 15.211/2025 – Estatuto Digital da Criança e do Adolescente):** In force from 17 March 2026, FELCA applies to digital platforms directed at or accessible by minors in Brazil. We do not implement age verification or platform controls. Our **minor data detection** (e.g. date-of-birth and age-related columns, “possible minor” flags) and reports help you map where data relating to minors is processed and support transparency and accountability (e.g. toward ANPD). See [PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md](plans/PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md).
+
+**Other compliance to watch:** Regional child-protection or platform laws (beyond FELCA), sector-specific rules (e.g. health, finance), and new data-localisation or cross-border requirements may affect your scope. We extend support via config and [compliance-samples](compliance-samples/) as norms become relevant; no code change is required to add new norm tags or recommendation text.
+
+Other auditable or regional norms can be addressed via our config-driven norm tags and [compliance-samples](compliance-samples/); we continue to extend documentation and samples as new standards become relevant.
+
+---
+
 ## Explicitly referenced today (built-in labels)
 
 The built-in regex patterns and report labels refer to these frameworks (with example `norm_tag` values):
