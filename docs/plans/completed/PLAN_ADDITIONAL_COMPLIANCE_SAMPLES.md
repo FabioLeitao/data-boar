@@ -32,7 +32,7 @@ This plan adds **sample configuration files** and documentation so the applicati
 | **APPI**    | Japan – Act on the Protection of Personal Information | Asia-Pacific market; "personal information" and "retained personal data"; different terminology but same config mechanism (regex + ML terms + overrides).                                 | **Medium** – add Japanese column-name/term examples and overrides; doc in EN/pt-BR can still describe APPI.       |
 | **PCI-DSS** | Payment card data (global)                            | Already partially covered (credit card regex, financial risk); explicit **sample** ties patterns and recommendations to PCI-DSS so reports speak the language of merchants and assessors. | **Low** – bundle existing financial patterns + dedicated recommendation_overrides and optional regex refinements. |
 
-**Out of scope for this plan (can be later):** SOC 2, ISO 27001 (control frameworks; different "violation" model), state-level US laws beyond CCPA (e.g. VCDPA, CPA), ePrivacy (cookies/comms) – can be added as more samples once the pattern is established.
+**Out of scope for this plan (can be later):** SOC 2, ISO/IEC 27001 (control frameworks; different "violation" model), state-level US laws beyond CCPA (e.g. VCDPA, CPA), ePrivacy (cookies/comms) – can be added as more samples once the pattern is established.
 
 ---
 
