@@ -18,18 +18,28 @@ You can **set the training words for both ML and DL** in the main config file (i
 
 ## CNPJ formats (Brazil): legacy numeric and alphanumeric
 
-Brazilian **CNPJ** (company identifier) historically used a **numeric-only** format:
+Brazilian **CNPJ** (Cadastro Nacional da Pessoa Jurídica) is the company tax identifier. Two formats are relevant:
 
-- 14 digits, optionally formatted as `XX.XXX.XXX/XXXX-XX` (dots, slash, hyphen).
+**Legacy (numeric only):**
 
-The project now supports both formats, but alphanumeric detection is **opt-in** to avoid surprising behaviour changes:
+- 14 digits, optionally formatted as `XX.XXX.XXX/XXXX-XX` (dots, slash, hyphen). Still valid; no mandatory migration.
+
+**Alphanumeric (current official format):**
+
+- Defined by **Instrução Normativa RFB nº 2.229/2024** (Receita Federal). Same 14-character length; display punctuation unchanged (`XX.XXX.XXX/XXXX-XX`).
+- **Positions 1–8 (root):** alphanumeric `0–9`, `A–Z` (uppercase).
+- **Positions 9–12 (registration order):** alphanumeric `0–9`, `A–Z`.
+- **Positions 13–14 (verification digits):** numeric only `0–9`.
+- New company registrations will receive alphanumeric CNPJs from **July 2026** onward; existing numeric CNPJs remain valid.
+
+The project supports both formats. Alphanumeric detection is **opt-in** so existing behaviour is unchanged:
 
 - `LGPD_CNPJ` – legacy numeric format only (always active).
-- `LGPD_CNPJ_ALNUM` – an **alphanumeric** format where the first 12 positions may contain `A–Z` or `0–9`, and the last two positions remain numeric check digits. Active when either:
+- `LGPD_CNPJ_ALNUM` – alphanumeric format per IN RFB 2.229/2024 (first 12 positions `[0-9A-Z]`, last two digits). Active when either:
   - `detection.cnpj_alphanumeric: true` is set in config, or
   - an override for `LGPD_CNPJ_ALNUM` is added via `regex_overrides_file`.
 
-Both patterns share the same `norm_tag` (`LGPD Art. 5`) so they are treated as identifiers under LGPD. At this stage the detector performs **format compatibility checks only** (regex match); **checksum validation** for CNPJ (numeric or alphanumeric) and other Brazilian identifiers (e.g. CPF, PIS/PASEP) is intentionally left to a **future detector-logic phase** so the regex layer stays simple and easy to extend.
+Both patterns share the same `norm_tag` (`LGPD Art. 5`). The detector performs **format compatibility only** (regex match); **checksum validation** (e.g. Module 11 for alphanumeric) is left to a future detector phase. If your sector uses a variant (e.g. lowercase letters), adjust the regex in your override accordingly.
 
 ---
 
