@@ -79,16 +79,20 @@ The list below is ordered for the current billing cycle, with a focus on:
 
 **Deferred (larger or later):** Secrets Phase B, Version check & self-upgrade, Selenium QA, Synthetic data, SAP connector, Dashboard i18n. **Backlog:** Additional data soup formats.
 
-### Secure default host binding (Wabix P0/P1 follow-up – future release)
+### Secure default host binding (Wabix P0/P1 follow-up)
 
-Tighten runtime defaults for the API host without a large refactor. This builds on completed web hardening and security plans.
+Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt-in `0.0.0.0` via `api.host`, docs and tests.
 
 | # | To-do                                                                                                                                                | Status    |
 | - | -----                                                                                                                                                | ------    |
-| 1 | Default host loopback for desktop: make the API bind to `127.0.0.1` by default when running as a normal process (CLI/desktop).                      | ⬜ Pending |
-| 2 | Explicit opt-in for `0.0.0.0`: only bind to all interfaces when explicitly requested in config/CLI, or in container entrypoints where it is fenced. | ⬜ Pending |
-| 3 | Docs: add a short note in `USAGE.md` / `USAGE.pt_BR.md` and `deploy/DEPLOY*.md` explaining the difference and safer recommended host settings.      | ⬜ Pending |
-| 4 | Tests: add 1–2 small tests around API startup config (host value chosen from config vs CLI) to avoid regressions in future releases.               | ⬜ Pending |
+| 1 | Default host loopback for desktop: make the API bind to `127.0.0.1` by default when running as a normal process (CLI/desktop).                      | ✅ Done   |
+| 2 | Explicit opt-in for `0.0.0.0`: only bind to all interfaces when explicitly requested in config/CLI, or in container entrypoints where it is fenced. | ✅ Done   |
+| 3 | Docs: add a short note in `USAGE.md` / `USAGE.pt_BR.md` and `deploy/DEPLOY*.md` explaining the difference and safer recommended host settings.      | ✅ Done   |
+| 4 | Tests: add 1–2 small tests around API startup config (host value chosen from config vs CLI) to avoid regressions in future releases.               | ✅ Done   |
+
+### Documentation and sync reminders
+
+- **pt-BR translation review:** When syncing EN → pt-BR, review for **naturalness** and meaning-equivalent wording; avoid overly literal transposition that can sound artificial. Schedule a pass over key docs (README.pt_BR, USAGE.pt_BR, DEPLOY.pt_BR, SENSITIVITY_DETECTION.pt_BR, etc.) when capacity allows.
 
 ### A. Near-term focus (current billing cycle)
 
