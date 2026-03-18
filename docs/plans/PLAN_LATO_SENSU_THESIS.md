@@ -18,6 +18,17 @@ This plan turns the existing application and its plans into a **professionally o
 | 1.1 | Draft 2–3 candidate titles (PT-BR) and one-paragraph abstracts; choose one that best matches the program’s emphasis (more jurídico/compliance vs. mais técnico). | ⬜ Pending |
 | 1.2 | Write a 1–2 page “Projeto de TCC” style outline: problem statement, objectives (geral/específicos), justification, and expected contributions (for organizations and for you as a professional). | ⬜ Pending |
 
+#### Candidate titles and abstracts (rascunho)
+
+- **Título 1 (mais jurídico/compliance):**  
+  *Mapeamento de dados e evidências de conformidade para LGPD e normas ISO/IEC 27xxx: projeto e avaliação de uma plataforma de descoberta de dados corporativos.*  
+  **Resumo (rascunho):** O trabalho descreve o desenho e a implementação de uma aplicação de descoberta de dados (“Data Boar”) voltada a apoiar organizações na identificação de dados pessoais/sensíveis em múltiplas fontes (arquivos, bancos de dados, APIs, compartilhamentos) e na geração de evidências para LGPD, GDPR e normas ISO/IEC 27xxx. A partir de cenários inspirados em ambientes corporativos reais, avalia-se como os relatórios produzidos (inventário, menores, cripto/transporte, risco de identificação agregada) podem ser utilizados por DPOs e equipes de compliance como insumo para registros de operações, avaliações de risco e prestação de contas perante reguladores.
+
+- **Título 2 (mais técnico/engenharia):**  
+  *Uma arquitetura configurável para descoberta de dados e apoio à conformidade em ambientes legados sob LGPD e ISO/IEC 27xxx.*  
+  **Resumo (rascunho):** Este trabalho apresenta uma arquitetura configurável, baseada em detecção híbrida (regex + ML/DL) e conectores para múltiplas fontes de dados, destinada a apoiar a conformidade com LGPD, GDPR e normas ISO/IEC 27xxx em ambientes corporativos heterogêneos. Detalham-se as decisões de projeto (metadados-only, on-premises, relatórios em Excel) e avalia-se, por meio de estudos de caso, em que medida a solução facilita o mapeamento de dados, a identificação de dados de menores, a visibilidade de criptografia/transporte e a geração de evidências para auditorias e avaliações de risco.
+
+
 ---
 
 ## 2. Background and regulatory/standards mapping

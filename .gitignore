@@ -13,6 +13,10 @@ config.local.yaml
 # Local-only security reviews / feedback (confidential; keep out of git)
 docs/feedbacks, reviews, comments and criticism/
 
+# Local-only private artifacts (CV, TCC, LinkedIn exports, personal notes)
+docs/private/
+.cursor/private/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
