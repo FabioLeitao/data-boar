@@ -85,6 +85,7 @@ Each item is a small doc update or script. Status: **Done** | **Not started** | 
 
 ## 5. How to use this plan
 
+- **Token-aware:** Each checklist item can be done in one short session; open only this file plus the doc or script you edit. See [TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md) for short vs long-term and one-session workflow.
 - **This file is the readiness checklist.** Items are small (doc update or script). No obligation to implement every to-do; “Optional” and “When needed” are valid.
 - **When you implement an item:** Do the change (doc or script). If it’s docs, update EN + pt-BR per the documentation policy. Then set the item’s Status to **Done** in §2 or §3 of this file.
 - **Revisit when:** You do a release, onboard someone new, or get an audit request. Use the checklist to decide what to formalise next.

@@ -1,6 +1,6 @@
 # Plan: CNPJ alphanumeric format – understanding, validation, and compatibility
 
-**Status:** In progress (Phase 1–3 done; Phase 4–5 pending)
+**Status:** Phase 4 done; Phase 5 (checksum validation) future. Phases 1–4 complete.
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
@@ -98,8 +98,8 @@ This is **pattern-based compatibility** (format of allowed or found data), not s
 | #   | To-do                                                                                                                                                                                                                                                                                                                                       | Status |
 | --- | ---------------------------------------------------------------------                                                                                                                                                                                                                                                                       | ------ |
 | 4.1 | Write a short **“How to get there”** section (in this plan or in docs): (1) Use regex_overrides_file with the alphanumeric pattern; (2) optionally add ML term “cnpj” / “cnpj alfanumérico”; (3) run scan; (4) use report to see where alphanumeric-compatible data appears; (5) if built-in or flag is implemented, enable it and re-scan. | ✅ Done (see "How to get there" above; USAGE documents config and override). |
-| 4.2 | Update PLANS_TODO.md and this plan when steps are completed; ensure SENSITIVITY_DETECTION and USAGE docs (EN + pt_BR) are in sync.                                                                                                                                                                                                          | ⬜      |
-| 4.3 | Regression: full test suite passes; existing LGPD_CNPJ behaviour unchanged when alphanumeric is not enabled.                                                                                                                                                                                                                                | ⬜      |
+| 4.2 | Update PLANS_TODO.md and this plan when steps are completed; ensure SENSITIVITY_DETECTION and USAGE docs (EN + pt_BR) are in sync.                                                                                                                                                                                                          | ✅ Done |
+| 4.3 | Regression: full test suite passes; existing LGPD_CNPJ behaviour unchanged when alphanumeric is not enabled.                                                                                                                                                                                                                                | ✅ Done |
 
 ### Phase 5: Future checksum validation (CNPJ, CPF and other Brazilian IDs)
 
