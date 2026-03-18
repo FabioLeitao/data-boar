@@ -11,7 +11,7 @@ This plan outlines how to evolve the existing application and documentation into
 
 **Goal:** Identify 1–2 focused, researchable questions that use the app as a platform.
 
-### To-dos
+### To-dos (Candidate research questions)
 
 | # | To-do | Status |
 | - | ----- | ------ |
@@ -25,7 +25,7 @@ This plan outlines how to evolve the existing application and documentation into
 
 **Goal:** Prepare the app and surrounding assets so they can support repeatable experiments.
 
-### To-dos
+### To-dos (Experimental infrastructure)
 
 | # | To-do | Status |
 | - | ----- | ------ |
@@ -39,7 +39,7 @@ This plan outlines how to evolve the existing application and documentation into
 
 **Goal:** Outline research methods and evaluation criteria suitable for stricto sensu work.
 
-### To-dos
+### To-dos (Methodology and metrics)
 
 | # | To-do | Status |
 | - | ----- | ------ |
@@ -53,7 +53,7 @@ This plan outlines how to evolve the existing application and documentation into
 
 **Goal:** Create stepping stones (papers, proposals) and a narrative to discuss with potential advisors.
 
-### To-dos
+### To-dos (Early publications and advisor outreach)
 
 | # | To-do | Status |
 | - | ----- | ------ |
@@ -67,7 +67,7 @@ This plan outlines how to evolve the existing application and documentation into
 
 **Goal:** Keep a rough blueprint for how M.Sc. and PhD theses might be structured.
 
-### To-dos
+### To-dos (Long-term thesis structures)
 
 | # | To-do | Status |
 | - | ----- | ------ |
@@ -76,7 +76,17 @@ This plan outlines how to evolve the existing application and documentation into
 
 ---
 
-## 6. Sync notes
+## 6. Artifacts and evidence sources
+
+For research proposals and advisor outreach:
+
+- **Platform:** This repo (Data Boar) and Docker image `fabioleitao/data_boar`.
+- **Portfolio:** `docs/private/From Docker hub list of repositories.md` (data_boar, wildfly_t1r, uptk) for prior work and infra/observability context.
+- **Personal/academic:** CV, TCC, LinkedIn in `docs/private/` (git-ignored). See [TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md) §3.
+
+---
+
+## 7. Sync notes
 
 - This plan is **exploratory** and academic; it does not impose product work on the current roadmap.
 - Use it as a living document when you move closer to applying for M.Sc./PhD programs or start pilots with advisors.
