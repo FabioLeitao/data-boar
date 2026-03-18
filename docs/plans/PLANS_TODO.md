@@ -226,7 +226,7 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
 
 | #   | To-do                                                                                                                       | Status    |
 | --- | ---------------------------------------------------------------------------------------------------------------------------- | ------    |
-| 1   | Magic-byte table + read_magic / infer_content_type for supported formats                                                     | ⬜ Pending |
+| 1   | Magic-byte table + read_magic / infer_content_type for supported formats                                                     | ✅ Done   |
 | 2   | Config file_scan.use_content_type (default false); engine/connectors                                                        | ⬜ Pending |
 | 3   | FilesystemConnector (and shares): use inferred type when option on; fallback to extension                                   | ⬜ Pending |
 | 4   | CLI --content-type-check; API/dashboard checkbox + user warning (may increase I/O and run time)                             | ⬜ Pending |
