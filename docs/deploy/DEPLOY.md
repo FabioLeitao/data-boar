@@ -198,7 +198,7 @@ docker run -d --name data-boar-audit \
   data_boar:latest
 ```
 
-Access: <http://localhost:8088/> (dashboard), <http://localhost:8088/docs> (API). To stop: `docker stop data-boar-audit && docker rm data-boar-audit`.
+Access: <http://localhost:8088/> (dashboard), <http://localhost:8088/docs> (API). In Docker and Kubernetes examples, the service is exposed via container/Service port bindings, so it is safe to keep the internal API binding on `0.0.0.0` inside the container while still using `127.0.0.1` as the default when running the CLI directly on a workstation. To stop: `docker stop data-boar-audit && docker rm data-boar-audit`.
 
 ## 4. Run with Docker Compose
 
