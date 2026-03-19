@@ -16,6 +16,28 @@ This mirrors the industry pattern used by projects such as **Bitwarden**: core u
 - Scanner engine, connectors (baseline), report generation, API/dashboard (dashBOARd), tests, docs for **operators** (USAGE, SECURITY, deployment guides).
 - **Runtime verification only**: public **Ed25519 verify key** (not the signing key), revocation list format, and the behaviour of `core/licensing/` when `licensing.enforcement` is enabled.
 
+**Note:** Open-source licensing of **code** under BSD (or future AGPL) does **not** waive **trademark**, **trade-dress**, or **commercial goodwill** in the **name, mascot, narrative, and product experience** below. Forks may redistribute code under license terms but must not imply endorsement or confuse origin unless permitted. Counsel should align `LICENSE`, `NOTICE`, trademark policy, and any **partner / white-label** SKUs (see [Future product tiers](#future-product-tiers-partners-vs-end-customers-planning-reminder)) with this inventory.
+
+## Brand, narrative, and experience IP (inventory for counsel and commercial policy)
+
+When you harden **IP protection**, **commercial** offers, or **partner** programs, treat the following as an explicit **checklist** alongside patents/trade secrets (if any) and cryptographic licensing. This is **not legal advice**; use it to brief counsel and to scope what contracts and enforcement should cover.
+
+| Layer | What to protect (examples) | Where documented / embodied |
+| ----- | -------------------------- | --------------------------- |
+| **Name and sub-brands** | **Data Boar** as product name; **dashBOARd** as the web dashboard sub-brand; consistent spelling and capitalization in UI, README, Docker metadata | Root README, `core/about.py`, API/templates, [MASCOT.md](MASCOT.md), [plans/completed/PLAN_LOGO_AND_NAMING.md](plans/completed/PLAN_LOGO_AND_NAMING.md) |
+| **Mascot and visual identity** | Boar character artwork (SVG/PNG), favicon, placement in dashboard/About/help, **Excel report** (Report info sheet), **heatmap** watermark; colour vs B&W variants | [MASCOT.md](MASCOT.md), `api/static/mascot/`, `NOTICE`, `report/generator.py` |
+| **“Data soup” and scope metaphor** | The **heterogeneous audit scope** (databases, filesystems, APIs, shares, archives, future formats) described as a unified **data soup** or equivalent narrative; connector **taxonomy** and “one audit across many sources” positioning | [USAGE.md](USAGE.md), [TECH_GUIDE.md](TECH_GUIDE.md), topology/deploy docs, [PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md](plans/PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md) |
+| **Mythology, tone, and metaphors** | **Boar / trail / audit** language; compliance framing (LGPD/GDPR/CCPA and samples); **risk heatmap** as visual metaphor; “sensitivity”, “findings”, “quasi-identifiers” as part of product voice | README, COMPLIANCE docs, report wording, dashboard copy |
+| **Overall appearance (trade dress–adjacent)** | Dashboard **layout** (cards, status, chart), nav labels, dark/light styling patterns; **Excel** sheet structure, column conventions, attribution blocks; API **OpenAPI** titles where branded | `api/templates/`, static CSS, report layout code |
+| **Operation and “how it works”** | **CLI one-shot** vs **API + dashboard** vs **Docker** default command; session/report lifecycle; licensing states in About/health — the **documented operator story** is **copyrightable expression**; **secret** know-how that is **not** published may be a separate trade-secret topic | [USAGE.md](USAGE.md), [TECH_GUIDE.md](TECH_GUIDE.md), [deploy/DEPLOY.md](deploy/DEPLOY.md), [LICENSING_SPEC.md](LICENSING_SPEC.md) |
+| **Companion resources and adjacent apps** | **Docker Hub** image naming (`fabioleitao/data_boar`, tags); future **public website** copy; **private** issuer tooling (`tools/license-studio` — separate repo); other repos you cite in portfolio (e.g. infra demos) — clarify which are **product family** vs **personal** | [DOCKER_SETUP.md](DOCKER_SETUP.md), [HOSTING_AND_WEBSITE_OPTIONS.md](HOSTING_AND_WEBSITE_OPTIONS.md), [PORTFOLIO_AND_EVIDENCE_SOURCES.md](plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md) (plan), private runbooks |
+
+**Partner / enterprise angle:** If partners deliver audits to **their** customers, contracts should state whether they may **co-brand**, must **retain** Data Boar attribution, or **white-label** (and under which SKUs). That interacts with trademark and the **mascot** in reports exports.
+
+**Practical steps (with counsel):** (1) Trademark search/register **word mark** and optionally **logo/mascot** in key jurisdictions and classes (e.g. software, SaaS). (2) Add or tighten **trademark usage** paragraph in `NOTICE` or a `TRADEMARK.md` if needed. (3) Ensure **commercial / source-available** license text reserves **brand** clauses (no suggestion of affiliation). (4) Align **release integrity** and **license JWT** claims if you ever encode **tier** or **program** (see [LICENSING_SPEC.md](LICENSING_SPEC.md) future extensions).
+
+For copyright vs trademark basics and registration pointers, see [COPYRIGHT_AND_TRADEMARK.md](COPYRIGHT_AND_TRADEMARK.md).
+
 ## What must never be in the public repository
 
 - **Private signing keys**, operator “blob” secrets, or any material that allows forging valid license JWTs.
