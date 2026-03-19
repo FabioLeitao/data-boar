@@ -71,3 +71,4 @@ When A1–A3 are done (and nothing is on fire), say:
 - [LICENSING_SPEC.md](LICENSING_SPEC.md) — runtime token behaviour
 - [HOSTING_AND_WEBSITE_OPTIONS.md](HOSTING_AND_WEBSITE_OPTIONS.md) — public vs private hosting costs
 - [RELEASE_INTEGRITY.md](RELEASE_INTEGRITY.md) — signed release manifest (optional)
+- [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md) — **§ Brand, narrative, and experience IP** (mascot, data soup, dashBOARd, UI/report trade dress, companion resources) for counsel briefings
