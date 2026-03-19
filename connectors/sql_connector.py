@@ -241,9 +241,7 @@ class SQLConnector:
     ) -> None:
         """Sample column, run detection, optionally full-scan for minor; save finding and log."""
         sample = self.sample(schema, table, cname)
-        res = self.scanner.scan_column(
-            cname, sample, connector_data_type=ctype
-        )
+        res = self.scanner.scan_column(cname, sample, connector_data_type=ctype)
         res = augment_low_id_like_for_persist(res, cname, self.detection_config)
         if (
             res["sensitivity_level"] == "LOW"

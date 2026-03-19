@@ -130,12 +130,14 @@ def test_analyze_default_matches_explicit_fuzzy_false():
     d0 = SensitivityDetector(detection_config={})
     d1 = SensitivityDetector(detection_config={"fuzzy_column_match": False})
     for col, sample in cases:
-        assert d0.analyze(col, sample) == d1.analyze(
-            col, sample
-        ), f"mismatch for {col!r}"
+        assert d0.analyze(col, sample) == d1.analyze(col, sample), (
+            f"mismatch for {col!r}"
+        )
 
 
-def test_analyze_fuzzy_true_without_rapidfuzz_same_as_false_when_library_missing(monkeypatch):
+def test_analyze_fuzzy_true_without_rapidfuzz_same_as_false_when_library_missing(
+    monkeypatch,
+):
     """
     If rapidfuzz import fails, fuzzy_column_match: true must not change outcomes vs false.
     """
@@ -154,7 +156,10 @@ def test_analyze_fuzzy_true_without_rapidfuzz_same_as_false_when_library_missing
         detection_config={"fuzzy_column_match": True, "medium_confidence_threshold": 40}
     )
     d_off = SensitivityDetector(
-        detection_config={"fuzzy_column_match": False, "medium_confidence_threshold": 40}
+        detection_config={
+            "fuzzy_column_match": False,
+            "medium_confidence_threshold": 40,
+        }
     )
     assert d_on.analyze(col, sample) == d_off.analyze(col, sample)
 
