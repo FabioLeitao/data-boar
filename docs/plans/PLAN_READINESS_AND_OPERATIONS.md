@@ -94,7 +94,7 @@ Notes:
 
 - Data sources: GitHub PR list/checks + Dependabot alerts/PR timestamps.
 - Keep a small markdown note per release cycle in `docs/releases/X.Y.Z.md` with the latest KPI snapshot.
-- If manual collection starts to drift, automate with a lightweight script in a later slice.
+- Lightweight export script available: `python scripts/kpi-export.py --limit-prs 10` (stdout) or `--out docs/releases/kpi_snapshot.md`.
 
 ---
 
