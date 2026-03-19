@@ -54,6 +54,7 @@ Additional client libraries may be required depending on which connectors you us
 - Whenever you change dependencies (including when applying Dependabot or automation), edit **`pyproject.toml`** first, then run `uv lock` and `uv export --no-emit-package pyproject.toml -o requirements.txt` so **uv.lock** and **requirements.txt** stay in sync with the lockfile.
 
 - **Local triage (Dependabot + image CVEs):** On Windows, from the repo root, run **`.\scripts\maintenance-check.ps1`** after `gh auth login` (lists open Dependabot PRs) and with Docker Desktop if you want **`docker scout quickview`** on the published image. It does not modify the repo. After fixing deps or the **Dockerfile**, rebuild and push the image, then re-run Scout on the new digest. The **Dockerfile** upgrades **pip** and **wheel** in both builder and runtime layers so scans do not flag stale tooling copied from old layers; **`requirements.txt`** is uv-exported and typically does not list `wheel` as an app dependency.
+- **Code scanning baseline:** CodeQL workflow uses **`security-and-quality`** for Python and should stay enabled on push/PR/schedule. Keep this broad suite plus project-specific hardening tests/rules; if a new query is noisy, triage and document before considering suppression.
 
 This approach is part of the project’s security baseline. For the full list of hardening measures and status, see **`docs/plans/completed/PLAN_SECURITY_HARDENING.md`**.
 
@@ -130,3 +131,18 @@ These are **targets** for maintainers and reporters, not contractual obligations
 | **Dependabot security PRs** | We treat Dependabot **security** PRs as **P0**: aim to **merge or respond** (e.g. merge, close with comment, or defer with rationale) within **5 working days**. Non-security dependency PRs follow the usual review cycle. |
 
 See **CONTRIBUTING** for how to apply dependency updates and run `pip-audit`; see **`.github/dependabot.yml`** for Dependabot configuration.
+
+## CodeQL quick triage matrix (P0/P1/P2)
+
+Use this matrix to prioritize CodeQL findings by impact and release risk. Map each alert to the nearest rule family and code surface, then decide fix-now vs scheduled.
+
+| Priority | Rule IDs (examples) | Typical code surface in this repo | Action |
+| --- | --- | --- | --- |
+| **P0** (fix before release) | `py/path-injection`, `py/sql-injection`, `py/nosql-injection`, `py/code-injection`, `py/command-line-injection`, `py/template-injection`, `py/full-ssrf`, `py/unsafe-deserialization`, `py/xxe` | API file serving and report paths (`api/routes.py`), connectors/query builders (`connectors/*`, `database/*`), config/load paths (`config/*`) | Patch immediately, add regression test, and verify with CodeQL rerun. |
+| **P1** (fix in current cycle) | `py/weak-sensitive-data-hashing`, `py/clear-text-logging-sensitive-data`, `py/clear-text-storage-sensitive-data`, `py/insecure-protocol`, `py/insecure-default-protocol`, `py/url-redirection`, `py/regex-injection`, `py/redos` | Licensing/integrity helpers (`core/licensing/*`), logging and failure persistence (`core/database.py`, `core/validation.py`), network connectors (`connectors/*`) | Fix or document mitigation in this release cycle; add tests where practical. |
+| **P2** (scheduled hardening / monitor) | `py/bind-socket-all-network-interfaces`, `py/flask-debug`, `py/client-exposed-cookie`, `py/insecure-cookie`, `py/samesite-none-cookie`, `py/stack-trace-exposure`, `py/use-of-input` | Host/runtime settings (`core/host_resolution.py`, Docker defaults), web middleware/templates (`api/routes.py`, `api/templates/*`) | Keep enabled, monitor trends, and batch low-risk fixes with maintenance PRs. |
+
+Notes:
+
+- **Do not disable broad suites by default.** Keep `security-and-quality` and use targeted code fixes + tests first.
+- If you must defer a finding, record reason + compensating control in PR/issue and revisit next `-1/-1b` loop.

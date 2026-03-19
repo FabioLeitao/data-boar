@@ -54,6 +54,7 @@ Bibliotecas cliente adicionais podem ser necessárias dependendo de quais conect
 - Sempre que alterar dependências (incluindo ao aplicar Dependabot ou automação), edite primeiro o **`pyproject.toml`**, depois execute `uv lock` e `uv export --no-emit-package pyproject.toml -o requirements.txt` para que **uv.lock** e **requirements.txt** permaneçam em sincronia com o lockfile.
 
 - **Triagem local (Dependabot + CVEs de imagem):** No Windows, na raiz do repositório, execute **`.\scripts\maintenance-check.ps1`** após `gh auth login` (lista PRs abertos do Dependabot) e com Docker Desktop se quiser **`docker scout quickview`** na imagem publicada. O script não altera o repositório. Depois de corrigir deps ou o **Dockerfile**, reconstrua e publique a imagem e rode o Scout de novo no novo digest. O **Dockerfile** atualiza **pip** e **wheel** no builder e no runtime para evitar ferramentas antigas em camadas copiadas; o **`requirements.txt`** é exportado pelo uv e em geral não lista `wheel` como dependência da aplicação.
+- **Linha de base de code scanning:** O workflow de CodeQL usa **`security-and-quality`** para Python e deve permanecer ativo em push/PR/agendado. Mantenha essa cobertura ampla junto com regras/testes de hardening do projeto; se uma query nova gerar ruído, triar e documentar antes de considerar supressão.
 
 Essa abordagem faz parte da linha de base de segurança do projeto. Para a lista completa de medidas de endurecimento e status, veja **`docs/plans/completed/PLAN_SECURITY_HARDENING.md`**.
 
@@ -129,3 +130,18 @@ Estes são **metas** para mantenedores e reportadores, não obrigações contrat
 | **PRs de segurança do Dependabot** | Tratamos os PRs **de segurança** do Dependabot como **P0**: objetivamos **fazer merge ou responder** (ex.: merge, fechar com comentário ou adiar com justificativa) em até **5 dias úteis**. PRs de dependência que não sejam de segurança seguem o ciclo normal de revisão. |
 
 Veja **CONTRIBUTING** para como aplicar atualizações de dependências e executar `pip-audit`; veja **`.github/dependabot.yml`** para a configuração do Dependabot.
+
+## Matriz rápida de triagem CodeQL (P0/P1/P2)
+
+Use esta matriz para priorizar alertas do CodeQL por impacto e risco de release. Mapeie cada alerta para a família de regra e superfície de código mais próxima, então decida correção imediata vs agendamento.
+
+| Prioridade | Rule IDs (exemplos) | Superfície típica neste repositório | Ação |
+| --- | --- | --- | --- |
+| **P0** (corrigir antes da release) | `py/path-injection`, `py/sql-injection`, `py/nosql-injection`, `py/code-injection`, `py/command-line-injection`, `py/template-injection`, `py/full-ssrf`, `py/unsafe-deserialization`, `py/xxe` | Servir arquivos e caminhos de relatório na API (`api/routes.py`), conectores/construção de query (`connectors/*`, `database/*`), caminhos de config/load (`config/*`) | Corrigir imediatamente, adicionar teste de regressão e validar com nova execução do CodeQL. |
+| **P1** (corrigir no ciclo atual) | `py/weak-sensitive-data-hashing`, `py/clear-text-logging-sensitive-data`, `py/clear-text-storage-sensitive-data`, `py/insecure-protocol`, `py/insecure-default-protocol`, `py/url-redirection`, `py/regex-injection`, `py/redos` | Helpers de licensing/integridade (`core/licensing/*`), logging/persistência de falhas (`core/database.py`, `core/validation.py`), conectores de rede (`connectors/*`) | Corrigir ou documentar mitigação neste ciclo de release; adicionar testes quando viável. |
+| **P2** (hardening agendado / monitorar) | `py/bind-socket-all-network-interfaces`, `py/flask-debug`, `py/client-exposed-cookie`, `py/insecure-cookie`, `py/samesite-none-cookie`, `py/stack-trace-exposure`, `py/use-of-input` | Configuração de host/runtime (`core/host_resolution.py`, defaults de Docker), middleware/templates web (`api/routes.py`, `api/templates/*`) | Manter habilitado, monitorar tendência e agrupar correções de baixo risco em PRs de manutenção. |
+
+Notas:
+
+- **Não desabilitar suites amplas por padrão.** Mantenha `security-and-quality` e priorize correções pontuais + testes.
+- Se um alerta precisar ser adiado, registrar justificativa + controle compensatório no PR/issue e revisitar no próximo loop `-1/-1b`.
