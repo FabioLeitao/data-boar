@@ -83,6 +83,7 @@ Deploy assets (Compose, Kubernetes, config examples) remain in the [deploy/](../
 
 - [ops/README.md](ops/README.md) — Operator runbooks index (this folder) and **link-audit checklist** for doc moves.
 - [plans/PLANS_TODO.md](plans/PLANS_TODO.md) — Plan status and current app state (single source of truth for open-plan to-dos). *Plan files are EN-only for history; operator runbooks under ops/ are EN + pt-BR.*
+- [plans/PYTHON_UPGRADE_PLAYBOOK.md](plans/PYTHON_UPGRADE_PLAYBOOK.md) — Python runtime upgrade sequencing (3.12→3.13→…), Docker, CI, and wheels; [pt-BR companion](plans/PYTHON_UPGRADE_PLAYBOOK.pt_BR.md).
 - External evolution reviews are mapped into plan history (internal; not a public doc surface).
 - [releases/](releases/) — Release notes (e.g. 1.6.3, 1.6.2, 1.6.1, 1.6.0, 1.5.4, 1.5.3, 1.4.3).
 - [plans/completed/](plans/completed/) — Archived completed plans and the implementation checklist ([NEXT_STEPS.md](plans/completed/NEXT_STEPS.md)), all items Done.
