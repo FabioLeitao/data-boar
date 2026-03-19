@@ -9,6 +9,10 @@ import os
 from typing import Any
 
 from core.connector_registry import register
+from core.suggested_review import (
+    SUGGESTED_REVIEW_PATTERN,
+    augment_low_id_like_for_persist,
+)
 
 try:
     import httpx
@@ -71,11 +75,13 @@ class PowerBIConnector:
         scanner: Any,
         db_manager: Any,
         sample_limit: int = 5,
+        detection_config: dict[str, Any] | None = None,
     ):
         self.config = target_config
         self.scanner = scanner
         self.db_manager = db_manager
         self.sample_limit = min(max(int(sample_limit), 1), 100)
+        self.detection_config = detection_config or {}
         self._client: "httpx.Client | None" = None
         self._token: str | None = None
 
@@ -218,10 +224,18 @@ class PowerBIConnector:
                                             str(r.get(key, ""))[:200]
                                             for r in rows[: self.sample_limit]
                                         )
+                                        cname = key.split("[")[-1].rstrip("]")
                                         res = self.scanner.scan_column(
-                                            key.split("[")[-1].rstrip("]"), sample
+                                            cname, sample, connector_data_type=None
                                         )
-                                        if res.get("sensitivity_level") == "LOW":
+                                        res = augment_low_id_like_for_persist(
+                                            res, cname, self.detection_config
+                                        )
+                                        if (
+                                            res.get("sensitivity_level") == "LOW"
+                                            and res.get("pattern_detected")
+                                            != SUGGESTED_REVIEW_PATTERN
+                                        ):
                                             continue
                                         self.db_manager.save_finding(
                                             source_type="database",
@@ -261,8 +275,18 @@ class PowerBIConnector:
                                         str(row.get(full_key, row.get(cname, "")))[:200]
                                         + " "
                                     )
-                            res = self.scanner.scan_column(cname, sample)
-                            if res.get("sensitivity_level") == "LOW":
+                            pbi_dtype = str(col.get("dataType", "") or "") or None
+                            res = self.scanner.scan_column(
+                                cname, sample, connector_data_type=pbi_dtype
+                            )
+                            res = augment_low_id_like_for_persist(
+                                res, cname, self.detection_config
+                            )
+                            if (
+                                res.get("sensitivity_level") == "LOW"
+                                and res.get("pattern_detected")
+                                != SUGGESTED_REVIEW_PATTERN
+                            ):
                                 continue
                             self.db_manager.save_finding(
                                 source_type="database",

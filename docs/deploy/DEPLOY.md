@@ -42,7 +42,7 @@ The report is written under `report.output_dir` in config (e.g. `/data`); copy i
 
 You can run the application **without cloning the repository** by using the published image on Docker Hub:
 
-- **Docker Hub:** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** and **`fabioleitao/data_boar:1.5.4`**
+- **Docker Hub:** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** and **`fabioleitao/data_boar:1.6.2`**
 
 Example:
 
@@ -77,12 +77,12 @@ docker push ghcr.io/fabioleitao/data_boar:latest
 
 ```bash
 # From repo root
-docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.5.4 .
+docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.6.2 .
 docker login
 # Username: fabioleitao (or your Docker Hub username)
 # Password: your Docker Hub password or Access Token
 docker push fabioleitao/data_boar:latest
-docker push fabioleitao/data_boar:1.5.4
+docker push fabioleitao/data_boar:1.6.2
 ```
 
 Then in `deploy/docker-compose.yml` set `image:` to your pushed image (e.g. `fabioleitao/data_boar:latest` or `ghcr.io/fabioleitao/...`).
@@ -91,10 +91,10 @@ Then in `deploy/docker-compose.yml` set `image:` to your pushed image (e.g. `fab
 
 ```bash
 uv run pytest -v -W error
-docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.5.4 .
+docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.6.2 .
 docker login              # username: fabioleitao, password: your token
 docker push fabioleitao/data_boar:latest
-docker push fabioleitao/data_boar:1.5.4
+docker push fabioleitao/data_boar:1.6.2
 ```
 
 See also [DOCKER_SETUP.md](../DOCKER_SETUP.md).
@@ -371,7 +371,7 @@ To run a single audit from the CLI in the cluster, use a **Job** that overrides 
 
 **Why this matters:** Public tags remain **pullable** until you delete them on Docker Hub. Cleaning up **obsolete** tags reduces casual reuse of old builds (CVEs, wrong defaults) and aligns docs with what you actually support.
 
-1. **Inventory:** In [Docker Hub](https://hub.docker.com/r/fabioleitao/data_boar/tags) list all tags; note which CI, partners, or docs pin each tag (e.g. `latest`, `1.5.4`).
+1. **Inventory:** In [Docker Hub](https://hub.docker.com/r/fabioleitao/data_boar/tags) list all tags; note which CI, partners, or docs pin each tag (e.g. `latest`, `1.6.2`).
 2. **Decide support policy:** Typically keep **`latest`** plus **current semver** (and optionally one previous semver for rollback). Document the supported set here and in [PLANS_TODO.md](../plans/PLANS_TODO.md) Priority band A if needed.
 3. **Delete on Hub:** Hub → repository → **Tags** → delete tags you no longer support. **Warning:** Anyone who already pulled a tag still has that image locally; deletion only stops *new* pulls from Hub.
 4. **Update automation:** Adjust CI/CD and `docker-compose` / Kubernetes manifests so nothing references removed tags.

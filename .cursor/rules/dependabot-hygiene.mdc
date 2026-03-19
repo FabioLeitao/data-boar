@@ -8,7 +8,7 @@ alwaysApply: false
 
 When working with **dependencies** (pyproject.toml, uv.lock, requirements.txt) or when the user asks about updates:
 
-1. **Check Dependabot** (e.g. `gh pr list` or GitHub PRs) for open/closed dependency-update PRs.
+1. **Check Dependabot** (e.g. `gh pr list --author dependabot[bot]` or GitHub PRs). On Windows, **`.\scripts\maintenance-check.ps1`** lists open Dependabot PRs and optionally runs **Docker Scout quickview** on the published image (see **SECURITY.md**).
 2. **Verify viability**: Apply recommended version bumps only if they are compatible (no known breaking changes for this project).
 3. **Apply safely**: Update constraints in pyproject.toml, run `uv lock`, refresh requirements.txt if used; do not merge Dependabot branches blindly—prefer applying the same change locally and validating.
 4. **Validate**: Run the full test suite with `uv run pytest -v -W error`; all tests must pass with no errors or warnings.
