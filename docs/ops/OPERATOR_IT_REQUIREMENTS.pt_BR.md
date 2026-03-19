@@ -2,7 +2,7 @@
 
 **English:** [OPERATOR_IT_REQUIREMENTS.md](OPERATOR_IT_REQUIREMENTS.md)
 
-**Veja também:** [USAGE.pt_BR.md](USAGE.pt_BR.md) (configuração), [TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md) (problemas de autenticação).
+**Veja também:** [USAGE.pt_BR.md](../USAGE.pt_BR.md) (configuração), [TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md](../TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md) (problemas de autenticação).
 
 Este documento auxilia **prestadores de serviço e operadores** que implantam ou operam o Data Boar e precisam **solicitar acesso à equipe de TI**. Ele descreve as **permissões mínimas** necessárias para cada tipo de fonte (bancos de dados, compartilhamentos, APIs etc.), **o que não precisamos** e uma **breve justificativa**, para que você possa solicitar acesso com o mínimo de privilégios e alinhar-se a políticas de zero-trust ou restritivas.
 

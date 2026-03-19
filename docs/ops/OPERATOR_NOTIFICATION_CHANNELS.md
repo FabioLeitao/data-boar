@@ -4,7 +4,7 @@
 
 **Purpose:** When **CI fails**, **long jobs finish**, or a **human must return** to Cursor, prefer **at least two independent channels** so one outage (app blocked, DND, wrong account) does not block awareness. This doc is **policy + integration notes only**—**no secrets** in the repo (tokens in env, `docs/private/`, or GitHub **encrypted secrets**).
 
-**Scope:** Maintainer / operator pings (you + agents automating checks). Product **tenant** notifications (scan-complete, etc.) stay in the main **Notifications** plan ([PLANS_TODO.md](plans/PLANS_TODO.md) order 6)—reuse the same channel list where appropriate.
+**Scope:** Maintainer / operator pings (you + agents automating checks). Product **tenant** notifications (scan-complete, etc.) stay in the main **Notifications** plan ([PLANS_TODO.md](../plans/PLANS_TODO.md) order 6)—reuse the same channel list where appropriate.
 
 ---
 
@@ -72,19 +72,19 @@ Implement **one generic “notify” step** in CI (bash/PowerShell) that posts t
 
 ## 6. Optional KPI snapshot + notify
 
-Baseline script: [scripts/kpi-export.py](../scripts/kpi-export.py) (needs `gh auth`). **Optional extension (backlog):**
+Baseline script: [scripts/kpi-export.py](../../scripts/kpi-export.py) (needs `gh auth`). **Optional extension (backlog):**
 
 - **Weekly** `workflow_dispatch` or cron workflow: run `python scripts/kpi-export.py --out kpi_snapshot.md`, upload as **artifact**, or post excerpt to Slack/Telegram.
 - **Do not** commit snapshots with live URLs if they’re sensitive; keep artifacts **retention short** or post summary only.
 
-See [PLAN_READINESS_AND_OPERATIONS.md](plans/PLAN_READINESS_AND_OPERATIONS.md) §4.7.
+See [PLAN_READINESS_AND_OPERATIONS.md](../plans/PLAN_READINESS_AND_OPERATIONS.md) §4.7.
 
 ---
 
 ## 7. Related docs
 
 - [BRANCH_AND_DOCKER_CLEANUP.md](ops/BRANCH_AND_DOCKER_CLEANUP.md) — hygiene; §7 legacy remote.
-- [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](CODE_PROTECTION_OPERATOR_PLAYBOOK.md) — Priority band A.
+- [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md) — Priority band A.
 - [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md) — `origin` vs legacy remote.
 - Cursor: **`.cursor/rules/operator-notification-channels.mdc`** + **`.cursor/skills/operator-notification-channels/SKILL.md`** (agents editing workflows / KPI notify).
 

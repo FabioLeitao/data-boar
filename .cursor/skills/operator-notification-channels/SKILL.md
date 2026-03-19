@@ -15,7 +15,7 @@ description: >-
 
 ## Instructions
 
-1. Read **[docs/OPERATOR_NOTIFICATION_CHANNELS.md](../../../docs/OPERATOR_NOTIFICATION_CHANNELS.md)** (EN + pt-BR sibling).
+1. Read **[docs/ops/OPERATOR_NOTIFICATION_CHANNELS.md](../../../docs/ops/OPERATOR_NOTIFICATION_CHANNELS.md)** (EN + pt-BR sibling).
 2. **Tier A:** GitHub (watch, failed workflows, Issue `@mention`).
 3. **Tier B/C:** Slack incoming webhook **or** Telegram Bot API—**never** commit URLs/tokens; use `${{ secrets.* }}` or gitignored `.env`.
 4. **Tier D:** Signal (`signal-cli` / **signald** in Docker)—only after A+(B|C); operator must own pairing and ToS compliance.

@@ -84,7 +84,7 @@ Antes de marcar uma **release estável**, os mantenedores devem:
 
 - **[docs/TESTING.md](docs/TESTING.md)** ([pt-BR](docs/TESTING.pt_BR.md)) — Módulos de teste, CI, SonarQube.
 - **[docs/TOPOLOGY.md](docs/TOPOLOGY.md)** ([pt-BR](docs/TOPOLOGY.pt_BR.md)) — Topologia da aplicação (módulos, classes, fluxo de dados).
-- **[docs/COMMIT_AND_PR.md](docs/COMMIT_AND_PR.md)** ([pt-BR](docs/COMMIT_AND_PR.pt_BR.md)) — Automação de commit e PR.
+- **[docs/ops/COMMIT_AND_PR.md](docs/ops/COMMIT_AND_PR.md)** ([pt-BR](docs/ops/COMMIT_AND_PR.pt_BR.md)) — Automação de commit e PR.
 - **[docs/COMPLIANCE_FRAMEWORKS.md](docs/COMPLIANCE_FRAMEWORKS.md)** ([pt-BR](docs/COMPLIANCE_FRAMEWORKS.pt_BR.md)) — Rótulos de conformidade e extensibilidade.
 - **[docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md](docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md)** ([EN](docs/COPYRIGHT_AND_TRADEMARK.md)) — Direitos autorais e marca (tornar oficial, registros). [NOTICE](NOTICE) para o aviso do projeto.
 - Índice completo da documentação: [docs/README.pt_BR.md](docs/README.pt_BR.md) ([EN](docs/README.md)).

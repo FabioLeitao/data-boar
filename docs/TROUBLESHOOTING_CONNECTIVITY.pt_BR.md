@@ -4,7 +4,7 @@
 
 **Ver também:** [TROUBLESHOOTING.pt_BR.md](TROUBLESHOOTING.pt_BR.md) (visão geral e dicas rápidas).
 
-Este documento ajuda a diagnosticar e corrigir falhas **unreachable**, **timeout** e **permission_denied** ao varrer bancos de dados, APIs ou shares de arquivos (incluindo NFS/SMB). Aplica-se a implantações em host e em Docker; para rede e volumes específicos de Docker, veja [TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md).
+Este documento ajuda a diagnosticar e corrigir falhas **unreachable**, **timeout** e **permission_denied** ao varrer bancos de dados, APIs ou shares de arquivos (incluindo NFS/SMB). Aplica-se a implantações em host e em Docker; para rede e volumes específicos de Docker, veja [TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md](ops/TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md).
 
 ---
 
@@ -29,7 +29,7 @@ Este documento ajuda a diagnosticar e corrigir falhas **unreachable**, **timeout
 
 ### 2.2 Passos para corrigir
 
-Corrija DNS (use IP ou servidor DNS correto); abra firewall para a porta necessária; corrija `host`, `port` ou URL no config e reexecute a varredura. Em Docker, veja [TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md).
+Corrija DNS (use IP ou servidor DNS correto); abra firewall para a porta necessária; corrija `host`, `port` ou URL no config e reexecute a varredura. Em Docker, veja [TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md](ops/TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md).
 
 ---
 

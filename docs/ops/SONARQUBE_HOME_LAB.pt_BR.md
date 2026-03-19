@@ -7,7 +7,7 @@ Este guia ajuda a rodar o **SonarQube Server** numa segunda máquina (VM Linux o
 - Apontar o **GitHub Actions** para ele (o mesmo job de `.github/workflows/ci.yml` quando `SONAR_TOKEN` e `SONAR_HOST_URL` estão definidos).
 - Ligar o **Cursor / VS Code** (extensão SonarQube e/ou **MCP SonarQube**) ao mesmo servidor.
 
-Complementa [`.cursor/rules/sonarqube_mcp_instructions.mdc`](../.cursor/rules/sonarqube_mcp_instructions.mdc) (como o **agente** deve usar as ferramentas MCP) e [`sonar-project.properties`](../sonar-project.properties) (o que analisamos). Para testes e lint do dia a dia, veja [TESTING.pt_BR.md](TESTING.pt_BR.md).
+Complementa [`.cursor/rules/sonarqube_mcp_instructions.mdc`](../../.cursor/rules/sonarqube_mcp_instructions.mdc) (como o **agente** deve usar as ferramentas MCP) e [`sonar-project.properties`](../../sonar-project.properties) (o que analisamos). Para testes e lint do dia a dia, veja [TESTING.pt_BR.md](TESTING.pt_BR.md).
 
 ---
 
@@ -94,13 +94,13 @@ Ver detalhes em [SONARQUBE_HOME_LAB.md §6](SONARQUBE_HOME_LAB.md#6-github-actio
 
 ## 8. MCP no Cursor
 
-Variáveis típicas: URL base + token de utilizador (iguais à extensão). Comportamento do agente: [`.cursor/rules/sonarqube_mcp_instructions.mdc`](../.cursor/rules/sonarqube_mcp_instructions.mdc). Configure em **Cursor Settings → MCP** conforme o README do servidor MCP que instalar.
+Variáveis típicas: URL base + token de utilizador (iguais à extensão). Comportamento do agente: [`.cursor/rules/sonarqube_mcp_instructions.mdc`](../../.cursor/rules/sonarqube_mcp_instructions.mdc). Configure em **Cursor Settings → MCP** conforme o README do servidor MCP que instalar.
 
 ---
 
 ## 9. Ver também
 
 - [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md) ([pt-BR](HOMELAB_VALIDATION.pt_BR.md)) — smoke de deploy e alvos de dados no lab.
-- [TESTING.md](TESTING.md) ([pt-BR](TESTING.pt_BR.md))
-- [sonar-project.properties](../sonar-project.properties)
+- [TESTING.md](../TESTING.md) ([pt-BR](../TESTING.pt_BR.md))
+- [sonar-project.properties](../../sonar-project.properties)
 - `.github/workflows/ci.yml`

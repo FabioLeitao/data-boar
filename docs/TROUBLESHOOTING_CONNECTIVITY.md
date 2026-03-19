@@ -4,7 +4,7 @@
 
 **See also:** [TROUBLESHOOTING.md](TROUBLESHOOTING.md) (overview and quick hints).
 
-This document helps you diagnose and fix **unreachable**, **timeout**, and **permission_denied** failures when scanning databases, APIs, or file shares (including NFS/SMB). It applies to both host and Docker deployments; for Docker-specific network and volume setup, see [TROUBLESHOOTING_DOCKER_DEPLOYMENT.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.md).
+This document helps you diagnose and fix **unreachable**, **timeout**, and **permission_denied** failures when scanning databases, APIs, or file shares (including NFS/SMB). It applies to both host and Docker deployments; for Docker-specific network and volume setup, see [TROUBLESHOOTING_DOCKER_DEPLOYMENT.md](ops/TROUBLESHOOTING_DOCKER_DEPLOYMENT.md).
 
 ---
 
@@ -32,7 +32,7 @@ This document helps you diagnose and fix **unreachable**, **timeout**, and **per
 - Fix DNS (use IP or correct DNS server).
 - Open firewall for the required port (DB, SMB, NFS, HTTPS) from audit host/container to target.
 - Correct `host`, `port`, or URL in config; restart or re-run scan.
-- If running in Docker and target is on the host or another container, see [TROUBLESHOOTING_DOCKER_DEPLOYMENT.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.md) (host networking, `host.docker.internal`, etc.).
+- If running in Docker and target is on the host or another container, see [TROUBLESHOOTING_DOCKER_DEPLOYMENT.md](ops/TROUBLESHOOTING_DOCKER_DEPLOYMENT.md) (host networking, `host.docker.internal`, etc.).
 
 ---
 
