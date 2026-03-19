@@ -79,7 +79,7 @@ Os artefatos de deploy (Compose, Kubernetes, exemplos de config) ficam na pasta 
 | Licenciamento, hospedagem, integridade de release, **playbook do operador (Priority band A)** | [LICENSING_SPEC.md](LICENSING_SPEC.md), [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md), [HOSTING_AND_WEBSITE_OPTIONS.md](HOSTING_AND_WEBSITE_OPTIONS.md), [RELEASE_INTEGRITY.md](RELEASE_INTEGRITY.md), [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](CODE_PROTECTION_OPERATOR_PLAYBOOK.md) | [CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md](CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md) — *spec e open-core em inglês apenas* |
 
 - [plans/PLANS_TODO.md](plans/PLANS_TODO.md) — Status dos planos e estado atual da aplicação (fonte única de verdade para os to-dos dos planos abertos). *Arquivos de plano são apenas em inglês para histórico; a documentação para o operador é EN + pt-BR.*
-- [plans/Corporate-Entity-C_ANALISE_2026-03-18.md](plans/Corporate-Entity-C_ANALISE_2026-03-18.md) — Revisão externa de evolução (Corporate-Entity-C): nota, itens resolvidos, mapeamento do backlog (painel de KPI, testes de contrato, desacoplamento, documentação).
+- Revisões externas de evolução são mapeadas no histórico dos planos (conteúdo interno; não é uma superfície pública de documentação).
 - [releases/](releases/) — Notas de release (ex.: 1.6.2, 1.6.1, 1.6.0, 1.5.4, 1.4.3).
 - [plans/completed/](plans/completed/) — Planos concluídos arquivados e o checklist de implementação ([NEXT_STEPS.md](plans/completed/NEXT_STEPS.md)), todos os itens Feitos.
 
