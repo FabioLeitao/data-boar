@@ -1,0 +1,39 @@
+# Release integrity (optional tamper-evidence)
+
+The runtime can perform **optional** checks so modified installs are flagged as **TAMPERED** when commercial **enforcement** is on. This is **not** proof against a determined attacker; it aids **supportability** and **audit**.
+
+## Embedded build digest
+
+- File: [`core/licensing/_build_digest.txt`](../core/licensing/_build_digest.txt) — default `dev` in source trees.
+- At release time, replace the single line with a **SHA-256 hex** of an agreed release artifact (e.g. tarball) or a constant release id.
+- Set environment variable **`DATA_BOAR_EXPECTED_BUILD_DIGEST`** to the same value on customer installs. If it **does not match** the embedded file, the license guard sets state **TAMPERED** (blocks scans when `licensing.mode: enforced`).
+
+## Signed file manifest (optional)
+
+- JSON schema:
+
+```json
+{
+  "version": 1,
+  "files": [
+    { "path": "core/licensing/guard.py", "sha256": "hex..." }
+  ]
+}
+```
+
+- Set **`DATA_BOAR_RELEASE_MANIFEST_PATH`** or `licensing.manifest_path` in config to this file’s path.
+- At startup (enforced mode), hashes are verified; mismatch → **TAMPERED**.
+
+## Automation
+
+- [`scripts/release-integrity-check.ps1`](../scripts/release-integrity-check.ps1) — validates a manifest against the working tree (developer/CI use).
+- [`scripts/example-release-manifest.json`](../scripts/example-release-manifest.json) — sample shape (replace paths/hashes for real releases).
+
+## Packaging notes
+
+- **PyInstaller / zipapp / wheel:** regenerate manifest for the **installed** file layout.
+- Prefer **code signing** (Windows Authenticode / Apple notarization) for binaries in addition to manifest checks.
+
+## Related
+
+- [LICENSING_SPEC.md](LICENSING_SPEC.md)

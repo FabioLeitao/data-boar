@@ -66,6 +66,8 @@ Os arquivos `.md` do projeto são verificados quanto a regras estilo SonarQube/m
 
 O GitHub Actions (`.github/workflows/ci.yml`) executa: (1) Testes — `uv run pytest -v -W error`; (2) Auditoria de dependências — `uv run pip-audit`; (3) SonarQube/SonarCloud quando `SONAR_TOKEN` está definido. O CodeQL está em `.github/workflows/codeql.yml`. O mesmo `sonar-project.properties` na raiz do repositório é usado pelo extension no IDE e pelo scanner no CI.
 
+Para montar um **SonarQube Server** em casa (Docker, VM, secrets `SONAR_HOST_URL`, rede com GitHub Actions, IDE/MCP), veja **[SONARQUBE_HOME_LAB.md](SONARQUBE_HOME_LAB.md)** ([pt-BR](SONARQUBE_HOME_LAB.pt_BR.md)).
+
 Para usar a lista de issues do SonarQube de forma automatizada: execute `uv run python scripts/sonar_issues.py` (ou `--json`) com `SONAR_TOKEN` definido; o script usa o `sonar.projectKey` do `sonar-project.properties`.
 
 ## Ver também

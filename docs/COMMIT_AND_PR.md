@@ -89,4 +89,22 @@ From the repo root (PowerShell):
 - The script **respects `.gitignore`**: it uses `git check-ignore` so only non-ignored paths are ever staged or committed (e.g. `audit_results.db`, `*.db-journal`, `.env.local`, reports/heatmaps, `__pycache__`, etc. are never included).
 - The agent does **not** have access to your credentials; it runs `git` and `gh` in your environment, so your SSH and `gh auth` are used.
 
+## Complete workflow: check, pre-commit, commit, describe, and safe synced PR
+
+When you want to **check**, run **pre-commit**, **commit**, **describe**, and create a **safe, synced PR** using repo scripts (best for saving tokens and one source of truth), use these **concrete actions in order** from the repo root (PowerShell):
+
+| Step | Goal | Command |
+|------|------|--------|
+| 1 | **Check + pre-commit** (Ruff lint, format, markdown, full pytest in one run) | `.\scripts\check-all.ps1` |
+| 2 | **Preview** (see what would be committed; no stage, no commit) | `.\scripts\preview-commit.ps1` |
+| 3 | **Propose** a short commit title and bullet-point PR body from the file list and context | (you or the agent suggest title and body) |
+| 4 | **Commit + describe + safe synced PR** (commit with title/body, run tests again, fetch+rebase if behind, push, open PR in browser) | `.\scripts\commit-or-pr.ps1 -Action PR -Title "Your title" -Body "Bullet1`nBullet2" -RunTests` |
+
+For a **long PR body**, use:
+
+- `.\scripts\create-pr.ps1 -Title "Your title" -BodyFilePath path\to\body.txt` (optionally add `-RunTests`; it defaults to on), or
+- A one-off `.ps1` that sets `$Title` and `$Body` (e.g. here-string) and calls `commit-or-pr.ps1 -Action PR -Title $Title -Body $Body -RunTests`.
+
+**Why this order:** One full gate before committing; one preview to confirm scope; one PR step that re-runs tests and syncs (fetch + rebase if behind) before push, so the PR is safe and synced. No ad-hoc `git add`/`git commit`/`git push` or raw `pytest`/`ruff` in between when these scripts cover the need.
+
 **Documentation index** (all topics, both languages): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).

@@ -481,4 +481,20 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
     if "exclude_if_in_ml_patterns" not in lp:
         lp["exclude_if_in_ml_patterns"] = True
 
+    # Optional commercial licensing (default: open — no enforcement). See docs/LICENSING_SPEC.md.
+    lic = data.get("licensing") or {}
+    if not isinstance(lic, dict):
+        lic = {}
+    mode = str(lic.get("mode", "open")).strip().lower()
+    if mode not in ("open", "enforced"):
+        mode = "open"
+    out["licensing"] = {
+        "mode": mode,
+        "public_key_path": str(lic.get("public_key_path") or "").strip(),
+        "license_path": str(lic.get("license_path") or "").strip(),
+        "revocation_list_path": str(lic.get("revocation_list_path") or "").strip(),
+        "manifest_path": str(lic.get("manifest_path") or "").strip(),
+        "machine_bind_strict": bool(lic.get("machine_bind_strict", False)),
+    }
+
     return out
