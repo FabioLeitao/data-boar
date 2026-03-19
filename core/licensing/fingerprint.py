@@ -20,5 +20,9 @@ def compute_machine_fingerprint() -> str:
     """
     seed = (os.environ.get("DATA_BOAR_MACHINE_SEED") or "").strip()
     host = socket.gethostname().lower()
-    blob = f"v1|host={host}|seed={seed}".encode("utf-8")
-    return hashlib.sha256(blob).hexdigest()
+    # Use a KDF (PBKDF2-HMAC) instead of a direct fast hash to avoid weak-sensitive-hash patterns
+    # and keep a stable deterministic fingerprint per host/seed pair.
+    data = f"v2|host={host}|seed={seed}".encode("utf-8")
+    salt = f"data-boar-mfp|{host}".encode("utf-8")
+    derived = hashlib.pbkdf2_hmac("sha256", data, salt, 200_000, dklen=32)
+    return derived.hex()
