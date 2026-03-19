@@ -6,7 +6,7 @@
 
 **Not legal advice.** For **real** personal data, use **lawful basis**, **minimisation**, and **read-only** technical accounts; prefer **synthetic** or **public sample** data when unsure.
 
-**Related:** [deploy/DEPLOY.md](deploy/DEPLOY.md) · [SONARQUBE_HOME_LAB.md](SONARQUBE_HOME_LAB.md) (optional quality server) · [OPERATOR_IT_REQUIREMENTS.md](OPERATOR_IT_REQUIREMENTS.md) · [TESTING.md](TESTING.md) · [SECURITY.md](../SECURITY.md)
+**Related:** [deploy/DEPLOY.md](../deploy/DEPLOY.md) · [SONARQUBE_HOME_LAB.md](SONARQUBE_HOME_LAB.md) (optional quality server) · [OPERATOR_IT_REQUIREMENTS.md](OPERATOR_IT_REQUIREMENTS.md) · [TESTING.md](../TESTING.md) · [SECURITY.md](../SECURITY.md)
 
 ---
 
@@ -16,7 +16,7 @@
 1. **Lab is for integration:** OS paths, Docker volumes, real DB ports, firewall, and “does this config actually run here?”
 1. **Synthetic by default:** hand-made `.txt` / `.csv` with **fake** CPF/email patterns (see project tests for valid-format examples—do not use real people’s data).
 1. **Real data only when allowed:** copies of non-production DBs, anonymised extracts, or documents you own/have permission to scan.
-1. **Docker container churn:** Prefer `docker run --rm` for one-shot checks. If you keep a named **Data Boar** container between runs, aim for **one** primary instance—or **two** only for explicit **A/B** (image or config). Remove throwaway containers when done so ports (`8088`) and volumes stay predictable. See [DOCKER_SETUP.md](DOCKER_SETUP.md) §7.
+1. **Docker container churn:** Prefer `docker run --rm` for one-shot checks. If you keep a named **Data Boar** container between runs, aim for **one** primary instance—or **two** only for explicit **A/B** (image or config). Remove throwaway containers when done so ports (`8088`) and volumes stay predictable. See [DOCKER_SETUP.md](../DOCKER_SETUP.md) §7.
 
 ---
 
@@ -27,7 +27,7 @@
 | 1.1 | Clone repo on lab (or `git pull`); `uv sync` | Dependencies install |
 | 1.2 | `uv run pytest -v -W error` or project check script | All tests green |
 | 1.3 | `docker build -t data_boar:lab .` | Build completes |
-| 1.4 | Create `./data/config.yaml` from [deploy/config.example.yaml](../deploy/config.example.yaml) | File valid YAML |
+| 1.4 | Create `./data/config.yaml` from [deploy/config.example.yaml](../../deploy/config.example.yaml) | File valid YAML |
 | 1.5 | `docker run --rm -p 8088:8088 -v "$(pwd)/data:/data" -e CONFIG_PATH=/data/config.yaml data_boar:lab` | Dashboard loads at `:8088`, `/health` OK |
 | 1.6 | **Start scan** (dashboard or `POST /scan`) with `targets: []` | Completes idle run; no crash |
 
@@ -58,7 +58,7 @@ file_scan:
 1. Run CLI one-shot or dashboard scan.
 1. **Pass:** findings appear in SQLite/report; filesystem findings &gt; 0 for obvious patterns.
 
-**Optional:** enable `use_content_type: true` or dashboard **content-type** checkbox; add a file `disguised.txt` whose bytes start with `%PDF-1.` to confirm magic-byte path (see [USAGE.md](USAGE.md)).
+**Optional:** enable `use_content_type: true` or dashboard **content-type** checkbox; add a file `disguised.txt` whose bytes start with `%PDF-1.` to confirm magic-byte path (see [USAGE.md](../USAGE.md)).
 
 ---
 
@@ -85,7 +85,7 @@ docker run -d --name lab-pg --network lab-net -e POSTGRES_PASSWORD=labpass -e PO
 1. Use **read-only** user if possible.
 1. **Pass:** scan connects; findings or empty result without connection errors; check `scan_failures` in session.
 
-**MySQL/MariaDB:** same idea; install connector deps per [TECH_GUIDE.md](TECH_GUIDE.md).
+**MySQL/MariaDB:** same idea; install connector deps per [TECH_GUIDE.md](../TECH_GUIDE.md).
 
 ---
 
@@ -142,5 +142,5 @@ Keep a **dated note** (e.g. in `docs/private/` gitignored or a personal wiki): d
 
 ## See also
 
-- [TOKEN_AWARE_USAGE.md](plans/TOKEN_AWARE_USAGE.md) — after lab validation, return to one-row-per-session feature work ([PLANS_TODO.md](plans/PLANS_TODO.md)).
-- [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](CODE_PROTECTION_OPERATOR_PLAYBOOK.md) — Priority band A (deps, Scout, Hub) before heavy feature bursts when urgent.
+- [TOKEN_AWARE_USAGE.md](../plans/TOKEN_AWARE_USAGE.md) — after lab validation, return to one-row-per-session feature work ([PLANS_TODO.md](../plans/PLANS_TODO.md)).
+- [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md) — Priority band A (deps, Scout, Hub) before heavy feature bursts when urgent.

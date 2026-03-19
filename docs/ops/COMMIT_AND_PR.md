@@ -123,4 +123,4 @@ For a **long PR body**, use:
 
 **Why this order:** One full gate before committing; one preview to confirm scope; one PR step that re-runs tests and syncs (fetch + rebase if behind) before push, so the PR is safe and synced. No ad-hoc `git add`/`git commit`/`git push` or raw `pytest`/`ruff` in between when these scripts cover the need.
 
-**Documentation index** (all topics, both languages): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
+**Documentation index** (all topics, both languages): [README.md](../README.md) · [README.pt_BR.md](../README.pt_BR.md).

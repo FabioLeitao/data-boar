@@ -2,7 +2,7 @@
 
 **Português (Brasil):** [TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md)
 
-**See also:** [TROUBLESHOOTING.md](TROUBLESHOOTING.md) (overview and quick hints).
+**See also:** [TROUBLESHOOTING.md](../TROUBLESHOOTING.md) (overview and quick hints).
 
 This document helps when Data Boar runs **inside a Docker container** and must connect to **remote databases**, **NFS/SMB shares**, or **APIs**. It covers network reachability from the container, DNS, and how to use host-mounted shares vs NFS/SMB targets.
 
@@ -46,7 +46,7 @@ This document helps when Data Boar runs **inside a Docker container** and must c
 
 ### 2.2 Approach B: NFS/SMB target in config (container talks directly to the share)
 
-- **In config:** Add a target with `type: nfs` or `type: smb` and the appropriate `host`, `path`, `share`, credentials, etc. (see [USAGE.md](USAGE.md) and [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md)).
+- **In config:** Add a target with `type: nfs` or `type: smb` and the appropriate `host`, `path`, `share`, credentials, etc. (see [USAGE.md](../USAGE.md) and [ADDING_CONNECTORS.md](../ADDING_CONNECTORS.md)).
 - **Image:** The image must include the optional **shares** extra (NFS/SMB client libraries). The pre-built image may or may not include it; if you get "smbprotocol not installed" or similar, build a custom image with `pip install -e ".[shares]"` (or use the image that documents shares support).
 - **Network:** The **container** must be able to reach the NFS server (ports 2049, 111, etc.) or SMB server (445). Open outbound firewall from the container network to those ports; ensure DNS resolution if you use hostnames.
 - **Pros:** No host mount; config is self-contained. Good when the container runs in a cluster and can reach the share directly.
@@ -56,8 +56,8 @@ This document helps when Data Boar runs **inside a Docker container** and must c
 
 - **"Missing host" / "Missing share name":** Fill in `host`, `share` (SMB), and path in config.
 - **"unreachable":** Container cannot reach NFS/SMB server. Check firewall (outbound from container to server ports); test with `docker exec <container> nc -zv <server> 445` (SMB) or `2049` (NFS).
-- **"smbprotocol not installed" (or NFS client missing):** Install optional dependency and rebuild image; see [TECH_GUIDE.md](TECH_GUIDE.md) and [USAGE.md](USAGE.md).
-- **"auth_failed":** Wrong credentials for the share; see [TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md).
+- **"smbprotocol not installed" (or NFS client missing):** Install optional dependency and rebuild image; see [TECH_GUIDE.md](../TECH_GUIDE.md) and [USAGE.md](../USAGE.md).
+- **"auth_failed":** Wrong credentials for the share; see [TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md](../TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md).
 
 ### 2.4 Steps to fix
 
@@ -93,4 +93,4 @@ This document helps when Data Boar runs **inside a Docker container** and must c
 
 ---
 
-**Documentation index:** [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md). **Overview:** [TROUBLESHOOTING.md](TROUBLESHOOTING.md). **Deploy:** [deploy/DEPLOY.md](deploy/DEPLOY.md).
+**Documentation index:** [README.md](../README.md) · [README.pt_BR.md](../README.pt_BR.md). **Overview:** [TROUBLESHOOTING.md](../TROUBLESHOOTING.md). **Deploy:** [deploy/DEPLOY.md](../deploy/DEPLOY.md).
