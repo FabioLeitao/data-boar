@@ -49,6 +49,9 @@ COPY . .
 
 ENV CONFIG_PATH=/data/config.yaml
 ENV PYTHONUNBUFFERED=1
+# Docker image default: expose web API on all interfaces inside the container
+# so published ports work from outside Docker Desktop/WSL host.
+ENV API_HOST=0.0.0.0
 
 RUN useradd -r -u 1000 -d /data appuser && \
     mkdir -p /data && chown -R appuser:appuser /data
