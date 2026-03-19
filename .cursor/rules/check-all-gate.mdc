@@ -1,0 +1,19 @@
+---
+description: Use repo automation scripts for lint/tests (token-aware)
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Automation scripts (token-aware)
+
+**Prefer existing scripts over ad-hoc commands** when it saves tokens or time.
+
+| When | Script | Example |
+|------|--------|--------|
+| Full gate (lint + tests) | `.\scripts\check-all.ps1` | Before commit/PR |
+| Quick iterations (tests only) | `.\scripts\check-all.ps1 -SkipPreCommit` | After code change |
+| Lint/format only (no pytest) | `.\scripts\lint-only.ps1` | After docs/templates/style change |
+| Subset of tests | `.\scripts\quick-test.ps1 -Path tests/test_foo.py` or `-Keyword "content_type"` | When iterating on one area |
+
+Avoid raw `pytest`/`ruff` invocations when a script covers the need; scripts keep behaviour consistent and reduce back-and-forth. See `.cursor/skills/token-aware-automation/SKILL.md` for when to use which.
+
