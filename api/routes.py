@@ -63,6 +63,26 @@ def _validate_session_id(session_id: str) -> None:
         )
 
 
+def _safe_report_output_path(path: str | Path, engine) -> Path | None:
+    """
+    Resolve and validate a report/heatmap path against configured report.output_dir.
+
+    Returns the resolved candidate when it is inside output_dir and exists.
+    Returns None when missing, invalid, outside output_dir, or non-existent.
+    """
+    if not path:
+        return None
+    try:
+        out_dir = Path(engine.config.get("report", {}).get("output_dir", ".")).resolve()
+        candidate = Path(path).resolve()
+        candidate.relative_to(out_dir)
+    except (OSError, RuntimeError, ValueError):
+        return None
+    if not candidate.exists():
+        return None
+    return candidate
+
+
 class DatabaseConfig(BaseModel):
     """Single database target for one-off scan via POST /scan_database."""
 
@@ -707,10 +727,11 @@ async def download_report():
             sessions = engine.db_manager.list_sessions()
             if sessions:
                 path = engine.generate_final_reports(sessions[0]["session_id"])
-    if path and Path(path).exists():
+    safe_path = _safe_report_output_path(path, engine) if path else None
+    if safe_path:
         return FileResponse(
-            path,
-            filename=Path(path).name,
+            safe_path,
+            filename=safe_path.name,
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
     raise HTTPException(
@@ -737,17 +758,17 @@ async def download_heatmap():
             )
         path = engine.generate_final_reports(sid)
     # At this point we have a report path and can infer session_id if needed
-    if not path or not Path(path).exists():
+    safe_report_path = _safe_report_output_path(path, engine) if path else None
+    if not safe_report_path:
         raise HTTPException(
             status_code=404, detail="Heatmap not available. Run a scan first."
         )
-    report_path = Path(path)
     if not sid:
         # Recover session prefix from report filename: Relatorio_Auditoria_<session_prefix>.xlsx
-        name = report_path.name
+        name = safe_report_path.name
         prefix = name.removeprefix("Relatorio_Auditoria_").removesuffix(".xlsx")
         sid = prefix
-    out_dir = report_path.parent
+    out_dir = safe_report_path.parent
     heatmap_path = out_dir / f"heatmap_{sid[:12]}.png"
     if heatmap_path.exists():
         return FileResponse(
@@ -827,22 +848,12 @@ async def download_report_by_session(session_id: str):
     engine = _get_engine()
     path = engine.generate_final_reports(session_id)
     if path:
-        # Normalise and restrict the report path to the configured report output_dir.
-        # This guards against any accidental path traversal or misconfiguration.
-        out_dir = Path(engine.config.get("report", {}).get("output_dir", ".")).resolve()
-        candidate = Path(path).resolve()
-        try:
-            candidate.relative_to(out_dir)
-        except ValueError:
-            # Path is outside configured report directory; do not serve it.
+        candidate = _safe_report_output_path(path, engine)
+        if candidate is None:
+            # Path is outside configured report directory or does not exist.
             raise HTTPException(
                 status_code=403,
                 detail="Report path is outside the configured report directory.",
-            )
-        if not candidate.exists():
-            raise HTTPException(
-                status_code=404,
-                detail=f"No data for session {session_id} or report generation failed.",
             )
         return FileResponse(
             candidate,
@@ -861,12 +872,13 @@ async def download_heatmap_by_session(session_id: str):
     _validate_session_id(session_id)
     engine = _get_engine()
     path = engine.generate_final_reports(session_id)
-    if not path or not Path(path).exists():
+    safe_report_path = _safe_report_output_path(path, engine) if path else None
+    if not safe_report_path:
         raise HTTPException(
             status_code=404,
             detail=f"No data for session {session_id} or report generation failed.",
         )
-    out_dir = Path(path).parent
+    out_dir = safe_report_path.parent
     # session_id already validated; safe for path segment (no ".." or slashes)
     safe_prefix = session_id[:12]
     heatmap_path = out_dir / f"heatmap_{safe_prefix}.png"

@@ -1,0 +1,93 @@
+from pathlib import Path
+
+from fastapi.testclient import TestClient
+
+
+def _write_minimal_config(config_path: Path, output_dir: Path, sqlite_path: Path) -> None:
+    config_path.write_text(
+        f"""targets: []
+report:
+  output_dir: {output_dir}
+api:
+  port: 8088
+sqlite_path: {sqlite_path}
+scan:
+  max_workers: 1
+""",
+        encoding="utf-8",
+    )
+
+
+def _set_routes_context(tmp_path: Path, output_dir: Path):
+    import api.routes as routes
+
+    config_path = tmp_path / "config.yaml"
+    sqlite_path = tmp_path / "audit.db"
+    _write_minimal_config(config_path, output_dir, sqlite_path)
+
+    orig = (routes._config_path, routes._config, routes._audit_engine)
+    routes._config_path = str(config_path)
+    routes._config = None
+    routes._audit_engine = None
+    return routes, orig
+
+
+def _restore_routes_context(routes, orig):
+    routes._config_path, routes._config, routes._audit_engine = orig
+
+
+class _FakeDBManager:
+    current_session_id = None
+
+    @staticmethod
+    def list_sessions():
+        return []
+
+
+class _FakeEngine:
+    def __init__(self, report_output_dir: Path, report_path: Path):
+        self.config = {"report": {"output_dir": str(report_output_dir)}}
+        self._report_path = str(report_path)
+        self.db_manager = _FakeDBManager()
+
+    def get_last_report_path(self):
+        return self._report_path
+
+    def generate_final_reports(self, _session_id):
+        return self._report_path
+
+
+def test_download_report_rejects_path_outside_configured_output_dir(tmp_path: Path):
+    output_dir = tmp_path / "reports"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    outside_report = tmp_path / "outside.xlsx"
+    outside_report.write_text("dummy", encoding="utf-8")
+
+    routes, orig = _set_routes_context(tmp_path, output_dir)
+    try:
+        routes._audit_engine = _FakeEngine(output_dir, outside_report)
+        client = TestClient(routes.app)
+        resp = client.get("/report")
+        assert resp.status_code == 404
+    finally:
+        _restore_routes_context(routes, orig)
+
+
+def test_download_heatmap_rejects_report_path_outside_configured_output_dir(tmp_path: Path):
+    output_dir = tmp_path / "reports"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    outside_report = tmp_path / "Relatorio_Auditoria_abcdef123456.xlsx"
+    outside_report.write_text("dummy", encoding="utf-8")
+    # Even if a matching heatmap exists beside the report, endpoint must reject the base report path.
+    outside_heatmap = tmp_path / "heatmap_abcdef123456.png"
+    outside_heatmap.write_bytes(b"png")
+
+    routes, orig = _set_routes_context(tmp_path, output_dir)
+    try:
+        routes._audit_engine = _FakeEngine(output_dir, outside_report)
+        client = TestClient(routes.app)
+        resp = client.get("/heatmap")
+        assert resp.status_code == 404
+    finally:
+        _restore_routes_context(routes, orig)
+
