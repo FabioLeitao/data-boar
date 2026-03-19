@@ -22,12 +22,12 @@ Use these tags in headings to keep priorities explicit and machine-countable:
 
 Do not edit this block manually; refresh with `python scripts/plans-stats.py --write`.
 
-- **Status rows counted:** 87  (Done: 43 | Incomplete: 44)
-- **Incomplete breakdown:** Pending `⬜`=42, Tracked `🔄`=2, Under consideration=0, Backlog-marked rows=1
+- **Status rows counted:** 87  (Done: 44 | Incomplete: 43)
+- **Incomplete breakdown:** Pending `⬜`=41, Tracked `🔄`=2, Under consideration=0, Backlog-marked rows=0
 
 | Horizon | Total rows | Done | Incomplete |
 | ------- | ----------: | ----: | ----------: |
-| `H0` | 19 | 16 | 3 |
+| `H0` | 19 | 17 | 2 |
 | `H1` | 0 | 0 | 0 |
 | `H2` | 0 | 0 | 0 |
 | `H3` | 68 | 27 | 41 |
@@ -172,7 +172,7 @@ External review PDF (local): `docs/feedbacks, reviews, comments and criticism/an
 
 | Follow-up | Status | Notes |
 | --------- | ------ | ----- |
-| KPI panel (release / CI / security ops) | ⬜ Backlog (**W-KPI**) | GitHub Insights / manual dashboard; low AI, ops cadence. |
+| KPI panel (release / CI / security ops) | ✅ Done (baseline) (**W-KPI**) | Baseline defined in `PLAN_READINESS_AND_OPERATIONS.md` §4.7 with 2 manual KPIs (CI pass rate, security maintenance latency). Next slice: optional lightweight automation/export. |
 | Contract tests (reports + critical APIs) | ✅ Done (**W-CONTRACT**) | Report/heatmap artifacts regression: `tests/test_report_trends.py`; API/OpenAPI contract responses: `tests/test_routes_responses.py`. |
 | Decouple detector/report rules | 🔄 Incremental (**W-DECOUPLE**) | Small modules (e.g. fuzzy helper); Sonar complexity gates. |
 | Doc snapshot per release | ✅ Baseline | `docs/releases/X.Y.Z.md` per version; optional “frozen bundle” → backlog. |
@@ -226,7 +226,7 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
 
 ### H2/U2 B. Deferred to after billing reset (or if on-demand spend is enabled)
 
-0. **Corporate-Entity-C backlog (token-aware, non-blocking)** — **W-KPI:** release/CI KPI view. (W-CONTRACT already covered by existing contract tests for reports + OpenAPI responses.) Pick one small slice when maintenance is green.
+0. **Corporate-Entity-C backlog (token-aware, non-blocking)** — **W-KPI baseline done** (manual KPI panel in readiness plan). Next optional slice: automate KPI extraction/export when maintenance is green. (W-CONTRACT already covered by existing contract tests for reports + OpenAPI responses.)
 1. **Secrets vault – Phase B** – full vault implementation, re-import CLI/web, optional remove-from-config, and key management docs.
 2. **Version check & self-upgrade** – version fetch, CLI/API, backup/restore, container detection, audit log.
 3. **Selenium QA test suite** – full UI automation suite, stress tests, QA reports.
