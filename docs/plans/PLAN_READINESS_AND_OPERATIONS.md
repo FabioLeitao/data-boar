@@ -81,6 +81,21 @@ Each item is a small doc update or script. Status: **Done** | **Not started** | 
 | Docker/Dependabot vulnerability triage: for each release cycle, review GitHub Dependabot alerts and Docker Scout quickview for the base image; classify P0/P1 vulns and decide which to patch in-code vs via base-image bump.           | Not started |
 | Future Cursor rule/skill: add a security rule/skill that reminds the agent to check Dependabot and Docker Scout summaries before declaring a release “prod-ready”, within token constraints.                                           | Optional    |
 
+### 4.7 W-KPI baseline (release / CI / security ops)
+
+Token-aware baseline with 2 manual KPIs (no new tooling required):
+
+| KPI | How to measure | Cadence | Initial target |
+| --- | --- | --- | --- |
+| CI pass rate | Last 10 PRs to `main`: count green CI checks before merge (`successful PRs / total PRs`) | Weekly | >= 90% |
+| Security maintenance latency | Business days between opening and merge/mitigation of high/critical Dependabot alert/PR | Weekly | <= 5 business days for high/critical |
+
+Notes:
+
+- Data sources: GitHub PR list/checks + Dependabot alerts/PR timestamps.
+- Keep a small markdown note per release cycle in `docs/releases/X.Y.Z.md` with the latest KPI snapshot.
+- If manual collection starts to drift, automate with a lightweight script in a later slice.
+
 ---
 
 ## 5. How to use this plan
