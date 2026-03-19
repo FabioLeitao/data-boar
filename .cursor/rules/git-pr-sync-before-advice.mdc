@@ -1,0 +1,39 @@
+---
+description: Refresh git/gh state before merge/PR advice or sharing PR URLs (avoid stale PR numbers)
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Git / GitHub PR state — sync before advice
+
+**Problem:** Chat context can still say “open PR #80” after #80 merged and #81 exists. The assistant has **no live GitHub view** unless commands run **in this session**.
+
+## When this applies
+
+- Before advising **merge**, **“what’s next”** after a PR, or **which PR** to open.
+- Before pasting or opening a **PR URL** or number after `gh pr create`.
+- When the user says they **just merged** — **do not** assume local `main` is current.
+
+## Minimum refresh (pick at least one)
+
+| Action | Command / script |
+|--------|------------------|
+| Update remote refs | `git fetch origin` |
+| Align local `main` | `git checkout main` → `git pull origin main` |
+| Verify a PR | `gh pr view <n> --json number,state,mergedAt,url` |
+| List PR for current branch | `gh pr list --head <branch-name> --json number,state,url` |
+
+Prefer repo automation when it already does fetch/rebase: **`.\scripts\commit-or-pr.ps1`** (see `.cursor/skills/token-aware-automation/SKILL.md` and `CONTRIBUTING.md` § PR state).
+
+## After creating a PR
+
+1. Run `gh pr view --json number,state,url` (or `gh pr list --head <branch>`).
+2. **Only then** share the link or say “PR #N” — avoids pointing at the **previous** merged PR.
+
+## GitHub lag
+
+Right after merge, `gh` may still show `OPEN` briefly. Re-run `gh pr view` or wait a few seconds; distinguish **UI lag** from **stale chat context**.
+
+## Human + agent habit
+
+Maintainers: after merging on GitHub, run **`git checkout main && git pull`**. Agents: **run a refresh command** before merge-related advice unless the user pasted fresh `gh`/`git` output in the same turn.
