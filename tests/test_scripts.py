@@ -94,3 +94,61 @@ def test_commit_or_pr_ps1_has_param_block():
     assert "param(" in text
     assert "ValidateSet" in text
     assert "Preview" in text and "Commit" in text and "PR" in text
+
+
+def _parse_powershell_script(script_path: Path, root: Path) -> bool:
+    """Return True if script has valid PowerShell syntax (Parser::ParseFile)."""
+    rel = script_path.relative_to(root)
+    path_expr = (
+        "[System.IO.Path]::GetFullPath((Join-Path (Get-Location) '"
+        + str(rel.as_posix())
+        + "'))"
+    )
+    parse_script = (
+        f"$path = {path_expr}; "
+        "$errors = $null; "
+        "$null = [System.Management.Automation.Language.Parser]::ParseFile($path, [ref]$null, [ref]$errors); "
+        "exit ([int]($errors -and $errors.Count -gt 0))"
+    )
+    for pw in ("pwsh", "powershell"):
+        try:
+            proc = subprocess.run(
+                [pw, "-NoProfile", "-NonInteractive", "-Command", parse_script],
+                cwd=str(root),
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+        except FileNotFoundError:
+            continue
+        return proc.returncode == 0
+    return False
+
+
+def test_preview_commit_ps1_syntax():
+    """scripts/preview-commit.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "preview-commit.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), "preview-commit.ps1 parse failed"
+
+
+def test_create_pr_ps1_syntax():
+    """scripts/create-pr.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "create-pr.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), "create-pr.ps1 parse failed"
+
+
+def test_create_pr_ps1_has_param_block():
+    """scripts/create-pr.ps1 has param block with Title and BodyFilePath (structured)."""
+    root = _project_root()
+    script = root / "scripts" / "create-pr.ps1"
+    if not script.exists():
+        return
+    text = script.read_text(encoding="utf-8", errors="replace")
+    assert "param(" in text
+    assert "Title" in text and "BodyFilePath" in text
