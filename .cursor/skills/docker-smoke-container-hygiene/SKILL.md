@@ -30,4 +30,4 @@ description: >-
 
 ## Rationale
 
-Stale containers confuse port mappings (`8088`), volume mounts, and Scout/quickview workflows; they also waste disk. A single explicit policy matches [docs/DOCKER_SETUP.md](../../../docs/DOCKER_SETUP.md) §7 and [docs/HOMELAB_VALIDATION.md](../../../docs/HOMELAB_VALIDATION.md).
+Stale containers confuse port mappings (`8088`), volume mounts, and Scout/quickview workflows; they also waste disk. A single explicit policy matches [docs/DOCKER_SETUP.md](../../../docs/DOCKER_SETUP.md) §7 and [docs/ops/HOMELAB_VALIDATION.md](../../../docs/ops/HOMELAB_VALIDATION.md).

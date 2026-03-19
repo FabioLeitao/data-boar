@@ -2,7 +2,7 @@
 
 **Português (Brasil):** [OPERATOR_IT_REQUIREMENTS.pt_BR.md](OPERATOR_IT_REQUIREMENTS.pt_BR.md)
 
-**See also:** [USAGE.md](USAGE.md) (configuration), [TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md) (auth issues).
+**See also:** [USAGE.md](../USAGE.md) (configuration), [TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md](../TROUBLESHOOTING_CREDENTIALS_AND_AUTH.md) (auth issues).
 
 This document helps **service providers and operators** who deploy or run Data Boar and need to **request access from the IT team**. It states the **minimum permissions** required for each type of source (databases, file shares, APIs, etc.), **what we do not need**, and a **brief justification** so you can confidently request least-privilege access and align with zero-trust or strict policies.
 

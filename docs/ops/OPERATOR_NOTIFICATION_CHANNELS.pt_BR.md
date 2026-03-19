@@ -4,7 +4,7 @@
 
 **Objetivo:** Quando o **CI falha**, um **job longo termina** ou um **humano precisa voltar** ao Cursor, use **pelo menos dois canais independentes** para um não bloquear o outro (app em DND, conta errada, etc.). Este doc é **política + notas de integração** — **sem segredos** no repositório (tokens em variável de ambiente, `docs/private/` ou **secrets** do GitHub Actions).
 
-**Âmbito:** Alertas para **mantenedor/operador** (você + automações). Notificações de **produto** (fim de scan, etc.) seguem o plano **Notifications** em [PLANS_TODO.md](plans/PLANS_TODO.md) (ordem 6) — pode reutilizar a mesma lista de canais.
+**Âmbito:** Alertas para **mantenedor/operador** (você + automações). Notificações de **produto** (fim de scan, etc.) seguem o plano **Notifications** em [PLANS_TODO.md](../plans/PLANS_TODO.md) (ordem 6) — pode reutilizar a mesma lista de canais.
 
 ---
 
@@ -35,7 +35,7 @@ Use **GITHUB_TOKEN** no Actions (permissões no workflow).
 
 Configurações comuns usam **`signal-cli`** ou **`signald`** em **Docker**, com **dispositivo vinculado** ou fluxo de registro. O comportamento que descreveu (mensagens como **sua** identidade; “anotação” ao enviar para si / conversa consigo) é um padrão conhecido para **lembretes do operador** (análogo a “mensagens salvas” no Telegram).
 
-**Riscos / cuidados**
+### Riscos / cuidados
 
 - **Operacional:** reinícios do container, pareamento/QR, recuperação de sessão.
 - **Legal / ToS:** imagens auditadas; cumprimento dos termos do Signal.
@@ -69,19 +69,19 @@ Um passo genérico “notify” pode tentar **Slack** e, se falhar, **Telegram**
 
 ## 6. KPI snapshot + notificar (opcional)
 
-Script base: [scripts/kpi-export.py](../scripts/kpi-export.py) (requer `gh auth`). **Extensão em backlog:**
+Script base: [scripts/kpi-export.py](../../scripts/kpi-export.py) (requer `gh auth`). **Extensão em backlog:**
 
 - Workflow **semanal** ou `workflow_dispatch`: gerar `kpi_snapshot.md`, **artefato**, ou enviar trecho ao Slack/Telegram.
 - Evitar commit de snapshots com dados sensíveis; retenção curta de artefactos.
 
-Ver [PLAN_READINESS_AND_OPERATIONS.md](plans/PLAN_READINESS_AND_OPERATIONS.md) §4.7.
+Ver [PLAN_READINESS_AND_OPERATIONS.md](../plans/PLAN_READINESS_AND_OPERATIONS.md) §4.7.
 
 ---
 
 ## 7. Documentos relacionados
 
 - [BRANCH_AND_DOCKER_CLEANUP.md](ops/BRANCH_AND_DOCKER_CLEANUP.md) — higiene; §7 remote legado.
-- [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](CODE_PROTECTION_OPERATOR_PLAYBOOK.md) — faixa A.
+- [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md) — faixa A.
 - [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md) — `origin` vs legado.
 - Cursor: **`.cursor/rules/operator-notification-channels.mdc`** e **`.cursor/skills/operator-notification-channels/SKILL.md`**.
 

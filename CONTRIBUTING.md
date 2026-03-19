@@ -84,7 +84,7 @@ Before tagging a **stable release**, maintainers should:
 
 - **[docs/TESTING.md](docs/TESTING.md)** ([pt-BR](docs/TESTING.pt_BR.md)) — Test modules, CI, SonarQube.
 - **[docs/TOPOLOGY.md](docs/TOPOLOGY.md)** ([pt-BR](docs/TOPOLOGY.pt_BR.md)) — Application topology (modules, classes, data flow).
-- **[docs/COMMIT_AND_PR.md](docs/COMMIT_AND_PR.md)** ([pt-BR](docs/COMMIT_AND_PR.pt_BR.md)) — Commit and PR automation.
+- **[docs/ops/COMMIT_AND_PR.md](docs/ops/COMMIT_AND_PR.md)** ([pt-BR](docs/ops/COMMIT_AND_PR.pt_BR.md)) — Commit and PR automation.
 - **[docs/COMPLIANCE_FRAMEWORKS.md](docs/COMPLIANCE_FRAMEWORKS.md)** ([pt-BR](docs/COMPLIANCE_FRAMEWORKS.pt_BR.md)) — Compliance labels and extensibility.
 - **[docs/COPYRIGHT_AND_TRADEMARK.md](docs/COPYRIGHT_AND_TRADEMARK.md)** ([pt-BR](docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md)) — Copyright and trademark (making it official, registries). [NOTICE](NOTICE) for project notice.
 - Full doc index: [docs/README.md](docs/README.md) ([pt-BR](docs/README.pt_BR.md)).

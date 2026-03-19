@@ -4,7 +4,7 @@ globs:
 alwaysApply: true
 ---
 
-These are guidelines when using the **SonarQube MCP** server in Cursor. **Deploying** your own SonarQube (home lab, Docker, CI networking, tokens) is documented in **[docs/SONARQUBE_HOME_LAB.md](../../docs/SONARQUBE_HOME_LAB.md)** ([pt-BR](../../docs/SONARQUBE_HOME_LAB.pt_BR.md)).
+These are guidelines when using the **SonarQube MCP** server in Cursor. **Deploying** your own SonarQube (home lab, Docker, CI networking, tokens) is documented in **[docs/ops/SONARQUBE_HOME_LAB.md](../../docs/ops/SONARQUBE_HOME_LAB.md)** ([pt-BR](../../docs/ops/SONARQUBE_HOME_LAB.pt_BR.md)).
 
 **Before MCP works:** the SonarQube instance must be **running**, reachable from the machine running Cursor, and authenticated with a **user token** (not a project token). GitHub-hosted CI needs either a **public/reachable** `SONAR_HOST_URL` or a **self-hosted runner** on the same LAN as SonarQube — see the home-lab guide §6.
 

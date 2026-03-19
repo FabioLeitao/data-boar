@@ -7,7 +7,7 @@ This guide helps you run **SonarQube Server** on a second machine (Linux VM or c
 - Point **GitHub Actions** at it (same job as in `.github/workflows/ci.yml` when `SONAR_TOKEN` and `SONAR_HOST_URL` are set).
 - Connect **Cursor / VS Code** (SonarQube extension and/or **SonarQube MCP**) to the same server.
 
-It complements [`.cursor/rules/sonarqube_mcp_instructions.mdc`](../.cursor/rules/sonarqube_mcp_instructions.mdc) (how the **agent** should use MCP tools) and [`sonar-project.properties`](../sonar-project.properties) (what we scan). For day-to-day test and lint behaviour, see [TESTING.md](TESTING.md).
+It complements [`.cursor/rules/sonarqube_mcp_instructions.mdc`](../../.cursor/rules/sonarqube_mcp_instructions.mdc) (how the **agent** should use MCP tools) and [`sonar-project.properties`](../../sonar-project.properties) (what we scan). For day-to-day test and lint behaviour, see [TESTING.md](../TESTING.md).
 
 ---
 
@@ -113,7 +113,7 @@ Open `http://<server-ip>:9000`. Default login is **admin / admin** — you **mus
 
 1. **Create a project** in SonarQube with a **Project key** that matches `sonar.projectKey` in this repo (`python3-lgpd-crawler` unless you change it).
 1. **User token (not project token):** **My Account → Security → Generate Tokens.**
-   - The MCP rule file [`.cursor/rules/sonarqube_mcp_instructions.mdc`](../.cursor/rules/sonarqube_mcp_instructions.mdc) states SonarQube expects **user** tokens for API/MCP-style use.
+   - The MCP rule file [`.cursor/rules/sonarqube_mcp_instructions.mdc`](../../.cursor/rules/sonarqube_mcp_instructions.mdc) states SonarQube expects **user** tokens for API/MCP-style use.
 1. **GitHub repository secrets** (for `ci.yml` sonar job):
    - `SONAR_TOKEN` — the user token.
    - `SONAR_HOST_URL` — base URL of your server, e.g. `https://sonarqube.home.example` (no trailing slash).
@@ -169,7 +169,7 @@ MCP servers vary by implementation; typical requirements are:
 
 - **Server base URL** — same as `SONAR_HOST_URL`.
 - **User token** — same as for the scanner.
-- The agent-side behaviour (e.g. `analyze_file_list`, `toggle_automatic_analysis`) is described in [`.cursor/rules/sonarqube_mcp_instructions.mdc`](../.cursor/rules/sonarqube_mcp_instructions.mdc).
+- The agent-side behaviour (e.g. `analyze_file_list`, `toggle_automatic_analysis`) is described in [`.cursor/rules/sonarqube_mcp_instructions.mdc`](../../.cursor/rules/sonarqube_mcp_instructions.mdc).
 
 Add the MCP server in **Cursor Settings → MCP** per the MCP provider’s README (env var names may differ). After the SonarQube container is healthy and the token works in the browser/extension, point MCP at the same URL and token.
 
@@ -190,6 +190,6 @@ Add the MCP server in **Cursor Settings → MCP** per the MCP provider’s READM
 ## See also
 
 - [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md) — deployment smoke tests and synthetic/real **data targets** (filesystem, SQL, archives) on a second machine; complements SonarQube (code quality).
-- [TESTING.md](TESTING.md) — SonarQube/SonarCloud section and `scripts/sonar_issues.py`.
-- [sonar-project.properties](../sonar-project.properties) — project key, sources, exclusions.
+- [TESTING.md](../TESTING.md) — SonarQube/SonarCloud section and `scripts/sonar_issues.py`.
+- [sonar-project.properties](../../sonar-project.properties) — project key, sources, exclusions.
 - `.github/workflows/ci.yml` — `sonar` job conditions and `SonarSource/sonarqube-scan-action`.
