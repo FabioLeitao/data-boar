@@ -24,7 +24,9 @@ Você pode limitar o commit/PR a arquivos específicos com **`-IncludeFiles`** (
 Na raiz do repositório (PowerShell):
 
 ```powershell
-# Apenas visualizar (sem commit)
+# Apenas visualizar (sem commit) – atalho
+.\scripts\preview-commit.ps1
+# Ou com título/corpo proposto:
 .\scripts\commit-or-pr.ps1 -Action Preview -Title "Seu título" -Body "Tópico um`nTópico dois"
 
 # Apenas commit
@@ -41,6 +43,10 @@ Na raiz do repositório (PowerShell):
 
 # Criar PR e rodar a suíte de testes antes do push (não faz push se os testes falharem)
 .\scripts\commit-or-pr.ps1 -Action PR -Title "Título" -Body "Tópicos..." -RunTests
+
+# Criar PR com corpo lido de arquivo (evita escapar corpo multi-linha no shell)
+.\scripts\create-pr.ps1 -Title "Título" -BodyFilePath "caminho\para\body.txt"
+.\scripts\create-pr.ps1 -Title "Título" -BodyFilePath $env:TEMP\pr-body.txt -RunTests
 ```
 
 - **Push** usa seu remote e chaves SSH normais do Git. O PR **sempre envia o branch atual para origin** para que o repositório central (data-boar) tenha o progresso e histórico completos.
