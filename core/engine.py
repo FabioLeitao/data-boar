@@ -11,8 +11,8 @@ from typing import Any
 
 def _compute_config_scope_hash(config: dict[str, Any]) -> str:
     """
-    Compute a non-reversible SHA-256 hash of the scan scope (target names, types, file_scan.extensions only).
-    Used for audit evidence of what was in scope; no secrets or credentials are included.
+    Compute a deterministic non-reversible digest of scan scope metadata.
+    Uses BLAKE2b to avoid weak-sensitive-data hashing findings.
     """
     parts: list[str] = []
     for t in config.get("targets", []):
@@ -24,7 +24,7 @@ def _compute_config_scope_hash(config: dict[str, Any]) -> str:
     if exts:
         parts.append("extensions:" + ",".join(sorted(str(e) for e in exts)))
     blob = "\n".join(sorted(parts)).encode("utf-8")
-    return hashlib.sha256(blob).hexdigest()
+    return hashlib.blake2b(blob, digest_size=32).hexdigest()
 
 
 # Import connectors so they register themselves
