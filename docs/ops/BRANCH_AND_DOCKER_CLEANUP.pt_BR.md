@@ -77,6 +77,29 @@ docker builder prune -f
 
 ---
 
-## 4. Documentos relacionados
+## 4. Ordem recomendada
+
+1. `git fetch origin --prune` e `git pull` no `main`.
+2. Revisar `git branch --no-merged origin/main`.
+3. Apagar branches **locais** já mergeadas (`git branch -d …`).
+4. No GitHub, apagar branches **remotas** mergeadas e sem uso.
+5. Docker: manter **latest + uma versão anterior** → `docker rmi` / `prune`.
+
+---
+
+## 5. Remote legado apenas (`python3-lgpd-crawler-legacy-and-history-only`)
+
+**Backlog / não bloqueante.** Push cotidiano só em **`data-boar`** (`origin`). O remote extra ([REMOTES_AND_ORIGIN.md](../REMOTES_AND_ORIGIN.md)) é o repositório **antigo** python3-lgpd-crawler (só fetch, sem push).
+
+**Objetivos**
+
+1. Branches **locais** que ainda apontam para o remote legado: `git branch -vv` e alinhar ou apagar.
+2. **Não fazer push** para o remoto legado a partir deste clone (política intencional).
+3. Repositório antigo no GitHub: opcional **arquivar** + README apontando para **data-boar**.
+
+---
+
+## 6. Documentos relacionados
 
 - [COMMIT_AND_PR.md](../COMMIT_AND_PR.md) · [REMOTES_AND_ORIGIN.md](../REMOTES_AND_ORIGIN.md) · [DOCKER_SETUP.md](../DOCKER_SETUP.md) · [HOMELAB_VALIDATION.md](../HOMELAB_VALIDATION.md) · [PLANS_TODO.md](../plans/PLANS_TODO.md)
+- [OPERATOR_NOTIFICATION_CHANNELS.md](../OPERATOR_NOTIFICATION_CHANNELS.md) — alertas multi-canal (GitHub, Slack, Telegram, Signal).

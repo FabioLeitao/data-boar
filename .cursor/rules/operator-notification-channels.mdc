@@ -1,0 +1,15 @@
+---
+description: Prefer at least two operator notification paths (GitHub + Slack/Telegram); Signal is optional tier D; never commit webhooks or bot tokens.
+globs: .github/workflows/**,scripts/kpi-export.py,scripts/*notify*,docs/OPERATOR_NOTIFICATION_CHANNELS.md
+alwaysApply: false
+---
+
+# Operator notifications (multi-channel)
+
+When adding CI alerts, KPI jobs, or “ping the human” automation:
+
+1. **Read** [docs/OPERATOR_NOTIFICATION_CHANNELS.md](../../docs/OPERATOR_NOTIFICATION_CHANNELS.md) for the recommended **A→D** tier order (GitHub baseline, then Slack or Telegram webhook/API, Signal last).
+2. **Redundancy:** design for **at least two** independent channels so one failure mode does not block awareness.
+3. **Secrets:** store `SLACK_WEBHOOK_URL`, Telegram bot token, or Signal API secrets only in **GitHub Actions secrets** or local `.env` (gitignored)—never in committed YAML beyond `${{ secrets.* }}` references.
+4. **Signal:** document-only until the operator finishes `signal-cli` / **signald** Docker pairing; do not assume the agent holds a Signal session.
+5. **KPI:** optional `kpi-export.py` in scheduled/workflow_dispatch workflows; artifacts with short retention or chat summary only.

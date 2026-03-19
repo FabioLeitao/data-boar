@@ -196,7 +196,9 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
 ### Documentation and sync reminders
 
 - **pt-BR translation review:** When syncing EN → pt-BR, review for **naturalness** and meaning-equivalent wording; avoid overly literal transposition that can sound artificial. Schedule a pass over key docs (README.pt_BR, USAGE.pt_BR, DEPLOY.pt_BR, SENSITIVITY_DETECTION.pt_BR, etc.) when capacity allows.
-- **Legacy branches cleanup reminder:** When we have maintenance time, tidy `python2-lgpd-crawler-legacy-and-history-only` branches (verify no active work depends on them, then delete/close/retire them).
+- **Legacy remote / branches cleanup (non-blocking):** Tidy local branches still tracking **`python3-lgpd-crawler-legacy-and-history-only`** (not `python2-…`); verify no active work, repoint upstream to **data-boar** or delete locally; optional archive old GitHub repo. Step-by-step: [ops/BRANCH_AND_DOCKER_CLEANUP.md](../ops/BRANCH_AND_DOCKER_CLEANUP.md) §7 · [REMOTES_AND_ORIGIN.md](../REMOTES_AND_ORIGIN.md).
+- **Operator reachability (non-blocking):** Prefer **two channels** (e.g. GitHub notifications + Slack *or* Telegram); Signal via `signal-cli` / **signald** in Docker is **tier D** (advanced). Policy: [OPERATOR_NOTIFICATION_CHANNELS.md](../OPERATOR_NOTIFICATION_CHANNELS.md) ([pt-BR](../OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md)).
+- **KPI snapshot automation (optional):** Weekly `scripts/kpi-export.py` via Actions `workflow_dispatch` or schedule → artifact or chat excerpt; see [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) §4.7.
 
 ### H1/U1 A. Near-term focus (current billing cycle)
 
