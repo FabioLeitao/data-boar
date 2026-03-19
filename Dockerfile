@@ -5,7 +5,7 @@
 # -----------------------------------------------------------------------------
 # Stage 1: build Python extensions and install dependencies
 # -----------------------------------------------------------------------------
-FROM python:3.12-slim AS builder
+FROM python:3.12.13-slim AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential gcc g++ pkg-config \
@@ -24,7 +24,7 @@ RUN pip install --no-cache-dir --upgrade "pip>=25.3" "wheel>=0.46.2" && \
 # -----------------------------------------------------------------------------
 # Stage 2: minimal runtime (no build tools, only runtime libs + app)
 # -----------------------------------------------------------------------------
-FROM python:3.12-slim
+FROM python:3.12.13-slim
 
 LABEL org.opencontainers.image.description="LGPD/GDPR/CCPA audit. Default: web API and frontend on port 8088. Override command for CLI one-shot."
 
