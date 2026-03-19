@@ -28,7 +28,25 @@ When the user asks to **commit**, **write a description**, **push to GitHub**, o
 | Create PR with body from file (avoids escaping) | `.\scripts\create-pr.ps1 -Title "Title" -BodyFilePath path\to\body.txt` | Write body to a temp file, then pass path; no here-string in shell. |
 | One-off PR with predefined message | Create a small .ps1 that sets `$Title` and `$Body` (here-string) and calls `commit-or-pr.ps1 -Action PR -Title $Title -Body $Body -RunTests` | Same pattern as `scripts/do_pr.ps1`; avoids CLI escaping. |
 
-Workflow that saves tokens:
+## Complete workflow: check → pre-commit → commit → describe → safe synced PR
+
+When the user wants to **check, pre-commit, commit, describe, and create a safe synced PR**, use these **concrete actions in order** (script-only, token-optimal):
+
+| Step | Action | Script / command |
+|------|--------|------------------|
+| 1 | **Check + pre-commit** (lint, format, markdown, tests in one run) | `.\scripts\check-all.ps1` |
+| 2 | **Preview** (see what would be committed; no commit) | `.\scripts\preview-commit.ps1` |
+| 3 | **Propose** title and body from the file list and context | (you suggest a short title and bullet-point body) |
+| 4 | **Commit + describe + safe synced PR** (commit, run tests, fetch/rebase if behind, push, open PR) | `.\scripts\commit-or-pr.ps1 -Action PR -Title "Title" -Body "Bullet1`nBullet2" -RunTests` |
+
+For a **long PR body**, use one of:
+
+- `.\scripts\create-pr.ps1 -Title "Title" -BodyFilePath path\to\body.txt` (body in file)
+- A one-off .ps1 that sets `$Title` and `$Body` (here-string) and calls `commit-or-pr.ps1 -Action PR -Title $Title -Body $Body -RunTests`
+
+**Why this order:** One full gate (`check-all.ps1`) before any commit; one preview to avoid wrong scope; one PR action that re-runs tests and syncs (fetch+rebase) before push. No ad-hoc `git`/`pytest`/`ruff` in between.
+
+Workflow that saves tokens (shorter form):
 
 1. **Preview:** run `.\scripts\preview-commit.ps1` (or `commit-or-pr.ps1 -Action Preview`) to see changed files and diff summary.
 2. **Propose:** from the file list and context, suggest a short title and bullet-point body.

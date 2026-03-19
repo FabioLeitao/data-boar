@@ -461,6 +461,10 @@ targets:
 
 Todos os tipos de share usam as mesmas configurações **file_scan** (extensions, recursive, scan_sqlite_as_db, sample_limit) da config. Os achados aparecem na planilha **Filesystem findings**.
 
+Com `file_scan.use_content_type: true`, os conectores de partilha também usam o helper estreito de magic bytes: PDFs renomeados para `.txt` (ou similar) com cabeçalho `%PDF-...` são tratados como PDF na extração, como no filesystem local. Continua **opt-in**; com o flag desligado, a varredura em shares é só por extensão.
+
+Para **uma única execução** sem alterar o config gravado: CLI **`--content-type-check`**, ou **`POST /scan`** / **`POST /start`** com **`content_type_check: true`**, ou a caixa no dashboard (mesma ideia que **`--scan-compressed`** / **`scan_compressed`** para arquivos compactados).
+
 ## Adicionando novos conectores
 
 Para suportar uma nova fonte de dados (ex.: outro driver de banco ou API), veja **[ADDING_CONNECTORS.md](ADDING_CONNECTORS.md)** (inglês) ou **[ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md)** (Português – Brasil). O guia descreve o contrato do conector, como registrar um novo tipo (ou driver), dependências opcionais e inclui instruções passo a passo e exemplos (estilo banco e estilo API).
