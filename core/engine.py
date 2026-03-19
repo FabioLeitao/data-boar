@@ -11,8 +11,16 @@ from typing import Any
 
 def _compute_config_scope_hash(config: dict[str, Any]) -> str:
     """
-    Compute a non-reversible SHA-256 hash of the scan scope (target names, types, file_scan.extensions only).
-    Used for audit evidence of what was in scope; no secrets or credentials are included.
+    Compute a non-reversible digest of the scan scope (target names, types, file_scan.extensions only).
+
+    **Why PBKDF2, not SHA-256 / BLAKE2:** CodeQL ``py/weak-sensitive-data-hashing`` treats
+    configuration-derived strings (including target ``name``) as potentially sensitive and flags
+    *fast* digests (MD5/SHA/BLAKE2, etc.) as unsafe “password hashing.” This value is **not** a
+    password store—it is audit metadata only—but we use **PBKDF2-HMAC-SHA256** with a fixed salt
+    and high iteration count so the query suite is satisfied without changing semantics beyond the
+    digest function.
+
+    No secrets or credentials are included in the scope material.
     """
     parts: list[str] = []
     for t in config.get("targets", []):
@@ -24,7 +32,10 @@ def _compute_config_scope_hash(config: dict[str, Any]) -> str:
     if exts:
         parts.append("extensions:" + ",".join(sorted(str(e) for e in exts)))
     blob = "\n".join(sorted(parts)).encode("utf-8")
-    return hashlib.sha256(blob).hexdigest()
+    # Fixed application salt (not secret); iteration count is the work factor for CodeQL / KDF posture.
+    salt = b"data-boar|config-scope|v1"
+    derived = hashlib.pbkdf2_hmac("sha256", blob, salt, 120_000, dklen=32)
+    return derived.hex()
 
 
 # Import connectors so they register themselves
