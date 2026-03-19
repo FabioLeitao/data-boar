@@ -16,6 +16,7 @@
 1. **Lab = integração:** caminhos, volumes Docker, portas de BD, firewall.
 1. **Sintético por omissão:** ficheiros `.txt` / `.csv` com padrões **falsos** (inspire-se nos testes do projeto, **não** use dados reais de terceiros).
 1. **Real só com permissão:** cópias não produtivas, anonimizadas ou documentos seus.
+1. **Containers Docker:** Prefira `docker run --rm` em checagens pontuais. Se mantiver um container **Data Boar** nomeado entre execuções, objetive **uma** instância principal—ou **duas** só para **A/B** explícito. Remova containers descartáveis ao fim para não confundir portas (`8088`) e volumes. Ver [DOCKER_SETUP.pt_BR.md](DOCKER_SETUP.pt_BR.md) §7.
 
 ---
 
