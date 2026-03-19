@@ -72,4 +72,22 @@ Na raiz do repositório (PowerShell):
 - O script **respeita `.gitignore`**: usa `git check-ignore` para que apenas caminhos não ignorados sejam colocados em stage ou commitados (ex.: `audit_results.db`, relatórios, `__pycache__` nunca são incluídos).
 - O agente **não** tem acesso às suas credenciais; ele executa `git` e `gh` no seu ambiente, então seu SSH e `gh auth` são usados.
 
+## Fluxo completo: check, pre-commit, commit, descrever e PR seguro e sincronizado
+
+Quando você quiser **verificar**, rodar **pre-commit**, **fazer commit**, **descrever** e criar um **PR seguro e sincronizado** usando os scripts do repositório (melhor para economizar tokens e ter uma única fonte de verdade), use estas **ações concretas nesta ordem** na raiz do repositório (PowerShell):
+
+| Passo | Objetivo | Comando |
+|-------|----------|---------|
+| 1 | **Check + pre-commit** (Ruff lint, format, markdown, pytest completo em uma execução) | `.\scripts\check-all.ps1` |
+| 2 | **Preview** (ver o que seria commitado; sem stage, sem commit) | `.\scripts\preview-commit.ps1` |
+| 3 | **Propor** um título curto e corpo do PR em tópicos a partir da lista de arquivos e do contexto | (você ou o agente sugere título e corpo) |
+| 4 | **Commit + descrever + PR seguro e sincronizado** (commit com título/corpo, rodar testes de novo, fetch+rebase se atrás, push, abrir PR no navegador) | `.\scripts\commit-or-pr.ps1 -Action PR -Title "Seu título" -Body "Tópico1`nTópico2" -RunTests` |
+
+Para um **corpo de PR longo**, use:
+
+- `.\scripts\create-pr.ps1 -Title "Seu título" -BodyFilePath caminho\para\body.txt` (opcionalmente `-RunTests`; o padrão é ligado), ou
+- Um .ps1 pontual que define `$Title` e `$Body` (ex.: here-string) e chama `commit-or-pr.ps1 -Action PR -Title $Title -Body $Body -RunTests`.
+
+**Por que essa ordem:** Um gate completo antes de commitar; um preview para confirmar o escopo; um passo de PR que reexecuta os testes e sincroniza (fetch + rebase se atrás) antes do push, deixando o PR seguro e sincronizado. Nada de `git add`/`git commit`/`git push` ou `pytest`/`ruff` soltos no meio quando esses scripts atendem.
+
 **Índice da documentação** (todos os tópicos, ambos os idiomas): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).

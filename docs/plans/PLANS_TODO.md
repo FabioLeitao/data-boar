@@ -6,9 +6,15 @@ This document is the **single source of truth** for the project's plan status an
 
 **Token-aware work:** When context or token limits apply (e.g. after an initial Pro+ burst), prefer **one plan or one to-do per session**; open only the files needed for that step. See **[TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md)** for short vs long-term goals, artifact references (Docker Hub, `docs/private/`), and one-session workflow.
 
+**Safety / IP / profitability burst:** When protecting revenue or reducing public exposure matters more than token savings for a short period, use **Priority band A** below first, then return to the token-aware table. See **[CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md)** for phased steps and copy-paste prompts for the agent.
+
 **Policy:** When implementing a plan step, **update documentation** (USAGE, TECH_GUIDE, SECURITY, or dedicated docs) and **add or run tests** as the feature is implemented. After completing or adding to-dos, **update this file and the plan file** so progress is tracked in one place. All steps are intended to be **non-destructive**, **non-regression**, and **tested** before marking done.
 
-**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ✅ Done · **Compliance standards alignment (ISO/IEC 27701, FELCA)** ✅ Done (doc only) · **Additional detection techniques & FN reduction** ⬜ Not started · **Compressed files** ✅ Done (steps 1–12; follow-ups 13–14 optional) · **Content type & cloaking detection** ⬜ Not started · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ✅ Phase 4 done (Phase 5 checksum future) · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started · **Additional data soup formats** ⬜ Backlog (catalogue)
+**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Commercial licensing (runtime + docs + issuer bootstrap)** ✅ Phase 1 in repo (see `docs/LICENSING_SPEC.md`, `core/licensing/`); operational hardening ⬜ Priority band A · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ✅ Done · **Compliance standards alignment (ISO/IEC 27701, FELCA)** ✅ Done (doc only) · **Additional detection techniques & FN reduction** ⬜ Not started · **Compressed files** ✅ Done (steps 1–12; follow-ups 13–14 optional) · **Content type & cloaking detection** ✅ Core plan done (optional: man pages / OpenAPI examples) · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ✅ Phase 4 done (Phase 5 checksum future) · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started · **Additional data soup formats** ⬜ Backlog (catalogue)
+
+### Commercial licensing — future reminder (partner / tiered SKUs)
+
+When revising **license terms** for IP, commerciality, and profitability, explicitly design **multiple SKUs** (e.g. **direct end-user commercial** vs **partner / pro / enterprise**—names TBD) so **consulting partners** can deliver to **their customers** under a **partner-appropriate** subscription and price point, with different objectives and cost-to-serve (analogous to tiered DB licensing: Express / Standard / Enterprise / options). **Legal + pricing first;** then JWT claims and runtime enforcement. Documented in [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](../LICENSING_OPEN_CORE_AND_COMMERCIAL.md) and [LICENSING_SPEC.md](../LICENSING_SPEC.md) (future extensions).
 
 ---
 
@@ -50,6 +56,7 @@ The recommended order below is chosen to:
 
 ## Tier summary (for planning):
 
+- **Priority band A – Safety, IP exposure, profitability guardrails (do before resuming heavy token-aware feature slices when critical):** See table **“Priority band A”** below — Dependabot/Scout, Docker Hub tag hygiene, private issuer repo, partner access, optional `license-smoke` CI, legal/license boundary review. Does not replace cryptographic licensing; complements it.
 - **Tier 1 – Foundation (completed):** Security hardening, Configurable timeouts, Secrets Phase A.
 - **Tier 2 – Scan and report (in progress, token-efficient slices first):** Compressed files, Content type & cloaking detection, Data source versions & hardening, Strong crypto & controls, Compliance samples (completed), SAP connector (later).
 - **Tier 3 – Secrets and upgrade (deferred unless extra capacity):** Secrets Phase B, Version check & self-upgrade.
@@ -67,6 +74,24 @@ The list below is ordered for the current billing cycle, with a focus on:
 - **AI-heavy** tasks where the agent’s help is most valuable.
 - **Manual-friendly** tasks that you can do largely by hand or with existing tooling.
 
+### Priority band A — Safety, security, IP exposure, profitability (sequence when critical)
+
+Complete **in order** when you need to reduce public artifact exposure or tighten commercial posture **before** burning tokens on large feature work. Most steps are **manual on GitHub/Docker Hub** + short doc updates; use the agent for checklists, scripts, and repo docs.
+
+| Step | Task | Owner | Done when |
+| ---- | ---- | ----- | ---------- |
+| **A1** | **Dependabot / dependency alerts** | You + agent (PRs) | Alerts triaged; safe merges; `pyproject.toml` + lockfiles + `requirements.txt` aligned; `.\scripts\check-all.ps1` green. Same as order **–1** in the table below. |
+| **A2** | **Docker Scout / image CVEs** | You + agent (Dockerfile) | `docker scout quickview` acceptable or documented exceptions; image rebuilt; smoke test. Same as **–1b**. |
+| **A3** | **Docker Hub tag hygiene** | **You (manual Hub UI)** | Obsolete tags deleted or documented; only supported tags documented in [DEPLOY.md](../deploy/DEPLOY.md) §8; CI/partners confirmed not pinning removed tags. |
+| **A4** | **Private repo for issuer tooling** | **You** | `tools/license-studio` copied to a **private** GitHub/GitLab repo; no signing keys in any public remote; README/runbook only in private or `docs/private/`. |
+| **A5** | **Partner access (e.g. Ivan)** | **You** | Collaborator role on private repos as needed; no shared personal secrets via chat. |
+| **A6** | **Licensing smoke automation** | Agent | `scripts/license-smoke.ps1` (or pytest slice) documented; optional CI job — token-aware single session. |
+| **A7** | **Legal / license boundary** | **You + counsel** | Open-core vs commercial terms documented; no repo change required for first call. |
+
+After **A1–A3** (minimum), you can **resume token-aware pace** on Tier 2 features (e.g. content-type Step 4) unless A4–A7 are blocking revenue.
+
+**Reference:** [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md), [LICENSING_SPEC.md](../LICENSING_SPEC.md), [HOSTING_AND_WEBSITE_OPTIONS.md](../HOSTING_AND_WEBSITE_OPTIONS.md).
+
 ### What to start next (by recommended execution under token constraints)
 
 **Order = smallest-scope, high-value first.** Pick one when you're ready to implement; each can be done in one or a few sessions.
@@ -77,7 +102,7 @@ The list below is ordered for the current billing cycle, with a focus on:
 | –1b | **Docker Hub Scout (image CVEs)** | **Do early, after Dependabot:** Run `docker scout quickview fabioleitao/data_boar:latest` (or `:1.6.1`) locally, or use [Docker Hub → data_boar → Tags → Scout](https://hub.docker.com/r/fabioleitao/data_boar) for the image. Fix by: bump base image in Dockerfile (e.g. `python:3.12-slim` to a digest or newer tag), and/or apply dependency updates (Dependabot); rebuild, re-scan with Scout, run `.\scripts\check-all.ps1` and a quick container smoke test. Merge only when tests pass and Scout findings are acceptable or resolved. Token-aware: one session for Scout review + one round of fixes. |
 | 0 | **Compliance standards alignment (ISO/IEC 27701, FELCA)** | Doc only: COMPLIANCE_FRAMEWORKS + roadmap; no code; smallest scope; supports pitch and audit narrative. ✅ Done |
 | 1 | **CNPJ alphanumeric format validation** | Research + regex + doc (Phase 1); focused, no schema change; high value for BR compliance. ✅ Phase 4 done |
-| 2 | **Content type & cloaking detection** | Step 1 only: magic-byte table + `infer_content_type`; reuses pattern from compressed; small, additive; catches renamed/cloaked files. |
+| 2 | **Content type & cloaking detection** | Steps 1–6 done (CLI `--content-type-check`, `POST /scan` `content_type_check`, dashboard checkbox, tests, USAGE/TECH_GUIDE). Optional follow-ups: man pages, OpenAPI examples. |
 | 3 | **Additional detection techniques & FN reduction** | First slice: configurable MEDIUM threshold + "suggested review" in report; config + wording; small surface. |
 | 4 | **Strong crypto & controls validation** | Phase 1: CLI flag, config, API/dashboard checkbox, engine wiring (no criteria yet); then Phase 2 adds criteria. |
 | 5 | **Data source versions & hardening** | Phase 1: `data_source_inventory` schema + save + one connector (e.g. SQL) + report sheet; one clear slice. |
@@ -88,6 +113,8 @@ The list below is ordered for the current billing cycle, with a focus on:
 #### Resume next session (security/maintenance first, then feature work)
 
 **If you have an open PR** with the latest plan edits (Dependabot/Scout to-dos, self-upgrade §9 .deb/apt/bytecode, **deb name availability and deps for easy deployment**): merge when ready, then continue below.
+
+**If IP / Docker / profitability is urgent:** run **Priority band A** (table above) through at least **A3** before deep feature work; say *“Priority band A, step Ax”* to the agent (see playbook).
 
 1. **Dependabot (order –1):** On GitHub go to **Security → Dependabot**. There are open alerts (e.g. pyOpenSSL, PyJWT, pypdf, SonarQube action). For each: either merge an existing Dependabot PR after local `check-all` and CI pass, or update `pyproject.toml` (and Actions in `.github/workflows` if needed), then `uv lock`, `uv export --no-emit-package pyproject.toml -o requirements.txt`, commit `pyproject.toml` + `uv.lock` + `requirements.txt`, run `.\scripts\check-all.ps1`, push and merge. One PR per ecosystem (pip vs github-actions) is enough; batch non-security updates if desired.
 2. **Docker Hub Scout (order –1b):** Run **`docker scout quickview fabioleitao/data_boar:latest`** locally (or open Docker Hub → repo **data_boar** → Tags → Scout for the image). If there are CVEs: update Dockerfile base image (e.g. `python:3.12-slim` to a digest or newer tag) and/or rely on Dependabot dependency updates; rebuild image, run Scout again, then `.\scripts\check-all.ps1` and a quick container smoke test. Merge only when tests pass and Scout is acceptable. Do one Scout review + one round of fixes per session (token-aware).
@@ -248,9 +275,9 @@ Core flow first (sections 1–7); then optional Phase 9 (complexity/gain: high c
 | 1   | Magic-byte table + read_magic / infer_content_type for supported formats                                                     | ✅ Done   |
 | 2   | Config file_scan.use_content_type (default false); engine/connectors                                                        | ✅ Done   |
 | 3   | FilesystemConnector (and shares): use inferred type when option on; fallback to extension                                   | ✅ Done   |
-| 4   | CLI --content-type-check; API/dashboard checkbox + user warning (may increase I/O and run time)                             | ⬜ Pending |
-| 5   | Tests: default unchanged; with option on, renamed PDF scanned by content; no regressions                                     | ⬜ Pending |
-| 6   | Docs: option, benefit (renamed/cloaking), resource impact; steganography out of scope for v1                                 | ⬜ Pending |
+| 4   | CLI --content-type-check; API/dashboard checkbox + user warning (may increase I/O and run time)                             | ✅ Done   |
+| 5   | Tests: default unchanged; with option on, renamed PDF scanned by content; no regressions                                     | ✅ Done   |
+| 6   | Docs: option, benefit (renamed/cloaking), resource impact; steganography out of scope for v1                                 | ✅ Done   |
 
 ---
 
