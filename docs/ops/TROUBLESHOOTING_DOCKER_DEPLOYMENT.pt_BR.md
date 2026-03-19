@@ -2,7 +2,7 @@
 
 **English:** [TROUBLESHOOTING_DOCKER_DEPLOYMENT.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.md)
 
-**Ver também:** [TROUBLESHOOTING.pt_BR.md](TROUBLESHOOTING.pt_BR.md) (visão geral e dicas rápidas).
+**Ver também:** [TROUBLESHOOTING.pt_BR.md](../TROUBLESHOOTING.pt_BR.md) (visão geral e dicas rápidas).
 
 Este documento ajuda quando o Data Boar roda **dentro de um container Docker** e precisa conectar a **bancos remotos**, **shares NFS/SMB** ou **APIs**. Aborda alcance de rede a partir do container, DNS e como usar shares montadas no host vs alvos NFS/SMB.
 
@@ -26,7 +26,7 @@ Use **hostname ou IP** que o container consiga resolver e alcançar. **Não** us
 
 **Abordagem B:** Use alvo **NFS/SMB** no config (host, share, path, credenciais). A **imagem** precisa incluir o extra **shares** (bibliotecas NFS/SMB). O **container** precisa alcançar o servidor NFS (portas 2049, 111) ou SMB (445). Abra o firewall de saída do container para essas portas; use DNS se usar hostnames. **Prós:** Config autocontido. **Contras:** Rede e firewall corretos; imagem com suporte a shares.
 
-**Quando falha:** "Missing host" / "Missing share name" → preencha host, share (SMB) e path. "unreachable" → container não alcança o servidor; verifique firewall e teste com `docker exec <container> nc -zv <server> 445` (SMB) ou `2049` (NFS). "smbprotocol not installed" → instale o extra e reconstrua a imagem. "auth_failed" → credenciais do share; veja [TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md](TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md).
+**Quando falha:** "Missing host" / "Missing share name" → preencha host, share (SMB) e path. "unreachable" → container não alcança o servidor; verifique firewall e teste com `docker exec <container> nc -zv <server> 445` (SMB) ou `2049` (NFS). "smbprotocol not installed" → instale o extra e reconstrua a imagem. "auth_failed" → credenciais do share; veja [TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md](../TROUBLESHOOTING_CREDENTIALS_AND_AUTH.pt_BR.md).
 
 ---
 
@@ -53,4 +53,4 @@ O config deve estar disponível **dentro** do container. Setup típico: diretór
 
 ---
 
-**Índice da documentação:** [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md). **Visão geral:** [TROUBLESHOOTING.pt_BR.md](TROUBLESHOOTING.pt_BR.md). **Deploy:** [deploy/DEPLOY.pt_BR.md](deploy/DEPLOY.pt_BR.md).
+**Índice da documentação:** [README.md](../README.md) · [README.pt_BR.md](../README.pt_BR.md). **Visão geral:** [TROUBLESHOOTING.pt_BR.md](../TROUBLESHOOTING.pt_BR.md). **Deploy:** [deploy/DEPLOY.pt_BR.md](../deploy/DEPLOY.pt_BR.md).
