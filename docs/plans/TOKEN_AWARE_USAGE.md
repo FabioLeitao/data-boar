@@ -4,13 +4,15 @@
 
 **Policy:** Prefer **one plan or one feature at a time**; open only the files needed for that slice. Update PLANS_TODO and the relevant plan file when a step is done.
 
+**When to pause token-saving mode:** If **Docker Hub exposure**, **issuer keys**, **dependency CVEs**, or **commercial/IP posture** need attention first, open **[PLANS_TODO.md](PLANS_TODO.md)** and run the table **“Priority band A”**, then use **[CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md)** for copy-paste prompts. After **A1–A3** (minimum), return to one-row-per-session feature work.
+
 ---
 
 ## 1. Short-term vs long-term (at a glance)
 
 | Horizon | Focus | Where it lives |
 | --------| ----- | --------------- |
-| **Short (this cycle)** | High-value, small-scope slices: CNPJ Phase 4–5, Content-type steps 2–6, FN reduction (MEDIUM threshold + wording), Strong crypto Phase 1, Data source inventory Phase 1, Notifications Phase 1. | PLANS_TODO § “What to start next”, § “A. Near-term focus” |
+| **Short (this cycle)** | High-value, small-scope slices: CNPJ Phase 4–5, Content-type steps 2–6, FN reduction (MEDIUM threshold + wording), Strong crypto Phase 1, Data source inventory Phase 1, Notifications Phase 1. **If critical:** run Priority band A (Dependabot, Scout, Docker tags, private issuer) before large feature slices. | PLANS_TODO § “Priority band A”, § “What to start next”, § “A. Near-term focus” |
 | **Medium** | Readiness: runbooks, compliance evidence subsection, data retention note, onboarding checklist, dependency policy sentence. | [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) |
 | **Long (academic)** | Lato sensu thesis (framing, case studies, evidence mapping); stricto sensu research path; compliance evidence mapping table. **After lato sensu:** choose one path when ready (stricto sensu, Faculdade HUB MBA IA, Universidade do Intercâmbio, or other) – see [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §4.2; open only that one plan or program link per session (token-aware). | [PLAN_LATO_SENSU_THESIS.md](PLAN_LATO_SENSU_THESIS.md), [PLAN_STRICTO_SENSU_RESEARCH_PATH.md](PLAN_STRICTO_SENSU_RESEARCH_PATH.md), [PLAN_COMPLIANCE_EVIDENCE_MAPPING.md](PLAN_COMPLIANCE_EVIDENCE_MAPPING.md); post-lato options in PORTFOLIO §4.2 |
 | **Deferred / backlog** | Secrets Phase B, Version check, Selenium QA, Synthetic data, SAP, Dashboard i18n, Additional data soup formats. | PLANS_TODO § “B. Deferred”, § “C. Backlog” |
@@ -60,3 +62,14 @@ When you add new evidence, list it in PORTFOLIO_AND_EVIDENCE_SOURCES or in this 
 
 - **PLANS_TODO** is the single source of truth for execution order and status. When a plan file’s to-dos change, sync PLANS_TODO so the “What to start next” table and open-plan sections stay accurate.
 - This file (TOKEN_AWARE_USAGE) should be updated when: (1) short vs long-term priorities change, (2) a new artifact or doc is added to `docs/private/`, or (3) you adopt a new “one-session” pattern.
+
+---
+
+## 6. Security-first burst vs token-aware pace
+
+| Mode | When to use | What you ask the agent |
+| ---- | ------------ | ---------------------- |
+| **Security / IP burst** | Stale public images, open Dependabot alerts, or issuer/commercial boundary is blocking trust or revenue. | One step at a time: *“Priority band A, step A2: help triage Dockerfile / Scout output and propose minimal changes.”* Full prompts: [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md). |
+| **Token-aware pace** | After A1–A3 (or when nothing above is urgent). | *“PLANS_TODO order N only”* or *“Content-type Step 4 only; don’t load other plans.”* |
+
+**Rule of thumb:** If skipping A1–A3 could leave **known-bad dependencies** or **easy pull of obsolete images** in the wild, do the burst first; profitability follows **trust + hygiene**, not only feature velocity.

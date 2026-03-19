@@ -75,6 +75,7 @@ Deploy assets (Compose, Kubernetes, config examples) remain in the [deploy/](../
 | Troubleshooting         | [TROUBLESHOOTING.md](TROUBLESHOOTING.md)                 | [TROUBLESHOOTING.pt_BR.md](TROUBLESHOOTING.pt_BR.md)                 |
 | Copyright and trademark | [COPYRIGHT_AND_TRADEMARK.md](COPYRIGHT_AND_TRADEMARK.md) | [COPYRIGHT_AND_TRADEMARK.pt_BR.md](COPYRIGHT_AND_TRADEMARK.pt_BR.md) |
 | Observability and SRE   | [OBSERVABILITY_SRE.md](OBSERVABILITY_SRE.md)             | [OBSERVABILITY_SRE.pt_BR.md](OBSERVABILITY_SRE.pt_BR.md)             |
+| Licensing, hosting, release integrity, **operator playbook (Priority band A)** | [LICENSING_SPEC.md](LICENSING_SPEC.md), [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md), [HOSTING_AND_WEBSITE_OPTIONS.md](HOSTING_AND_WEBSITE_OPTIONS.md), [RELEASE_INTEGRITY.md](RELEASE_INTEGRITY.md), [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](CODE_PROTECTION_OPERATOR_PLAYBOOK.md) | [CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md](CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md) — *licensing spec / open-core memos are EN-only* |
 
 - [plans/PLANS_TODO.md](plans/PLANS_TODO.md) — Plan status and current app state (single source of truth for open-plan to-dos). *Plan files are EN-only for history; operator docs are EN + pt-BR.*
 - [releases/](releases/) — Release notes (e.g. 1.5.4, 1.5.3, 1.5.2, 1.5.1, 1.5.0, 1.4.3).

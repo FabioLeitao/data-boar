@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 COPY requirements.txt /app/requirements.txt
 
-RUN pip install --no-cache-dir --upgrade pip && \
+# Upgrade pip/wheel in builder before deps (Scout: pip<25.3, wheel<=0.46.1 had CVEs; image inherits site-packages).
+RUN pip install --no-cache-dir --upgrade "pip>=25.3" "wheel>=0.46.2" && \
     pip install --no-cache-dir -r /app/requirements.txt && \
     find /usr/local/lib/python3.12/site-packages -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null; \
     find /usr/local/lib/python3.12/site-packages -name "*.pyc" -delete 2>/dev/null; true
