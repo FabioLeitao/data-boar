@@ -60,3 +60,14 @@ Workflow that saves tokens (shorter form):
 - **User asks to commit / push / create PR:** use `preview-commit.ps1` then `commit-or-pr.ps1` (or `create-pr.ps1` for PR with body file); do not use ad-hoc `git add`/`git commit`/`git push` when the script covers the need.
 
 Avoid running raw `pytest`, `ruff`, `pre-commit`, or manual git commit/push when a script already does the same thing; the scripts are the single source of behaviour and keep sessions token-efficient.
+
+## PR state / number freshness (before merge advice or sharing links)
+
+The assistant **does not** have live GitHub state between messages. Before advising **merge**, **post-merge next steps**, or pasting a **PR URL/number** (especially right after `gh pr create`):
+
+1. Run **`git fetch origin`**, and on **`main`**: **`git pull origin main`** (or show `git status -sb`), **or**
+2. Run **`gh pr view <n> --json state,mergedAt,url`** or **`gh pr list --head <branch>`**.
+
+After **`gh pr create`**, run **`gh pr view --json number,state,url`** before sharing the link so you cite the **new** PR, not a previously merged one. GitHub may lag briefly after merge — re-query if needed.
+
+**Project rule:** `.cursor/rules/git-pr-sync-before-advice.mdc` (always apply). **Human-readable:** `CONTRIBUTING.md` § *PR state and agent advice*, **`AGENTS.md`**.
