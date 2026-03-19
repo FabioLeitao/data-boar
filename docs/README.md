@@ -74,7 +74,8 @@ Deploy assets (Compose, Kubernetes, config examples) remain in the [deploy/](../
 | Topology                | [TOPOLOGY.md](TOPOLOGY.md)                               | [TOPOLOGY.pt_BR.md](TOPOLOGY.pt_BR.md)                               |
 | Commit and PR           | [COMMIT_AND_PR.md](COMMIT_AND_PR.md)                     | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md)                     |
 | Remotes and origin      | [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md)           | [REMOTES_AND_ORIGIN.pt_BR.md](REMOTES_AND_ORIGIN.pt_BR.md)           |
-| Branch + Docker cleanup (stale branches, image retention) | [ops/BRANCH_AND_DOCKER_CLEANUP.md](ops/BRANCH_AND_DOCKER_CLEANUP.md) | [ops/BRANCH_AND_DOCKER_CLEANUP.pt_BR.md](ops/BRANCH_AND_DOCKER_CLEANUP.pt_BR.md) |
+| Branch + Docker cleanup (stale branches, image retention, **legacy remote** §7) | [ops/BRANCH_AND_DOCKER_CLEANUP.md](ops/BRANCH_AND_DOCKER_CLEANUP.md) | [ops/BRANCH_AND_DOCKER_CLEANUP.pt_BR.md](ops/BRANCH_AND_DOCKER_CLEANUP.pt_BR.md) |
+| Operator alerts (GitHub, Slack, Telegram, Signal, KPI hook) | [OPERATOR_NOTIFICATION_CHANNELS.md](OPERATOR_NOTIFICATION_CHANNELS.md) | [OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md](OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md) |
 | Troubleshooting         | [TROUBLESHOOTING.md](TROUBLESHOOTING.md)                 | [TROUBLESHOOTING.pt_BR.md](TROUBLESHOOTING.pt_BR.md)                 |
 | Copyright and trademark | [COPYRIGHT_AND_TRADEMARK.md](COPYRIGHT_AND_TRADEMARK.md) | [COPYRIGHT_AND_TRADEMARK.pt_BR.md](COPYRIGHT_AND_TRADEMARK.pt_BR.md) |
 | Observability and SRE   | [OBSERVABILITY_SRE.md](OBSERVABILITY_SRE.md)             | [OBSERVABILITY_SRE.pt_BR.md](OBSERVABILITY_SRE.pt_BR.md)             |
