@@ -62,7 +62,9 @@ def _compute_ci_pass_rate(prs: list[dict[str, Any]]) -> tuple[int, int, int]:
     for pr in prs:
         checks = pr.get("statusCheckRollup") or []
         # Conservative: if no checks are attached, count as non-passing.
-        if checks and all((c.get("conclusion") or "").upper() == "SUCCESS" for c in checks):
+        if checks and all(
+            (c.get("conclusion") or "").upper() == "SUCCESS" for c in checks
+        ):
             passed += 1
     pct = int(round((passed / total) * 100))
     return passed, total, pct
@@ -78,7 +80,9 @@ def _compute_dependabot_latency(prs: list[dict[str, Any]]) -> tuple[str, str]:
             merged_days.append(_business_days(created, merged))
         elif created and not merged:
             open_count += 1
-    avg = "-" if not merged_days else str(int(round(sum(merged_days) / len(merged_days))))
+    avg = (
+        "-" if not merged_days else str(int(round(sum(merged_days) / len(merged_days))))
+    )
     p95 = "-"
     if merged_days:
         ordered = sorted(merged_days)
@@ -113,7 +117,9 @@ def _render_block(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Export W-KPI markdown snapshot.")
-    parser.add_argument("--limit-prs", type=int, default=10, help="Merged PR sample size")
+    parser.add_argument(
+        "--limit-prs", type=int, default=10, help="Merged PR sample size"
+    )
     parser.add_argument(
         "--out",
         type=str,
@@ -154,7 +160,9 @@ def main() -> int:
     ci_passed, ci_total, ci_pct = _compute_ci_pass_rate(merged_prs or [])
     dep_latency, dep_open = _compute_dependabot_latency(dependabot_prs or [])
     generated_utc = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
-    block = _render_block(ci_passed, ci_total, ci_pct, dep_latency, dep_open, generated_utc)
+    block = _render_block(
+        ci_passed, ci_total, ci_pct, dep_latency, dep_open, generated_utc
+    )
 
     if args.out:
         out_path = Path(args.out)
@@ -172,4 +180,3 @@ if __name__ == "__main__":
     except RuntimeError as exc:
         print(f"kpi-export: {exc}", file=sys.stderr)
         raise SystemExit(2)
-

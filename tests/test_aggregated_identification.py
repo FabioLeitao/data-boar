@@ -365,7 +365,8 @@ def test_report_contains_aggregated_sheet_and_recommendation(tmp_path):
             assert len(df_agg) >= 2
             assert (
                 "Sample / coverage note" in str(df_agg.iloc[0].get("Target", ""))
-                or "sampled scanning" in str(df_agg.iloc[0].get("Explanation", "")).lower()
+                or "sampled scanning"
+                in str(df_agg.iloc[0].get("Explanation", "")).lower()
             )
             assert (
                 "Target" in df_agg.columns
