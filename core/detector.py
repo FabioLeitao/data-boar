@@ -308,6 +308,26 @@ PII_AMBIGUOUS_NORM_TAG = (
 )
 
 
+def _join_pattern_hits(found_patterns: list[tuple[str, str]]) -> tuple[str, str]:
+    """Return joined pattern names and norm tags from regex hits."""
+    names = ", ".join(p[0] for p in found_patterns)
+    norms = ", ".join(p[1] for p in found_patterns)
+    return names, norms
+
+
+def _attach_possible_minor_context(
+    names: str, norms: str, possible_minor: bool
+) -> tuple[str, str]:
+    """Prefix minor marker and legal context when minor heuristics trigger."""
+    if not possible_minor:
+        return names, norms
+    names = f"DOB_POSSIBLE_MINOR, {names}"
+    norms = "LGPD Art. 14 – possible minor data; GDPR Art. 8" + (
+        ", " + norms if norms else ""
+    )
+    return names, norms
+
+
 def _looks_like_lyrics(sample: str) -> bool:
     """
     Heuristic: content resembles song lyrics (short lines, verse/chorus keywords).
@@ -828,31 +848,24 @@ class SensitivityDetector:
                 matched_names = {p[0] for p in found_patterns}
                 only_weak = matched_names <= WEAK_PATTERNS_IN_ENTERTAINMENT
                 if only_weak and not possible_minor:
-                    names = ", ".join(p[0] for p in found_patterns)
-                    norms = ", ".join(p[1] for p in found_patterns)
+                    names, norms = _join_pattern_hits(found_patterns)
                     return (
                         "MEDIUM",
                         names + " (lyrics/tabs context)",
                         norms,
                         min(combined_confidence, 55),
                     )
-                names = ", ".join(p[0] for p in found_patterns)
-                norms = ", ".join(p[1] for p in found_patterns)
-                if possible_minor:
-                    names = f"DOB_POSSIBLE_MINOR, {names}"
-                    norms = "LGPD Art. 14 – possible minor data; GDPR Art. 8" + (
-                        ", " + norms if norms else ""
-                    )
+                names, norms = _join_pattern_hits(found_patterns)
+                names, norms = _attach_possible_minor_context(
+                    names, norms, possible_minor
+                )
                 return "HIGH", names, norms, max(combined_confidence, 70)
         else:
             if found_patterns:
-                names = ", ".join(p[0] for p in found_patterns)
-                norms = ", ".join(p[1] for p in found_patterns)
-                if possible_minor:
-                    names = f"DOB_POSSIBLE_MINOR, {names}"
-                    norms = "LGPD Art. 14 – possible minor data; GDPR Art. 8" + (
-                        ", " + norms if norms else ""
-                    )
+                names, norms = _join_pattern_hits(found_patterns)
+                names, norms = _attach_possible_minor_context(
+                    names, norms, possible_minor
+                )
                 return "HIGH", names, norms, max(combined_confidence, 80)
         if possible_minor:
             # Minor indication even without strong ML/regex confidence → treat as HIGH with dedicated norm_tag.
