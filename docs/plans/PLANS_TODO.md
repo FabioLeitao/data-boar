@@ -93,6 +93,7 @@ The list below is ordered for the current billing cycle, with a focus on:
 2. **Docker Hub Scout (order –1b):** Run **`docker scout quickview fabioleitao/data_boar:latest`** locally (or open Docker Hub → repo **data_boar** → Tags → Scout for the image). If there are CVEs: update Dockerfile base image (e.g. `python:3.12-slim` to a digest or newer tag) and/or rely on Dependabot dependency updates; rebuild image, run Scout again, then `.\scripts\check-all.ps1` and a quick container smoke test. Merge only when tests pass and Scout is acceptable. Do one Scout review + one round of fixes per session (token-aware).
 3. **CodeQL:** Runs on push/PR to main; weekly schedule. No action unless **Security → Code scanning** shows new findings; then fix and re-run.
 4. **After bots and Scout are green:** Continue with the next plan in the table (e.g. **Content type & cloaking** step 2, or **Additional detection** first slice, or **Data source versions** Phase 1).
+5. **Study (your task):** CWL paid courses are listed and prioritised in [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.2 and in `docs/private/Learning_and_certs.md`. Recommended order: BTF → C3SA → MCBTA → PTF → …; one cert at a time. Slot fixed study blocks (e.g. 1–2 sessions/week) after one feature slice; don’t mix deep study with same-day agent-heavy coding (token-aware). **After lato sensu:** post-lato options (stricto sensu, Faculdade HUB MBA IA, Universidade do Intercâmbio) are in PORTFOLIO §4.2; choose one when ready – no need to open all academic plans in one session.
 
 ### Compliance standards alignment (ISO/IEC 27701, FELCA) – [PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md](PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md)
 
@@ -158,6 +159,8 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
 ### C. Backlog (catalogue)
 
 **Additional data soup formats:** [PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md](PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md) – additional formats (epub, parquet, avro, dbf) and rich media / steganography containers (images, audio, video). Prioritise after compressed + content-type; stego as optional future phase.
+
+**Brand micro-copy reminder (dashBOARd):** Revisit whether/how to label the **web dashboard** with the recommended sub-brand nickname `dashBOARd` (while keeping the decision-maker pitch unchanged). Keep changes low-noise and professional: prefer page title/header parenthetical (and minimal doc mentions in technical overview / USAGE / TECH_GUIDE). If we apply it, also update version bump / release notes accordingly. Status: ✅ Implemented (nav + About); revisit on next minor bump if needed.
 
 ---
 
@@ -243,8 +246,8 @@ Core flow first (sections 1–7); then optional Phase 9 (complexity/gain: high c
 | #   | To-do                                                                                                                       | Status    |
 | --- | ---------------------------------------------------------------------------------------------------------------------------- | ------    |
 | 1   | Magic-byte table + read_magic / infer_content_type for supported formats                                                     | ✅ Done   |
-| 2   | Config file_scan.use_content_type (default false); engine/connectors                                                        | ⬜ Pending |
-| 3   | FilesystemConnector (and shares): use inferred type when option on; fallback to extension                                   | ⬜ Pending |
+| 2   | Config file_scan.use_content_type (default false); engine/connectors                                                        | ✅ Done   |
+| 3   | FilesystemConnector (and shares): use inferred type when option on; fallback to extension                                   | ✅ Done   |
 | 4   | CLI --content-type-check; API/dashboard checkbox + user warning (may increase I/O and run time)                             | ⬜ Pending |
 | 5   | Tests: default unchanged; with option on, renamed PDF scanned by content; no regressions                                     | ⬜ Pending |
 | 6   | Docs: option, benefit (renamed/cloaking), resource impact; steganography out of scope for v1                                 | ⬜ Pending |
