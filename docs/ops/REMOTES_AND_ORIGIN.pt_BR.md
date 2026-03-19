@@ -75,4 +75,4 @@ git log python3-lgpd-crawler-legacy-and-history-only/main..origin/main --oneline
 
 Se o primeiro comando listar commits, eles existem apenas no repositório antigo. Você pode deixá-los só como histórico legado ou trazer alterações específicas para o data-boar (ex.: cherry-pick ou merge) se precisar.
 
-**Índice da documentação:** [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
+**Índice da documentação:** [README.md](../README.md) · [README.pt_BR.md](../README.pt_BR.md).

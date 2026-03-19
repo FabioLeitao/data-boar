@@ -1,7 +1,7 @@
 # Local triage for maintenance rows –1 (Dependabot) and –1b (Docker Scout image).
 # Does not modify the repo. Run from repo root after `gh auth login` and (for Scout) Docker Desktop.
 # Usage: .\scripts\maintenance-check.ps1
-# See SECURITY.md, docs/COMMIT_AND_PR.md, and .cursor/rules/dependabot-hygiene.mdc.
+# See SECURITY.md, docs/ops/COMMIT_AND_PR.md, and .cursor/rules/dependabot-hygiene.mdc.
 
 $ErrorActionPreference = "Continue"
 Write-Host "=== Maintenance check: Dependabot + Docker Scout ===" -ForegroundColor Cyan

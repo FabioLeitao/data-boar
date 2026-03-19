@@ -89,9 +89,9 @@ docker builder prune -f
 
 ## 5. Remote legado apenas (`python3-lgpd-crawler-legacy-and-history-only`)
 
-**Backlog / não bloqueante.** Push cotidiano só em **`data-boar`** (`origin`). O remote extra ([REMOTES_AND_ORIGIN.md](../REMOTES_AND_ORIGIN.md)) é o repositório **antigo** python3-lgpd-crawler (só fetch, sem push).
+**Backlog / não bloqueante.** Push cotidiano só em **`data-boar`** (`origin`). O remote extra ([REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md)) é o repositório **antigo** python3-lgpd-crawler (só fetch, sem push).
 
-**Objetivos**
+### Objetivos
 
 1. Branches **locais** que ainda apontam para o remote legado: `git branch -vv` e alinhar ou apagar.
 2. **Não fazer push** para o remoto legado a partir deste clone (política intencional).
@@ -101,5 +101,5 @@ docker builder prune -f
 
 ## 6. Documentos relacionados
 
-- [COMMIT_AND_PR.md](../COMMIT_AND_PR.md) · [REMOTES_AND_ORIGIN.md](../REMOTES_AND_ORIGIN.md) · [DOCKER_SETUP.md](../DOCKER_SETUP.md) · [HOMELAB_VALIDATION.md](../HOMELAB_VALIDATION.md) · [PLANS_TODO.md](../plans/PLANS_TODO.md)
-- [OPERATOR_NOTIFICATION_CHANNELS.md](../OPERATOR_NOTIFICATION_CHANNELS.md) — alertas multi-canal (GitHub, Slack, Telegram, Signal).
+- [COMMIT_AND_PR.md](COMMIT_AND_PR.md) · [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md) · [DOCKER_SETUP.md](../DOCKER_SETUP.md) · [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md) · [PLANS_TODO.md](../plans/PLANS_TODO.md)
+- [OPERATOR_NOTIFICATION_CHANNELS.md](OPERATOR_NOTIFICATION_CHANNELS.md) — alertas multi-canal (GitHub, Slack, Telegram, Signal).
