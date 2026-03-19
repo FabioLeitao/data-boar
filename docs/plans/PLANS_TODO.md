@@ -147,7 +147,7 @@ External review PDF (local): `docs/feedbacks, reviews, comments and criticism/an
 | Follow-up | Status | Notes |
 | --------- | ------ | ----- |
 | KPI panel (release / CI / security ops) | ⬜ Backlog (**W-KPI**) | GitHub Insights / manual dashboard; low AI, ops cadence. |
-| Contract tests (reports + critical APIs) | ⬜ Deferred (**W-CONTRACT**) | Pair with synthetic data plan; one sheet or endpoint per session. |
+| Contract tests (reports + critical APIs) | ✅ Done (**W-CONTRACT**) | Report/heatmap artifacts regression: `tests/test_report_trends.py`; API/OpenAPI contract responses: `tests/test_routes_responses.py`. |
 | Decouple detector/report rules | 🔄 Incremental (**W-DECOUPLE**) | Small modules (e.g. fuzzy helper); Sonar complexity gates. |
 | Doc snapshot per release | ✅ Baseline | `docs/releases/X.Y.Z.md` per version; optional “frozen bundle” → backlog. |
 | Security vuln triage routine | 🔄 Tracked | Priority band **A1–A3**, `scripts/maintenance-check.ps1`, `SECURITY.md`. |
@@ -200,7 +200,7 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
 
 ### B. Deferred to after billing reset (or if on-demand spend is enabled)
 
-0. **Wabbix backlog (token-aware, non-blocking)** — **W-KPI:** release/CI KPI view; **W-CONTRACT:** contract tests for Excel/OpenAPI critical paths (see [WABBIX_ANALISE_2026-03-18.md](WABBIX_ANALISE_2026-03-18.md)). Pick one small slice when maintenance is green.
+0. **Wabbix backlog (token-aware, non-blocking)** — **W-KPI:** release/CI KPI view. (W-CONTRACT already covered by existing contract tests for reports + OpenAPI responses.) Pick one small slice when maintenance is green.
 1. **Secrets vault – Phase B** – full vault implementation, re-import CLI/web, optional remove-from-config, and key management docs.
 2. **Version check & self-upgrade** – version fetch, CLI/API, backup/restore, container detection, audit log.
 3. **Selenium QA test suite** – full UI automation suite, stress tests, QA reports.
