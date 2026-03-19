@@ -75,6 +75,23 @@ def test_download_report_rejects_path_outside_configured_output_dir(tmp_path: Pa
         _restore_routes_context(routes, orig)
 
 
+def test_download_report_rejects_non_report_filename_pattern(tmp_path: Path):
+    """Basename must match Relatorio_Auditoria_*.xlsx even if file sits under output_dir."""
+    output_dir = tmp_path / "reports"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    bad_name = output_dir / "not_a_report.xlsx"
+    bad_name.write_text("dummy", encoding="utf-8")
+
+    routes, orig = _set_routes_context(tmp_path, output_dir)
+    try:
+        routes._audit_engine = _FakeEngine(output_dir, bad_name)
+        client = TestClient(routes.app)
+        resp = client.get("/report")
+        assert resp.status_code == 404
+    finally:
+        _restore_routes_context(routes, orig)
+
+
 def test_download_heatmap_rejects_report_path_outside_configured_output_dir(
     tmp_path: Path,
 ):
