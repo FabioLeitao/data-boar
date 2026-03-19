@@ -14,6 +14,7 @@ alwaysApply: true
 | Quick iterations (tests only) | `.\scripts\check-all.ps1 -SkipPreCommit` | After code change |
 | Lint/format only (no pytest) | `.\scripts\lint-only.ps1` | After docs/templates/style change |
 | Subset of tests | `.\scripts\quick-test.ps1 -Path tests/test_foo.py` or `-Keyword "content_type"` | When iterating on one area |
+| **Commit / PR** | `.\scripts\commit-or-pr.ps1` | When user asks to commit, push, or create a PR: use Preview first to see files and propose title/body, then `-Action Commit` or `-Action PR -RunTests`. Prefer `.\scripts\preview-commit.ps1` for preview-only; for PR with multi-line body use a one-off .ps1 that sets `$Title`/`$Body` and calls commit-or-pr.ps1, or `.\scripts\create-pr.ps1 -Title "..." -BodyFilePath path`. |
 
-Avoid raw `pytest`/`ruff` invocations when a script covers the need; scripts keep behaviour consistent and reduce back-and-forth. See `.cursor/skills/token-aware-automation/SKILL.md` for when to use which.
+Avoid raw `pytest`/`ruff` invocations when a script covers the need; scripts keep behaviour consistent and reduce back-and-forth. For **commit, description, push, and PR**, prefer the commit-or-pr workflow (and helpers) over ad-hoc `git add`/`git commit`/`git push` so behaviour is consistent and tokens are saved. See `.cursor/skills/token-aware-automation/SKILL.md` for when to use which.
 
