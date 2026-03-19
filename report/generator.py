@@ -847,6 +847,41 @@ def _enrich_failures(fail_rows: list[dict]) -> list[dict]:
     ]
 
 
+def _aggregated_identification_recommendation_row() -> dict:
+    """Recommendation row for aggregated identification risk (cross-category re-identification)."""
+    return {
+        _REC_DATA_PATTERN: "AGGREGATED_IDENTIFICATION",
+        _REC_BASE_LEGAL: "LGPD Art. 5 (dado pessoal); GDPR Recital 26 (identifiability – combination of data may identify individuals)",
+        _REC_RISCO: (
+            "Dados de múltiplas colunas ou fontes (ex.: gênero, cargo, saúde, endereço, telefone) na mesma tabela/arquivo "
+            "podem permitir identificação ou reidentificação de pessoas. "
+            "A detecção baseia-se em amostras de escaneamento (não no universo completo); tratar como caso especial para DPO e compliance."
+        ),
+        _REC_RECOMENDACAO: (
+            "Avaliar controles de acesso e limitação de finalidade; considerar anonimização ou pseudonimização; "
+            "documentar base legal para o tratamento combinado (LGPD Art. 5; GDPR Recital 26). "
+            "Confirmar manualmente com base nos dados reais, especialmente quando sample_limit for baixo."
+        ),
+        _REC_PRIORIDADE: "ALTA",
+        _REC_RELEVANTE_PARA: "DPO, Compliance, Segurança da Informação",
+    }
+
+
+def _minor_crossref_recommendation_row() -> dict:
+    """Recommendation row when DOB_POSSIBLE_MINOR is cross-referenced with identifier/health findings."""
+    return {
+        _REC_DATA_PATTERN: "DOB_POSSIBLE_MINOR (high confidence – cross-ref)",
+        _REC_BASE_LEGAL: "LGPD Art. 14 (dados de crianças/adolescentes); GDPR Art. 8 (consentimento em serviços da sociedade da informação)",
+        _REC_RISCO: "Mesma tabela/arquivo contém data de nascimento sugerindo menor e dados identificadores ou de saúde; tratar como alta prioridade para DPO.",
+        _REC_RECOMENDACAO: (
+            "Caso especial – dados de menores: confirmar base legal e consentimento (titular ou responsável, conforme a idade e a lei aplicável); "
+            "restringir acesso e retenção ao estritamente necessário; priorizar anonimização ou pseudonimização."
+        ),
+        _REC_PRIORIDADE: _REC_PRIORITY_CRITICA,
+        _REC_RELEVANTE_PARA: "DPO, Compliance, Área jurídica, Segurança da Informação",
+    }
+
+
 def _write_excel_sheets(
     writer: Any,
     session_id: str,
@@ -929,40 +964,9 @@ def _write_excel_sheets(
         recommendation_overrides=overrides if overrides else None,
     )
     if agg_rows:
-        recs.insert(
-            0,
-            {
-                _REC_DATA_PATTERN: "AGGREGATED_IDENTIFICATION",
-                _REC_BASE_LEGAL: "LGPD Art. 5 (dado pessoal); GDPR Recital 26 (identifiability – combination of data may identify individuals)",
-                _REC_RISCO: (
-                    "Dados de múltiplas colunas ou fontes (ex.: gênero, cargo, saúde, endereço, telefone) na mesma tabela/arquivo "
-                    "podem permitir identificação ou reidentificação de pessoas. "
-                    "A detecção baseia-se em amostras de escaneamento (não no universo completo); tratar como caso especial para DPO e compliance."
-                ),
-                _REC_RECOMENDACAO: (
-                    "Avaliar controles de acesso e limitação de finalidade; considerar anonimização ou pseudonimização; "
-                    "documentar base legal para o tratamento combinado (LGPD Art. 5; GDPR Recital 26). "
-                    "Confirmar manualmente com base nos dados reais, especialmente quando sample_limit for baixo."
-                ),
-                _REC_PRIORIDADE: "ALTA",
-                _REC_RELEVANTE_PARA: "DPO, Compliance, Segurança da Informação",
-            },
-        )
+        recs.insert(0, _aggregated_identification_recommendation_row())
     if db_high_keys or fs_high_keys:
-        recs.insert(
-            0,
-            {
-                _REC_DATA_PATTERN: "DOB_POSSIBLE_MINOR (high confidence – cross-ref)",
-                _REC_BASE_LEGAL: "LGPD Art. 14 (dados de crianças/adolescentes); GDPR Art. 8 (consentimento em serviços da sociedade da informação)",
-                _REC_RISCO: "Mesma tabela/arquivo contém data de nascimento sugerindo menor e dados identificadores ou de saúde; tratar como alta prioridade para DPO.",
-                _REC_RECOMENDACAO: (
-                    "Caso especial – dados de menores: confirmar base legal e consentimento (titular ou responsável, conforme a idade e a lei aplicável); "
-                    "restringir acesso e retenção ao estritamente necessário; priorizar anonimização ou pseudonimização."
-                ),
-                _REC_PRIORIDADE: _REC_PRIORITY_CRITICA,
-                _REC_RELEVANTE_PARA: "DPO, Compliance, Área jurídica, Segurança da Informação",
-            },
-        )
+        recs.insert(0, _minor_crossref_recommendation_row())
     pd.DataFrame(recs).to_excel(writer, sheet_name="Recommendations", index=False)
     praise = _praise_rows(db_rows_for_sheets, fs_rows_for_sheets)
     if praise:
