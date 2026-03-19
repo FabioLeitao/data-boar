@@ -76,7 +76,11 @@ def _filter_by_min_sensitivity(rows: list[dict], min_sensitivity: str) -> list[d
 
 
 def _create_heatmap(
-    db_rows: list[dict], fs_rows: list[dict], output_dir: str, session_id: str
+    db_rows: list[dict],
+    fs_rows: list[dict],
+    output_dir: str,
+    session_id: str,
+    license_footer: str | None = None,
 ) -> str | None:
     """Build sensitivity/risk heatmap from DB + filesystem findings; save PNG with about footer. Return path or None."""
     if not _PLOT_AVAILABLE:
@@ -112,6 +116,8 @@ def _create_heatmap(
     footer = (
         f"{about['name']} v{about['version']} · {about['author']} · {about['license']}"
     )
+    if license_footer:
+        footer = f"{footer} · {license_footer}"
     plt.tight_layout()
     plt.subplots_adjust(bottom=0.12)
     plt.figtext(0.5, 0.02, footer, ha="center", fontsize=7, style="italic")
@@ -882,16 +888,89 @@ def _write_excel_sheets(
                 pass
 
 
+def _apply_trial_row_cap(
+    db_rows: list[dict], fs_rows: list[dict], cap: int
+) -> tuple[list[dict], list[dict]]:
+    """
+    Limit combined DB + filesystem finding rows for trial/POC licenses; append one watermark row.
+    """
+    if cap <= 0:
+        return db_rows, fs_rows
+    total = len(db_rows) + len(fs_rows)
+    if total <= cap:
+        return db_rows, fs_rows
+    out_db: list[dict] = []
+    out_fs: list[dict] = []
+    remaining = cap
+    for r in db_rows:
+        if remaining <= 0:
+            break
+        out_db.append(r)
+        remaining -= 1
+    for r in fs_rows:
+        if remaining <= 0:
+            break
+        out_fs.append(r)
+        remaining -= 1
+    sample = fs_rows[0] if fs_rows else (db_rows[0] if db_rows else {})
+    if sample:
+        teaser = {k: "" for k in sample}
+        teaser["target_name"] = "[Data Boar trial]"
+        teaser["file_name"] = teaser.get("file_name", "") or "poc_preview"
+        teaser["column_name"] = teaser.get("column_name", "") or "—"
+        teaser["pattern_detected"] = "TRIAL_WATERMARK"
+        teaser["sensitivity_level"] = "LOW"
+        teaser["sample_value"] = (
+            "POC: full discovery requires a paid license. Contact sales."
+        )
+        out_fs = list(out_fs) + [teaser]
+    return out_db, out_fs
+
+
 def _build_report_info(
-    session_id: str, meta: dict, about: dict, db_rows: list[dict], fs_rows: list[dict]
+    session_id: str,
+    meta: dict,
+    about: dict,
+    db_rows: list[dict],
+    fs_rows: list[dict],
+    license_ctx: Any | None = None,
 ) -> list[dict]:
     """Build the Report info sheet rows (session + tenant/technician + about + brief compatibility notes)."""
-    report_info = [
-        {"Field": "Session ID", "Value": session_id},
-        {"Field": "Started at", "Value": meta["started_at"] or "—"},
-        {"Field": "Tenant / Customer", "Value": meta["tenant_name"] or "—"},
-        {"Field": "Technician / Operator", "Value": meta["technician_name"] or "—"},
-    ]
+    report_info: list[dict] = []
+    if license_ctx is not None:
+        report_info.extend(
+            [
+                {"Field": "License state", "Value": getattr(license_ctx, "state", "—")},
+                {
+                    "Field": "License mode",
+                    "Value": getattr(license_ctx, "mode", "—"),
+                },
+                {
+                    "Field": "Licensed customer (token)",
+                    "Value": getattr(license_ctx, "customer_name", "") or "—",
+                },
+                {
+                    "Field": "License expiration (UTC)",
+                    "Value": getattr(license_ctx, "expires_at_iso", "") or "—",
+                },
+                {
+                    "Field": "License issuer (token)",
+                    "Value": getattr(license_ctx, "issuer_id", "") or "—",
+                },
+                {
+                    "Field": "License environment",
+                    "Value": getattr(license_ctx, "environment", "") or "—",
+                },
+            ]
+        )
+    report_info.extend(
+        [
+            {"Field": "Session ID", "Value": session_id},
+            {"Field": "Started at", "Value": meta["started_at"] or "—"},
+            {"Field": "Tenant / Customer", "Value": meta["tenant_name"] or "—"},
+            {"Field": "Technician / Operator", "Value": meta["technician_name"] or "—"},
+        ]
+    )
     if meta.get("config_scope_hash"):
         report_info.append(
             {"Field": "Config scope hash", "Value": meta["config_scope_hash"]}
@@ -934,6 +1013,18 @@ def _build_report_info(
         )
         report_info.append({"Field": _REPORT_INFO_CNPJ_FORMAT_COMPAT, "Value": note})
 
+    if license_ctx is not None:
+        report_info.append(
+            {
+                "Field": "License summary (footer)",
+                "Value": (
+                    f"state={getattr(license_ctx, 'state', '')}; "
+                    f"customer={getattr(license_ctx, 'customer_name', '') or '—'}; "
+                    f"expires_utc={getattr(license_ctx, 'expires_at_iso', '') or '—'}"
+                ),
+            }
+        )
+
     return report_info
 
 
@@ -965,16 +1056,46 @@ def generate_report(
     report_cfg, db_rows_for_sheets, fs_rows_for_sheets = (
         _get_report_config_and_filtered_rows(config, db_rows, fs_rows)
     )
+    lic_ctx = None
+    if config:
+        from core.licensing.guard import get_license_guard
+
+        lic_ctx = get_license_guard(config).context
+        cap = None
+        if (
+            lic_ctx.state in ("VALID", "GRACE", "OPEN")
+            and lic_ctx.trial
+            and lic_ctx.max_report_rows > 0
+        ):
+            cap = lic_ctx.max_report_rows
+        if cap:
+            db_rows_for_sheets, fs_rows_for_sheets = _apply_trial_row_cap(
+                db_rows_for_sheets, fs_rows_for_sheets, cap
+            )
     meta = _get_session_metadata(db_manager, session_id)
     current_started_at = meta["started_at"]
     about = get_about_info()
     report_info = _build_report_info(
-        session_id, meta, about, db_rows_for_sheets, fs_rows_for_sheets
+        session_id,
+        meta,
+        about,
+        db_rows_for_sheets,
+        fs_rows_for_sheets,
+        license_ctx=lic_ctx,
     )
+    lic_footer = None
+    if lic_ctx is not None:
+        lic_footer = f"License: {lic_ctx.state}"
+        if lic_ctx.watermark:
+            lic_footer = f"{lic_footer} ({lic_ctx.watermark})"
     out_path = Path(output_dir) / f"Relatorio_Auditoria_{session_id[:16]}.xlsx"
     # Create heatmap PNG first so we can embed it in the Heatmap data sheet
     heatmap_path = _create_heatmap(
-        db_rows_for_sheets, fs_rows_for_sheets, output_dir, session_id
+        db_rows_for_sheets,
+        fs_rows_for_sheets,
+        output_dir,
+        session_id,
+        license_footer=lic_footer,
     )
     with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
         _write_excel_sheets(
