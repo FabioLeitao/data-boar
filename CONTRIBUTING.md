@@ -46,6 +46,17 @@ Thank you for considering contributing. This document covers local setup, workfl
 - **Security:** Do not post exploit details publicly. Use the [Security issue](.github/ISSUE_TEMPLATE/security.md) template (high-level only) or the process in [SECURITY.md](SECURITY.md).
 - **Pull requests:** Use the [PR template](.github/PULL_REQUEST_TEMPLATE.md). Ensure tests pass (`uv run pytest -v -W error`; see [docs/TESTING.md](docs/TESTING.md)), the lint job passes (`uv run ruff check .`), and that docs/README are updated when behaviour or setup changes.
 
+### PR state and agent advice (sync before citing PR numbers)
+
+AI assistants and humans should **not** assume a PR is still open or that local `main` matches GitHub **without a fresh check** — chat context can reference an **already merged** PR (e.g. #80) while the next one (#81) is already merged.
+
+- **Minimum:** `git fetch origin` and, on `main`, `git pull origin main` (or at least `git status -sb`) before advising “merge PR #N” or “what’s next” after a merge.
+- **GitHub CLI:** `gh pr view <n> --json state,mergedAt,url` or `gh pr list --head <your-branch>`.
+- **Automation:** `.\scripts\commit-or-pr.ps1` includes fetch/rebase patterns for PR flows; prefer it over ad-hoc git when possible.
+- **After `gh pr create`:** Run `gh pr view --json number,state,url` (or `gh pr list --head <branch>`) **before** sharing the URL so the number matches the **new** PR, not a previous one.
+
+Cursor encodes this in **`.cursor/rules/git-pr-sync-before-advice.mdc`**. See also **[AGENTS.md](AGENTS.md)**. Brief GitHub lag after merge is possible; re-query `gh` if unsure.
+
 ### Reducing merge conflicts
 
 - **Merge or rebase `main` into your branch before opening a PR.** Run `git fetch origin main` then `git merge origin/main` (or `git rebase origin/main`) and fix any conflicts locally. That way the PR stays mergeable and reviewers see a clean diff.

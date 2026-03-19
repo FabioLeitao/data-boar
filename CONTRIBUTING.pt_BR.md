@@ -46,6 +46,17 @@ Obrigado por considerar contribuir. Este documento cobre a configuração local,
 - **Segurança:** Não publique detalhes de exploração em público. Use o modelo [Security issue](.github/ISSUE_TEMPLATE/security.md) (apenas em alto nível) ou o processo em [SECURITY.md](SECURITY.md) ([pt-BR](SECURITY.pt_BR.md)).
 - **Pull requests:** Use o [modelo de PR](.github/PULL_REQUEST_TEMPLATE.md). Garanta que os testes passem (`uv run pytest -v -W error`; veja [docs/TESTING.md](docs/TESTING.md) ([pt-BR](docs/TESTING.pt_BR.md))) e que docs/README sejam atualizados quando o comportamento ou a configuração mudar.
 
+### Estado do PR e conselhos ao assistente (sincronizar antes de citar número)
+
+Assistentes de IA e humanos **não** devem assumir que um PR ainda está aberto ou que o `main` local bate com o GitHub **sem verificar** — o contexto do chat pode citar um PR **já mergeado** (ex.: #80) enquanto o seguinte (#81) também já foi mergeado.
+
+- **Mínimo:** `git fetch origin` e, no `main`, `git pull origin main` (ou pelo menos `git status -sb`) antes de aconselhar “faça merge do PR #N” ou “o que vem depois” do merge.
+- **GitHub CLI:** `gh pr view <n> --json state,mergedAt,url` ou `gh pr list --head <sua-branch>`.
+- **Automação:** `.\scripts\commit-or-pr.ps1` inclui fetch/rebase nos fluxos de PR; prefira-o ao git manual quando couber.
+- **Depois de `gh pr create`:** Execute `gh pr view --json number,state,url` (ou `gh pr list --head <branch>`) **antes** de compartilhar o URL para o número bater com o PR **novo**, não o anterior.
+
+O Cursor registra isso em **`.cursor/rules/git-pr-sync-before-advice.mdc`**. Veja também **[AGENTS.md](AGENTS.md)**. Pode haver um pequeno atraso do GitHub após o merge; consulte o `gh` de novo se houver dúvida.
+
 ### Reduzir conflitos de merge
 
 - **Faça merge ou rebase de `main` na sua branch antes de abrir um PR.** Execute `git fetch origin main` e depois `git merge origin/main` (ou `git rebase origin/main`) e resolva conflitos localmente. Assim o PR permanece integrável e os revisores veem um diff limpo.
