@@ -1,6 +1,6 @@
 """
 Unified scanner that uses core.detector only (regex + ML + optional DL).
-Interface: scan_column(label, sample) and scan_file_content(content, path) returning
+Interface: scan_column(label, sample, connector_data_type=...) and scan_file_content(content, path) returning
 structured result for LocalDBManager.save_finding.
 """
 
@@ -33,13 +33,21 @@ class DataScanner:
             file_encoding=file_encoding or "utf-8",
         )
 
-    def scan_column(self, column_name: str, sample_content: str) -> dict[str, Any]:
+    def scan_column(
+        self,
+        column_name: str,
+        sample_content: str,
+        *,
+        connector_data_type: str | None = None,
+    ) -> dict[str, Any]:
         """
         Analyze a DB column (name + sample). Returns dict with sensitivity_level, pattern_detected, norm_tag, ml_confidence.
-        Sample content is not stored.
+        Sample content is not stored. Optional ``connector_data_type`` (e.g. VARCHAR(11) from SQLAlchemy) feeds Plan §4 hints when enabled in config.
         """
         level, pattern, norm, conf = self.detector.analyze(
-            column_name, sample_content or ""
+            column_name,
+            sample_content or "",
+            connector_data_type=connector_data_type,
         )
         return {
             "sensitivity_level": level,

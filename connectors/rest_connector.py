@@ -9,6 +9,10 @@ import os
 from typing import Any
 
 from core.connector_registry import register
+from core.suggested_review import (
+    SUGGESTED_REVIEW_PATTERN,
+    augment_low_id_like_for_persist,
+)
 
 try:
     import httpx
@@ -140,11 +144,13 @@ class RESTConnector:
         scanner: Any,
         db_manager: Any,
         sample_limit: int = 5,
+        detection_config: dict[str, Any] | None = None,
     ):
         self.config = target_config
         self.scanner = scanner
         self.db_manager = db_manager
         self.sample_limit = sample_limit
+        self.detection_config = detection_config or {}
         self._client: "httpx.Client | None" = None
 
     def connect(self) -> None:
@@ -242,19 +248,27 @@ class RESTConnector:
                     if (path_str, key) in seen_path_key:
                         return
                     result = self.scanner.scan_column(key, sample)
-                    if result.get("sensitivity_level") in ("HIGH", "MEDIUM"):
-                        seen_path_key.add((path_str, key))
-                        self.db_manager.save_finding(
-                            "filesystem",
-                            target_name=target_name,
-                            path=self.config.get("base_url", "") + path_str,
-                            file_name=f"GET {path_str} | {key}",
-                            data_type="application/json",
-                            sensitivity_level=result.get("sensitivity_level", "MEDIUM"),
-                            pattern_detected=result.get("pattern_detected", ""),
-                            norm_tag=result.get("norm_tag", ""),
-                            ml_confidence=result.get("ml_confidence") or 0,
-                        )
+                    result = augment_low_id_like_for_persist(
+                        result, key, self.detection_config
+                    )
+                    hi_med = result.get("sensitivity_level") in ("HIGH", "MEDIUM")
+                    suggested = (
+                        result.get("pattern_detected") == SUGGESTED_REVIEW_PATTERN
+                    )
+                    if not hi_med and not suggested:
+                        return
+                    seen_path_key.add((path_str, key))
+                    self.db_manager.save_finding(
+                        "filesystem",
+                        target_name=target_name,
+                        path=self.config.get("base_url", "") + path_str,
+                        file_name=f"GET {path_str} | {key}",
+                        data_type="application/json",
+                        sensitivity_level=result.get("sensitivity_level", "MEDIUM"),
+                        pattern_detected=result.get("pattern_detected", ""),
+                        norm_tag=result.get("norm_tag", ""),
+                        ml_confidence=result.get("ml_confidence") or 0,
+                    )
 
                 if isinstance(payload, list):
                     for item in payload[: self.sample_limit]:

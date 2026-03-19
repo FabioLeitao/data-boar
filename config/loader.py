@@ -266,6 +266,12 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         out["report"]["min_sensitivity"] = (
             v if v in ("HIGH", "MEDIUM", "LOW") else "LOW"
         )
+    if "include_suggested_review_sheet" not in out["report"]:
+        out["report"]["include_suggested_review_sheet"] = True
+    else:
+        out["report"]["include_suggested_review_sheet"] = bool(
+            out["report"]["include_suggested_review_sheet"]
+        )
 
     # API
     out["api"] = data.get("api", {})
@@ -299,9 +305,45 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
 
     # Inline sensitivity-detection terms (override or supplement file-based terms when provided)
     sens = data.get("sensitivity_detection") or {}
+    mct = sens.get("medium_confidence_threshold", 40)
+    try:
+        mct_int = int(mct)
+    except (TypeError, ValueError):
+        mct_int = 40
+    # MEDIUM band must stay strictly below HIGH (70) in the detector.
+    mct_int = max(1, min(69, mct_int))
+    fcm_min = sens.get("fuzzy_column_match_min_confidence", 25)
+    fcm_max = sens.get("fuzzy_column_match_max_confidence", 45)
+    fcm_ratio = sens.get("fuzzy_column_match_min_ratio", 85)
+    try:
+        fcm_min_i = int(fcm_min)
+    except (TypeError, ValueError):
+        fcm_min_i = 25
+    try:
+        fcm_max_i = int(fcm_max)
+    except (TypeError, ValueError):
+        fcm_max_i = 45
+    try:
+        fcm_ratio_i = int(fcm_ratio)
+    except (TypeError, ValueError):
+        fcm_ratio_i = 85
+    fcm_min_i = max(0, min(100, fcm_min_i))
+    fcm_max_i = max(0, min(100, fcm_max_i))
+    fcm_ratio_i = max(50, min(100, fcm_ratio_i))
+
     out["sensitivity_detection"] = {
         "ml_terms": sens.get("ml_terms") or [],
         "dl_terms": sens.get("dl_terms") or [],
+        "medium_confidence_threshold": mct_int,
+        # When true, fold accents and normalize separators on column names for ML/DL input only.
+        "column_name_normalize_for_ml": bool(
+            sens.get("column_name_normalize_for_ml", False)
+        ),
+        # Optional typo-tolerant column name vs sensitive terms (requires rapidfuzz).
+        "fuzzy_column_match": bool(sens.get("fuzzy_column_match", False)),
+        "fuzzy_column_match_min_confidence": fcm_min_i,
+        "fuzzy_column_match_max_confidence": fcm_max_i,
+        "fuzzy_column_match_min_ratio": fcm_ratio_i,
     }
 
     # Detection options (e.g. possible minor data)
@@ -322,7 +364,9 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
     except (TypeError, ValueError):
         agg_min = 2
     quasi = detection_cfg.get("quasi_identifier_mapping")
+    # Merge onto earlier detection dict (preserves cnpj_alphanumeric and any passthrough keys).
     out["detection"] = {
+        **(out.get("detection") or {}),
         "minor_age_threshold": minor_age_int,
         "minor_full_scan": bool(detection_cfg.get("minor_full_scan", False)),
         "minor_full_scan_limit": minor_full_scan_limit,
@@ -332,6 +376,11 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         ),
         "aggregated_min_categories": agg_min,
         "quasi_identifier_mapping": list(quasi) if isinstance(quasi, list) else [],
+        # When true, SQL connector persists LOW columns whose names look like identifiers
+        # (see core.suggested_review) for the "Suggested review (LOW)" report sheet.
+        "persist_low_id_like_for_review": bool(
+            detection_cfg.get("persist_low_id_like_for_review", False)
+        ),
     }
 
     # Rate limiting / safety

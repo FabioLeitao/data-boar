@@ -10,6 +10,7 @@
 # -IncludeFiles: optional; only these paths are included (enables file selection). Comma-separated or array.
 # PR: fetch + rebase if behind origin (keeps workflow clean), then push to origin and open PR in browser.
 # PR always pushes the current branch to origin so the central repo (data-boar) reflects full progress and history.
+# If the branch is already pushed (no unpushed commits), PR still runs gh pr create when no open PR exists for the head branch.
 # -RunTests: when creating a PR, run the test suite before pushing; exit without pushing if tests fail.
 
 param(
@@ -17,9 +18,10 @@ param(
     [ValidateSet('Preview','Commit','PR')]
     [string]$Action,
 
-    [string]$Title = "Update: security and docs",
+    # Empty defaults: Preview lists files only; Commit/PR require -Title (see COMMIT_AND_PR.md).
+    [string]$Title = "",
 
-    [string]$Body = "- Harden CSP and move dashboard JS to static file`n- Add rate limiting and CSP/header tests`n- Update docs and plan to-dos (EN/pt-BR, man, help)",
+    [string]$Body = "",
 
     [string]$Branch = "",
 
@@ -120,7 +122,45 @@ if (-not $toAdd.Count -and $Action -eq 'PR') {
         }
         exit 0
     }
-    Write-Host "Nothing to commit and no unpushed commits. Make changes or run with -Action Commit first."
+    # Already synced with origin: open a PR if GitHub has none for this branch (avoids silent skip after manual push).
+    Write-Host "No unpushed commits on '$branchName'. Checking for an existing PR..."
+    if (Get-Command gh -ErrorAction SilentlyContinue) {
+        $prJson = gh pr list --head $branchName --json number 2>$null
+        $hasPr = $false
+        if ($prJson) {
+            try {
+                $arr = $prJson | ConvertFrom-Json
+                if ($arr -and @($arr).Count -gt 0) { $hasPr = $true }
+            } catch { }
+        }
+        if ($hasPr) {
+            Write-Host "A pull request already exists for '$branchName'. Nothing to do."
+            exit 0
+        }
+        if (-not (($Title -or "").Trim())) {
+            Write-Host "commit-or-pr: Branch is already pushed; -Title is required for gh pr create." -ForegroundColor Red
+            Write-Host "Example: .\scripts\commit-or-pr.ps1 -Action PR -Title `"feat: my change`" -Body `"`"- detail`"`n- detail`"`""
+            exit 1
+        }
+        $bodyFile = [System.IO.Path]::GetTempFileName()
+        $prBodySynced = if (($Body -or "").Trim()) { $Body } else { "See commits on branch '$branchName'." }
+        $prBodySynced | Set-Content -Path $bodyFile -Encoding utf8
+        try {
+            $baseBranch = "main"
+            $ref = gh repo view --json defaultBranchRef -q ".defaultBranchRef.name" 2>$null
+            if ($ref) { $baseBranch = $ref }
+            & gh pr create --title $Title --body-file $bodyFile --base $baseBranch --head $branchName
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "Created pull request for '$branchName' (was already pushed)."
+                exit 0
+            }
+        } finally {
+            Remove-Item -LiteralPath $bodyFile -ErrorAction SilentlyContinue
+        }
+        Write-Host "gh pr create failed (auth, fork, or branch). Open the compare URL from your repo or fix gh."
+        exit $LASTEXITCODE
+    }
+    Write-Host "Nothing to commit, branch is up to date, and 'gh' is not available. Install GitHub CLI or create the PR in the browser."
     exit 0
 }
 
@@ -140,9 +180,21 @@ if ($Action -eq 'Preview') {
     git diff --stat -- $toAdd
     git diff --cached --stat -- $toAdd
     Write-Host ""
-    Write-Host "Proposed commit title: $Title"
-    Write-Host "Proposed body (will appear in PR description):"
-    $Body -split "`n" | ForEach-Object { Write-Host "  $_" }
+    if (-not (($Title -or "").Trim())) {
+        Write-Host "NOTE: You did not pass -Title / -Body. There is no auto-generated commit message." -ForegroundColor Yellow
+        Write-Host "      For -Action Commit or -Action PR you must supply -Title and usually -Body (see COMMIT_AND_PR.md)." -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host "Proposed commit title: (not set — pass -Title)"
+        Write-Host "Proposed body: (not set — pass -Body, e.g. bullet lines separated by ``n)"
+    } else {
+        Write-Host "Proposed commit title: $Title"
+        Write-Host "Proposed body (will appear in PR description):"
+        if (($Body -or "").Trim()) {
+            $Body -split "`n" | ForEach-Object { Write-Host "  $_" }
+        } else {
+            Write-Host "  (empty — optional)"
+        }
+    }
     Write-Host ""
     Write-Host "To include only specific files, run with -IncludeFiles ""path1"",""path2""."
     Write-Host "Run with -Action Commit to commit locally, or -Action PR to push and open PR in browser."
@@ -165,11 +217,18 @@ if ($Action -eq 'PR' -and $Branch) {
     }
 }
 
+if (-not (($Title -or "").Trim())) {
+    Write-Host "commit-or-pr: -Title is required for Commit/PR when there are changes to commit." -ForegroundColor Red
+    Write-Host "Example: .\scripts\commit-or-pr.ps1 -Action Commit -Title `"feat: FN reduction slice`" -Body `"`"- MEDIUM threshold config`"`n- Suggested review sheet`"`""
+    exit 1
+}
+
 foreach ($f in $toAdd) { git add -- $f }
 git status -sb
 
 # Use separate -m for title and body so both are passed as single arguments (no word-split)
-git commit -m "$Title" -m "$Body"
+$bodyForCommit = if (($Body -or "").Trim()) { $Body } else { "See diff for details." }
+git commit -m "$Title" -m "$bodyForCommit"
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Host "Committed: $Title"
 
@@ -197,7 +256,7 @@ if ($Action -eq 'PR') {
     $prOpened = $false
     if (Get-Command gh -ErrorAction SilentlyContinue) {
         $bodyFile = [System.IO.Path]::GetTempFileName()
-        $Body | Set-Content -Path $bodyFile -Encoding utf8
+        $bodyForCommit | Set-Content -Path $bodyFile -Encoding utf8
         try {
             $baseBranch = "main"
             $ref = gh repo view --json defaultBranchRef -q ".defaultBranchRef.name" 2>$null

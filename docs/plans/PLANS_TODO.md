@@ -10,7 +10,7 @@ This document is the **single source of truth** for the project's plan status an
 
 **Policy:** When implementing a plan step, **update documentation** (USAGE, TECH_GUIDE, SECURITY, or dedicated docs) and **add or run tests** as the feature is implemented. After completing or adding to-dos, **update this file and the plan file** so progress is tracked in one place. All steps are intended to be **non-destructive**, **non-regression**, and **tested** before marking done.
 
-**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Commercial licensing (runtime + docs + issuer bootstrap)** ✅ Phase 1 in repo (see `docs/LICENSING_SPEC.md`, `core/licensing/`); operational hardening ⬜ Priority band A · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ✅ Done · **Compliance standards alignment (ISO/IEC 27701, FELCA)** ✅ Done (doc only) · **Additional detection techniques & FN reduction** ⬜ Not started · **Compressed files** ✅ Done (steps 1–12; follow-ups 13–14 optional) · **Content type & cloaking detection** ✅ Core plan done (optional: man pages / OpenAPI examples) · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ✅ Phase 4 done (Phase 5 checksum future) · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started · **Additional data soup formats** ⬜ Backlog (catalogue)
+**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Commercial licensing (runtime + docs + issuer bootstrap)** ✅ Phase 1 in repo (see `docs/LICENSING_SPEC.md`, `core/licensing/`); operational hardening ⬜ Priority band A · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ✅ Done · **Compliance standards alignment (ISO/IEC 27701, FELCA)** ✅ Done (doc only) · **Additional detection techniques & FN reduction** 🔄 Slices 1–3 done (+ optional `fuzzy_column_match` / `FUZZY_COLUMN_MATCH`); next: plan §4 format hints / aggregated wording, etc. · **Compressed files** ✅ Done (steps 1–12; follow-ups 13–14 optional) · **Content type & cloaking detection** ✅ Core plan done (optional: man pages / OpenAPI examples) · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ✅ Phase 4 done (Phase 5 checksum future) · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started · **Additional data soup formats** ⬜ Backlog (catalogue)
 
 ### Commercial licensing — future reminder (partner / tiered SKUs)
 
@@ -41,6 +41,7 @@ When revising **license terms** for IP, commerciality, and profitability, explic
 | SAP connector                            | Optional: Configurable timeouts | None           | Add SAP (HANA/OData/RFC) to data soup; same discovery/sample/finding flow; optional [sap] extra. See PLAN_SAP_CONNECTOR.      |
 | Additional data soup formats             | Optional: Compressed, content-type | None        | Catalogue: epub, parquet, avro, dbf; rich media (images, audio, video) as stego containers; metadata-only or stego phase. See PLAN_ADDITIONAL_DATA_SOUP_FORMATS. |
 | Additional detection techniques & FN reduction | Optional: Synthetic data (for validation) | None        | Additive: optional engines (fuzzy, stemming, format hint, embedding prototype); config thresholds; “suggested review”; reduce false negatives. See PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION. |
+| Home lab validation (production-readiness)   | Optional: –1/–1b maintenance in acceptable state | None | Manual second-machine smoke per [HOMELAB_VALIDATION.md](../HOMELAB_VALIDATION.md); proves deploy + ≥1 connector path before demo/customer confidence; low token. |
 | Compliance standards alignment           | —                               | None           | Doc only: ISO/IEC 27701 (PIMS), FELCA (minor data); COMPLIANCE_FRAMEWORKS + roadmap sentence; no code. See PLAN_COMPLIANCE_STANDARDS_ALIGNMENT. |
 
 **Regression and tests:** No plan modifies wipe behaviour, SQLite schema (except Self-upgrade adds optional upgrade_log, Data source versions adds data_source_inventory, Strong crypto adds optional crypto_controls_audit or extends inventory), or existing config keys in a breaking way. New tests per plan must pass together with the full suite (`uv run pytest -v -W error`). Document each new feature in the relevant docs (EN + pt-BR where applicable).
@@ -62,7 +63,7 @@ The recommended order below is chosen to:
 - **Tier 1 – Foundation (completed):** Security hardening, Configurable timeouts, Secrets Phase A.
 - **Tier 2 – Scan and report (in progress, token-efficient slices first):** Compressed files, Content type & cloaking detection, Data source versions & hardening, Strong crypto & controls, Compliance samples (completed), SAP connector (later).
 - **Tier 3 – Secrets and upgrade (deferred unless extra capacity):** Secrets Phase B, Version check & self-upgrade.
-- **Tier 4 – Validation and ops (partial, high-value slices first):** CNPJ alphanumeric, Additional detection techniques & FN reduction, Notifications (early phases), Selenium QA, Synthetic data & confidence, Dashboard i18n.
+- **Tier 4 – Validation and ops (partial, high-value slices first):** CNPJ alphanumeric, Additional detection techniques & FN reduction, **Home lab smoke** (order **–1L**, after maintenance), Notifications (early phases), Selenium QA, Synthetic data & confidence, Dashboard i18n.
 
 Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). Within a plan, execute phases in order.
 
@@ -94,7 +95,7 @@ After **A1–A3** (minimum), you can **resume token-aware pace** on Tier 2 featu
 
 **Reference:** [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md), [LICENSING_SPEC.md](../LICENSING_SPEC.md), [HOSTING_AND_WEBSITE_OPTIONS.md](../HOSTING_AND_WEBSITE_OPTIONS.md).
 
-**Home lab (manual, low token use):** Second-machine deploy + synthetic/real target checks—[HOMELAB_VALIDATION.md](../HOMELAB_VALIDATION.md) ([pt-BR](../HOMELAB_VALIDATION.pt_BR.md)). Use between releases or before demos; does not replace pytest/CI.
+**Home lab (production-readiness gate):** Sequenced as **order –1L** in the table below—run **after –1/–1b** when deps/image are in an acceptable state, **before** treating a build as demo/customer-ready without a second environment. Playbook: [HOMELAB_VALIDATION.md](../HOMELAB_VALIDATION.md) ([pt-BR](../HOMELAB_VALIDATION.pt_BR.md)). Manual on your hardware; does not replace pytest/CI.
 
 ### What to start next (by recommended execution under token constraints)
 
@@ -103,11 +104,12 @@ After **A1–A3** (minimum), you can **resume token-aware pace** on Tier 2 featu
 | Order | Plan | Why this order (scope / value) |
 | ----- | ---- | ------------------------------ |
 | –1 | **Dependabot & GH bots (security/maintenance)** | **Do early:** Review [Security → Dependabot alerts](https://github.com/FabioLeitao/data-boar/security/dependabot) and open Dependabot PRs. Apply only safe updates: edit `pyproject.toml` (or accept Dependabot PR), then `uv lock`, `uv export --no-emit-package pyproject.toml -o requirements.txt`, commit all three, run `.\scripts\check-all.ps1`. Merge only after CI green. See SECURITY.md (Dependabot SLAs, dependency policy). |
-| –1b | **Docker Hub Scout (image CVEs)** | **Do early, after Dependabot:** Run `docker scout quickview fabioleitao/data_boar:latest` (or `:1.6.1`) locally, or use [Docker Hub → data_boar → Tags → Scout](https://hub.docker.com/r/fabioleitao/data_boar) for the image. Fix by: bump base image in Dockerfile (e.g. `python:3.12-slim` to a digest or newer tag), and/or apply dependency updates (Dependabot); rebuild, re-scan with Scout, run `.\scripts\check-all.ps1` and a quick container smoke test. Merge only when tests pass and Scout findings are acceptable or resolved. Token-aware: one session for Scout review + one round of fixes. |
+| –1b | **Docker Hub Scout (image CVEs)** | **Do early, after Dependabot:** Run `docker scout quickview fabioleitao/data_boar:latest` (or `:1.6.2`) locally, or use [Docker Hub → data_boar → Tags → Scout](https://hub.docker.com/r/fabioleitao/data_boar) for the image. Fix by: bump base image in Dockerfile (e.g. `python:3.12-slim` to a digest or newer tag), and/or apply dependency updates (Dependabot); rebuild, re-scan with Scout, run `.\scripts\check-all.ps1` and a quick container smoke test. Merge only when tests pass and Scout findings are acceptable or resolved. Token-aware: one session for Scout review + one round of fixes. |
+| –1L | **Home lab — production-readiness smoke** | **When:** After –1/–1b are acceptable (or exceptions documented)—you are **ready to invest half a day on a second machine** (VM/container host), not before. **What:** Run [HOMELAB_VALIDATION.md](../HOMELAB_VALIDATION.md) §1 baseline (clone, tests, `docker build`, config, run, idle scan) **plus** at least one connector slice (e.g. §2 synthetic filesystem or §3 SQLite). **Why:** Catches deploy/config gaps CI cannot see; high gain for production confidence; **manual, low AI tokens** (agent only for doc fixes if you find gaps). |
 | 0 | **Compliance standards alignment (ISO/IEC 27701, FELCA)** | Doc only: COMPLIANCE_FRAMEWORKS + roadmap; no code; smallest scope; supports pitch and audit narrative. ✅ Done |
 | 1 | **CNPJ alphanumeric format validation** | Research + regex + doc (Phase 1); focused, no schema change; high value for BR compliance. ✅ Phase 4 done |
 | 2 | **Content type & cloaking detection** | Steps 1–6 done (CLI `--content-type-check`, `POST /scan` `content_type_check`, dashboard checkbox, tests, USAGE/TECH_GUIDE). Optional follow-ups: man pages, OpenAPI examples. |
-| 3 | **Additional detection techniques & FN reduction** | First slice: configurable MEDIUM threshold + "suggested review" in report; config + wording; small surface. |
+| 3 | **Additional detection techniques & FN reduction** | ✅ Slices 1–3 + **aggregated cross-ref sample note** (Excel + recommendation text). **Next (token-aware):** plan priority 4 — format/length hints from connectors. |
 | 4 | **Strong crypto & controls validation** | Phase 1: CLI flag, config, API/dashboard checkbox, engine wiring (no criteria yet); then Phase 2 adds criteria. |
 | 5 | **Data source versions & hardening** | Phase 1: `data_source_inventory` schema + save + one connector (e.g. SQL) + report sheet; one clear slice. |
 | 6 | **Notifications (off-band + scan-complete)** | Phase 1: config shape + notifier module + one channel (e.g. webhook); docs and examples; medium scope. |
@@ -123,7 +125,7 @@ After **A1–A3** (minimum), you can **resume token-aware pace** on Tier 2 featu
 1. **Dependabot (order –1):** On GitHub go to **Security → Dependabot**. There are open alerts (e.g. pyOpenSSL, PyJWT, pypdf, SonarQube action). For each: either merge an existing Dependabot PR after local `check-all` and CI pass, or update `pyproject.toml` (and Actions in `.github/workflows` if needed), then `uv lock`, `uv export --no-emit-package pyproject.toml -o requirements.txt`, commit `pyproject.toml` + `uv.lock` + `requirements.txt`, run `.\scripts\check-all.ps1`, push and merge. One PR per ecosystem (pip vs github-actions) is enough; batch non-security updates if desired.
 2. **Docker Hub Scout (order –1b):** Run **`docker scout quickview fabioleitao/data_boar:latest`** locally (or open Docker Hub → repo **data_boar** → Tags → Scout for the image). If there are CVEs: update Dockerfile base image (e.g. `python:3.12-slim` to a digest or newer tag) and/or rely on Dependabot dependency updates; rebuild image, run Scout again, then `.\scripts\check-all.ps1` and a quick container smoke test. Merge only when tests pass and Scout is acceptable. Do one Scout review + one round of fixes per session (token-aware).
 3. **CodeQL:** Runs on push/PR to main; weekly schedule. No action unless **Security → Code scanning** shows new findings; then fix and re-run.
-4. **After bots and Scout are green:** Continue with the next plan in the table (e.g. **Content type & cloaking** step 2, or **Additional detection** first slice, or **Data source versions** Phase 1).
+4. **After bots and Scout are green:** Either run **order –1L** (home lab) if you want second-environment proof before the next feature burst, or continue the table: **Content type** optional follow-ups, **FN reduction** plan §4 (format hints), **Strong crypto** Phase 1, or **Data source versions** Phase 1.
 5. **Study (your task):** CWL paid courses are listed and prioritised in [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.2 and in `docs/private/Learning_and_certs.md`. Recommended order: BTF → C3SA → MCBTA → PTF → …; one cert at a time. Slot fixed study blocks (e.g. 1–2 sessions/week) after one feature slice; don’t mix deep study with same-day agent-heavy coding (token-aware). **After lato sensu:** post-lato options (stricto sensu, Faculdade HUB MBA IA, Universidade do Intercâmbio) are in PORTFOLIO §4.2; choose one when ready – no need to open all academic plans in one session.
 
 ### Compliance standards alignment (ISO/IEC 27701, FELCA) – [PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md](PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md)
@@ -137,6 +139,20 @@ Doc-only; supports pitch and audit narrative. No code changes.
 | 3 | Update roadmap sentence in README.md (ISO/IEC 27701, FELCA, auditable/regional standards).                 | ✅ Done   |
 | 4 | Update roadmap sentence in README.pt_BR.md equivalently.                                              | ✅ Done   |
 | 5 | PLANS_TODO: plan status, dependency row, "What to start next" order 0, this to-do block.              | ✅ Done   |
+
+### Wabbix 2026-03-18 — evolution review (9.1/10) and follow-ups
+
+External review PDF (local): `docs/feedbacks, reviews, comments and criticism/analise_evolucao_data_boar_2026-03-18.pdf`. **In-repo tracking:** [WABBIX_ANALISE_2026-03-18.md](WABBIX_ANALISE_2026-03-18.md).
+
+| Follow-up | Status | Notes |
+| --------- | ------ | ----- |
+| KPI panel (release / CI / security ops) | ⬜ Backlog (**W-KPI**) | GitHub Insights / manual dashboard; low AI, ops cadence. |
+| Contract tests (reports + critical APIs) | ✅ Done (**W-CONTRACT**) | Report/heatmap artifacts regression: `tests/test_report_trends.py`; API/OpenAPI contract responses: `tests/test_routes_responses.py`. |
+| Decouple detector/report rules | 🔄 Incremental (**W-DECOUPLE**) | Small modules (e.g. fuzzy helper); Sonar complexity gates. |
+| Doc snapshot per release | ✅ Baseline | `docs/releases/X.Y.Z.md` per version; optional “frozen bundle” → backlog. |
+| Security vuln triage routine | 🔄 Tracked | Priority band **A1–A3**, `scripts/maintenance-check.ps1`, `SECURITY.md`. |
+| Aggregated “incomplete sample” wording | ✅ Done | Cross-ref sheet note row + recommendation text. |
+| Staging fuzzy config | ✅ Example | `deploy/config.staging.example.yaml`, `deploy/STAGING_CONFIG.md`. |
 
 ### Secure default host binding (Wabix P0/P1 follow-up)
 
@@ -152,8 +168,11 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
 ### Documentation and sync reminders
 
 - **pt-BR translation review:** When syncing EN → pt-BR, review for **naturalness** and meaning-equivalent wording; avoid overly literal transposition that can sound artificial. Schedule a pass over key docs (README.pt_BR, USAGE.pt_BR, DEPLOY.pt_BR, SENSITIVITY_DETECTION.pt_BR, etc.) when capacity allows.
+- **Legacy branches cleanup reminder:** When we have maintenance time, tidy `python2-lgpd-crawler-legacy-and-history-only` branches (verify no active work depends on them, then delete/close/retire them).
 
 ### A. Near-term focus (current billing cycle)
+
+0. **Home lab validation (order –1L)** *(manual, high gain for prod readiness)* — After Dependabot/Scout are under control, execute [HOMELAB_VALIDATION.md](../HOMELAB_VALIDATION.md) on a second machine; no feature code unless you document a gap. Prefer this **before** staking reputation on “it runs anywhere” demos.
 
 1. **CNPJ alphanumeric format validation** *(AI-assisted research + manual wiring)*
    - Use AI for: research/spec for alphanumeric format, regex proposal, EN + pt-BR doc wording.
@@ -170,9 +189,10 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
    - Use AI for: strong-crypto matrix per connector type, “Crypto & controls” sheet layout, disclaimers.
    - Do manually: add CLI/config flag, implement persistence for one connector, basic tests.
 
-5. **Additional detection techniques & FN reduction – simple thresholds + wording** *(mixed)*
-   - Use AI for: “suggested review” and aggregation wording, simple stemming/normalisation/fuzzy strategy.
-   - Do manually: add MEDIUM threshold config, wiring for 1–2 techniques, unit tests, docs tweaks.
+5. **Additional detection techniques & FN reduction – next slices** *(mixed)*
+   - Done in repo: MEDIUM threshold, suggested review, `column_name_normalize_for_ml`, multi-connector persist LOW ID-like.
+   - Use AI for: fuzzy-match design (plan §3), aggregation wording, optional format hints.
+   - Do manually: config + detector wiring, tests, docs (EN + pt-BR).
 
 6. **Notifications (off-band + scan-complete) – Phase 1 only** *(AI for schema/templates, manual implementation)*
    - Use AI for: notifications config shape, notifier interface, initial message templates for CI/script usage.
@@ -180,10 +200,11 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
 
 ### B. Deferred to after billing reset (or if on-demand spend is enabled)
 
+0. **Wabbix backlog (token-aware, non-blocking)** — **W-KPI:** release/CI KPI view. (W-CONTRACT already covered by existing contract tests for reports + OpenAPI responses.) Pick one small slice when maintenance is green.
 1. **Secrets vault – Phase B** – full vault implementation, re-import CLI/web, optional remove-from-config, and key management docs.
 2. **Version check & self-upgrade** – version fetch, CLI/API, backup/restore, container detection, audit log.
 3. **Selenium QA test suite** – full UI automation suite, stress tests, QA reports.
-4. **Synthetic data & confidence validation** – fixtures across all formats, precision/recall tooling, confidence bands in reports.
+4. **Synthetic data & confidence validation** – fixtures across all formats, precision/recall tooling, confidence bands in reports (feeds **W-CONTRACT**).
 5. **SAP connector** – research, connector module for HANA/OData/RFC, docs and tests.
 6. **Dashboard i18n** – routing and translation strategy decision, then implementation.
 
@@ -201,15 +222,15 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
 
 | Priority | To-do                                                                                                                       | Status    |
 | -------- | --------------------------------------------------------------------------------------------------------------------------- | ------    |
-| 1        | Configurable MEDIUM threshold; “suggested review” in report for ID-like columns classified LOW                               | ⬜ Pending |
-| 2        | Stemming/normalisation for column names in ML/term matching                                                                 | ⬜ Pending |
-| 3        | Optional fuzzy column name match (e.g. rapidfuzz) in confidence band 25–45 → MEDIUM + FUZZY_COLUMN_MATCH                   | ⬜ Pending |
-| 4        | Data type/length hint from connectors → optional format hint in detector; MEDIUM suggestion when format suggests ID        | ⬜ Pending |
+| 1        | Configurable MEDIUM threshold; “suggested review” in report for ID-like columns classified LOW                               | ✅ Done (MEDIUM via `sensitivity_detection.medium_confidence_threshold`; `detection.persist_low_id_like_for_review` on SQL, Snowflake, MongoDB, Redis, Dataverse, Power BI, REST + sheet **Suggested review (LOW)**; see SENSITIVITY_DETECTION.md) |
+| 2        | Stemming/normalisation for column names in ML/term matching                                                                 | ✅ Done (`sensitivity_detection.column_name_normalize_for_ml`: accent + separators for ML/DL only; see SENSITIVITY_DETECTION.md, `tests/test_column_name_ml_normalize.py`) |
+| 3        | Optional fuzzy column name match (e.g. rapidfuzz) in confidence band 25–45 → MEDIUM + FUZZY_COLUMN_MATCH                   | ✅ Done (`sensitivity_detection.fuzzy_column_match`, extra `detection-fuzzy`, `FUZZY_COLUMN_MATCH`; see SENSITIVITY_DETECTION.md) |
+| 4        | Data type/length hint from connectors → optional format hint in detector; MEDIUM suggestion when format suggests ID        | ✅ Done (initial slice: `connector_format_id_hint`, `FORMAT_LENGTH_HINT_ID`, `tests/test_format_length_hint.py`; extend INT/email/REST later) |
 | 5        | Embedding prototype similarity (reuse DL embedder) as optional semantic hint                                               | ⬜ Pending |
 | 6        | Region-specific column dictionaries (config); FK/table context where connector exposes schema                              | ⬜ Pending |
 | 7        | Validation: ground-truth fixtures, baseline recall; per-technique FN/FP metrics; docs                                       | ⬜ Pending |
-| 8        | Aggregated/incomplete: report wording – state results based on sampled data, human confirmation recommended               | ⬜ Pending |
-| 9        | Aggregated/incomplete: verify MEDIUM and PII_AMBIGUOUS contribute to aggregation; document                                 | ⬜ Pending |
+| 8        | Aggregated/incomplete: report wording – state results based on sampled data, human confirmation recommended               | ✅ Done (first row on **Cross-ref data – ident. risk** + `AGGREGATED_IDENTIFICATION` recommendation text; `report/generator.py`) |
+| 9        | Aggregated/incomplete: verify MEDIUM and PII_AMBIGUOUS contribute to aggregation; document                                 | ✅ Done (`PII_AMBIGUOUS` → `other` in `DEFAULT_PATTERN_CATEGORY_MAP`; documented in [WABBIX_ANALISE_2026-03-18.md](WABBIX_ANALISE_2026-03-18.md)) |
 | 10       | Aggregated/incomplete: optional "incomplete data" mode (lower min_categories, report note)                                 | ⬜ Pending |
 | 11       | Aggregated/incomplete: optional single high-risk category "suggested review"                                                | ⬜ Pending |
 

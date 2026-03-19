@@ -20,6 +20,10 @@ Target config (type: database, driver: snowflake):
 from typing import Any
 
 from core.connector_registry import register
+from core.suggested_review import (
+    SUGGESTED_REVIEW_PATTERN,
+    augment_low_id_like_for_persist,
+)
 
 try:
     import snowflake.connector  # type: ignore[import]
@@ -42,11 +46,13 @@ class SnowflakeConnector:
         scanner: Any,
         db_manager: Any,
         sample_limit: int = 5,
+        detection_config: dict[str, Any] | None = None,
     ):
         self.config = target_config
         self.scanner = scanner
         self.db_manager = db_manager
         self.sample_limit = max(int(sample_limit or 5), 1)
+        self.detection_config = detection_config or {}
         self._conn = None
 
     def connect(self) -> None:
@@ -193,8 +199,16 @@ class SnowflakeConnector:
                     cname = col["name"]
                     ctype = col["type"]
                     sample = self._sample_column(schema, table, cname)
-                    res = self.scanner.scan_column(cname, sample)
-                    if res.get("sensitivity_level") == "LOW":
+                    res = self.scanner.scan_column(
+                        cname, sample, connector_data_type=ctype
+                    )
+                    res = augment_low_id_like_for_persist(
+                        res, cname, self.detection_config
+                    )
+                    if (
+                        res.get("sensitivity_level") == "LOW"
+                        and res.get("pattern_detected") != SUGGESTED_REVIEW_PATTERN
+                    ):
                         continue
                     self.db_manager.save_finding(
                         source_type="database",

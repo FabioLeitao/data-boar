@@ -1,0 +1,168 @@
+# Branch and Docker image cleanup (safe workflow)
+
+**Português (Brasil):** [BRANCH_AND_DOCKER_CLEANUP.pt_BR.md](BRANCH_AND_DOCKER_CLEANUP.pt_BR.md)
+
+**Purpose:** Free disk space and reduce clutter **without** losing Git history that is already on `main`, and without deleting work that is not merged. **Deleting a branch does not delete commits** that were merged into `main`—those commits remain in history. **Unmerged** branch tips are the only commits at risk if you delete a branch without merging or without pushing a backup ref.
+
+**Repositories:** Day-to-day work targets **`FabioLeitao/data-boar`** (`origin`). The **`python3-lgpd-crawler-legacy-and-history-only`** remote is legacy; treat its branches separately (do not mix cleanup policies).
+
+---
+
+## 1. Git: refresh and see what is safe locally
+
+From the repo root:
+
+```powershell
+# Update remote refs; drop local tracking branches whose remote was deleted
+git fetch origin --prune
+
+# See current branch
+git branch --show-current
+
+# Branches whose tips are already contained in origin/main (often safe to delete locally)
+git branch --merged origin/main
+
+# Branches that still have commits NOT in origin/main — review before deleting
+git branch --no-merged origin/main
+```
+
+**Rules:**
+
+- **Do not delete** a branch listed under `--no-merged` unless you are sure the work is abandoned or saved elsewhere (e.g. another branch, a patch, or a GitHub fork).
+- **Do not delete** the branch you are currently on; switch first: `git checkout main` (or another branch).
+- After merges, remote branches on GitHub may still exist until you delete them (see §3).
+
+**Example — delete one merged local branch** (after `checkout main`):
+
+```powershell
+git branch -d branch-name
+```
+
+Force delete only if Git says “not fully merged” and you **accept** losing that tip’s unique commits:
+
+```powershell
+git branch -D branch-name
+```
+
+---
+
+## 2. What we saw on a typical dev machine (example snapshot)
+
+After `git fetch origin --prune`:
+
+- **`git branch --no-merged origin/main`** showed only **`plans-done-07ab7`** — treat as **keep or review** until merged or intentionally dropped.
+- Many other locals were **`--merged origin/main`** — candidates for **local** deletion once you are not using them for work.
+- Several locals showed **`[origin/...: gone]`** — the GitHub branch was already removed; your local copy is stale; safe to delete locally after you no longer need the name for reference.
+
+**Your `main` may be behind `origin/main`** if you have not pulled recently. Before cleaning, align:
+
+```powershell
+git checkout main
+git pull origin main
+```
+
+---
+
+## 3. GitHub (`data-boar`): list and remove stale remote branches
+
+**List branches on the remote** (requires GitHub CLI `gh auth login`):
+
+```powershell
+gh api repos/FabioLeitao/data-boar/branches --paginate -q ".[].name"
+```
+
+**Open PRs** (do not delete branches that still have open PRs until PR is closed/merged):
+
+```powershell
+gh pr list --repo FabioLeitao/data-boar --state open
+```
+
+**Check whether a remote branch is fully merged into `main`** (no unique commits):
+
+```powershell
+git fetch origin
+git log origin/main..origin/BRANCH-NAME
+```
+
+- **Empty output** → branch tip is reachable from `main` (safe to delete remote branch from a history perspective).
+- **Non-empty** → unique commits remain; merge or cherry-pick before deleting, unless you intentionally abandon them.
+
+**Delete a remote branch** (when you are sure):
+
+```powershell
+git push origin --delete BRANCH-NAME
+```
+
+Or use the GitHub UI: **Repository → Branches →** delete stale feature branches (prefer after PR merge).
+
+**Dependabot branches:** Usually delete after you merge or supersede the dependency update; keep the PR/merge commit on `main` as the record.
+
+---
+
+## 4. Docker: retention policy for Data Boar images
+
+**Goal:** Keep roughly **two** distinct image **digests** for this product locally, for example:
+
+1. **`fabioleitao/data_boar:latest`** (or the semver tag you are actively using, e.g. `1.6.2`).
+2. **One previous** digest (older semver tag or last local `docker build`), so you can compare or roll back quickly.
+
+Older digests can be removed locally; you can **`docker pull`** historical tags from Docker Hub when needed.
+
+**List local images** (Windows PowerShell):
+
+```powershell
+docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.CreatedSince}}\t{{.Size}}" | Select-String -Pattern "data_boar|fabioleitao/data_boar"
+```
+
+**Remove a specific tag** (does not remove the digest until all tags pointing to it are removed):
+
+```powershell
+docker rmi fabioleitao/data_boar:OLD_TAG
+```
+
+**Remove an image by ID** (after removing or retagging all names that reference it):
+
+```powershell
+docker rmi IMAGE_ID
+```
+
+If a container still uses the image, stop/remove the container first or use `docker rm -f CONTAINER` then retry.
+
+**Dangling / build cache** (usually safe; reclaim space without touching tagged releases):
+
+```powershell
+docker image prune -f
+docker builder prune -f
+```
+
+For a deeper cache clean (optional):
+
+```powershell
+docker builder prune -af
+```
+
+---
+
+## 5. Order of operations (recommended)
+
+1. `git fetch origin --prune` and `git pull` on `main`.
+2. Note `git branch --no-merged origin/main` — **do not delete** without review.
+3. Delete **local** merged branches you no longer need (`git branch -d …`).
+4. On GitHub, delete **remote** branches that are merged and unused (or `git push origin --delete …`).
+5. Docker: list images → keep **latest + one previous** digest → `docker rmi` old tags/IDs → `docker image prune` / `docker builder prune`.
+
+---
+
+## 6. Related docs
+
+- [COMMIT_AND_PR.md](../COMMIT_AND_PR.md) — PR workflow; **push only to `data-boar`**.
+- [REMOTES_AND_ORIGIN.md](../REMOTES_AND_ORIGIN.md) — `origin` vs legacy remote.
+- [DOCKER_SETUP.md](../DOCKER_SETUP.md) — build and tag conventions.
+- [HOMELAB_VALIDATION.md](../HOMELAB_VALIDATION.md) — smoke tests after cleanup.
+- [PLANS_TODO.md](../plans/PLANS_TODO.md) — Priority band A (Dependabot, Scout, tag hygiene).
+
+---
+
+## Last updated
+
+Aligned with **data-boar** workflow and optional **Docker** cleanup; re-run the commands in §1–§4 whenever you want a hygiene pass.
