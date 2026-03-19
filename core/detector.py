@@ -659,11 +659,17 @@ def _format_length_suggests_id_column(column_name: str, char_len: int) -> bool:
     Conservative: 9 (SSN-style), 11 (CPF digits), 14 (CNPJ digits) with name hints to limit FPs.
     """
     col = (column_name or "").lower()
-    if char_len == 9 and ("ssn" in col or "social_sec" in col or "social security" in col):
+    if char_len == 9 and (
+        "ssn" in col or "social_sec" in col or "social security" in col
+    ):
         return True
-    if char_len == 11 and ("cpf" in col or column_name_suggests_identifier_review(column_name)):
+    if char_len == 11 and (
+        "cpf" in col or column_name_suggests_identifier_review(column_name)
+    ):
         return True
-    if char_len == 14 and ("cnpj" in col or column_name_suggests_identifier_review(column_name)):
+    if char_len == 14 and (
+        "cnpj" in col or column_name_suggests_identifier_review(column_name)
+    ):
         return True
     return False
 
