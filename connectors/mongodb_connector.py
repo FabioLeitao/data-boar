@@ -16,6 +16,10 @@ except ImportError:
     MongoClient = None
 
 from core.connector_registry import register
+from core.suggested_review import (
+    SUGGESTED_REVIEW_PATTERN,
+    augment_low_id_like_for_persist,
+)
 
 
 class MongoDBConnector:
@@ -27,11 +31,13 @@ class MongoDBConnector:
         scanner: Any,
         db_manager: Any,
         sample_limit: int = 5,
+        detection_config: dict[str, Any] | None = None,
     ):
         self.config = target_config
         self.scanner = scanner
         self.db_manager = db_manager
         self.sample_limit = sample_limit
+        self.detection_config = detection_config or {}
         self._client = None
 
     def connect(self) -> None:
@@ -98,7 +104,13 @@ class MongoDBConnector:
                 combined = " ".join(sample_texts)
                 for key in all_keys:
                     res = self.scanner.scan_column(key, combined)
-                    if res["sensitivity_level"] == "LOW":
+                    res = augment_low_id_like_for_persist(
+                        res, key, self.detection_config
+                    )
+                    if (
+                        res["sensitivity_level"] == "LOW"
+                        and res.get("pattern_detected") != SUGGESTED_REVIEW_PATTERN
+                    ):
                         continue
                     self.db_manager.save_finding(
                         source_type="database",

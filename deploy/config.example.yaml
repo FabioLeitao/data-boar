@@ -31,6 +31,8 @@ scan:
 # ml_patterns_file: /data/config/ml_terms.yaml
 # dl_patterns_file: /data/config/dl_terms.yaml
 # sensitivity_detection:
+#   # Optional Plan §4: declared VARCHAR/CHAR length + ID-like column name → MEDIUM FORMAT_LENGTH_HINT_ID (default off).
+#   # connector_format_id_hint: true
 #   ml_terms:
 #     - { text: "cpf", label: sensitive }
 #     - { text: "email", label: sensitive }

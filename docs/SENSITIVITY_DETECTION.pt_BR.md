@@ -3,7 +3,7 @@
 A aplicação usa um pipeline **híbrido** para classificar nomes de colunas e conteúdo amostrado como sensível ou não:
 
 1. **Regex** – Padrões embutidos (CPF, CNPJ, e-mail, telefone, SSN, cartão de crédito, datas) mais overrides opcionais via arquivo de config.
-1. **ML** – TF-IDF + RandomForest treinado em uma lista de termos **(texto, rótulo)** (sensível vs não sensível). Os termos vêm de arquivo ou da config inline.
+1. **ML** – TF-IDF + RandomForest treinado em uma lista de termos **(texto, rótulo)** (sensível vs não sensível). Os termos vêm de arquivo ou da config inline. A floresta usa **`random_state` fixo** para confianças reproduzíveis entre execuções e instâncias do detector.
 1. **DL (opcional)** – Embeddings de sentenças + um classificador pequeno treinado nos seus termos. Usado quando a dependência opcional `sentence-transformers` está instalada e você fornece termos DL (arquivo ou inline). A confiança é combinada com a do ML (ex.: `max(ml_confidence, dl_confidence)`).
 
 Você pode **definir as palavras de treino para ML e DL** no arquivo de config principal (inline) ou em arquivos YAML/JSON separados.
@@ -62,8 +62,40 @@ Para detalhes de desenho e etapas de rollout, consulte [PLAN_CONTENT_TYPE_AND_CL
 | `sensitivity_detection`          | Seção opcional com termos inline (dispensa arquivo separado).                                                                                         |                                                                                |
 | `sensitivity_detection.ml_terms` | Lista de `{ text: string, label: "sensitive" \                                                                                                        | "non_sensitive" }`. Substitui/complementa `ml_patterns_file` quando não vazia. |
 | `sensitivity_detection.dl_terms` | Lista de `{ text: string, label: "sensitive" \                                                                                                        | "non_sensitive" }`. Substitui/complementa `dl_patterns_file` quando não vazia. |
+| `sensitivity_detection.medium_confidence_threshold` | Inteiro **1–69**, padrão **40**. Confiança mínima combinada ML/DL (0–100) para **MEDIUM** sem regex forte. **HIGH** continua em 70. Valores menores expõem mais casos limítrofes (prioridade a reduzir falsos negativos). |
+| `sensitivity_detection.column_name_normalize_for_ml` | Booleano, padrão **false**. Se **true**, **remove acentos** e **normaliza separadores** só no nome da coluna **para entrada ML/DL** (regex e heurísticas de menor continuam com o nome bruto). Reduz FN em nomes como `téléphone` vs termo `telefone`. |
+| `sensitivity_detection.fuzzy_column_match` | Booleano, padrão **false**. Se **true** e **`rapidfuzz`** instalado (`pip install .[detection-fuzzy]` ou `uv sync --group dev`), compara o nome da coluna aos termos **sensíveis** ML/DL. Sem regex, com confiança ML/DL na faixa **abaixo** do limiar MEDIUM e similaridade ≥ `fuzzy_column_match_min_ratio`, retorna **MEDIUM** com `FUZZY_COLUMN_MATCH`. **Desligado por padrão.** |
+| `sensitivity_detection.fuzzy_column_match_min_confidence` | Inteiro **0–100**, padrão **25**. Piso da faixa de confiança (inclusivo). |
+| `sensitivity_detection.fuzzy_column_match_max_confidence` | Inteiro **0–100**, padrão **45**. Teto efetivo = `min(valor, medium_confidence_threshold - 1)` para não alterar MEDIUM normal por ML/DL. |
+| `sensitivity_detection.fuzzy_column_match_min_ratio` | Inteiro **50–100**, padrão **85**. Score mínimo `rapidfuzz` (máx. entre ratio / partial_ratio / token_set_ratio) vs um termo sensível. |
+| `sensitivity_detection.connector_format_id_hint` | Booleano, padrão **false**. Se **true**, os conectores passam tipos SQL declarados (ex.: `VARCHAR(11)`) ao detector. Sem regex, com confiança ML/DL **abaixo** do limiar MEDIUM, e o tamanho declarado `CHAR`/`VARCHAR` combina com tamanhos típicos de ID **e** o nome da coluna é ID-like (sufixo `*_id`, ou `cpf` / `cnpj` / `ssn` no nome), a classificação vira **MEDIUM** com **`FORMAT_LENGTH_HINT_ID`**. **Desligado por padrão.** Ver `tests/test_format_length_hint.py` e o plano §4 em `PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md`. |
+| `detection.persist_low_id_like_for_review` | Booleano, padrão **false**. Se **true**, **conectores estilo banco** (SQL, Snowflake, MongoDB, Redis, Dataverse, Power BI, chaves JSON em REST) podem persistir colunas **LOW** com nome de identificador (`*_id`, `*_uuid`, `*_number`, etc.; ver `core.suggested_review`) com padrão `SUGGESTED_REVIEW_ID_LIKE` na aba **Suggested review (LOW)**. |
+| `report.include_suggested_review_sheet` | Booleano, padrão **true**. Se **true**, achados `SUGGESTED_REVIEW_ID_LIKE` vão para **Suggested review (LOW)** e **são removidos** das abas Database/Filesystem para não duplicar. **false** mantém só nas abas principais. |
 
 **Valores de label:** `sensitive` ou `1` = sensível (dados pessoais/PII); `non_sensitive` ou `0` = não sensível.
+
+### Revisão sugerida (LOW) e limiar MEDIUM (redução de FN)
+
+1. Reduza `sensitivity_detection.medium_confidence_threshold` (ex.: **35**) para que scores limítrofes ML/DL virem **MEDIUM** em vez de **LOW**.
+2. Ative `detection.persist_low_id_like_for_review: true` em alvos de banco para persistir colunas identificadoras que continuem **LOW** e listá-las em **Suggested review (LOW)**.
+
+Detalhes: [PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md](plans/PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md).
+
+#### Por que “Suggested review” precisa de `persist_low_id_like_for_review: true` (ou fixtures)
+
+Por padrão os conectores **não gravam** achados **LOW** (menos ruído no SQLite/relatório). **Suggested review** continua sendo **LOW**; só muda o `pattern_detected` para o Excel listar na aba dedicada. Por isso a aba só enche se:
+
+- **`detection.persist_low_id_like_for_review: true`**, ou
+- testes/inserções manuais (fixtures).
+
+#### Limiar MEDIUM **vs** flag de persistência (postura FN-first)
+
+| Opção | Efeito |
+|-------|--------|
+| **Reduzir `medium_confidence_threshold`** (ex. 35) | Mais casos viram **MEDIUM** e entram nas abas principais; mais revisão humana ampla. |
+| **`persist_low_id_like_for_review: true`** | Só nomes **ID-like** ainda **LOW** viram linhas na aba **Suggested review**; não alarga a faixa MEDIUM. |
+
+Em ambientes com **alto custo de FN regulatório**, combinar **limiar um pouco mais baixo** e/ou **persist ID-like** é coerente com “preferir falso positivo + confirmação humana”. Padrões permanecem conservadores.
 
 ---
 
