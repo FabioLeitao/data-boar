@@ -48,7 +48,16 @@ def _is_status_row(line: str) -> bool:
     # Skip markdown separators.
     if re.match(r"^\|\s*-+\s*\|", line):
         return False
-    return any(token in line for token in ("✅", "⬜", "🔄", "Under consideration"))
+    return any(
+        token in line
+        for token in (
+            "✅",
+            "⬜",
+            "🔄",
+            "Under consideration",
+            "Tracked (partially done)",
+        )
+    )
 
 
 def compute_stats(text: str) -> dict:
@@ -83,7 +92,7 @@ def compute_stats(text: str) -> dict:
             by_h_incomplete[current_horizon] += 1
             if "⬜" in line:
                 pending += 1
-            if "🔄" in line:
+            if "🔄" in line or "Tracked (partially done)" in line:
                 tracked += 1
             if "Under consideration" in line:
                 under_consideration += 1
@@ -125,7 +134,7 @@ def render_dashboard(stats: dict) -> str:
     )
     lines.append(
         f"- **Incomplete breakdown:** Pending `⬜`={stats['pending']}, "
-        f"Tracked `🔄`={stats['tracked']}, "
+        f"Tracked `🔄` / `Tracked (partially done)`={stats['tracked']}, "
         f"Under consideration={stats['under_consideration']}, "
         f"Backlog-marked rows={stats['backlog']}"
     )
