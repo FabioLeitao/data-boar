@@ -16,7 +16,10 @@ WORKDIR /app
 COPY requirements.txt /app/requirements.txt
 
 # Upgrade pip/wheel in builder before deps (Scout: pip<25.3, wheel<=0.46.1 had CVEs; image inherits site-packages).
-RUN pip install --no-cache-dir --upgrade "pip>=25.3" "wheel>=0.46.2" && \
+# Remove any stale wheel metadata first, then assert effective runtime version.
+RUN pip uninstall -y wheel || true && \
+    pip install --no-cache-dir --upgrade "pip>=25.3" "wheel>=0.46.2" && \
+    python -c "import wheel; import sys; sys.exit(0 if tuple(map(int, wheel.__version__.split('.'))) >= (0,46,2) else 1)" && \
     pip install --no-cache-dir -r /app/requirements.txt && \
     find /usr/local/lib/python3.12/site-packages -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null; \
     find /usr/local/lib/python3.12/site-packages -name "*.pyc" -delete 2>/dev/null; true
@@ -42,7 +45,9 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Re-assert pip/wheel in the runtime layer so Docker Scout does not flag stale tooling copied from
 # older builder caches (CVEs on wheel<=0.46.1, pip<25.3). App deps already live under site-packages.
-RUN pip install --no-cache-dir --upgrade "pip>=25.3" "wheel>=0.46.2"
+RUN pip uninstall -y wheel || true && \
+    pip install --no-cache-dir --upgrade "pip>=25.3" "wheel>=0.46.2" && \
+    python -c "import wheel; import sys; sys.exit(0 if tuple(map(int, wheel.__version__.split('.'))) >= (0,46,2) else 1)"
 
 # Copy application code
 COPY . .
