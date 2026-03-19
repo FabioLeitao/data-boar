@@ -367,6 +367,18 @@ To run a single audit from the CLI in the cluster, use a **Job** that overrides 
 1. Prepare `/data/config.yaml` as in section 2 (volume or bind mount).
 1. Run with **docker run** (section 3), **Docker Compose** (section 4), **Docker Swarm** (section 5), or **Kubernetes** (section 6) as above.
 
+## 8. Docker Hub: supported tags and retiring old images
+
+**Why this matters:** Public tags remain **pullable** until you delete them on Docker Hub. Cleaning up **obsolete** tags reduces casual reuse of old builds (CVEs, wrong defaults) and aligns docs with what you actually support.
+
+1. **Inventory:** In [Docker Hub](https://hub.docker.com/r/fabioleitao/data_boar/tags) list all tags; note which CI, partners, or docs pin each tag (e.g. `latest`, `1.5.4`).
+2. **Decide support policy:** Typically keep **`latest`** plus **current semver** (and optionally one previous semver for rollback). Document the supported set here and in [PLANS_TODO.md](../plans/PLANS_TODO.md) Priority band A if needed.
+3. **Delete on Hub:** Hub → repository → **Tags** → delete tags you no longer support. **Warning:** Anyone who already pulled a tag still has that image locally; deletion only stops *new* pulls from Hub.
+4. **Update automation:** Adjust CI/CD and `docker-compose` / Kubernetes manifests so nothing references removed tags.
+5. **Commercial / IP note:** Tag hygiene is **not** a substitute for licensing or private issuer repos; it complements them. See [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md).
+
+**Português (Brasil):** [DEPLOY.pt_BR.md §8](DEPLOY.pt_BR.md#8-docker-hub-tags-suportadas-e-descontinuar-imagens-antigas).
+
 ## Summary
 
 | Goal                     | Command / step                                                                                                                             |

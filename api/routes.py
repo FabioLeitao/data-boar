@@ -78,12 +78,15 @@ class DatabaseConfig(BaseModel):
 
 
 class ScanStartBody(BaseModel):
-    """Optional body for POST /scan: tenant/customer, technician/operator, and scan_compressed override."""
+    """Optional body for POST /scan: tenant/customer, technician/operator, run-local scan toggles."""
 
     tenant: str | None = None
     technician: str | None = None
     scan_compressed: bool | None = (
         None  # when True, merge into file_scan for this run only
+    )
+    content_type_check: bool | None = (
+        None  # when True, set file_scan.use_content_type for this run only (magic-byte format sniffing)
     )
 
 
@@ -146,6 +149,7 @@ scan:
 def _save_config_yaml(yaml_content: str) -> None:
     """Validate and save config file; reset in-memory config and engine so next request reloads."""
     from config.loader import normalize_config
+    from core.licensing.guard import reset_license_guard_for_tests
 
     p = Path(_config_path)
     try:
@@ -160,6 +164,7 @@ def _save_config_yaml(yaml_content: str) -> None:
     global _config, _audit_engine
     _config = None
     _audit_engine = None
+    reset_license_guard_for_tests()
 
 
 def _merge_and_save_config_yaml(submitted_yaml: str) -> None:
@@ -207,9 +212,41 @@ def _get_engine():
     global _audit_engine
     if _audit_engine is None:
         from core.engine import AuditEngine
+        from core.licensing.guard import get_license_guard
 
-        _audit_engine = AuditEngine(_get_config())
+        cfg = _get_config()
+        _audit_engine = AuditEngine(cfg)
+        get_license_guard(cfg)
     return _audit_engine
+
+
+def _license_public_dict() -> dict:
+    """License status for API/UI (open mode shows OPEN)."""
+    try:
+        from core.licensing.guard import get_license_guard
+
+        return get_license_guard(_get_config()).context.to_public_dict()
+    except Exception:
+        return {"license_state": "UNKNOWN", "license_mode": "open"}
+
+
+def _raise_if_license_blocks_scan() -> None:
+    """403 when enforcement blocks ingest/digest."""
+    from core.licensing.guard import get_license_guard
+
+    g = get_license_guard(_get_config())
+    if g.allows_scan():
+        return
+    c = g.context
+    raise HTTPException(
+        status_code=403,
+        detail={
+            "error": "license_blocked",
+            "license_state": c.state,
+            "message": "Scan blocked by licensing policy. See /health and /about for status.",
+            "detail": c.detail,
+        },
+    )
 
 
 @asynccontextmanager
@@ -428,7 +465,9 @@ app.mount("/static", StaticFiles(directory=str(_api_dir / "static")), name="stat
 @app.get("/health")
 async def health():
     """Liveness/readiness probe for Docker, Swarm and Kubernetes."""
-    return {"status": "ok"}
+    body: dict = {"status": "ok"}
+    body["license"] = _license_public_dict()
+    return body
 
 
 @app.get("/help", response_class=HTMLResponse)
@@ -447,14 +486,16 @@ async def about_page(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="about.html",
-        context={"about": _about_info()},
+        context={"about": _about_info(), "license": _license_public_dict()},
     )
 
 
 @app.get("/about/json")
 async def about_json():
     """Machine-readable about info (name, version, author, license) for API consumers."""
-    return _about_info()
+    info = _about_info()
+    info["license"] = _license_public_dict()
+    return info
 
 
 def _build_chart_data(sessions: list[dict]) -> list[dict]:
@@ -502,6 +543,7 @@ async def dashboard(request: Request):
             "last_session": last_session,
             "chart_data": chart_data,
             "about": _about_info(),
+            "license": _license_public_dict(),
         },
     )
 
@@ -589,7 +631,8 @@ _SESSION_RESPONSES = {
 async def start_scan(
     background_tasks: BackgroundTasks, body: ScanStartBody | None = None
 ):
-    """Start audit in background. Optional body: tenant, technician, scan_compressed. Returns session_id."""
+    """Start audit in background. Optional body: tenant, technician, scan_compressed, content_type_check. Returns session_id."""
+    _raise_if_license_blocks_scan()
     engine = _get_engine()
     if engine.is_running:
         raise HTTPException(status_code=409, detail="Audit already in progress.")
@@ -608,12 +651,15 @@ async def start_scan(
         technician_name=technician,
     )
 
-    # Run-local override: merge scan_compressed into config for this run only; restore after.
+    # Run-local overrides: merge into file_scan for this run only; restore after (same pattern as scan_compressed).
     fs = engine.config.get("file_scan") or {}
     prev_scan_compressed = fs.get("scan_compressed")
+    prev_use_content_type = fs.get("use_content_type")
 
     if body and getattr(body, "scan_compressed", None) is True:
         engine.config.setdefault("file_scan", {})["scan_compressed"] = True
+    if body and getattr(body, "content_type_check", None) is True:
+        engine.config.setdefault("file_scan", {})["use_content_type"] = True
 
     def run_targets():
         try:
@@ -624,6 +670,12 @@ async def start_scan(
                     engine.config["file_scan"].pop("scan_compressed", None)
                 else:
                     engine.config["file_scan"]["scan_compressed"] = prev_scan_compressed
+                if prev_use_content_type is None:
+                    engine.config["file_scan"].pop("use_content_type", None)
+                else:
+                    engine.config["file_scan"]["use_content_type"] = (
+                        prev_use_content_type
+                    )
 
     background_tasks.add_task(run_targets)
     _invalidate_sessions_cache()
@@ -873,6 +925,7 @@ async def download_log_for_session(session_id: str):
 @app.post("/scan_database", responses=_RATE_LIMIT_429)
 async def scan_database(config: DatabaseConfig, background_tasks: BackgroundTasks):
     """One-off scan of a single database (body: name, host, port, user, password, database, optional driver). Starts in background; returns session_id."""
+    _raise_if_license_blocks_scan()
     engine = _get_engine()
     if engine.is_running:
         raise HTTPException(status_code=409, detail="Audit already in progress.")

@@ -147,6 +147,18 @@ Detalhes (NodePort, LoadBalancer, Ingress, persistência) em `deploy/kubernetes/
 
 Em `deploy/docker-compose.yml` defina `image: fabioleitao/data_boar:latest` e remova ou comente o bloco `build:`. Prepare `/data/config.yaml` como na seção 2 e use docker run, Compose, Swarm ou Kubernetes como acima.
 
+## 8. Docker Hub: tags suportadas e descontinuar imagens antigas
+
+**Por que importa:** Tags públicas continuam **puxáveis** até você removê-las no Docker Hub. Limpar tags **obsoletas** reduz o reuso casual de builds antigos (CVEs, padrões errados) e alinha a documentação ao que você realmente suporta.
+
+1. **Inventário:** No [Docker Hub](https://hub.docker.com/r/fabioleitao/data_boar/tags), liste as tags; anote o que CI, parceiros ou docs fixam (ex.: `latest`, `1.5.4`).
+2. **Política de suporte:** Em geral mantenha **`latest`** mais o **semver atual** (e opcionalmente um semver anterior para rollback). Documente o conjunto suportado aqui e, se útil, em [PLANS_TODO.md](../plans/PLANS_TODO.md) (Priority band A).
+3. **Excluir no Hub:** Hub → repositório → **Tags** → exclua tags que não suporta mais. **Aviso:** quem já deu `pull` ainda tem a imagem local; a exclusão só impede *novos* pulls pelo Hub.
+4. **Automação:** Ajuste CI/CD e manifests Compose/Kubernetes para não referenciar tags removidas.
+5. **Comercial / IP:** Higiene de tags **não** substitui licenciamento ou repositório privado do emissor; complementa. Veja [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md) (EN) e [CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md).
+
+**English:** [DEPLOY.md §8](DEPLOY.md#8-docker-hub-supported-tags-and-retiring-old-images).
+
 ## Resumo
 
 | Objetivo              | Comando / passo                                                                                     |

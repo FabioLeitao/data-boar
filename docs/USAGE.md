@@ -319,6 +319,8 @@ ml_patterns_file: docs/compliance-samples/compliance-sample-pipeda.yaml
 ```
 
 > **Optional (opt-in) toggle:** The `file_scan` block also accepts a boolean `use_content_type` key. When enabled, the scanner may consult a small content-type helper (magic bytes) to better detect renamed or cloaked files. As of version 1.6.0 this is a **narrow** feature: it helps catch PDFs renamed as `.txt` on filesystem and share targets (SMB/WebDAV/SharePoint) by treating them as PDF for extraction when the header looks like `%PDF-...`. The default remains extension-based; leave this off if you prefer the original behaviour and lowest I/O.
+>
+> **One-shot overrides (same run only):** CLI **`--content-type-check`** sets `use_content_type: true` for that process (like **`--scan-compressed`** for archives). The dashboard **Start scan** checkbox and **`POST /scan`** / **`POST /start`** JSON field **`content_type_check: true`** do the same for that API-triggered run only; the on-disk config is unchanged after the scan finishes.
 
 ### Credentials from environment (secrets not in config)
 
