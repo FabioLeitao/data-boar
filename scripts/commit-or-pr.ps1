@@ -18,7 +18,7 @@ param(
     [ValidateSet('Preview','Commit','PR')]
     [string]$Action,
 
-    # Empty defaults: Preview lists files only; Commit/PR require -Title (see COMMIT_AND_PR.md).
+    # Empty defaults: Preview lists files only; Commit/PR require -Title (see docs/ops/COMMIT_AND_PR.md).
     [string]$Title = "",
 
     [string]$Body = "",
@@ -182,7 +182,7 @@ if ($Action -eq 'Preview') {
     Write-Host ""
     if (-not (($Title -or "").Trim())) {
         Write-Host "NOTE: You did not pass -Title / -Body. There is no auto-generated commit message." -ForegroundColor Yellow
-        Write-Host "      For -Action Commit or -Action PR you must supply -Title and usually -Body (see COMMIT_AND_PR.md)." -ForegroundColor Yellow
+        Write-Host "      For -Action Commit or -Action PR you must supply -Title and usually -Body (see docs/ops/COMMIT_AND_PR.md)." -ForegroundColor Yellow
         Write-Host ""
         Write-Host "Proposed commit title: (not set — pass -Title)"
         Write-Host "Proposed body: (not set — pass -Body, e.g. bullet lines separated by ``n)"

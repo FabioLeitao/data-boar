@@ -1,6 +1,6 @@
 ---
 description: Keep at most one or two local Data Boar containers; remove smoke-test leftovers unless A/B comparison needs them.
-globs: Dockerfile,deploy/**,docs/DOCKER_SETUP.md,docs/HOMELAB_VALIDATION.md,docs/deploy/**
+globs: Dockerfile,deploy/**,docs/DOCKER_SETUP.md,docs/ops/HOMELAB_VALIDATION.md,docs/deploy/**
 alwaysApply: false
 ---
 
@@ -16,4 +16,4 @@ When creating or advising **local** `data_boar` / **data-boar** containers for s
    - Remove extras: `docker rm -f <old-container>` after confirming the user does not need them for A/B.
 5. **Do not** automate destructive `docker rm` without user confirmation; **do** document the recommended cleanup in PR/session notes when smoke tests were run.
 
-See also: [`.cursor/skills/docker-smoke-container-hygiene/SKILL.md`](../skills/docker-smoke-container-hygiene/SKILL.md), [docs/HOMELAB_VALIDATION.md](../../docs/HOMELAB_VALIDATION.md).
+See also: [`.cursor/skills/docker-smoke-container-hygiene/SKILL.md`](../skills/docker-smoke-container-hygiene/SKILL.md), [docs/ops/HOMELAB_VALIDATION.md](../../docs/ops/HOMELAB_VALIDATION.md).

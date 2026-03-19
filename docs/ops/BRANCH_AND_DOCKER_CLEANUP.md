@@ -155,23 +155,22 @@ docker builder prune -af
 
 ## 6. Related docs
 
-- [COMMIT_AND_PR.md](../COMMIT_AND_PR.md) — PR workflow; **push only to `data-boar`**.
-- [REMOTES_AND_ORIGIN.md](../REMOTES_AND_ORIGIN.md) — `origin` vs legacy remote.
+- [COMMIT_AND_PR.md](COMMIT_AND_PR.md) — PR workflow; **push only to `data-boar`**.
+- [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md) — `origin` vs legacy remote.
 - [DOCKER_SETUP.md](../DOCKER_SETUP.md) — build and tag conventions.
-- [HOMELAB_VALIDATION.md](../HOMELAB_VALIDATION.md) — smoke tests after cleanup.
+- [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md) — smoke tests after cleanup.
 - [PLANS_TODO.md](../plans/PLANS_TODO.md) — Priority band A (Dependabot, Scout, tag hygiene).
-- [OPERATOR_NOTIFICATION_CHANNELS.md](../OPERATOR_NOTIFICATION_CHANNELS.md) — multi-channel alerts (GitHub, Slack, Telegram, Signal) for humans and CI.
+- [OPERATOR_NOTIFICATION_CHANNELS.md](OPERATOR_NOTIFICATION_CHANNELS.md) — multi-channel alerts (GitHub, Slack, Telegram, Signal) for humans and CI.
 
 ---
 
 ## 7. Legacy remote only (`python3-lgpd-crawler-legacy-and-history-only`)
 
-**Backlog / non-blocking.** Day-to-day work and pushes belong to **`FabioLeitao/data-boar`** (`origin`). The extra remote ([REMOTES_AND_ORIGIN.md](../REMOTES_AND_ORIGIN.md)) points at the **old** `python3-lgpd-crawler` repo (fetch-only, `pushurl = no-push`).
+**Backlog / non-blocking.** Day-to-day work and pushes belong to **`FabioLeitao/data-boar`** (`origin`). The extra remote ([REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md)) points at the **old** `python3-lgpd-crawler` repo (fetch-only, `pushurl = no-push`).
 
-**Tidy-up goals**
+### Tidy-up goals
 
-1. **Local branches** that still track `python3-lgpd-crawler-legacy-and-history-only/*`: list with  
-   `git branch -vv | Select-String legacy` (or `grep legacy` on Unix). For each, either **delete locally** if abandoned or **repoint** the upstream to `origin` on `data-boar` if the work should continue there ([REMOTES_AND_ORIGIN.md](../REMOTES_AND_ORIGIN.md) § reassign upstream).
+1. **Local branches** that still track `python3-lgpd-crawler-legacy-and-history-only/*`: list with `git branch -vv | Select-String legacy` (or `grep legacy` on Unix). For each, either **delete locally** if abandoned or **repoint** the upstream to `origin` on `data-boar` if the work should continue there ([REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md) § reassign upstream).
 2. **No pushes** to the legacy GitHub repo from this workspace; that policy is intentional.
 3. **Old repo on GitHub** (if you still own it): optional archive, or leave read-only for history—**do not** delete if others may have fork links; prefer **archived** state + README pointing to **data-boar**.
 

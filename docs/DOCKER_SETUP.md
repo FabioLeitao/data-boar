@@ -161,4 +161,4 @@ docker ps -a --filter "name=data-boar"
 
 Agent/automation guidance for this workflow lives in **`.cursor/rules/docker-local-smoke-cleanup.mdc`** and **`.cursor/skills/docker-smoke-container-hygiene/SKILL.md`** (optional for contributors using Cursor).
 
-See also: [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md) (lab baseline uses `docker run --rm` where possible).
+See also: [HOMELAB_VALIDATION.md](ops/HOMELAB_VALIDATION.md) (lab baseline uses `docker run --rm` where possible).
