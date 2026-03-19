@@ -1093,6 +1093,10 @@ pygments==2.19.2 \
     # via
     #   pytest
     #   python3-lgpd-crawler
+pyjwt==2.12.1 \
+    --hash=sha256:28ca37c070cad8ba8cd9790cd940535d40274d22f80ab87f3ac6a713e6e8454c \
+    --hash=sha256:c74a7a2adf861c04d002db713dd85f84beb242228e671280bf709d765b03672b
+    # via python3-lgpd-crawler
 pymysql==1.1.2 \
     --hash=sha256:4961d3e165614ae65014e361811a724e2044ad3ea3739de9903ae7c21f539f03 \
     --hash=sha256:e6b1d89711dd51f8f74b1631fe08f039e7d76cf67a42a323d3178f0f25762ed9
@@ -1146,10 +1150,6 @@ pyparsing==3.3.2 \
 pypdf==6.9.0 \
     --hash=sha256:85805ad7457ca878c4cfd1bc026c4b3dcae359b4a80f889fa7e8c5a1c1a83e51 \
     --hash=sha256:a59257869fc575ba2ccc10100a36be0a47cd1bc1fb00f2950abf1d219fa94c01
-    # via python3-lgpd-crawler
-pypdf2==3.0.1 \
-    --hash=sha256:a74408f69ba6271f71b9352ef4ed03dc53a31aa404d29b5d31f53bfecfee1440 \
-    --hash=sha256:d16e4205cfee272fbdc0568b68d82be796540b1537508cef59388f839c191928
     # via python3-lgpd-crawler
 pytest==9.0.2 \
     --hash=sha256:711ffd45bf766d5264d487b917733b453d917afd2b0ad65223959f59089f875b \

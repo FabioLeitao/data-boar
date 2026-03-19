@@ -12,7 +12,7 @@
 | --------| ----- | --------------- |
 | **Short (this cycle)** | High-value, small-scope slices: CNPJ Phase 4–5, Content-type steps 2–6, FN reduction (MEDIUM threshold + wording), Strong crypto Phase 1, Data source inventory Phase 1, Notifications Phase 1. | PLANS_TODO § “What to start next”, § “A. Near-term focus” |
 | **Medium** | Readiness: runbooks, compliance evidence subsection, data retention note, onboarding checklist, dependency policy sentence. | [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) |
-| **Long (academic)** | Lato sensu thesis (framing, case studies, evidence mapping); stricto sensu research path; compliance evidence mapping table. | [PLAN_LATO_SENSU_THESIS.md](PLAN_LATO_SENSU_THESIS.md), [PLAN_STRICTO_SENSU_RESEARCH_PATH.md](PLAN_STRICTO_SENSU_RESEARCH_PATH.md), [PLAN_COMPLIANCE_EVIDENCE_MAPPING.md](PLAN_COMPLIANCE_EVIDENCE_MAPPING.md) |
+| **Long (academic)** | Lato sensu thesis (framing, case studies, evidence mapping); stricto sensu research path; compliance evidence mapping table. **After lato sensu:** choose one path when ready (stricto sensu, Faculdade HUB MBA IA, Universidade do Intercâmbio, or other) – see [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §4.2; open only that one plan or program link per session (token-aware). | [PLAN_LATO_SENSU_THESIS.md](PLAN_LATO_SENSU_THESIS.md), [PLAN_STRICTO_SENSU_RESEARCH_PATH.md](PLAN_STRICTO_SENSU_RESEARCH_PATH.md), [PLAN_COMPLIANCE_EVIDENCE_MAPPING.md](PLAN_COMPLIANCE_EVIDENCE_MAPPING.md); post-lato options in PORTFOLIO §4.2 |
 | **Deferred / backlog** | Secrets Phase B, Version check, Selenium QA, Synthetic data, SAP, Dashboard i18n, Additional data soup formats. | PLANS_TODO § “B. Deferred”, § “C. Backlog” |
 
 ---
@@ -20,6 +20,7 @@
 ## 2. Working under token constraints
 
 - **Single-context rule:** For each session, choose **one** of: (a) one plan’s next to-do, (b) one readiness item, or (c) one academic-plan section. Open only that plan file + the code/docs files you need to edit.
+- **Low complexity / high gain bias:** Prefer small-scope, high-value slices (see PLANS_TODO "What to start next"). For study: one cert at a time (CWL order in PORTFOLIO §3.2 and `docs/private/Learning_and_certs.md`); post-lato choice (stricto sensu vs MBA HUB vs Intercâmbio) is a separate, low-frequency decision – PORTFOLIO §4.2 has the comparison; open only one option per session.
 - **Entry point:** Start from [PLANS_TODO.md](PLANS_TODO.md). Use the “What to start next” table and the “Order” column to pick the next step.
 - **AI-heavy vs manual-friendly:** PLANS_TODO marks which tasks benefit from AI (research, wording, design) vs which you can do by hand (regex wiring, tests, config). Use AI for the former; do the latter in small, focused sessions.
 - **After each step:** Run `uv run pytest -v -W error` (or `.\scripts\check-all.ps1` on Windows), update the plan and PLANS_TODO, then commit. Avoid stacking many uncommitted changes.
@@ -36,6 +37,7 @@ Summary:
 - **Docker Hub:** Public pages fetched for data_boar, wildfly_t1r, uptk (tags, sizes, links). Authoritative list: `docs/private/From Docker hub list of repositories.md`.
 - **GitHub:** FabioLeitao/data-boar, wf_t1r, and other public repos; profile and repo list in PORTFOLIO_AND_EVIDENCE_SOURCES.
 - **Certifications / community:** LPIC-1 (101); Ubuntu tester/collaborator. Add others in PORTFOLIO_AND_EVIDENCE_SOURCES §3.
+- **CWL courses (paid, in progress):** Listed and prioritised in PORTFOLIO_AND_EVIDENCE_SOURCES §3.2 (from `docs/private/` images). **Study is your task;** use the recommended order there (BTF → C3SA → MCBTA → PTF → …) and slot fixed study blocks after Dependabot/Scout and one feature slice; one cert at a time for max value.
 - **Private docs (git-ignored):** CV, TCC, LinkedIn PDFs in `docs/private/`; reference by filename only.
 
 Optional: add Dockerfiles (or a short note) for wildfly_t1r/uptk in `docs/private/Dockerfiles_used.md` or in the wf_t1r repo so “Dockerfiles I created and used” is easy to cite.
