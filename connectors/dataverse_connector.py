@@ -9,6 +9,10 @@ import os
 from typing import Any
 
 from core.connector_registry import register
+from core.suggested_review import (
+    SUGGESTED_REVIEW_PATTERN,
+    augment_low_id_like_for_persist,
+)
 
 try:
     import httpx
@@ -97,11 +101,13 @@ class DataverseConnector:
         scanner: Any,
         db_manager: Any,
         sample_limit: int = 5,
+        detection_config: dict[str, Any] | None = None,
     ):
         self.config = target_config
         self.scanner = scanner
         self.db_manager = db_manager
         self.sample_limit = min(max(int(sample_limit), 1), 100)
+        self.detection_config = detection_config or {}
         self._client: "httpx.Client | None" = None
         self._token: str | None = None
 
@@ -229,8 +235,16 @@ class DataverseConnector:
                             val = row.get(col_name)
                             if val is not None:
                                 sample += str(val)[:200] + " "
-                    res = self.scanner.scan_column(col_name, sample)
-                    if res.get("sensitivity_level") == "LOW":
+                    res = self.scanner.scan_column(
+                        col_name, sample, connector_data_type=col_type or None
+                    )
+                    res = augment_low_id_like_for_persist(
+                        res, col_name, self.detection_config
+                    )
+                    if (
+                        res.get("sensitivity_level") == "LOW"
+                        and res.get("pattern_detected") != SUGGESTED_REVIEW_PATTERN
+                    ):
                         continue
                     self.db_manager.save_finding(
                         source_type="database",

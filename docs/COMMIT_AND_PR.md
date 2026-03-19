@@ -38,16 +38,31 @@ You can limit the commit/PR to specific files with **`-IncludeFiles`** (comma-se
 
 ## Doing it yourself
 
+### Preview: file list vs commit message
+
+**`-Action Preview` without `-Title` / `-Body`** only guarantees an accurate **list of files** and **`git diff --stat`**. The script **does not infer** a commit message from your changes.
+
+- **Before (confusing):** the script used **hardcoded example** defaults (e.g. “Update: security and docs” / CSP bullets) so Preview looked like a real proposal — it was not.
+- **Now:** if you omit `-Title`, Preview prints a **yellow NOTE** and shows “(not set)”. You must pass **`-Title`** and usually **`-Body`** for **Commit** or **PR** (Commit **fails** without a title).
+
+### Commands
+
 From the repo root (PowerShell):
 
 ```powershell
-# Preview only (no commit) – see files and proposed message (shortcut)
+# Preview only (no commit) – see files; message is NOT auto-generated (see note above)
 .\scripts\preview-commit.ps1
-# Or with proposed title/body:
+# Optional: preview the exact title/body you will use for Commit/PR
 .\scripts\commit-or-pr.ps1 -Action Preview -Title "Your title" -Body "Bullet one`nBullet two"
 
-# Commit only
-.\scripts\commit-or-pr.ps1 -Action Commit -Title "Your short title" -Body "Bullet one`nBullet two"
+# Commit only (example: FN reduction + commit-or-pr script)
+$body = @"
+- MEDIUM threshold: sensitivity_detection.medium_confidence_threshold (loader + detector + engine)
+- Suggested review: core/suggested_review, SQL persist_low_id_like_for_review, Excel sheet
+- commit-or-pr: empty default title; Preview NOTE; PR when already pushed requires -Title
+- Docs: SENSITIVITY_DETECTION, USAGE, TECH_GUIDE, PLANS_TODO, COMMIT_AND_PR; detection merge fix in loader
+"@
+.\scripts\commit-or-pr.ps1 -Action Commit -Title "feat: FN reduction slice + commit-or-pr message clarity" -Body $body
 
 # Create PR on current branch (commit, push, open PR in default browser for approval)
 .\scripts\commit-or-pr.ps1 -Action PR -Title "Your short title" -Body "Bullet one`nBullet two"
@@ -95,6 +110,7 @@ When you want to **check**, run **pre-commit**, **commit**, **describe**, and cr
 
 | Step | Goal | Command |
 |------|------|--------|
+| 0 | **Optional:** open Dependabot PRs + Docker Scout quickview (read-only; needs `gh`, optional Docker) | `.\scripts\maintenance-check.ps1` |
 | 1 | **Check + pre-commit** (Ruff lint, format, markdown, full pytest in one run) | `.\scripts\check-all.ps1` |
 | 2 | **Preview** (see what would be committed; no stage, no commit) | `.\scripts\preview-commit.ps1` |
 | 3 | **Propose** a short commit title and bullet-point PR body from the file list and context | (you or the agent suggest title and body) |

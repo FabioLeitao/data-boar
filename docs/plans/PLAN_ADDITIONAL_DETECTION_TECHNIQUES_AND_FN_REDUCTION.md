@@ -1,6 +1,6 @@
 # Plan: Additional detection techniques and false-negative reduction
 
-**Status:** Not started
+**Status:** In progress (priorities 1–3 implemented; priority 4 initial slice: `connector_format_id_hint` + `FORMAT_LENGTH_HINT_ID`)
 **Goal:** Explore techniques, frameworks, and libraries (beyond Regex, ML, and DL) to improve report quality, with emphasis on **reducing false negatives** (missed PII) even at the cost of more false positives (which can be handled later by human review).
 
 ---
@@ -124,9 +124,9 @@ Prefer **more false positives and human confirmation** over **false negatives an
 ## Implementation priorities (recommended order)
 
 1. **Configurable MEDIUM threshold** and **“suggested review”** (report) for ID-like columns classified LOW — minimal code, immediate value.
-2. **Stemming/normalisation** for column names in ML/term matching — small change, reduces FN on non-English or inflected names.
-3. **Optional fuzzy column name match** (e.g. rapidfuzz), only in 25–45 confidence band, → MEDIUM + FUZZY_COLUMN_MATCH.
-4. **Data type / length hint** from connectors → optional “format hint” in detector and MEDIUM suggestion when format suggests identifier but no regex hit.
+2. **Stemming/normalisation** for column names in ML/term matching — **done (slice 2):** optional `sensitivity_detection.column_name_normalize_for_ml` applies **accent folding + separator normalisation** to the column name **for ML/DL input only** (`core/column_name_normalize.py`); not full Porter stemming. See `docs/SENSITIVITY_DETECTION.md`.
+3. **Optional fuzzy column name match** (e.g. rapidfuzz), only in 25–45 confidence band, → MEDIUM + FUZZY_COLUMN_MATCH — **done:** `sensitivity_detection.fuzzy_column_match` + optional extra `detection-fuzzy`; see `docs/SENSITIVITY_DETECTION.md`, `core/fuzzy_column_match.py`.
+4. **Data type / length hint** from connectors → optional “format hint” in detector and MEDIUM suggestion when format suggests identifier but no regex hit — **done (initial slice):** `sensitivity_detection.connector_format_id_hint` + `FORMAT_LENGTH_HINT_ID`; SQL `CHAR`/`VARCHAR(N)` length parsed from connector metadata; conservative name heuristics (CPF/CNPJ/SSN tokens + `*_id`-style); wired through `DataScanner.scan_column` / SQL, Snowflake, Dataverse, Power BI, SQLite-in-file path in filesystem connector. Further work: numeric/INT lengths, email-length heuristics, more connectors.
 5. **Embedding prototype similarity** (reuse DL embedder) as optional “semantic hint” to elevate MEDIUM.
 6. **Region-specific column dictionaries** (config) and, where connector supports it, **FK/table context**.
 7. NER / Presidio as **optional, documented** extensions once fixtures and FN metrics are in place.

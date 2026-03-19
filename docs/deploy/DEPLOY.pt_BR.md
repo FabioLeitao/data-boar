@@ -41,7 +41,7 @@ O relatório é escrito em `report.output_dir` do config (ex.: `/data`). **Não*
 
 Você pode executar a aplicação **sem clonar o repositório** usando a imagem publicada no Docker Hub:
 
-- **Docker Hub:** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** e **`fabioleitao/data_boar:1.5.4`**
+- **Docker Hub:** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** e **`fabioleitao/data_boar:1.6.2`**
 
 Exemplo:
 
@@ -70,10 +70,10 @@ docker push ghcr.io/fabioleitao/data_boar:latest
 ### Opção B – Docker Hub (imagem branded Data Boar)
 
 ```bash
-docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.5.4 .
+docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.6.2 .
 docker login
 docker push fabioleitao/data_boar:latest
-docker push fabioleitao/data_boar:1.5.4
+docker push fabioleitao/data_boar:1.6.2
 ```
 
 Veja também [DOCKER_SETUP.md](../DOCKER_SETUP.md).
@@ -151,7 +151,7 @@ Em `deploy/docker-compose.yml` defina `image: fabioleitao/data_boar:latest` e re
 
 **Por que importa:** Tags públicas continuam **puxáveis** até você removê-las no Docker Hub. Limpar tags **obsoletas** reduz o reuso casual de builds antigos (CVEs, padrões errados) e alinha a documentação ao que você realmente suporta.
 
-1. **Inventário:** No [Docker Hub](https://hub.docker.com/r/fabioleitao/data_boar/tags), liste as tags; anote o que CI, parceiros ou docs fixam (ex.: `latest`, `1.5.4`).
+1. **Inventário:** No [Docker Hub](https://hub.docker.com/r/fabioleitao/data_boar/tags), liste as tags; anote o que CI, parceiros ou docs fixam (ex.: `latest`, `1.6.2`).
 2. **Política de suporte:** Em geral mantenha **`latest`** mais o **semver atual** (e opcionalmente um semver anterior para rollback). Documente o conjunto suportado aqui e, se útil, em [PLANS_TODO.md](../plans/PLANS_TODO.md) (Priority band A).
 3. **Excluir no Hub:** Hub → repositório → **Tags** → exclua tags que não suporta mais. **Aviso:** quem já deu `pull` ainda tem a imagem local; a exclusão só impede *novos* pulls pelo Hub.
 4. **Automação:** Ajuste CI/CD e manifests Compose/Kubernetes para não referenciar tags removidas.
