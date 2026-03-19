@@ -82,7 +82,7 @@ Deploy assets (Compose, Kubernetes, config examples) remain in the [deploy/](../
 
 - [plans/PLANS_TODO.md](plans/PLANS_TODO.md) — Plan status and current app state (single source of truth for open-plan to-dos). *Plan files are EN-only for history; operator docs are EN + pt-BR.*
 - External evolution reviews are mapped into plan history (internal; not a public doc surface).
-- [releases/](releases/) — Release notes (e.g. 1.6.2, 1.6.1, 1.6.0, 1.5.4, 1.5.3, 1.4.3).
+- [releases/](releases/) — Release notes (e.g. 1.6.3, 1.6.2, 1.6.1, 1.6.0, 1.5.4, 1.5.3, 1.4.3).
 - [plans/completed/](plans/completed/) — Archived completed plans and the implementation checklist ([NEXT_STEPS.md](plans/completed/NEXT_STEPS.md)), all items Done.
 
 Man pages: `docs/data_boar.1` (command), `docs/data_boar.5` (config and file formats). Install and optionally add compatibility symlinks so `man lgpd_crawler` also works (see root README and [TECH_GUIDE.md](TECH_GUIDE.md)).
