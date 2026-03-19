@@ -83,6 +83,7 @@ Os artefatos de deploy (Compose, Kubernetes, exemplos de config) ficam na pasta 
 
 - [ops/README.md](ops/README.md) — Índice dos runbooks do operador e **checklist de auditoria de links** após mover docs.
 - [plans/PLANS_TODO.md](plans/PLANS_TODO.md) — Status dos planos e estado atual da aplicação (fonte única de verdade para os to-dos dos planos abertos). *Arquivos de plano são apenas em inglês para histórico; runbooks em ops/ são EN + pt-BR.*
+- [plans/PYTHON_UPGRADE_PLAYBOOK.md](plans/PYTHON_UPGRADE_PLAYBOOK.md) — Sequenciamento de upgrade do runtime Python (3.12→3.13→…), Docker, CI e wheels; [guia em pt-BR](plans/PYTHON_UPGRADE_PLAYBOOK.pt_BR.md).
 - Revisões externas de evolução são mapeadas no histórico dos planos (conteúdo interno; não é uma superfície pública de documentação).
 - [releases/](releases/) — Notas de release (ex.: 1.6.3, 1.6.2, 1.6.1, 1.6.0, 1.5.4, 1.4.3).
 - [plans/completed/](plans/completed/) — Planos concluídos arquivados e o checklist de implementação ([NEXT_STEPS.md](plans/completed/NEXT_STEPS.md)), todos os itens Feitos.
