@@ -74,13 +74,15 @@ Deploy assets (Compose, Kubernetes, config examples) remain in the [deploy/](../
 | Topology                | [TOPOLOGY.md](TOPOLOGY.md)                               | [TOPOLOGY.pt_BR.md](TOPOLOGY.pt_BR.md)                               |
 | Commit and PR           | [COMMIT_AND_PR.md](COMMIT_AND_PR.md)                     | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md)                     |
 | Remotes and origin      | [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md)           | [REMOTES_AND_ORIGIN.pt_BR.md](REMOTES_AND_ORIGIN.pt_BR.md)           |
+| Branch + Docker cleanup (stale branches, image retention) | [ops/BRANCH_AND_DOCKER_CLEANUP.md](ops/BRANCH_AND_DOCKER_CLEANUP.md) | [ops/BRANCH_AND_DOCKER_CLEANUP.pt_BR.md](ops/BRANCH_AND_DOCKER_CLEANUP.pt_BR.md) |
 | Troubleshooting         | [TROUBLESHOOTING.md](TROUBLESHOOTING.md)                 | [TROUBLESHOOTING.pt_BR.md](TROUBLESHOOTING.pt_BR.md)                 |
 | Copyright and trademark | [COPYRIGHT_AND_TRADEMARK.md](COPYRIGHT_AND_TRADEMARK.md) | [COPYRIGHT_AND_TRADEMARK.pt_BR.md](COPYRIGHT_AND_TRADEMARK.pt_BR.md) |
 | Observability and SRE   | [OBSERVABILITY_SRE.md](OBSERVABILITY_SRE.md)             | [OBSERVABILITY_SRE.pt_BR.md](OBSERVABILITY_SRE.pt_BR.md)             |
 | Licensing, hosting, release integrity, **operator playbook (Priority band A)** | [LICENSING_SPEC.md](LICENSING_SPEC.md), [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md), [HOSTING_AND_WEBSITE_OPTIONS.md](HOSTING_AND_WEBSITE_OPTIONS.md), [RELEASE_INTEGRITY.md](RELEASE_INTEGRITY.md), [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](CODE_PROTECTION_OPERATOR_PLAYBOOK.md) | [CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md](CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md) — *licensing spec / open-core memos are EN-only* |
 
 - [plans/PLANS_TODO.md](plans/PLANS_TODO.md) — Plan status and current app state (single source of truth for open-plan to-dos). *Plan files are EN-only for history; operator docs are EN + pt-BR.*
-- [releases/](releases/) — Release notes (e.g. 1.5.4, 1.5.3, 1.5.2, 1.5.1, 1.5.0, 1.4.3).
+- External evolution reviews are mapped into plan history (internal; not a public doc surface).
+- [releases/](releases/) — Release notes (e.g. 1.6.2, 1.6.1, 1.6.0, 1.5.4, 1.5.3, 1.4.3).
 - [plans/completed/](plans/completed/) — Archived completed plans and the implementation checklist ([NEXT_STEPS.md](plans/completed/NEXT_STEPS.md)), all items Done.
 
 Man pages: `docs/data_boar.1` (command), `docs/data_boar.5` (config and file formats). Install and optionally add compatibility symlinks so `man lgpd_crawler` also works (see root README and [TECH_GUIDE.md](TECH_GUIDE.md)).

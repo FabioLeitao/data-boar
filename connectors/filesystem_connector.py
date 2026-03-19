@@ -329,7 +329,9 @@ def _scan_sqlite_file_as_db(
                     except Exception:
                         pass
                     sample = " ".join(sample_parts)
-                    res = scanner.scan_column(cname, sample)
+                    res = scanner.scan_column(
+                        cname, sample, connector_data_type=ctype
+                    )
                     if res["sensitivity_level"] == "LOW":
                         continue
                     findings.append(

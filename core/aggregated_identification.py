@@ -206,6 +206,7 @@ DEFAULT_PATTERN_CATEGORY_MAP: dict[str, str] = {
     "RG": "other",
     "SSN": "other",
     "PII_AMBIGUOUS": "other",  # generic identifier – confirm manually
+    "FUZZY_COLUMN_MATCH": "other",  # typo-tolerant column name vs sensitive term
     "DATE_": "other",  # age/DOB related
     "DOB": "other",
     "ADDRESS": "address",
