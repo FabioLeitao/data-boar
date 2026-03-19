@@ -140,3 +140,25 @@ docker rm data-boar-audit
 ```
 
 Ou com Compose: `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml down`
+
+---
+
+## 7. Smoke local: higiene de containers (manter poucos)
+
+Execuções repetidas de `docker run` / `docker build` em testes de smoke ou no homelab deixam **vários containers parados** no Docker Desktop. Isso atrapalha portas, volumes e saber qual imagem está “ativa”.
+
+**Convenção do projeto:**
+
+1. Preferir **um** container principal local (ex.: `--name data-boar-audit`) ou **uma** stack Compose.
+2. No máximo **dois** containers com nome **só** quando houver **A/B** explícito (ex.: `fabioleitao/data_boar:latest` vs `data_boar:lab` construída localmente). Evitar containers anônimos “soltos”.
+3. Ao terminar um teste descartável, **parar e remover** os extras: `docker rm -f <nome>` (após confirmar que essa instância não é mais necessária).
+
+**Listar candidatos a remoção:**
+
+```powershell
+docker ps -a --filter "name=data-boar"
+```
+
+Orientação para agentes/automação: **`.cursor/rules/docker-local-smoke-cleanup.mdc`** e **`.cursor/skills/docker-smoke-container-hygiene/SKILL.md`** (opcional para quem usa Cursor).
+
+Ver também: [HOMELAB_VALIDATION.pt_BR.md](HOMELAB_VALIDATION.pt_BR.md) (baseline do lab usa `docker run --rm` quando possível).

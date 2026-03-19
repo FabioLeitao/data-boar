@@ -1,0 +1,19 @@
+---
+description: Keep at most one or two local Data Boar containers; remove smoke-test leftovers unless A/B comparison needs them.
+globs: Dockerfile,deploy/**,docs/DOCKER_SETUP.md,docs/HOMELAB_VALIDATION.md,docs/deploy/**
+alwaysApply: false
+---
+
+# Local Docker smoke tests — container hygiene
+
+When creating or advising **local** `data_boar` / **data-boar** containers for smoke tests, builds, or lab validation:
+
+1. **Default:** prefer **one** long-lived container (e.g. `data-boar-audit` or compose project name from `deploy/docker-compose.yml`) matching [docs/DOCKER_SETUP.md](../../docs/DOCKER_SETUP.md).
+2. **Temporary / A–B only:** allow **at most two** named containers when comparing images or configs (e.g. `:latest` vs `:lab`, or two `docker run` variants). Use **clear names** (e.g. `data-boar-a`, `data-boar-b` or `data_boar:lab-a` tags), never anonymous piles of `docker run` without `--name`.
+3. **After success:** recommend `docker stop` + `docker rm` (or `docker compose … down`) for **throwaway** test containers; do **not** leave stopped containers “for later” unless the user explicitly wants a second slot for regression.
+4. **Discovery / cleanup commands** (operator or agent suggestions only; run in the user’s environment):
+   - `docker ps -a --filter "name=data-boar" --filter "name=data_boar"`
+   - Remove extras: `docker rm -f <old-container>` after confirming the user does not need them for A/B.
+5. **Do not** automate destructive `docker rm` without user confirmation; **do** document the recommended cleanup in PR/session notes when smoke tests were run.
+
+See also: [`.cursor/skills/docker-smoke-container-hygiene/SKILL.md`](../skills/docker-smoke-container-hygiene/SKILL.md), [docs/HOMELAB_VALIDATION.md](../../docs/HOMELAB_VALIDATION.md).
