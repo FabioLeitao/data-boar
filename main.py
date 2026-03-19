@@ -11,8 +11,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from config.loader import load_config
-from core.engine import AuditEngine
 from core.database import LocalDBManager
+from core.engine import AuditEngine
+from core.licensing import LicenseBlockedError
 
 
 def main() -> None:
@@ -114,6 +115,16 @@ def main() -> None:
             "scan inside supported archives (zip, tar, 7z, etc.). May increase run time and I/O."
         ),
     )
+    parser.add_argument(
+        "--content-type-check",
+        action="store_true",
+        dest="content_type_check",
+        help=(
+            "When set, act as if file_scan.use_content_type is true for this run: "
+            "infer file format from magic bytes (first bytes of each file), not only extension—"
+            "helps find renamed or cloaked files. Adds extra I/O and CPU per file."
+        ),
+    )
     args = parser.parse_args()
 
     try:
@@ -135,6 +146,8 @@ def main() -> None:
 
     if args.scan_compressed:
         config.setdefault("file_scan", {})["scan_compressed"] = True
+    if args.content_type_check:
+        config.setdefault("file_scan", {})["use_content_type"] = True
 
     if args.web and not args.reset_data:
         import uvicorn
@@ -238,7 +251,7 @@ def main() -> None:
 
     tenant = sanitize_tenant_technician(args.tenant)
     technician = sanitize_tenant_technician(args.technician)
-    # scan_compressed already merged into config above when --scan-compressed was passed
+    # scan_compressed / use_content_type already merged above when CLI flags were passed
     try:
         session_id = engine.start_audit(tenant_name=tenant, technician_name=technician)
         print(f"Scan session: {session_id}")
@@ -279,6 +292,14 @@ def main() -> None:
             "What to do: Check config against docs/USAGE.md and ensure all required keys are set."
         )
         sys.exit(1)
+    except LicenseBlockedError as e:
+        print(f"Licensing: scan blocked ({e.state}).", file=sys.stderr)
+        print(str(e), file=sys.stderr)
+        print(
+            "What to do: Provide a valid license file and verify key (see docs/LICENSING_SPEC.md).",
+            file=sys.stderr,
+        )
+        sys.exit(2)
     except Exception as e:
         print(f"Error: {e}")
         print("Probable cause: Unexpected failure during scan or report generation.")

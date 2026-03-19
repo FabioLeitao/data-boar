@@ -1,6 +1,6 @@
 # Plan: Content-based type detection and cloaking resistance
 
-**Status:** Step 1 helper implemented; wiring and toggles not started
+**Status:** Steps 1–4 implemented (config, connectors, CLI, API/dashboard); tests and doc polish tracked below
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
@@ -76,9 +76,9 @@ This keeps the default lightweight and lets operators who care about renamed fil
 | 1   | Define magic-byte table for supported formats (PDF, ZIP, Office OOXML, plain text, etc.); implement `read_magic` and `infer_content_type`.                                                           | ✅ Done (helper `infer_content_type(path_or_bytes)` in `core/content_type.py`; basic PDF/ZIP/text coverage; uses existing `read_magic` and archive magic) |
 | 2   | Config: `file_scan.use_content_type` (default false); normalize in loader and pass to engine/connectors.                                                                                               | ✅ Done (loader normalizes; engine injects file_scan into target; connectors read use_content_type; test in test_config_encoding + test_file_scan_use_content_type_flag) |
 | 3   | FilesystemConnector: when `use_content_type` true, infer type from header and use it for extraction (fallback to extension). Share connectors: same when they use file-scan logic.                    | ✅ Done (choose_effective_pdf_extension used in filesystem, SMB, WebDAV, SharePoint when use_content_type true) |
-| 4   | CLI: `--content-type-check`; API/dashboard: optional `content_type_check` and checkbox with user warning (may increase I/O and run time).                                                            | ⬜     |
-| 5   | Tests: default behaviour unchanged; with option on, renamed PDF (or other) is scanned by content; no regressions.                                                                                       | ⬜     |
-| 6   | Docs: USAGE, TECH_GUIDE, help—content-type option, benefit (renamed/cloaking), and resource impact. Note: steganography out of scope for v1; possible future phase.                                  | ⬜     |
+| 4   | CLI: `--content-type-check`; API/dashboard: optional `content_type_check` and checkbox with user warning (may increase I/O and run time).                                                            | ✅ Done   |
+| 5   | Tests: default behaviour unchanged; with option on, renamed PDF (or other) is scanned by content; no regressions.                                                                                       | ✅ Done (`tests/test_api_scan_content_type_check.py` + existing connector tests)   |
+| 6   | Docs: USAGE, TECH_GUIDE, help—content-type option, benefit (renamed/cloaking), and resource impact. Note: steganography out of scope for v1; possible future phase.                                  | ✅ Done (USAGE, USAGE.pt_BR, TECH_GUIDE EN/pt_BR; optional: man pages / OpenAPI examples later)   |
 
 **Sync:** When a step is done, mark **✅ Done** in this table and in [PLANS_TODO.md](PLANS_TODO.md).
 

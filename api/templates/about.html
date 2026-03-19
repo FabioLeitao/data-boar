@@ -17,6 +17,22 @@
 </section>
 
 <section class="card">
+  <h2>Subscription / runtime license status</h2>
+  <p class="muted">Operational status of optional commercial enforcement (default: open distribution). See <code>docs/LICENSING_SPEC.md</code>.</p>
+  <p><strong>State:</strong> {{ license.get('license_state', '—') }}</p>
+  <p><strong>Mode:</strong> {{ license.get('license_mode', '—') }}</p>
+  {% if license.get('customer_name') %}
+  <p><strong>Licensed customer (token):</strong> {{ license.get('customer_name') }}</p>
+  {% endif %}
+  {% if license.get('expires_at') %}
+  <p><strong>Expiration (UTC):</strong> {{ license.get('expires_at') }}</p>
+  {% endif %}
+  {% if license.get('issuer_id') %}
+  <p><strong>Issuer (token):</strong> {{ license.get('issuer_id') }}</p>
+  {% endif %}
+</section>
+
+<section class="card">
   <h2>License</h2>
   <p>This project is released under the <strong>{{ about.license }}</strong>, as established in the <code>LICENSE</code> file in the project repository (see also <a href="{{ about.license_url }}" target="_blank" rel="noopener noreferrer">OSI BSD 3-Clause</a>).</p>
   <p class="muted">Summary: Redistribution and use in source and binary forms, with or without modification, are permitted provided that the copyright notice, list of conditions and the following disclaimer are retained; redistributions in binary form must reproduce the same in documentation; and the name of the copyright holder may not be used to endorse or promote derived products without permission. Full text is in the repository <code>LICENSE</code> file.</p>

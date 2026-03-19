@@ -136,6 +136,8 @@
           : null;
         var scanCompressedEl = document.getElementById('scan-compressed');
         var scanCompressed = scanCompressedEl && scanCompressedEl.checked;
+        var contentTypeEl = document.getElementById('scan-content-type');
+        var contentTypeCheck = contentTypeEl && contentTypeEl.checked;
 
         if (feedback) feedback.textContent = 'Starting…';
         if (feedbackGuide) { feedbackGuide.textContent = ''; feedbackGuide.style.display = 'none'; }
@@ -144,6 +146,7 @@
         if (tenant != null) body.tenant = tenant;
         if (technician != null) body.technician = technician;
         if (scanCompressed) body.scan_compressed = true;
+        if (contentTypeCheck) body.content_type_check = true;
 
         var opts = {
           method: 'POST',
