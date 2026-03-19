@@ -107,7 +107,15 @@ So: **copyright** already protects your code and mascot as creative works. To **
 
 ---
 
-## 6. Summary
+## 6. Brand, narrative, and product experience (inventory)
+
+Beyond the **word mark** “Data Boar” and the **mascot logo**, commercial and partner agreements should account for **product narrative** and **distinctive presentation**: the **dashBOARd** sub-brand, the **data soup** metaphor (many connector types in one audit), dashboard and **Excel report** layout with embedded mascot/heatmap, documented **operator flows** (CLI, API, Docker), and **companion** artifacts (e.g. Docker image naming, website, related repositories). Open-source **copyright** on code does not automatically replace **trademark** policy for these elements.
+
+**Canonical checklist (detail and counsel briefing):** [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md) — section **Brand, narrative, and experience IP**.
+
+---
+
+## 7. Summary
 
 | Question                                 | Short answer                                                                                                                                                                                                                                                                 |
 | ----------                               | --------------                                                                                                                                                                                                                                                               |

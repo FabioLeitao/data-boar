@@ -68,6 +68,8 @@ Os artefatos de deploy (Compose, Kubernetes, exemplos de config) ficam na pasta 
 | Tópico                    | English                                                  | Português (pt-BR)                                                    |
 | ----------------------    | ------------------------------------                     | ------------------------------------                                 |
 | Testes                    | [TESTING.md](TESTING.md)                                 | [TESTING.pt_BR.md](TESTING.pt_BR.md)                                 |
+| SonarQube (home lab, Docker, CI / IDE / MCP) | [SONARQUBE_HOME_LAB.md](SONARQUBE_HOME_LAB.md)             | [SONARQUBE_HOME_LAB.pt_BR.md](SONARQUBE_HOME_LAB.pt_BR.md)             |
+| Home lab (smoke de deploy, alvos sintéticos/reais) | [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md)       | [HOMELAB_VALIDATION.pt_BR.md](HOMELAB_VALIDATION.pt_BR.md)             |
 | Topologia                 | [TOPOLOGY.md](TOPOLOGY.md)                               | [TOPOLOGY.pt_BR.md](TOPOLOGY.pt_BR.md)                               |
 | Commit e PR               | [COMMIT_AND_PR.md](COMMIT_AND_PR.md)                     | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md)                     |
 | Remotes e origin          | [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md)           | [REMOTES_AND_ORIGIN.pt_BR.md](REMOTES_AND_ORIGIN.pt_BR.md)           |

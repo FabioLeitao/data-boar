@@ -16,6 +16,8 @@ This document is the **single source of truth** for the project's plan status an
 
 When revising **license terms** for IP, commerciality, and profitability, explicitly design **multiple SKUs** (e.g. **direct end-user commercial** vs **partner / pro / enterprise**—names TBD) so **consulting partners** can deliver to **their customers** under a **partner-appropriate** subscription and price point, with different objectives and cost-to-serve (analogous to tiered DB licensing: Express / Standard / Enterprise / options). **Legal + pricing first;** then JWT claims and runtime enforcement. Documented in [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](../LICENSING_OPEN_CORE_AND_COMMERCIAL.md) and [LICENSING_SPEC.md](../LICENSING_SPEC.md) (future extensions).
 
+**Brand and experience IP (same pass):** Include **mascot**, **Data Boar / dashBOARd** naming, **data soup** metaphor and connector narrative, **UI/report appearance**, documented **operation** (CLI/API/Docker story), and **companion artifacts** (Docker image branding, website, related repos) in trademark and commercial-license review — see [LICENSING_OPEN_CORE_AND_COMMERCIAL.md § Brand, narrative, and experience IP](../LICENSING_OPEN_CORE_AND_COMMERCIAL.md#brand-narrative-and-experience-ip-inventory-for-counsel-and-commercial-policy) and [COPYRIGHT_AND_TRADEMARK.md](../COPYRIGHT_AND_TRADEMARK.md#6-brand-narrative-and-product-experience-inventory).
+
 ---
 
 ## Conflict and dependency analysis
@@ -91,6 +93,8 @@ Complete **in order** when you need to reduce public artifact exposure or tighte
 After **A1–A3** (minimum), you can **resume token-aware pace** on Tier 2 features (e.g. content-type Step 4) unless A4–A7 are blocking revenue.
 
 **Reference:** [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md), [LICENSING_SPEC.md](../LICENSING_SPEC.md), [HOSTING_AND_WEBSITE_OPTIONS.md](../HOSTING_AND_WEBSITE_OPTIONS.md).
+
+**Home lab (manual, low token use):** Second-machine deploy + synthetic/real target checks—[HOMELAB_VALIDATION.md](../HOMELAB_VALIDATION.md) ([pt-BR](../HOMELAB_VALIDATION.pt_BR.md)). Use between releases or before demos; does not replace pytest/CI.
 
 ### What to start next (by recommended execution under token constraints)
 
