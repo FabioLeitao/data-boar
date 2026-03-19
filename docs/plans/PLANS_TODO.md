@@ -10,6 +10,32 @@ This document is the **single source of truth** for the project's plan status an
 
 **Policy:** When implementing a plan step, **update documentation** (USAGE, TECH_GUIDE, SECURITY, or dedicated docs) and **add or run tests** as the feature is implemented. After completing or adding to-dos, **update this file and the plan file** so progress is tracked in one place. All steps are intended to be **non-destructive**, **non-regression**, and **tested** before marking done.
 
+## Status taxonomy (horizon + urgency)
+
+Use these tags in headings to keep priorities explicit and machine-countable:
+
+- Horizons: `[H0]` must-do-now, `[H1]` short-term, `[H2]` medium-term, `[H3]` long-term/production-ready milestone, `[H4]` far horizon (post-lato/master's scenario), `[H5]` dream horizon (PhD thesis scenario).
+- Urgency: `[U0]` security/safety now, `[U1]` low-AI/high-gain soon, `[U2]` not critical next, `[U3]` backlog/catalogue.
+
+<!-- PLANS_STATUS_DASHBOARD:START -->
+## Status dashboard (auto-generated)
+
+Do not edit this block manually; refresh with `python scripts/plans-stats.py --write`.
+
+- **Status rows counted:** 87  (Done: 43 | Incomplete: 44)
+- **Incomplete breakdown:** Pending `⬜`=42, Tracked `🔄`=2, Under consideration=0, Backlog-marked rows=1
+
+| Horizon | Total rows | Done | Incomplete |
+| ------- | ----------: | ----: | ----------: |
+| `H0` | 19 | 16 | 3 |
+| `H1` | 0 | 0 | 0 |
+| `H2` | 0 | 0 | 0 |
+| `H3` | 68 | 27 | 41 |
+| `H4` | 0 | 0 | 0 |
+| `H5` | 0 | 0 | 0 |
+| `UNSPECIFIED` | 0 | 0 | 0 |
+<!-- PLANS_STATUS_DASHBOARD:END -->
+
 **Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Commercial licensing (runtime + docs + issuer bootstrap)** ✅ Phase 1 in repo (see `docs/LICENSING_SPEC.md`, `core/licensing/`); operational hardening ⬜ Priority band A · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ✅ Done · **Compliance standards alignment (ISO/IEC 27701, FELCA)** ✅ Done (doc only) · **Additional detection techniques & FN reduction** 🔄 Slices 1–3 done (+ optional `fuzzy_column_match` / `FUZZY_COLUMN_MATCH`); next: plan §4 format hints / aggregated wording, etc. · **Compressed files** ✅ Done (steps 1–12; follow-ups 13–14 optional) · **Content type & cloaking detection** ✅ Core plan done (optional: man pages / OpenAPI examples) · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ✅ Phase 4 done (Phase 5 checksum future) · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started · **Additional data soup formats** ⬜ Backlog (catalogue)
 
 ### Commercial licensing — future reminder (partner / tiered SKUs)
@@ -77,7 +103,7 @@ The list below is ordered for the current billing cycle, with a focus on:
 - **AI-heavy** tasks where the agent’s help is most valuable.
 - **Manual-friendly** tasks that you can do largely by hand or with existing tooling.
 
-### Priority band A — Safety, security, IP exposure, profitability (sequence when critical)
+### H0/U0 Priority band A — Safety, security, IP exposure, profitability (sequence when critical)
 
 Complete **in order** when you need to reduce public artifact exposure or tighten commercial posture **before** burning tokens on large feature work. Most steps are **manual on GitHub/Docker Hub** + short doc updates; use the agent for checklists, scripts, and repo docs.
 
@@ -170,7 +196,7 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
 - **pt-BR translation review:** When syncing EN → pt-BR, review for **naturalness** and meaning-equivalent wording; avoid overly literal transposition that can sound artificial. Schedule a pass over key docs (README.pt_BR, USAGE.pt_BR, DEPLOY.pt_BR, SENSITIVITY_DETECTION.pt_BR, etc.) when capacity allows.
 - **Legacy branches cleanup reminder:** When we have maintenance time, tidy `python2-lgpd-crawler-legacy-and-history-only` branches (verify no active work depends on them, then delete/close/retire them).
 
-### A. Near-term focus (current billing cycle)
+### H1/U1 A. Near-term focus (current billing cycle)
 
 0. **Home lab validation (order –1L)** *(manual, high gain for prod readiness)* — After Dependabot/Scout are under control, execute [HOMELAB_VALIDATION.md](../HOMELAB_VALIDATION.md) on a second machine; no feature code unless you document a gap. Prefer this **before** staking reputation on “it runs anywhere” demos.
 
@@ -198,7 +224,7 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
    - Use AI for: notifications config shape, notifier interface, initial message templates for CI/script usage.
    - Do manually: notifier module, config parsing, basic docs and examples; later phases after reset.
 
-### B. Deferred to after billing reset (or if on-demand spend is enabled)
+### H2/U2 B. Deferred to after billing reset (or if on-demand spend is enabled)
 
 0. **Wabbix backlog (token-aware, non-blocking)** — **W-KPI:** release/CI KPI view. (W-CONTRACT already covered by existing contract tests for reports + OpenAPI responses.) Pick one small slice when maintenance is green.
 1. **Secrets vault – Phase B** – full vault implementation, re-import CLI/web, optional remove-from-config, and key management docs.
@@ -208,11 +234,14 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
 5. **SAP connector** – research, connector module for HANA/OData/RFC, docs and tests.
 6. **Dashboard i18n** – routing and translation strategy decision, then implementation.
 
-### C. Backlog (catalogue)
+### H3/U3 C. Backlog (catalogue)
 
 **Additional data soup formats:** [PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md](PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md) – additional formats (epub, parquet, avro, dbf) and rich media / steganography containers (images, audio, video). Prioritise after compressed + content-type; stego as optional future phase.
 
 **Brand micro-copy reminder (dashBOARd):** Revisit whether/how to label the **web dashboard** with the recommended sub-brand nickname `dashBOARd` (while keeping the decision-maker pitch unchanged). Keep changes low-noise and professional: prefer page title/header parenthetical (and minimal doc mentions in technical overview / USAGE / TECH_GUIDE). If we apply it, also update version bump / release notes accordingly. Status: ✅ Implemented (nav + About); revisit on next minor bump if needed.
+
+- **H4/U3 far horizon (post-lato / master's scenario):** Master's degree path and related portfolio milestones can be tracked here when activated. Status: ⬜ Backlog.
+- **H5/U3 dream horizon (PhD thesis scenario):** PhD thesis-aligned research/roadmap items can be tracked here when activated. Status: ⬜ Backlog.
 
 ---
 

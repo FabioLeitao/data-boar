@@ -14,6 +14,14 @@ Set-Location $repoRoot
 
 Write-Host "=== check-all: lint + tests ===" -ForegroundColor Cyan
 
+# Keep plan dashboard stats in sync before lint/tests.
+Write-Host "Refreshing plans status dashboard..." -ForegroundColor Yellow
+& python "$repoRoot\scripts\plans-stats.py" --write
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "check-all: FAILED to refresh plans dashboard." -ForegroundColor Red
+    exit $LASTEXITCODE
+}
+
 # Delegate to the existing script so we keep behaviour in one place.
 $argsList = @()
 if ($SkipPreCommit) {
