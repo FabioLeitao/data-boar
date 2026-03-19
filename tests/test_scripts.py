@@ -134,6 +134,15 @@ def test_preview_commit_ps1_syntax():
     assert _parse_powershell_script(script, root), "preview-commit.ps1 parse failed"
 
 
+def test_maintenance_check_ps1_syntax():
+    """scripts/maintenance-check.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "maintenance-check.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), "maintenance-check.ps1 parse failed"
+
+
 def test_create_pr_ps1_syntax():
     """scripts/create-pr.ps1 has valid PowerShell syntax (parse-only)."""
     root = _project_root()

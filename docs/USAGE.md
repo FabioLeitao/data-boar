@@ -344,6 +344,7 @@ You can set the **training words for ML and DL** in the main config (inline) or 
 - **Files:** `ml_patterns_file`, `dl_patterns_file` – paths to YAML/JSON with a list of `{ text, label }`.
 - **Inline:** `sensitivity_detection.ml_terms`, `sensitivity_detection.dl_terms` – same structure; when non-empty they override the corresponding file.
 - **DL backend:** Optional; install with `uv pip install -e ".[dl]"`. When installed and DL terms are provided, confidence is combined with ML for better semantic detection.
+- **FN reduction (optional):** `sensitivity_detection.medium_confidence_threshold` (default 40, range 1–69) tunes how aggressively ML/DL borderline scores map to **MEDIUM**; `detection.persist_low_id_like_for_review` (default false) makes the SQL connector persist identifier-like **LOW** columns for the Excel sheet **Suggested review (LOW)**. See [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md#suggested-review-low-and-medium-threshold-fn-reduction).
 
 **Full description and examples:** [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) (English) · [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md) (Português – Brasil).
 

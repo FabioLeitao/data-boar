@@ -22,7 +22,7 @@ uv run pytest tests/test_routes_responses.py -v -W error
 uv run pytest -v -W error -k "session_id"
 ```
 
-**Requirements:** Python 3.12+, dependencies installed (`uv sync` or `pip install -e .`). No external services are required; tests use temporary configs and in-memory or temporary SQLite where needed.
+**Requirements:** Python 3.12+, dependencies installed (`uv sync --group dev` or `pip install -e .` plus dev tools). The **dev** group includes **`rapidfuzz`** so fuzzy-column tests run; core runtime does not require it unless you enable `sensitivity_detection.fuzzy_column_match` (optional extra **`detection-fuzzy`**). No external services are required; tests use temporary configs and in-memory or temporary SQLite where needed.
 
 ## Test modules overview
 
