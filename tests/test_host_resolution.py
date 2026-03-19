@@ -21,3 +21,17 @@ def test_resolve_api_host_falls_back_to_loopback_default() -> None:
 def test_resolve_api_host_handles_missing_api_block() -> None:
     config = {}
     assert resolve_api_host(config, cli_host=None) == "127.0.0.1"
+
+
+def test_resolve_api_host_uses_env_api_host_when_no_config() -> None:
+    import os
+
+    old = os.environ.get("API_HOST")
+    try:
+        os.environ["API_HOST"] = "0.0.0.0"
+        assert resolve_api_host({}, cli_host=None) == "0.0.0.0"
+    finally:
+        if old is None:
+            os.environ.pop("API_HOST", None)
+        else:
+            os.environ["API_HOST"] = old
