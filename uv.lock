@@ -2346,7 +2346,7 @@ wheels = [
 
 [[package]]
 name = "python3-lgpd-crawler"
-version = "1.6.2"
+version = "1.6.3"
 source = { virtual = "." }
 dependencies = [
     { name = "annotated-doc" },
