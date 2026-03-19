@@ -86,6 +86,7 @@ See [PLAN_READINESS_AND_OPERATIONS.md](plans/PLAN_READINESS_AND_OPERATIONS.md) �
 - [BRANCH_AND_DOCKER_CLEANUP.md](ops/BRANCH_AND_DOCKER_CLEANUP.md) — hygiene; §7 legacy remote.
 - [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](CODE_PROTECTION_OPERATOR_PLAYBOOK.md) — Priority band A.
 - [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md) — `origin` vs legacy remote.
+- Cursor: **`.cursor/rules/operator-notification-channels.mdc`** + **`.cursor/skills/operator-notification-channels/SKILL.md`** (agents editing workflows / KPI notify).
 
 ---
 

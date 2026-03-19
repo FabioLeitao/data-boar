@@ -83,6 +83,7 @@ Ver [PLAN_READINESS_AND_OPERATIONS.md](plans/PLAN_READINESS_AND_OPERATIONS.md) �
 - [BRANCH_AND_DOCKER_CLEANUP.md](ops/BRANCH_AND_DOCKER_CLEANUP.md) — higiene; §7 remote legado.
 - [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](CODE_PROTECTION_OPERATOR_PLAYBOOK.md) — faixa A.
 - [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md) — `origin` vs legado.
+- Cursor: **`.cursor/rules/operator-notification-channels.mdc`** e **`.cursor/skills/operator-notification-channels/SKILL.md`**.
 
 ---
 
