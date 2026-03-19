@@ -5,7 +5,7 @@ Runtime license guard: open mode (default) vs enforced commercial token verifica
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any

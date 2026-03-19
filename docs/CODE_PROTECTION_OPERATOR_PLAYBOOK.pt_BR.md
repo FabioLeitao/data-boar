@@ -69,3 +69,4 @@ Quando A1–A3 estiverem prontos:
 - [LICENSING_SPEC.md](LICENSING_SPEC.md)
 - [HOSTING_AND_WEBSITE_OPTIONS.md](HOSTING_AND_WEBSITE_OPTIONS.md)
 - [RELEASE_INTEGRITY.md](RELEASE_INTEGRITY.md)
+- [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md) — secção **Brand, narrative, and experience IP** (mascote, data soup, dashBOARd, aparência UI/relatório, recursos associados) para briefings com assessoria

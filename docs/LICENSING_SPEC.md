@@ -117,4 +117,4 @@ When you **change or harden licensing** for IP and profitability, you may introd
 | **Enforcement** | `LicenseGuard` and report metadata would read claims and block or watermark **unauthorised** consulting or multi-customer use. |
 | **Issuance** | Private issuer (`tools/license-studio` or successor) issues different token **templates** per SKU; audit log records program/tier. |
 
-Keep this section in sync with [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md) (“Future product tiers”). **Do not add claims to production tokens until contracts and pricing are defined.**
+Keep this section in sync with [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md) (“Future product tiers” and **Brand, narrative, and experience IP** — mascot, data soup, dashBOARd, report/UI presentation, companion resources). **Do not add claims to production tokens until contracts and pricing are defined.**
