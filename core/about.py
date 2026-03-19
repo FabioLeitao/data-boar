@@ -19,7 +19,9 @@ def get_about_info() -> dict:
     return {
         "name": "Data Boar",
         "version": ver,
-        "description": "Data Boar — based on lgpd_crawler technology. Audits personal and sensitive data across databases and filesystems, aligned with LGPD, GDPR, CCPA, HIPAA, and GLBA.",
+        # Note: the template already prints `about.name` before `about.description`,
+        # so `description` must not repeat the product name.
+        "description": "based on lgpd_crawler technology. Audits personal and sensitive data across databases and filesystems, aligned with LGPD, GDPR, CCPA, HIPAA, and GLBA.",
         "author": "Fabio Leitao",
         "license": "BSD 3-Clause License",
         "license_url": "https://opensource.org/licenses/BSD-3-Clause",
