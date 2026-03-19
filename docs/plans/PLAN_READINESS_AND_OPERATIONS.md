@@ -95,6 +95,7 @@ Notes:
 - Data sources: GitHub PR list/checks + Dependabot alerts/PR timestamps.
 - Keep a small markdown note per release cycle in `docs/releases/X.Y.Z.md` with the latest KPI snapshot.
 - Lightweight export script available: `python scripts/kpi-export.py --limit-prs 10` (stdout) or `--out docs/releases/kpi_snapshot.md`.
+- **Optional automation (backlog, non-blocking):** scheduled or `workflow_dispatch` GitHub Action runs `kpi-export.py`, uploads **artifact** (short retention) or posts a summary to Slack/Telegram via secrets—**never** commit tokens. Combine with [OPERATOR_NOTIFICATION_CHANNELS.md](../OPERATOR_NOTIFICATION_CHANNELS.md) for “ping me when the snapshot runs or fails.”
 
 ---
 
