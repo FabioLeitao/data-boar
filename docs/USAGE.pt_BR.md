@@ -1,6 +1,6 @@
 # Como usar o Data Boar (aplicação de auditoria LGPD) — pt-BR
 
-**Data Boar** é o nome da aplicação (baseado na tecnologia lgpd_crawler; motor: python3-lgpd-crawler). Este documento complementa o `docs/USAGE.md` em inglês e descreve, em português, como:
+**Data Boar** é o nome da aplicação (baseado na tecnologia lgpd_crawler; id de pacote/distribuição: `python3-lgpd-crawler`). Este documento complementa o `docs/USAGE.md` em inglês e descreve, em português, como:
 
 - Executar a aplicação via **CLI** e **API web**;
 - Entender os parâmetros (`--config`, `--web`, `--port`, `--tenant`, `--technician`);
