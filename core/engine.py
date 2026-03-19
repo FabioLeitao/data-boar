@@ -129,6 +129,16 @@ class AuditEngine:
         """
         Run audit for all targets (sequential or parallel). Returns session_id (UUID + timestamp).
         """
+        from core.licensing import LicenseBlockedError, get_license_guard
+
+        guard = get_license_guard(self.config)
+        if not guard.allows_scan():
+            c = guard.context
+            raise LicenseBlockedError(
+                c.state,
+                f"Licensing blocks scan: state={c.state} detail={c.detail}",
+            )
+
         session_id = new_session_id()
         self.db_manager.set_current_session_id(session_id)
         scope_hash = _compute_config_scope_hash(self.config)
@@ -258,7 +268,10 @@ class AuditEngine:
             return None
         out_dir = self.config.get("report", {}).get("output_dir", ".")
         path = generate_report(
-            self.db_manager, sid, output_dir=out_dir, config=self.config
+            self.db_manager,
+            sid,
+            output_dir=out_dir,
+            config=self.config,
         )
         if path:
             self._last_report_path = path
