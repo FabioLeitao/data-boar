@@ -61,6 +61,7 @@ python main.py --config config.yaml --web --port 8088
 ### Deploying the server
 
 ## Option: run from Docker (no Git clone)
+
 Pre-built images are on Docker Hub: `fabioleitao/data_boar:latest` ([hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar)). Pull and run with a mounted config at `/data/config.yaml` (see README “Deploy with Docker” and [docs/deploy/DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md))). You can use this instanced container instead of installing from source.
 
 1. **Install** the application and optional dependencies (e.g. `.[nosql]`, `.[shares]`) as in the README.
@@ -300,7 +301,9 @@ CLI uses the path you pass with `--config` (e.g. `config.yaml`). For the **web s
 - **Location:** Any path; typical names: `config.yaml`, `config/config.json`. Legacy `config/config.json` with `databases` and `file_scan.directories` is normalized automatically.
 - **Root keys:** `targets`, `file_scan`, `report`, `api`, `sqlite_path`, `scan`, **`rate_limit`**, **`timeouts`**, optional `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection`, `learned_patterns`, **`pattern_files_encoding`**.
 
-By default the web API binds to **`127.0.0.1` (loopback)** when started via the CLI (`python main.py --web ...`) unless you explicitly set `api.host` in the config (for example, `0.0.0.0` when running behind a reverse proxy or inside a container). In container and Kubernetes deployments, the manifests and Docker examples already expose port 8088 via the orchestrator; we recommend keeping `api.host` at the default or at `0.0.0.0` only when the container is fenced by network policy, ingress or reverse proxy.
+By default the web API binds to **`127.0.0.1` (loopback)** when started via the CLI (`python main.py --web ...`). When you run the official Docker image, the container sets `API_HOST=0.0.0.0` so the published port works from outside Docker Desktop/WSL.
+
+If you run behind a reverse proxy or have special network constraints, you can still override with `api.host` in the config (e.g. `0.0.0.0` / `127.0.0.1`)—but keep the safe loopback default unless the runtime is explicitly fenced.
 
 ### File encoding (config and pattern files)
 
