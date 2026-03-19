@@ -41,7 +41,9 @@ You can limit the commit/PR to specific files with **`-IncludeFiles`** (comma-se
 From the repo root (PowerShell):
 
 ```powershell
-# Preview only (no commit) – see files and proposed message
+# Preview only (no commit) – see files and proposed message (shortcut)
+.\scripts\preview-commit.ps1
+# Or with proposed title/body:
 .\scripts\commit-or-pr.ps1 -Action Preview -Title "Your title" -Body "Bullet one`nBullet two"
 
 # Commit only
@@ -58,6 +60,10 @@ From the repo root (PowerShell):
 
 # Create PR and run the test suite before pushing (no push if tests fail)
 .\scripts\commit-or-pr.ps1 -Action PR -Title "Your title" -Body "Bullets..." -RunTests
+
+# Create PR with body from a file (avoids escaping multi-line body in the shell)
+.\scripts\create-pr.ps1 -Title "Your title" -BodyFilePath "path\to\body.txt"
+.\scripts\create-pr.ps1 -Title "Your title" -BodyFilePath $env:TEMP\pr-body.txt -RunTests
 ```
 
 - **Push** uses your normal Git remote and SSH keys. PR **always pushes the current branch to origin** so the central repo (data-boar) has the full progress and history.
