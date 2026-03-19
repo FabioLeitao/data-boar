@@ -40,6 +40,10 @@ WORKDIR /app
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
+# Re-assert pip/wheel in the runtime layer so Docker Scout does not flag stale tooling copied from
+# older builder caches (CVEs on wheel<=0.46.1, pip<25.3). App deps already live under site-packages.
+RUN pip install --no-cache-dir --upgrade "pip>=25.3" "wheel>=0.46.2"
+
 # Copy application code
 COPY . .
 

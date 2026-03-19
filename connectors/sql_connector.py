@@ -10,6 +10,10 @@ from urllib.parse import quote
 from sqlalchemy import create_engine, inspect, text
 
 from core.connector_registry import register
+from core.suggested_review import (
+    SUGGESTED_REVIEW_PATTERN,
+    augment_low_id_like_for_persist,
+)
 
 # Driver to SQLAlchemy drivername mapping (driver in config may be e.g. postgresql+psycopg2)
 DRIVER_MAP = {
@@ -237,8 +241,14 @@ class SQLConnector:
     ) -> None:
         """Sample column, run detection, optionally full-scan for minor; save finding and log."""
         sample = self.sample(schema, table, cname)
-        res = self.scanner.scan_column(cname, sample)
-        if res["sensitivity_level"] == "LOW":
+        res = self.scanner.scan_column(
+            cname, sample, connector_data_type=ctype
+        )
+        res = augment_low_id_like_for_persist(res, cname, self.detection_config)
+        if (
+            res["sensitivity_level"] == "LOW"
+            and res.get("pattern_detected") != SUGGESTED_REVIEW_PATTERN
+        ):
             return
         norm_tag = res.get("norm_tag", "")
         if "DOB_POSSIBLE_MINOR" in (
@@ -246,7 +256,9 @@ class SQLConnector:
         ) and self.detection_config.get("minor_full_scan"):
             full_scan_limit = self.detection_config.get("minor_full_scan_limit", 100)
             full_sample = self.sample(schema, table, cname, limit=full_scan_limit)
-            full_res = self.scanner.scan_column(cname, full_sample)
+            full_res = self.scanner.scan_column(
+                cname, full_sample, connector_data_type=ctype
+            )
             if "DOB_POSSIBLE_MINOR" in (full_res.get("pattern_detected") or ""):
                 res = full_res
                 suffix = " (full-scan confirmed)"

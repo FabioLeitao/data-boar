@@ -1,6 +1,7 @@
 """
 Single report generator: reads database_findings, filesystem_findings, scan_failures from LocalDBManager
-for a session; produces Excel with sheets "Report info" (session + about), "Database findings", etc.,
+for a session; produces Excel with sheets "Report info" (session + about), "Database findings",
+optional "Suggested review (LOW)" (SUGGESTED_REVIEW_ID_LIKE rows), etc.,
 and heatmap image (sensitivity/risk) with about footer. Returns path to Excel file.
 
 Branding: if api/static/mascot/data_boar_mascote_color_full.png exists, a small mascot is embedded
@@ -24,6 +25,22 @@ from openpyxl.worksheet.properties import PageSetupProperties
 from core.about import get_about_info
 from core.aggregated_identification import run_aggregation
 from core.database import failure_hint
+from core.suggested_review import SUGGESTED_REVIEW_PATTERN
+
+# Cross-ref aggregated sheet: first row explains sampling limits (FN-first; incomplete-data transparency).
+_AGGREGATED_CROSSREF_SAMPLE_NOTE_ROW: dict[str, str] = {
+    "Target": "— Sample / coverage note —",
+    "Source": "",
+    "Table / File": "",
+    "Columns involved": "",
+    "Categories": "",
+    "Explanation": (
+        "Esta aba resume combinações de categorias quasi-identificadoras com base em achados do escaneamento "
+        "(amostras por coluna/arquivo, p.ex. sample_limit), não em uma auditoria exaustiva de todos os valores. "
+        "Recomenda-se confirmação humana; a ausência de linhas aqui não prova ausência de risco identificável. "
+        "/ This sheet reflects sampled scanning only—not a full-population audit; human confirmation is recommended."
+    ),
+}
 
 # Mascot path for report branding (Excel Report info sheet and heatmap PNG)
 _REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -213,6 +230,8 @@ _SHEET_FS_FINDINGS = "Filesystem findings"
 _SHEET_SCAN_FAILURES = "Scan failures"
 _SHEET_REPORT_INFO = "Report info"
 _SHEET_HEATMAP_DATA = "Heatmap data"
+# LOW findings persisted for ID-like column names (FN reduction); see core.suggested_review
+_SHEET_SUGGESTED_REVIEW = "Suggested review (LOW)"
 _REPORT_INFO_CNPJ_FORMAT_COMPAT = "CNPJ format compatibility"
 
 
@@ -436,6 +455,19 @@ def _recommendation_row_for_pattern(pat: str, norm: str) -> dict:
     Priority: minor (Art. 14) > PII_AMBIGUOUS (confirm manually) > CPF/SSN/LGPD > EMAIL > CREDIT/CARD > default.
     """
     norm_lower = norm.lower()
+    if "FUZZY_COLUMN_MATCH" in pat:
+        return {
+            _REC_DATA_PATTERN: pat,
+            _REC_BASE_LEGAL: norm
+            or "Possible personal data (fuzzy column name – confirm manually)",
+            _REC_RISCO: "Nome de coluna grafado de forma próxima a um termo sensível da lista ML/DL; confirmação humana recomendada.",
+            _REC_RECOMENDACAO: (
+                "Confirmar manualmente se a coluna contém dado pessoal. Se for falso positivo, ajuste termos em "
+                "ml_patterns_file / dl_patterns_file ou desative fuzzy_column_match / aumente fuzzy_column_match_min_ratio."
+            ),
+            _REC_PRIORIDADE: "MÉDIA",
+            _REC_RELEVANTE_PARA: "Operador, DPO, Segurança da Informação",
+        }
     if "PII_AMBIGUOUS" in pat or "Generic identifier" in norm:
         return {
             _REC_DATA_PATTERN: pat,
@@ -646,6 +678,77 @@ def _get_session_metadata(db_manager: Any, session_id: str) -> dict[str, Any]:
     }
 
 
+def _build_suggested_review_rows(
+    db_rows: list[dict],
+    fs_rows: list[dict],
+    config: dict | None,
+) -> list[dict]:
+    """
+    Rows for the Suggested review sheet: findings stored as LOW with SUGGESTED_REVIEW_ID_LIKE.
+
+    Built from **unfiltered** session rows so they still appear when report.min_sensitivity
+    hides LOW from the main findings sheets.
+    """
+    cfg = config or {}
+    report_cfg = cfg.get("report", {}) if isinstance(cfg.get("report"), dict) else {}
+    if not report_cfg.get("include_suggested_review_sheet", True):
+        return []
+    out: list[dict] = []
+    for r in db_rows:
+        if r.get("pattern_detected") != SUGGESTED_REVIEW_PATTERN:
+            continue
+        out.append(
+            {
+                "Source": "database",
+                "Target": r.get("target_name", ""),
+                "Schema": r.get("schema_name", ""),
+                "Table": r.get("table_name", ""),
+                "Column": r.get("column_name", ""),
+                "Data type": r.get("data_type", ""),
+                "Sensitivity": r.get("sensitivity_level", ""),
+                "Pattern": r.get("pattern_detected", ""),
+                "Norm / note": r.get("norm_tag", ""),
+                "ML confidence": r.get("ml_confidence", ""),
+            }
+        )
+    for r in fs_rows:
+        if r.get("pattern_detected") != SUGGESTED_REVIEW_PATTERN:
+            continue
+        out.append(
+            {
+                "Source": "filesystem",
+                "Target": r.get("target_name", ""),
+                "Schema": "",
+                "Table": "",
+                "Column": r.get("file_name", ""),
+                "Data type": r.get("data_type", ""),
+                "Sensitivity": r.get("sensitivity_level", ""),
+                "Pattern": r.get("pattern_detected", ""),
+                "Norm / note": r.get("norm_tag", ""),
+                "ML confidence": r.get("ml_confidence", ""),
+            }
+        )
+    return out
+
+
+def _remove_suggested_review_from_main_sheets(
+    db_rows: list[dict],
+    fs_rows: list[dict],
+    report_cfg: dict,
+) -> tuple[list[dict], list[dict]]:
+    """
+    When the Suggested review sheet is enabled, drop SUGGESTED_REVIEW_ID_LIKE rows from
+    Database/Filesystem findings so they are not duplicated (they remain on Suggested review).
+    """
+    if not report_cfg.get("include_suggested_review_sheet", True):
+        return db_rows, fs_rows
+
+    def _keep(r: dict) -> bool:
+        return r.get("pattern_detected") != SUGGESTED_REVIEW_PATTERN
+
+    return [r for r in db_rows if _keep(r)], [r for r in fs_rows if _keep(r)]
+
+
 def _get_report_config_and_filtered_rows(
     config: dict | None,
     db_rows: list[dict],
@@ -759,6 +862,7 @@ def _write_excel_sheets(
     current_started_at: str | None,
     report_info: list[dict],
     heatmap_path: str | None = None,
+    suggested_review_rows: list[dict] | None = None,
 ) -> None:
     """Write all Excel sheets (Report info, Executive summary, findings, recommendations, trends, heatmap data)."""
     pd.DataFrame(report_info).to_excel(
@@ -792,6 +896,11 @@ def _write_excel_sheets(
         pd.DataFrame(fs_rows_for_sheets).to_excel(
             writer, sheet_name=_SHEET_FS_FINDINGS, index=False
         )
+    sr = suggested_review_rows or []
+    if sr:
+        pd.DataFrame(sr).to_excel(
+            writer, sheet_name=_SHEET_SUGGESTED_REVIEW, index=False
+        )
     agg_rows = db_manager.get_aggregated_identification_risks(session_id)
     if agg_rows:
         sheet_data = [
@@ -805,7 +914,8 @@ def _write_excel_sheets(
             }
             for r in agg_rows
         ]
-        pd.DataFrame(sheet_data).to_excel(
+        sheet_with_note = [_AGGREGATED_CROSSREF_SAMPLE_NOTE_ROW] + sheet_data
+        pd.DataFrame(sheet_with_note).to_excel(
             writer, sheet_name="Cross-ref data – ident. risk", index=False
         )
     if fail_rows:
@@ -824,8 +934,16 @@ def _write_excel_sheets(
             {
                 _REC_DATA_PATTERN: "AGGREGATED_IDENTIFICATION",
                 _REC_BASE_LEGAL: "LGPD Art. 5 (dado pessoal); GDPR Recital 26 (identifiability – combination of data may identify individuals)",
-                _REC_RISCO: "Dados de múltiplas colunas ou fontes (ex.: gênero, cargo, saúde, endereço, telefone) na mesma tabela/arquivo podem permitir identificação ou reidentificação de pessoas. Tratar como caso especial para DPO e compliance.",
-                _REC_RECOMENDACAO: "Avaliar controles de acesso e limitação de finalidade; considerar anonimização ou pseudonimização; documentar base legal para o tratamento combinado (LGPD Art. 5; GDPR Recital 26).",
+                _REC_RISCO: (
+                    "Dados de múltiplas colunas ou fontes (ex.: gênero, cargo, saúde, endereço, telefone) na mesma tabela/arquivo "
+                    "podem permitir identificação ou reidentificação de pessoas. "
+                    "A detecção baseia-se em amostras de escaneamento (não no universo completo); tratar como caso especial para DPO e compliance."
+                ),
+                _REC_RECOMENDACAO: (
+                    "Avaliar controles de acesso e limitação de finalidade; considerar anonimização ou pseudonimização; "
+                    "documentar base legal para o tratamento combinado (LGPD Art. 5; GDPR Recital 26). "
+                    "Confirmar manualmente com base nos dados reais, especialmente quando sample_limit for baixo."
+                ),
                 _REC_PRIORIDADE: "ALTA",
                 _REC_RELEVANTE_PARA: "DPO, Compliance, Segurança da Informação",
             },
@@ -1056,6 +1174,7 @@ def generate_report(
     report_cfg, db_rows_for_sheets, fs_rows_for_sheets = (
         _get_report_config_and_filtered_rows(config, db_rows, fs_rows)
     )
+    suggested_review_rows = _build_suggested_review_rows(db_rows, fs_rows, config)
     lic_ctx = None
     if config:
         from core.licensing.guard import get_license_guard
@@ -1072,6 +1191,9 @@ def generate_report(
             db_rows_for_sheets, fs_rows_for_sheets = _apply_trial_row_cap(
                 db_rows_for_sheets, fs_rows_for_sheets, cap
             )
+    db_rows_for_sheets, fs_rows_for_sheets = _remove_suggested_review_from_main_sheets(
+        db_rows_for_sheets, fs_rows_for_sheets, report_cfg
+    )
     meta = _get_session_metadata(db_manager, session_id)
     current_started_at = meta["started_at"]
     about = get_about_info()
@@ -1113,5 +1235,6 @@ def generate_report(
             current_started_at,
             report_info,
             heatmap_path=heatmap_path,
+            suggested_review_rows=suggested_review_rows,
         )
     return str(out_path)

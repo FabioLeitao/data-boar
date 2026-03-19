@@ -53,6 +53,8 @@ Bibliotecas cliente adicionais podem ser necessárias dependendo de quais conect
 
 - Sempre que alterar dependências (incluindo ao aplicar Dependabot ou automação), edite primeiro o **`pyproject.toml`**, depois execute `uv lock` e `uv export --no-emit-package pyproject.toml -o requirements.txt` para que **uv.lock** e **requirements.txt** permaneçam em sincronia com o lockfile.
 
+- **Triagem local (Dependabot + CVEs de imagem):** No Windows, na raiz do repositório, execute **`.\scripts\maintenance-check.ps1`** após `gh auth login` (lista PRs abertos do Dependabot) e com Docker Desktop se quiser **`docker scout quickview`** na imagem publicada. O script não altera o repositório. Depois de corrigir deps ou o **Dockerfile**, reconstrua e publique a imagem e rode o Scout de novo no novo digest. O **Dockerfile** atualiza **pip** e **wheel** no builder e no runtime para evitar ferramentas antigas em camadas copiadas; o **`requirements.txt`** é exportado pelo uv e em geral não lista `wheel` como dependência da aplicação.
+
 Essa abordagem faz parte da linha de base de segurança do projeto. Para a lista completa de medidas de endurecimento e status, veja **`docs/plans/completed/PLAN_SECURITY_HARDENING.md`**.
 
 ## Resistência a vulnerabilidades comuns
