@@ -23,7 +23,7 @@ description: >-
    - **A/B or regression:** keep **at most two** intentionally named containers (e.g. different tags or configs). Anything else is **throwaway**.
 3. **Cleanup suggestion** (confirm with the operator before `rm -f`):
    - Stop: `docker stop <name>`
-   - Remove: `docker rm <name>`  
+   - Remove: `docker rm <name>`
    - Compose: `docker compose -f deploy/docker-compose.yml … down` (add override file if used).
 4. **Document** in the session or PR description if smoke was run and **which** container name/tag was kept, so the next run does not spawn duplicates.
 5. **Agents:** do not delete containers autonomously; **propose** commands and remind the operator to keep only 1–2 instances unless A/B is required.
