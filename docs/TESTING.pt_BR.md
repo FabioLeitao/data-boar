@@ -24,6 +24,8 @@ uv run pytest -v -W error -k "session_id"
 
 **Requisitos:** Python 3.12+, dependências instaladas (`uv sync` ou `pip install -e .`). Nenhum serviço externo é necessário; os testes usam configs temporários e SQLite em memória ou temporário quando preciso.
 
+**Versões menores suportadas:** o CI executa **pytest** em **Python 3.12 e 3.13** (veja `.github/workflows/ci.yml`). Para bumps da imagem Docker e checklist de readiness 3.14, veja [PYTHON_UPGRADE_PLAYBOOK.pt_BR.md](PYTHON_UPGRADE_PLAYBOOK.pt_BR.md).
+
 ## Visão geral dos módulos de teste
 
 | Módulo                                | Objetivo                                                                                                                                                                                                                                                          |

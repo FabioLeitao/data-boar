@@ -24,6 +24,8 @@ uv run pytest -v -W error -k "session_id"
 
 **Requirements:** Python 3.12+, dependencies installed (`uv sync --group dev` or `pip install -e .` plus dev tools). The **dev** group includes **`rapidfuzz`** so fuzzy-column tests run; core runtime does not require it unless you enable `sensitivity_detection.fuzzy_column_match` (optional extra **`detection-fuzzy`**). No external services are required; tests use temporary configs and in-memory or temporary SQLite where needed.
 
+**Supported minors:** CI runs **pytest** on **Python 3.12 and 3.13** (see `.github/workflows/ci.yml`). For Docker base bumps and a 3.14 readiness checklist, see [PYTHON_UPGRADE_PLAYBOOK.md](PYTHON_UPGRADE_PLAYBOOK.md).
+
 ## Test modules overview
 
 | Module                                | Purpose                                                                                                                                                                                                                                                          |
