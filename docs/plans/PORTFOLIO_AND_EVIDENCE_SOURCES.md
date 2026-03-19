@@ -68,7 +68,39 @@ Use this when you (re)find **paid but incomplete** certs or want to pick **low-e
 
 ---
 
-### 3.2 Certifications and courses (from CV – LEITAO_Candidates_Resume_BR.pdf, p.2)
+### 3.2 CWL (CyberWarFare Labs) – paid courses in progress (from `docs/private/` images)
+
+**Source:** Screenshots in `docs/private/`: IMG_6491–6499.jpg, signal-2026-03-18-035101.jpeg. Platform: **labs.cyberwarfare.live**. All listed below are marked "On Progress."
+
+| Code | Course | Why it helps (production / academic / certifiable confidence) |
+| ---- | ------ | ------------------------------------------------------------- |
+| **BTF** | Blue Team Fundamentals | Threat detection, incident response, security monitoring. **Foundation** for production readiness and defensive narrative; short, high leverage. |
+| **C3SA** | Certified Cyber Security Analyst | SOC analyst: detect threats, investigate incidents, analyze logs. Direct fit for **audit, logging, and certifiable confidence**; strong CV title. |
+| **MCBTA** | Multi-Cloud Blue Team Analyst | Centralized logging, log analysis, threat detection on AWS/Azure/GCP. Supports **cloud-ready** app narrative and Data Prev / enterprise roles. |
+| **PTF** | Purple Team Fundamentals | Core of purple teaming (red + blue). Supports **balanced offensive/defensive** narrative for thesis and PUC-Rio Compliance de Cibersegurança. |
+| **MCRTA** | Multi-Cloud Red Team Analyst | Cloud red team, credentials enum/exploit, AWS/Azure/GCP. Complements MCBTA; good for **cloud security** depth and academic breadth. |
+| **CRTA** | Red Team Analyst | Web/network exploitation, AD basics & attacks, pivoting. **Offensive** depth; informs defensive hardening of app and deploy pipeline. |
+| **CRT-ID** | Red Team Infra Dev | OPSEC-safe infra, redirectors, payload servers, cloud/on-prem. Relevant to **secure deploy** (signing, repo, OPSEC) and production infra. |
+| **CRT-COI** | Red Team CredOps Infiltrator | Windows creds (DPAPI, LSASS), credential dumping. **Defensive** value: understand cred handling for secure config/secrets in app. |
+| **CPIA** | Certified Process Injection Analyst | Process injection, persistence, evasion. Informs **app hardening** and "why signed/verified deploy" narrative. |
+| **CCSE** | Cyber Security Engineer | Broad: 50+ labs, OSINT to internal pentest. Strong **certifiable confidence** and CV; larger scope – do after 1–2 shorter certs. |
+
+**How to use these for maximum value (your study, token-aware):**
+
+- **Studying is your task;** the agent does not do the learning. Use this section to decide **what** to do and **when**.
+- **One cert at a time:** Finish one course fully (proof in `docs/private/`) before starting the next. "One done > three in progress" keeps narrative and CV clear.
+- **Recommended order for goals (production + academic + certifiable confidence):**
+  1. **BTF** → foundational blue team; fastest impact on "defensive readiness" and incident response.
+  2. **C3SA** → SOC analyst; logs and detection; strong title for Data Prev / enterprise and thesis.
+  3. **MCBTA** → multi-cloud blue; after BTF/C3SA for cloud and centralized logging narrative.
+  4. **PTF** → purple team; bridges red+blue; good for thesis "balanced view" and PUC-Rio alignment.
+  5. Then red/advanced as capacity allows: **MCRTA**, **CRTA**, **CRT-ID**, **CRT-COI**, **CPIA**; **CCSE** last or in parallel with one shorter one (broad, 50+ labs).
+- **When to slot study in the sequence:** After **Dependabot/Scout** and **one feature slice** (e.g. Content type step 2 or Data source versions Phase 1), allocate **fixed study blocks** (e.g. 1–2 sessions per week). Do not mix deep study with same-day agent-heavy coding; keeps context and tokens manageable.
+- **Evidence:** When you complete a CWL cert, save the certificate or completion screenshot to `docs/private/` (e.g. `CWL_BTF_certificate.pdf`) and add a row to §3 table (Certifications and community) so it feeds CV and thesis narrative.
+
+---
+
+### 3.3 Certifications and courses (from CV – LEITAO_Candidates_Resume_BR.pdf, p.2)
 
 Source: **`docs/private/LEITAO_Candidates_Resume_BR.pdf`**, section "CERTIFICAÇÕES E CURSOS COMPLEMENTARES" (second page). Use for narrative, prioritisation, and §3.1 sequenced to-do.
 
@@ -89,7 +121,7 @@ Source: **`docs/private/LEITAO_Candidates_Resume_BR.pdf`**, section "CERTIFICAÇ
 
 ---
 
-### 3.3 Education, monitoring, and technical background (for narrative / CV)
+### 3.4 Education, monitoring, and technical background (for narrative / CV)
 
 - **UFRJ (student):** Studied at UFRJ (taught by their professors). Worked at the **LCI Lab** during student years. **Monitored** students (helping the teacher and students who needed help with course content, classes, and IT lab).
 - **UESA (Telecommunications):** While studying Telecommunications at UESA, **monitored and assisted** the Physics class.
@@ -99,6 +131,52 @@ Source: **`docs/private/LEITAO_Candidates_Resume_BR.pdf`**, section "CERTIFICAÇ
 - **Languages (work and personal projects, including before GitHub and similar):** Pascal (Turbo, Borland, Delphi, Lazarus, FPC, etc.), C/C++, and some Visual Basic. **Scripting and current development:** Bash, Python, Expect; plenty of .bat, .cmd, VBS, and .ps1 (PowerShell) for Windows/systems automation; and the stack behind current work (e.g. Data Boar, Python, Go, Rust from CV). Supports narrative of long-standing programming practice, breadth of stacks, and evolution from desktop/legacy to modern tooling.
 
 *No artifact to “fetch”; reference in bio and “Formação e experiência” when drafting thesis or pitch.*
+
+---
+
+### 3.5 Free / optional courses to consider (when capacity allows)
+
+**Stanford – Transformers and Large Language Models (free, YouTube)**
+Official Stanford fall curriculum; full course on LLMs, 9 lectures. **Free on YouTube.** Relevant to: Data Boar's optional [dl] (sentence-transformers, embeddings), PUC-Rio's "IA" and "Gestão de Incidentes e Privacidade de Dados + IA" content, and academic/stricto sensu narrative. Consider when you have bandwidth; no cost, watch at your own pace.
+
+| Aula | Topic | YouTube |
+| ---- | ----- | ------- |
+| 1 | Transformer | [Ub3GoFaUcds](https://youtu.be/Ub3GoFaUcds) |
+| 2 | Modelos baseados em Transformer e técnicas | [yT84Y5zCnaA](https://youtu.be/yT84Y5zCnaA) |
+| 3 | Transformers e Large Language Models | [Q5baLehv5So](https://youtu.be/Q5baLehv5So) |
+| 4 | Treinamento de LLMs | [VlA_jt_3Qc4](https://youtu.be/VlA_jt_3Qc4) |
+| 5 | Ajuste fino de LLMs | [PmW_TMQ3l0I](https://youtu.be/PmW_TMQ3l0I) |
+| 6 | Raciocínio em LLMs | [k5Fh-UgTuCo](https://youtu.be/k5Fh-UgTuCo) |
+| 7 | LLMs agênticos | [h-7S6HNq0Vg](https://youtu.be/h-7S6HNq0Vg) |
+| 8 | Avaliação de LLMs | [8fNP4N46RRo](https://youtu.be/8fNP4N46RRo) |
+| 9 | Recapitulação e tendências atuais | [Q86qzJ1K1Ss](https://youtu.be/Q86qzJ1K1Ss) |
+
+**How to use:** Slot after CWL priority certs or in parallel with lato sensu if you want to deepen LLM/AI for thesis or future stricto sensu. No certificate to save unless you track completion yourself; can still cite "Stanford CS curriculum (Transformers & LLMs)" in CV or narrative if you complete the playlist.
+
+**Harvard PLL – Machine Learning for Leaders (HKS Executive Education webinar)**
+Free, online, self-paced, ~1 hour. Harvard Kennedy School + SEAS; faculty Martin Wattenberg and Fernanda Viégas. Topics: machine learning basics for leaders and policy-makers, cybersecurity, public policy. [Course page](https://pll.harvard.edu/course/hks-executive-education-faculty-webinar-machine-learning-leaders). Fits Data Boar ML/DL narrative, PUC-Rio “IA”, and leadership/compliance angle.
+
+**Harvard Online – CS50's Introduction to Cybersecurity**
+Introduction to cybersecurity (Harvard Online / CS50 series). [Course page](https://www.harvardonline.harvard.edu/course/cs50s-introduction-cybersecurity). Fits production readiness, certifiable confidence, and PUC-Rio Compliance de Cibersegurança / Data Prev narrative.
+
+**Harvard PLL – Data Science: Visualization**
+Free*, online, 8 weeks, 1–2 h/week, self-paced (edX). ggplot2/R, visualization principles, communicating data-driven findings; part of Harvard’s Professional Certificate in Data Science. [Course page](https://pll.harvard.edu/course/data-science-visualization/2025-10). Fits Data Boar reports/heatmaps narrative and data-science credibility.
+
+**Harvard PLL – Data Science: Productivity Tools**
+Free*, online, 8 weeks, 1–2 h/week, self-paced (edX). Unix/Linux, git, GitHub, RStudio, R Markdown; reproducible reports and project organization; part of Harvard's Professional Certificate in Data Science. [Course page](https://pll.harvard.edu/course/data-science-productivity-tools/2025-10). Fits production workflow and open-source (GitHub) narrative.
+
+**Harvard PLL – Machine Learning and AI with Python**
+Free* (audit), online, 6 weeks, 4–5 h/week, self-paced (edX). Decision trees, random forests, ML models, Python libraries; data bias, overfitting/underfitting; SEAS. [Course page](https://pll.harvard.edu/course/machine-learning-and-ai-python). Fits Data Boar optional [dl] and ML sensitivity detection narrative; verified certificate $299 if desired.
+
+**Harvard PLL – Data Science: Building Machine Learning Models**
+Free*, online, 8 weeks, 2–4 h/week, self-paced (edX). ML basics, cross-validation, popular algorithms, recommendation systems, regularization; part of Harvard's Professional Certificate in Data Science. [Course page](https://pll.harvard.edu/course/data-science-building-machine-learning-models/2025-10). Fits Data Boar ML/sensitivity detection and data-science credential narrative.
+
+**Harvard PLL – Free courses catalog**
+Browse all free* courses (140+): filter by subject (Data Science, Computer Science, etc.), duration, school, difficulty. [Free courses](https://pll.harvard.edu/catalog/FRee). Use when you want to add more Harvard PLL options beyond the ones already listed above.
+
+**Additional free resources:**
+- YouTube: [youtu.be/qHwIiwjrT1I](https://youtu.be/qHwIiwjrT1I) – add title/topic when you note it.
+- **IBM SkillsBuild:** [activity/plan](https://skills.yourlearning.ibm.com/activity/PLAN-FA511CDFAF48) – add plan name/topic in `docs/private/Learning_and_certs.md` when you check it (fits with your existing IBM cybersecurity certs on CV).
 
 ---
 
@@ -122,6 +200,21 @@ Fetched from [PUC-Rio Digital – Compliance de Cibersegurança](https://especia
 | **Relevance to Data Boar / thesis** | Direct fit: compliance digital, privacidade de dados, governança de dados com cibersegurança, gestão de riscos. Thesis can frame Data Boar as artefato de apoio à conformidade e evidências (LGPD, ISO 27xxx) dentro deste programa. |
 
 Optional: add official "Guia do Curso", ementa completa, or TCC norms to `docs/private/` when you have them.
+
+### 4.2 After the lato sensu at PUC-Rio – possible next steps
+
+**Purpose:** Document the option to pursue **another course or track** after finishing the PUC-Rio Compliance de Cibersegurança (lato sensu). Makes sense as a natural continuation for production readiness, certifiable confidence, and academic career.
+
+**Token-aware:** When deciding post-lato, open only this section (and the one plan or program link you are comparing). No need to open all academic plans in one session; pick one option at a time (low complexity / high gain).
+
+| Option | What it is | Where it lives / what to add |
+| ------ | ---------- | ---------------------------- |
+| **Stricto sensu (M.Sc. / PhD)** | Research path building on Data Boar and the lato sensu thesis: research questions, methodology, experimental infrastructure, advisor outreach. | [PLAN_STRICTO_SENSU_RESEARCH_PATH.md](PLAN_STRICTO_SENSU_RESEARCH_PATH.md). Use lato sensu TCC and 1–2 papers as stepping stones; see plan §4 (early publications and advisor outreach). |
+| **Universidade do Intercâmbio (Harvard online + mestrado opcional)** | Escola/programa com cursos online de Harvard; possibilidade de mestrado opcional. | [Cursos online de Harvard](https://www.universidadedointercambio.com/cursos-online-de-harvard/). Add details (modalidade, duração, custo, requisitos do mestrado) to `docs/private/Post_lato_sensu_options.md` when you have them. |
+| **Faculdade HUB – MBA em IA (+ Mestrado AGTU opcional)** | MBA em Transformação de Negócios com IA Generativa (HUB, MEC); dupla titulação opcional com Mestrado em Negócios e IA (AGTU, Flórida). 12 meses, 100% online; sem TCC; inclui trilha de microcertificados Harvard/IBM/Babson, bootcamp presencial em SP (opcional). Pago (12x ou 18x); graduação completa exigida para o mestrado AGTU. | [MBA Inteligência Artificial – Faculdade HUB](https://pv.faculdadehub.com.br/mbaia0002/mba-inteligencia-artificial/). Add preço atual e condições to `docs/private/Post_lato_sensu_options.md` when you evaluate. |
+| **Other course or program** | A second specialization, MBA, or extension you are considering (e.g. another PUC-Rio program, or a different institution). | When you have the link or name: add a row here and, if useful, a short note in `docs/private/` (e.g. `docs/private/Post_lato_sensu_options.md`) with URL, duration, and how it fits after Compliance de Cibersegurança. |
+
+**Suggested sequence (if it makes sense for you):** (1) Finish PUC-Rio lato sensu and TCC; (2) then choose one of: stricto sensu (M.Sc. track) per PLAN_STRICTO_SENSU, Universidade do Intercâmbio (Harvard online / mestrado opcional), Faculdade HUB (MBA em IA + mestrado AGTU opcional), or another course you have in mind; (3) CWL certs (BTF, C3SA, etc.) can run in parallel with the lato sensu as capacity allows, and will strengthen the narrative for whichever path you choose next.
 
 ---
 

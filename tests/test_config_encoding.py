@@ -131,3 +131,27 @@ def test_normalize_config_max_inner_size_validation():
         }
     )
     assert out5["file_scan"]["max_inner_size"] is None
+
+
+def test_normalize_config_use_content_type():
+    """file_scan.use_content_type is normalized (default False); engine/connectors receive it via target file_scan."""
+    out = normalize_config({"targets": [], "report": {"output_dir": "."}})
+    assert out["file_scan"].get("use_content_type") is False
+
+    out2 = normalize_config(
+        {
+            "targets": [],
+            "report": {"output_dir": "."},
+            "file_scan": {"use_content_type": True},
+        }
+    )
+    assert out2["file_scan"]["use_content_type"] is True
+
+    out3 = normalize_config(
+        {
+            "targets": [],
+            "report": {"output_dir": "."},
+            "file_scan": {"use_content_type": False},
+        }
+    )
+    assert out3["file_scan"]["use_content_type"] is False
