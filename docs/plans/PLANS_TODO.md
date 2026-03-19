@@ -16,6 +16,7 @@ Use these tags in headings to keep priorities explicit and machine-countable:
 
 - Horizons: `[H0]` must-do-now, `[H1]` short-term, `[H2]` medium-term, `[H3]` long-term/production-ready milestone, `[H4]` far horizon (post-lato/master's scenario), `[H5]` dream horizon (PhD thesis scenario).
 - Urgency: `[U0]` security/safety now, `[U1]` low-AI/high-gain soon, `[U2]` not critical next, `[U3]` backlog/catalogue.
+- Status labels used in to-do rows/tables: `✅ Done`, `⬜ Pending`, `🔄 Tracked`, `Tracked (partially done)`, `Under consideration`, `Backlog`.
 
 <!-- PLANS_STATUS_DASHBOARD:START -->
 ## Status dashboard (auto-generated)
@@ -23,7 +24,7 @@ Use these tags in headings to keep priorities explicit and machine-countable:
 Do not edit this block manually; refresh with `python scripts/plans-stats.py --write`.
 
 - **Status rows counted:** 87  (Done: 44 | Incomplete: 43)
-- **Incomplete breakdown:** Pending `⬜`=41, Tracked `🔄`=2, Under consideration=0, Backlog-marked rows=0
+- **Incomplete breakdown:** Pending `⬜`=41, Tracked `🔄` / `Tracked (partially done)`=2, Under consideration=0, Backlog-marked rows=0
 
 | Horizon | Total rows | Done | Incomplete |
 | ------- | ----------: | ----: | ----------: |
@@ -36,7 +37,7 @@ Do not edit this block manually; refresh with `python scripts/plans-stats.py --w
 | `UNSPECIFIED` | 0 | 0 | 0 |
 <!-- PLANS_STATUS_DASHBOARD:END -->
 
-**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Commercial licensing (runtime + docs + issuer bootstrap)** ✅ Phase 1 in repo (see `docs/LICENSING_SPEC.md`, `core/licensing/`); operational hardening ⬜ Priority band A · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ✅ Done · **Compliance standards alignment (ISO/IEC 27701, FELCA)** ✅ Done (doc only) · **Additional detection techniques & FN reduction** 🔄 Slices 1–3 done (+ optional `fuzzy_column_match` / `FUZZY_COLUMN_MATCH`); next: plan §4 format hints / aggregated wording, etc. · **Compressed files** ✅ Done (steps 1–12; follow-ups 13–14 optional) · **Content type & cloaking detection** ✅ Core plan done (optional: man pages / OpenAPI examples) · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ✅ Phase 4 done (Phase 5 checksum future) · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started · **Additional data soup formats** ⬜ Backlog (catalogue)
+**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Commercial licensing (runtime + docs + issuer bootstrap)** ✅ Phase 1 in repo (see `docs/LICENSING_SPEC.md`, `core/licensing/`); operational hardening ⬜ Priority band A · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ✅ Done · **Compliance standards alignment (ISO/IEC 27701, FELCA)** ✅ Done (doc only) · **Additional detection techniques & FN reduction** 🔄 Slices 1–4 done (`fuzzy_column_match`, `FUZZY_COLUMN_MATCH`, `connector_format_id_hint`, `FORMAT_LENGTH_HINT_ID`); next: optional aggregated/incomplete-data modes and semantic hints (priorities 5+). · **Compressed files** ✅ Done (steps 1–12; follow-ups 13–14 optional) · **Content type & cloaking detection** ✅ Core plan done (optional: man pages / OpenAPI examples) · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ✅ Phase 4 done (Phase 5 checksum future) · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started · **Additional data soup formats** ⬜ Backlog (catalogue)
 
 ### Commercial licensing — future reminder (partner / tiered SKUs)
 
@@ -135,7 +136,7 @@ After **A1–A3** (minimum), you can **resume token-aware pace** on Tier 2 featu
 | 0 | **Compliance standards alignment (ISO/IEC 27701, FELCA)** | Doc only: COMPLIANCE_FRAMEWORKS + roadmap; no code; smallest scope; supports pitch and audit narrative. ✅ Done |
 | 1 | **CNPJ alphanumeric format validation** | Research + regex + doc (Phase 1); focused, no schema change; high value for BR compliance. ✅ Phase 4 done |
 | 2 | **Content type & cloaking detection** | Steps 1–6 done (CLI `--content-type-check`, `POST /scan` `content_type_check`, dashboard checkbox, tests, USAGE/TECH_GUIDE). Optional follow-ups: man pages, OpenAPI examples. |
-| 3 | **Additional detection techniques & FN reduction** | ✅ Slices 1–3 + **aggregated cross-ref sample note** (Excel + recommendation text). **Next (token-aware):** plan priority 4 — format/length hints from connectors. |
+| 3 | **Additional detection techniques & FN reduction** | ✅ Slices 1–4 + **aggregated cross-ref sample note** (Excel + recommendation text). **Next (token-aware):** priorities 5+ (semantic hint, regional dictionaries/FK context, validation). |
 | 4 | **Strong crypto & controls validation** | Phase 1: CLI flag, config, API/dashboard checkbox, engine wiring (no criteria yet); then Phase 2 adds criteria. |
 | 5 | **Data source versions & hardening** | Phase 1: `data_source_inventory` schema + save + one connector (e.g. SQL) + report sheet; one clear slice. |
 | 6 | **Notifications (off-band + scan-complete)** | Phase 1: config shape + notifier module + one channel (e.g. webhook); docs and examples; medium scope. |
