@@ -16,6 +16,7 @@
 1. **Lab is for integration:** OS paths, Docker volumes, real DB ports, firewall, and “does this config actually run here?”
 1. **Synthetic by default:** hand-made `.txt` / `.csv` with **fake** CPF/email patterns (see project tests for valid-format examples—do not use real people’s data).
 1. **Real data only when allowed:** copies of non-production DBs, anonymised extracts, or documents you own/have permission to scan.
+1. **Docker container churn:** Prefer `docker run --rm` for one-shot checks. If you keep a named **Data Boar** container between runs, aim for **one** primary instance—or **two** only for explicit **A/B** (image or config). Remove throwaway containers when done so ports (`8088`) and volumes stay predictable. See [DOCKER_SETUP.md](DOCKER_SETUP.md) §7.
 
 ---
 
