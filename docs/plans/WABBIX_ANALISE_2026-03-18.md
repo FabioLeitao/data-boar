@@ -23,7 +23,7 @@
 
 | ID | Wabbix recommendation | Mapping | Priority vs token-aware rule |
 |----|------------------------|---------|------------------------------|
-| **W-KPI** | Painel de KPIs de release e segurança operacional | **Backlog:** DORA-lite / GitHub Actions insights (lead time, CI fail rate); no code in app. Link: `PLAN_READINESS_AND_OPERATIONS.md`, future dashboard or wiki. | Low AI / manual-friendly; after critical security band. |
+| **W-KPI** | Painel de KPIs de release e segurança operacional | **Done (baseline):** 2 manual KPIs in `PLAN_READINESS_AND_OPERATIONS.md` §4.7 + lightweight exporter `scripts/kpi-export.py`. **Next optional:** DORA-lite / Actions insights (lead time, CI fail rate). | Low AI / manual-friendly; after critical security band. |
 | **W-CONTRACT** | Bateria de testes de contrato (relatórios + APIs críticas) | **Done (baseline):** report/heatmap artifact regressions in `tests/test_report_trends.py` + OpenAPI contract response documentation in `tests/test_routes_responses.py`. | Low/moderate slice; already covered by existing tests. |
 | **W-DECOUPLE** | Desacoplar regras centrais (detector / gerador) | **Ongoing:** SonarQube cognitive-complexity gates; incremental extraction (e.g. `core/fuzzy_column_match.py` pattern). No big-bang refactor. | High effort; small extractions when touching files. |
 | **W-DOC** | Disciplina de release + snapshot de documentação | **Done (baseline):** release notes per version; **optional:** export doc set per tag — backlog under W-KPI ops. | Doc-only follow-up. |
@@ -50,7 +50,7 @@ Use **`deploy/config.staging.example.yaml`** as a merge overlay:
 
 ## Next suggested (token-aware)
 
-1. **W-KPI** — add 1-2 concrete release/security KPIs (lead time, CI fail rate, rollback frequency) to the ops playbook so we can monitor evolution.
+1. **W-KPI (optional next slice)** — extend from baseline to DORA-lite/Actions insights (lead time, CI fail rate, rollback frequency) when maintenance is green.
 2. **W-DECOUPLE** — small extractions to reduce core detector/report coupling when touching high-complexity modules.
 3. **–1 / –1b** — maintenance when critical (Dependabot / Docker Scout).
 

@@ -78,7 +78,7 @@ Each item is a small doc update or script. Status: **Done** | **Not started** | 
 | -------                                                                                                                                                                                           | --------    |
 | Python/platform support sentence in README or CONTRIBUTING: we support Python 3.12 and 3.13 on Linux, macOS, Windows; we will announce deprecation of a version at least one minor release ahead. | Not started |
 | Optional: written “upgrade policy” (e.g. we refresh lockfile at least every N months or when a critical CVE appears).                                                                             | Optional    |
-| Docker/Dependabot vulnerability triage: for each release cycle, review GitHub Dependabot alerts and Docker Scout quickview for the base image; classify P0/P1 vulns and decide which to patch in-code vs via base-image bump.           | Not started |
+| Docker/Dependabot vulnerability triage: for each release cycle, review GitHub Dependabot alerts and Docker Scout quickview for the base image; classify P0/P1 vulns and decide which to patch in-code vs via base-image bump.           | Tracked (partially done) |
 | Future Cursor rule/skill: add a security rule/skill that reminds the agent to check Dependabot and Docker Scout summaries before declaring a release “prod-ready”, within token constraints.                                           | Optional    |
 
 ### 4.7 W-KPI baseline (release / CI / security ops)
