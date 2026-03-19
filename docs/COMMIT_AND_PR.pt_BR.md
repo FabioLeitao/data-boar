@@ -21,12 +21,21 @@ Você pode limitar o commit/PR a arquivos específicos com **`-IncludeFiles`** (
 
 ## Fazer manualmente
 
+### Preview: lista de arquivos vs mensagem de commit
+
+**`-Action Preview` sem `-Title` / `-Body`** mostra corretamente **quais arquivos** entram e o **`git diff --stat`**. O script **não deduz** título ou corpo a partir das alterações.
+
+- **Antes:** havia **textos de exemplo fixos** no script (ex.: “Update: security and docs”), o que parecia uma mensagem real — **não era**.
+- **Agora:** sem `-Title`, o Preview mostra um **aviso em amarelo** e “(não definido)”. Para **Commit** ou **PR** é obrigatório passar **`-Title`** (e em geral **`-Body`**); o Commit **falha** sem título.
+
+### Comandos
+
 Na raiz do repositório (PowerShell):
 
 ```powershell
-# Apenas visualizar (sem commit) – atalho
+# Apenas visualizar (sem commit) – atalho; mensagem não é gerada automaticamente
 .\scripts\preview-commit.ps1
-# Ou com título/corpo proposto:
+# Opcional: pré-visualizar o título/corpo que você usará no Commit/PR
 .\scripts\commit-or-pr.ps1 -Action Preview -Title "Seu título" -Body "Tópico um`nTópico dois"
 
 # Apenas commit
@@ -78,6 +87,7 @@ Quando você quiser **verificar**, rodar **pre-commit**, **fazer commit**, **des
 
 | Passo | Objetivo | Comando |
 |-------|----------|---------|
+| 0 | **Opcional:** PRs Dependabot + Docker Scout quickview (somente leitura; exige `gh`, Docker opcional) | `.\scripts\maintenance-check.ps1` |
 | 1 | **Check + pre-commit** (Ruff lint, format, markdown, pytest completo em uma execução) | `.\scripts\check-all.ps1` |
 | 2 | **Preview** (ver o que seria commitado; sem stage, sem commit) | `.\scripts\preview-commit.ps1` |
 | 3 | **Propor** um título curto e corpo do PR em tópicos a partir da lista de arquivos e do contexto | (você ou o agente sugere título e corpo) |

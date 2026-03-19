@@ -85,7 +85,24 @@ class AuditEngine:
         self.db_path = db_path or config.get("sqlite_path", "audit_results.db")
         self.db_manager = LocalDBManager(self.db_path)
         sens = config.get("sensitivity_detection") or {}
-        detection = config.get("detection") or {}
+        detection = dict(config.get("detection") or {})
+        # ML/DL MEDIUM band threshold lives under sensitivity_detection; detector reads flat keys.
+        if "medium_confidence_threshold" in sens:
+            detection["medium_confidence_threshold"] = sens[
+                "medium_confidence_threshold"
+            ]
+        if "column_name_normalize_for_ml" in sens:
+            detection["column_name_normalize_for_ml"] = sens[
+                "column_name_normalize_for_ml"
+            ]
+        for _fuzzy_key in (
+            "fuzzy_column_match",
+            "fuzzy_column_match_min_confidence",
+            "fuzzy_column_match_max_confidence",
+            "fuzzy_column_match_min_ratio",
+        ):
+            if _fuzzy_key in sens:
+                detection[_fuzzy_key] = sens[_fuzzy_key]
         self.scanner = DataScanner(
             regex_overrides_path=config.get("regex_overrides_file") or None,
             ml_patterns_path=config.get("ml_patterns_file") or None,
@@ -225,7 +242,11 @@ class AuditEngine:
             )
         elif t in ("powerbi", "dataverse", "powerapps"):
             connector = connector_class(
-                target, self.scanner, self.db_manager, sample_limit=sample_limit
+                target,
+                self.scanner,
+                self.db_manager,
+                sample_limit=sample_limit,
+                detection_config=self.config.get("detection"),
             )
         else:
             # Database targets (postgresql, mysql, sqlite, mssql, oracle, etc.): pass detection

@@ -18,7 +18,7 @@ Use this skill when updating dependencies, reviewing Dependabot PRs, or preparin
 
 ### 1. Discover recommendations
 
-- **PRs:** `gh pr list --state all` (or GitHub UI) to see open/closed Dependabot PRs (pip, uv, github_actions).
+- **PRs:** `gh pr list --state all` (or GitHub UI) to see open/closed Dependabot PRs (pip, uv, github_actions). On Windows, **`.\scripts\maintenance-check.ps1`** (repo root) lists open PRs from `dependabot[bot]` and can run **Docker Scout** on the published image; see **SECURITY.md**.
 - **Local vs Dependabot:** Prefer applying the same version change locally rather than merging the Dependabot branch; that way you run the same validation and avoid surprises.
 
 ### 2. Verify viability

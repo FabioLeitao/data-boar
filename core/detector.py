@@ -8,6 +8,11 @@ Pipeline:
 2. ML: training terms from ml_patterns_file or sensitivity_detection.ml_terms (inline).
 3. DL (hybrid): when available, training terms from dl_patterns_file or sensitivity_detection.dl_terms;
    confidence is combined with ML (e.g. max(ml_confidence, dl_confidence)).
+4. Optional fuzzy column name: when sensitivity_detection.fuzzy_column_match and rapidfuzz are
+   available, may elevate LOW borderline scores to MEDIUM (FUZZY_COLUMN_MATCH); default off.
+5. Optional connector format hint: when sensitivity_detection.connector_format_id_hint and
+   connectors pass declared SQL CHAR/VARCHAR length, may elevate LOW to MEDIUM (FORMAT_LENGTH_HINT_ID);
+   default off (Plan §4).
 
 To reduce false positives on song lyrics and music tablature/chord sheets:
 - Content heuristics detect lyrics (verse/chorus keywords, short lines) and tabs (digit/pipe lines).
@@ -21,7 +26,10 @@ from typing import Any
 
 import re
 
+from core.column_name_normalize import normalize_column_name_for_ml
 from core.dl_backend import DLClassifier, is_available as dl_available
+from core.fuzzy_column_match import try_fuzzy_elevation
+from core.suggested_review import column_name_suggests_identifier_review
 from utils.file_encoding import read_text_with_encoding
 
 import copy
@@ -604,10 +612,46 @@ def _detect_possible_minor(
     return False
 
 
+# Declared length in SQL-style type strings, e.g. VARCHAR(11), CHARACTER(14), character varying(9).
+_DECLARED_CHAR_LEN = re.compile(
+    r"(?i)(?:var)?char(?:acter)?(?:\s+varying)?\s*\(\s*(\d+)\s*\)"
+)
+
+
+def _parse_declared_char_length(data_type: str | None) -> int | None:
+    """Return N from VARCHAR(N) / CHAR(N) / CHARACTER VARYING(N) if present; else None."""
+    if not data_type or not str(data_type).strip():
+        return None
+    m = _DECLARED_CHAR_LEN.search(str(data_type).strip())
+    if not m:
+        return None
+    try:
+        n = int(m.group(1))
+    except ValueError:
+        return None
+    return n if n > 0 else None
+
+
+def _format_length_suggests_id_column(column_name: str, char_len: int) -> bool:
+    """
+    True if declared string length matches common ID sizes and the column name is ID-like.
+
+    Conservative: 9 (SSN-style), 11 (CPF digits), 14 (CNPJ digits) with name hints to limit FPs.
+    """
+    col = (column_name or "").lower()
+    if char_len == 9 and ("ssn" in col or "social_sec" in col or "social security" in col):
+        return True
+    if char_len == 11 and ("cpf" in col or column_name_suggests_identifier_review(column_name)):
+        return True
+    if char_len == 14 and ("cnpj" in col or column_name_suggests_identifier_review(column_name)):
+        return True
+    return False
+
+
 class SensitivityDetector:
     """
     Hybrid detector: regex first, then ML (TF-IDF + RandomForest), then optional DL (sentence embeddings + classifier).
-    analyze(column_name, sample_text) -> (sensitivity_level, pattern_detected, norm_tag, confidence).
+    analyze(column_name, sample_text, connector_data_type=...) -> (sensitivity_level, pattern_detected, norm_tag, confidence).
     ML/DL training terms can come from config files (ml_patterns_file, dl_patterns_file) or inline (sensitivity_detection.ml_terms / dl_terms).
     """
 
@@ -648,7 +692,7 @@ class SensitivityDetector:
             labels = [t[1] for t in ml_terms]
             self._vectorizer = TfidfVectorizer(ngram_range=(1, 2), min_df=1)
             X = self._vectorizer.fit_transform(texts)
-            self._model = RandomForestClassifier(n_estimators=100)
+            self._model = RandomForestClassifier(n_estimators=100, random_state=42)
             self._model.fit(X, labels)
             self._ml_available = True
 
@@ -662,13 +706,77 @@ class SensitivityDetector:
             if not self._dl_classifier.is_ready:
                 self._dl_classifier = None
 
+        # Sensitive term strings for optional fuzzy column match (ML + DL training labels).
+        sens_for_fuzzy: list[str] = []
+        seen_fz: set[str] = set()
+        for text, label in ml_terms:
+            if label == 1 and text and text not in seen_fz:
+                seen_fz.add(text)
+                sens_for_fuzzy.append(text)
+        for text, label in dl_terms:
+            if label == 1 and text and text not in seen_fz:
+                seen_fz.add(text)
+                sens_for_fuzzy.append(text)
+        self._fuzzy_sensitive_terms: tuple[str, ...] = tuple(sens_for_fuzzy)
+
+        try:
+            from rapidfuzz import fuzz as _rapidfuzz_fuzz
+        except ImportError:
+            _rapidfuzz_fuzz = None
+        self._rapidfuzz_fuzz = _rapidfuzz_fuzz
+        self._fuzzy_requested = bool(det.get("fuzzy_column_match", False))
+        self._fuzzy_enabled = self._fuzzy_requested and self._rapidfuzz_fuzz is not None
+        try:
+            self._fuzzy_min_confidence = int(
+                det.get("fuzzy_column_match_min_confidence", 25)
+            )
+        except (TypeError, ValueError):
+            self._fuzzy_min_confidence = 25
+        try:
+            self._fuzzy_max_confidence = int(
+                det.get("fuzzy_column_match_max_confidence", 45)
+            )
+        except (TypeError, ValueError):
+            self._fuzzy_max_confidence = 45
+        try:
+            self._fuzzy_min_ratio = int(det.get("fuzzy_column_match_min_ratio", 85))
+        except (TypeError, ValueError):
+            self._fuzzy_min_ratio = 85
+        self._fuzzy_min_confidence = max(0, min(100, self._fuzzy_min_confidence))
+        self._fuzzy_max_confidence = max(0, min(100, self._fuzzy_max_confidence))
+        self._fuzzy_min_ratio = max(50, min(100, self._fuzzy_min_ratio))
+
         # Minor detection: threshold from config (default 18); other options (e.g. full_scan, cross_reference) are used by connectors/report
         try:
             self._minor_age_threshold = int(det.get("minor_age_threshold", 18))
         except (TypeError, ValueError):
             self._minor_age_threshold = 18
+        # ML/DL combined confidence floor for MEDIUM (default 40). HIGH remains at 70. Clamped 1–69.
+        try:
+            self._medium_confidence_threshold = int(
+                det.get("medium_confidence_threshold", 40)
+            )
+        except (TypeError, ValueError):
+            self._medium_confidence_threshold = 40
+        self._medium_confidence_threshold = max(
+            1, min(69, self._medium_confidence_threshold)
+        )
+        # Optional: normalize column name (accents/separators) for ML/DL input only; default off.
+        self._normalize_column_name_for_ml = bool(
+            det.get("column_name_normalize_for_ml", False)
+        )
+        # Optional: use SQL VARCHAR/CHAR length from connector metadata (Plan §4).
+        self._connector_format_id_hint = bool(
+            det.get("connector_format_id_hint", False)
+        )
 
-    def analyze(self, column_name: str, sample_text: str) -> tuple[str, str, str, int]:
+    def analyze(
+        self,
+        column_name: str,
+        sample_text: str,
+        *,
+        connector_data_type: str | None = None,
+    ) -> tuple[str, str, str, int]:
         """
         Returns (sensitivity_level, pattern_detected, norm_tag, ml_confidence 0-100).
         Does not store sample_text. Downgrades classification when content looks like
@@ -676,6 +784,12 @@ class SensitivityDetector:
         """
         combined = f"{column_name} {sample_text}"
         sample_only = sample_text or ""
+        if self._normalize_column_name_for_ml:
+            nc = normalize_column_name_for_ml(column_name)
+            col_for_ml = nc if nc else (column_name or "").strip()
+            ml_dl_text = f"{col_for_ml} {sample_only}".strip()
+        else:
+            ml_dl_text = combined
         entertainment_context = _looks_like_lyrics(
             sample_only
         ) or _looks_like_music_tab(sample_only)
@@ -694,7 +808,7 @@ class SensitivityDetector:
         ml_confidence = 0
         if self._ml_available and self._model and self._vectorizer:
             try:
-                X = self._vectorizer.transform([combined.lower()])
+                X = self._vectorizer.transform([ml_dl_text.lower()])
                 prob = self._model.predict_proba(X)[0][1]
                 ml_confidence = int(round(prob * 100))
             except Exception:
@@ -703,7 +817,7 @@ class SensitivityDetector:
         # Hybrid DL step: when available, combine with ML (take max to avoid missing semantic matches)
         dl_confidence = 0
         if self._dl_classifier and self._dl_classifier.is_ready:
-            prob = self._dl_classifier.predict_proba(combined)
+            prob = self._dl_classifier.predict_proba(ml_dl_text)
             if prob is not None:
                 dl_confidence = int(round(prob * 100))
         combined_confidence = max(ml_confidence, dl_confidence)
@@ -750,7 +864,8 @@ class SensitivityDetector:
             )
         # Ambiguous column names (doc_id, document_id, etc.): flag for review but MEDIUM priority and ask operator to confirm.
         col_lower = (column_name or "").lower().strip()
-        if not found_patterns and combined_confidence >= 40:
+        med_thr = self._medium_confidence_threshold
+        if not found_patterns and combined_confidence >= med_thr:
             for token in AMBIGUOUS_COLUMN_TOKENS:
                 if token in col_lower or col_lower == token:
                     return (
@@ -759,6 +874,21 @@ class SensitivityDetector:
                         PII_AMBIGUOUS_NORM_TAG,
                         combined_confidence,
                     )
+        if not found_patterns:
+            fz = try_fuzzy_elevation(
+                column_name=column_name,
+                combined_confidence=combined_confidence,
+                found_patterns=found_patterns,
+                medium_threshold=med_thr,
+                fuzzy_enabled=self._fuzzy_enabled,
+                fuzzy_min_confidence=self._fuzzy_min_confidence,
+                fuzzy_max_confidence=self._fuzzy_max_confidence,
+                fuzzy_min_ratio=self._fuzzy_min_ratio,
+                sensitive_terms=self._fuzzy_sensitive_terms,
+                fuzz_mod=self._rapidfuzz_fuzz,
+            )
+            if fz is not None:
+                return fz
         if combined_confidence >= 70:
             if entertainment_context:
                 # ML-only confidence in entertainment context (lyrics/tabs) → cap at MEDIUM so that
@@ -770,11 +900,24 @@ class SensitivityDetector:
                     combined_confidence,
                 )
             return "HIGH", "ML_DETECTED", "LGPD/GDPR/CCPA context", combined_confidence
-        if combined_confidence >= 40:
+        if combined_confidence >= med_thr:
             return (
                 "MEDIUM",
                 "ML_POTENTIAL",
                 "Potential personal data",
                 combined_confidence,
             )
+        # Connector-declared CHAR/VARCHAR length + ID-like name → MEDIUM (no regex hit, ML/DL below MEDIUM threshold).
+        # Note: column names alone often drive high ML scores; neutral/non-PII sample values keep combined_confidence low so this path can fire in edge cases (e.g. opaque keys + schema metadata).
+        if self._connector_format_id_hint and not found_patterns:
+            decl_len = _parse_declared_char_length(connector_data_type)
+            if decl_len is not None and _format_length_suggests_id_column(
+                column_name, decl_len
+            ):
+                return (
+                    "MEDIUM",
+                    "FORMAT_LENGTH_HINT_ID",
+                    "Schema type/length suggests identifier; confirm against sample values",
+                    max(combined_confidence, med_thr),
+                )
         return "LOW", "GENERAL", "Non-personal", combined_confidence
