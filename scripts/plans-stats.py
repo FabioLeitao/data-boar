@@ -24,10 +24,14 @@ HORIZONS = ("H0", "H1", "H2", "H3", "H4", "H5", "UNSPECIFIED")
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Refresh/check PLANS_TODO status dashboard.")
+    p = argparse.ArgumentParser(
+        description="Refresh/check PLANS_TODO status dashboard."
+    )
     p.add_argument("--path", default=str(DEFAULT_PATH), help="Path to PLANS_TODO.md")
     mode = p.add_mutually_exclusive_group(required=True)
-    mode.add_argument("--write", action="store_true", help="Write refreshed block in file")
+    mode.add_argument(
+        "--write", action="store_true", help="Write refreshed block in file"
+    )
     mode.add_argument("--check", action="store_true", help="Check block is up-to-date")
     mode.add_argument("--stdout", action="store_true", help="Print generated block")
     return p.parse_args()
@@ -187,4 +191,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
