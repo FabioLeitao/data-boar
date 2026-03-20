@@ -143,6 +143,42 @@ def test_maintenance_check_ps1_syntax():
     assert _parse_powershell_script(script, root), "maintenance-check.ps1 parse failed"
 
 
+def test_docker_hub_pull_ps1_syntax():
+    """scripts/docker-hub-pull.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "docker-hub-pull.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), "docker-hub-pull.ps1 parse failed"
+
+
+def test_docker_lab_build_ps1_syntax():
+    """scripts/docker-lab-build.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "docker-lab-build.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), "docker-lab-build.ps1 parse failed"
+
+
+def test_docker_prune_local_ps1_syntax():
+    """scripts/docker-prune-local.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "docker-prune-local.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), "docker-prune-local.ps1 parse failed"
+
+
+def test_docker_common_ps1_syntax():
+    """scripts/docker/DataBoarDockerCommon.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "docker" / "DataBoarDockerCommon.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), "DataBoarDockerCommon.ps1 parse failed"
+
+
 def test_create_pr_ps1_syntax():
     """scripts/create-pr.ps1 has valid PowerShell syntax (parse-only)."""
     root = _project_root()

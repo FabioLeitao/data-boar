@@ -159,6 +159,11 @@ Repeated `docker run` / `docker build` during smoke tests or homelab checks can 
 docker ps -a --filter "name=data-boar"
 ```
 
+4. **Image tags (avoid sprawl):** You do **not** need a **new tag for every smoke run** (e.g. `data_boar:smoke-post93`, `data_boar:smoke-xyz`). Each extra tag makes it harder to see what matters and can leave **many large layer stacks** referenced until you prune. Prefer **one mutable local tag** you **overwrite** on each build, e.g. **`docker build -t data_boar:lab .`** — same name as [HOMELAB_VALIDATION.md](ops/HOMELAB_VALIDATION.md) step 1.3. Only add a **second** tag when you truly need A/B (e.g. `data_boar:lab-a` vs `data_boar:lab-b`, or Hub `fabioleitao/data_boar:latest` **pulled** vs local `data_boar:lab`).
+5. **Disk / retention:** After smoke, keep roughly **two** useful image lines locally (e.g. Hub **`latest`** + **`data_boar:lab`**, or latest + one older semver). **Remove** stale smoke tags and run **`docker image prune`** / **`docker builder prune`** as needed — see [BRANCH_AND_DOCKER_CLEANUP.md](ops/BRANCH_AND_DOCKER_CLEANUP.md) §4.
+
+6. **Automation (Windows):** From repo root, **`.\scripts\docker-hub-pull.ps1`** (pull Hub `latest` + semver + previous patch), **`.\scripts\docker-lab-build.ps1`** (build **`data_boar:lab`**, optional **`lab-prev`** / **`smoke`**), **`.\scripts\docker-prune-local.ps1 -WhatIf`** then without `-WhatIf` to drop extra tags. Details: [scripts/docker/README.md](../scripts/docker/README.md).
+
 Agent/automation guidance for this workflow lives in **`.cursor/rules/docker-local-smoke-cleanup.mdc`** and **`.cursor/skills/docker-smoke-container-hygiene/SKILL.md`** (optional for contributors using Cursor).
 
 See also: [HOMELAB_VALIDATION.md](ops/HOMELAB_VALIDATION.md) (lab baseline uses `docker run --rm` where possible).

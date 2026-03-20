@@ -29,4 +29,5 @@ Write-Host ""
 Write-Host "## Next steps" -ForegroundColor Green
 Write-Host "  1. Merge or apply Dependabot changes only after: .\scripts\check-all.ps1 (and CI green on PR)."
 Write-Host "  2. For image CVEs: rebuild/push image after Dockerfile / deps fixes; re-run Scout on the new digest."
-Write-Host "  3. requirements.txt is uv-exported; wheel/pip are not direct app deps — Dockerfile upgrades pip/wheel in build + runtime."
+Write-Host "  3. Local Docker hygiene: .\scripts\docker-lab-build.ps1, .\scripts\docker-hub-pull.ps1, .\scripts\docker-prune-local.ps1 -WhatIf (see scripts\docker\README.md)."
+Write-Host "  4. requirements.txt is uv-exported; wheel/pip are not direct app deps — Dockerfile upgrades pip/wheel in build + runtime."
