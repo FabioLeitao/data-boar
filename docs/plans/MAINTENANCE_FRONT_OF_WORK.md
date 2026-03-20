@@ -38,9 +38,10 @@ Pick **one** per session when CI is green:
 
 | Track | Aligns to | Notes |
 | ----- | --------- | ----- |
-| `pr/docker-scout-high-slice` | Order **–1b** (Docker Hub Scout) | **Merged** (PR **#93**). Operator follow-up: rebuild/push image, `docker scout quickview` on published tag. |
-| `pr/deps-security-refresh` | Dependabot / security hygiene | Rebase, resolve lock conflicts, full test gate. **Next S4 candidate** (pick one session). |
-| `pr/api-report-path-hardening` | Security / API hardening | **PR [#98](https://github.com/FabioLeitao/data-boar/pull/98)** — basename patterns for report/heatmap under `output_dir`; supersedes stale local branch `pr/api-report-path-hardening`. |
+| `pr/docker-scout-high-slice` | Order **–1b** (Docker Hub Scout) | **Merged** (PR **#93**). |
+| **Docker base 3.13** | Order **–1b** | **Merged** — PR [**#99**](https://github.com/FabioLeitao/data-boar/pull/99) (`python:3.13-slim`). **Operator:** publish from `main`, then Scout — see [DOCKER_IMAGE_RELEASE_ORDER.md](../ops/DOCKER_IMAGE_RELEASE_ORDER.md). |
+| `pr/deps-security-refresh` | Dependabot / security hygiene (**A1** / **–1**) | Rebase on `main`, lock + `requirements.txt`, `check-all`. **Next S4 candidate.** |
+| `pr/api-report-path-hardening` | Security / API hardening | **Merged** — PR [**#98**](https://github.com/FabioLeitao/data-boar/pull/98). |
 
 Do **not** stack these in one PR unless they are truly the same incident (e.g. one Scout round-trip).
 
@@ -48,9 +49,10 @@ Do **not** stack these in one PR unless they are truly the same incident (e.g. o
 
 | Sub-track | Status |
 | --------- | ------ |
-| **–1b** `pr/docker-scout-high-slice` | **Merged** — PR **#93** (Dockerfile + ruff format gate). **Operator:** rebuild/push image, `docker scout quickview` on tag (see [PLANS_TODO.md](PLANS_TODO.md) **–1b**). **Local:** after merge, drop stale local branch (see **Quick housekeeping** below). |
-| `pr/deps-security-refresh` | **Queued** — rebase on `main`, then PR (certifi/lock refresh); run `.\scripts\check-all.ps1`. |
-| `pr/api-report-path-hardening` | **Queued** — diff vs `main` first (report path safety may overlap); then rebase + PR if still unique. |
+| **–1b** Dockerfile / Scout | **Merged** — PR **#93** + PR **#99** (3.13-slim base). **Operator:** `docker-lab-build` → `docker-hub-publish` → `docker-prune-local` (see [DOCKER_IMAGE_RELEASE_ORDER.md](../ops/DOCKER_IMAGE_RELEASE_ORDER.md)). |
+| **A1** `pr/deps-security-refresh` | **Queued** — Dependabot / `uv lock` / `requirements.txt`; `.\scripts\check-all.ps1`. |
+| API report paths | **Merged** — PR **#98**. Follow-up: [API_REPORT_PATH_CODEQL_FOLLOWUP.md](API_REPORT_PATH_CODEQL_FOLLOWUP.md). |
+| **–1L** second environment | **When ready** — [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md); not a blocker for merge/publish on `main`. |
 
 ### Quick housekeeping (local branches after a merged maintenance PR)
 
@@ -72,4 +74,4 @@ Use **`-D`** only when you accept dropping that local ref; **do not** delete bra
 2. Prefer **merge or close** existing open PRs before opening another **workflow** PR.
 3. Product features (`feat/*`) follow `PLANS_TODO.md` after maintenance gates are green.
 
-*Last updated: S4 api-report path hardening **PR #98**; deps track still queued; Docker Scout merged (#93); docs batch (#97).*
+*Last updated: **#98** + **#99** merged on `main`; **A1/deps** next; publish + Scout per [DOCKER_IMAGE_RELEASE_ORDER.md](../ops/DOCKER_IMAGE_RELEASE_ORDER.md); **–1L** when second env is ready.*
