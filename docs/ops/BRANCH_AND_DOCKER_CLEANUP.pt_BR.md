@@ -68,6 +68,8 @@ Manter cerca de **dois** **digests** de imagem localmente, por exemplo:
 
 Versões mais antigas podem ser removidas; use `docker pull` no Hub quando precisar de histórico.
 
+**Automação:** Na raiz do repo, **`.\scripts\docker-hub-pull.ps1`**, **`.\scripts\docker-lab-build.ps1`**, **`.\scripts\docker-prune-local.ps1 -WhatIf`** — ver [scripts/docker/README.md](../../scripts/docker/README.md).
+
 ```powershell
 docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.CreatedSince}}\t{{.Size}}" | Select-String -Pattern "data_boar|fabioleitao/data_boar"
 docker rmi fabioleitao/data_boar:TAG_ANTIGA
