@@ -28,8 +28,18 @@
   </p>
 
   <h3>From the CLI</h3>
-  <pre><code>python main.py --config config.yaml
-python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Silva"</code></pre>
+  <p class="muted">From the repo root, prefer <code>uv run python main.py</code> (or activate your venv and run <code>python main.py</code>). Full flag list: <code>python main.py --help</code>. Packaged installs: <code>man 1 data_boar</code> (command) and <code>man 5 data_boar</code> (config file format).</p>
+  <p><strong>One-shot audit</strong> (same targets as a dashboard scan):</p>
+  <pre><code>uv run python main.py --config config.yaml
+uv run python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Silva"
+# Same optional toggles as the dashboard checkboxes (this run only):
+uv run python main.py --config config.yaml --scan-compressed --content-type-check</code></pre>
+  <p><strong>Start the API / dashBOARd</strong> (no scan until you use the browser or HTTP):</p>
+  <pre><code>uv run python main.py --config config.yaml --web
+# Default bind is loopback (127.0.0.1). Listen on all interfaces only with network controls:
+uv run python main.py --config config.yaml --web --host 0.0.0.0 --port 8088</code></pre>
+  <p class="muted">Bind order when using <code>--web</code>: <code>--host</code> overrides <code>api.host</code> in config and <code>API_HOST</code>; if none are set, the default is <code>127.0.0.1</code> (Docker image often sets <code>API_HOST=0.0.0.0</code>). Port: <code>api.port</code> in config vs <code>--port</code> — see <code>docs/USAGE.md</code>.</p>
+  <p><strong>Dangerous maintenance</strong> (lab/demo only): <code>--reset-data</code> wipes SQLite sessions/findings and deletes generated reports under <code>report.output_dir</code>. See <code>SECURITY.md</code> before using in production.</p>
 </section>
 
 <section class="card">
@@ -76,12 +86,15 @@ file_scan:
   recursive: true
   scan_sqlite_as_db: true
   sample_limit: 5
+  # scan_compressed: true   # optional: scan inside archives (matches dashboard checkbox)
+  # use_content_type: true   # optional: magic-byte detection (matches dashboard checkbox)
 
 report:
   output_dir: .
 
 api:
   port: 8088
+  # host: 127.0.0.1  # optional; omit for defaults (see USAGE.md)
 
 sqlite_path: audit_results.db
 scan:

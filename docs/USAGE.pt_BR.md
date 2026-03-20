@@ -3,7 +3,7 @@
 **Data Boar** é o nome da aplicação (baseado na tecnologia lgpd_crawler; id de pacote/distribuição: `python3-lgpd-crawler`). Este documento complementa o `docs/USAGE.md` em inglês e descreve, em português, como:
 
 - Executar a aplicação via **CLI** e **API web**;
-- Entender os parâmetros (`--config`, `--web`, `--port`, `--tenant`, `--technician`);
+- Entender os parâmetros (`--config`, `--web`, `--port`, `--host`, `--tenant`, `--technician`, `--scan-compressed`, `--content-type-check`);
 - Navegar pelo **dashboard web**;
 - Iniciar varreduras e baixar relatórios/heatmaps usando **curl**.
 
@@ -21,12 +21,15 @@ O ponto de entrada é `main.py`.
 
 | Argumento      | Padrão        | Descrição                                                                                                                                                                                              |
 | ---            | ---           | ---                                                                                                                                                                                                    |
-| `--config`     | `config.yaml` | Caminho do arquivo de configuração (YAML ou JSON). Usado tanto em varredura única quanto para inicializar a API.                                                                                       |
-| `--web`        | *(flag)*      | Inicia o servidor FastAPI em vez de executar uma varredura única.                                                                                                                                      |
-| `--port`       | `8088`        | Porta da API quando `--web` é usado. Ignorado em modo CLI.                                                                                                                                             |
-| `--reset-data` | *(flag)*      | Operação de manutenção perigosa: apaga todas as sessões/achados/falhas do SQLite, remove relatórios/heatmaps em `report.output_dir` e registra o wipe na tabela `data_wipe_log`. Não inicia varredura. |
-| `--tenant`     | *(vazio)*     | Nome do cliente/tenant na execução CLI; gravado na sessão e exibido em dashboard/relatórios.                                                                                                           |
-| `--technician` | *(vazio)*     | Nome do técnico/operador na execução CLI; também gravado na sessão e relatórios.                                                                                                                       |
+| `--config`             | `config.yaml` | Caminho do arquivo de configuração (YAML ou JSON). Usado em varredura única e para resolver `api.port` / `api.host` ao subir a API.                                                                  |
+| `--web`                | *(flag)*      | Inicia o servidor FastAPI em vez de executar uma varredura única.                                                                                                                                      |
+| `--port`               | `8088`        | Porta da API quando `--web` é usado. Pode ser sobrescrita por `api.port` no config, salvo se você passar `--port` explicitamente. Ignorado em modo varredura única.                                     |
+| `--host`               | *(resolvido)* | Endereço de bind quando `--web` (ex.: `127.0.0.1`, `0.0.0.0`). **Prevalece** sobre `api.host` e `API_HOST`. Se omitido: `api.host` → `API_HOST` → padrão seguro **`127.0.0.1`**. Ver §2.                 |
+| `--reset-data`         | *(flag)*      | Operação de manutenção perigosa: apaga todas as sessões/achados/falhas do SQLite, remove relatórios/heatmaps em `report.output_dir` e registra o wipe na tabela `data_wipe_log`. Não inicia varredura. |
+| `--tenant`             | *(vazio)*     | Nome do cliente/tenant na execução CLI; gravado na sessão e exibido em dashboard/relatórios.                                                                                                           |
+| `--technician`         | *(vazio)*     | Nome do técnico/operador na execução CLI; também gravado na sessão e relatórios.                                                                                                                         |
+| `--scan-compressed`    | *(flag)*      | Sobrescrita pontual: ativa varredura dentro de arquivos compactados como se `file_scan.scan_compressed` estivesse true.                                                                                  |
+| `--content-type-check` | *(flag)*      | Sobrescrita pontual: inferência por magic bytes como se `file_scan.use_content_type` estivesse true (arquivos renomeados/ocultos).                                                                       |
 
 ### Resultados
 
@@ -51,9 +54,11 @@ python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Sil
 
 ```bash
 python main.py --config config.yaml --web --port 8088
+# Escutar em todas as interfaces (sobrescreve config / API_HOST; use só com controles de rede):
+python main.py --config config.yaml --web --host 0.0.0.0 --port 8088
 ```
 
-- Inicia o servidor FastAPI em `0.0.0.0:8088` (ou a porta passada em `--port`).
+- Inicia o FastAPI em **`<bind>:<port>`**. O bind padrão é **`127.0.0.1`**, salvo `api.host`, `API_HOST` ou **`--host`** (a CLI ganha). A imagem Docker oficial define `API_HOST=0.0.0.0` para a porta publicada funcionar de fora do container.
 - Nenhuma varredura é executada automaticamente; você controla tudo via HTTP (dashboard ou curl).
 - Configuração para a API:
 - Se `--config` não for usado, a API lê de `CONFIG_PATH` ou `config.yaml` no diretório atual.
