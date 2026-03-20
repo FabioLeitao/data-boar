@@ -12,7 +12,7 @@ Você pode **definir as palavras de treino para ML e DL** no arquivo de config p
 
 **Detecção de dados de menores:** A aplicação pode sinalizar possíveis dados de menores (colunas de DOB/idade) e aplicar tratamento diferenciado nos relatórios (LGPD Art. 14, GDPR Art. 8). O limite de idade (padrão 18) é configurável no arquivo de config externo. Consulte [MINOR_DETECTION.pt_BR.md](MINOR_DETECTION.pt_BR.md) para configuração e ajuste fino.
 
-**Risco de identificação agregada / cruzada:** Quando várias categorias de quasi-identificadores (ex.: gênero, cargo, saúde, endereço, telefone) aparecem na **mesma tabela ou arquivo**, o gerador de relatório sinaliza isso como **caso especial** para DPO e compliance (LGPD Art. 5, GDPR Recital 26 – identificabilidade pela combinação de dados). O relatório Excel inclui a aba **"Cross-ref data – ident. risk"** listando cada caso (alvo, tabela/arquivo, colunas envolvidas, categorias, explicação) e uma recomendação de alta prioridade. Isso é opcional e configurável via `detection.aggregated_identification_enabled`, `aggregated_min_categories` e `quasi_identifier_mapping`. Consulte [PLAN_AGGREGATED_IDENTIFICATION.md](completed/PLAN_AGGREGATED_IDENTIFICATION.md) para o desenho e detalhes de config.
+**Risco de identificação agregada / cruzada:** Quando várias categorias de quasi-identificadores (ex.: gênero, cargo, saúde, endereço, telefone) aparecem na **mesma tabela ou arquivo**, o gerador de relatório sinaliza isso como **caso especial** para DPO e compliance (LGPD Art. 5, GDPR Recital 26 – identificabilidade pela combinação de dados). O relatório Excel inclui a aba **"Cross-ref data – ident. risk"** listando cada caso (alvo, tabela/arquivo, colunas envolvidas, categorias, explicação) e uma recomendação de alta prioridade. Isso é opcional e configurável via `detection.aggregated_identification_enabled`, `aggregated_min_categories` e `quasi_identifier_mapping`. Consulte [PLAN_AGGREGATED_IDENTIFICATION.md](plans/completed/PLAN_AGGREGATED_IDENTIFICATION.md) para o desenho e detalhes de config.
 
 ---
 
@@ -177,6 +177,17 @@ Quando a **identificação agregada** está habilitada, o gerador de relatório 
 | `detection.aggregated_incomplete_data_mode`   | boolean | **false**| Modo opcional C10 para cobertura parcial: reduz o limiar efetivo de agregação em **1** (mínimo 1) e marca a explicação como orientada a dados incompletos; aumenta recall/linhas de revisão sugerida. |
 | `detection.aggregated_single_high_risk_suggested_review` | boolean | **false** | Modo opcional C11: se só uma categoria for detectada mas ela for de alto risco (**health**), ainda gera linha agregada como **MEDIUM suggested review** (em vez de descartar). |
 | `detection.quasi_identifier_mapping`          | lista   | **[]**   | Lista opcional de `{ column_pattern, category }` ou `{ pattern_detected, category }` para mapear colunas/padrões para `gender`, `job_position`, `health`, `address`, `phone`, `other`. Já existem mapeamentos padrão para nomes comuns (ex.: gender, sex, cargo, department, health, address, phone). |
+
+### Tabela de decisão dos modos agregados (guia rápido para operação)
+
+| Cenário | Opções recomendadas | Motivo |
+| --- | --- | --- |
+| Scans com cobertura completa, equilíbrio entre ruído e recall | Manter padrões (`aggregated_min_categories: 2`, modos opcionais `false`) | Linha de base conservadora, comportamento estável e menos linhas de revisão sugerida. |
+| Scans parciais/incrementais (amostras, janelas reduzidas) | Ativar `aggregated_incomplete_data_mode: true` e manter `aggregated_min_categories` | O limiar efetivo cai em 1 (mínimo 1), aumentando recall quando a cobertura está incompleta. |
+| Domínios de alto arrependimento (dados de saúde) com baixa tolerância a alerta perdido | Ativar `aggregated_single_high_risk_suggested_review: true` (opcionalmente junto ao modo incompleto) | Sinaliza categoria única de saúde como MEDIUM suggested review em vez de descartar. |
+| Ruído alto de revisão após ativar modos opcionais | Desligar primeiro um modo opcional (normalmente single-high-risk) e reavaliar | Controla carga de triagem mantendo suporte a cobertura parcial. |
+
+Ambos os modos opcionais são opt-in e foram pensados para revisão humana no loop.
 
 ## Exemplo: habilitar com mapeamento customizado e mínimo de 3 categorias
 
@@ -469,7 +480,7 @@ Quando um padrão customizado der match no nome da coluna ou no texto amostrado,
 - **Configurar:** Defina `regex_overrides_file` no config principal com o caminho do seu arquivo YAML/JSON.
 - **Formato:** Lista de `{ name, pattern, norm_tag }`; `norm_tag` opcional (padrão `"Custom"`).
 - **Efeito:** Seus padrões são mesclados aos embutidos; qualquer match em (nome da coluna + amostra) é sinalizado. Use padrões precisos e limites de palavra para reduzir falsos positivos.
-- **ML/DL:** Para contexto (ex.: “este nome de coluna sugere PII”), use os [termos de treino ML/DL](#config-keys) além do regex.
+- **ML/DL:** Para contexto (ex.: “este nome de coluna sugere PII”), use os [termos de treino ML/DL](#chaves-de-config) além do regex.
 
 ---
 
