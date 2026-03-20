@@ -159,6 +159,9 @@ Execuções repetidas de `docker run` / `docker build` em testes de smoke ou no 
 docker ps -a --filter "name=data-boar"
 ```
 
+4. **Tags de imagem (evitar explosão):** **Não** é necessário criar **uma tag nova a cada smoke** (ex.: `data_boar:smoke-post93`). Cada tag extra dificulta ver o que importa e pode manter **muitas camadas grandes** até você fazer prune. Prefira **uma tag local mutável** que você **sobrescreve** a cada build, ex.: **`docker build -t data_boar:lab .`** — alinhado ao passo 1.3 de [HOMELAB_VALIDATION.pt_BR.md](ops/HOMELAB_VALIDATION.pt_BR.md). Só use **segunda** tag para A/B de verdade (ex.: `data_boar:lab-a` vs `data_boar:lab-b`, ou `fabioleitao/data_boar:latest` **pulled** vs `data_boar:lab` local).
+5. **Disco / retenção:** Depois do smoke, mantenha cerca de **duas** imagens úteis localmente (ex.: Hub **`latest`** + **`data_boar:lab`**, ou `latest` + um semver anterior). **Remova** tags de smoke antigas e use **`docker image prune`** / **`docker builder prune`** quando precisar — ver [BRANCH_AND_DOCKER_CLEANUP.pt_BR.md](ops/BRANCH_AND_DOCKER_CLEANUP.pt_BR.md) §3.
+
 Orientação para agentes/automação: **`.cursor/rules/docker-local-smoke-cleanup.mdc`** e **`.cursor/skills/docker-smoke-container-hygiene/SKILL.md`** (opcional para quem usa Cursor).
 
 Ver também: [HOMELAB_VALIDATION.pt_BR.md](ops/HOMELAB_VALIDATION.pt_BR.md) (baseline do lab usa `docker run --rm` quando possível).
