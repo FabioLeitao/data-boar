@@ -44,6 +44,14 @@ Pick **one** per session when CI is green:
 
 Do **not** stack these in one PR unless they are truly the same incident (e.g. one Scout round-trip).
 
+### S4 progress (rolling)
+
+| Sub-track | Status |
+| --------- | ------ |
+| **–1b** `pr/docker-scout-high-slice` | **In flight** — Rebased on `main`; adds `chore: ruff format` (pre-commit gate) + Dockerfile pip/wheel refresh for Scout. `.\scripts\check-all.ps1` passed locally. **After merge:** rebuild/push the image, then run `docker scout quickview` on the published tag (see [PLANS_TODO.md](PLANS_TODO.md) order **–1b**). |
+| `pr/deps-security-refresh` | Next session (when no open maintenance PR). |
+| `pr/api-report-path-hardening` | Next session — confirm diff vs `main` before rebase. |
+
 ---
 
 ## Operating rule (minimal open fronts)
@@ -52,4 +60,4 @@ Do **not** stack these in one PR unless they are truly the same incident (e.g. o
 2. Prefer **merge or close** existing open PRs before opening another **workflow** PR.
 3. Product features (`feat/*`) follow `PLANS_TODO.md` after maintenance gates are green.
 
-*Last updated: S3 legacy remote prune + commit-type guidance in `AGENTS.md` / execution rule.*
+*Last updated: S4 –1b Docker Scout track (branch `pr/docker-scout-high-slice`) + rolling S4 progress table.*
