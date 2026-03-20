@@ -66,4 +66,3 @@ def test_embedding_hint_respects_medium_threshold_band():
         similarity_score=95,
     )
     assert r is None
-

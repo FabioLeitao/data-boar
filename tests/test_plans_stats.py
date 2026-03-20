@@ -41,4 +41,3 @@ def test_compute_stats_counts_tracked_partially_done_as_incomplete_tracked():
     assert stats["by_h_total"]["H0"] == 4
     assert stats["by_h_done"]["H0"] == 1
     assert stats["by_h_incomplete"]["H0"] == 3
-
