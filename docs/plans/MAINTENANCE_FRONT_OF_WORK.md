@@ -40,7 +40,7 @@ Pick **one** per session when CI is green:
 | ----- | --------- | ----- |
 | `pr/docker-scout-high-slice` | Order **–1b** (Docker Hub Scout) | **Merged** (PR **#93**). Operator follow-up: rebuild/push image, `docker scout quickview` on published tag. |
 | `pr/deps-security-refresh` | Dependabot / security hygiene | Rebase, resolve lock conflicts, full test gate. **Next S4 candidate** (pick one session). |
-| `pr/api-report-path-hardening` | Security / API hardening | Diff vs `main` first; may already be superseded by merged slices. **Next S4 candidate** (pick one session). |
+| `pr/api-report-path-hardening` | Security / API hardening | **PR [#98](https://github.com/FabioLeitao/data-boar/pull/98)** — basename patterns for report/heatmap under `output_dir`; supersedes stale local branch `pr/api-report-path-hardening`. |
 
 Do **not** stack these in one PR unless they are truly the same incident (e.g. one Scout round-trip).
 
@@ -72,4 +72,4 @@ Use **`-D`** only when you accept dropping that local ref; **do not** delete bra
 2. Prefer **merge or close** existing open PRs before opening another **workflow** PR.
 3. Product features (`feat/*`) follow `PLANS_TODO.md` after maintenance gates are green.
 
-*Last updated: S4 –1b Docker Scout **merged** (PR #93); S4 next tracks deps / api-report; local branch delete snippet; docs batch alignment.*
+*Last updated: S4 api-report path hardening **PR #98**; deps track still queued; Docker Scout merged (#93); docs batch (#97).*
