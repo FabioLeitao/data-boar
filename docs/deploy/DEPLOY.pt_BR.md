@@ -55,7 +55,7 @@ Garanta que `/data/config.yaml` exista (ex.: copie de `deploy/config.example.yam
 ## Imagem (build a partir do código)
 
 - **Dockerfile** na raiz do repositório. Build (marca Data Boar): `docker build -t fabioleitao/data_boar:latest .` ou tag local: `docker build -t data_boar:latest .`
-- O Dockerfile usa **multi-stage build**: a etapa final contém apenas bibliotecas de runtime e o código da aplicação (sem ferramentas de build), reduzindo tamanho e superfície de ataque.
+- O Dockerfile usa **multi-stage build** em **`python:3.13-slim`** (`requires-python >=3.12`; CI em 3.12 e 3.13): a etapa final contém apenas bibliotecas de runtime e o código da aplicação (sem ferramentas de build), reduzindo tamanho e superfície de ataque.
 
 ## 1. Build e push da imagem
 
