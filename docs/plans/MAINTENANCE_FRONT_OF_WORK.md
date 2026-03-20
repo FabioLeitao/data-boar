@@ -23,10 +23,12 @@
 
 ---
 
-## Slice S3 — Legacy `origin/feature/*` and `origin/commit`
+## Slice S3 — Legacy `origin/feature/*` and `origin/commit` ✅ completed
 
 - **Goal:** Classify each: archive, resume as a new branch from `main`, or delete if fully superseded.
-- **Type:** `investigate` then small `workflow` or `documentation` PR if anything is salvaged.
+- **Outcome (verified):** Tips of `origin/commit`, `origin/feature/agent-review-style-pr-automation`, `origin/feature/agent-review-style-pr-automation-2`, and `origin/feature/release-1.4.0-completed-plans` were **already ancestors of `main`** (no commits ahead). **No resumable work** — safe disposal only.
+- **Action taken:** Remote branches **deleted** on `origin` after `git merge-base --is-ancestor` + `rev-list --count main..branch` = 0.
+- **If similar branches reappear:** Re-run the same checks before delete; do not prune if `aheadOfMain > 0` without review.
 
 ---
 
@@ -50,4 +52,4 @@ Do **not** stack these in one PR unless they are truly the same incident (e.g. o
 2. Prefer **merge or close** existing open PRs before opening another **workflow** PR.
 3. Product features (`feat/*`) follow `PLANS_TODO.md` after maintenance gates are green.
 
-*Last updated: maintenance closeout alignment.*
+*Last updated: S3 legacy remote prune + commit-type guidance in `AGENTS.md` / execution rule.*

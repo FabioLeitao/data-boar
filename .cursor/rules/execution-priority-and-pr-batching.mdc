@@ -49,3 +49,10 @@ Use this decision order every session:
    - Open PR when a track reaches a stable checkpoint (tests/docs for that track pass and diff is reviewable).
    - If a branch carries multiple tracks, ensure commits are clearly separated by intent and keep PR title/body explicit about included tracks.
 
+8. **Conventional Commit types (subject line) vs grouping (feature/workflow/docs)**
+   - **Types:** `feat`, `fix`, `security` (optional top-level for primary hardening), `refactor`, `docs`, `chore`, `ci`, `test`, `perf`, `style`.
+   - **Bugfix:** use **`fix:`** (not a separate invented prefix). **`fix(security):`** when the fix is security-critical.
+   - **Refactor vs feat+fix:** Prefer **`refactor:`** for behavior-preserving moves. **Do not** combine unrelated **`feat` + `fix`** in one commit; split into two commits (or two PRs) unless the work is truly atomic. If it is both a feature and a fix, separate commits almost always read clearer in history.
+   - **Scopes:** Optional — `feat(detector):`, `docs(ops):`, `fix(api):`.
+   - Grouping rules (`feature + documentation`, etc.) still apply; the type line tells *what* changed, grouping tells *which narrative bucket*.
+

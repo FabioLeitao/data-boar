@@ -89,6 +89,10 @@ Quick checklist before PR:
 - "Would reverting one commit break an unrelated concern?"
 - "Did we keep docs attached only where they are required for that change?"
 
+### Conventional commit types (subject line)
+
+See **`AGENTS.md`** for the full list: `feat`, `fix`, **`fix(security):`** or top-level **`security:`**, **`refactor`** (prefer over mixing **`feat` + `fix`** in one commit), `docs`, `chore`, `ci`, optional scopes. If a slice mixes unrelated feature work and a bugfix, use **two commits** (or PRs), not one ambiguous combo.
+
 Avoid running raw `pytest`, `ruff`, `pre-commit`, or manual git commit/push when a script already does the same thing; the scripts are the single source of behaviour and keep sessions token-efficient.
 
 ## PR state / number freshness (before merge advice or sharing links)
