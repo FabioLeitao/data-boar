@@ -41,7 +41,7 @@ O Data Boar roda como auditoria **CLI de execução única** ou como **API REST*
 | Detecção de sensibilidade (termos ML/DL)                     | [SENSITIVITY_DETECTION.pt_BR.md](docs/SENSITIVITY_DETECTION.pt_BR.md) · [SENSITIVITY_DETECTION.md](docs/SENSITIVITY_DETECTION.md)        |
 | Testes, segurança, contribuição                              | [docs/TESTING.pt_BR.md](docs/TESTING.pt_BR.md) · [SECURITY.pt_BR.md](SECURITY.pt_BR.md) · [CONTRIBUTING.pt_BR.md](CONTRIBUTING.pt_BR.md) |
 
-**Início rápido (na raiz do repositório):** `uv sync` → prepare `config.yaml` (veja `deploy/config.example.yaml` e [USAGE](docs/USAGE.pt_BR.md)) → `uv run python main.py --config config.yaml` para execução única, ou `uv run python main.py --config config.yaml --web` para a API e o dashboard em <http://localhost:8088/>.
+**Início rápido (na raiz do repositório):** `uv sync` → prepare `config.yaml` (veja `deploy/config.example.yaml` e [USAGE](docs/USAGE.pt_BR.md)) → `uv run python main.py --config config.yaml` para execução única, ou `uv run python main.py --config config.yaml --web` para a API e o dashboard (bind padrão `127.0.0.1`, ex. <http://127.0.0.1:8088/>; use `--host 0.0.0.0` só com controles de rede). Lista de flags: `uv run python main.py --help`.
 
 **Índice completo da documentação** (todos os tópicos e idiomas): [docs/README.md](docs/README.md) · [docs/README.pt_BR.md](docs/README.pt_BR.md).
 
