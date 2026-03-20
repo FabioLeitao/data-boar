@@ -41,7 +41,7 @@ Summary:
 - **Certifications / community:** LPIC-1 (101); Ubuntu tester/collaborator. Add others in PORTFOLIO_AND_EVIDENCE_SOURCES §3.
 - **CWL courses (paid, in progress):** Listed and prioritised in PORTFOLIO_AND_EVIDENCE_SOURCES §3.2 (from `docs/private/` images). **Study is your task;** use the recommended order there (BTF → C3SA → MCBTA → PTF → …) and slot fixed study blocks after Dependabot/Scout and one feature slice; one cert at a time for max value.
 - **Private docs (git-ignored):** CV, TCC, LinkedIn PDFs in `docs/private/`; reference by filename only.
-- **Home lab validation:** Second machine checks (Docker deploy, synthetic filesystem/SQL targets)—manual playbook [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md) ([pt-BR](../ops/HOMELAB_VALIDATION.pt_BR.md)); run between releases or before demos without burning agent tokens on ad-hoc steps.
+- **Home lab validation:** Second machine checks (Docker deploy, synthetic filesystem/SQL targets)—manual playbook [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md) ([pt-BR](../ops/HOMELAB_VALIDATION.pt_BR.md)); run between releases or before demos without burning agent tokens on ad-hoc steps. On Windows, prefer repo scripts **`scripts/docker-lab-build.ps1`**, **`scripts/docker-hub-pull.ps1`**, **`scripts/docker-prune-local.ps1 -WhatIf`** ([scripts/docker/README.md](../../scripts/docker/README.md)) so agents and operators reuse one flow and keep local image tags bounded.
 
 Optional: add Dockerfiles (or a short note) for wildfly_t1r/uptk in `docs/private/Dockerfiles_used.md` or in the wf_t1r repo so “Dockerfiles I created and used” is easy to cite.
 
