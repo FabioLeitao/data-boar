@@ -331,7 +331,12 @@ class TestRunAggregation(unittest.TestCase):
             db_rows,
             [],
             "sess1",
-            {"detection": {"aggregated_identification_enabled": True, "aggregated_min_categories": 2}},
+            {
+                "detection": {
+                    "aggregated_identification_enabled": True,
+                    "aggregated_min_categories": 2,
+                }
+            },
         )
         self.assertEqual(len(records), 1)
         cats = set(str(records[0]["categories"]).split(", "))

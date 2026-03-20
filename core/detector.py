@@ -711,15 +711,17 @@ def _format_hint_suggests_sensitive_column(
     col = (column_name or "").lower()
 
     decl_len = _parse_declared_char_length(data_type)
-    if decl_len is not None and _format_length_suggests_id_column(column_name, decl_len):
+    if decl_len is not None and _format_length_suggests_id_column(
+        column_name, decl_len
+    ):
         return (
             "FORMAT_LENGTH_HINT_ID",
             "Schema type/length suggests identifier; confirm against sample values",
         )
 
-    if _declared_type_is_integer_like(data_type) and column_name_suggests_identifier_review(
-        column_name
-    ):
+    if _declared_type_is_integer_like(
+        data_type
+    ) and column_name_suggests_identifier_review(column_name):
         return (
             "FORMAT_TYPE_HINT_ID_INT",
             "Schema integer type with ID-like column name; confirm against sample values",
@@ -857,7 +859,9 @@ class SensitivityDetector:
             det.get("connector_format_id_hint", False)
         )
         # Optional semantic hint from DL embedding similarity to sensitive-term prototype (Plan §5).
-        self._embedding_prototype_hint = bool(det.get("embedding_prototype_hint", False))
+        self._embedding_prototype_hint = bool(
+            det.get("embedding_prototype_hint", False)
+        )
         try:
             self._embedding_prototype_hint_min_confidence = int(
                 det.get("embedding_prototype_hint_min_confidence", 20)
@@ -1000,7 +1004,9 @@ class SensitivityDetector:
                 return fz
             sim_score = None
             if self._dl_classifier and self._dl_classifier.is_ready:
-                sim_score = self._dl_classifier.sensitive_prototype_similarity(ml_dl_text)
+                sim_score = self._dl_classifier.sensitive_prototype_similarity(
+                    ml_dl_text
+                )
             proto = try_embedding_prototype_elevation(
                 combined_confidence=combined_confidence,
                 found_patterns=found_patterns,
