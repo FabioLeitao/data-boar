@@ -44,6 +44,8 @@ Force delete only if Git says “not fully merged” and you **accept** losing t
 git branch -D branch-name
 ```
 
+**Squash-merged PRs:** After a **squash merge** to `main`, your old branch may still exist locally with different SHAs than `main` (`git branch --merged` might not list it). If the PR is merged on GitHub and you do not need the branch, delete by name (example after PR **#93**): `git branch -D pr/docker-scout-high-slice` — see [MAINTENANCE_FRONT_OF_WORK.md](../plans/MAINTENANCE_FRONT_OF_WORK.md) § Slice S4 *Quick housekeeping*.
+
 ---
 
 ## 2. What we saw on a typical dev machine (example snapshot)
@@ -105,6 +107,8 @@ Or use the GitHub UI: **Repository → Branches →** delete stale feature branc
 
 1. **`fabioleitao/data_boar:latest`** (or the semver tag you are actively using, e.g. `1.6.2`).
 2. **One previous** digest (older semver tag or last local `docker build`), so you can compare or roll back quickly.
+
+**Smoke / lab builds are not special:** Repeated smoke tests do **not** require a unique tag each time (`data_boar:smoke-93`, `data_boar:smoke-foo`, …). That pattern **wastes disk** and mental overhead. Prefer **one** overwritten tag — **`docker build -t data_boar:lab .`** (matches [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md) step 1.3) — and delete old experimental tags when done.
 
 Older digests can be removed locally; you can **`docker pull`** historical tags from Docker Hub when needed.
 
