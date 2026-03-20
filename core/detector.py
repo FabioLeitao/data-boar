@@ -11,8 +11,8 @@ Pipeline:
 4. Optional fuzzy column name: when sensitivity_detection.fuzzy_column_match and rapidfuzz are
    available, may elevate LOW borderline scores to MEDIUM (FUZZY_COLUMN_MATCH); default off.
 5. Optional connector format hint: when sensitivity_detection.connector_format_id_hint and
-   connectors pass declared SQL CHAR/VARCHAR length, may elevate LOW to MEDIUM (FORMAT_LENGTH_HINT_ID);
-   default off (Plan §4).
+   connectors pass declared SQL types/lengths, may elevate LOW to MEDIUM
+   (FORMAT_LENGTH_HINT_ID, FORMAT_TYPE_HINT_ID_INT, FORMAT_LENGTH_HINT_EMAIL); default off (Plan §4).
 
 To reduce false positives on song lyrics and music tablature/chord sheets:
 - Content heuristics detect lyrics (verse/chorus keywords, short lines) and tabs (digit/pipe lines).
@@ -652,6 +652,30 @@ def _parse_declared_char_length(data_type: str | None) -> int | None:
     return n if n > 0 else None
 
 
+def _declared_type_is_integer_like(data_type: str | None) -> bool:
+    """True when declared SQL type is integer-ish and suitable for ID hints."""
+    if not data_type or not str(data_type).strip():
+        return False
+    t = str(data_type).strip().lower()
+    if re.search(r"\b(bigint|integer|int2|int4|int8|int|smallint)\b", t):
+        return True
+    # DECIMAL(p,0) / NUMERIC(p,0) used as IDs in some schemas.
+    if re.search(r"\b(?:decimal|numeric)\s*\(\s*\d+\s*,\s*0\s*\)", t):
+        return True
+    return False
+
+
+def _declared_type_email_length_hint(data_type: str | None) -> int | None:
+    """
+    Return declared character length when it strongly suggests an email-storage column.
+    Conservative values commonly used for email fields: 254, 255, 320.
+    """
+    char_len = _parse_declared_char_length(data_type)
+    if char_len in (254, 255, 320):
+        return char_len
+    return None
+
+
 def _format_length_suggests_id_column(column_name: str, char_len: int) -> bool:
     """
     True if declared string length matches common ID sizes and the column name is ID-like.
@@ -672,6 +696,40 @@ def _format_length_suggests_id_column(column_name: str, char_len: int) -> bool:
     ):
         return True
     return False
+
+
+def _format_hint_suggests_sensitive_column(
+    column_name: str, data_type: str | None
+) -> tuple[str, str] | None:
+    """
+    Optional schema-based hints for columns that look sensitive despite low sample signal.
+    Returns (pattern_detected, norm_tag) when a conservative hint applies.
+    """
+    col = (column_name or "").lower()
+
+    decl_len = _parse_declared_char_length(data_type)
+    if decl_len is not None and _format_length_suggests_id_column(column_name, decl_len):
+        return (
+            "FORMAT_LENGTH_HINT_ID",
+            "Schema type/length suggests identifier; confirm against sample values",
+        )
+
+    if _declared_type_is_integer_like(data_type) and column_name_suggests_identifier_review(
+        column_name
+    ):
+        return (
+            "FORMAT_TYPE_HINT_ID_INT",
+            "Schema integer type with ID-like column name; confirm against sample values",
+        )
+
+    email_len = _declared_type_email_length_hint(data_type)
+    email_name_tokens = ("email", "e_mail", "mail")
+    if email_len is not None and any(tok in col for tok in email_name_tokens):
+        return (
+            "FORMAT_LENGTH_HINT_EMAIL",
+            "Schema type/length suggests email field; confirm against sample values",
+        )
+    return None
 
 
 class SensitivityDetector:
@@ -926,17 +984,18 @@ class SensitivityDetector:
                 "Potential personal data",
                 combined_confidence,
             )
-        # Connector-declared CHAR/VARCHAR length + ID-like name → MEDIUM (no regex hit, ML/DL below MEDIUM threshold).
-        # Note: column names alone often drive high ML scores; neutral/non-PII sample values keep combined_confidence low so this path can fire in edge cases (e.g. opaque keys + schema metadata).
+        # Optional schema hints (declared SQL type/length + conservative column-name heuristics)
+        # can elevate LOW to MEDIUM for manual confirmation. This is FN-first and opt-in.
         if self._connector_format_id_hint and not found_patterns:
-            decl_len = _parse_declared_char_length(connector_data_type)
-            if decl_len is not None and _format_length_suggests_id_column(
-                column_name, decl_len
-            ):
+            fmt_hint = _format_hint_suggests_sensitive_column(
+                column_name, connector_data_type
+            )
+            if fmt_hint is not None:
+                pat, norm = fmt_hint
                 return (
                     "MEDIUM",
-                    "FORMAT_LENGTH_HINT_ID",
-                    "Schema type/length suggests identifier; confirm against sample values",
+                    pat,
+                    norm,
                     max(combined_confidence, med_thr),
                 )
         return "LOW", "GENERAL", "Non-personal", combined_confidence
