@@ -10,7 +10,7 @@ Quando você pede ao agente para **visualizar**, **fazer commit local** ou **cri
 
 - **“Commit local”** (opcionalmente: “… com mensagem: …”): dá stage em todos os arquivos alterados **exceto** `audit_results.db`, monta um **título** e **corpo em tópicos** a partir das alterações (ou usa o que você disse) e executa `git commit -m "<título>" -m "<corpo>"`.
 
-- **“Criar PR”** (opcionalmente: “… com descrição: …” ou “… no branch X”): se houver alterações não commitadas, faz stage (ou só `-IncludeFiles` se indicado) e commit. Se não houver alterações não commitadas mas houver commits locais não enviados, usa esses commits para o PR. **Antes do push:** executa `git fetch origin` e, se o branch estiver **atrás** do remoto, executa `git pull --rebase origin <branch>`. Em seguida faz **push** do branch atual para `origin` e **abre o PR no navegador padrão** com título e descrição **pré-preenchidos** (via `gh pr create --web` ou página de compare do GitHub se `gh` não estiver instalado).
+- **“Criar PR”** (opcionalmente: “… com descrição: …” ou “… no branch X”): se houver alterações não commitadas, faz stage (ou só `-IncludeFiles` se indicado) e commit. Se não houver alterações não commitadas mas houver commits locais não enviados, usa esses commits para o PR. **Antes do push:** executa `git fetch origin` e, se o branch estiver **atrás** do remoto, executa `git pull --rebase origin <branch>`. Em seguida faz **push** do branch atual para `origin` e **abre o PR no navegador padrão** com título e descrição **pré-preenchidos** (via `gh pr create --web` ou página de compare do GitHub se `gh` não estiver instalado). O fluxo usa **guarda de Preview** (mesmo branch + mesmo escopo de arquivos); para ignorar intencionalmente, use `-SkipPreviewGuard`.
 
 ## Selecionar quais arquivos incluir
 
@@ -18,6 +18,7 @@ Você pode limitar o commit/PR a arquivos específicos com **`-IncludeFiles`** (
 
 - **Visualize primeiro:** execute com `-Action Preview` para ver os arquivos candidatos e o título/corpo proposto.
 - **Depois:** execute com `-Action Commit` ou `-Action PR` e, se quiser incluir só alguns arquivos, adicione `-IncludeFiles "path1","path2"`.
+- **Guarda de segurança:** Commit/PR exigem um Preview anterior com o mesmo escopo; se o escopo mudar, rode Preview de novo.
 
 ## Fazer manualmente
 

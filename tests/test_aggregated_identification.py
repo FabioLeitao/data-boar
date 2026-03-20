@@ -304,6 +304,100 @@ class TestRunAggregation(unittest.TestCase):
         self.assertEqual(records[0]["source_type"], "filesystem")
         self.assertIn("contacts.csv", records[0]["table_or_file"])
 
+    def test_medium_pii_ambiguous_counts_toward_aggregation(self):
+        """
+        C9: MEDIUM + PII_AMBIGUOUS should still map to category 'other' and count
+        toward aggregated_min_categories with another category in the same group.
+        """
+        db_rows = [
+            {
+                "target_name": "T1",
+                "schema_name": "public",
+                "table_name": "users",
+                "column_name": "document_id",
+                "pattern_detected": "PII_AMBIGUOUS",
+                "sensitivity_level": "MEDIUM",
+            },
+            {
+                "target_name": "T1",
+                "schema_name": "public",
+                "table_name": "users",
+                "column_name": "telefone",
+                "pattern_detected": "PHONE_BR",
+                "sensitivity_level": "MEDIUM",
+            },
+        ]
+        records = run_aggregation(
+            db_rows,
+            [],
+            "sess1",
+            {"detection": {"aggregated_identification_enabled": True, "aggregated_min_categories": 2}},
+        )
+        self.assertEqual(len(records), 1)
+        cats = set(str(records[0]["categories"]).split(", "))
+        self.assertIn("other", cats)
+        self.assertIn("phone", cats)
+
+    def test_incomplete_data_mode_lowers_threshold_by_one(self):
+        db_rows = [
+            {
+                "target_name": "T1",
+                "schema_name": "public",
+                "table_name": "users",
+                "column_name": "gender",
+                "pattern_detected": "",
+                "sensitivity_level": "MEDIUM",
+            }
+        ]
+        # Default threshold 2 -> no row
+        records_default = run_aggregation(
+            db_rows, [], "sess1", {"detection": {"aggregated_min_categories": 2}}
+        )
+        self.assertEqual(len(records_default), 0)
+        # Incomplete mode lowers effective threshold to 1 -> row appears
+        records_incomplete = run_aggregation(
+            db_rows,
+            [],
+            "sess1",
+            {
+                "detection": {
+                    "aggregated_min_categories": 2,
+                    "aggregated_incomplete_data_mode": True,
+                }
+            },
+        )
+        self.assertEqual(len(records_incomplete), 1)
+        self.assertIn(
+            "incomplete-data mode", records_incomplete[0]["explanation"].lower()
+        )
+
+    def test_single_high_risk_health_suggested_review_mode(self):
+        db_rows = [
+            {
+                "target_name": "T1",
+                "schema_name": "public",
+                "table_name": "clinical",
+                "column_name": "health_status",
+                "pattern_detected": "",
+                "sensitivity_level": "HIGH",
+            }
+        ]
+        # With min_categories=2, single category would normally not be emitted.
+        records = run_aggregation(
+            db_rows,
+            [],
+            "sess1",
+            {
+                "detection": {
+                    "aggregated_min_categories": 2,
+                    "aggregated_single_high_risk_suggested_review": True,
+                }
+            },
+        )
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0]["sensitivity_level"], "MEDIUM")
+        self.assertIn("Single high-risk category", records[0]["explanation"])
+
 
 def test_report_contains_aggregated_sheet_and_recommendation(tmp_path):
     """Generate report with DB findings that trigger aggregation; sheet and recommendation must exist."""
