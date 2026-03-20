@@ -26,7 +26,7 @@
 | ---- | ------ | ------------- |
 | 1.1 | Clone repo on lab (or `git pull`); `uv sync` | Dependencies install |
 | 1.2 | `uv run pytest -v -W error` or project check script | All tests green |
-| 1.3 | `docker build -t data_boar:lab .` | Build completes |
+| 1.3 | `docker build -t data_boar:lab .` | Build completes (reuse this tag for every lab smoke — do not mint a new tag per run; see [DOCKER_SETUP.md](../DOCKER_SETUP.md) §7) |
 | 1.4 | Create `./data/config.yaml` from [deploy/config.example.yaml](../../deploy/config.example.yaml) | File valid YAML |
 | 1.5 | `docker run --rm -p 8088:8088 -v "$(pwd)/data:/data" -e CONFIG_PATH=/data/config.yaml data_boar:lab` | Dashboard loads at `:8088`, `/health` OK |
 | 1.6 | **Start scan** (dashboard or `POST /scan`) with `targets: []` | Completes idle run; no crash |

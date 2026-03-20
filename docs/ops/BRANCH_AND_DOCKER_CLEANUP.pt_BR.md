@@ -66,6 +66,8 @@ Manter cerca de **dois** **digests** de imagem localmente, por exemplo:
 1. `fabioleitao/data_boar:latest` ou a tag semver em uso (ex.: `1.6.2`).
 2. **Uma versão anterior** para comparação ou rollback rápido.
 
+**Smokes / lab:** Testes de smoke **não** precisam de uma **tag nova a cada execução** (`data_boar:smoke-93`, …). Isso **ocupa disco** à toa. Prefira **uma** tag sobrescrita — **`docker build -t data_boar:lab .`** (igual ao passo 1.3 de [HOMELAB_VALIDATION.pt_BR.md](HOMELAB_VALIDATION.pt_BR.md)) — e apague tags experimentais antigas quando terminar.
+
 Versões mais antigas podem ser removidas; use `docker pull` no Hub quando precisar de histórico.
 
 **Automação:** Na raiz do repo, **`.\scripts\docker-hub-pull.ps1`**, **`.\scripts\docker-lab-build.ps1`**, **`.\scripts\docker-prune-local.ps1 -WhatIf`** — ver [scripts/docker/README.md](../../scripts/docker/README.md).

@@ -26,7 +26,7 @@
 | ----- | ---- | -------------------- |
 | 1.1 | `git pull`; `uv sync` | Dependências OK |
 | 1.2 | Testes completos | Tudo verde |
-| 1.3 | `docker build -t data_boar:lab .` | Build concluído |
+| 1.3 | `docker build -t data_boar:lab .` | Build concluído (reutilize esta tag em cada smoke de lab — não crie tag nova por execução; ver [DOCKER_SETUP.pt_BR.md](../DOCKER_SETUP.pt_BR.md) §7) |
 | 1.4 | `data/config.yaml` a partir de [config.example.yaml](../deploy/config.example.yaml) | YAML válido |
 | 1.5 | `docker run` com volume `/data` e `CONFIG_PATH` | Dashboard em `:8088`, `/health` OK |
 | 1.6 | Scan com `targets: []` | Termina sem crash |
