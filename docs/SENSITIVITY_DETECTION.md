@@ -214,6 +214,8 @@ detection:
 
 **To disable:** Set `detection.aggregated_identification_enabled: false` in your config; the Cross-ref sheet and aggregated recommendation will not be generated.
 
+**Operator practical tuning guide:** [ops/AGGREGATED_IDENTIFICATION_TUNING.md](ops/AGGREGATED_IDENTIFICATION_TUNING.md) (pt-BR: [ops/AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md](ops/AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md)).
+
 ---
 
 ## Inline terms in main config
