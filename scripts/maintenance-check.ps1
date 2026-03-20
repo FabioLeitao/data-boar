@@ -18,6 +18,49 @@ if (Get-Command gh -ErrorAction SilentlyContinue) {
 }
 Write-Host ""
 
+Write-Host "## Open Dependabot security alerts (GitHub API)" -ForegroundColor Yellow
+if (Get-Command gh -ErrorAction SilentlyContinue) {
+    $repoJson = gh repo view --json nameWithOwner 2>$null
+    if ($LASTEXITCODE -eq 0 -and $repoJson) {
+        try {
+            $nameWithOwner = ($repoJson | ConvertFrom-Json).nameWithOwner
+            if ($nameWithOwner) {
+                $alertsJson = gh api "repos/$nameWithOwner/dependabot/alerts?state=open&per_page=20" 2>$null
+                if ($LASTEXITCODE -eq 0 -and $alertsJson) {
+                    $parsed = $alertsJson | ConvertFrom-Json
+                    if ($null -eq $parsed) {
+                        $alerts = @()
+                    } elseif ($parsed -is [System.Array]) {
+                        $alerts = $parsed
+                    } else {
+                        $alerts = @($parsed)
+                    }
+                    if ($alerts.Count -gt 0) {
+                        foreach ($a in $alerts) {
+                            $pkg = $a.dependency.package.name
+                            $sev = $a.security_advisory.severity
+                            $num = $a.number
+                            Write-Host "  - #$num  $sev  $pkg  $($a.security_advisory.summary)"
+                        }
+                        Write-Host "  Triage doc (pyOpenSSL / Snowflake): docs/ops/DEPENDABOT_PYOPENSSL_SNOWFLAKE.md" -ForegroundColor DarkGray
+                    } else {
+                        Write-Host "  (none open)" -ForegroundColor DarkGray
+                    }
+                } else {
+                    Write-Host "  (could not list alerts — permissions or auth: gh auth login)" -ForegroundColor DarkYellow
+                }
+            }
+        } catch {
+            Write-Host "  (parse error; skip alerts section)" -ForegroundColor DarkYellow
+        }
+    } else {
+        Write-Host "  (not a gh repo or gh repo view failed)" -ForegroundColor DarkYellow
+    }
+} else {
+    Write-Host "  (skipped — gh not installed)" -ForegroundColor DarkYellow
+}
+Write-Host ""
+
 Write-Host "## Docker Scout quickview (published image)" -ForegroundColor Yellow
 if (Get-Command docker -ErrorAction SilentlyContinue) {
     docker scout quickview fabioleitao/data_boar:latest 2>&1

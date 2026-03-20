@@ -15,4 +15,8 @@ When working with **dependencies** (pyproject.toml, uv.lock, requirements.txt) o
 5. **Regression guard**: If the update fixes a bug or enforces a contract (e.g. minimum version), add or extend a test so future changes do not reintroduce the issue.
 6. **PR-ready**: After applying, the tree should be ready for a PR (tests green, pre-commit / Ruff clean).
 
+## Security alerts (not the same as Dependabot PRs)
+
+GitHub **Dependabot alerts** can stay open when **no fix fits the resolver** (e.g. **pyOpenSSL ≥ 26** blocked by **`snowflake-connector-python`**’s published upper bound). Before forcing pins, read **`docs/ops/DEPENDABOT_PYOPENSSL_SNOWFLAKE.md`** and **SECURITY.md** (bullet on pyOpenSSL/Snowflake). **`.\scripts\maintenance-check.ps1`** lists open alerts when `gh` is authenticated.
+
 For the full step-by-step workflow, use the **dependabot-recommendations** skill when performing dependency updates.
