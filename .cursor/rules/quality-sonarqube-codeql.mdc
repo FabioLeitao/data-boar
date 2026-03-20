@@ -31,7 +31,7 @@ This project enforces quality and security via **tests** (CI) and **CodeQL** (Gi
    - Do not log secrets (API keys, passwords, connection strings). See SECURITY.md and docs/SECURITY.md.
    - Do not build SQL or shell commands by concatenating user input; use parameterized queries and safe APIs.
    - Prefer strong crypto (e.g. TLS 1.2+); avoid weak or deprecated algorithms for sensitive data.
-   - **py/path-injection:** For serving files under `report.output_dir` (reports, heatmaps), use **`_resolved_existing_file_under_out_dir`** in `api/routes.py` (or the same pattern: `os.path.join` + `os.path.normpath` + `os.path.realpath` + prefix containment under the real base directory). Allowlist basenames with regex (`_validated_output_basename`). Avoid relying on `(out_dir / name).resolve()` + `Path.relative_to()` alone — CodeQL may still flag taint. After editing `api/routes.py` path logic, run **`uv run pytest tests/test_report_path_safety.py -v -W error`**.
+   - **py/path-injection:** For serving files under `report.output_dir`, use **`_real_file_under_out_dir_str`** / **`_resolved_existing_file_under_out_dir`** in `api/routes.py`: canonical `base_path` (`realpath(abspath(out_dir))`), then CodeQL’s documented `normpath(join(base_path, filename))` + `fullpath.startswith(base_path)` + `os.path.isfile(fullpath)`. Use **`_report_output_dir_resolved(engine)`** for the base (not `report_path.parent`). Heatmaps use **`_heatmap_png_response`** (bytes body) to avoid `FileResponse(path=...)` as a sink. After editing `api/routes.py` path logic, run **`uv run pytest tests/test_report_path_safety.py -v -W error`**.
 
 ## After editing markdown
 

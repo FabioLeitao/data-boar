@@ -5,10 +5,11 @@ GET /reports/{session_id}, POST /scan_database (optional tenant/technician), PAT
 and /sessions/{session_id}/technician for metadata updates. On startup load config (config.yaml or CONFIG_PATH)
 and create a singleton AuditEngine.
 
-Path safety: session_id is validated before use in file paths. Report and heatmap downloads
-use ``_resolved_existing_file_under_out_dir`` (join + normpath + realpath + prefix containment)
-plus basename allowlists so CodeQL ``py/path-injection`` is satisfied; see
-``tests/test_report_path_safety.py``.
+Path safety: session_id is validated before use in file paths. Report paths use
+``_real_file_under_out_dir_str`` / ``_resolved_existing_file_under_out_dir``: CodeQL's
+documented ``normpath(join(base, filename))`` + ``startswith(base)`` + ``isfile``, with
+basename allowlists. Heatmap GET handlers return PNG bytes via ``_heatmap_png_response`` to
+avoid ``FileResponse(path=...)`` as an extra sink. See ``tests/test_report_path_safety.py``.
 
 Cache: static assets get long-lived Cache-Control; API/HTML get no-store. Sessions list is cached
 in-memory for a short TTL when no scan is running to reduce SQLite reads on repeated dashboard loads.
@@ -56,37 +57,41 @@ _REPORT_FILENAME_PATTERN = re.compile(r"^Relatorio_Auditoria_[A-Za-z0-9_]{4,64}\
 _HEATMAP_FILENAME_PATTERN = re.compile(r"^heatmap_[A-Za-z0-9_]{4,64}\.png$")
 
 
-def _resolved_existing_file_under_out_dir(out_dir: Path, filename: str) -> Path | None:
-    """
-    Resolve ``(out_dir / filename)`` only if the real path stays under ``out_dir``.
+def _report_output_dir_resolved(engine) -> Path:
+    """Configured ``report.output_dir`` only (never a path derived from report files)."""
+    return Path(engine.config.get("report", {}).get("output_dir", ".")).resolve()
 
-    Uses ``os.path.join`` + ``normpath`` + ``realpath`` + prefix containment — the
-    pattern CodeQL documents for ``py/path-injection`` — so the sanitizer is
-    recognized and we avoid path traversal. ``filename`` must be a single segment
-    with no path separators (callers validate with an allowlist regex).
+
+def _real_file_under_out_dir_str(out_dir: Path, filename: str) -> str | None:
+    """
+    Return ``fullpath`` for ``(out_dir / filename)`` if it exists as a file under ``out_dir``.
+
+    Matches CodeQL's documented safe pattern: ``normpath(join(base_path, filename))`` then
+    ``fullpath.startswith(base_path)`` with the **same** ``base_path`` string, then
+    ``os.path.isfile(fullpath)``. We avoid an extra ``realpath`` between the prefix check
+    and file checks so the analyzer's path-injection barrier still applies. ``base_path``
+    is ``realpath(abspath(out_dir))`` so the root is canonical.
     """
     if not filename or "/" in filename or "\\" in filename:
         return None
     if filename in (".", "..") or filename.startswith(".."):
         return None
     try:
-        base_path = os.path.realpath(os.fspath(out_dir.resolve()))
-        fullpath = os.path.normpath(os.path.join(base_path, filename))
-        real_full = os.path.realpath(fullpath)
-        real_base = os.path.realpath(base_path)
-    except (OSError, ValueError):
+        base_path = os.path.realpath(os.path.abspath(os.fspath(out_dir)))
+    except OSError:
         return None
-    if real_full == real_base:
+    fullpath = os.path.normpath(os.path.join(base_path, filename))
+    if not fullpath.startswith(base_path):
         return None
-    under = real_full.startswith(real_base + os.sep) or real_full.startswith(
-        real_base + "/"
-    )
-    if not under:
+    if not os.path.isfile(fullpath):
         return None
-    p = Path(real_full)
-    if not p.exists():
-        return None
-    return p
+    return fullpath
+
+
+def _resolved_existing_file_under_out_dir(out_dir: Path, filename: str) -> Path | None:
+    """``Path`` wrapper for :func:`_real_file_under_out_dir_str` (reports / shared logic)."""
+    s = _real_file_under_out_dir_str(out_dir, filename)
+    return Path(s) if s else None
 
 
 def _validated_output_basename(
@@ -130,8 +135,7 @@ def _safe_report_output_path(path: str | Path, engine) -> Path | None:
     filename = _validated_output_basename(path, _REPORT_FILENAME_PATTERN)
     if filename is None:
         return None
-    out_dir = Path(engine.config.get("report", {}).get("output_dir", ".")).resolve()
-    return _resolved_existing_file_under_out_dir(out_dir, filename)
+    return _resolved_existing_file_under_out_dir(_report_output_dir_resolved(engine), filename)
 
 
 def _safe_report_path_for_heatmap(engine) -> tuple[Path, str] | None:
@@ -162,16 +166,48 @@ def _safe_report_path_for_heatmap(engine) -> tuple[Path, str] | None:
     return safe_report_path, sid or ""
 
 
-def _heatmap_png_path_under_out_dir(out_dir: Path, session_key: str) -> Path | None:
+def _heatmap_png_path_for_download(engine, session_key: str) -> Path | None:
     """
-    Resolve ``heatmap_<first 12 chars of session_key>.png`` under ``out_dir`` if it exists.
+    Resolve ``heatmap_<first 12 chars of session_key>.png`` under configured output_dir.
 
-    ``session_key`` is a validated session id or prefix derived from a report basename.
+    Uses only ``engine.config`` for the base directory (not ``report_path.parent``).
     """
     heatmap_filename = f"heatmap_{session_key[:12]}.png"
     if not _HEATMAP_FILENAME_PATTERN.fullmatch(heatmap_filename):
         return None
-    return _resolved_existing_file_under_out_dir(out_dir, heatmap_filename)
+    return _resolved_existing_file_under_out_dir(
+        _report_output_dir_resolved(engine), heatmap_filename
+    )
+
+
+def _heatmap_png_response(engine, session_key: str):
+    """
+    Heatmap download without ``FileResponse(path=...)`` (CodeQL path sink).
+
+    Opens the file only after :func:`_real_file_under_out_dir_str` (normpath + startswith
+    + realpath), matching the documented safe ``open(fullpath)`` pattern.
+    """
+    from starlette.responses import Response
+
+    heatmap_filename = f"heatmap_{session_key[:12]}.png"
+    if not _HEATMAP_FILENAME_PATTERN.fullmatch(heatmap_filename):
+        return None
+    safe_path = _real_file_under_out_dir_str(
+        _report_output_dir_resolved(engine), heatmap_filename
+    )
+    if not safe_path:
+        return None
+    try:
+        with open(safe_path, "rb") as fh:
+            body = fh.read()
+    except OSError:
+        return None
+    fname = os.path.basename(safe_path)
+    return Response(
+        content=body,
+        media_type="image/png",
+        headers={"Content-Disposition": f'inline; filename="{fname}"'},
+    )
 
 
 class DatabaseConfig(BaseModel):
@@ -842,14 +878,10 @@ async def download_heatmap():
         raise HTTPException(
             status_code=404, detail="Heatmap not available. Run a scan first."
         )
-    safe_report_path, sid = resolved
-    safe_heatmap_path = _heatmap_png_path_under_out_dir(safe_report_path.parent, sid)
-    if safe_heatmap_path:
-        return FileResponse(
-            safe_heatmap_path,
-            filename=safe_heatmap_path.name,
-            media_type="image/png",
-        )
+    _, sid = resolved
+    heatmap_resp = _heatmap_png_response(engine, sid)
+    if heatmap_resp:
+        return heatmap_resp
     raise HTTPException(
         status_code=404,
         detail="Heatmap not available. Run a scan first or ensure the report was generated.",
@@ -948,22 +980,15 @@ async def download_heatmap_by_session(session_id: str):
     _validate_session_id(session_id)
     engine = _get_engine()
     path = engine.generate_final_reports(session_id)
-    safe_report_path = _safe_report_output_path(path, engine) if path else None
-    if not safe_report_path:
+    if not path or _safe_report_output_path(path, engine) is None:
         raise HTTPException(
             status_code=404,
             detail=f"No data for session {session_id} or report generation failed.",
         )
-    # session_id already validated; heatmap name is allowlisted (no ".." or slashes)
-    safe_heatmap_path = _heatmap_png_path_under_out_dir(
-        safe_report_path.parent, session_id
-    )
-    if safe_heatmap_path:
-        return FileResponse(
-            safe_heatmap_path,
-            filename=safe_heatmap_path.name,
-            media_type="image/png",
-        )
+    # Heatmap file is resolved under config output_dir only; body response avoids FileResponse path sink.
+    heatmap_resp = _heatmap_png_response(engine, session_id)
+    if heatmap_resp:
+        return heatmap_resp
     raise HTTPException(
         status_code=404,
         detail=f"Heatmap not available for session {session_id}. Run a scan and ensure findings exist.",

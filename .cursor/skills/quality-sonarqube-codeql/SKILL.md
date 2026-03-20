@@ -32,7 +32,7 @@ Use this skill when implementing or reviewing **Python** or **markdown** changes
 - **Secrets:** Do not log API keys, passwords, or connection strings (see SECURITY.md, docs/SECURITY.md).
 - **Injection:** Use parameterized queries and safe APIs; never concatenate user input into SQL or shell commands.
 - **Crypto:** Prefer TLS 1.2+ and standard libraries; avoid weak or deprecated algorithms.
-- **Path (py/path-injection):** For downloads under `report.output_dir`, reuse **`api.routes._resolved_existing_file_under_out_dir`** (join + normpath + realpath + prefix check). Pair with basename allowlists (`_REPORT_FILENAME_PATTERN`, `_HEATMAP_FILENAME_PATTERN`). Do not use only `Path.resolve()` + `relative_to()` for engine- or session-influenced paths — CodeQL may still report taint. After path changes in `api/routes.py`, run **`uv run pytest tests/test_report_path_safety.py -v -W error`**.
+- **Path (py/path-injection):** Reuse **`api.routes._real_file_under_out_dir_str`** / **`_report_output_dir_resolved`**: `normpath(join(base_path, filename))`, then `fullpath.startswith(base_path)`, then `isfile` (CodeQL’s documented barrier). Heatmaps: **`_heatmap_png_response`** (bytes) instead of `FileResponse(path=...)`. Allowlist basenames (`_REPORT_FILENAME_PATTERN`, `_HEATMAP_FILENAME_PATTERN`). After path changes in `api/routes.py`, run **`uv run pytest tests/test_report_path_safety.py -v -W error`**.
 
 ### 3. Markdown: points of attention
 

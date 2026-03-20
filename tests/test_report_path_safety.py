@@ -107,15 +107,16 @@ def test_resolved_existing_file_under_out_dir_rejects_traversal(tmp_path: Path):
     assert routes._resolved_existing_file_under_out_dir(base, "nope.png") is None
 
 
-def test_heatmap_png_path_under_out_dir_matches_allowlist(tmp_path: Path):
+def test_heatmap_png_path_for_download_matches_allowlist(tmp_path: Path):
     import api.routes as routes
 
     out = tmp_path / "reports"
     out.mkdir(parents=True, exist_ok=True)
     (out / "heatmap_abcdef123456.png").write_bytes(b"png")
-    ok = routes._heatmap_png_path_under_out_dir(out, "abcdef1234567890")
+    engine = _FakeEngine(out, out / "Relatorio_Auditoria_abcdef123456.xlsx")
+    ok = routes._heatmap_png_path_for_download(engine, "abcdef1234567890")
     assert ok is not None and ok.name == "heatmap_abcdef123456.png"
-    assert routes._heatmap_png_path_under_out_dir(out, "../../etc") is None
+    assert routes._heatmap_png_path_for_download(engine, "../../etc") is None
 
 
 def test_download_heatmap_rejects_report_path_outside_configured_output_dir(
