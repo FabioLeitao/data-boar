@@ -24,4 +24,3 @@ def test_machine_fingerprint_changes_when_seed_changes(monkeypatch):
     b = compute_machine_fingerprint()
 
     assert a != b
-
