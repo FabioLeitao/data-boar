@@ -14,4 +14,4 @@
 
 **Optional GitHub UI:** If noise is high, maintainers may **dismiss** alerts with reason **`patch_unavailable`** and a comment linking this doc — **re-open or re-check** when the connector releases.
 
-**Related:** [SECURITY.md](../SECURITY.md) (dependency workflow), [MAINTENANCE_FRONT_OF_WORK.md](../plans/MAINTENANCE_FRONT_OF_WORK.md) (S4 / A1).
+**Related:** [SECURITY.md](../SECURITY.md) (dependency workflow), [MAINTENANCE_FRONT_OF_WORK.md](../plans/MAINTENANCE_FRONT_OF_WORK.md) (S4 / A1). **`.\scripts\maintenance-check.ps1`** (after `gh auth login`) lists open Dependabot **alerts** and points here for pyOpenSSL/Snowflake context.
