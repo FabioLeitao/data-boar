@@ -304,6 +304,40 @@ class TestRunAggregation(unittest.TestCase):
         self.assertEqual(records[0]["source_type"], "filesystem")
         self.assertIn("contacts.csv", records[0]["table_or_file"])
 
+    def test_medium_pii_ambiguous_counts_toward_aggregation(self):
+        """
+        C9: MEDIUM + PII_AMBIGUOUS should still map to category 'other' and count
+        toward aggregated_min_categories with another category in the same group.
+        """
+        db_rows = [
+            {
+                "target_name": "T1",
+                "schema_name": "public",
+                "table_name": "users",
+                "column_name": "document_id",
+                "pattern_detected": "PII_AMBIGUOUS",
+                "sensitivity_level": "MEDIUM",
+            },
+            {
+                "target_name": "T1",
+                "schema_name": "public",
+                "table_name": "users",
+                "column_name": "telefone",
+                "pattern_detected": "PHONE_BR",
+                "sensitivity_level": "MEDIUM",
+            },
+        ]
+        records = run_aggregation(
+            db_rows,
+            [],
+            "sess1",
+            {"detection": {"aggregated_identification_enabled": True, "aggregated_min_categories": 2}},
+        )
+        self.assertEqual(len(records), 1)
+        cats = set(str(records[0]["categories"]).split(", "))
+        self.assertIn("other", cats)
+        self.assertIn("phone", cats)
+
 
 def test_report_contains_aggregated_sheet_and_recommendation(tmp_path):
     """Generate report with DB findings that trigger aggregation; sheet and recommendation must exist."""

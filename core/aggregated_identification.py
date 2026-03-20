@@ -356,6 +356,7 @@ def run_aggregation(
 def _build_explanation(categories: set[str], context: str) -> str:
     cat_list = ", ".join(sorted(categories))
     return (
-        f"Combination of {cat_list} in the same {context} may allow identification or re-identification of individuals. "
+        f"Possible identification risk: combination of {cat_list} in the same {context} may allow identification or re-identification of individuals. "
+        "This inference is based on sampled/incomplete scanning coverage; treat as suggested review and confirm manually. "
         "Consider access controls, purpose limitation and anonymisation (LGPD Art. 5, GDPR Recital 26)."
     )

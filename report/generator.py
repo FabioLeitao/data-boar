@@ -37,8 +37,8 @@ _AGGREGATED_CROSSREF_SAMPLE_NOTE_ROW: dict[str, str] = {
     "Explanation": (
         "Esta aba resume combinações de categorias quasi-identificadoras com base em achados do escaneamento "
         "(amostras por coluna/arquivo, p.ex. sample_limit), não em uma auditoria exaustiva de todos os valores. "
-        "Recomenda-se confirmação humana; a ausência de linhas aqui não prova ausência de risco identificável. "
-        "/ This sheet reflects sampled scanning only—not a full-population audit; human confirmation is recommended."
+        "Trate as linhas como risco possível/suggested review e confirme manualmente; ausência de linhas aqui não prova ausência de risco identificável. "
+        "/ This sheet reflects sampled/incomplete scanning only—not a full-population audit; treat rows as possible risk (suggested review) and confirm manually."
     ),
 }
 
@@ -855,12 +855,12 @@ def _aggregated_identification_recommendation_row() -> dict:
         _REC_RISCO: (
             "Dados de múltiplas colunas ou fontes (ex.: gênero, cargo, saúde, endereço, telefone) na mesma tabela/arquivo "
             "podem permitir identificação ou reidentificação de pessoas. "
-            "A detecção baseia-se em amostras de escaneamento (não no universo completo); tratar como caso especial para DPO e compliance."
+            "A detecção baseia-se em amostras de escaneamento (não no universo completo); tratar como risco possível/suggested review para DPO e compliance."
         ),
         _REC_RECOMENDACAO: (
             "Avaliar controles de acesso e limitação de finalidade; considerar anonimização ou pseudonimização; "
             "documentar base legal para o tratamento combinado (LGPD Art. 5; GDPR Recital 26). "
-            "Confirmar manualmente com base nos dados reais, especialmente quando sample_limit for baixo."
+            "Confirmar manualmente com base nos dados reais, especialmente quando sample_limit for baixo ou houver falhas de scan."
         ),
         _REC_PRIORIDADE: "ALTA",
         _REC_RELEVANTE_PARA: "DPO, Compliance, Segurança da Informação",
