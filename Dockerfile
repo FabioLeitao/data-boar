@@ -5,7 +5,8 @@
 # -----------------------------------------------------------------------------
 # Stage 1: build Python extensions and install dependencies
 # -----------------------------------------------------------------------------
-FROM python:3.12.13-slim AS builder
+# Rolling 3.12 slim (patch updates) reduces stale base CVE noise vs. a fixed old micro-tag.
+FROM python:3.12-slim AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential gcc g++ pkg-config \
@@ -18,7 +19,8 @@ COPY requirements.txt /app/requirements.txt
 # Upgrade pip/wheel in builder before deps (Scout: pip<25.3, wheel<=0.46.1 had CVEs; image inherits site-packages).
 # Remove any stale wheel metadata first, then assert effective runtime version.
 RUN pip uninstall -y wheel || true && \
-    pip install --no-cache-dir --upgrade "pip>=25.3" "wheel>=0.46.2" && \
+    pip install --no-cache-dir --upgrade "pip>=25.3" && \
+    pip install --no-cache-dir --force-reinstall "wheel>=0.46.2" && \
     python -c "import wheel; import sys; sys.exit(0 if tuple(map(int, wheel.__version__.split('.'))) >= (0,46,2) else 1)" && \
     pip install --no-cache-dir -r /app/requirements.txt && \
     find /usr/local/lib/python3.12/site-packages -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null; \
@@ -27,7 +29,7 @@ RUN pip uninstall -y wheel || true && \
 # -----------------------------------------------------------------------------
 # Stage 2: minimal runtime (no build tools, only runtime libs + app)
 # -----------------------------------------------------------------------------
-FROM python:3.12.13-slim
+FROM python:3.12-slim
 
 LABEL org.opencontainers.image.description="LGPD/GDPR/CCPA audit. Default: web API and frontend on port 8088. Override command for CLI one-shot."
 
@@ -46,7 +48,8 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Re-assert pip/wheel in the runtime layer so Docker Scout does not flag stale tooling copied from
 # older builder caches (CVEs on wheel<=0.46.1, pip<25.3). App deps already live under site-packages.
 RUN pip uninstall -y wheel || true && \
-    pip install --no-cache-dir --upgrade "pip>=25.3" "wheel>=0.46.2" && \
+    pip install --no-cache-dir --upgrade "pip>=25.3" && \
+    pip install --no-cache-dir --force-reinstall "wheel>=0.46.2" && \
     python -c "import wheel; import sys; sys.exit(0 if tuple(map(int, wheel.__version__.split('.'))) >= (0,46,2) else 1)"
 
 # Copy application code

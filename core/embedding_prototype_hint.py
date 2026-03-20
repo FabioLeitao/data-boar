@@ -48,4 +48,3 @@ def try_embedding_prototype_elevation(
         EMBEDDING_PROTOTYPE_HINT_NORM,
         combined_confidence,
     )
-
