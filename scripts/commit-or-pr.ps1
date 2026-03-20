@@ -66,10 +66,19 @@ if (-not $toAdd.Count -and $Action -in 'Preview','Commit') {
 # PR with nothing to commit: push any existing local commits and open PR (central repo gets full history).
 if (-not $toAdd.Count -and $Action -eq 'PR') {
     $branchName = (git rev-parse --abbrev-ref HEAD)
+    # Parse ahead count explicitly: git prints "0" when in sync; do not use `-and $countOut` — in PowerShell the
+    # integer 0 is falsy and string "0" is truthy; mixed behavior caused false "1 ahead" and wrong branches.
     $ahead = 0
     $countOut = git rev-list --count "origin/$branchName..HEAD" 2>$null
-    if ($LASTEXITCODE -eq 0 -and $countOut) { $ahead = [int]$countOut }
-    else { $ahead = 1 }
+    if ($LASTEXITCODE -eq 0) {
+        $parsedAhead = 0
+        if ($null -ne $countOut -and [int]::TryParse($countOut.Trim(), [ref]$parsedAhead)) {
+            $ahead = $parsedAhead
+        }
+    } else {
+        # No origin/<branch> or rev-list failed (e.g. first push): assume local commits may need pushing.
+        $ahead = 1
+    }
     if ($ahead -gt 0) {
         if ($RunTests) {
             Write-Host "Running tests before push (-RunTests)..."
