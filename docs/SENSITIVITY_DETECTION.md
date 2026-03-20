@@ -180,6 +180,17 @@ When **aggregated identification** is enabled, the report generator groups findi
 | `detection.aggregated_single_high_risk_suggested_review` | boolean | **false** | Optional C11 mode: if only one category is detected but it is high-risk (**health**), still emit an aggregated row as **MEDIUM suggested review** (instead of dropping it). |
 | `detection.quasi_identifier_mapping`          | list    | **[]**   | Optional list of `{ column_pattern, category }` or `{ pattern_detected, category }` to map columns/patterns to `gender`, `job_position`, `health`, `address`, `phone`, `other`. Built-in defaults map common names (e.g. gender, sex, cargo, department, health, address), **phone** (phone, telefone, celular, home phone, téléphone, handynummer, etc.), **name/identifier** to `other` (first name, surname, nome, apellido, vorname, etc.), and **ID/document** to `other` (cpf, rg, passaporte, passport, ctps, documento oficial, pis, cartão cidadão, certidão, green card, cnh, driver license, identity document, id card, national id, document number, carte d'identité, etc.). |
 
+### Aggregated mode decision table (quick operator guide)
+
+| Scenario | Recommended knobs | Why |
+| --- | --- | --- |
+| Full coverage scans, balanced noise/recall | Keep defaults (`aggregated_min_categories: 2`, both optional modes `false`) | Conservative baseline, stable behavior, fewer suggested-review rows. |
+| Partial/incremental scans (sampled tables, narrow windows) | Enable `aggregated_incomplete_data_mode: true` and keep `aggregated_min_categories` as-is | Effective threshold is reduced by 1 (minimum 1), improving recall when data coverage is incomplete. |
+| High-regret domains (health-heavy datasets) with low tolerance for missed alerts | Enable `aggregated_single_high_risk_suggested_review: true` (optionally with incomplete mode) | Surfaces single-category health signals as MEDIUM suggested review instead of dropping them. |
+| Excess review noise after enabling optional modes | Disable one optional mode first (usually single-high-risk), then reassess | Keeps triage load controlled while retaining partial-coverage support. |
+
+Both optional modes are opt-in and intended for human-in-the-loop review contexts.
+
 ## Example: enable with custom mapping and minimum 3 categories
 
 ```yaml
