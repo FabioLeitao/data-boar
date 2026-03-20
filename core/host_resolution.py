@@ -9,7 +9,7 @@ def resolve_api_host(config: dict[str, Any], cli_host: str | None = None) -> str
     Resolve the host/interface for the API server.
 
     Resolution order:
-    - If cli_host is provided (future CLI flag), prefer it.
+    - If cli_host is provided (e.g. main.py --web --host), prefer it.
     - Else, if config.api.host is set, use it.
     - Else, fall back to a safer desktop default: "127.0.0.1".
 
