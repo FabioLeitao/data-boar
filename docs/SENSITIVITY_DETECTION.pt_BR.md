@@ -212,6 +212,8 @@ detection:
 
 **Para desativar:** Defina `detection.aggregated_identification_enabled: false` no config; a aba Cross-ref e a recomendação agregada não serão geradas.
 
+**Guia prático para operação:** [ops/AGGREGATED_IDENTIFICATION_TUNING.md](ops/AGGREGATED_IDENTIFICATION_TUNING.md) (pt-BR: [ops/AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md](ops/AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md)).
+
 ---
 
 ## Termos inline no config principal
