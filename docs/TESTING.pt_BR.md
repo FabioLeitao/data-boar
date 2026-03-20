@@ -22,7 +22,7 @@ uv run pytest tests/test_routes_responses.py -v -W error
 uv run pytest -v -W error -k "session_id"
 ```
 
-**Requisitos:** Python 3.12+, dependências instaladas (`uv sync` ou `pip install -e .`). Nenhum serviço externo é necessário; os testes usam configs temporários e SQLite em memória ou temporário quando preciso.
+**Requisitos:** Python **3.12 ou 3.13** (veja `CONTRIBUTING.md` / `SECURITY.md`), dependências instaladas (`uv sync --group dev` ou `pip install -e .`). Nenhum serviço externo é necessário; os testes usam configs temporários e SQLite em memória ou temporário quando preciso.
 
 ## Visão geral dos módulos de teste
 
@@ -64,7 +64,14 @@ Os arquivos `.md` do projeto são verificados quanto a regras estilo SonarQube/m
 
 ## CI
 
-O GitHub Actions (`.github/workflows/ci.yml`) executa: (1) Testes — `uv run pytest -v -W error`; (2) Auditoria de dependências — `uv run pip-audit`; (3) SonarQube/SonarCloud quando `SONAR_TOKEN` está definido. O CodeQL está em `.github/workflows/codeql.yml`. O mesmo `sonar-project.properties` na raiz do repositório é usado pelo extension no IDE e pelo scanner no CI.
+O GitHub Actions (`.github/workflows/ci.yml`) executa:
+
+- **Lint (Ruff)** — em **Python 3.12** (job único).
+- **Testes** — `uv run pytest -v -W error` no Ubuntu para **Python 3.12 e 3.13** (matriz, `fail-fast: false`).
+- **Auditoria de dependências** — `uv run pip-audit` após `uv sync` (Python 3.12).
+- **SonarQube/SonarCloud** — quando `SONAR_TOKEN` está definido; usa Python 3.12 após os testes passarem.
+
+O CodeQL está em `.github/workflows/codeql.yml`. O mesmo `sonar-project.properties` na raiz do repositório é usado pelo extension no IDE e pelo scanner no CI.
 
 Para montar um **SonarQube Server** em casa (Docker, VM, secrets `SONAR_HOST_URL`, rede com GitHub Actions, IDE/MCP), veja **[SONARQUBE_HOME_LAB.md](ops/SONARQUBE_HOME_LAB.md)** ([pt-BR](ops/SONARQUBE_HOME_LAB.pt_BR.md)).
 
