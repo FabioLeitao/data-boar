@@ -71,6 +71,44 @@ Comportamento esperado:
 
 ---
 
+## Mini exemplos de evidência (comportamento do Cross-ref por perfil)
+
+Estes exemplos mostram como a saída da aba Cross-ref pode mudar quando os toggles são ajustados.
+
+### Exemplo 1: extrato amostrado de RH (gênero + cargo; sem coluna de saúde na amostra)
+
+- Categorias observadas na amostra: `gender`, `job_position`
+- Configuração declarada: `aggregated_min_categories: 2`
+
+| Perfil | Resultado esperado no Cross-ref | Motivo |
+| --- | --- | --- |
+| A (padrão) | Linha aparece (contexto MEDIUM de revisão sugerida) | Duas categorias atingem o limiar mínimo. |
+| B (modo incompleto) | Linha aparece (igual ao A) | O modo incompleto não reduz limiar que já foi atingido. |
+| C (incompleto + alto risco único) | Linha aparece (igual ao A/B) | A regra de alto risco único não é necessária quando o limiar já foi atingido. |
+
+### Exemplo 2: extrato amostrado de clínica (apenas sinal de saúde encontrado)
+
+- Categorias observadas na amostra: somente `health`
+- Configuração declarada: `aggregated_min_categories: 2`
+
+| Perfil | Resultado esperado no Cross-ref | Motivo |
+| --- | --- | --- |
+| A (padrão) | Sem linha | Uma categoria fica abaixo do limiar. |
+| B (modo incompleto) | Linha aparece | O limiar efetivo cai em 1 (de 2 para 1). |
+| C (incompleto + alto risco único) | Linha aparece | Também satisfaz a regra de saúde como alto risco único. |
+
+### Exemplo 3: execução com política estrita (`aggregated_min_categories: 3`) e duas categorias detectadas
+
+- Categorias observadas na amostra: `address`, `phone`
+
+| Perfil | Resultado esperado no Cross-ref | Motivo |
+| --- | --- | --- |
+| A (padrão) | Sem linha | Duas categorias < limiar estrito (3). |
+| B (modo incompleto) | Linha aparece | O limiar efetivo vira 2, agora atendido. |
+| C (incompleto + alto risco único) | Linha aparece (igual ao B) | O modo incompleto já é suficiente; alto risco único não é necessário. |
+
+---
+
 ## Fluxo operacional (recomendado)
 
 1. Rode um scan base com o Perfil A.

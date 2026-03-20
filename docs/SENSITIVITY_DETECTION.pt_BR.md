@@ -214,6 +214,25 @@ detection:
 
 **Guia prático para operação:** [ops/AGGREGATED_IDENTIFICATION_TUNING.md](ops/AGGREGATED_IDENTIFICATION_TUNING.md) (pt-BR: [ops/AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md](ops/AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md)).
 
+### Pacote rápido de toggles (discoverability)
+
+```yaml
+# config.yaml
+detection:
+  aggregated_identification_enabled: true
+  aggregated_min_categories: 2
+  aggregated_incomplete_data_mode: false
+  aggregated_single_high_risk_suggested_review: false
+
+sensitivity_detection:
+  embedding_prototype_hint: false
+  embedding_prototype_hint_min_confidence: 20
+  embedding_prototype_hint_max_confidence: 39
+  embedding_prototype_hint_min_similarity: 80
+```
+
+Use este bloco como linha de base e depois ajuste por alvo usando o guia prático de operação.
+
 ---
 
 ## Termos inline no config principal
