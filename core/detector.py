@@ -13,6 +13,8 @@ Pipeline:
 5. Optional connector format hint: when sensitivity_detection.connector_format_id_hint and
    connectors pass declared SQL types/lengths, may elevate LOW to MEDIUM
    (FORMAT_LENGTH_HINT_ID, FORMAT_TYPE_HINT_ID_INT, FORMAT_LENGTH_HINT_EMAIL); default off (Plan §4).
+6. Optional embedding prototype semantic hint: when enabled and DL backend is available,
+   borderline low-confidence columns may elevate to MEDIUM (EMBEDDING_PROTOTYPE_HINT); default off (Plan §5).
 
 To reduce false positives on song lyrics and music tablature/chord sheets:
 - Content heuristics detect lyrics (verse/chorus keywords, short lines) and tabs (digit/pipe lines).
@@ -28,6 +30,7 @@ import re
 
 from core.column_name_normalize import normalize_column_name_for_ml
 from core.dl_backend import DLClassifier, is_available as dl_available
+from core.embedding_prototype_hint import try_embedding_prototype_elevation
 from core.fuzzy_column_match import try_fuzzy_elevation
 from core.suggested_review import column_name_suggests_identifier_review
 from utils.file_encoding import read_text_with_encoding
@@ -853,6 +856,35 @@ class SensitivityDetector:
         self._connector_format_id_hint = bool(
             det.get("connector_format_id_hint", False)
         )
+        # Optional semantic hint from DL embedding similarity to sensitive-term prototype (Plan §5).
+        self._embedding_prototype_hint = bool(det.get("embedding_prototype_hint", False))
+        try:
+            self._embedding_prototype_hint_min_confidence = int(
+                det.get("embedding_prototype_hint_min_confidence", 20)
+            )
+        except (TypeError, ValueError):
+            self._embedding_prototype_hint_min_confidence = 20
+        try:
+            self._embedding_prototype_hint_max_confidence = int(
+                det.get("embedding_prototype_hint_max_confidence", 39)
+            )
+        except (TypeError, ValueError):
+            self._embedding_prototype_hint_max_confidence = 39
+        try:
+            self._embedding_prototype_hint_min_similarity = int(
+                det.get("embedding_prototype_hint_min_similarity", 80)
+            )
+        except (TypeError, ValueError):
+            self._embedding_prototype_hint_min_similarity = 80
+        self._embedding_prototype_hint_min_confidence = max(
+            0, min(100, self._embedding_prototype_hint_min_confidence)
+        )
+        self._embedding_prototype_hint_max_confidence = max(
+            0, min(100, self._embedding_prototype_hint_max_confidence)
+        )
+        self._embedding_prototype_hint_min_similarity = max(
+            50, min(100, self._embedding_prototype_hint_min_similarity)
+        )
 
     def analyze(
         self,
@@ -966,6 +998,21 @@ class SensitivityDetector:
             )
             if fz is not None:
                 return fz
+            sim_score = None
+            if self._dl_classifier and self._dl_classifier.is_ready:
+                sim_score = self._dl_classifier.sensitive_prototype_similarity(ml_dl_text)
+            proto = try_embedding_prototype_elevation(
+                combined_confidence=combined_confidence,
+                found_patterns=found_patterns,
+                medium_threshold=med_thr,
+                hint_enabled=self._embedding_prototype_hint,
+                hint_min_confidence=self._embedding_prototype_hint_min_confidence,
+                hint_max_confidence=self._embedding_prototype_hint_max_confidence,
+                hint_min_similarity=self._embedding_prototype_hint_min_similarity,
+                similarity_score=sim_score,
+            )
+            if proto is not None:
+                return proto
         if combined_confidence >= 70:
             if entertainment_context:
                 # ML-only confidence in entertainment context (lyrics/tabs) → cap at MEDIUM so that

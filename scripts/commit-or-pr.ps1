@@ -146,13 +146,13 @@ if (-not $toAdd.Count -and $Action -eq 'PR') {
             Write-Host "A pull request already exists for '$branchName'. Nothing to do."
             exit 0
         }
-        if (-not (($Title -or "").Trim())) {
+        if ([string]::IsNullOrWhiteSpace($Title)) {
             Write-Host "commit-or-pr: Branch is already pushed; -Title is required for gh pr create." -ForegroundColor Red
             Write-Host "Example: .\scripts\commit-or-pr.ps1 -Action PR -Title `"feat: my change`" -Body `"`"- detail`"`n- detail`"`""
             exit 1
         }
         $bodyFile = [System.IO.Path]::GetTempFileName()
-        $prBodySynced = if (($Body -or "").Trim()) { $Body } else { "See commits on branch '$branchName'." }
+        $prBodySynced = if (-not [string]::IsNullOrWhiteSpace($Body)) { $Body } else { "See commits on branch '$branchName'." }
         $prBodySynced | Set-Content -Path $bodyFile -Encoding utf8
         try {
             $baseBranch = "main"
@@ -189,7 +189,7 @@ if ($Action -eq 'Preview') {
     git diff --stat -- $toAdd
     git diff --cached --stat -- $toAdd
     Write-Host ""
-    if (-not (($Title -or "").Trim())) {
+    if ([string]::IsNullOrWhiteSpace($Title)) {
         Write-Host "NOTE: You did not pass -Title / -Body. There is no auto-generated commit message." -ForegroundColor Yellow
         Write-Host "      For -Action Commit or -Action PR you must supply -Title and usually -Body (see docs/ops/COMMIT_AND_PR.md)." -ForegroundColor Yellow
         Write-Host ""
@@ -198,7 +198,7 @@ if ($Action -eq 'Preview') {
     } else {
         Write-Host "Proposed commit title: $Title"
         Write-Host "Proposed body (will appear in PR description):"
-        if (($Body -or "").Trim()) {
+        if (-not [string]::IsNullOrWhiteSpace($Body)) {
             $Body -split "`n" | ForEach-Object { Write-Host "  $_" }
         } else {
             Write-Host "  (empty — optional)"
@@ -226,7 +226,7 @@ if ($Action -eq 'PR' -and $Branch) {
     }
 }
 
-if (-not (($Title -or "").Trim())) {
+if ([string]::IsNullOrWhiteSpace($Title)) {
     Write-Host "commit-or-pr: -Title is required for Commit/PR when there are changes to commit." -ForegroundColor Red
     Write-Host "Example: .\scripts\commit-or-pr.ps1 -Action Commit -Title `"feat: FN reduction slice`" -Body `"`"- MEDIUM threshold config`"`n- Suggested review sheet`"`""
     exit 1
@@ -236,7 +236,7 @@ foreach ($f in $toAdd) { git add -- $f }
 git status -sb
 
 # Use separate -m for title and body so both are passed as single arguments (no word-split)
-$bodyForCommit = if (($Body -or "").Trim()) { $Body } else { "See diff for details." }
+$bodyForCommit = if (-not [string]::IsNullOrWhiteSpace($Body)) { $Body } else { "See diff for details." }
 git commit -m "$Title" -m "$bodyForCommit"
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Host "Committed: $Title"
