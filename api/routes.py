@@ -135,7 +135,9 @@ def _safe_report_output_path(path: str | Path, engine) -> Path | None:
     filename = _validated_output_basename(path, _REPORT_FILENAME_PATTERN)
     if filename is None:
         return None
-    return _resolved_existing_file_under_out_dir(_report_output_dir_resolved(engine), filename)
+    return _resolved_existing_file_under_out_dir(
+        _report_output_dir_resolved(engine), filename
+    )
 
 
 def _safe_report_path_for_heatmap(engine) -> tuple[Path, str] | None:
