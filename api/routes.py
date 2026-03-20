@@ -5,8 +5,10 @@ GET /reports/{session_id}, POST /scan_database (optional tenant/technician), PAT
 and /sessions/{session_id}/technician for metadata updates. On startup load config (config.yaml or CONFIG_PATH)
 and create a singleton AuditEngine.
 
-Path safety: all path expressions use only validated session_id or server-controlled paths;
-user-supplied session_id is validated to prevent path traversal before use in file paths.
+Path safety: session_id is validated before use in file paths. Report and heatmap downloads
+use ``_resolved_existing_file_under_out_dir`` (join + normpath + realpath + prefix containment)
+plus basename allowlists so CodeQL ``py/path-injection`` is satisfied; see
+``tests/test_report_path_safety.py``.
 
 Cache: static assets get long-lived Cache-Control; API/HTML get no-store. Sessions list is cached
 in-memory for a short TTL when no scan is running to reduce SQLite reads on repeated dashboard loads.
@@ -54,6 +56,39 @@ _REPORT_FILENAME_PATTERN = re.compile(r"^Relatorio_Auditoria_[A-Za-z0-9_]{4,64}\
 _HEATMAP_FILENAME_PATTERN = re.compile(r"^heatmap_[A-Za-z0-9_]{4,64}\.png$")
 
 
+def _resolved_existing_file_under_out_dir(out_dir: Path, filename: str) -> Path | None:
+    """
+    Resolve ``(out_dir / filename)`` only if the real path stays under ``out_dir``.
+
+    Uses ``os.path.join`` + ``normpath`` + ``realpath`` + prefix containment — the
+    pattern CodeQL documents for ``py/path-injection`` — so the sanitizer is
+    recognized and we avoid path traversal. ``filename`` must be a single segment
+    with no path separators (callers validate with an allowlist regex).
+    """
+    if not filename or "/" in filename or "\\" in filename:
+        return None
+    if filename in (".", "..") or filename.startswith(".."):
+        return None
+    try:
+        base_path = os.path.realpath(os.fspath(out_dir.resolve()))
+        fullpath = os.path.normpath(os.path.join(base_path, filename))
+        real_full = os.path.realpath(fullpath)
+        real_base = os.path.realpath(base_path)
+    except (OSError, ValueError):
+        return None
+    if real_full == real_base:
+        return None
+    under = real_full.startswith(real_base + os.sep) or real_full.startswith(
+        real_base + "/"
+    )
+    if not under:
+        return None
+    p = Path(real_full)
+    if not p.exists():
+        return None
+    return p
+
+
 def _validated_output_basename(
     path: str | Path, pattern: re.Pattern[str]
 ) -> str | None:
@@ -92,35 +127,51 @@ def _safe_report_output_path(path: str | Path, engine) -> Path | None:
     """
     if not path:
         return None
-    try:
-        out_dir = Path(engine.config.get("report", {}).get("output_dir", ".")).resolve()
-        filename = _validated_output_basename(path, _REPORT_FILENAME_PATTERN)
-        if filename is None:
-            return None
-        candidate = (out_dir / filename).resolve()
-        candidate.relative_to(out_dir)
-    except (OSError, RuntimeError, ValueError):
+    filename = _validated_output_basename(path, _REPORT_FILENAME_PATTERN)
+    if filename is None:
         return None
-    if not candidate.exists():
-        return None
-    return candidate
+    out_dir = Path(engine.config.get("report", {}).get("output_dir", ".")).resolve()
+    return _resolved_existing_file_under_out_dir(out_dir, filename)
 
 
-def _safe_heatmap_output_path(path: str | Path, out_dir: Path) -> Path | None:
-    """Resolve and validate a heatmap path against a trusted output directory."""
-    if not path:
-        return None
-    try:
-        filename = _validated_output_basename(path, _HEATMAP_FILENAME_PATTERN)
-        if filename is None:
+def _safe_report_path_for_heatmap(engine) -> tuple[Path, str] | None:
+    """
+    Resolve a report path under ``report.output_dir`` and a session key for heatmap naming.
+
+    Returns ``(safe_report_path, session_key)`` or ``None`` when no report is available.
+    """
+    path = engine.get_last_report_path()
+    sid: str | None = None
+    safe_report_path = _safe_report_output_path(path, engine) if path else None
+    if not safe_report_path:
+        sid = engine.db_manager.current_session_id or None
+        if not sid:
+            sessions = engine.db_manager.list_sessions()
+            if sessions:
+                sid = sessions[0]["session_id"]
+        if not sid:
             return None
-        candidate = (out_dir / filename).resolve()
-        candidate.relative_to(out_dir)
-    except (OSError, RuntimeError, ValueError):
+        path = engine.generate_final_reports(sid)
+        safe_report_path = _safe_report_output_path(path, engine) if path else None
+    if not safe_report_path:
         return None
-    if not candidate.exists():
+    if not sid:
+        name = safe_report_path.name
+        prefix = name.removeprefix("Relatorio_Auditoria_").removesuffix(".xlsx")
+        sid = prefix
+    return safe_report_path, sid or ""
+
+
+def _heatmap_png_path_under_out_dir(out_dir: Path, session_key: str) -> Path | None:
+    """
+    Resolve ``heatmap_<first 12 chars of session_key>.png`` under ``out_dir`` if it exists.
+
+    ``session_key`` is a validated session id or prefix derived from a report basename.
+    """
+    heatmap_filename = f"heatmap_{session_key[:12]}.png"
+    if not _HEATMAP_FILENAME_PATTERN.fullmatch(heatmap_filename):
         return None
-    return candidate
+    return _resolved_existing_file_under_out_dir(out_dir, heatmap_filename)
 
 
 class DatabaseConfig(BaseModel):
@@ -786,34 +837,13 @@ async def download_report():
 async def download_heatmap():
     """Download last generated heatmap PNG (sensitivity/risk heatmap for the most recent session)."""
     engine = _get_engine()
-    # Try to reuse last report path; if missing or not under output_dir, generate like /report.
-    path = engine.get_last_report_path()
-    sid: str | None = None
-    safe_report_path = _safe_report_output_path(path, engine) if path else None
-    if not safe_report_path:
-        sid = engine.db_manager.current_session_id or None
-        if not sid:
-            sessions = engine.db_manager.list_sessions()
-            if sessions:
-                sid = sessions[0]["session_id"]
-        if not sid:
-            raise HTTPException(
-                status_code=404, detail="Heatmap not available. Run a scan first."
-            )
-        path = engine.generate_final_reports(sid)
-        safe_report_path = _safe_report_output_path(path, engine) if path else None
-    if not safe_report_path:
+    resolved = _safe_report_path_for_heatmap(engine)
+    if not resolved:
         raise HTTPException(
             status_code=404, detail="Heatmap not available. Run a scan first."
         )
-    if not sid:
-        # Recover session prefix from report filename: Relatorio_Auditoria_<session_prefix>.xlsx
-        name = safe_report_path.name
-        prefix = name.removeprefix("Relatorio_Auditoria_").removesuffix(".xlsx")
-        sid = prefix
-    out_dir = safe_report_path.parent
-    heatmap_path = out_dir / f"heatmap_{sid[:12]}.png"
-    safe_heatmap_path = _safe_heatmap_output_path(heatmap_path, out_dir)
+    safe_report_path, sid = resolved
+    safe_heatmap_path = _heatmap_png_path_under_out_dir(safe_report_path.parent, sid)
     if safe_heatmap_path:
         return FileResponse(
             safe_heatmap_path,
@@ -924,11 +954,10 @@ async def download_heatmap_by_session(session_id: str):
             status_code=404,
             detail=f"No data for session {session_id} or report generation failed.",
         )
-    out_dir = safe_report_path.parent
-    # session_id already validated; safe for path segment (no ".." or slashes)
-    safe_prefix = session_id[:12]
-    heatmap_path = out_dir / f"heatmap_{safe_prefix}.png"
-    safe_heatmap_path = _safe_heatmap_output_path(heatmap_path, out_dir)
+    # session_id already validated; heatmap name is allowlisted (no ".." or slashes)
+    safe_heatmap_path = _heatmap_png_path_under_out_dir(
+        safe_report_path.parent, session_id
+    )
     if safe_heatmap_path:
         return FileResponse(
             safe_heatmap_path,

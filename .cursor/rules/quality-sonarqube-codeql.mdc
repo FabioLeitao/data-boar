@@ -31,6 +31,7 @@ This project enforces quality and security via **tests** (CI) and **CodeQL** (Gi
    - Do not log secrets (API keys, passwords, connection strings). See SECURITY.md and docs/SECURITY.md.
    - Do not build SQL or shell commands by concatenating user input; use parameterized queries and safe APIs.
    - Prefer strong crypto (e.g. TLS 1.2+); avoid weak or deprecated algorithms for sensitive data.
+   - **py/path-injection:** For serving files under `report.output_dir` (reports, heatmaps), use **`_resolved_existing_file_under_out_dir`** in `api/routes.py` (or the same pattern: `os.path.join` + `os.path.normpath` + `os.path.realpath` + prefix containment under the real base directory). Allowlist basenames with regex (`_validated_output_basename`). Avoid relying on `(out_dir / name).resolve()` + `Path.relative_to()` alone — CodeQL may still flag taint. After editing `api/routes.py` path logic, run **`uv run pytest tests/test_report_path_safety.py -v -W error`**.
 
 ## After editing markdown
 
@@ -58,6 +59,7 @@ The full suite (`uv run pytest -v -W error`) is the regression gate: keep all te
 
 - **tests/test_sonarqube_python.py** – S3981, S3776, S4423, S5706, S1192, S5856, S8415. S3776 (cognitive complexity ≤ 15) applies to **all** `.py` files; when adding or editing tests, extract helpers so each function stays under the limit.
 - **tests/test_security.py** – SQL injection, path traversal, safe_load, config endpoint.
+- **tests/test_report_path_safety.py** – Report/heatmap paths under `report.output_dir` (CodeQL py/path-injection; containment + allowlist basenames).
 - **tests/test_markdown_lint.py** – MD009, MD012, MD060, etc.
 - **docs/TESTING.md** – Full test module list and quality section.
 - **.github/workflows/codeql.yml** – CodeQL runs on push/PR; fix findings in Security tab.

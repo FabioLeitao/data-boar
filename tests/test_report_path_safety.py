@@ -1,3 +1,5 @@
+"""API report/heatmap path containment (aligned with CodeQL py/path-injection patterns)."""
+
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -90,6 +92,30 @@ def test_download_report_rejects_non_report_filename_pattern(tmp_path: Path):
         assert resp.status_code == 404
     finally:
         _restore_routes_context(routes, orig)
+
+
+def test_resolved_existing_file_under_out_dir_rejects_traversal(tmp_path: Path):
+    """Join+normpath+realpath containment must reject escaping the base directory."""
+    import api.routes as routes
+
+    base = tmp_path / "out"
+    base.mkdir(parents=True, exist_ok=True)
+    (base / "good.png").write_bytes(b"x")
+    assert routes._resolved_existing_file_under_out_dir(base, "good.png") is not None
+    assert routes._resolved_existing_file_under_out_dir(base, "../out/good.png") is None
+    assert routes._resolved_existing_file_under_out_dir(base, "..") is None
+    assert routes._resolved_existing_file_under_out_dir(base, "nope.png") is None
+
+
+def test_heatmap_png_path_under_out_dir_matches_allowlist(tmp_path: Path):
+    import api.routes as routes
+
+    out = tmp_path / "reports"
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "heatmap_abcdef123456.png").write_bytes(b"png")
+    ok = routes._heatmap_png_path_under_out_dir(out, "abcdef1234567890")
+    assert ok is not None and ok.name == "heatmap_abcdef123456.png"
+    assert routes._heatmap_png_path_under_out_dir(out, "../../etc") is None
 
 
 def test_download_heatmap_rejects_report_path_outside_configured_output_dir(

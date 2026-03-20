@@ -32,6 +32,7 @@ Use this skill when implementing or reviewing **Python** or **markdown** changes
 - **Secrets:** Do not log API keys, passwords, or connection strings (see SECURITY.md, docs/SECURITY.md).
 - **Injection:** Use parameterized queries and safe APIs; never concatenate user input into SQL or shell commands.
 - **Crypto:** Prefer TLS 1.2+ and standard libraries; avoid weak or deprecated algorithms.
+- **Path (py/path-injection):** For downloads under `report.output_dir`, reuse **`api.routes._resolved_existing_file_under_out_dir`** (join + normpath + realpath + prefix check). Pair with basename allowlists (`_REPORT_FILENAME_PATTERN`, `_HEATMAP_FILENAME_PATTERN`). Do not use only `Path.resolve()` + `relative_to()` for engine- or session-influenced paths — CodeQL may still report taint. After path changes in `api/routes.py`, run **`uv run pytest tests/test_report_path_safety.py -v -W error`**.
 
 ### 3. Markdown: points of attention
 
@@ -56,6 +57,9 @@ uv run ruff check .
 
 # SonarQube-style + security (Python)
 uv run pytest tests/test_sonarqube_python.py tests/test_security.py -v -W error
+
+# Report/heatmap path containment (CodeQL py/path-injection; after api/routes path edits)
+uv run pytest tests/test_report_path_safety.py -v -W error
 
 # Markdown (if .md changed)
 uv run python scripts/fix_markdown_sonar.py
@@ -83,5 +87,5 @@ The full suite runs with `-W error` (pyproject.toml addopts and CI); all tests m
 ## Alignment with project
 
 - **Rule:** `.cursor/rules/quality-sonarqube-codeql.mdc` – same scope (Python + markdown); apply that rule when editing those files.
-- **Tests:** `tests/test_sonarqube_python.py`, `tests/test_security.py`, `tests/test_markdown_lint.py`; see **docs/TESTING.md** for the full list.
+- **Tests:** `tests/test_sonarqube_python.py`, `tests/test_security.py`, `tests/test_report_path_safety.py` (after `api/routes` path changes), `tests/test_markdown_lint.py`; see **docs/TESTING.md** for the full list.
 - **CI:** GitHub Actions run pytest and pip-audit; CodeQL runs on push/PR. Keeping tests green and fixing CodeQL findings is required for merge.
