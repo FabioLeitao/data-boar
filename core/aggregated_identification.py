@@ -398,11 +398,7 @@ def _build_explanation(
         "Consider access controls, purpose limitation and anonymisation (LGPD Art. 5, GDPR Recital 26)."
     )
     if incomplete_mode:
-        base += (
-            " Incomplete-data mode is enabled (lower aggregation threshold) to favor recall under partial coverage."
-        )
+        base += " Incomplete-data mode is enabled (lower aggregation threshold) to favor recall under partial coverage."
     if single_high_risk:
-        base += (
-            " Single high-risk category (health) is surfaced as suggested review to avoid false negatives."
-        )
+        base += " Single high-risk category (health) is surfaced as suggested review to avoid false negatives."
     return base

@@ -3,7 +3,9 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 
-def _write_minimal_config(config_path: Path, output_dir: Path, sqlite_path: Path) -> None:
+def _write_minimal_config(
+    config_path: Path, output_dir: Path, sqlite_path: Path
+) -> None:
     config_path.write_text(
         f"""targets: []
 report:
@@ -73,7 +75,9 @@ def test_download_report_rejects_path_outside_configured_output_dir(tmp_path: Pa
         _restore_routes_context(routes, orig)
 
 
-def test_download_heatmap_rejects_report_path_outside_configured_output_dir(tmp_path: Path):
+def test_download_heatmap_rejects_report_path_outside_configured_output_dir(
+    tmp_path: Path,
+):
     output_dir = tmp_path / "reports"
     output_dir.mkdir(parents=True, exist_ok=True)
     outside_report = tmp_path / "Relatorio_Auditoria_abcdef123456.xlsx"
@@ -90,4 +94,3 @@ def test_download_heatmap_rejects_report_path_outside_configured_output_dir(tmp_
         assert resp.status_code == 404
     finally:
         _restore_routes_context(routes, orig)
-
