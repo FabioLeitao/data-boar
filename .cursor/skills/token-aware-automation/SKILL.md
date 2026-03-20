@@ -59,6 +59,13 @@ Workflow that saves tokens (shorter form):
 - **Iterating on one area:** `.\scripts\quick-test.ps1 -Keyword "content_type"` (or `-Path tests/test_file_scan_use_content_type_flag.py`); run full check-all when the slice is done.
 - **User asks to commit / push / create PR:** use `preview-commit.ps1` then `commit-or-pr.ps1` (or `create-pr.ps1` for PR with body file); do not use ad-hoc `git add`/`git commit`/`git push` when the script covers the need.
 
+## Critical-first + PR batching (workflow policy)
+
+- If a **critical blocker** exists (broken script flow, sync/merge confusion, failing safety gate), prioritize that first and stabilize to local commits before resuming feature work.
+- If no critical blocker exists, prioritize product slices by `docs/plans/PLANS_TODO.md` taxonomy, with token-aware bias (low cost / high gain).
+- Do **not** force a PR on every commit. Keep coherent local commits, then open one PR when the slice is reviewable and useful.
+- Micro-PRs are for truly tiny, complete, low-risk changes only.
+
 Avoid running raw `pytest`, `ruff`, `pre-commit`, or manual git commit/push when a script already does the same thing; the scripts are the single source of behaviour and keep sessions token-efficient.
 
 ## PR state / number freshness (before merge advice or sharing links)

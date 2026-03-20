@@ -1,5 +1,6 @@
 # Agent / assistant notes (Cursor, Copilot, etc.)
 
 - **Git & PR state:** The model does **not** see GitHub or your local repo unless a command runs in-session. Before advising **merge**, **next steps after a PR**, or sharing a **PR number/URL**, refresh state (`git fetch`, `git pull` on `main`, and/or `gh pr view`). See **`.cursor/rules/git-pr-sync-before-advice.mdc`** (always applied) and **`CONTRIBUTING.md`** → *PR state and agent advice*.
+- **Execution strategy:** Apply **critical-first** sequencing and **PR batching**. Resolve critical blockers to a stable local commit state first; otherwise prioritize product work per `docs/plans/PLANS_TODO.md` taxonomy (token-aware, high-gain slices). Do not force micro-PRs for every commit; batch coherent commits into a reviewable PR. See **`.cursor/rules/execution-priority-and-pr-batching.mdc`**.
 - **Automation:** Prefer **`scripts/check-all.ps1`**, **`scripts/commit-or-pr.ps1`**, and related helpers — **``.cursor/skills/token-aware-automation/SKILL.md`**.
 - **Plans:** Single source of truth for backlog sequencing is **`docs/plans/PLANS_TODO.md`** (English-only history); operator runbooks live under **`docs/ops/`** (EN + pt-BR).
