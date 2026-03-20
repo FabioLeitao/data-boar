@@ -36,7 +36,7 @@ or
 .BR "man 1 lgpd_crawler" )
 Shows the
 .I command
-and its options (config path, \-\-web, \-\-port, \-\-tenant, \-\-technician, API usage, curl examples).
+and its options (config path, \-\-web, \-\-host, \-\-port, \-\-tenant, \-\-technician, \-\-scan\-compressed, \-\-content\-type\-check, \-\-reset\-data, API usage, curl examples).
 Use this when you want to know how to run the application.
 .TP
 .B "man 5 data_boar"
@@ -150,7 +150,12 @@ and
 .I scan_sqlite_as_db
 (bool),
 .I sample_limit
-(integer).
+(integer);
+optionally
+.I scan_compressed
+(bool, scan inside zip/tar/7z when supported),
+.I use_content_type
+(bool, magic\-byte / content\-type detection for renamed or cloaked files; extra I/O).
 .TP
 .B report
 .I output_dir
@@ -162,6 +167,17 @@ optionally
 .B api
 .I port
 (integer);
+optionally
+.I host
+(bind address for the HTTP server, e.g.\&
+.BR 127.0.0.1 " or " 0.0.0.0 ;
+default resolution when unset is
+.B 127.0.0.1
+unless
+.B API_HOST
+is set or
+.B "main.py \-\-web \-\-host"
+overrides);
 optionally
 .I require_api_key
 (bool),
@@ -274,6 +290,8 @@ Example main config (excerpt):
   recursive: true
   scan_sqlite_as_db: true
   sample_limit: 5
+  # scan_compressed: false   # optional: scan inside archives
+  # use_content_type: false   # optional: magic-byte detection (renamed files)
 
 \fBreport:\fR
   output_dir: .
@@ -287,6 +305,7 @@ Example main config (excerpt):
 
 \fBapi:\fR
   port: 8088
+  # host: 127.0.0.1   # optional bind address; see man 1 data_boar for CLI and API_HOST
 
 \fBsqlite_path:\fR audit_results.db
 \fBscan:\fR

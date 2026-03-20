@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-CLI entry point: load config (YAML/JSON), run audit and report (optionally tagged with tenant/customer and technician/operator), or start API (--web) on --port (default 8088).
+CLI entry point: load config (YAML/JSON), run audit and report (optionally tagged with tenant/customer and technician/operator), or start API (--web) on --host/--port (defaults: loopback, 8088; see resolve_api_host).
 """
 
 import argparse
@@ -37,6 +37,9 @@ def main() -> None:
             "  # One-shot audit tagging tenant/customer and technician/operator\n"
             '  python main.py --config config.yaml --tenant "ACME Corp" --technician "Alice"\n'
             "\n"
+            "  # One-shot with archive scan + content-type detection (this run only)\n"
+            "  python main.py --config config.yaml --scan-compressed --content-type-check\n"
+            "\n"
             "  # Wipe all collected data and generated reports (dangerous, see SECURITY.md)\n"
             "  python main.py --config config.yaml --reset-data\n"
             "\n"
@@ -46,6 +49,9 @@ def main() -> None:
             "\n"
             "  # Start REST API explicitly on port 9090 (overrides config.api.port)\n"
             "  python main.py --config config.yaml --web --port 9090\n"
+            "\n"
+            "  # Bind API on all interfaces (overrides config api.host and API_HOST; use with care)\n"
+            "  python main.py --config config.yaml --web --host 0.0.0.0\n"
             "\n"
             "Once a one-shot scan finishes, an Excel report and heatmap PNG are written under\n"
             "the configured report.output_dir (default: current directory). When the API is\n"
@@ -79,6 +85,17 @@ def main() -> None:
             "API port when --web is enabled. "
             "If api.port is set in the config file it takes precedence, unless you explicitly pass --port here. "
             "Default: 8088."
+        ),
+    )
+    parser.add_argument(
+        "--host",
+        default=None,
+        metavar="ADDR",
+        help=(
+            "Bind address when --web is enabled (e.g. 127.0.0.1 or 0.0.0.0). "
+            "Takes precedence over api.host in config and over the API_HOST environment variable. "
+            "If omitted, resolution follows config api.host, then API_HOST, then safe default 127.0.0.1. "
+            "Ignored in one-shot CLI mode."
         ),
     )
     parser.add_argument(
@@ -157,7 +174,7 @@ def main() -> None:
         api_cfg = config.get("api", {})
         port = api_cfg.get("port", args.port)
         workers = int(api_cfg.get("workers", 1))
-        host = resolve_api_host(config, cli_host=None)
+        host = resolve_api_host(config, cli_host=args.host)
         uvicorn.run(app, host=host, port=port, workers=workers)
         return
 
