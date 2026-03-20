@@ -108,6 +108,8 @@ Or use the GitHub UI: **Repository → Branches →** delete stale feature branc
 
 Older digests can be removed locally; you can **`docker pull`** historical tags from Docker Hub when needed.
 
+**Automation:** From repo root, **`.\scripts\docker-hub-pull.ps1`**, **`.\scripts\docker-lab-build.ps1`**, **`.\scripts\docker-prune-local.ps1 -WhatIf`** (see [scripts/docker/README.md](../../scripts/docker/README.md)).
+
 **List local images** (Windows PowerShell):
 
 ```powershell
