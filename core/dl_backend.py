@@ -10,6 +10,7 @@ Same structure as ML terms; can share the same config file or use a separate dl_
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
 # Optional: sentence-transformers (pulls torch + transformers). Fail gracefully if not installed.
@@ -81,6 +82,7 @@ class DLClassifier:
         self._model = None
         self._embedder = None
         self._ready = False
+        self._sensitive_prototype: list[float] | None = None
         norm = _normalize_terms(terms)
         if not norm or not is_available():
             return
@@ -92,9 +94,44 @@ class DLClassifier:
             X = self._embedder.encode(texts, convert_to_numpy=True)
             self._model = _LogisticRegression(max_iter=500, random_state=42)
             self._model.fit(X, labels)
+            self._sensitive_prototype = self._build_sensitive_prototype(X, labels)
             self._ready = True
         except Exception:
             pass
+
+    @staticmethod
+    def _build_sensitive_prototype(
+        embeddings: Any, labels: list[int]
+    ) -> list[float] | None:
+        """Centroid of sensitive-term embeddings, used for optional semantic hints."""
+        sens_rows = [embeddings[i] for i, lab in enumerate(labels) if int(lab) == 1]
+        if not sens_rows:
+            return None
+        dim = len(sens_rows[0])
+        centroid = [0.0] * dim
+        for row in sens_rows:
+            for i in range(dim):
+                centroid[i] += float(row[i])
+        denom = float(len(sens_rows))
+        return [v / denom for v in centroid]
+
+    @staticmethod
+    def _cosine_similarity(a: list[float], b: list[float]) -> float:
+        """Cosine similarity in [0,1] for non-zero vectors."""
+        if len(a) != len(b) or not a:
+            return 0.0
+        dot = 0.0
+        na = 0.0
+        nb = 0.0
+        for i in range(len(a)):
+            av = float(a[i])
+            bv = float(b[i])
+            dot += av * bv
+            na += av * av
+            nb += bv * bv
+        if na <= 0.0 or nb <= 0.0:
+            return 0.0
+        return max(0.0, min(1.0, dot / (math.sqrt(na) * math.sqrt(nb))))
 
     def predict_proba(self, text: str) -> float | None:
         """
@@ -108,6 +145,26 @@ class DLClassifier:
             vec = self._embedder.encode([text], convert_to_numpy=True)
             prob = self._model.predict_proba(vec)[0][1]
             return float(prob)
+        except Exception:
+            return None
+
+    def sensitive_prototype_similarity(self, text: str) -> int | None:
+        """
+        Return similarity (0..100) between text embedding and sensitive-term prototype.
+        Used by optional Plan §5 semantic hint.
+        """
+        if (
+            not self._ready
+            or not self._embedder
+            or not self._sensitive_prototype
+            or not (text or "").strip()
+        ):
+            return None
+        try:
+            vec = self._embedder.encode([text], convert_to_numpy=True)[0]
+            v = [float(x) for x in vec]
+            sim = self._cosine_similarity(v, self._sensitive_prototype)
+            return int(round(sim * 100))
         except Exception:
             return None
 
