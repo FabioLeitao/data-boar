@@ -60,7 +60,7 @@ Ensure `/data/config.yaml` exists (e.g. copy from `deploy/config.example.yaml` i
 - **Dockerfile** at repo root. Build (Data Boar branding): `docker build -t fabioleitao/data_boar:latest .` or a local tag: `docker build -t data_boar:latest .`
 - **Public image**: You can also push to GitHub Container Registry (ghcr.io) or your own Docker Hub account and use that name in Compose/Swarm/Kubernetes.
 
-**Image footprint:** The Dockerfile uses a **multi-stage build**. The first stage installs build tools (gcc, dev headers) and compiles Python extensions; the final stage copies only the installed packages and app code and installs **runtime** libraries (e.g. `libpq5`, `libffi8`, `unixodbc`, `libmariadb3`). Build tools and `-dev` packages are not included in the final image, reducing size and attack surface while keeping the same behaviour (all DB connectors, reports, API).
+**Image footprint:** The Dockerfile uses a **multi-stage build** on **`python:3.13-slim`** (see repo `Dockerfile`; aligns with `requires-python >=3.12` and CI on 3.12/3.13). The first stage installs build tools (gcc, dev headers) and compiles Python extensions; the final stage copies only the installed packages and app code and installs **runtime** libraries (e.g. `libpq5`, `libffi8`, `unixodbc`, `libmariadb3`). Build tools and `-dev` packages are not included in the final image, reducing size and attack surface while keeping the same behaviour (all DB connectors, reports, API).
 
 ## 1. Build and push image (public repository)
 
