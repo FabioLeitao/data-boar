@@ -1,6 +1,6 @@
 ---
 name: token-aware-automation
-description: Use when deciding how to run lint, tests, or commit/PR. Prefer repo scripts (check-all, lint-only, quick-test, commit-or-pr and helpers) over ad-hoc commands to save tokens and keep behaviour consistent.
+description: Use when deciding how to run lint, tests, commit/PR, or Docker homelab steps. Prefer repo scripts (check-all, lint-only, quick-test, commit-or-pr, docker-lab-build, docker-hub-pull, docker-prune-local) over ad-hoc commands to save tokens and keep behaviour consistent.
 ---
 
 # Token-aware automation (scripts first)
@@ -15,6 +15,18 @@ When you need to **verify lint or tests**, or when the user asks to **commit, cr
 | Tests only (no pre-commit) | `.\scripts\check-all.ps1 -SkipPreCommit` | Skips Ruff/markdown when you only care about tests |
 | Lint/format only | `.\scripts\lint-only.ps1` | No pytest when you only changed docs, templates, or style |
 | One test file or keyword | `.\scripts\quick-test.ps1 -Path tests/test_foo.py` or `-Keyword "content_type"` | Fewer tests = faster feedback and fewer tokens |
+
+## Docker homelab (Windows, optional — token-efficient)
+
+When the session touches **Dockerfile**, **image publish**, **Scout**, **homelab disk**, or **local smoke/A/B**, prefer these **repo scripts** from the project root instead of inventing many `docker build -t data_boar:smoke-…` commands or long `docker rmi` explorations. Same outcome, **shorter transcripts**, predictable tags.
+
+| Goal | Script | When it saves tokens |
+|------|--------|----------------------|
+| Build / refresh **local lab** image (`data_boar:lab`, optional `lab-prev`, optional `-TagSmoke`) | `.\scripts\docker-lab-build.ps1` | One command vs multi-step build/tag instructions |
+| Pull **Hub** `latest` + **semver from pyproject** + **previous patch** | `.\scripts\docker-hub-pull.ps1` | One command vs three pulls + version lookup |
+| Drop stray local tags (keep allowlist) | `.\scripts\docker-prune-local.ps1 -WhatIf` first | Lists targets without deleting; avoids huge `docker images` + manual reasoning every time |
+
+**Opportunistic use:** After merging Dockerfile changes, after push to Docker Hub, when the user mentions **full disks** or **too many `data_boar` tags**, or when **HOMELAB_VALIDATION** / **–1b Scout** steps are relevant — suggest or run **`-WhatIf`** first for prune. Details: **`scripts/docker/README.md`**. Container/image policy: **`.cursor/skills/docker-smoke-container-hygiene/SKILL.md`**.
 
 ## Commit, push, and PR (use automation)
 
@@ -93,7 +105,7 @@ Quick checklist before PR:
 
 See **`AGENTS.md`** for the full list: `feat`, `fix`, **`fix(security):`** or top-level **`security:`**, **`refactor`** (prefer over mixing **`feat` + `fix`** in one commit), `docs`, `chore`, `ci`, optional scopes. If a slice mixes unrelated feature work and a bugfix, use **two commits** (or PRs), not one ambiguous combo.
 
-Avoid running raw `pytest`, `ruff`, `pre-commit`, or manual git commit/push when a script already does the same thing; the scripts are the single source of behaviour and keep sessions token-efficient.
+Avoid running raw `pytest`, `ruff`, `pre-commit`, or manual git commit/push when a script already does the same thing; the scripts are the single source of behaviour and keep sessions token-efficient. For **Docker** homelab hygiene, avoid long custom `docker build`/`rmi` sequences when **`docker-lab-build.ps1`**, **`docker-hub-pull.ps1`**, or **`docker-prune-local.ps1`** cover the need.
 
 ## PR state / number freshness (before merge advice or sharing links)
 

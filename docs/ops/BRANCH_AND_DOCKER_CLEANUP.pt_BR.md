@@ -37,6 +37,8 @@ git branch -d nome-da-branch
 git branch -D nome-da-branch
 ```
 
+**PR mergeado com squash:** Depois de um **squash merge** no `main`, a branch antiga pode continuar localmente com SHAs diferentes dos do `main` (`git branch --merged` pode não listá-la). Se o PR já está mergeado no GitHub e você não precisa do nome da branch, apague pelo nome (exemplo após o PR **#93**): `git branch -D pr/docker-scout-high-slice` — ver [MAINTENANCE_FRONT_OF_WORK.md](../plans/MAINTENANCE_FRONT_OF_WORK.md) § Slice S4 *Quick housekeeping*.
+
 ---
 
 ## 2. GitHub (`data-boar`): branches remotas obsoletas
@@ -65,6 +67,8 @@ Manter cerca de **dois** **digests** de imagem localmente, por exemplo:
 
 1. `fabioleitao/data_boar:latest` ou a tag semver em uso (ex.: `1.6.2`).
 2. **Uma versão anterior** para comparação ou rollback rápido.
+
+**Smokes / lab:** Testes de smoke **não** precisam de uma **tag nova a cada execução** (`data_boar:smoke-93`, …). Isso **ocupa disco** à toa. Prefira **uma** tag sobrescrita — **`docker build -t data_boar:lab .`** (igual ao passo 1.3 de [HOMELAB_VALIDATION.pt_BR.md](HOMELAB_VALIDATION.pt_BR.md)) — e apague tags experimentais antigas quando terminar.
 
 Versões mais antigas podem ser removidas; use `docker pull` no Hub quando precisar de histórico.
 
