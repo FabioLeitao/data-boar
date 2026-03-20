@@ -22,7 +22,7 @@ uv run pytest tests/test_routes_responses.py -v -W error
 uv run pytest -v -W error -k "session_id"
 ```
 
-**Requirements:** Python 3.12+, dependencies installed (`uv sync --group dev` or `pip install -e .` plus dev tools). The **dev** group includes **`rapidfuzz`** so fuzzy-column tests run; core runtime does not require it unless you enable `sensitivity_detection.fuzzy_column_match` (optional extra **`detection-fuzzy`**). No external services are required; tests use temporary configs and in-memory or temporary SQLite where needed.
+**Requirements:** Python **3.12 or 3.13** (see `CONTRIBUTING.md` / `SECURITY.md`), dependencies installed (`uv sync --group dev` or `pip install -e .` plus dev tools). The **dev** group includes **`rapidfuzz`** so fuzzy-column tests run; core runtime does not require it unless you enable `sensitivity_detection.fuzzy_column_match` (optional extra **`detection-fuzzy`**). No external services are required; tests use temporary configs and in-memory or temporary SQLite where needed.
 
 ## Test modules overview
 
@@ -92,11 +92,11 @@ Run the check as part of the full suite: `uv run pytest tests/test_markdown_lint
 
 GitHub Actions (`.github/workflows/ci.yml`) runs:
 
-- **Lint** – `uv run ruff check .` (config in pyproject.toml; legacy dirs excluded). Run the same command locally before PR so the lint job passes. Optional: `uv run pre-commit install` to run Ruff on commit.
+- **Lint** – `uv run ruff check .` and format check on **Python 3.12** (single job; config in pyproject.toml; legacy dirs excluded). Run the same commands locally before PR so the lint job passes. Optional: `uv run pre-commit install` to run Ruff on commit.
 
-1. **Test** – `uv run pytest -v -W error` on Ubuntu with Python 3.12.
-1. **Dependency audit** – `uv run pip-audit` after `uv sync`.
-1. **SonarQube / SonarCloud** – Code quality and security analysis (Python, scripts, etc.) when `SONAR_TOKEN` is set in repo secrets. See [SonarQube / SonarCloud](#sonarqube--sonarcloud) below.
+1. **Test** – `uv run pytest -v -W error` on Ubuntu for **Python 3.12 and 3.13** (matrix, `fail-fast: false`).
+1. **Dependency audit** – `uv run pip-audit` after `uv sync` (Python 3.12).
+1. **SonarQube / SonarCloud** – Code quality and security analysis when `SONAR_TOKEN` is set; uses Python 3.12 after tests pass. See [SonarQube / SonarCloud](#sonarqube--sonarcloud) below.
 
 Code scanning (CodeQL) is in `.github/workflows/codeql.yml` and analyzes Python for security and quality findings. See the repository **Security** tab for CodeQL alerts.
 
