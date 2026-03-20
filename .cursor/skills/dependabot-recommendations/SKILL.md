@@ -70,5 +70,6 @@ Use this skill when updating dependencies, reviewing Dependabot PRs, or preparin
 
 ## Notes
 
+- **Upstream-blocked alerts:** If **`uv lock`** fails after adding a security floor (e.g. **`pyopenssl>=26`**) because an optional/direct dep caps the package (e.g. **Snowflake connector** and **`bigdata`** extra), do not merge a broken lockfile. Document in **`docs/ops/`** (see **`DEPENDABOT_PYOPENSSL_SNOWFLAKE.md`**), link from **SECURITY.md**, and optionally dismiss the GitHub alert with **`patch_unavailable`** plus a comment. Revisit when upstream relaxes constraints on PyPI.
 - **ebcdic / transitives:** If a Dependabot PR suggests bumping a package that appears only in the lockfile (transitive), try `uv lock --upgrade-package <name>`. If the resolver keeps the old version, a direct dependency is constraining it; document that and leave the Dependabot PR closed unless you add a direct dep.
 - **uv tool version:** Dependabot PRs that only bump the `uv` version in a dependency group (e.g. for CI) are independent of app runtime; apply only if the project intends to use that uv version in CI.
