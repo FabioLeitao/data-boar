@@ -66,6 +66,29 @@ Workflow that saves tokens (shorter form):
 - Do **not** force a PR on every commit. Keep coherent local commits, then open one PR when the slice is reviewable and useful.
 - Micro-PRs are for truly tiny, complete, low-risk changes only.
 
+## Commit grouping for low cognitive load (feature vs workflow vs documentation)
+
+When a "next step" includes multiple phases, classify each planned change before committing:
+
+| Type | Includes | Keep with docs? |
+|------|----------|-----------------|
+| `feature` | Product behavior, detector/report logic, config semantics | Yes, when docs are needed to explain behavior/config at that checkpoint (`feature + documentation`) |
+| `workflow` | Scripts, branch/PR guardrails, CI/process automation | Yes, when docs are needed for contributor/operator usage (`workflow + documentation`) |
+| `documentation` | Pure explanatory text with no behavior/process change | Prefer standalone docs commit |
+
+Rules:
+
+1. Avoid mixing `feature + workflow` in one commit/PR unless explicitly requested for urgent recovery.
+2. Prefer one coherent commit per type/track, not one commit per tiny file.
+3. For larger slices, keep commits ordered by narrative: core change first, required docs second, optional polish last.
+4. Before opening PR, verify commit list reads clearly as a story for a new reviewer.
+
+Quick checklist before PR:
+
+- "Can each commit be explained in one sentence?"
+- "Would reverting one commit break an unrelated concern?"
+- "Did we keep docs attached only where they are required for that change?"
+
 Avoid running raw `pytest`, `ruff`, `pre-commit`, or manual git commit/push when a script already does the same thing; the scripts are the single source of behaviour and keep sessions token-efficient.
 
 ## PR state / number freshness (before merge advice or sharing links)
