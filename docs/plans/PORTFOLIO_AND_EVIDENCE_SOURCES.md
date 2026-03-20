@@ -10,7 +10,7 @@
 
 | Image | Docker Hub | GitHub / Dockerfile | Notes (fetched or from you) |
 | ----- | ---------- | ------------------- | --------------------------- |
-| **data_boar** | [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) | This repo: **[Dockerfile](https://github.com/FabioLeitao/data-boar/blob/main/Dockerfile)** (multi-stage, python:3.12-slim, builder + runtime). Tags e.g. `1.6.0`, `latest`. | Short description on Hub; full description with quick start and link to GitHub. Size ~186 MB (1.6.0). |
+| **data_boar** | [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) | This repo: **[Dockerfile](https://github.com/FabioLeitao/data-boar/blob/main/Dockerfile)** (multi-stage, **python:3.13-slim**, builder + runtime). Tags e.g. `1.6.0`, `latest`. | Short description on Hub; full description with quick start and link to GitHub. Size ~186 MB (1.6.0). |
 | **wildfly_t1r** | [hub.docker.com/r/fabioleitao/wildfly_t1r](https://hub.docker.com/r/fabioleitao/wildfly_t1r) | **[FabioLeitao/wf_t1r](https://github.com/FabioLeitao/wf_t1r)** (Shell). Dockerfiles live in that repo if you want to paste or link them here later. | Archived on Hub. Tag e.g. `et-ojdk8-a_w26.1.1-final`. Eclipse Temurin + Wildfly; Ubuntu/Alpine; OpenJDK 8/11/17/19; Oracle JDBC. |
 | **uptk** | [hub.docker.com/r/fabioleitao/uptk](https://hub.docker.com/r/fabioleitao/uptk) | No overview on Hub. If you have a repo or Dockerfile for Uptime Colleague-Ma, add the link here. | Tag `0.1`, ~3.1 MB. You keep upgrading on the actual server. |
 
