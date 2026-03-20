@@ -37,6 +37,8 @@ git branch -d nome-da-branch
 git branch -D nome-da-branch
 ```
 
+**PR mergeado com squash:** Depois de um **squash merge** no `main`, a branch antiga pode continuar localmente com SHAs diferentes dos do `main` (`git branch --merged` pode não listá-la). Se o PR já está mergeado no GitHub e você não precisa do nome da branch, apague pelo nome (exemplo após o PR **#93**): `git branch -D pr/docker-scout-high-slice` — ver [MAINTENANCE_FRONT_OF_WORK.md](../plans/MAINTENANCE_FRONT_OF_WORK.md) § Slice S4 *Quick housekeeping*.
+
 ---
 
 ## 2. GitHub (`data-boar`): branches remotas obsoletas

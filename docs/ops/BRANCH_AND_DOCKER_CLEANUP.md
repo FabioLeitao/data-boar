@@ -44,6 +44,8 @@ Force delete only if Git says “not fully merged” and you **accept** losing t
 git branch -D branch-name
 ```
 
+**Squash-merged PRs:** After a **squash merge** to `main`, your old branch may still exist locally with different SHAs than `main` (`git branch --merged` might not list it). If the PR is merged on GitHub and you do not need the branch, delete by name (example after PR **#93**): `git branch -D pr/docker-scout-high-slice` — see [MAINTENANCE_FRONT_OF_WORK.md](../plans/MAINTENANCE_FRONT_OF_WORK.md) § Slice S4 *Quick housekeeping*.
+
 ---
 
 ## 2. What we saw on a typical dev machine (example snapshot)
