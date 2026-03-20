@@ -26,7 +26,7 @@ function Get-DataBoarVersionFromPyproject {
 
 <#
 .SYNOPSIS
-  Returns previous patch version for semver x.y.z (e.g. 1.6.3 -> 1.6.2). If patch is 0, returns $null (caller may pass -PreviousVersion manually).
+  Returns previous patch version for semver x.y.z (e.g. 1.6.4 -> 1.6.3). If patch is 0, returns $null (caller may pass -PreviousVersion manually).
 #>
 function Get-DataBoarPreviousPatchVersion {
     param([string]$Version)
