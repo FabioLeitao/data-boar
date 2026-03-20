@@ -71,6 +71,44 @@ Expected behavior:
 
 ---
 
+## Mini evidence examples (Cross-ref behavior by profile)
+
+These examples illustrate how Cross-ref sheet output can change when toggles are adjusted.
+
+### Example 1: sampled HR extract (gender + role; no health column in sample)
+
+- Observed categories in sample: `gender`, `job_position`
+- Declared setup: `aggregated_min_categories: 2`
+
+| Profile | Expected Cross-ref result | Why |
+| --- | --- | --- |
+| A (default) | Row appears (MEDIUM suggested review context) | Two categories meet min threshold. |
+| B (incomplete mode) | Row appears (same as A) | Incomplete mode does not reduce an already-met threshold. |
+| C (incomplete + single high-risk) | Row appears (same as A/B) | Single high-risk rule is not needed when threshold is already met. |
+
+### Example 2: sampled clinic extract (only health-like signal found)
+
+- Observed categories in sample: `health` only
+- Declared setup: `aggregated_min_categories: 2`
+
+| Profile | Expected Cross-ref result | Why |
+| --- | --- | --- |
+| A (default) | No row | One category is below threshold. |
+| B (incomplete mode) | Row appears | Effective threshold drops by 1 (from 2 to 1). |
+| C (incomplete + single high-risk) | Row appears | Also satisfied by single high-risk health rule. |
+
+### Example 3: strict policy run (`aggregated_min_categories: 3`) with two detected categories
+
+- Observed categories in sample: `address`, `phone`
+
+| Profile | Expected Cross-ref result | Why |
+| --- | --- | --- |
+| A (default) | No row | Two categories < strict threshold (3). |
+| B (incomplete mode) | Row appears | Effective threshold becomes 2, now met. |
+| C (incomplete + single high-risk) | Row appears (same as B) | Incomplete mode is already sufficient; single high-risk not required. |
+
+---
+
 ## Operator workflow (recommended)
 
 1. Run one baseline scan with Profile A.
