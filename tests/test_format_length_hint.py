@@ -4,6 +4,8 @@ import unittest
 
 from core.detector import (
     SensitivityDetector,
+    _declared_type_email_length_hint,
+    _declared_type_is_integer_like,
     _format_length_suggests_id_column,
     _parse_declared_char_length,
 )
@@ -34,6 +36,24 @@ class TestFormatLengthSuggestsId(unittest.TestCase):
         self.assertFalse(_format_length_suggests_id_column("status_code", 9))
 
 
+class TestDeclaredTypeHelpers(unittest.TestCase):
+    def test_integer_like(self):
+        self.assertTrue(_declared_type_is_integer_like("INT"))
+        self.assertTrue(_declared_type_is_integer_like("BIGINT"))
+        self.assertTrue(_declared_type_is_integer_like("NUMERIC(20,0)"))
+        self.assertFalse(_declared_type_is_integer_like("NUMERIC(20,2)"))
+        self.assertFalse(_declared_type_is_integer_like("VARCHAR(20)"))
+
+    def test_email_len_hint(self):
+        self.assertEqual(_declared_type_email_length_hint("VARCHAR(254)"), 254)
+        self.assertEqual(_declared_type_email_length_hint("CHAR(255)"), 255)
+        self.assertEqual(
+            _declared_type_email_length_hint("character varying(320)"), 320
+        )
+        self.assertIsNone(_declared_type_email_length_hint("VARCHAR(200)"))
+        self.assertIsNone(_declared_type_email_length_hint("INT"))
+
+
 def _neutral_sample_text() -> str:
     """Push ML/DL confidence down so ID-like column names do not alone trigger HIGH."""
     return " ".join(["item_count"] * 20)
@@ -60,6 +80,30 @@ class TestDetectorFormatHintIntegration(unittest.TestCase):
         self.assertEqual(level, "MEDIUM")
         self.assertEqual(pat, "FORMAT_LENGTH_HINT_ID")
         self.assertIn("Schema", norm)
+        self.assertGreaterEqual(conf, 40)
+
+    def test_enabled_integer_id_hint(self):
+        d = SensitivityDetector(detection_config={"connector_format_id_hint": True})
+        level, pat, norm, conf = d.analyze(
+            "customer_id",
+            _neutral_sample_text(),
+            connector_data_type="BIGINT",
+        )
+        self.assertEqual(level, "MEDIUM")
+        self.assertEqual(pat, "FORMAT_TYPE_HINT_ID_INT")
+        self.assertIn("integer", norm)
+        self.assertGreaterEqual(conf, 40)
+
+    def test_enabled_email_length_hint(self):
+        d = SensitivityDetector(detection_config={"connector_format_id_hint": True})
+        level, pat, norm, conf = d.analyze(
+            "contact_email",
+            _neutral_sample_text(),
+            connector_data_type="VARCHAR(254)",
+        )
+        self.assertEqual(level, "MEDIUM")
+        self.assertEqual(pat, "FORMAT_LENGTH_HINT_EMAIL")
+        self.assertIn("email", norm.lower())
         self.assertGreaterEqual(conf, 40)
 
 

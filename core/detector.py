@@ -11,8 +11,10 @@ Pipeline:
 4. Optional fuzzy column name: when sensitivity_detection.fuzzy_column_match and rapidfuzz are
    available, may elevate LOW borderline scores to MEDIUM (FUZZY_COLUMN_MATCH); default off.
 5. Optional connector format hint: when sensitivity_detection.connector_format_id_hint and
-   connectors pass declared SQL CHAR/VARCHAR length, may elevate LOW to MEDIUM (FORMAT_LENGTH_HINT_ID);
-   default off (Plan §4).
+   connectors pass declared SQL types/lengths, may elevate LOW to MEDIUM
+   (FORMAT_LENGTH_HINT_ID, FORMAT_TYPE_HINT_ID_INT, FORMAT_LENGTH_HINT_EMAIL); default off (Plan §4).
+6. Optional embedding prototype semantic hint: when enabled and DL backend is available,
+   borderline low-confidence columns may elevate to MEDIUM (EMBEDDING_PROTOTYPE_HINT); default off (Plan §5).
 
 To reduce false positives on song lyrics and music tablature/chord sheets:
 - Content heuristics detect lyrics (verse/chorus keywords, short lines) and tabs (digit/pipe lines).
@@ -28,6 +30,7 @@ import re
 
 from core.column_name_normalize import normalize_column_name_for_ml
 from core.dl_backend import DLClassifier, is_available as dl_available
+from core.embedding_prototype_hint import try_embedding_prototype_elevation
 from core.fuzzy_column_match import try_fuzzy_elevation
 from core.suggested_review import column_name_suggests_identifier_review
 from utils.file_encoding import read_text_with_encoding
@@ -652,6 +655,30 @@ def _parse_declared_char_length(data_type: str | None) -> int | None:
     return n if n > 0 else None
 
 
+def _declared_type_is_integer_like(data_type: str | None) -> bool:
+    """True when declared SQL type is integer-ish and suitable for ID hints."""
+    if not data_type or not str(data_type).strip():
+        return False
+    t = str(data_type).strip().lower()
+    if re.search(r"\b(bigint|integer|int2|int4|int8|int|smallint)\b", t):
+        return True
+    # DECIMAL(p,0) / NUMERIC(p,0) used as IDs in some schemas.
+    if re.search(r"\b(?:decimal|numeric)\s*\(\s*\d+\s*,\s*0\s*\)", t):
+        return True
+    return False
+
+
+def _declared_type_email_length_hint(data_type: str | None) -> int | None:
+    """
+    Return declared character length when it strongly suggests an email-storage column.
+    Conservative values commonly used for email fields: 254, 255, 320.
+    """
+    char_len = _parse_declared_char_length(data_type)
+    if char_len in (254, 255, 320):
+        return char_len
+    return None
+
+
 def _format_length_suggests_id_column(column_name: str, char_len: int) -> bool:
     """
     True if declared string length matches common ID sizes and the column name is ID-like.
@@ -672,6 +699,40 @@ def _format_length_suggests_id_column(column_name: str, char_len: int) -> bool:
     ):
         return True
     return False
+
+
+def _format_hint_suggests_sensitive_column(
+    column_name: str, data_type: str | None
+) -> tuple[str, str] | None:
+    """
+    Optional schema-based hints for columns that look sensitive despite low sample signal.
+    Returns (pattern_detected, norm_tag) when a conservative hint applies.
+    """
+    col = (column_name or "").lower()
+
+    decl_len = _parse_declared_char_length(data_type)
+    if decl_len is not None and _format_length_suggests_id_column(column_name, decl_len):
+        return (
+            "FORMAT_LENGTH_HINT_ID",
+            "Schema type/length suggests identifier; confirm against sample values",
+        )
+
+    if _declared_type_is_integer_like(data_type) and column_name_suggests_identifier_review(
+        column_name
+    ):
+        return (
+            "FORMAT_TYPE_HINT_ID_INT",
+            "Schema integer type with ID-like column name; confirm against sample values",
+        )
+
+    email_len = _declared_type_email_length_hint(data_type)
+    email_name_tokens = ("email", "e_mail", "mail")
+    if email_len is not None and any(tok in col for tok in email_name_tokens):
+        return (
+            "FORMAT_LENGTH_HINT_EMAIL",
+            "Schema type/length suggests email field; confirm against sample values",
+        )
+    return None
 
 
 class SensitivityDetector:
@@ -795,6 +856,35 @@ class SensitivityDetector:
         self._connector_format_id_hint = bool(
             det.get("connector_format_id_hint", False)
         )
+        # Optional semantic hint from DL embedding similarity to sensitive-term prototype (Plan §5).
+        self._embedding_prototype_hint = bool(det.get("embedding_prototype_hint", False))
+        try:
+            self._embedding_prototype_hint_min_confidence = int(
+                det.get("embedding_prototype_hint_min_confidence", 20)
+            )
+        except (TypeError, ValueError):
+            self._embedding_prototype_hint_min_confidence = 20
+        try:
+            self._embedding_prototype_hint_max_confidence = int(
+                det.get("embedding_prototype_hint_max_confidence", 39)
+            )
+        except (TypeError, ValueError):
+            self._embedding_prototype_hint_max_confidence = 39
+        try:
+            self._embedding_prototype_hint_min_similarity = int(
+                det.get("embedding_prototype_hint_min_similarity", 80)
+            )
+        except (TypeError, ValueError):
+            self._embedding_prototype_hint_min_similarity = 80
+        self._embedding_prototype_hint_min_confidence = max(
+            0, min(100, self._embedding_prototype_hint_min_confidence)
+        )
+        self._embedding_prototype_hint_max_confidence = max(
+            0, min(100, self._embedding_prototype_hint_max_confidence)
+        )
+        self._embedding_prototype_hint_min_similarity = max(
+            50, min(100, self._embedding_prototype_hint_min_similarity)
+        )
 
     def analyze(
         self,
@@ -908,6 +998,21 @@ class SensitivityDetector:
             )
             if fz is not None:
                 return fz
+            sim_score = None
+            if self._dl_classifier and self._dl_classifier.is_ready:
+                sim_score = self._dl_classifier.sensitive_prototype_similarity(ml_dl_text)
+            proto = try_embedding_prototype_elevation(
+                combined_confidence=combined_confidence,
+                found_patterns=found_patterns,
+                medium_threshold=med_thr,
+                hint_enabled=self._embedding_prototype_hint,
+                hint_min_confidence=self._embedding_prototype_hint_min_confidence,
+                hint_max_confidence=self._embedding_prototype_hint_max_confidence,
+                hint_min_similarity=self._embedding_prototype_hint_min_similarity,
+                similarity_score=sim_score,
+            )
+            if proto is not None:
+                return proto
         if combined_confidence >= 70:
             if entertainment_context:
                 # ML-only confidence in entertainment context (lyrics/tabs) → cap at MEDIUM so that
@@ -926,17 +1031,18 @@ class SensitivityDetector:
                 "Potential personal data",
                 combined_confidence,
             )
-        # Connector-declared CHAR/VARCHAR length + ID-like name → MEDIUM (no regex hit, ML/DL below MEDIUM threshold).
-        # Note: column names alone often drive high ML scores; neutral/non-PII sample values keep combined_confidence low so this path can fire in edge cases (e.g. opaque keys + schema metadata).
+        # Optional schema hints (declared SQL type/length + conservative column-name heuristics)
+        # can elevate LOW to MEDIUM for manual confirmation. This is FN-first and opt-in.
         if self._connector_format_id_hint and not found_patterns:
-            decl_len = _parse_declared_char_length(connector_data_type)
-            if decl_len is not None and _format_length_suggests_id_column(
-                column_name, decl_len
-            ):
+            fmt_hint = _format_hint_suggests_sensitive_column(
+                column_name, connector_data_type
+            )
+            if fmt_hint is not None:
+                pat, norm = fmt_hint
                 return (
                     "MEDIUM",
-                    "FORMAT_LENGTH_HINT_ID",
-                    "Schema type/length suggests identifier; confirm against sample values",
+                    pat,
+                    norm,
                     max(combined_confidence, med_thr),
                 )
         return "LOW", "GENERAL", "Non-personal", combined_confidence
