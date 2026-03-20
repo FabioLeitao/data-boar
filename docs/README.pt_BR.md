@@ -86,7 +86,7 @@ Os artefatos de deploy (Compose, Kubernetes, exemplos de config) ficam na pasta 
 - [plans/MAINTENANCE_FRONT_OF_WORK.md](plans/MAINTENANCE_FRONT_OF_WORK.md) — Após rajadas de PRs paralelos: manter um frente ativa de desenvolvimento; matriz CI/Python; fatias opcionais de manutenção (Scout, deps). *(EN-only.)*
 - [plans/PYTHON_UPGRADE_PLAYBOOK.md](plans/PYTHON_UPGRADE_PLAYBOOK.md) — Sequenciamento de upgrade do runtime Python (3.12→3.13→…), Docker, CI e wheels; [guia em pt-BR](plans/PYTHON_UPGRADE_PLAYBOOK.pt_BR.md).
 - Revisões externas de evolução são mapeadas no histórico dos planos (conteúdo interno; não é uma superfície pública de documentação).
-- [releases/](releases/) — Notas de release (ex.: 1.6.3, 1.6.2, 1.6.1, 1.6.0, 1.5.4, 1.4.3).
+- [releases/](releases/) — Notas de release (ex.: 1.6.4, 1.6.3, 1.6.2, 1.6.1, 1.6.0, 1.5.4, 1.4.3).
 - [plans/completed/](plans/completed/) — Planos concluídos arquivados e o checklist de implementação ([NEXT_STEPS.md](plans/completed/NEXT_STEPS.md)), todos os itens Feitos.
 
 Man pages: `docs/data_boar.1` (comando), `docs/data_boar.5` (config e formatos de arquivo). Instale e opcionalmente crie symlinks de compatibilidade para `man lgpd_crawler` (veja o README na raiz e [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md)).
