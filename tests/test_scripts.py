@@ -176,7 +176,9 @@ def test_docker_common_ps1_syntax():
     script = root / "scripts" / "docker" / "DataBoarDockerCommon.ps1"
     if not script.exists():
         return
-    assert _parse_powershell_script(script, root), "DataBoarDockerCommon.ps1 parse failed"
+    assert _parse_powershell_script(script, root), (
+        "DataBoarDockerCommon.ps1 parse failed"
+    )
 
 
 def test_create_pr_ps1_syntax():
