@@ -48,7 +48,7 @@ Do **not** stack these in one PR unless they are truly the same incident (e.g. o
 
 | Sub-track | Status |
 | --------- | ------ |
-| **–1b** `pr/docker-scout-high-slice` | **In flight** — Rebased on `main`; adds `chore: ruff format` (pre-commit gate) + Dockerfile pip/wheel refresh for Scout. `.\scripts\check-all.ps1` passed locally. **After merge:** rebuild/push the image, then run `docker scout quickview` on the published tag (see [PLANS_TODO.md](PLANS_TODO.md) order **–1b**). |
+| **–1b** `pr/docker-scout-high-slice` | **In flight** — PR **#93** (rebased on `main`; `chore: ruff format` + Dockerfile pip/wheel refresh). `.\scripts\check-all.ps1` passed locally. **After merge:** rebuild/push the image, then run `docker scout quickview` on the published tag (see [PLANS_TODO.md](PLANS_TODO.md) order **–1b**). |
 | `pr/deps-security-refresh` | Next session (when no open maintenance PR). |
 | `pr/api-report-path-hardening` | Next session — confirm diff vs `main` before rebase. |
 
