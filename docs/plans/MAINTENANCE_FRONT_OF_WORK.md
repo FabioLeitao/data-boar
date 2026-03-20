@@ -40,7 +40,7 @@ Pick **one** per session when CI is green:
 | ----- | --------- | ----- |
 | `pr/docker-scout-high-slice` | Order **–1b** (Docker Hub Scout) | **Merged** (PR **#93**). |
 | **Docker base 3.13** | Order **–1b** | **Merged** — PR [**#99**](https://github.com/FabioLeitao/data-boar/pull/99) (`python:3.13-slim`). **Operator:** publish from `main`, then Scout — see [DOCKER_IMAGE_RELEASE_ORDER.md](../ops/DOCKER_IMAGE_RELEASE_ORDER.md). |
-| `pr/deps-security-refresh` | Dependabot / security hygiene (**A1** / **–1**) | Rebase on `main`, lock + `requirements.txt`, `check-all`. **Next S4 candidate.** |
+| `pr/deps-security-refresh` | Dependabot / security hygiene (**A1** / **–1**) | **Open** — PR [**#101**](https://github.com/FabioLeitao/data-boar/pull/101) (certifi floor + lock refresh). Merge after CI; then continue Dependabot triage. |
 | `pr/api-report-path-hardening` | Security / API hardening | **Merged** — PR [**#98**](https://github.com/FabioLeitao/data-boar/pull/98). |
 
 Do **not** stack these in one PR unless they are truly the same incident (e.g. one Scout round-trip).
@@ -50,7 +50,7 @@ Do **not** stack these in one PR unless they are truly the same incident (e.g. o
 | Sub-track | Status |
 | --------- | ------ |
 | **–1b** Dockerfile / Scout | **Merged** — PR **#93** + PR **#99** (3.13-slim base). **Operator:** `docker-lab-build` → `docker-hub-publish` → `docker-prune-local` (see [DOCKER_IMAGE_RELEASE_ORDER.md](../ops/DOCKER_IMAGE_RELEASE_ORDER.md)). |
-| **A1** `pr/deps-security-refresh` | **Queued** — Dependabot / `uv lock` / `requirements.txt`; `.\scripts\check-all.ps1`. |
+| **A1** `pr/deps-security-refresh` | **In progress** — PR [**#101**](https://github.com/FabioLeitao/data-boar/pull/101); merge when CI green; further Dependabot batches can follow. |
 | API report paths | **Merged** — PR **#98**. Follow-up: [API_REPORT_PATH_CODEQL_FOLLOWUP.md](API_REPORT_PATH_CODEQL_FOLLOWUP.md). |
 | **–1L** second environment | **When ready** — [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md); not a blocker for merge/publish on `main`. |
 
@@ -74,4 +74,4 @@ Use **`-D`** only when you accept dropping that local ref; **do not** delete bra
 2. Prefer **merge or close** existing open PRs before opening another **workflow** PR.
 3. Product features (`feat/*`) follow `PLANS_TODO.md` after maintenance gates are green.
 
-*Last updated: **#98** + **#99** merged on `main`; **A1/deps** next; publish + Scout per [DOCKER_IMAGE_RELEASE_ORDER.md](../ops/DOCKER_IMAGE_RELEASE_ORDER.md); **–1L** when second env is ready.*
+*Last updated: **#98**–**#100** on `main`; **A1** — PR **#101** open; publish + Scout per [DOCKER_IMAGE_RELEASE_ORDER.md](../ops/DOCKER_IMAGE_RELEASE_ORDER.md); **–1L** when second env is ready.*
