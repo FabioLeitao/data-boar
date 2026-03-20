@@ -2,8 +2,9 @@
 name: docker-smoke-container-hygiene
 description: >-
   After local Data Boar Docker smoke tests, keep at most one or two named containers,
-  remove throwaway ones, and document cleanup. Use when creating containers, running
-  lab validation, or closing a session that used docker run/compose for data_boar.
+  reuse one local image tag (e.g. data_boar:lab) instead of many smoke-* tags, prune old
+  images, and document cleanup. Use when creating containers, running lab validation,
+  or closing a session that used docker run/compose/build for data_boar.
 ---
 
 # Docker smoke container hygiene (Data Boar)
@@ -12,9 +13,9 @@ description: >-
 
 - You (or the operator) ran `docker build`, `docker run`, or `docker compose` for **Data Boar** (`data_boar` image, `data-boar-*` names).
 - The session is ending or you are about to open a PR after smoke verification.
-- Docker Desktop is accumulating stopped containers from repeated tests.
+- Docker Desktop is accumulating stopped containers from repeated tests, **or** many local `data_boar:*` / `fabioleitao/data_boar:*` image tags after smoke runs.
 
-## Instructions
+## Instructions — containers
 
 1. **Inventory** local Data Boar-related containers (name filter is enough for most cases):
    - `docker ps -a` and look for `data-boar`, `data_boar`, or compose project service names from `deploy/`.
@@ -28,6 +29,16 @@ description: >-
 4. **Document** in the session or PR description if smoke was run and **which** container name/tag was kept, so the next run does not spawn duplicates.
 5. **Agents:** do not delete containers autonomously; **propose** commands and remind the operator to keep only 1–2 instances unless A/B is required.
 
+## Instructions — images and disk (homelab)
+
+Smoke tests **do not** require a **new Docker tag every time**. Tags like `data_boar:smoke-post93`, `data_boar:smoke-foo` accumulate and waste **disk** (many digests/layers stay referenced until pruned).
+
+1. **Default build command for local smoke:** `docker build -t data_boar:lab -f Dockerfile .` — **reuse `data_boar:lab`** and overwrite it on each build (same idea as [docs/ops/HOMELAB_VALIDATION.md](../../../docs/ops/HOMELAB_VALIDATION.md) step 1.3).
+2. **Second tag only when needed:** e.g. true A/B (`data_boar:lab-a` vs `data_boar:lab-b`) or compare **pulled** `fabioleitao/data_boar:latest` vs local `data_boar:lab`.
+3. **Retention:** keep roughly **two** useful lines locally (e.g. Hub `latest` + `data_boar:lab`, or `latest` + one older semver). Remove stale tags: `docker rmi data_boar:OLD_TAG`, then `docker image prune -f` and optionally `docker builder prune -f` — see [docs/ops/BRANCH_AND_DOCKER_CLEANUP.md](../../../docs/ops/BRANCH_AND_DOCKER_CLEANUP.md) §4.
+4. **Scripts (Windows, repo root):** [scripts/docker-hub-pull.ps1](../../../scripts/docker-hub-pull.ps1) (pull Hub tags), [scripts/docker-lab-build.ps1](../../../scripts/docker-lab-build.ps1) (build `data_boar:lab` + optional `lab-prev`/`smoke`), [scripts/docker-prune-local.ps1](../../../scripts/docker-prune-local.ps1) `-WhatIf` first — see [scripts/docker/README.md](../../../scripts/docker/README.md).
+5. **Agents:** propose list/prune commands; do not run destructive `docker rmi` / `prune` without operator confirmation.
+
 ## Rationale
 
-Stale containers confuse port mappings (`8088`), volume mounts, and Scout/quickview workflows; they also waste disk. A single explicit policy matches [docs/DOCKER_SETUP.md](../../../docs/DOCKER_SETUP.md) §7 and [docs/ops/HOMELAB_VALIDATION.md](../../../docs/ops/HOMELAB_VALIDATION.md).
+Stale containers confuse port mappings (`8088`), volume mounts, and Scout/quickview workflows; **too many image tags** waste disk on homelab hosts. Policy matches [docs/DOCKER_SETUP.md](../../../docs/DOCKER_SETUP.md) §7, [docs/ops/BRANCH_AND_DOCKER_CLEANUP.md](../../../docs/ops/BRANCH_AND_DOCKER_CLEANUP.md) §4, and [docs/ops/HOMELAB_VALIDATION.md](../../../docs/ops/HOMELAB_VALIDATION.md).
