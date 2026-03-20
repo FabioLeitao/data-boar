@@ -2,6 +2,8 @@
 
 **Intent:** Work **priority 4** first (incremental format hints + connectors), then **priority 5** (embedding semantic hint) in a later session. Phases **8–11** are a **different layer** (aggregation / incomplete-sample policy); schedule when you want **report/UX + config** without blocking product detection work.
 
+**Deferred note (Option B):** Keep a follow-up slice for **config discoverability hardening** (where/how to set aggregated and embedding toggles in one place) if reviewers report onboarding friction. This is a docs-focused maintenance item and can be batched separately from detector/report behavior changes.
+
 ---
 
 ## Why phases 8–11 are called “aggregated / incomplete”

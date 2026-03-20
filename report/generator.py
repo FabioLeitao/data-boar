@@ -855,12 +855,14 @@ def _aggregated_identification_recommendation_row() -> dict:
         _REC_RISCO: (
             "Dados de múltiplas colunas ou fontes (ex.: gênero, cargo, saúde, endereço, telefone) na mesma tabela/arquivo "
             "podem permitir identificação ou reidentificação de pessoas. "
+            "Why flagged: múltiplas categorias detectadas no mesmo alvo. "
             "A detecção baseia-se em amostras de escaneamento (não no universo completo); tratar como risco possível/suggested review para DPO e compliance."
         ),
         _REC_RECOMENDACAO: (
             "Avaliar controles de acesso e limitação de finalidade; considerar anonimização ou pseudonimização; "
             "documentar base legal para o tratamento combinado (LGPD Art. 5; GDPR Recital 26). "
-            "Confirmar manualmente com base nos dados reais, especialmente quando sample_limit for baixo ou houver falhas de scan."
+            "What to confirm: validar manualmente se a combinação realmente identifica titulares com os dados reais, "
+            "especialmente quando sample_limit for baixo ou houver falhas de scan."
         ),
         _REC_PRIORIDADE: "ALTA",
         _REC_RELEVANTE_PARA: "DPO, Compliance, Segurança da Informação",
