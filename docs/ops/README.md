@@ -17,6 +17,7 @@ This folder groups **maintainer / operator** procedural docs. **Product usage** 
 | Branch + Docker cleanup (legacy remote §7) | [BRANCH_AND_DOCKER_CLEANUP.md](BRANCH_AND_DOCKER_CLEANUP.md) | [BRANCH_AND_DOCKER_CLEANUP.pt_BR.md](BRANCH_AND_DOCKER_CLEANUP.pt_BR.md) |
 | Operator notification channels | [OPERATOR_NOTIFICATION_CHANNELS.md](OPERATOR_NOTIFICATION_CHANNELS.md) | [OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md](OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md) |
 | Operator / IT minimal permissions | [OPERATOR_IT_REQUIREMENTS.md](OPERATOR_IT_REQUIREMENTS.md) | [OPERATOR_IT_REQUIREMENTS.pt_BR.md](OPERATOR_IT_REQUIREMENTS.pt_BR.md) |
+| Aggregated-identification practical tuning (Phase C) | [AGGREGATED_IDENTIFICATION_TUNING.md](AGGREGATED_IDENTIFICATION_TUNING.md) | [AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md](AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md) |
 | Troubleshooting Docker deployment | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.md) | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md) |
 
 **Related (not in this folder):** [SECURITY.md](../SECURITY.md) / [SECURITY.pt_BR.md](../SECURITY.pt_BR.md) and [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md) / [CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md) — security posture and **Priority band A** hardening next to the main security policy in [`docs/README.md`](../README.md).
