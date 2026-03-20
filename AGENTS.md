@@ -12,4 +12,5 @@
   - **`docs`**, **`chore`**, **`ci`**, **`test`**, **`perf`**, **`style`** — standard meanings.
   - **Scopes** — optional domain in parentheses: `feat(detector):`, `docs(ops):`, `fix(report):`.
 - **Automation:** Prefer **`scripts/check-all.ps1`**, **`scripts/commit-or-pr.ps1`**, and related helpers — **``.cursor/skills/token-aware-automation/SKILL.md`**.
+- **Docker homelab (optional):** Prefer **`.\scripts\docker-lab-build.ps1`**, **`.\scripts\docker-hub-pull.ps1`**, and **`.\scripts\docker-prune-local.ps1 -WhatIf`** (then without `-WhatIf` when agreed) over ad-hoc `docker build` / tag sprawl / manual `rmi` lists — same outcomes, fewer tokens, predictable tags (`data_boar:lab`, Hub `latest` + semver + previous patch). See **`scripts/docker/README.md`** and **``.cursor/skills/docker-smoke-container-hygiene/SKILL.md`**. Use **opportunistically** after Dockerfile/image work, before/after Hub push + Scout, or when the operator mentions disk clutter.
 - **Plans:** Single source of truth for backlog sequencing is **`docs/plans/PLANS_TODO.md`** (English-only history); operator runbooks live under **`docs/ops/`** (EN + pt-BR).
