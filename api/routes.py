@@ -54,6 +54,24 @@ _REPORT_FILENAME_PATTERN = re.compile(r"^Relatorio_Auditoria_[A-Za-z0-9_]{4,64}\
 _HEATMAP_FILENAME_PATTERN = re.compile(r"^heatmap_[A-Za-z0-9_]{4,64}\.png$")
 
 
+def _validated_output_basename(
+    path: str | Path, pattern: re.Pattern[str]
+) -> str | None:
+    """
+    Last path segment only, validated against an allowlist pattern.
+
+    Uses ``os.path.basename`` (not ``Path(path)``) so static analysis does not treat
+    the stored report path as controlling a path expression before we restrict to
+    ``out_dir / basename`` only. ``path`` comes from engine state (last report path),
+    not raw HTTP input, but we still normalize to a single filename segment.
+    """
+    raw = os.fspath(path)
+    name = os.path.basename(raw.replace("\\", "/"))
+    if not name or pattern.fullmatch(name) is None:
+        return None
+    return name
+
+
 def _validate_session_id(session_id: str) -> None:
     """Reject session_id that could be used in path traversal. Raises HTTPException if invalid."""
     if not session_id or not isinstance(session_id, str):
@@ -76,8 +94,8 @@ def _safe_report_output_path(path: str | Path, engine) -> Path | None:
         return None
     try:
         out_dir = Path(engine.config.get("report", {}).get("output_dir", ".")).resolve()
-        filename = Path(path).name
-        if not _REPORT_FILENAME_PATTERN.fullmatch(filename):
+        filename = _validated_output_basename(path, _REPORT_FILENAME_PATTERN)
+        if filename is None:
             return None
         candidate = (out_dir / filename).resolve()
         candidate.relative_to(out_dir)
@@ -93,8 +111,8 @@ def _safe_heatmap_output_path(path: str | Path, out_dir: Path) -> Path | None:
     if not path:
         return None
     try:
-        filename = Path(path).name
-        if not _HEATMAP_FILENAME_PATTERN.fullmatch(filename):
+        filename = _validated_output_basename(path, _HEATMAP_FILENAME_PATTERN)
+        if filename is None:
             return None
         candidate = (out_dir / filename).resolve()
         candidate.relative_to(out_dir)
