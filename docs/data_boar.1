@@ -18,6 +18,10 @@ data_boar, lgpd_crawler \- audit databases and filesystems for personal and sens
 .I PORT
 ]
 [
+.B \-\-host
+.I ADDR
+]
+[
 .B \-\-reset\-data
 ]
 [
@@ -118,6 +122,36 @@ Can be overridden by
 in the configuration file.
 .
 .TP
+.BI "\-\-host " ADDR
+Bind address for the API when
+.B \-\-web
+is set (e.g.\&
+.BR 127.0.0.1 ", " 0.0.0.0 ).
+Overrides
+.B api.host
+in the configuration file and the
+.B API_HOST
+environment variable.
+If omitted, the bind address is resolved in this order:
+.BR api.host ", " API_HOST ", "
+then a safe default of
+.B 127.0.0.1
+(loopback) for desktop/CLI use.
+Ignored in one\-shot audit mode.
+.
+.TP
+.B \-\-scan\-compressed
+When set, treat
+.B file_scan.scan_compressed
+as true for this run: scan inside supported archives (zip, tar, 7z, etc.). May increase run time and I/O.
+.
+.TP
+.B \-\-content\-type\-check
+When set, treat
+.B file_scan.use_content_type
+as true for this run: infer file type from magic bytes, not only extension (helps find renamed or cloaked files). Adds extra I/O and CPU per file.
+.
+.TP
 .B \-\-reset\-data
 Dangerous maintenance operation: wipes all scan sessions, findings and failures from the SQLite database, deletes generated Excel reports and heatmap PNGs under
 .I report.output_dir
@@ -156,7 +190,14 @@ The main config file (YAML or JSON) defines:
 (list of norm_tag_pattern with base_legal, risk, recommendation, priority, relevant_for) for custom recommendation text per category (e.g.\& health, religion, political).
 .IP \(bu 2
 .B api
-\- port; optionally require_api_key, api_key or api_key_from_env for API key protection (GET /health remains public).
+\- port;
+.B host
+(bind address; optional; CLI
+.B \-\-host
+and
+.B API_HOST
+can override);
+optionally require_api_key, api_key or api_key_from_env for API key protection (GET /health remains public).
 .IP \(bu 2
 .B sqlite_path
 \- path to the SQLite database (default:
@@ -305,6 +346,12 @@ Use CONFIG_PATH and start the server:
 export CONFIG_PATH=/etc/lgpd\-audit/config.yaml
 python main.py \-\-web \-\-port 8088
 .fi
+.RE
+.
+.TP
+Listen on all interfaces (e.g.\& LAN or container without Docker env); use only with network controls:
+.RS
+.B python main.py \-\-config config.yaml \-\-web \-\-host 0.0.0.0 \-\-port 8088
 .RE
 .
 .SS curl \- API examples

@@ -14,12 +14,15 @@ The main entry point is `main.py`. Prefer it over `run.py`.
 
 | Argument       | Default       | Description                                                                                                                                                                                                             |
 | ---            | ---           | ---                                                                                                                                                                                                                     |
-| `--config`     | `config.yaml` | Path to the configuration file (YAML or JSON). Used for both one-shot audit and to resolve `api.port` when starting the web server.                                                                                     |
-| `--web`        | *(flag)*      | Start the REST API server instead of running a one-shot audit.                                                                                                                                                          |
-| `--port`       | `8088`        | Port for the API when `--web` is set. Can be overridden by `api.port` in config. Ignored in one-shot mode.                                                                                                              |
-| `--reset-data` | *(flag)*      | Dangerous maintenance operation: wipe all scan sessions, findings and failures from SQLite, delete generated reports/heatmaps under `report.output_dir`, and record the wipe in `data_wipe_log`. Does not start a scan. |
-| `--tenant`     | *(none)*      | Optional customer/tenant name for the scan in CLI mode. Stored on the session and surfaced on dashboard and reports.                                                                                                    |
-| `--technician` | *(none)*      | Optional technician/operator responsible for the scan in CLI mode. Stored on the session and surfaced on dashboard and reports.                                                                                         |
+| `--config`           | `config.yaml` | Path to the configuration file (YAML or JSON). Used for both one-shot audit and to resolve `api.port` / `api.host` when starting the web server.                                                                         |
+| `--web`              | *(flag)*      | Start the REST API server instead of running a one-shot audit.                                                                                                                                                          |
+| `--port`             | `8088`        | Port for the API when `--web` is set. Can be overridden by `api.port` in config unless you pass `--port` explicitly. Ignored in one-shot mode.                                                                            |
+| `--host`             | *(resolved)*  | Bind address when `--web` is set (e.g. `127.0.0.1`, `0.0.0.0`). **Overrides** `api.host` and `API_HOST`. If omitted: `api.host` → `API_HOST` → default **`127.0.0.1`**. Ignored in one-shot mode. See §2.                    |
+| `--reset-data`       | *(flag)*      | Dangerous maintenance operation: wipe all scan sessions, findings and failures from SQLite, delete generated reports/heatmaps under `report.output_dir`, and record the wipe in `data_wipe_log`. Does not start a scan. |
+| `--tenant`           | *(none)*      | Optional customer/tenant name for the scan in CLI mode. Stored on the session and surfaced on dashboard and reports.                                                                                                    |
+| `--technician`       | *(none)*      | Optional technician/operator responsible for the scan in CLI mode. Stored on the session and surfaced on dashboard and reports.                                                                                         |
+| `--scan-compressed`  | *(flag)*      | One-shot override: enable archive scanning as if `file_scan.scan_compressed` were true (zip, tar, 7z, …).                                                                                                               |
+| `--content-type-check` | *(flag)*   | One-shot override: enable magic-byte / content-type inference as if `file_scan.use_content_type` were true (renamed/cloaked files).                                                                                     |
 
 ### Outcomes
 
@@ -42,9 +45,11 @@ python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Sil
 
 ```bash
 python main.py --config config.yaml --web --port 8088
+# Listen on all interfaces (overrides config / API_HOST; use only with network controls):
+python main.py --config config.yaml --web --host 0.0.0.0 --port 8088
 ```
 
-- Loads config and starts the FastAPI server on `0.0.0.0:<port>` (listens on all interfaces).
+- Loads config and starts the FastAPI server on **`<bind>:<port>`**. Default bind is **`127.0.0.1`** unless you set `api.host`, `API_HOST`, or **`--host`** (CLI wins). The official Docker image sets `API_HOST=0.0.0.0` so the published port works from outside the container.
 - **Outcome:** Server runs until interrupted. No scan runs automatically; you trigger scans and download reports via the API (see below).
 - **Note:** The API process loads its own config at startup from the **`CONFIG_PATH`** environment variable, or `config.yaml` in the current working directory. To use a different file when running the server, set `CONFIG_PATH`:
 
@@ -82,7 +87,7 @@ Pre-built images are on Docker Hub: `fabioleitao/data_boar:latest` ([hub.docker.
    uvicorn api.routes:app --host 0.0.0.0 --port 8088
    ```
 
-1. **Binding:** Default `0.0.0.0` means the server accepts connections from any interface. Restrict by using `--host 127.0.0.1` if only local access is needed.
+1. **Binding:** `python main.py --web` uses the same resolution as above (`--host`, then `api.host`, then `API_HOST`, then **`127.0.0.1`**). Direct **uvicorn** defaults differ by version; pass **`--host`** explicitly if you need a specific interface.
 1. **Production:** Run behind a reverse proxy (nginx, Traefik, Caddy, or similar), use a process manager (systemd, supervisord), or a container; ensure `CONFIG_PATH` and `report.output_dir` are set appropriately and that the process can write to the output directory and the SQLite path. The application behaves correctly behind NAT, load balancers, and reverse proxies: when TLS is terminated at the proxy, set **X-Forwarded-Proto: https** so security headers (e.g. HSTS) and scheme detection work. See [SECURITY.md](../SECURITY.md) for HTTP security headers.
 
 ### Base URL and accessing the API
@@ -92,8 +97,8 @@ Pre-built images are on Docker Hub: `fabioleitao/data_boar:latest` ([hub.docker.
   Example: `<http://localhost:8088>/` or `<http://your-server:8088>/`
 
 - **OpenAPI docs (interactive):**
-- Swagger UI: `<http://localhost:8088/doc>s`
-- ReDoc: `<http://localhost:8088/redo>c`
+  - Swagger UI: `http://localhost:8088/docs`
+  - ReDoc: `http://localhost:8088/redoc`
 - **Authentication:** By default the API does not require authentication; secure it at the reverse proxy or network level if exposed. You can optionally enable a shared API key: set `api.require_api_key: true` and `api.api_key` (or `api.api_key_from_env: "VAR"`) in config; then send **X-API-Key** or **Authorization: Bearer &lt;key&gt;** on each request (GET /health remains public). **For production deployments we recommend setting `require_api_key: true` and using a strong key from an environment variable** (e.g. `api.api_key_from_env: "AUDIT_API_KEY"`) so the key is not stored in the config file. See [SECURITY.md](../SECURITY.md#optional-api-key-enterprise) and the Configuration section below.
 
 ### Web dashboard
