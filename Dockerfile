@@ -5,8 +5,9 @@
 # -----------------------------------------------------------------------------
 # Stage 1: build Python extensions and install dependencies
 # -----------------------------------------------------------------------------
-# Rolling 3.12 slim (patch updates) reduces stale base CVE noise vs. a fixed old micro-tag.
-FROM python:3.12-slim AS builder
+# Rolling 3.13 slim: aligns with CI (3.12 + 3.13), requires-python >=3.12, and Docker Scout
+# base-image recommendations (fewer base CVEs vs. 3.12-slim at last scan).
+FROM python:3.13-slim AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential gcc g++ pkg-config \
@@ -23,13 +24,13 @@ RUN pip uninstall -y wheel || true && \
     pip install --no-cache-dir --force-reinstall "wheel>=0.46.2" && \
     python -c "import wheel; import sys; sys.exit(0 if tuple(map(int, wheel.__version__.split('.'))) >= (0,46,2) else 1)" && \
     pip install --no-cache-dir -r /app/requirements.txt && \
-    find /usr/local/lib/python3.12/site-packages -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null; \
-    find /usr/local/lib/python3.12/site-packages -name "*.pyc" -delete 2>/dev/null; true
+    find /usr/local/lib/python3.13/site-packages -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null; \
+    find /usr/local/lib/python3.13/site-packages -name "*.pyc" -delete 2>/dev/null; true
 
 # -----------------------------------------------------------------------------
 # Stage 2: minimal runtime (no build tools, only runtime libs + app)
 # -----------------------------------------------------------------------------
-FROM python:3.12-slim
+FROM python:3.13-slim
 
 LABEL org.opencontainers.image.description="LGPD/GDPR/CCPA audit. Default: web API and frontend on port 8088. Override command for CLI one-shot."
 
@@ -42,7 +43,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Copy installed packages from builder (no gcc/dev in this image)
-COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Re-assert pip/wheel in the runtime layer so Docker Scout does not flag stale tooling copied from
