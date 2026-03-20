@@ -38,9 +38,9 @@ Pick **one** per session when CI is green:
 
 | Track | Aligns to | Notes |
 | ----- | --------- | ----- |
-| `pr/docker-scout-high-slice` | Order **–1b** (Docker Hub Scout) | Rebase on `main`, refresh base image, Scout + `check-all`. |
-| `pr/deps-security-refresh` | Dependabot / security hygiene | Rebase, resolve lock conflicts, full test gate. |
-| `pr/api-report-path-hardening` | Security / API hardening | Diff vs `main` first; may already be superseded by merged slices. |
+| `pr/docker-scout-high-slice` | Order **–1b** (Docker Hub Scout) | **Merged** (PR **#93**). Operator follow-up: rebuild/push image, `docker scout quickview` on published tag. |
+| `pr/deps-security-refresh` | Dependabot / security hygiene | Rebase, resolve lock conflicts, full test gate. **Next S4 candidate** (pick one session). |
+| `pr/api-report-path-hardening` | Security / API hardening | Diff vs `main` first; may already be superseded by merged slices. **Next S4 candidate** (pick one session). |
 
 Do **not** stack these in one PR unless they are truly the same incident (e.g. one Scout round-trip).
 
@@ -48,9 +48,21 @@ Do **not** stack these in one PR unless they are truly the same incident (e.g. o
 
 | Sub-track | Status |
 | --------- | ------ |
-| **–1b** `pr/docker-scout-high-slice` | **In flight** — PR **#93** (rebased on `main`; `chore: ruff format` + Dockerfile pip/wheel refresh). `.\scripts\check-all.ps1` passed locally. **After merge:** rebuild/push the image, then run `docker scout quickview` on the published tag (see [PLANS_TODO.md](PLANS_TODO.md) order **–1b**). |
-| `pr/deps-security-refresh` | Next session (when no open maintenance PR). |
-| `pr/api-report-path-hardening` | Next session — confirm diff vs `main` before rebase. |
+| **–1b** `pr/docker-scout-high-slice` | **Merged** — PR **#93** (Dockerfile + ruff format gate). **Operator:** rebuild/push image, `docker scout quickview` on tag (see [PLANS_TODO.md](PLANS_TODO.md) **–1b**). **Local:** after merge, drop stale local branch (see **Quick housekeeping** below). |
+| `pr/deps-security-refresh` | **Queued** — rebase on `main`, then PR (certifi/lock refresh); run `.\scripts\check-all.ps1`. |
+| `pr/api-report-path-hardening` | **Queued** — diff vs `main` first (report path safety may overlap); then rebase + PR if still unique. |
+
+### Quick housekeeping (local branches after a merged maintenance PR)
+
+GitHub **squash** merges often leave a **local** branch (e.g. `pr/docker-scout-high-slice`) with commits that no longer match `main`’s history, even though the work is on `main`. Safe cleanup when the PR is merged and you do not need the branch name:
+
+```powershell
+git checkout main
+git pull origin main
+git branch -D pr/docker-scout-high-slice
+```
+
+Use **`-D`** only when you accept dropping that local ref; **do not** delete branches with **unmerged** unique work (see [BRANCH_AND_DOCKER_CLEANUP.md](../ops/BRANCH_AND_DOCKER_CLEANUP.md) §1). Remote branch `origin/pr/docker-scout-high-slice` was removed after PR **#93** merged.
 
 ---
 
@@ -60,4 +72,4 @@ Do **not** stack these in one PR unless they are truly the same incident (e.g. o
 2. Prefer **merge or close** existing open PRs before opening another **workflow** PR.
 3. Product features (`feat/*`) follow `PLANS_TODO.md` after maintenance gates are green.
 
-*Last updated: S4 –1b Docker Scout track (branch `pr/docker-scout-high-slice`) + rolling S4 progress table.*
+*Last updated: S4 –1b Docker Scout **merged** (PR #93); S4 next tracks deps / api-report; local branch delete snippet; docs batch alignment.*
