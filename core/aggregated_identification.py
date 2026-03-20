@@ -274,6 +274,13 @@ def run_aggregation(
     if not detection.get("aggregated_identification_enabled", True):
         return []
     min_cat = max(1, int(detection.get("aggregated_min_categories", 2)))
+    incomplete_mode = bool(detection.get("aggregated_incomplete_data_mode", False))
+    if incomplete_mode:
+        # C10: when operator knows coverage is partial, lower category threshold by one (min 1).
+        min_cat = max(1, min_cat - 1)
+    single_high_risk_mode = bool(
+        detection.get("aggregated_single_high_risk_suggested_review", False)
+    )
     mapping = detection.get("quasi_identifier_mapping") or []
 
     out: list[dict[str, Any]] = []
@@ -297,10 +304,22 @@ def run_aggregation(
             col = r.get("column_name") or ""
             if col and col not in columns_involved:
                 columns_involved.append(col)
-        if len(all_cats) >= min_cat:
+        should_emit = len(all_cats) >= min_cat
+        single_high_risk = len(all_cats) == 1 and "health" in all_cats
+        if (not should_emit) and single_high_risk_mode and single_high_risk:
+            should_emit = True
+        if should_emit:
             table_display = f"{schema}.{table}" if schema else table
-            explanation = _build_explanation(all_cats, "table")
-            sensitivity = "CRITICAL" if "health" in all_cats else "HIGH"
+            explanation = _build_explanation(
+                all_cats,
+                "table",
+                incomplete_mode=incomplete_mode,
+                single_high_risk=single_high_risk,
+            )
+            if single_high_risk_mode and single_high_risk:
+                sensitivity = "MEDIUM"
+            else:
+                sensitivity = "CRITICAL" if "health" in all_cats else "HIGH"
             out.append(
                 {
                     "session_id": session_id,
@@ -333,10 +352,22 @@ def run_aggregation(
             fn = r.get("file_name") or ""
             if fn and fn not in columns_involved:
                 columns_involved.append(fn)
-        if len(all_cats) >= min_cat:
+        should_emit = len(all_cats) >= min_cat
+        single_high_risk = len(all_cats) == 1 and "health" in all_cats
+        if (not should_emit) and single_high_risk_mode and single_high_risk:
+            should_emit = True
+        if should_emit:
             table_display = file_name or path or "-"
-            explanation = _build_explanation(all_cats, "file")
-            sensitivity = "CRITICAL" if "health" in all_cats else "HIGH"
+            explanation = _build_explanation(
+                all_cats,
+                "file",
+                incomplete_mode=incomplete_mode,
+                single_high_risk=single_high_risk,
+            )
+            if single_high_risk_mode and single_high_risk:
+                sensitivity = "MEDIUM"
+            else:
+                sensitivity = "CRITICAL" if "health" in all_cats else "HIGH"
             out.append(
                 {
                     "session_id": session_id,
@@ -353,10 +384,25 @@ def run_aggregation(
     return out
 
 
-def _build_explanation(categories: set[str], context: str) -> str:
+def _build_explanation(
+    categories: set[str],
+    context: str,
+    *,
+    incomplete_mode: bool = False,
+    single_high_risk: bool = False,
+) -> str:
     cat_list = ", ".join(sorted(categories))
-    return (
+    base = (
         f"Possible identification risk: combination of {cat_list} in the same {context} may allow identification or re-identification of individuals. "
         "This inference is based on sampled/incomplete scanning coverage; treat as suggested review and confirm manually. "
         "Consider access controls, purpose limitation and anonymisation (LGPD Art. 5, GDPR Recital 26)."
     )
+    if incomplete_mode:
+        base += (
+            " Incomplete-data mode is enabled (lower aggregation threshold) to favor recall under partial coverage."
+        )
+    if single_high_risk:
+        base += (
+            " Single high-risk category (health) is surfaced as suggested review to avoid false negatives."
+        )
+    return base
