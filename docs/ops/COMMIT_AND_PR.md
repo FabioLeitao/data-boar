@@ -15,12 +15,13 @@ When you ask the agent to **preview**, **commit locally**, or **create a PR** wi
 - **“Commit locally”** (optionally: “… with message: …”):
 - Stages all changed files **except** `audit_results.db`.
 - Builds a **short title** and **bullet-point body** from the changes (or uses what you said).
-- Runs `git commit -m "<title>" -m "<body>"` on the current branch.
+- Requires a matching **Preview stamp** from `-Action Preview` (same branch + file scope), then runs `git commit -m "<title>" -m "<body>"` on the current branch.
 
 - **“Create a PR”** (optionally: “… with description: …” or “… on branch X”):
 - If you have **uncommitted changes**: stages (optionally only `-IncludeFiles`), commits with the given title/body.
 - If you have **no uncommitted changes but have local commits not yet pushed**: does not create a new commit; uses those existing local commits for the PR.
 - **Before pushing:** runs **`git fetch origin`** and, if your branch is **behind** the remote, runs **`git pull --rebase origin <branch>`** so your local commits sit on top of the latest remote (avoids divergent history and failed pushes). If rebase hits conflicts, the script exits and asks you to resolve and run `git rebase --continue` or `git rebase --abort`.
+- Uses the same **Preview stamp guard** as Commit (run Preview first); bypass only if intentional via `-SkipPreviewGuard`.
 - If you asked for a specific branch (e.g. “on branch `feature/xyz`”), creates or checks out that branch before committing (when there are changes).
 - **Pushes** the current branch to `origin` via your existing SSH credentials (all local commits are included).
 - **Opens the PR in your default browser** with the title and description **pre-filled**:

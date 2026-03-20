@@ -27,12 +27,16 @@ param(
 
     [string[]]$IncludeFiles = @(),
 
-    [switch]$RunTests = $false
+    [switch]$RunTests = $false,
+
+    # Safety guard: require Preview before Commit/PR unless explicitly bypassed.
+    [switch]$SkipPreviewGuard = $false
 )
 
 $ErrorActionPreference = "Stop"
 $repoRoot = (Get-Item $PSScriptRoot).Parent.FullName
 Set-Location $repoRoot
+$previewStampPath = Join-Path $repoRoot ".git\commit-or-pr.preview.json"
 
 # Allow -IncludeFiles "path1,path2" as single string
 if ($IncludeFiles.Count -eq 1 -and $IncludeFiles[0] -match ',') {
@@ -55,6 +59,12 @@ foreach ($p in $changed) {
 # Optional: restrict to selected files only (file selection)
 if ($IncludeFiles.Count -gt 0) {
     $toAdd = @($toAdd | Where-Object { $f = $_; $IncludeFiles | Where-Object { $f -eq $_ -or $f -like "$_*" -or $f -replace '\\','/' -like "$($_ -replace '\\','/')*" } })
+}
+
+function Get-ScopeFingerprint([string[]]$paths) {
+    if (-not $paths) { return "" }
+    $sorted = @($paths | Sort-Object -Unique)
+    return [string]::Join("|", $sorted)
 }
 
 # Preview and Commit require something to commit
@@ -205,6 +215,16 @@ if ($Action -eq 'Preview') {
         }
     }
     Write-Host ""
+    $branchName = (git rev-parse --abbrev-ref HEAD)
+    $stamp = @{
+        branch = $branchName
+        created_at_utc = [DateTime]::UtcNow.ToString("o")
+        file_count = @($toAdd).Count
+        scope_fingerprint = (Get-ScopeFingerprint $toAdd)
+    }
+    $stamp | ConvertTo-Json -Depth 3 | Set-Content -Path $previewStampPath -Encoding utf8
+    Write-Host "Preview stamp saved to .git/commit-or-pr.preview.json"
+    Write-Host ""
     Write-Host "To include only specific files, run with -IncludeFiles ""path1"",""path2""."
     Write-Host "Run with -Action Commit to commit locally, or -Action PR to push and open PR in browser."
     exit 0
@@ -230,6 +250,30 @@ if ([string]::IsNullOrWhiteSpace($Title)) {
     Write-Host "commit-or-pr: -Title is required for Commit/PR when there are changes to commit." -ForegroundColor Red
     Write-Host "Example: .\scripts\commit-or-pr.ps1 -Action Commit -Title `"feat: FN reduction slice`" -Body `"`"- MEDIUM threshold config`"`n- Suggested review sheet`"`""
     exit 1
+}
+
+if (-not $SkipPreviewGuard) {
+    if (-not (Test-Path -LiteralPath $previewStampPath)) {
+        Write-Host "commit-or-pr safety guard: no Preview stamp found." -ForegroundColor Yellow
+        Write-Host "Run: .\scripts\commit-or-pr.ps1 -Action Preview"
+        Write-Host "Or bypass once with -SkipPreviewGuard."
+        exit 1
+    }
+    $stampRaw = Get-Content -LiteralPath $previewStampPath -Raw -ErrorAction SilentlyContinue
+    $stamp = $null
+    try { $stamp = $stampRaw | ConvertFrom-Json } catch { $stamp = $null }
+    if (-not $stamp) {
+        Write-Host "commit-or-pr safety guard: invalid Preview stamp. Re-run Preview." -ForegroundColor Yellow
+        exit 1
+    }
+    $currentBranch = (git rev-parse --abbrev-ref HEAD)
+    $currentFp = Get-ScopeFingerprint $toAdd
+    if (($stamp.branch -ne $currentBranch) -or ($stamp.scope_fingerprint -ne $currentFp)) {
+        Write-Host "commit-or-pr safety guard: scope changed since Preview (branch or file set differs)." -ForegroundColor Yellow
+        Write-Host "Run Preview again to confirm scope, then Commit/PR."
+        Write-Host "Current branch: $currentBranch | Stamped branch: $($stamp.branch)"
+        exit 1
+    }
 }
 
 foreach ($f in $toAdd) { git add -- $f }
