@@ -1,0 +1,19 @@
+---
+description: Operator shorthand — when the user says deps, feature, homelab, docs, or houseclean, scope the session accordingly (plans + scripts).
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Session mode keywords (operator shorthand)
+
+Single-word cues set **session scope**. Prefer **one mode per branch/PR** unless the user explicitly combines tracks.
+
+| Keyword | Scope | Primary references |
+| ------- | ----- | ------------------- |
+| **deps** | Dependency maintenance: edit **`pyproject.toml`** → **`uv lock`** → **`uv export --no-emit-package pyproject.toml -o requirements.txt`** → **`.\scripts\check-all.ps1`**. Triage Dependabot/security deps per **`SECURITY.md`** and **`.cursor/rules/dependabot-hygiene.mdc`**. | `docs/plans/PLANS_TODO.md` (order **–1**) |
+| **feature** | Product work: one slice from **`PLANS_TODO.md`** (“What to start next”) + linked **`docs/plans/PLAN_*.md`**. Tests + operator docs as needed; refresh plan rows / dashboard when the slice completes. | Plans + **`.\scripts\check-all.ps1`** |
+| **homelab** | Production-readiness smoke on a **second environment** (manual). Operator runs **`docs/ops/HOMELAB_VALIDATION.md`** (and **`.pt_BR`** if used). Agent helps with **doc/checklist fixes** or small script tweaks from what you find—not running your hardware. | `PLANS_TODO.md` (order **–1L**) |
+| **docs** | **Documentation-only** passes: guides (**USAGE**, **DEPLOY**, **TECH_GUIDE**, **SECURITY**, pt-BR pairs per policy), README/pitch (**`.cursor/rules/pitch-roadmap-sync.mdc`**), plan prose, broken links. Follow **`.cursor/rules/docs-policy.mdc`**. If **`PLANS_TODO.md`** status table rows change, run **`python scripts/plans-stats.py --write`**. For **CLI /help / man** drift, see **`docs/OPERATOR_HELP_AUDIT.md`**, rule **`operator-help-sync.mdc`**, tests **`tests/test_operator_help_sync.py`**. No behavior change unless correcting docs that describe wrong behavior. | `docs/`, `docs/plans/` |
+| **houseclean** | **Hygiene** without a new product feature: branch/remote cleanup playbook (**`docs/ops/BRANCH_AND_DOCKER_CLEANUP.md`**), **`plans-stats`** refresh, Ruff/format (pre-commit), optional **`scripts/maintenance-check.ps1`**, small safe refactors, dead code, script/ignore consistency. Batch coherent edits; **`check-all`** before merge. Avoid mixing with large **deps** or **feature** slices in one PR unless the user asks. | Ops docs + **`check-all`** |
+
+**Commit taxonomy:** **`docs`** and **`houseclean`** usually map to **`documentation`** or **`workflow`** commits in **`.cursor/rules/execution-priority-and-pr-batching.mdc`**; keep intent explicit in commit messages.
