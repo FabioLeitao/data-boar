@@ -23,21 +23,21 @@ Use these tags in headings to keep priorities explicit and machine-countable:
 
 Do not edit this block manually; refresh with `python scripts/plans-stats.py --write`.
 
-- **Status rows counted:** 87  (Done: 44 | Incomplete: 43)
+- **Status rows counted:** 93  (Done: 50 | Incomplete: 43)
 - **Incomplete breakdown:** Pending `⬜`=41, Tracked `🔄` / `Tracked (partially done)`=2, Under consideration=0, Backlog-marked rows=0
 
 | Horizon | Total rows | Done | Incomplete |
 | ------- | ----------: | ----: | ----------: |
-| `H0` | 19 | 17 | 2 |
+| `H0` | 20 | 18 | 2 |
 | `H1` | 0 | 0 | 0 |
 | `H2` | 0 | 0 | 0 |
-| `H3` | 68 | 27 | 41 |
+| `H3` | 73 | 32 | 41 |
 | `H4` | 0 | 0 | 0 |
 | `H5` | 0 | 0 | 0 |
 | `UNSPECIFIED` | 0 | 0 | 0 |
 <!-- PLANS_STATUS_DASHBOARD:END -->
 
-**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Commercial licensing (runtime + docs + issuer bootstrap)** ✅ Phase 1 in repo (see `docs/LICENSING_SPEC.md`, `core/licensing/`); operational hardening ⬜ Priority band A · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ✅ Done · **Compliance standards alignment (ISO/IEC 27701, FELCA)** ✅ Done (doc only) · **Additional detection techniques & FN reduction** 🔄 Slices 1–4 done (`fuzzy_column_match`, `FUZZY_COLUMN_MATCH`, `connector_format_id_hint`, `FORMAT_LENGTH_HINT_ID`); next: optional aggregated/incomplete-data modes and semantic hints (priorities 5+). · **Compressed files** ✅ Done (steps 1–12; follow-ups 13–14 optional) · **Content type & cloaking detection** ✅ Core plan done (optional: man pages / OpenAPI examples) · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ✅ Phase 4 done (Phase 5 checksum future) · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started · **Additional data soup formats** ⬜ Backlog (catalogue)
+**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Commercial licensing (runtime + docs + issuer bootstrap)** ✅ Phase 1 in repo (see `docs/LICENSING_SPEC.md`, `core/licensing/`); operational hardening ⬜ Priority band A · **Release 1.6.4** ✅ shipped **2026-03-20** (GitHub Release **v1.6.4**, Docker Hub **`fabioleitao/data_boar:1.6.4`** + **`:latest`**, `docs/releases/1.6.4.md`; maintenance sprint **#99–#104** on `main`) · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ✅ Done · **Compliance standards alignment (ISO/IEC 27701, FELCA)** ✅ Done (doc only) · **Additional detection techniques & FN reduction** 🔄 Slices 1–4 done (`fuzzy_column_match`, `FUZZY_COLUMN_MATCH`, `connector_format_id_hint`, `FORMAT_LENGTH_HINT_ID`); next: optional aggregated/incomplete-data modes and semantic hints (priorities 5+). · **Compressed files** ✅ Done (steps 1–12; follow-ups 13–14 optional) · **Content type & cloaking detection** ✅ Core plan done (optional: man pages / OpenAPI examples) · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ✅ Phase 4 done (Phase 5 checksum future) · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started · **Additional data soup formats** ⬜ Backlog (catalogue)
 
 ### Commercial licensing — future reminder (partner / tiered SKUs)
 
@@ -177,8 +177,9 @@ External review PDF (local): `docs/feedbacks, reviews, comments and criticism/an
 | KPI panel (release / CI / security ops) | ✅ Done (baseline) (**W-KPI**) | Baseline defined in `PLAN_READINESS_AND_OPERATIONS.md` §4.7 with 2 manual KPIs (CI pass rate, security maintenance latency). Next slice: optional lightweight automation/export. |
 | Contract tests (reports + critical APIs) | ✅ Done (**W-CONTRACT**) | Report/heatmap artifacts regression: `tests/test_report_trends.py`; API/OpenAPI contract responses: `tests/test_routes_responses.py`. |
 | Decouple detector/report rules | 🔄 Incremental (**W-DECOUPLE**) | Small modules (e.g. fuzzy helper); Sonar complexity gates. |
-| Doc snapshot per release | ✅ Baseline | `docs/releases/X.Y.Z.md` per version; optional “frozen bundle” → backlog. |
-| Security vuln triage routine | 🔄 Tracked | Priority band **A1–A3**, `scripts/maintenance-check.ps1`, `SECURITY.md`. |
+| Doc snapshot per release | ✅ Baseline | `docs/releases/X.Y.Z.md` per version; **latest shipped: 1.6.4** (`docs/releases/1.6.4.md`). Optional “frozen bundle” → backlog. |
+| Security vuln triage routine | 🔄 Tracked | **1.6.4 slice:** **A1** certifi **#101**, pyOpenSSL/Snowflake triage doc + **`maintenance-check`** Dependabot **alerts** section **#102–#103**; open GH alerts acceptable per backlog. Ongoing: Priority band **A1–A3**, `scripts/maintenance-check.ps1`, `SECURITY.md`. |
+| **Release 1.6.4** (VERSIONING + GitHub + Docker Hub) | ✅ Done (**W-REL-164**) | **#104** on `main`; tag **`v1.6.4`**; [GitHub Release](https://github.com/FabioLeitao/data-boar/releases/tag/v1.6.4); **`fabioleitao/data_boar:1.6.4`** and **`:latest`** (digest `sha256:9081adbb03193a0a6c57b8218d57fc5fb47e7dc5867dccfdad81aac788f27623`); maintenance **#99–#103** + publish-order / Scout docs. |
 | Aggregated “incomplete sample” wording | ✅ Done | Cross-ref sheet note row + recommendation text. |
 | Staging fuzzy config | ✅ Example | `deploy/config.staging.example.yaml`, `deploy/STAGING_CONFIG.md`. |
 
@@ -250,6 +251,18 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
 ---
 
 ## Open plans and to-dos (summary)
+
+### H3/U2 Release **1.6.4** milestone checklist (2026-03-20) — shipped
+
+Counted rows below celebrate the **maintenance + publish** sprint; see **`docs/releases/1.6.4.md`**.
+
+| Milestone | Status | Notes |
+| --------- | ------ | ----- |
+| **VERSIONING** checklist → **1.6.4** (`pyproject.toml`, `core/about.py`, man pages, deploy/Docker examples, `uv.lock`) | ✅ Done | PR **#104** |
+| **Release notes** + README “current release” | ✅ Done | `docs/releases/1.6.4.md` |
+| **Git** tag + **GitHub Release** | ✅ Done | **`v1.6.4`** |
+| **Docker Hub** `:1.6.4` + `:latest` (image matches app version) | ✅ Done | Same digest as tag above; base **`python:3.13-slim`** (**#99**) |
+| **Ops docs** (merge→bump→build→push, Dependabot pyOpenSSL triage, `maintenance-check` alerts) | ✅ Done | **#100–#103** on `main` |
 
 ### Additional detection techniques & false-negative reduction – [PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md](PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md)
 
