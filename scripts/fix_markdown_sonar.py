@@ -14,7 +14,8 @@ Rules addressed:
 - MD047: File ends with single newline
 - MD060: Table column style "aligned" (pad cells so pipes align with header)
 
-Excludes: .git, node_modules, .venv, **docs/private**, **.cursor/private**, etc. `.cursor/` rules/skills stay included so `.md`/`.mdc` pass MD031, MD060, etc. — **never** rewrite the operator’s gitignored real inventory.
+Excludes: .git, node_modules, .venv, **docs/private**, **.cursor/private**, etc. by default.
+Use **`--include-private`** or env **`INCLUDE_PRIVATE_LINT=1`** to also fix Markdown under any path segment named **`private`** (e.g. ``docs/private/homelab``). `.cursor/` rules/skills stay included so `.md`/`.mdc` pass MD031, MD060, etc.
 
 Code quality (SonarQube): avoid S6326 (prefer simple string checks over regex where possible),
 S3776 (keep functions simple; extract helpers to reduce cognitive complexity), S1481 (remove
@@ -23,6 +24,8 @@ unused variables).
 
 from __future__ import annotations
 
+import argparse
+import os
 import re
 from pathlib import Path
 
@@ -37,12 +40,15 @@ EXCLUDE_DIRS = frozenset(
         ".tox",
         "build",
         "dist",
-        "private",  # docs/private/ and any other .../private/ (real inventory; gitignored)
+        "private",  # docs/private/ and any other .../private/ (skipped unless --include-private)
     }
 )
 
 
-def collect_md_files() -> list[Path]:
+def collect_md_files(*, include_private: bool = False) -> list[Path]:
+    exclude = EXCLUDE_DIRS
+    if include_private:
+        exclude = frozenset(p for p in EXCLUDE_DIRS if p != "private")
     out: list[Path] = []
     for ext in ("*.md", "*.mdc"):
         for path in REPO_ROOT.rglob(ext):
@@ -50,7 +56,7 @@ def collect_md_files() -> list[Path]:
                 rel = path.relative_to(REPO_ROOT)
             except ValueError:
                 continue
-            if any(part in EXCLUDE_DIRS for part in rel.parts):
+            if any(part in exclude for part in rel.parts):
                 continue
             out.append(path)
     return sorted(set(out))
@@ -300,8 +306,29 @@ def process_file(path: Path) -> bool:
     return False
 
 
+def _include_private_from_env() -> bool:
+    return os.environ.get("INCLUDE_PRIVATE_LINT", "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+    )
+
+
 def main() -> None:
-    md_files = collect_md_files()
+    parser = argparse.ArgumentParser(
+        description="Fix SonarQube-style markdown issues in project .md and .mdc files.",
+    )
+    parser.add_argument(
+        "--include-private",
+        action="store_true",
+        help=(
+            "Also process paths under a 'private' directory segment (e.g. docs/private/). "
+            "Or set INCLUDE_PRIVATE_LINT=1. Default: skip gitignored private trees."
+        ),
+    )
+    args = parser.parse_args()
+    include_private = bool(args.include_private) or _include_private_from_env()
+    md_files = collect_md_files(include_private=include_private)
     changed: list[Path] = []
     for path in md_files:
         if process_file(path):
