@@ -12,7 +12,8 @@ Checks project .md and .mdc files for:
 - MD034: No bare URLs (wrap in angle brackets or use [text](url); skip inside code blocks)
 - Table (compact): No space to the left of pipe (e.g. |col not | col)
 
-Excludes: paths in MARKDOWN_LINT_EXCLUDE only (.git, node_modules, .venv, etc.). .cursor/ is included so rules and skills (.mdc, SKILL.md) comply with MD031, MD060, etc.
+Excludes: paths in MARKDOWN_LINT_EXCLUDE only (.git, node_modules, .venv, **private**, etc.) by default.
+Pass **``pytest --include-private``** or set **``INCLUDE_PRIVATE_LINT=1``** to lint **``docs/private/``** too (see ``tests/conftest.py``). .cursor/ is included so rules and skills (.mdc, SKILL.md) comply with MD031, MD060, etc.
 """
 
 import re
@@ -53,6 +54,13 @@ MARKDOWN_LINT_EXCLUDE_DIRS = frozenset(
         "private",
     }
 )
+
+
+def _markdown_lint_exclude_dirs(*, include_private: bool) -> frozenset[str]:
+    """Effective exclude set; omit ``private`` when operator opts in."""
+    if include_private:
+        return frozenset(p for p in MARKDOWN_LINT_EXCLUDE_DIRS if p != "private")
+    return MARKDOWN_LINT_EXCLUDE_DIRS
 
 
 def _read_md(path: Path) -> str:
@@ -293,15 +301,18 @@ def _lint_one(path: Path) -> list[tuple[int, str]]:
     return out
 
 
-def test_markdown_lint_no_violations():
+def test_markdown_lint_no_violations(include_private_lint: bool):
     """
     All project .md files (except excluded dirs) pass MD009, MD012, MD024, MD036, MD051, MD060, MD031, MD034.
     Table style: SonarQube MD060 (aligned) is enforced via scripts/fix_markdown_sonar.py; test does not check table pipes.
 
     SonarQube / markdownlint-style quality so CI catches regressions.
+
+    Opt-in: ``pytest --include-private`` or ``INCLUDE_PRIVATE_LINT=1`` to include ``docs/private/``.
     """
     root = _project_root()
-    md_files = _collect_md_files(root, MARKDOWN_LINT_EXCLUDE_DIRS)
+    exclude = _markdown_lint_exclude_dirs(include_private=include_private_lint)
+    md_files = _collect_md_files(root, exclude)
     all_violations: list[tuple[Path, int, str]] = []
     for path in md_files:
         for line_no, msg in _lint_one(path):
