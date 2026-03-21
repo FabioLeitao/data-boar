@@ -74,6 +74,18 @@ This replaces any older wording that implied “the model cannot touch the lab�
 
 **Goal:** Let the assistant help with **layout, concepts, runbooks, SSH/API patterns**—without putting that material on **GitHub**.
 
+### 5.1 Chat language (pt-BR default, EN for technical tokens)
+
+**Preference (this operator):** Assistants should answer in **concise Brazilian Portuguese (pt-BR)** for narrative—not **Portuguese of Portugal (pt-PT)** (e.g. use **arquivo**, **compartilhar**, **seção**, **padrão** for software defaults). Keep **English** where it is standard in engineering: file paths, commit types, symbol names, flags, and citations of English-only plan rows.
+
+**Code-switching:** You may mix **pt-BR and English in the same message** (even mid-thought); the assistant should follow without forcing a single language for the whole reply.
+
+**Cost / tokens:** Brevity matters more than the choice of human language—avoid repeating the same point in two languages unless you ask for a bilingual summary. Say **short** or **token-aware** when you want minimal length.
+
+**Shorthand / taxonomy (English only):** Session keywords are **fixed English tokens**: `deps`, `feature`, `homelab`, `docs`, `houseclean`, `backlog`, `pmo-view`, and the brevity cues `short`, `token-aware`. Use them **exactly** in chat; do not ask for localized aliases in `.cursor/rules/`. **`.cursor/rules/session-mode-keywords.mdc`** and this taxonomy table stay **English-only**; pt-BR is for surrounding explanation, not the tokens.
+
+**Agent entry point:** **`AGENTS.md`** (chat language + shorthand bullets) encodes this for Cursor/Copilot.
+
 | Layer | What happens |
 | ----- | ------------ |
 | **Git / GitHub** | **`docs/private/`** is **gitignored** — not committed, not pushed. **Never** paste private paths or secrets into **issues, PR descriptions, or tracked files.** |

@@ -14,4 +14,4 @@
 1. **LAN:** opcional **Modbus** / página local do logger — só na **VLAN** certa, **sem** expor à internet.
 1. **4 kWp** é pico DC; à **noite** geração **0** é normal; **nobreak** e **disjuntores** seguem o plano em [HOMELAB_POWER_AND_ELECTRICAL_PLANNING.md](HOMELAB_POWER_AND_ELECTRICAL_PLANNING.md).
 
-**Notas locais:** ficheiro **só no seu disco** em **`docs/private/homelab/`** (gitignored — ver [PRIVATE_OPERATOR_NOTES.pt_BR.md](../PRIVATE_OPERATOR_NOTES.pt_BR.md)); modelo §6 no EN.
+**Notas locais:** arquivo **só no seu disco** em **`docs/private/homelab/`** (gitignored — ver [PRIVATE_OPERATOR_NOTES.pt_BR.md](../PRIVATE_OPERATOR_NOTES.pt_BR.md)); modelo §6 no EN.
