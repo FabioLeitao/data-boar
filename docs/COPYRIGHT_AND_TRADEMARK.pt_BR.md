@@ -111,7 +111,7 @@ Ou seja: **direitos autorais** já protegem seu código e mascote como obras cri
 
 Além da **marca verbal** “Data Boar” e do **logotipo do mascote**, acordos comerciais e com parceiros devem contemplar **narrativa de produto** e **apresentação distintiva**: sub-marca **dashBOARd**, metáfora **data soup** (vários tipos de conectores numa auditoria), layout do dashboard e do **relatório Excel** com mascote/heatmap embutidos, **fluxos de operação** documentados (CLI, API, Docker) e artefactos **associados** (ex.: nome da imagem Docker, site, outros repositórios). **Direitos autorais** em código aberto não substituem por si a **política de marca** para esses elementos.
 
-**Lista de verificação canónica (detalhe e briefing):** [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md) — secção **Brand, narrative, and experience IP** (documento em inglês).
+**Lista de verificação canônica (detalhe e briefing):** [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md) — seção **Brand, narrative, and experience IP** (documento em inglês).
 
 ---
 

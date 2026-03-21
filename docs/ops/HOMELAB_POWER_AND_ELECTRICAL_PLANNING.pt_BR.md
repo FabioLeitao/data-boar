@@ -6,7 +6,7 @@
 
 ### Energia solar (PV)
 
-Conta de luz **mais barata ou compensada** **não** elimina a necessidade de planejar **disjuntores, cabos, tomadas e UPS**: a capacidade de cada **circuito** continua a mesma; em muitas instalações **grid-tied**, numa **falta de rede** as tomadas **não** ficam alimentadas pelo solar sem **bateria e arquitetura de backup** adequados. Ver secção **Solar / PV** no documento em inglês.
+Conta de luz **mais barata ou compensada** **não** elimina a necessidade de planejar **disjuntores, cabos, tomadas e UPS**: a capacidade de cada **circuito** continua a mesma; em muitas instalações **grid-tied**, em uma **falta de rede** as tomadas **não** ficam alimentadas pelo solar sem **bateria e arquitetura de backup** adequados. Ver a seção **Solar / PV** no documento em inglês.
 
 ### UniFi “power bank” / SmartPower vs segundo nobreak
 

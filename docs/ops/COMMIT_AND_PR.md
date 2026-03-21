@@ -37,6 +37,19 @@ You can limit the commit/PR to specific files with **`-IncludeFiles`** (comma-se
 
   `-IncludeFiles "path1","path2"` (e.g. `-IncludeFiles "README.md","api/routes.py"`).
 
+## Document progress locally (before PR, release, or publish)
+
+**Why:** Uncommitted work that sits for days becomes **hard to review**, easy to **lose**, and painful to **rebase or merge** when you finally open a PR or ship. Regular **local commits** on a **feature branch** record intent and shrink conflict surfaces.
+
+| Situation | What to do |
+| --------- | ---------- |
+| **One important change** | Commit when it’s complete and gated (e.g. `check-all` or `lint-only` for docs-only). |
+| **Many small edits, same theme** | One commit for the whole “train of thought”, *or* a few commits split by sub-theme (`test:`, `docs:`, `feat:`)—each message should read clearly in `git log`. |
+| **Long session ending** | Prefer committing coherent work rather than a dirty tree; if you must stop mid-theme, use **one** clearly labeled commit (e.g. states what’s left) **on a branch**—agree with the operator; never pollute `main` casually. |
+| **Branch alive several days** | **`git fetch`** and merge or rebase **`origin/main`** into your branch often so you don’t stack a wall of conflicts at PR time. |
+
+This complements **PR batching**: many **local** commits can still ship as **one PR**. Rules: **`.cursor/rules/execution-priority-and-pr-batching.mdc`**, **`.cursor/rules/git-pr-sync-before-advice.mdc`**.
+
 ## Multiple local commits, one thematic PR (history-friendly)
 
 **Yes — this is supported and often ideal.** You can make **several small local commits** on the same branch (each with a clear Conventional Commit–style message), **without pushing**, then run **Create PR** once: the push includes **all unpushed commits**, and the PR shows a **readable history** on the branch. That matches **AGENTS.md** (commit grouping + PR batching): keep **coherent slices** separate (`docs` vs `feature` vs `workflow`) when it helps reviewers and `git log`.
