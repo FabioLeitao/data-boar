@@ -64,6 +64,13 @@ Workflow that saves tokens (shorter form):
 1. **Propose:** from the file list and context, suggest a short title and bullet-point body.
 1. **Commit or PR:** run `commit-or-pr.ps1 -Action Commit` (or `-Action PR -RunTests`) with that title and body. For a multi-line body without escaping issues, use `create-pr.ps1 -Title "..." -BodyFilePath (temp file)` or a one-off .ps1 with a here-string for `$Body`.
 
+## Local commits to document progress (before PR / release)
+
+- **Commit locally** on a **feature branch** when a checkpoint is done: one **important** change, *or* a **coherent batch** of edits (same “train of thought”). Prefer **not** leaving a huge **uncommitted** tree for days—it complicates review, risks loss, and causes **rebase/merge pain** at PR time.
+- **Split or batch:** one commit per batch is fine; or several commits by sub-theme (`docs`, `test`, `feat`) with clear messages—see **AGENTS.md** and **`.cursor/rules/execution-priority-and-pr-batching.mdc`**.
+- **Stay synced:** `git fetch` and merge/rebase **`origin/main`** into long-lived branches regularly (**.cursor/rules/git-pr-sync-before-advice.mdc**).
+- **Scripts:** `preview-commit.ps1` → `commit-or-pr.ps1 -Action Commit` for local-only; **one PR** can still include **many** local commits. Ops narrative: **`docs/ops/COMMIT_AND_PR.md`**.
+
 ## Rules of thumb
 
 - **After code change:** `.\scripts\check-all.ps1 -SkipPreCommit` (or full `check-all.ps1` before commit).

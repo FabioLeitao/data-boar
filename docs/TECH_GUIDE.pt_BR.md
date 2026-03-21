@@ -43,7 +43,7 @@ sudo apt install -y python3.12 python3.12-venv python3.12-dev build-essential \
 No Windows:
 
 - Instale **Python 3.12** em python.org e marque "Adicionar Python ao PATH".
-- **WSL2:** muitos desenvolvedores correm **`uv sync`** / **`pytest`** dentro de uma distro **Linux** (Debian, Ubuntu…) para paridade com os docs de servidor; clone o repo no **sistema de ficheiros Linux** dentro do WSL, não só em `/mnt/c/...`. Distros **extra** para matriz de compatibilidade: [WINDOWS_WSL_MULTI_DISTRO_LAB.pt_BR.md](ops/WINDOWS_WSL_MULTI_DISTRO_LAB.pt_BR.md).
+- **WSL2:** muitos desenvolvedores **executam** **`uv sync`** / **`pytest`** dentro de uma distro **Linux** (Debian, Ubuntu…) para paridade com os docs de servidor; clone o repo no **sistema de arquivos Linux** dentro do WSL, não só em `/mnt/c/...`. Distros **extra** para matriz de compatibilidade: [WINDOWS_WSL_MULTI_DISTRO_LAB.pt_BR.md](ops/WINDOWS_WSL_MULTI_DISTRO_LAB.pt_BR.md).
 - Instale ferramentas de cliente de banco conforme necessário (ex.: Oracle Instant Client, driver ODBC do SQL Server) seguindo a documentação do fabricante.
 
 ### Instalar uv
@@ -464,7 +464,7 @@ targets:
 
 Todos os tipos de share usam as mesmas configurações **file_scan** (extensions, recursive, scan_sqlite_as_db, sample_limit) da config. Os achados aparecem na planilha **Filesystem findings**.
 
-Com `file_scan.use_content_type: true`, os conectores de partilha também usam o helper estreito de magic bytes: PDFs renomeados para `.txt` (ou similar) com cabeçalho `%PDF-...` são tratados como PDF na extração, como no filesystem local. Continua **opt-in**; com o flag desligado, a varredura em shares é só por extensão.
+Com `file_scan.use_content_type: true`, os conectores de **compartilhamento** também usam o helper estreito de magic bytes: PDFs renomeados para `.txt` (ou similar) com cabeçalho `%PDF-...` são tratados como PDF na extração, como no filesystem local. Continua **opt-in**; com o flag desligado, a varredura em shares é só por extensão.
 
 Para **uma única execução** sem alterar o config gravado: CLI **`--content-type-check`**, ou **`POST /scan`** / **`POST /start`** com **`content_type_check: true`**, ou a caixa no dashboard (mesma ideia que **`--scan-compressed`** / **`scan_compressed`** para arquivos compactados).
 

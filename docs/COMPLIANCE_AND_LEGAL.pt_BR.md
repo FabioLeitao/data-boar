@@ -1,62 +1,61 @@
-# Conformidade e jurídico — resumo para equipes jurídicas e de conformidade
+# Conformidade e jurídico — resumo para liderança jurídica e de compliance
 
 **English:** [COMPLIANCE_AND_LEGAL.md](COMPLIANCE_AND_LEGAL.md)
 
-Este documento traz um resumo objetivo para **jurídico**, **conformidade** e **DPO**: o que a aplicação traz à tona, o que ela não faz, quais frameworks são suportados, onde está a evidência e onde encontrar detalhes técnicos e de segurança.
+**Público principal:** **Jurídico**, **liderança de conformidade** e **DPOs** avaliando aderência, risco e evidências—not **operação diária de TI**. Para **YAML, limites de API, codificações e timeouts**, veja [COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md](COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md); para **config completa e comandos**, [USAGE.pt_BR.md](USAGE.pt_BR.md).
+
+Esta página descreve **o que o Data Boar revela**, **o que não faz**, **com quais enquadramentos regulatórios** pode alinhar, **quais artefatos** apoiam auditoria, e como **serviços profissionais** ajudam a mapear a **sopa de dados** antes do produto **ingerir e digerir**.
 
 ---
 
 ## O que trazemos à tona (e sob quais dispositivos)
 
-- **Dados pessoais e sensíveis:** Detecção de PII (ex.: CPF, e-mail, telefone) e de **categorias sensíveis** sob **LGPD Art. 5 II** e **GDPR Art. 9** (saúde, religião, opinião política, biométrico, genético e afins).
-- **Quasi-identificadores e risco de reidentificação:** Combinações que podem reidentificar pessoas, em linha com **LGPD Art. 5** e **GDPR Recital 26**.
-- **Possíveis dados de menores:** Indicadores de dados relativos a menores, em linha com **LGPD Art. 14** e **GDPR Art. 8**.
-- **Identificadores regionais e ambíguos:** Nomes regionais de documentos (ex.: carte bleue, carte vitale na França) e identificadores ambíguos (ex.: doc_id) sinalizados para confirmação manual.
-- **Visibilidade multi-fonte:** Exposição em colunas legadas, exportações, dashboards e múltiplas fontes em uma visão; suporte a arquivos, SQL, NoSQL, APIs, Power BI, Dataverse, SharePoint, SMB/NFS e outros conectores (veja [TECH_GUIDE](TECH_GUIDE.pt_BR.md)).
+- **Dados pessoais e sensíveis:** Detecção de PII comum (ex.: CPF, e-mail, telefone) e **categorias especiais** no sentido da **LGPD art. 5º, II** e **GDPR art. 9** (saúde, religião, opinião política, biométrico, genético e afins).
+- **Quasi-identificadores e risco de reidentificação:** Combinações que podem contribuir para identificar pessoas, em linha com **LGPD art. 5º** e **Recital 26 do GDPR**.
+- **Possíveis dados relativos a menores:** Indicadores alinhados ao **LGPD art. 14** e **GDPR art. 8** (revisão humana pode ser necessária).
+- **Identificadores regionais e ambíguos:** Rótulos específicos de documentos e campos ambíguos sinalizados para **confirmação manual** quando a automação não pode afirmar certeza.
+- **Visibilidade multi-fonte:** Uma visão coerente da **sopa de dados** que a organização configurar—bancos, arquivos, APIs, sistemas de BI e colaboração e outros **conectores** descritos em alto nível em [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) e [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md)—sem afirmar completude de todo legado até que os alvos estejam no escopo.
 
 ---
 
 ## O que não fazemos
 
-- **Não armazenamos nem exfiltramos PII:** A aplicação não armazena nem exfiltra *conteúdo* pessoal ou sensível. Ela retém apenas **metadados** (onde foi encontrado, tipo de padrão, nível de sensibilidade) para você obter visibilidade para maturidade e remediação sem mover nem copiar PII. Relatórios e heatmaps contêm achados e recomendações, não dados pessoais em bruto.
+- **Não armazenamos nem exfiltramos conteúdo de PII** para fins de relatório: a ferramenta retém **metadados** (local, tipo de padrão, nível de sensibilidade, tags de framework) para **visibilidade e remediação** sem copiar dados pessoais para outro repositório. As planilhas descrevem **achados e recomendações**, não campos pessoais em bruto.
 
 ---
 
-## Frameworks suportados e amostras de configuração
+## Alinhamento regulatório: embutido e por configuração
 
-- **Integrados (prontos):** LGPD, GDPR, CCPA, HIPAA, GLBA (norm tags e texto de recomendação nos relatórios).
-- **Amostras de config (prontas para uso):** UK GDPR, EU GDPR, Benelux, PIPEDA, POPIA, APPI, PCI-DSS e outros frameworks regionais (ex.: Filipinas, Austrália, Singapura, UAE, Argentina, Quênia, Índia, Turquia) estão em [compliance-samples/](compliance-samples/). Cada amostra é um arquivo YAML (padrões regex, termos ML, overrides de recomendação) para alinhar a um framework sem mudar código. Lista completa e uso: [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md).
-
----
-
-## Evidência e saídas
-
-- **Relatórios Excel** por sessão de varredura: achados por alvo, coluna, tipo de padrão, nível de sensibilidade e texto de recomendação por framework (base legal, risco, recomendação, prioridade).
-- **Heatmaps** e **tendências** entre sessões (esta execução vs anteriores) para evolução no tempo.
-- Varreduras **agendáveis** via API interna para monitoramento contínuo; relatórios e heatmaps são o rastro de auditoria.
+- **Já presentes em linguagem de detecção e relatórios:** **LGPD**, **GDPR**, **CCPA**, **HIPAA**, **GLBA** (referências de norma e texto de recomendação).
+- **Outras jurisdições e políticas internas:** Muitos frameworks adicionais (ex. UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS e perfis regionais) podem ser refletidos por **perfis de configuração**—ajustando conjuntos de padrões, rótulos e texto de relatório—**sem fork do produto**. O que “ajuste pequeno” significa na prática (arquivos, mesclagem) está documentado para times de implementação em [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md). Itens de **roadmap** podem ampliar cobertura; veja [PLANS_TODO.md](plans/PLANS_TODO.md).
 
 ---
 
-## Segurança, encodings e operação
+## Evidência e saídas (para auditoria e governança)
 
-- **Segurança:** Validação de entradas (ex.: tenant/technician), limite de tamanho do body (API) e política de logging (sem API keys, senhas ou connection strings nos logs). Veja [SECURITY.pt_BR.md](SECURITY.pt_BR.md) ([EN](SECURITY.md)).
-- **Encodings e idiomas:** Config e arquivos de padrão suportam UTF-8 (recomendado), UTF-8 com BOM ou encodings legados (ex.: ANSI Windows, Latin-1); o config principal é lido com auto-detecção. Termos e relatórios podem seguir o idioma da sua região. Veja [USAGE.pt_BR.md](USAGE.pt_BR.md#file-encoding-config-and-pattern-files) ([EN](USAGE.md)).
-- **Timeouts:** Timeouts configuráveis (global e por alvo) para uma fonte lenta não travar a execução.
+- **Relatórios Excel** por **sessão** de varredura: achados por fonte, campo/caminho, tipo de padrão, sensibilidade e texto de recomendação orientado a framework (base legal, risco, ação sugerida, prioridade quando configurado).
+- **Heatmaps** e **visões de tendência** entre sessões para mostrar **evolução**, não só um instantâneo.
+- **Execuções repetíveis** (incluindo automação via API) para alinhar ao **modelo operacional**; detalhe técnico de agendamento e limites: [COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md](COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md).
 
 ---
 
-## Ajuste fino e suporte
+## Serviços profissionais: mapear a sopa de dados
 
-Se sua regulamentação ou escopo exigir ajuste específico (ex.: norm tags, texto de recomendação ou conjuntos de padrões customizados), podemos ajudar com configs sob medida ou pequenos ajustes no código. Entre em contato para discutir.
+Raramente a organização tem um inventário único e limpo de cada **ingrediente** da **sopa de dados**—cópias sombra, exportações legadas, modelos de BI e compartilhamentos ad hoc são frequentes. O **Data Boar** **ingere e digere** o que você apontar; **descobrir e priorizar** fontes, **afinar** tags de norma e linguagem de recomendação e **alinhar** expectativa jurídica ao escopo técnico costuma ser exercício **conjunto**.
+
+Há **serviços contratados** (consultoria e ajustes finos) para apoiar: escopo de alvos, alinhamento de configuração ao **mix regulatório** e redução do tempo até confiança operacional—**sem substituir** DPO ou assessoria jurídica. Limites comerciais e de licenciamento: [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md). **Contato** pelos canais que já utiliza com o mantenedor (ex.: GitHub, e-mail profissional)—sem obrigação.
 
 ---
 
 ## Próximos passos
 
-| Necessidade                                    | Documento                                                                                                               |
-| -------------                                  | -----------                                                                                                             |
-| Esquema de config, credenciais, exemplos       | [USAGE.pt_BR.md](USAGE.pt_BR.md) · [USAGE.md](USAGE.md)                                                                 |
-| Lista de frameworks e como usar amostras       | [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) · [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) |
-| Segurança (correções, logging, limite de body) | [SECURITY.pt_BR.md](SECURITY.pt_BR.md) · [SECURITY.md](SECURITY.md)                                                     |
-| Instalação, execução, conectores, deploy       | [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md) · [TECH_GUIDE.md](TECH_GUIDE.md)                                             |
-| Índice completo da documentação                | [README.pt_BR.md](README.pt_BR.md) · [README.md](README.md)                                                             |
+| Necessidade | Documento |
+| ----------- | --------- |
+| **Resumo jurídico / compliance (esta página)** | Você está aqui |
+| **TI: codificações, limites de API, timeouts, automação** | [COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md](COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md) ([EN](COMPLIANCE_TECHNICAL_REFERENCE.md)) |
+| **Lista de frameworks e perfis de exemplo** | [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) · [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) |
+| **Esquema de config, credenciais, CLI/API** | [USAGE.pt_BR.md](USAGE.pt_BR.md) · [USAGE.md](USAGE.md) |
+| **Política de segurança** | [SECURITY.pt_BR.md](SECURITY.pt_BR.md) · [SECURITY.md](SECURITY.md) |
+| **Instalação, conectores, deploy** | [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md) · [TECH_GUIDE.md](TECH_GUIDE.md) |
+| **Glossário** | [GLOSSARY.pt_BR.md](GLOSSARY.pt_BR.md) · [GLOSSARY.md](GLOSSARY.md) |
+| **Índice completo da documentação** | [README.pt_BR.md](README.pt_BR.md) · [README.md](README.md) |
