@@ -102,6 +102,50 @@ F    C    Dm   G
                 "Reported confidence should be capped in entertainment ML path",
             )
 
+    def test_readme_markdown_ml_not_high_when_headings(self):
+        """OSS README-style Markdown should not be ML_DETECTED HIGH (clone tree false positives)."""
+        scanner = DataScanner()
+        body = """# Data Boar
+
+## Overview
+This project scans metadata for compliance evidence.
+
+## Contributing
+Please open a pull request.
+"""
+        result = scanner.scan_file_content(body, "README.md")
+        if result is None:
+            return
+        self.assertNotEqual(result["sensitivity_level"], "HIGH")
+        if result["sensitivity_level"] == "MEDIUM":
+            self.assertLessEqual(result.get("ml_confidence", 100), 55)
+
+    def test_plain_lyrics_txt_without_section_headers(self):
+        """Short-line .txt lyrics without Verse/Chorus keywords still get entertainment downgrade."""
+        scanner = DataScanner()
+        text = """First line is short
+Second line also brief
+Third keeps going small
+Fourth line same idea
+Fifth wraps the stanza
+"""
+        result = scanner.scan_file_content(text, "Enjoy the silence.txt")
+        if result is None:
+            self.assertTrue(True)
+            return
+        self.assertNotEqual(result["sensitivity_level"], "HIGH")
+
+    def test_chord_symbol_in_filename_triggers_entertainment_context(self):
+        """Filenames like Rosa(D).txt hint cifra; ML-only should not stay uncapped HIGH."""
+        scanner = DataScanner()
+        text = """C   G   Am
+F   C   G
+"""
+        result = scanner.scan_file_content(text, "Rosa(D).txt")
+        if result is None:
+            return
+        self.assertNotEqual(result["sensitivity_level"], "HIGH")
+
     def test_phone_column_names_flagged_sensitive(self):
         """Phone-related column names (home phone, mobile, celular, téléphone, etc.) are recognised and flagged."""
         scanner = DataScanner()
