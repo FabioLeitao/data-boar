@@ -20,7 +20,13 @@ uv run pytest tests/test_routes_responses.py -v -W error
 
 # Run tests matching a keyword
 uv run pytest -v -W error -k "session_id"
+
+# Optional: lint gitignored docs/private/ (Markdown + any *.ps1 / *.sh there)
+uv run pytest -v -W error --include-private
+# Or: set INCLUDE_PRIVATE_LINT=1 (same effect for markdown + private script checks)
 ```
+
+**Optional — `docs/private/`:** By default **markdown lint** and **script syntax** tests **skip** the gitignored **`docs/private/`** tree. To include it locally (e.g. after editing private notes), pass **`pytest --include-private`** or set **`INCLUDE_PRIVATE_LINT=1`**. To fix Markdown there: **`uv run python scripts/fix_markdown_sonar.py --include-private`** (or the same env var). CI does **not** set this flag.
 
 **Requirements:** Python **3.12 or 3.13** (see `CONTRIBUTING.md` / `SECURITY.md`), dependencies installed (`uv sync --group dev` or `pip install -e .` plus dev tools). The **dev** group includes **`rapidfuzz`** so fuzzy-column tests run; core runtime does not require it unless you enable `sensitivity_detection.fuzzy_column_match` (optional extra **`detection-fuzzy`**). No external services are required; tests use temporary configs and in-memory or temporary SQLite where needed.
 
@@ -39,14 +45,14 @@ uv run pytest -v -W error -k "session_id"
 | **test_learned_patterns.py**          | Learned patterns: collect (sensitivity, pattern, filesystem), write YAML, exclusions.                                                                                                                                                                            |
 | **test_logic.py**                     | Audit logic: CPF in content, lyrics/tablature downgrade, backward compatibility of scan results.                                                                                                                                                                 |
 | **test_minor_detection.py**           | Minor detection: age/DOB heuristics, possible_minor flag, config wiring, report prioritization.                                                                                                                                                                  |
-| **test_markdown_lint.py**             | SonarQube/markdownlint-style rules on project .md files: MD009, MD012, MD024, MD036, MD051, MD060, MD031 (blanks around fences), MD034 (no bare URLs), table pipe spacing. Excludes .venv, .cursor, .git.                                                        |
+| **test_markdown_lint.py**             | SonarQube/markdownlint-style rules on project `.md` / `.mdc` files (including `.cursor/`). Excludes `private/` by default; opt-in **`--include-private`** or **`INCLUDE_PRIVATE_LINT=1`** for **`docs/private/`**. See [Running tests](#running-tests).              |
 | **test_ml_engine.py**                 | MLSensitivityScanner: random_state seed (S6709), hyperparameters (S6973), local variable naming (S117), predict behaviour.                                                                                                                                       |
 | **test_rate_limit_api.py**            | Rate limiting: 429 when max concurrent scans or min_interval exceeded; disabled by default for legacy configs.                                                                                                                                                   |
 | **test_report_path_safety.py**        | Report/heatmap `FileResponse` paths under `report.output_dir`: containment (CodeQL py/path-injection), basename allowlists, rejects paths outside configured dir.                                                                                                |
 | **test_report_recommendations.py**    | Report recommendations, overrides, executive summary, min_sensitivity, possible_minor row/priority, config_scope_hash.                                                                                                                                           |
 | **test_report_trends.py**             | Trends sheet and report info (tenant, technician) in generated reports.                                                                                                                                                                                          |
 | **test_routes_responses.py**          | API contract and OpenAPI: invalid session_id → 400; 429/400/404 documented in OpenAPI; config page uses template constant.                                                                                                                                       |
-| **test_scripts.py**                   | Shell/PowerShell script checks: `prep_audit.sh` bash syntax (`bash -n`, non-Windows), shebang and explicit `exit 1`; `scripts/commit-or-pr.ps1` PowerShell parse (Parser::ParseFile) and param block / ValidateSet. See [Script testing](#script-testing) below. |
+| **test_scripts.py**                   | Shell/PowerShell script checks: `prep_audit.sh` bash syntax (`bash -n`, non-Windows), shebang and explicit `exit 1`; `scripts/commit-or-pr.ps1` PowerShell parse (Parser::ParseFile) and param block / ValidateSet. Opt-in **`--include-private`**: `*.ps1` / `*.sh` under **`docs/private/`**. See [Script testing](#script-testing). |
 | **test_security.py**                  | SQL injection resistance (identifier escaping), path traversal (session_id validation), ORM-only session_id use, YAML safe_load.                                                                                                                                 |
 | **test_sonarqube_python.py**          | SonarQube-style guards: session_id regex (\\w + re.ASCII), response constants, report constants, connector/sql refactor helpers, no bare except in key modules.                                                                                                  |
 | **test_sql_connector.py**             | SQL connector: skip schemas (Oracle vs default), should_skip_schema, discover (SQLite fallback), _discover_fallback_no_schemas.                                                                                                                                  |
@@ -73,6 +79,7 @@ Scripts are validated for **syntax and structure** only; no root or network is r
 
 - **prep_audit.sh** – On non-Windows: `bash -n prep_audit.sh` (syntax check). On all platforms: tests assert shebang and use of explicit `exit 1` when not root (Sonar-style best practice). The script is intended to run as root and install packages; tests do not execute it.
 - **scripts/commit-or-pr.ps1** – PowerShell parse via `Parser::ParseFile` (no execution, no git calls). Tests also assert a `param` block with `ValidateSet('Preview','Commit','PR')`. Sonar-style fixes in the script: `git add -- $f`, `git commit -m "$Title" -m "$Body"` (quoted arguments).
+- **`docs/private/`** (opt-in) – With **`pytest --include-private`** or **`INCLUDE_PRIVATE_LINT=1`**, every **`*.ps1`** under **`docs/private/`** is parse-checked; on non-Windows, **`*.sh`** there gets **`bash -n`**. Skipped when the flag/env is off or the directory is missing.
 
 ### Markdown lint
 
@@ -86,7 +93,7 @@ Project `.md` files (excluding `.venv`, `.cursor`, `.git`, etc.) are checked for
 - **MD060** – Fenced code blocks use consistent markers (all ` ``` ` or all `~~~`).
 - **MD031** – Blanks around fences: a blank line is required before and after each fenced code block.
 - **MD034** – No bare URLs: wrap in angle brackets (`<url>`) or use `[text](url)`; URLs inside backticks or code blocks are ignored.
-- **MD060 (table)** – Table column style “aligned” (pipes align with header). Apply `uv run python scripts/fix_markdown_sonar.py` to fix MD007, MD009, MD012, MD029, MD032, MD036, MD047, and MD060 across all project `.md` files.
+- **MD060 (table)** – Table column style “aligned” (pipes align with header). Apply `uv run python scripts/fix_markdown_sonar.py` to fix MD007, MD009, MD012, MD029, MD032, MD036, MD047, and MD060 across tracked trees; add **`--include-private`** or **`INCLUDE_PRIVATE_LINT=1`** to include **`docs/private/`**.
 
 Run the check as part of the full suite: `uv run pytest tests/test_markdown_lint.py -v -W error`.
 

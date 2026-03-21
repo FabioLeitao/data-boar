@@ -2,6 +2,33 @@
 
 After copying this file to **`docs/private/homelab/README.md`**, replace placeholders. **Never commit** `docs/private/`.
 
+## SSH — how the assistant reaches this host
+
+The AI **cannot** open your LAN by itself. **Default:** it runs **`ssh`** from **your** Cursor terminal on the dev PC, using **your** `~/.ssh/config` (Windows OpenSSH, WSL, or Git’s `ssh`).
+
+1. Add a **`Host`** block on the machine where Cursor’s terminal runs (usually **not** in the repo):
+
+   ```sshconfig
+   Host latitude-lab
+     HostName <LAN-or-VPN-IP-or-mDNS>
+     User <your-linux-user>
+     IdentityFile ~/.ssh/id_ed25519
+   ```
+
+2. In **this** private README, record **only** the alias name and role (no secrets):
+
+   | Role        | SSH `Host` alias (local to dev PC) | Notes                          |
+   | ----------- | ---------------------------------- | ------------------------------ |
+   | Lab server  | `latitude-lab`                     | Zorin; reports / Docker / ISOs |
+
+3. Agents **`read_file`** this README and **`AGENT_LAB_ACCESS.md`** when homelab work applies (**`@` optional**). Then use **`ssh latitude-lab 'command'`** from the integrated terminal.
+
+**Do not** copy **private keys** or **passwords** into `docs/private/`. Use **key-based** login; keep passphrases in your OS keychain / agent.
+
+### Windows: pCloud as `P:` (optional)
+
+If you sync the same tree to **Linux** (`~/pCloudDrive`) and **Windows** (**`P:`**), note that here (e.g. “reports copy also under `P:\Backups\…`”). The assistant can use **`P:\…`** from the **Cursor terminal on Windows** when pCloud is mounted—still **gitignore** any paths you write in this file.
+
 ## Hosts
 
 | Role | Hostname (LAN)   | OS | Notes |

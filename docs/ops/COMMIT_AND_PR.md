@@ -37,6 +37,13 @@ You can limit the commit/PR to specific files with **`-IncludeFiles`** (comma-se
 
   `-IncludeFiles "path1","path2"` (e.g. `-IncludeFiles "README.md","api/routes.py"`).
 
+## Multiple local commits, one thematic PR (history-friendly)
+
+**Yes — this is supported and often ideal.** You can make **several small local commits** on the same branch (each with a clear Conventional Commit–style message), **without pushing**, then run **Create PR** once: the push includes **all unpushed commits**, and the PR shows a **readable history** on the branch. That matches **AGENTS.md** (commit grouping + PR batching): keep **coherent slices** separate (`docs` vs `feature` vs `workflow`) when it helps reviewers and `git log`.
+
+- **When to batch:** End of a sprint — group related commits into **one PR** with a summary description, or **split** into two PRs if one slice is risky and another is docs-only.
+- **Merge strategy on GitHub:** **Merge commit** preserves per-commit history on `main`; **squash** collapses the PR to one commit — choose per team preference; this repo does not mandate one style in docs.
+
 ## Doing it yourself
 
 ### Preview: file list vs commit message
