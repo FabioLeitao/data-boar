@@ -44,7 +44,7 @@ Thank you for considering contributing. This document covers local setup, workfl
 
 - **Bugs and features:** Open an issue using the [Bug report](.github/ISSUE_TEMPLATE/bug_report.md) or [Feature request](.github/ISSUE_TEMPLATE/feature_request.md) templates.
 - **Security:** Do not post exploit details publicly. Use the [Security issue](.github/ISSUE_TEMPLATE/security.md) template (high-level only) or the process in [SECURITY.md](SECURITY.md).
-- **Pull requests:** Use the [PR template](.github/PULL_REQUEST_TEMPLATE.md). Ensure tests pass (`uv run pytest -v -W error`; see [docs/TESTING.md](docs/TESTING.md)), the lint job passes (`uv run ruff check .`), and that docs/README are updated when behaviour or setup changes.
+- **Pull requests:** Use the [PR template](.github/PULL_REQUEST_TEMPLATE.md). Prefer **`.\scripts\check-all.ps1`** before push (full gate: plans dashboard, pre-commit, pytest with warnings as errors)—see [docs/ops/README.md](docs/ops/README.md) § *Before you open a PR*. At minimum: tests pass (`uv run pytest -v -W error`; see [docs/TESTING.md](docs/TESTING.md)), lint passes (`uv run ruff check .` / pre-commit), and docs/README are updated when behaviour or setup changes. **Private layout template (tracked):** copy from **`docs/private.example/`** into gitignored **`docs/private/`** per [docs/PRIVATE_OPERATOR_NOTES.md](docs/PRIVATE_OPERATOR_NOTES.md).
 
 ### Public repo hygiene (LAN, credentials)
 
