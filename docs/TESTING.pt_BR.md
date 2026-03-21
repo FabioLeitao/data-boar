@@ -41,6 +41,7 @@ uv run pytest -v -W error --include-private
 | **test_csp_headers.py**               | Cabeçalhos de segurança e Content-Security-Policy no dashboard e páginas de ajuda (sem `unsafe-inline` em script-src).                                                                                                                                            |
 | **test_data_scanner.py**              | Registro de conectores: filesystem, banco (Postgres), API, resolução de target desconhecido.                                                                                                                                                                      |
 | **test_database.py**                  | Normalização de config (vazio, legado, rate_limit, scan.max_workers), LocalDBManager, sessões, wipe.                                                                                                                                                              |
+| **test_detector_entertainment_regression.py** | **Regressão:** classificação só-ML não deve retornar ``HIGH`` + ``ML_DETECTED`` em contexto de letras / Markdown OSS / cifra; patch em ``predict_proba`` cobre ``ML_POTENTIAL_ENTERTAINMENT``. Roda com ``check-all.ps1``.                                        |
 | **test_docs_markdown.py**             | Qualidade da documentação: README e docs/USAGE existem, têm título e conteúdo chave; links relativos resolvem; SECURITY.md tem conteúdo.                                                                                                                          |
 | **test_learned_patterns.py**          | Padrões aprendidos: coleta (sensibilidade, padrão, filesystem), grava YAML, exclusões.                                                                                                                                                                            |
 | **test_logic.py**                     | Lógica de auditoria: CPF no conteúdo, downgrade de letras/tablatura, compatibilidade retroativa dos resultados do scan.                                                                                                                                           |
@@ -59,7 +60,9 @@ uv run pytest -v -W error --include-private
 
 ## Testes de qualidade e segurança
 
-Esses testes codificam regras **SonarQube** ou de **contrato da API** para que regressões sejam detectadas no CI. Ao adicionar ou alterar comportamento da API, esquema de config ou regras de qualidade, atualize o módulo de teste relevante e mantenha este documento em sincronia.
+Esses testes codificam regras **SonarQube** ou de **contrato da API** para que regressões sejam detectadas no CI. A suíte já cobre o **backend via HTTP** (`test_api_scan.py`, `test_routes_responses.py`, …). **Playwright** ou **Selenium** para E2E no browser são opcionais no futuro; prefira ampliar testes de API enquanto o fluxo crítico for exposto por endpoints.
+
+Ao adicionar ou alterar comportamento da API, esquema de config ou regras de qualidade, atualize o módulo de teste relevante e mantenha este documento em sincronia.
 
 ### Testes de scripts
 
