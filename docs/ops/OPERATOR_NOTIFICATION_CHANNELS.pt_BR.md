@@ -80,13 +80,36 @@ Ver [PLAN_READINESS_AND_OPERATIONS.md](../plans/PLAN_READINESS_AND_OPERATIONS.md
 
 ---
 
-## 7. Documentos relacionados
+## 7. Resumo fim do dia / fim do sprint (SMS, e-mail, chat)
 
-- [BRANCH_AND_DOCKER_CLEANUP.md](ops/BRANCH_AND_DOCKER_CLEANUP.md) — higiene; §7 remote legado.
+**O que o assistente não faz:** O agente no Cursor **não** envia **SMS** nem **e-mail** para o seu celular ou caixa de entrada. Não há integração com operadora ou SMTP a partir do chat. Qualquer “aviso” precisa rodar no **seu** ambiente: **GitHub Actions**, um **servidor em casa** ou um **script** que você executa na máquina.
+
+**O que dá para montar (padrão recomendado):**
+
+| Parte | Opções |
+| ----- | ------ |
+| **Gatilho** | **`workflow_dispatch`** (“enviar resumo agora”), **cron** (ex.: dias úteis 18h no seu fuso) para fim do dia, ou **no merge de release** / regra de calendário para fim de sprint. |
+| **Resumo curto** | Primeiras linhas de **`git log`** desde a última tag ou `--since=…`; opcional **`python scripts/plans-stats.py`** para contagens do painel de planos; um parágrafo com “principais ações / principais mudanças” (você ou um modelo preenche). |
+| **Release notes** | Link para **`docs/releases/X.Y.Z.md`** no `main` (ou **artefato** do workflow); não colar segredos nem URLs internas. |
+| **Progresso / visão PM** | Colar a tabela **Kanban** de [SPRINTS_AND_MILESTONES.pt_BR.md](../plans/SPRINTS_AND_MILESTONES.pt_BR.md) ou um bloco **Mermaid `gantt`** em **texto puro** na mensagem. O assistente pode **rascunhar** esse Markdown no chat; o **CI** envia — sem copiar na mão se o workflow montar o corpo. |
+| **SMS** | API **HTTP** (ex.: **Twilio**); **secrets** no GitHub para credenciais; custo e conformidade são **seus**. |
+| **E-mail** | SMTP via Action (ex.: **`dawidd6/action-send-mail`**) ou API REST do provedor; **secrets** para credenciais. |
+| **Menos atrito** | **Telegram** `sendMessage` ou webhook do **Slack** (como nas §2–§4) — muitas vezes basta para “fim do dia” sem taxa de SMS. |
+
+**Separação de escopo:** resumos para **mantenedor** (esta seção) são distintos de notificações de **produto** (scan terminou, webhooks para inquilinos) — ver **Notifications** em [PLANS_TODO.md](../plans/PLANS_TODO.md) (ordem 6).
+
+**Padrão local (Docker + volume):** Rode **signald** / **signal-cli** ou um cliente de SMS **no seu PC ou homelab**. Mapeie **credenciais e dados de sessão** no container com **volumes** apontando para um diretório **fora do Git** — por exemplo **`docs/private/notify/`**, criado a partir do modelo versionado **[private.example/notify/README.md](../private.example/notify/README.md)**. Coloque **`.env`**, estado do Signal e qualquer dado pessoal **só** aí. **Dispare** o envio com um **script que você executa** (ou agendador local); o repositório permanece sem segredos. **Outros colaboradores** repetem o **mesmo arranjo** em **`docs/private/notify/`** com **chaves e números próprios** — nada sensível circula pelo Git.
+
+---
+
+## 8. Documentos relacionados
+
+- [private.example/notify/README.md](../private.example/notify/README.md) — modelo de layout local (copiar para `docs/private/notify/`).
+- [BRANCH_AND_DOCKER_CLEANUP.md](BRANCH_AND_DOCKER_CLEANUP.md) — higiene; §7 remote legado.
 - [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md) — faixa A.
 - [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md) — `origin` vs legado.
 - Cursor: **`.cursor/rules/operator-notification-channels.mdc`** e **`.cursor/skills/operator-notification-channels/SKILL.md`**.
 
 ---
 
-*Última atualização: backlog ops — notificações multi-canal (Signal/Telegram/Slack/GitHub) + gancho de KPI.*
+*Última atualização: padrão de resumo EOD/sprint (SMS/e-mail/chat via sua automação); multi-canal + gancho de KPI.*
