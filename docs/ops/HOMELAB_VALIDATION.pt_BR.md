@@ -17,19 +17,27 @@
 1. **Sintético por omissão:** ficheiros `.txt` / `.csv` com padrões **falsos** (inspire-se nos testes do projeto, **não** use dados reais de terceiros).
 1. **Real só com permissão:** cópias não produtivas, anonimizadas ou documentos seus.
 1. **Containers Docker:** Prefira `docker run --rm` em checagens pontuais. Se mantiver um container **Data Boar** nomeado entre execuções, objetive **uma** instância principal—ou **duas** só para **A/B** explícito. Remova containers descartáveis ao fim para não confundir portas (`8088`) e volumes. Ver [DOCKER_SETUP.pt_BR.md](../DOCKER_SETUP.pt_BR.md) §7.
+1. **Docker CE + Swarm já ativo:** Num **manager** Swarm (incluindo **um só nó** em homelab), `docker build` e `docker run -p …` continuam a servir para §1.3–1.5; a porta publicada liga-se ao host salvo conflito com outro serviço. Se usar **stacks** (`docker stack deploy`), traduza o `docker run` do guia para Compose com `ports:` e volume para `/data`; em rede overlay o **nome do serviço** faz DNS (como `lab-net` na §4 em inglês). Nomes de serviços e papéis dos nós só em notas privadas.
 
 ---
 
 ## 1. Checklist base (copiar)
 
-| Passo | Ação | Critério de sucesso |
-| ----- | ---- | -------------------- |
-| 1.1 | `git pull`; `uv sync` | Dependências OK |
-| 1.2 | Testes completos | Tudo verde |
-| 1.3 | `docker build -t data_boar:lab .` | Build concluído (reutilize esta tag em cada smoke de lab — não crie tag nova por execução; ver [DOCKER_SETUP.pt_BR.md](../DOCKER_SETUP.pt_BR.md) §7) |
-| 1.4 | `data/config.yaml` a partir de [config.example.yaml](../deploy/config.example.yaml) | YAML válido |
-| 1.5 | `docker run` com volume `/data` e `CONFIG_PATH` | Dashboard em `:8088`, `/health` OK |
-| 1.6 | Scan com `targets: []` | Termina sem crash |
+| Passo | Ação                                                                                | Critério de sucesso                                                                                                                                  |
+| ----- | ----                                                                                | --------------------                                                                                                                                 |
+| 1.1   | `git pull`; `uv sync`                                                               | Dependências OK                                                                                                                                      |
+| 1.2   | Testes completos                                                                    | Tudo verde                                                                                                                                           |
+| 1.3   | `docker build -t data_boar:lab .`                                                   | Build concluído (reutilize esta tag em cada smoke de lab — não crie tag nova por execução; ver [DOCKER_SETUP.pt_BR.md](../DOCKER_SETUP.pt_BR.md) §7) |
+| 1.4   | `data/config.yaml` a partir de [config.example.yaml](../deploy/config.example.yaml) | YAML válido                                                                                                                                          |
+| 1.5   | `docker run` com volume `/data` e `CONFIG_PATH`                                     | Dashboard em `:8088`, `/health` OK                                                                                                                   |
+| 1.6   | Scan com `targets: []`                                                              | Termina sem crash                                                                                                                                    |
+| 1.7   | *(Opcional)* Abrir o dashboard em **vários** browsers no desktop                    | Páginas principais carregam; consola DevTools sem erros graves em fluxos centrais                                                                    |
+
+**Modo Swarm:** Se o host já for **manager** Swarm, os passos acima mantêm-se. Use outra porta se `8088` estiver ocupada por outra stack; registe conflitos no runbook privado.
+
+**§1.7 — Motores de browser:** Cobrir **Chromium** (ex.: **Edge**, **Vivaldi**, **Chrome**) e **Gecko** (ex.: **Firefox**, **Floorp**) costuma bastar; **Safari** se demonstrar em Apple. Detalhes: [HOMELAB_VALIDATION.md §1](HOMELAB_VALIDATION.md#1-lab-baseline-checklist-copypaste) (tabela + parágrafo após Swarm). **Helium** e outros: tratar como variante Chromium se aplicável.
+
+**VMs no portátil (Boxes / virt-manager):** Antes do Proxmox, pode correr **§1.1–1.2** e **§2** dentro de convidados **Linux**; **FreeBSD**, **Haiku** e **illumos**/OpenSolaris são **exploratórios** (Haiku/illumos não são alvos práticos; OpenSolaris legado — preferir **illumos** atual). **OS/2** (Warp, etc.) é só **museu/hobby** — nada a ver com o stack do Data Boar. Ver [HOMELAB_VALIDATION.md §1.5](HOMELAB_VALIDATION.md#15-vms-on-the-primary-laptop-gnome-boxes--virt-manager--smoke-before-proxmox); atenção à **RAM** no portátil primary (frequentemente **≤8 GB**).
 
 ---
 
@@ -75,19 +83,35 @@ Modo `enforced` sem `.lic` deve bloquear; ver [LICENSING_SPEC.md](LICENSING_SPEC
 
 ---
 
-## 9. SonarQube (opcional)
+## 9. Vários hosts Linux (matriz opcional)
+
+Homelab com **várias máquinas** (portátil Ubuntu/derivado com Docker, mini-PC musl, Raspberry Pi, mais tarde **hipervisor + VMs**): repetir o **mínimo** do §1 em cada “sabor” para apanhar **ARM vs x86**, **musl vs glibc**, RAM, **VM vs bare metal**. Derivados Ubuntu seguem a mesma lógica de pacotes/Docker que Ubuntu. **Swarm** no portátil não impede §1.3–1.5; atenção a portas. **Não** instalar pacotes de sistema via automação sem o operador — se faltar `uv`/Python, o operador instala e volta a correr §1.1–1.2.
+
+**Tabela completa (EN):** [HOMELAB_VALIDATION.md §9](HOMELAB_VALIDATION.md#9-multi-host-linux-optional-matrix-dns-ssh-different-distros) — **três portáteis** em papel: **Windows+WSL** (dev), **Linux nativo** (lab), **terceiro** (muitas vezes **silício mais recente** — candidato a **paralelismo** Docker/pytest; ver linha *Secondary x86_64 laptop* na tabela EN); **WSL extra** no Windows **não** é um quarto chassis — ver [WINDOWS_WSL_MULTI_DISTRO_LAB.pt_BR.md](WINDOWS_WSL_MULTI_DISTRO_LAB.pt_BR.md). **Rig paralelo (opcional):** [§9.2 em inglês](HOMELAB_VALIDATION.md#92-parallel-testing-rig-optional--secondary-laptop-or-tower-guest). Inclui **Proxmox**, *spare desktop*, etc.; ver EN §9 e §9.1.
+
+**Quando preparar o hardware (§9.1 + [PLANS_TODO](../plans/PLANS_TODO.md) ordem –1L):** **Agora** — nada depende da torre futura nem do Mac avariado; continue musl + ARM. **Torre principal com Proxmox** — antes de uma sessão focada de validação nesse alvo: Proxmox instalado, **≥1 VM ou LXC** Debian/Ubuntu, rede e disco prontos; depois §1+§2 **no guest** (ver [§9.1 em inglês](HOMELAB_VALIDATION.md#91-when-to-have-hardware-ready-operator-sync-with-planstodo-order-1l)). **Mac mini antigo** — só preparar quando voltar a arrancar de forma fiável.
+
+**Não** publique no GitHub nomes reais de máquinas, IPs da LAN ou caminhos em `$HOME`—use só **`docs/private/homelab/`** (ignorado pelo git) ou notas locais; política em [PRIVATE_OPERATOR_NOTES.pt_BR.md](../PRIVATE_OPERATOR_NOTES.pt_BR.md).
+
+---
+
+## 10. SonarQube (opcional)
 
 [SONARQUBE_HOME_LAB.md](SONARQUBE_HOME_LAB.md) — qualidade de código, não conectividade de dados.
 
 ---
 
-## 10. Registar resultados
+## 11. Registar resultados
 
-Nota datada (ex.: `docs/private/` ignorado pelo git): tag da imagem, alvos, pass/fail.
+Nota datada em **`docs/private/homelab/`** (gitignored): **hostnames**, tag da imagem, alvos, pass/fail.
 
 ---
 
-## 11. Ver também
+## 12. Ver também
 
+- [OS_COMPATIBILITY_TESTING_MATRIX.pt_BR.md](OS_COMPATIBILITY_TESTING_MATRIX.pt_BR.md) — **quais distros** testar (RHEL/Fedora, Arch/Manjaro, Gentoo, musl) priorizadas por relevância em produção.
+- [HOMELAB_HOST_PACKAGE_INVENTORY.pt_BR.md](HOMELAB_HOST_PACKAGE_INVENTORY.pt_BR.md) — inventário de pacotes nos hosts (o repo não “vê” as suas máquinas).
+- [HOMELAB_UNIFI_UDM_LAB_NETWORK.pt_BR.md](HOMELAB_UNIFI_UDM_LAB_NETWORK.pt_BR.md) — **UDM-SE**: VLANs/firewall e SNMP local antes do servidor de monitoração.
+- [HOMELAB_MOBILE_OPERATOR_TOOLS.pt_BR.md](HOMELAB_MOBILE_OPERATOR_TOOLS.pt_BR.md) — **iPhone / tablet Android** como ferramentas do operador (UniFi, GitHub, Bitwarden, SSH na LAN, smoke da UI, fotos para notas privadas).
 - [PLANS_TODO.md](../plans/PLANS_TODO.md) — sequência token-aware após o lab.
 - [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md) — Priority band A.

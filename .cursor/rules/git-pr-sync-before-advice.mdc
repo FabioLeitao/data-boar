@@ -16,11 +16,11 @@ alwaysApply: true
 
 ## Minimum refresh (pick at least one)
 
-| Action | Command / script |
-|--------|------------------|
-| Update remote refs | `git fetch origin` |
-| Align local `main` | `git checkout main` → `git pull origin main` |
-| Verify a PR | `gh pr view <n> --json number,state,mergedAt,url` |
+| Action                     | Command / script                                          |
+| --------                   | ------------------                                        |
+| Update remote refs         | `git fetch origin`                                        |
+| Align local `main`         | `git checkout main` → `git pull origin main`              |
+| Verify a PR                | `gh pr view <n> --json number,state,mergedAt,url`         |
 | List PR for current branch | `gh pr list --head <branch-name> --json number,state,url` |
 
 Prefer repo automation when it already does fetch/rebase: **`.\scripts\commit-or-pr.ps1`** (see `.cursor/skills/token-aware-automation/SKILL.md` and `CONTRIBUTING.md` § PR state).
@@ -28,7 +28,7 @@ Prefer repo automation when it already does fetch/rebase: **`.\scripts\commit-or
 ## After creating a PR
 
 1. Run `gh pr view --json number,state,url` (or `gh pr list --head <branch>`).
-2. **Only then** share the link or say “PR #N” — avoids pointing at the **previous** merged PR.
+1. **Only then** share the link or say “PR #N” — avoids pointing at the **previous** merged PR.
 
 ## GitHub lag
 

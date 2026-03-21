@@ -8,11 +8,11 @@
 
 ## 1. Docker images and Dockerfiles
 
-| Image | Docker Hub | GitHub / Dockerfile | Notes (fetched or from you) |
-| ----- | ---------- | ------------------- | --------------------------- |
-| **data_boar** | [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) | This repo: **[Dockerfile](https://github.com/FabioLeitao/data-boar/blob/main/Dockerfile)** (multi-stage, **python:3.13-slim**, builder + runtime). Tags e.g. `1.6.0`, `latest`. | Short description on Hub; full description with quick start and link to GitHub. Size ~186 MB (1.6.0). |
-| **wildfly_t1r** | [hub.docker.com/r/fabioleitao/wildfly_t1r](https://hub.docker.com/r/fabioleitao/wildfly_t1r) | **[FabioLeitao/wf_t1r](https://github.com/FabioLeitao/wf_t1r)** (Shell). Dockerfiles live in that repo if you want to paste or link them here later. | Archived on Hub. Tag e.g. `et-ojdk8-a_w26.1.1-final`. Eclipse Temurin + Wildfly; Ubuntu/Alpine; OpenJDK 8/11/17/19; Oracle JDBC. |
-| **uptk** | [hub.docker.com/r/fabioleitao/uptk](https://hub.docker.com/r/fabioleitao/uptk) | No overview on Hub. If you have a repo or Dockerfile for Uptime Kuma, add the link here. | Tag `0.1`, ~3.1 MB. You keep upgrading on the actual server. |
+| Image           | Docker Hub                                                                                   | GitHub / Dockerfile                                                                                                                                                             | Notes (fetched or from you)                                                                                                      |
+| -----           | ----------                                                                                   | -------------------                                                                                                                                                             | ---------------------------                                                                                                      |
+| **data_boar**   | [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar)     | This repo: **[Dockerfile](https://github.com/FabioLeitao/data-boar/blob/main/Dockerfile)** (multi-stage, **python:3.13-slim**, builder + runtime). Tags e.g. `1.6.0`, `latest`. | Short description on Hub; full description with quick start and link to GitHub. Size ~186 MB (1.6.0).                            |
+| **wildfly_t1r** | [hub.docker.com/r/fabioleitao/wildfly_t1r](https://hub.docker.com/r/fabioleitao/wildfly_t1r) | **[FabioLeitao/wf_t1r](https://github.com/FabioLeitao/wf_t1r)** (Shell). Dockerfiles live in that repo if you want to paste or link them here later.                            | Archived on Hub. Tag e.g. `et-ojdk8-a_w26.1.1-final`. Eclipse Temurin + Wildfly; Ubuntu/Alpine; OpenJDK 8/11/17/19; Oracle JDBC. |
+| **uptk**        | [hub.docker.com/r/fabioleitao/uptk](https://hub.docker.com/r/fabioleitao/uptk)               | No overview on Hub. If you have a repo or Dockerfile for Uptime Kuma, add the link here.                                                                                        | Tag `0.1`, ~3.1 MB. You keep upgrading on the actual server.                                                                     |
 
 **Optional:** You can add a short `docs/private/Dockerfiles_used.md` (or paste Dockerfiles there) for wf_t1r/uptk so thesis or narrative can cite “Dockerfiles created and used” without opening GitHub in every session.
 
@@ -20,14 +20,14 @@
 
 ## 2. GitHub repositories (public)
 
-| Repo | Description | Use in narrative |
-| ---- | ----------- | ----------------- |
-| **FabioLeitao/data-boar** | This project (Data Boar). | Main compliance/LGPD artifact; Dockerfile in repo root. |
-| **FabioLeitao/python3-lgpd-crawler** | Legacy/history-only (no push). | Historical reference for naming and evolution. |
-| **FabioLeitao/wf_t1r** | Container Eclipse Temurin + Wildfly tunado para testes. | Java/infra/SRE; multi-version JDK/Wildfly. |
-| **FabioLeitao/python3-qrcodegenerator** | QRCode images from file list (labels). | Utility/automation. |
-| **FabioLeitao/auto_uploader** | Bash automação de transferência de arquivos. | Automation/SRE. |
-| **bash_busca_vm_proxmox**, **bash_cups_control**, **bash_jboss_monitor** | PRTG/Proxmox/CUPS/jBoss scripts. | Monitoring, infra, ops. |
+| Repo                                                                     | Description                                             | Use in narrative                                        |
+| ----                                                                     | -----------                                             | -----------------                                       |
+| **FabioLeitao/data-boar**                                                | This project (Data Boar).                               | Main compliance/LGPD artifact; Dockerfile in repo root. |
+| **FabioLeitao/python3-lgpd-crawler**                                     | Legacy/history-only (no push).                          | Historical reference for naming and evolution.          |
+| **FabioLeitao/wf_t1r**                                                   | Container Eclipse Temurin + Wildfly tunado para testes. | Java/infra/SRE; multi-version JDK/Wildfly.              |
+| **FabioLeitao/python3-qrcodegenerator**                                  | QRCode images from file list (labels).                  | Utility/automation.                                     |
+| **FabioLeitao/auto_uploader**                                            | Bash automação de transferência de arquivos.            | Automation/SRE.                                         |
+| **bash_busca_vm_proxmox**, **bash_cups_control**, **bash_jboss_monitor** | PRTG/Proxmox/CUPS/jBoss scripts.                        | Monitoring, infra, ops.                                 |
 
 **Profile:** [github.com/FabioLeitao](https://github.com/FabioLeitao) – 26 public repos; location Niterói; recent activity data-boar.
 
@@ -37,17 +37,17 @@
 
 Add only what you are comfortable making reference to in docs; keep wording factual.
 
-| Item | How to use |
-| ---- | ---------- |
-| **LPIC-1 (101)** | Certification; supports Linux/systems and infra narrative in thesis and bio. |
-| **PUC-RS – IA e IoT** | Recent certification (AI and IoT); supports ML/DL and “diverse data sources” narrative; PUC-RS adds academic weight for thesis and advisor outreach. **File:** `docs/private/Certificado_IA_IOT_PucRS_Fabio.pdf`. Curso de Extensão "Internet das Coisas, IA e a Revolução Conectada" (Escola de Negócios PUC-RS, 10 h/aula, Porto Alegre 20/02/2026). Conteúdo: arquitetura IoT, 5G/6G, LGPD/dados, IA, transformação digital, cidades inteligentes. Validação: educon.pucrs.br/validarcertificado código 256371-904-1. |
-| **Ubuntu tester / collaborator** | Community contribution; supports quality, testing, and open-source narrative. |
-| **Launchpad (Canonical/Ubuntu)** | **[launchpad.net/~fabio-tleitao](https://launchpad.net/~fabio-tleitao)** (PresuntoRJ). Member since 2005-10-19; signed Ubuntu Code of Conduct. Teams: Ubuntu Brasil, Ubuntu Brazilian Security Team, Ubuntu Server Team, Launchpad Translators, Ubuntu on Rails. IRC: PresuntoRJ (Freenode #ubuntu, #ubuntu-br, etc.). **Location:** Niterói - RJ (Launchpad may still show Rio de Janeiro; that is stale). Languages EN, PT. Use for Ubuntu/community narrative and credibility. |
-| **RCDD BICSI** (former; renewal lapsed – expensive renewal, limited value in BR at the time; may renew someday) | Registered Communications Distribution Designer ([BICSI](https://www.bicsi.org/)). **File:** `docs/private/titulo-rcdd.jpeg`. Supports telecom/infra/cabling narrative; strong for CV and thesis background. |
-| **DataPrev – Analista de Cibersegurança** | Passed the selective exam for Cybersecurity analyst at DataPrev; **6th place overall**. Awaiting allocation (call from DataPrev). When you have evidence of classification (e.g. result notice, ranking), add to `docs/private/` (e.g. `DataPrev_exame_classificacao.pdf` or screenshot); we’ll reference by filename for CV and narrative. |
-| **Other communities / forums** | TrueNAS, FreeBSD (e.g. FUG-BR), Void Linux, Zorin Pro (paying user), etc. All count: they support infra, storage, BSD, minimal Linux, and ecosystem engagement. Add links or one-liners in §3 or here when you want them cited (no need to paste forum content). |
-| *(Optional)* Other certs (e.g. LPIC-2, cloud, security) | Add a row here when you want them cited. |
-| *(Optional)* Talks, blog, articles | Add URLs or one-liners here when you want them in the narrative. |
+| Item                                                                                                            | How to use                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ----                                                                                                            | ----------                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **LPIC-1 (101)**                                                                                                | Certification; supports Linux/systems and infra narrative in thesis and bio.                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **PUC-RS – IA e IoT**                                                                                           | Recent certification (AI and IoT); supports ML/DL and “diverse data sources” narrative; PUC-RS adds academic weight for thesis and advisor outreach. **File:** `docs/private/Certificado_IA_IOT_PucRS_Fabio.pdf`. Curso de Extensão "Internet das Coisas, IA e a Revolução Conectada" (Escola de Negócios PUC-RS, 10 h/aula, Porto Alegre 20/02/2026). Conteúdo: arquitetura IoT, 5G/6G, LGPD/dados, IA, transformação digital, cidades inteligentes. Validação: educon.pucrs.br/validarcertificado código 256371-904-1. |
+| **Ubuntu tester / collaborator**                                                                                | Community contribution; supports quality, testing, and open-source narrative.                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **Launchpad (Canonical/Ubuntu)**                                                                                | **[launchpad.net/~fabio-tleitao](https://launchpad.net/~fabio-tleitao)** (PresuntoRJ). Member since 2005-10-19; signed Ubuntu Code of Conduct. Teams: Ubuntu Brasil, Ubuntu Brazilian Security Team, Ubuntu Server Team, Launchpad Translators, Ubuntu on Rails. IRC: PresuntoRJ (Freenode #ubuntu, #ubuntu-br, etc.). **Location:** Niterói - RJ (Launchpad may still show Rio de Janeiro; that is stale). Languages EN, PT. Use for Ubuntu/community narrative and credibility.                                        |
+| **RCDD BICSI** (former; renewal lapsed – expensive renewal, limited value in BR at the time; may renew someday) | Registered Communications Distribution Designer ([BICSI](https://www.bicsi.org/)). **File:** `docs/private/titulo-rcdd.jpeg`. Supports telecom/infra/cabling narrative; strong for CV and thesis background.                                                                                                                                                                                                                                                                                                             |
+| **DataPrev – Analista de Cibersegurança**                                                                       | Passed the selective exam for Cybersecurity analyst at DataPrev; **6th place overall**. Awaiting allocation (call from DataPrev). When you have evidence of classification (e.g. result notice, ranking), add to `docs/private/` (e.g. `DataPrev_exame_classificacao.pdf` or screenshot); we’ll reference by filename for CV and narrative.                                                                                                                                                                              |
+| **Other communities / forums**                                                                                  | TrueNAS, FreeBSD (e.g. FUG-BR), Void Linux, Zorin Pro (paying user), etc. All count: they support infra, storage, BSD, minimal Linux, and ecosystem engagement. Add links or one-liners in §3 or here when you want them cited (no need to paste forum content).                                                                                                                                                                                                                                                         |
+| *(Optional)* Other certs (e.g. LPIC-2, cloud, security)                                                         | Add a row here when you want them cited.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| *(Optional)* Talks, blog, articles                                                                              | Add URLs or one-liners here when you want them in the narrative.                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 **Learning platforms (Udemy, Alura, etc.):** Certifications and courses from CV are listed in §3.2. We don’t have your full course/cert list from CV or LinkedIn here. For in-progress or paid-not-started, add or update `docs/private/Learning_and_certs.md` for prioritisation.
 
@@ -57,12 +57,12 @@ Add only what you are comfortable making reference to in docs; keep wording fact
 
 Use this when you (re)find **paid but incomplete** certs or want to pick **low-effort, high-gain** certs. Store your list in `docs/private/Learning_and_certs.md` (or similar); this section stays as the sequenced checklist.
 
-| Order | To-do | Why (production / academic) |
-| ----- | ----- | ---------------------------- |
-| 1 | **List paid / incomplete certs** (platform, course name, link if any). | So we don’t lose track; prioritise by effort vs gain. |
-| 2 | **Prioritise 1–2** as “low effort, high gain” for this cycle. | Focus beats scattering; one cert finished > three half-done. |
-| 3 | **Complete the chosen cert(s)** and save proof in `docs/private/` (PDF/screenshot). | Adds to §3 table and CV/thesis narrative. |
-| 4 | **Update this file** (§3 table) and optional checklist in PLANS_TODO or TOKEN_AWARE. | Keeps portfolio and plans in sync. |
+| Order | To-do                                                                                | Why (production / academic)                                  |
+| ----- | -----                                                                                | ----------------------------                                 |
+| 1     | **List paid / incomplete certs** (platform, course name, link if any).               | So we don’t lose track; prioritise by effort vs gain.        |
+| 2     | **Prioritise 1–2** as “low effort, high gain” for this cycle.                        | Focus beats scattering; one cert finished > three half-done. |
+| 3     | **Complete the chosen cert(s)** and save proof in `docs/private/` (PDF/screenshot).  | Adds to §3 table and CV/thesis narrative.                    |
+| 4     | **Update this file** (§3 table) and optional checklist in PLANS_TODO or TOKEN_AWARE. | Keeps portfolio and plans in sync.                           |
 
 **Low-effort, high-gain (suggestions):** Prefer certs that support **both** production readiness and academic narrative: e.g. **LGPD / privacy / DPO awareness** (short courses, many on Udemy/Alura), **ISO 27001/27701 awareness**, **cloud fundamentals** (AWS/GCP/Azure free or low-cost), **security basics** (e.g. CompTIA Security+ prep, or platform-specific). Avoid long, expensive ones unless they’re already paid and near completion. When in doubt, finish one you’ve already paid for before buying new.
 
@@ -72,29 +72,29 @@ Use this when you (re)find **paid but incomplete** certs or want to pick **low-e
 
 **Source:** Screenshots in `docs/private/`: IMG_6491–6499.jpg, signal-2026-03-18-035101.jpeg. Platform: **labs.cyberwarfare.live**. All listed below are marked "On Progress."
 
-| Code | Course | Why it helps (production / academic / certifiable confidence) |
-| ---- | ------ | ------------------------------------------------------------- |
-| **BTF** | Blue Team Fundamentals | Threat detection, incident response, security monitoring. **Foundation** for production readiness and defensive narrative; short, high leverage. |
-| **C3SA** | Certified Cyber Security Analyst | SOC analyst: detect threats, investigate incidents, analyze logs. Direct fit for **audit, logging, and certifiable confidence**; strong CV title. |
-| **MCBTA** | Multi-Cloud Blue Team Analyst | Centralized logging, log analysis, threat detection on AWS/Azure/GCP. Supports **cloud-ready** app narrative and Data Prev / enterprise roles. |
-| **PTF** | Purple Team Fundamentals | Core of purple teaming (red + blue). Supports **balanced offensive/defensive** narrative for thesis and PUC-Rio Compliance de Cibersegurança. |
-| **MCRTA** | Multi-Cloud Red Team Analyst | Cloud red team, credentials enum/exploit, AWS/Azure/GCP. Complements MCBTA; good for **cloud security** depth and academic breadth. |
-| **CRTA** | Red Team Analyst | Web/network exploitation, AD basics & attacks, pivoting. **Offensive** depth; informs defensive hardening of app and deploy pipeline. |
-| **CRT-ID** | Red Team Infra Dev | OPSEC-safe infra, redirectors, payload servers, cloud/on-prem. Relevant to **secure deploy** (signing, repo, OPSEC) and production infra. |
-| **CRT-COI** | Red Team CredOps Infiltrator | Windows creds (DPAPI, LSASS), credential dumping. **Defensive** value: understand cred handling for secure config/secrets in app. |
-| **CPIA** | Certified Process Injection Analyst | Process injection, persistence, evasion. Informs **app hardening** and "why signed/verified deploy" narrative. |
-| **CCSE** | Cyber Security Engineer | Broad: 50+ labs, OSINT to internal pentest. Strong **certifiable confidence** and CV; larger scope – do after 1–2 shorter certs. |
+| Code        | Course                              | Why it helps (production / academic / certifiable confidence)                                                                                     |
+| ----        | ------                              | -------------------------------------------------------------                                                                                     |
+| **BTF**     | Blue Team Fundamentals              | Threat detection, incident response, security monitoring. **Foundation** for production readiness and defensive narrative; short, high leverage.  |
+| **C3SA**    | Certified Cyber Security Analyst    | SOC analyst: detect threats, investigate incidents, analyze logs. Direct fit for **audit, logging, and certifiable confidence**; strong CV title. |
+| **MCBTA**   | Multi-Cloud Blue Team Analyst       | Centralized logging, log analysis, threat detection on AWS/Azure/GCP. Supports **cloud-ready** app narrative and Data Prev / enterprise roles.    |
+| **PTF**     | Purple Team Fundamentals            | Core of purple teaming (red + blue). Supports **balanced offensive/defensive** narrative for thesis and PUC-Rio Compliance de Cibersegurança.     |
+| **MCRTA**   | Multi-Cloud Red Team Analyst        | Cloud red team, credentials enum/exploit, AWS/Azure/GCP. Complements MCBTA; good for **cloud security** depth and academic breadth.               |
+| **CRTA**    | Red Team Analyst                    | Web/network exploitation, AD basics & attacks, pivoting. **Offensive** depth; informs defensive hardening of app and deploy pipeline.             |
+| **CRT-ID**  | Red Team Infra Dev                  | OPSEC-safe infra, redirectors, payload servers, cloud/on-prem. Relevant to **secure deploy** (signing, repo, OPSEC) and production infra.         |
+| **CRT-COI** | Red Team CredOps Infiltrator        | Windows creds (DPAPI, LSASS), credential dumping. **Defensive** value: understand cred handling for secure config/secrets in app.                 |
+| **CPIA**    | Certified Process Injection Analyst | Process injection, persistence, evasion. Informs **app hardening** and "why signed/verified deploy" narrative.                                    |
+| **CCSE**    | Cyber Security Engineer             | Broad: 50+ labs, OSINT to internal pentest. Strong **certifiable confidence** and CV; larger scope – do after 1–2 shorter certs.                  |
 
-**How to use these for maximum value (your study, token-aware):**
+## How to use these for maximum value (your study, token-aware):
 
 - **Studying is your task;** the agent does not do the learning. Use this section to decide **what** to do and **when**.
 - **One cert at a time:** Finish one course fully (proof in `docs/private/`) before starting the next. "One done > three in progress" keeps narrative and CV clear.
 - **Recommended order for goals (production + academic + certifiable confidence):**
   1. **BTF** → foundational blue team; fastest impact on "defensive readiness" and incident response.
-  2. **C3SA** → SOC analyst; logs and detection; strong title for Data Prev / enterprise and thesis.
-  3. **MCBTA** → multi-cloud blue; after BTF/C3SA for cloud and centralized logging narrative.
-  4. **PTF** → purple team; bridges red+blue; good for thesis "balanced view" and PUC-Rio alignment.
-  5. Then red/advanced as capacity allows: **MCRTA**, **CRTA**, **CRT-ID**, **CRT-COI**, **CPIA**; **CCSE** last or in parallel with one shorter one (broad, 50+ labs).
+  1. **C3SA** → SOC analyst; logs and detection; strong title for Data Prev / enterprise and thesis.
+  1. **MCBTA** → multi-cloud blue; after BTF/C3SA for cloud and centralized logging narrative.
+  1. **PTF** → purple team; bridges red+blue; good for thesis "balanced view" and PUC-Rio alignment.
+  1. Then red/advanced as capacity allows: **MCRTA**, **CRTA**, **CRT-ID**, **CRT-COI**, **CPIA**; **CCSE** last or in parallel with one shorter one (broad, 50+ labs).
 - **When to slot study in the sequence:** After **Dependabot/Scout** and **one feature slice** (e.g. Content type step 2 or Data source versions Phase 1), allocate **fixed study blocks** (e.g. 1–2 sessions per week). Do not mix deep study with same-day agent-heavy coding; keeps context and tokens manageable.
 - **Evidence:** When you complete a CWL cert, save the certificate or completion screenshot to `docs/private/` (e.g. `CWL_BTF_certificate.pdf`) and add a row to §3 table (Certifications and community) so it feeds CV and thesis narrative.
 
@@ -104,20 +104,20 @@ Use this when you (re)find **paid but incomplete** certs or want to pick **low-e
 
 Source: **`docs/private/LEITAO_Candidates_Resume_BR.pdf`**, section "CERTIFICAÇÕES E CURSOS COMPLEMENTARES" (second page). Use for narrative, prioritisation, and §3.1 sequenced to-do.
 
-| Platform / issuer | Course / certification | Year |
-| ------------------ | ---------------------- | ---- |
-| PUCRS | Curso de Extensão IOT e IA - Revolução Conectada | 2026 |
-| IBM | Cybersecurity Fundamentals; On the Defense (MDL-407); On the Offense (MDL-405); Introduction to Cybersecurity (MDL-403) | 2024 |
-| Certiprof | Cyber Security Foundation Professional Certificate (CSFPC) | 2023 |
-| IBM | Protect from Ransomware | 2023 |
-| Qude / DevOps Institute | SRE Fundamentals; SRE Practitioner | 2022 |
-| SOLAS | ISPS Code | 2025 |
-| Udemy | Ethical Hacking; Rust Completo; Python 3; Selenium WebDriver; Terraform with Ansible; Odin Bootcamp; Ansible SysAdmin | 2023–2025 |
-| Alura | Go (linguagem, OO, app web); Go e Gin API rest; AZ-900 Azure Fundamentals; SRE confiabilidade | 2023–2024 |
-| LPI | LPIC-1 Exam 101 | 2008 |
-| Microsoft | Microsoft Certified Professional (70-271) | 2000 |
+| Platform / issuer       | Course / certification                                                                                                  | Year      |
+| ------------------      | ----------------------                                                                                                  | ----      |
+| PUCRS                   | Curso de Extensão IOT e IA - Revolução Conectada                                                                        | 2026      |
+| IBM                     | Cybersecurity Fundamentals; On the Defense (MDL-407); On the Offense (MDL-405); Introduction to Cybersecurity (MDL-403) | 2024      |
+| Certiprof               | Cyber Security Foundation Professional Certificate (CSFPC)                                                              | 2023      |
+| IBM                     | Protect from Ransomware                                                                                                 | 2023      |
+| Qude / DevOps Institute | SRE Fundamentals; SRE Practitioner                                                                                      | 2022      |
+| SOLAS                   | ISPS Code                                                                                                               | 2025      |
+| Udemy                   | Ethical Hacking; Rust Completo; Python 3; Selenium WebDriver; Terraform with Ansible; Odin Bootcamp; Ansible SysAdmin   | 2023–2025 |
+| Alura                   | Go (linguagem, OO, app web); Go e Gin API rest; AZ-900 Azure Fundamentals; SRE confiabilidade                           | 2023–2024 |
+| LPI                     | LPIC-1 Exam 101                                                                                                         | 2008      |
+| Microsoft               | Microsoft Certified Professional (70-271)                                                                               | 2000      |
 
-*For in-progress or paid-not-started, add or update `docs/private/Learning_and_certs.md`.*
+## For in-progress or paid-not-started, add or update `docs/private/Learning_and_certs.md`.
 
 ---
 
@@ -136,45 +136,45 @@ Source: **`docs/private/LEITAO_Candidates_Resume_BR.pdf`**, section "CERTIFICAÇ
 
 ### 3.5 Free / optional courses to consider (when capacity allows)
 
-**Stanford – Transformers and Large Language Models (free, YouTube)**
+## Stanford – Transformers and Large Language Models (free, YouTube)
 Official Stanford fall curriculum; full course on LLMs, 9 lectures. **Free on YouTube.** Relevant to: Data Boar's optional [dl] (sentence-transformers, embeddings), PUC-Rio's "IA" and "Gestão de Incidentes e Privacidade de Dados + IA" content, and academic/stricto sensu narrative. Consider when you have bandwidth; no cost, watch at your own pace.
 
-| Aula | Topic | YouTube |
-| ---- | ----- | ------- |
-| 1 | Transformer | [Ub3GoFaUcds](https://youtu.be/Ub3GoFaUcds) |
-| 2 | Modelos baseados em Transformer e técnicas | [yT84Y5zCnaA](https://youtu.be/yT84Y5zCnaA) |
-| 3 | Transformers e Large Language Models | [Q5baLehv5So](https://youtu.be/Q5baLehv5So) |
-| 4 | Treinamento de LLMs | [VlA_jt_3Qc4](https://youtu.be/VlA_jt_3Qc4) |
-| 5 | Ajuste fino de LLMs | [PmW_TMQ3l0I](https://youtu.be/PmW_TMQ3l0I) |
-| 6 | Raciocínio em LLMs | [k5Fh-UgTuCo](https://youtu.be/k5Fh-UgTuCo) |
-| 7 | LLMs agênticos | [h-7S6HNq0Vg](https://youtu.be/h-7S6HNq0Vg) |
-| 8 | Avaliação de LLMs | [8fNP4N46RRo](https://youtu.be/8fNP4N46RRo) |
-| 9 | Recapitulação e tendências atuais | [Q86qzJ1K1Ss](https://youtu.be/Q86qzJ1K1Ss) |
+| Aula | Topic                                      | YouTube                                     |
+| ---- | -----                                      | -------                                     |
+| 1    | Transformer                                | [Ub3GoFaUcds](https://youtu.be/Ub3GoFaUcds) |
+| 2    | Modelos baseados em Transformer e técnicas | [yT84Y5zCnaA](https://youtu.be/yT84Y5zCnaA) |
+| 3    | Transformers e Large Language Models       | [Q5baLehv5So](https://youtu.be/Q5baLehv5So) |
+| 4    | Treinamento de LLMs                        | [VlA_jt_3Qc4](https://youtu.be/VlA_jt_3Qc4) |
+| 5    | Ajuste fino de LLMs                        | [PmW_TMQ3l0I](https://youtu.be/PmW_TMQ3l0I) |
+| 6    | Raciocínio em LLMs                         | [k5Fh-UgTuCo](https://youtu.be/k5Fh-UgTuCo) |
+| 7    | LLMs agênticos                             | [h-7S6HNq0Vg](https://youtu.be/h-7S6HNq0Vg) |
+| 8    | Avaliação de LLMs                          | [8fNP4N46RRo](https://youtu.be/8fNP4N46RRo) |
+| 9    | Recapitulação e tendências atuais          | [Q86qzJ1K1Ss](https://youtu.be/Q86qzJ1K1Ss) |
 
 **How to use:** Slot after CWL priority certs or in parallel with lato sensu if you want to deepen LLM/AI for thesis or future stricto sensu. No certificate to save unless you track completion yourself; can still cite "Stanford CS curriculum (Transformers & LLMs)" in CV or narrative if you complete the playlist.
 
-**Harvard PLL – Machine Learning for Leaders (HKS Executive Education webinar)**
+## Harvard PLL – Machine Learning for Leaders (HKS Executive Education webinar)
 Free, online, self-paced, ~1 hour. Harvard Kennedy School + SEAS; faculty Martin Wattenberg and Fernanda Viégas. Topics: machine learning basics for leaders and policy-makers, cybersecurity, public policy. [Course page](https://pll.harvard.edu/course/hks-executive-education-faculty-webinar-machine-learning-leaders). Fits Data Boar ML/DL narrative, PUC-Rio “IA”, and leadership/compliance angle.
 
-**Harvard Online – CS50's Introduction to Cybersecurity**
+## Harvard Online – CS50's Introduction to Cybersecurity
 Introduction to cybersecurity (Harvard Online / CS50 series). [Course page](https://www.harvardonline.harvard.edu/course/cs50s-introduction-cybersecurity). Fits production readiness, certifiable confidence, and PUC-Rio Compliance de Cibersegurança / Data Prev narrative.
 
-**Harvard PLL – Data Science: Visualization**
+## Harvard PLL – Data Science: Visualization
 Free*, online, 8 weeks, 1–2 h/week, self-paced (edX). ggplot2/R, visualization principles, communicating data-driven findings; part of Harvard’s Professional Certificate in Data Science. [Course page](https://pll.harvard.edu/course/data-science-visualization/2025-10). Fits Data Boar reports/heatmaps narrative and data-science credibility.
 
-**Harvard PLL – Data Science: Productivity Tools**
+## Harvard PLL – Data Science: Productivity Tools
 Free*, online, 8 weeks, 1–2 h/week, self-paced (edX). Unix/Linux, git, GitHub, RStudio, R Markdown; reproducible reports and project organization; part of Harvard's Professional Certificate in Data Science. [Course page](https://pll.harvard.edu/course/data-science-productivity-tools/2025-10). Fits production workflow and open-source (GitHub) narrative.
 
-**Harvard PLL – Machine Learning and AI with Python**
+## Harvard PLL – Machine Learning and AI with Python
 Free* (audit), online, 6 weeks, 4–5 h/week, self-paced (edX). Decision trees, random forests, ML models, Python libraries; data bias, overfitting/underfitting; SEAS. [Course page](https://pll.harvard.edu/course/machine-learning-and-ai-python). Fits Data Boar optional [dl] and ML sensitivity detection narrative; verified certificate $299 if desired.
 
-**Harvard PLL – Data Science: Building Machine Learning Models**
+## Harvard PLL – Data Science: Building Machine Learning Models
 Free*, online, 8 weeks, 2–4 h/week, self-paced (edX). ML basics, cross-validation, popular algorithms, recommendation systems, regularization; part of Harvard's Professional Certificate in Data Science. [Course page](https://pll.harvard.edu/course/data-science-building-machine-learning-models/2025-10). Fits Data Boar ML/sensitivity detection and data-science credential narrative.
 
-**Harvard PLL – Free courses catalog**
+## Harvard PLL – Free courses catalog
 Browse all free* courses (140+): filter by subject (Data Science, Computer Science, etc.), duration, school, difficulty. [Free courses](https://pll.harvard.edu/catalog/FRee). Use when you want to add more Harvard PLL options beyond the ones already listed above.
 
-**Additional free resources:**
+## Additional free resources:
 - YouTube: [youtu.be/qHwIiwjrT1I](https://youtu.be/qHwIiwjrT1I) – add title/topic when you note it.
 - **IBM SkillsBuild:** [activity/plan](https://skills.yourlearning.ibm.com/activity/PLAN-FA511CDFAF48) – add plan name/topic in `docs/private/Learning_and_certs.md` when you check it (fits with your existing IBM cybersecurity certs on CV).
 
@@ -188,16 +188,16 @@ Stored in **`docs/private/`** (git-ignored). Reference by **filename** only in p
 
 Fetched from [PUC-Rio Digital – Compliance de Cibersegurança](https://especializacao.ccec.puc-rio.br/especializacao/compliance-de-ciberseguranca). Use for lato sensu thesis plan alignment (objectives, structure, TCC).
 
-| Item | Detail |
-| ----- | ------ |
-| **Name** | Pós-Graduação em Compliance de Cibersegurança (Especialização Lato Sensu) |
-| **Institution** | PUC-Rio (CCEC – Coordenação Central de Educação Continuada), formato PUC-Rio Digital |
-| **Duration** | 12 meses (ou 15 com Sprint de Aperfeiçoamento "Do Zero ao Código") |
-| **Carga horária** | 480 horas |
-| **Format** | 100% online; aulas gravadas + encontros ao vivo; certificação Lato Sensu PUC-Rio |
-| **Structure** | Sprints a cada 3 meses (3 disciplinas + 1 MVP por sprint). **Blocos:** (1) Segurança Ofensiva: Ameaças, Ataques e Crimes; (2) Segurança Defensiva: Gestão de Controles, Riscos e Continuidade de Negócio; (3) Gestão de Incidentes e Privacidade de Dados + IA; (4) Governança e Forense. |
-| **LGPD / privacidade** | Disciplina **"Gestão da Privacidade de Dados Pessoais (LGPD e RIPD)"** (30h) – princípios de privacidade, LGPD, GDPR, ferramentas de conformidade. Professores incluem Caitlin Mulholland (ex-CNPD, Diretora Dept. Direito PUC-Rio), Anderson da Silva. |
-| **Relevance to Data Boar / thesis** | Direct fit: compliance digital, privacidade de dados, governança de dados com cibersegurança, gestão de riscos. Thesis can frame Data Boar as artefato de apoio à conformidade e evidências (LGPD, ISO 27xxx) dentro deste programa. |
+| Item                                | Detail                                                                                                                                                                                                                                                                                    |
+| -----                               | ------                                                                                                                                                                                                                                                                                    |
+| **Name**                            | Pós-Graduação em Compliance de Cibersegurança (Especialização Lato Sensu)                                                                                                                                                                                                                 |
+| **Institution**                     | PUC-Rio (CCEC – Coordenação Central de Educação Continuada), formato PUC-Rio Digital                                                                                                                                                                                                      |
+| **Duration**                        | 12 meses (ou 15 com Sprint de Aperfeiçoamento "Do Zero ao Código")                                                                                                                                                                                                                        |
+| **Carga horária**                   | 480 horas                                                                                                                                                                                                                                                                                 |
+| **Format**                          | 100% online; aulas gravadas + encontros ao vivo; certificação Lato Sensu PUC-Rio                                                                                                                                                                                                          |
+| **Structure**                       | Sprints a cada 3 meses (3 disciplinas + 1 MVP por sprint). **Blocos:** (1) Segurança Ofensiva: Ameaças, Ataques e Crimes; (2) Segurança Defensiva: Gestão de Controles, Riscos e Continuidade de Negócio; (3) Gestão de Incidentes e Privacidade de Dados + IA; (4) Governança e Forense. |
+| **LGPD / privacidade**              | Disciplina **"Gestão da Privacidade de Dados Pessoais (LGPD e RIPD)"** (30h) – princípios de privacidade, LGPD, GDPR, ferramentas de conformidade. Professores incluem Caitlin Mulholland (ex-CNPD, Diretora Dept. Direito PUC-Rio), Anderson da Silva.                                   |
+| **Relevance to Data Boar / thesis** | Direct fit: compliance digital, privacidade de dados, governança de dados com cibersegurança, gestão de riscos. Thesis can frame Data Boar as artefato de apoio à conformidade e evidências (LGPD, ISO 27xxx) dentro deste programa.                                                      |
 
 Optional: add official "Guia do Curso", ementa completa, or TCC norms to `docs/private/` when you have them.
 
@@ -207,12 +207,12 @@ Optional: add official "Guia do Curso", ementa completa, or TCC norms to `docs/p
 
 **Token-aware:** When deciding post-lato, open only this section (and the one plan or program link you are comparing). No need to open all academic plans in one session; pick one option at a time (low complexity / high gain).
 
-| Option | What it is | Where it lives / what to add |
-| ------ | ---------- | ---------------------------- |
-| **Stricto sensu (M.Sc. / PhD)** | Research path building on Data Boar and the lato sensu thesis: research questions, methodology, experimental infrastructure, advisor outreach. | [PLAN_STRICTO_SENSU_RESEARCH_PATH.md](PLAN_STRICTO_SENSU_RESEARCH_PATH.md). Use lato sensu TCC and 1–2 papers as stepping stones; see plan §4 (early publications and advisor outreach). |
-| **Universidade do Intercâmbio (Harvard online + mestrado opcional)** | Escola/programa com cursos online de Harvard; possibilidade de mestrado opcional. | [Cursos online de Harvard](https://www.universidadedointercambio.com/cursos-online-de-harvard/). Add details (modalidade, duração, custo, requisitos do mestrado) to `docs/private/Post_lato_sensu_options.md` when you have them. |
-| **Faculdade HUB – MBA em IA (+ Mestrado AGTU opcional)** | MBA em Transformação de Negócios com IA Generativa (HUB, MEC); dupla titulação opcional com Mestrado em Negócios e IA (AGTU, Flórida). 12 meses, 100% online; sem TCC; inclui trilha de microcertificados Harvard/IBM/Babson, bootcamp presencial em SP (opcional). Pago (12x ou 18x); graduação completa exigida para o mestrado AGTU. | [MBA Inteligência Artificial – Faculdade HUB](https://pv.faculdadehub.com.br/mbaia0002/mba-inteligencia-artificial/). Add preço atual e condições to `docs/private/Post_lato_sensu_options.md` when you evaluate. |
-| **Other course or program** | A second specialization, MBA, or extension you are considering (e.g. another PUC-Rio program, or a different institution). | When you have the link or name: add a row here and, if useful, a short note in `docs/private/` (e.g. `docs/private/Post_lato_sensu_options.md`) with URL, duration, and how it fits after Compliance de Cibersegurança. |
+| Option                                                               | What it is                                                                                                                                                                                                                                                                                                                              | Where it lives / what to add                                                                                                                                                                                                       |
+| ------                                                               | ----------                                                                                                                                                                                                                                                                                                                              | ----------------------------                                                                                                                                                                                                       |
+| **Stricto sensu (M.Sc. / PhD)**                                      | Research path building on Data Boar and the lato sensu thesis: research questions, methodology, experimental infrastructure, advisor outreach.                                                                                                                                                                                          | [PLAN_STRICTO_SENSU_RESEARCH_PATH.md](PLAN_STRICTO_SENSU_RESEARCH_PATH.md). Use lato sensu TCC and 1–2 papers as stepping stones; see plan §4 (early publications and advisor outreach).                                           |
+| **Universidade do Intercâmbio (Harvard online + mestrado opcional)** | Escola/programa com cursos online de Harvard; possibilidade de mestrado opcional.                                                                                                                                                                                                                                                       | [Cursos online de Harvard](https://www.universidadedointercambio.com/cursos-online-de-harvard/). Add details (modalidade, duração, custo, requisitos do mestrado) to `docs/private/Post_lato_sensu_options.md` when you have them. |
+| **Faculdade HUB – MBA em IA (+ Mestrado AGTU opcional)**             | MBA em Transformação de Negócios com IA Generativa (HUB, MEC); dupla titulação opcional com Mestrado em Negócios e IA (AGTU, Flórida). 12 meses, 100% online; sem TCC; inclui trilha de microcertificados Harvard/IBM/Babson, bootcamp presencial em SP (opcional). Pago (12x ou 18x); graduação completa exigida para o mestrado AGTU. | [MBA Inteligência Artificial – Faculdade HUB](https://pv.faculdadehub.com.br/mbaia0002/mba-inteligencia-artificial/). Add preço atual e condições to `docs/private/Post_lato_sensu_options.md` when you evaluate.                  |
+| **Other course or program**                                          | A second specialization, MBA, or extension you are considering (e.g. another PUC-Rio program, or a different institution).                                                                                                                                                                                                              | When you have the link or name: add a row here and, if useful, a short note in `docs/private/` (e.g. `docs/private/Post_lato_sensu_options.md`) with URL, duration, and how it fits after Compliance de Cibersegurança.            |
 
 **Suggested sequence (if it makes sense for you):** (1) Finish PUC-Rio lato sensu and TCC; (2) then choose one of: stricto sensu (M.Sc. track) per PLAN_STRICTO_SENSU, Universidade do Intercâmbio (Harvard online / mestrado opcional), Faculdade HUB (MBA em IA + mestrado AGTU opcional), or another course you have in mind; (3) CWL certs (BTF, C3SA, etc.) can run in parallel with the lato sensu as capacity allows, and will strengthen the narrative for whichever path you choose next.
 
@@ -231,16 +231,16 @@ Optional: add official "Guia do Curso", ementa completa, or TCC norms to `docs/p
 
 Use this when you can "try to get" something and want to prioritise. Ordered by **impact on the plans** and **realistic to obtain**.
 
-| Priority | What to get | Why it helps | Where to put it |
-| -------- | ----------- | ------------ | ----------------- |
-| **1** | **Program / course requirements** (lato sensu) | If you already have a program or course: official "estrutura do TCC", "critérios de avaliação", or "normas da ABNT" (1–3 pages). | `docs/private/` (e.g. `program_tcc_requirements.pdf`). Then we align thesis outline (PLAN_LATO_SENSU §1.2, §5.2) to it. |
-| **2** | **1–2 redacted report excerpts** (Data Boar) | One inventory sheet and one heatmap/summary (fake or anonymised data) as PDF or screenshots. | `docs/private/` (e.g. `sample_report_inventory.pdf`, `sample_heatmap.png`). Thesis "case study" and "outputs" (PLAN_LATO_SENSU §4.2) can reference them. |
-| **3** | **Architecture diagram export** | TOPOLOGY.md is textual. One visual (Mermaid → PNG/SVG, or draw.io) "high-level components + scan pipeline" for the thesis. | `docs/` (e.g. `topology-diagram.png`) or thesis folder. PLAN_LATO_SENSU §3.1 needs "1–2 architecture diagrams". |
-| **4** | **Ubuntu / LPIC proof (optional)** | Link to your Ubuntu profile or "contributor" page; LPIC-1 (101) certificate scan or link if you want it cited. | Add URL or filename to §3 above; no need to commit certificate image. |
-| **5** | **Runbook or backup procedure** (from your experience) | Short "when app is down we check X; when we backup we do Y" (even bullet points). | Paste into a note in `docs/private/` or send in chat; we turn it into the operator runbook and backup/restore text (PLAN_READINESS §4.3). |
-| **6** | **Scenario one-liners** (case studies) | 1–3 sentences per scenario: e.g. "Empresa médio porte BR: 2 DBs PostgreSQL, 1 filesystem, foco LGPD Art. 37". | `docs/private/case_study_scenarios.md` or in chat. Feeds PLAN_LATO_SENSU §4.1–4.3. |
-| **7** | **LGPD/ISO checklist** (if you have one) | Any checklist or list of "evidence we need" from a course, employer, or DPO template (generic is fine). | `docs/private/` or paste; we map app features to each line (PLAN_COMPLIANCE_EVIDENCE_MAPPING). |
-| **8** | **Dockerfiles** (wf_t1r, uptk) | So we can say "Dockerfiles created and used" with a single reference. | `docs/private/Dockerfiles_used.md` (paste or paths) or ensure they're in the GitHub repos; add link in §1. |
+| Priority | What to get                                            | Why it helps                                                                                                                     | Where to put it                                                                                                                                          |
+| -------- | -----------                                            | ------------                                                                                                                     | -----------------                                                                                                                                        |
+| **1**    | **Program / course requirements** (lato sensu)         | If you already have a program or course: official "estrutura do TCC", "critérios de avaliação", or "normas da ABNT" (1–3 pages). | `docs/private/` (e.g. `program_tcc_requirements.pdf`). Then we align thesis outline (PLAN_LATO_SENSU §1.2, §5.2) to it.                                  |
+| **2**    | **1–2 redacted report excerpts** (Data Boar)           | One inventory sheet and one heatmap/summary (fake or anonymised data) as PDF or screenshots.                                     | `docs/private/` (e.g. `sample_report_inventory.pdf`, `sample_heatmap.png`). Thesis "case study" and "outputs" (PLAN_LATO_SENSU §4.2) can reference them. |
+| **3**    | **Architecture diagram export**                        | TOPOLOGY.md is textual. One visual (Mermaid → PNG/SVG, or draw.io) "high-level components + scan pipeline" for the thesis.       | `docs/` (e.g. `topology-diagram.png`) or thesis folder. PLAN_LATO_SENSU §3.1 needs "1–2 architecture diagrams".                                          |
+| **4**    | **Ubuntu / LPIC proof (optional)**                     | Link to your Ubuntu profile or "contributor" page; LPIC-1 (101) certificate scan or link if you want it cited.                   | Add URL or filename to §3 above; no need to commit certificate image.                                                                                    |
+| **5**    | **Runbook or backup procedure** (from your experience) | Short "when app is down we check X; when we backup we do Y" (even bullet points).                                                | Paste into a note in `docs/private/` or send in chat; we turn it into the operator runbook and backup/restore text (PLAN_READINESS §4.3).                |
+| **6**    | **Scenario one-liners** (case studies)                 | 1–3 sentences per scenario: e.g. "Empresa médio porte BR: 2 DBs PostgreSQL, 1 filesystem, foco LGPD Art. 37".                    | `docs/private/case_study_scenarios.md` or in chat. Feeds PLAN_LATO_SENSU §4.1–4.3.                                                                       |
+| **7**    | **LGPD/ISO checklist** (if you have one)               | Any checklist or list of "evidence we need" from a course, employer, or DPO template (generic is fine).                          | `docs/private/` or paste; we map app features to each line (PLAN_COMPLIANCE_EVIDENCE_MAPPING).                                                           |
+| **8**    | **Dockerfiles** (wf_t1r, uptk)                         | So we can say "Dockerfiles created and used" with a single reference.                                                            | `docs/private/Dockerfiles_used.md` (paste or paths) or ensure they're in the GitHub repos; add link in §1.                                               |
 
 **Not required:** Real customer data, confidential configs, or anything that would expose PII. Anonymised, synthetic, or "inspired by" is enough for thesis and evidence mapping.
 
@@ -248,19 +248,19 @@ Use this when you can "try to get" something and want to prioritise. Ordered by 
 
 Use this to tick off as you find or add each item. Store files in `docs/private/` unless noted.
 
-| Item | Where to put it | Status (you can tick) |
-| ---- | ----------------- | --------------------- |
-| **RCDD BICSI** (cert or proof) | `docs/private/titulo-rcdd.jpeg` | ✅ Added |
-| **PUC-RS IA e IoT** (cert PDF or PNG) | `docs/private/Certificado_IA_IOT_PucRS_Fabio.pdf` | ✅ Added |
-| Program / course requirements (lato sensu) | `docs/private/` e.g. `program_tcc_requirements.pdf` | ⬜ |
-| 1–2 redacted report excerpts (Data Boar) | `docs/private/` e.g. `sample_report_inventory.pdf`, `sample_heatmap.png` | ⬜ |
-| Architecture diagram (high-level + pipeline) | `docs/topology-diagram.png` or thesis folder | ⬜ |
-| Runbook or backup procedure (bullets) | `docs/private/` note or paste in chat | ⬜ |
-| Scenario one-liners (case studies) | `docs/private/case_study_scenarios.md` or chat | ⬜ |
-| LGPD/ISO checklist (if you have one) | `docs/private/` or paste | ⬜ |
-| Dockerfiles note (wf_t1r, uptk) | `docs/private/Dockerfiles_used.md` or links in GitHub | ⬜ |
-| **Learning / certs list** (paid incomplete; Udemy, Alura, etc.) | `docs/private/Learning_and_certs.md` – then use §3.1 sequenced to-do to prioritise and complete 1–2 | ⬜ |
-| **DataPrev** (evidence of classification / 6th place) | `docs/private/` e.g. `DataPrev_exame_classificacao.pdf` or screenshot – for CV and narrative | ⬜ |
+| Item                                                            | Where to put it                                                                                     | Status (you can tick) |
+| ----                                                            | -----------------                                                                                   | --------------------- |
+| **RCDD BICSI** (cert or proof)                                  | `docs/private/titulo-rcdd.jpeg`                                                                     | ✅ Added               |
+| **PUC-RS IA e IoT** (cert PDF or PNG)                           | `docs/private/Certificado_IA_IOT_PucRS_Fabio.pdf`                                                   | ✅ Added               |
+| Program / course requirements (lato sensu)                      | `docs/private/` e.g. `program_tcc_requirements.pdf`                                                 | ⬜                     |
+| 1–2 redacted report excerpts (Data Boar)                        | `docs/private/` e.g. `sample_report_inventory.pdf`, `sample_heatmap.png`                            | ⬜                     |
+| Architecture diagram (high-level + pipeline)                    | `docs/topology-diagram.png` or thesis folder                                                        | ⬜                     |
+| Runbook or backup procedure (bullets)                           | `docs/private/` note or paste in chat                                                               | ⬜                     |
+| Scenario one-liners (case studies)                              | `docs/private/case_study_scenarios.md` or chat                                                      | ⬜                     |
+| LGPD/ISO checklist (if you have one)                            | `docs/private/` or paste                                                                            | ⬜                     |
+| Dockerfiles note (wf_t1r, uptk)                                 | `docs/private/Dockerfiles_used.md` or links in GitHub                                               | ⬜                     |
+| **Learning / certs list** (paid incomplete; Udemy, Alura, etc.) | `docs/private/Learning_and_certs.md` – then use §3.1 sequenced to-do to prioritise and complete 1–2 | ⬜                     |
+| **DataPrev** (evidence of classification / 6th place)           | `docs/private/` e.g. `DataPrev_exame_classificacao.pdf` or screenshot – for CV and narrative        | ⬜                     |
 
 *(Optional)* Ubuntu/LPIC proof: add URL or filename to §3; no file needed if you only cite the link.
 

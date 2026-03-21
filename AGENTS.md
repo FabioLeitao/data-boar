@@ -1,16 +1,17 @@
 # Agent / assistant notes (Cursor, Copilot, etc.)
 
+- **No secrets or home infra in tracked files:** Do **not** put **real hostnames**, **RFC1918 LAN IPs**, **hardware serials**, **`$HOME` / `C:\Users\...` paths**, or **live credentials** into **committed** Markdown, `.mdc` rules, or code comments. Use placeholders; the operator keeps specifics under **gitignored** `docs/private/` per **`docs/PRIVATE_OPERATOR_NOTES.md`**.
 - **Git & PR state:** The model does **not** see GitHub or your local repo unless a command runs in-session. Before advising **merge**, **next steps after a PR**, or sharing a **PR number/URL**, refresh state (`git fetch`, `git pull` on `main`, and/or `gh pr view`). See **`.cursor/rules/git-pr-sync-before-advice.mdc`** (always applied) and **`CONTRIBUTING.md`** → *PR state and agent advice*.
 - **Open PR dangling guard:** At session start/end, run `gh pr list --state open` and explicitly record any still-open PRs whose goal was partially superseded (for example older branch paths/docs). Before new feature work, either (a) resume to completion with a fresh sync from `main`, or (b) close as superseded and note replacement PR/commit.
 - **Execution strategy:** Apply **critical-first** sequencing and **PR batching**. Resolve critical blockers to a stable local commit state first; otherwise prioritize product work per `docs/plans/PLANS_TODO.md` taxonomy (token-aware, high-gain slices). Do not force micro-PRs for every commit; batch coherent commits into a reviewable PR. See **`.cursor/rules/execution-priority-and-pr-batching.mdc`**.
 - **Commit grouping strategy:** Classify work as `feature`, `workflow`, or `documentation` before committing. Keep tracks separate by default; allow `feature + documentation` or `workflow + documentation` only when docs are required for that checkpoint. Avoid mixing `feature + workflow` in one commit/PR unless explicitly requested.
 - **Commit message types (Conventional Commits):** Use a clear **type** as the first token, orthogonal to the grouping above:
-  - **`feat`** — new behavior or user-visible capability.
-  - **`fix`** — bugfix / incorrect behavior; use a **scope** when helpful, e.g. **`fix(security):`** when the primary risk is security.
-  - **`security`** — optional top-level type when the change is *primarily* hardening or threat reduction (alternative to `fix(security):` for larger security slices).
-  - **`refactor`** — behavior-preserving restructuring; prefer this over a **combo of `feat` + `fix`** in one commit. If a change mixes unrelated feature work and a bugfix, use **two commits** (or two PRs) instead of one ambiguous commit.
-  - **`docs`**, **`chore`**, **`ci`**, **`test`**, **`perf`**, **`style`** — standard meanings.
-  - **Scopes** — optional domain in parentheses: `feat(detector):`, `docs(ops):`, `fix(report):`.
+- **`feat`** — new behavior or user-visible capability.
+- **`fix`** — bugfix / incorrect behavior; use a **scope** when helpful, e.g. **`fix(security):`** when the primary risk is security.
+- **`security`** — optional top-level type when the change is *primarily* hardening or threat reduction (alternative to `fix(security):` for larger security slices).
+- **`refactor`** — behavior-preserving restructuring; prefer this over a **combo of `feat` + `fix`** in one commit. If a change mixes unrelated feature work and a bugfix, use **two commits** (or two PRs) instead of one ambiguous commit.
+- **`docs`**, **`chore`**, **`ci`**, **`test`**, **`perf`**, **`style`** — standard meanings.
+- **Scopes** — optional domain in parentheses: `feat(detector):`, `docs(ops):`, `fix(report):`.
 - **Automation:** Prefer **`scripts/check-all.ps1`**, **`scripts/commit-or-pr.ps1`**, and related helpers — **``.cursor/skills/token-aware-automation/SKILL.md`**.
 - **Docker homelab (optional):** Prefer **`.\scripts\docker-lab-build.ps1`**, **`.\scripts\docker-hub-pull.ps1`**, and **`.\scripts\docker-prune-local.ps1 -WhatIf`** (then without `-WhatIf` when agreed) over ad-hoc `docker build` / tag sprawl / manual `rmi` lists — same outcomes, fewer tokens, predictable tags (`data_boar:lab`, Hub `latest` + semver + previous patch). See **`scripts/docker/README.md`** and **``.cursor/skills/docker-smoke-container-hygiene/SKILL.md`**. Use **opportunistically** after Dockerfile/image work, before/after Hub push + Scout, or when the operator mentions disk clutter.
 - **Plans:** Single source of truth for backlog sequencing is **`docs/plans/PLANS_TODO.md`** (English-only history); operator runbooks live under **`docs/ops/`** (EN + pt-BR).

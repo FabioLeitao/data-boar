@@ -10,15 +10,15 @@
 
 ## Mapa de fases (ordem)
 
-| Fase | ID | Você faz | Agente ajuda com |
-| ---- | -- | -------- | ----------------- |
-| **Dependências** | A1 | Aprovar/merge de PRs Dependabot no GitHub | Triagem, bumps mínimos, testes, correções |
-| **CVEs da imagem** | A2 | Rodar Docker localmente, aprovar mudanças no Dockerfile | Interpretação do `docker scout`, base/pins mínimos |
-| **Registry público** | A3 | UI do Docker Hub: excluir ou documentar tags | Atualizar [deploy/DEPLOY.pt_BR.md](deploy/DEPLOY.pt_BR.md) §8, refs Compose/K8s |
-| **Isolamento do emissor** | A4 | Repo privado; copiar `tools/license-studio`; **nunca** enviar chaves | Modelo de README privado, checklist, `.gitignore` |
-| **Pessoas** | A5 | Convidar colaboradores no GitHub/GitLab | — |
-| **Automação** | A6 | Aprovar adições de CI | `scripts/license-smoke.ps1` ou job pytest, docs em um PR |
-| **Jurídico** | A7 | Contato com advogado | Apenas apontar docs: [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md) |
+| Fase                      | ID | Você faz                                                             | Agente ajuda com                                                                                    |
+| ----                      | -- | --------                                                             | -----------------                                                                                   |
+| **Dependências**          | A1 | Aprovar/merge de PRs Dependabot no GitHub                            | Triagem, bumps mínimos, testes, correções                                                           |
+| **CVEs da imagem**        | A2 | Rodar Docker localmente, aprovar mudanças no Dockerfile              | Interpretação do `docker scout`, base/pins mínimos                                                  |
+| **Registry público**      | A3 | UI do Docker Hub: excluir ou documentar tags                         | Atualizar [deploy/DEPLOY.pt_BR.md](deploy/DEPLOY.pt_BR.md) §8, refs Compose/K8s                     |
+| **Isolamento do emissor** | A4 | Repo privado; copiar `tools/license-studio`; **nunca** enviar chaves | Modelo de README privado, checklist, `.gitignore`                                                   |
+| **Pessoas**               | A5 | Convidar colaboradores no GitHub/GitLab                              | —                                                                                                   |
+| **Automação**             | A6 | Aprovar adições de CI                                                | `scripts/license-smoke.ps1` ou job pytest, docs em um PR                                            |
+| **Jurídico**              | A7 | Contato com advogado                                                 | Apenas apontar docs: [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md) |
 
 ---
 

@@ -4,26 +4,26 @@ PowerShell automation for **local lab builds**, **Docker Hub pulls**, and **tag 
 
 All scripts assume the **repository root** is the parent of `scripts/` (run them as `.\scripts\<name>.ps1` from the repo root, or `cd` to root first).
 
-| Script | Purpose |
-| ------ | ------- |
-| [../docker-hub-pull.ps1](../docker-hub-pull.ps1) | `docker pull` **fabioleitao/data_boar:latest**, **:\<semver from pyproject.toml\>**, and **previous patch** (e.g. 1.6.4 → 1.6.2) for cache and A/B. |
-| [../docker-lab-build.ps1](../docker-lab-build.ps1) | `docker build -t data_boar:lab`; optionally re-tags old **lab** → **lab-prev** before rebuild; optional **-TagSmoke** for A/B. |
-| [../docker-prune-local.ps1](../docker-prune-local.ps1) | `docker rmi` extra tags on **fabioleitao/data_boar** and **data_boar** repos; keeps a small allowlist. Use **-WhatIf** first. |
-| [DataBoarDockerCommon.ps1](DataBoarDockerCommon.ps1) | Shared helpers (dot-sourced only). |
+| Script                                                 | Purpose                                                                                                                                             |
+| ------                                                 | -------                                                                                                                                             |
+| [../docker-hub-pull.ps1](../docker-hub-pull.ps1)       | `docker pull` **fabioleitao/data_boar:latest**, **:\<semver from pyproject.toml\>**, and **previous patch** (e.g. 1.6.4 → 1.6.2) for cache and A/B. |
+| [../docker-lab-build.ps1](../docker-lab-build.ps1)     | `docker build -t data_boar:lab`; optionally re-tags old **lab** → **lab-prev** before rebuild; optional **-TagSmoke** for A/B.                      |
+| [../docker-prune-local.ps1](../docker-prune-local.ps1) | `docker rmi` extra tags on **fabioleitao/data_boar** and **data_boar** repos; keeps a small allowlist. Use **-WhatIf** first.                       |
+| [DataBoarDockerCommon.ps1](DataBoarDockerCommon.ps1)   | Shared helpers (dot-sourced only).                                                                                                                  |
 
 ## Typical flows
 
 ### After merging Dockerfile / before publishing
 
 1. `.\scripts\docker-lab-build.ps1` — refresh **data_boar:lab**; smoke with `docker run --rm` (see DOCKER_SETUP).
-2. When satisfied, build and push to Hub (manual or CI) with your release tags.
-3. `.\scripts\docker-hub-pull.ps1` — refresh local copies of **latest** + semver + previous patch.
-4. `.\scripts\docker-prune-local.ps1 -WhatIf` then `.\scripts\docker-prune-local.ps1` — drop stray **maint-***, **scout-***, etc.
+1. When satisfied, build and push to Hub (manual or CI) with your release tags.
+1. `.\scripts\docker-hub-pull.ps1` — refresh local copies of **latest** + semver + previous patch.
+1. `.\scripts\docker-prune-local.ps1 -WhatIf` then `.\scripts\docker-prune-local.ps1` — drop stray **maint-***, **scout-***, etc.
 
 ### A/B (Hub vs local)
 
 1. `.\scripts\docker-hub-pull.ps1`
-2. `.\scripts\docker-lab-build.ps1 -TagSmoke` — produces **data_boar:lab** and **data_boar:smoke** (same digest); or compare **fabioleitao/data_boar:latest** vs **data_boar:lab** on different ports.
+1. `.\scripts\docker-lab-build.ps1 -TagSmoke` — produces **data_boar:lab** and **data_boar:smoke** (same digest); or compare **fabioleitao/data_boar:latest** vs **data_boar:lab** on different ports.
 
 ### Parameters
 

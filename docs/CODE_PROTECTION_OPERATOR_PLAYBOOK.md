@@ -10,15 +10,15 @@
 
 ## Phase map (order)
 
-| Phase | ID | You do | Agent helps with |
-| ----- | -- | ------ | ------------------ |
-| **Dependencies** | A1 | Approve/merge Dependabot PRs on GitHub | Triage alerts, bump pins, run tests, fix breakages |
-| **Image CVEs** | A2 | Run Docker locally, approve Dockerfile changes | `docker scout` output interpretation, minimal base image / pin bumps |
-| **Public registry** | A3 | Docker Hub UI: delete or document tags | Update [deploy/DEPLOY.md](deploy/DEPLOY.md) §8, Compose/K8s refs |
-| **Issuer isolation** | A4 | Create private repo; copy `tools/license-studio`; **never** push keys | Private README template, checklist, `.gitignore` reminders |
-| **People** | A5 | GitHub/GitLab invites for partners | — |
-| **Automation** | A6 | Approve CI additions | `scripts/license-smoke.ps1` or pytest job, docs only in one PR |
-| **Legal** | A7 | Call counsel | Doc pointers: [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md) |
+| Phase                | ID | You do                                                                | Agent helps with                                                                             |
+| -----                | -- | ------                                                                | ------------------                                                                           |
+| **Dependencies**     | A1 | Approve/merge Dependabot PRs on GitHub                                | Triage alerts, bump pins, run tests, fix breakages                                           |
+| **Image CVEs**       | A2 | Run Docker locally, approve Dockerfile changes                        | `docker scout` output interpretation, minimal base image / pin bumps                         |
+| **Public registry**  | A3 | Docker Hub UI: delete or document tags                                | Update [deploy/DEPLOY.md](deploy/DEPLOY.md) §8, Compose/K8s refs                             |
+| **Issuer isolation** | A4 | Create private repo; copy `tools/license-studio`; **never** push keys | Private README template, checklist, `.gitignore` reminders                                   |
+| **People**           | A5 | GitHub/GitLab invites for partners                                    | —                                                                                            |
+| **Automation**       | A6 | Approve CI additions                                                  | `scripts/license-smoke.ps1` or pytest job, docs only in one PR                               |
+| **Legal**            | A7 | Call counsel                                                          | Doc pointers: [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md) |
 
 ---
 
