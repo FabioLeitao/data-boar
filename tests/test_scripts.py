@@ -199,3 +199,40 @@ def test_create_pr_ps1_has_param_block():
     text = script.read_text(encoding="utf-8", errors="replace")
     assert "param(" in text
     assert "Title" in text and "BodyFilePath" in text
+
+
+def test_docs_private_scripts_syntax_optional(include_private_lint: bool):
+    """
+    When opted in (``pytest --include-private`` or ``INCLUDE_PRIVATE_LINT=1``),
+    parse any ``*.ps1`` under ``docs/private/`` and run ``bash -n`` on ``*.sh`` there (non-Windows only).
+    Skips if ``docs/private/`` is missing or contains no matching scripts.
+    """
+    if not include_private_lint:
+        return
+    root = _project_root()
+    private_dir = root / "docs" / "private"
+    if not private_dir.is_dir():
+        return
+    ps1_files = sorted(private_dir.rglob("*.ps1"))
+    for script in ps1_files:
+        assert _parse_powershell_script(script, root), (
+            f"{script.relative_to(root)}: PowerShell parse failed"
+        )
+    if sys.platform == "win32":
+        return
+    sh_files = sorted(private_dir.rglob("*.sh"))
+    for script in sh_files:
+        try:
+            proc = subprocess.run(
+                ["bash", "-n", str(script)],
+                cwd=str(root),
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+        except FileNotFoundError:
+            return
+        assert proc.returncode == 0, (
+            f"bash -n failed for {script.relative_to(root)}: "
+            f"{proc.stderr or proc.stdout}"
+        )
