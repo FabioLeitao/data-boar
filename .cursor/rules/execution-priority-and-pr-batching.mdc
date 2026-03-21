@@ -56,5 +56,5 @@ Use this decision order every session:
    - **Types:** `feat`, `fix`, `security` (optional top-level for primary hardening), `refactor`, `docs`, `chore`, `ci`, `test`, `perf`, `style`.
    - **Bugfix:** use **`fix:`** (not a separate invented prefix). **`fix(security):`** when the fix is security-critical.
    - **Refactor vs feat+fix:** Prefer **`refactor:`** for behavior-preserving moves. **Do not** combine unrelated **`feat` + `fix`** in one commit; split into two commits (or two PRs) unless the work is truly atomic. If it is both a feature and a fix, separate commits almost always read clearer in history.
-   - **Scopes:** Optional — `feat(detector):`, `docs(ops):`, `fix(api):`.
+   - **Scopes:** Optional — `feat(detector):`, `docs(ops):`, `fix(api):`, **`chore(deps):`** for dependency-only bumps. **Homelab / operator fronts:** `docs(homelab):`, `docs(workflow):`, `chore(cursor):`, `docs(private-layout):`, `docs(plans):` — full scope table in root **`AGENTS.md`**.
    - Grouping rules (`feature + documentation`, etc.) still apply; the type line tells *what* changed, grouping tells *which narrative bucket*.
