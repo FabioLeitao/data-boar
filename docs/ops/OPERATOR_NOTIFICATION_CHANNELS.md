@@ -83,13 +83,36 @@ See [PLAN_READINESS_AND_OPERATIONS.md](../plans/PLAN_READINESS_AND_OPERATIONS.md
 
 ---
 
-## 7. Related docs
+## 7. End-of-day / end-of-sprint digest (SMS, email, chat)
 
-- [BRANCH_AND_DOCKER_CLEANUP.md](ops/BRANCH_AND_DOCKER_CLEANUP.md) — hygiene; §7 legacy remote.
+**What the AI cannot do:** The Cursor agent **does not** send **SMS** or **email** to your phone or inbox. There is no built-in carrier/SMTP integration from chat. Anything that “pings” you must run in **your** environment: **GitHub Actions**, a **home server**, or a **script** you execute locally.
+
+**What you can build (recommended pattern):**
+
+| Piece | Options |
+| ----- | ------- |
+| **Trigger** | **`workflow_dispatch`** (“send digest now”), **cron** (e.g. weekdays 18:00 in your TZ) for EOD, or **on release merge** / calendar rule for sprint end. |
+| **Short summary** | First lines of **`git log`** since last tag or `--since=…`; optional **`python scripts/plans-stats.py`** for plan-dashboard counts; one paragraph of “main actions / main changes” you or a template fills. |
+| **Release notes** | Link to **`docs/releases/X.Y.Z.md`** on `main` (or attach as workflow **artifact**); avoid pasting secrets or internal URLs. |
+| **Progress / PM view** | Paste the **Kanban** table from [SPRINTS_AND_MILESTONES.md](../plans/SPRINTS_AND_MILESTONES.md) or a **Mermaid `gantt`** block as **plain text** in the message. The agent can **draft** that Markdown in chat; **CI** sends it—you copy nothing manually if the workflow builds the body. |
+| **SMS** | **Twilio** (or similar) **HTTP API** from Actions; store **Account SID / auth token / From** in GitHub **secrets**; costs and compliance are **yours**. |
+| **Email** | SMTP via an Action (e.g. **`dawidd6/action-send-mail`**) or your provider’s REST API; **secrets** for credentials. |
+| **Low-friction** | **Telegram** `sendMessage` or **Slack** webhook (same as §2–§4)—often enough for “end of day” without SMS fees. |
+
+**Scope split:** Maintainer **digests** (this section) are separate from **product** notifications (scan finished, webhooks to tenants)—see **Notifications** in [PLANS_TODO.md](../plans/PLANS_TODO.md) (order 6).
+
+**Local-first pattern (Docker + bind mount):** Run **signald** / **signal-cli** or an SMS client **on your workstation or homelab**. Map **credentials and session data** into the container with **volumes** pointing at a **gitignored** directory—e.g. create **`docs/private/notify/`** using the tracked blueprint **[private.example/notify/README.md](../private.example/notify/README.md)**. Put **`.env`**, Signal state, and anything personal **only** there. **Trigger** delivery with a **script you execute** (or a local scheduler); the repo stays free of secrets. **Other contributors** replicate the **same layout** under **their** `docs/private/notify/` with **their** own keys and numbers—nothing sensitive is shared through Git.
+
+---
+
+## 8. Related docs
+
+- [private.example/notify/README.md](../private.example/notify/README.md) — local notify layout (copy to `docs/private/notify/`).
+- [BRANCH_AND_DOCKER_CLEANUP.md](BRANCH_AND_DOCKER_CLEANUP.md) — hygiene; §7 legacy remote.
 - [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md) — Priority band A.
 - [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md) — `origin` vs legacy remote.
 - Cursor: **`.cursor/rules/operator-notification-channels.mdc`** + **`.cursor/skills/operator-notification-channels/SKILL.md`** (agents editing workflows / KPI notify).
 
 ---
 
-*Last updated: backlog ops — multi-channel notifications + Signal/Telegram/Slack/GitHub guidance; KPI hook.*
+*Last updated: EOD/sprint digest pattern (SMS/email/chat via your automation); multi-channel + KPI hook.*
