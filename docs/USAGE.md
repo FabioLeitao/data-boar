@@ -97,8 +97,8 @@ Pre-built images are on Docker Hub: `fabioleitao/data_boar:latest` ([hub.docker.
   Example: `<http://localhost:8088>/` or `<http://your-server:8088>/`
 
 - **OpenAPI docs (interactive):**
-- Swagger UI: `<http://localhost:8088/doc>s`
-- ReDoc: `<http://localhost:8088/redo>c`
+  - Swagger UI: `http://localhost:8088/docs`
+  - ReDoc: `http://localhost:8088/redoc`
 - **Authentication:** By default the API does not require authentication; secure it at the reverse proxy or network level if exposed. You can optionally enable a shared API key: set `api.require_api_key: true` and `api.api_key` (or `api.api_key_from_env: "VAR"`) in config; then send **X-API-Key** or **Authorization: Bearer &lt;key&gt;** on each request (GET /health remains public). **For production deployments we recommend setting `require_api_key: true` and using a strong key from an environment variable** (e.g. `api.api_key_from_env: "AUDIT_API_KEY"`) so the key is not stored in the config file. See [SECURITY.md](../SECURITY.md#optional-api-key-enterprise) and the Configuration section below.
 
 ### Web dashboard
