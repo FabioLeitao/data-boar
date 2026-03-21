@@ -60,5 +60,5 @@
 
 ## Related
 
-- **[../PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)** §2 — full private path table  
+- **[../PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)** §2 — full private path table
 - **Homelab validation** “done” criteria: [HOMELAB_VALIDATION.md §12](HOMELAB_VALIDATION.md#12-when-you-are-done-with-a-lab-pass)

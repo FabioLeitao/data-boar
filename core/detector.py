@@ -21,6 +21,10 @@ To reduce false positives on song lyrics and music tablature/chord sheets:
 - In that context, weak patterns (DATE_DMY, PHONE_BR) are downgraded to MEDIUM; ML/DL confidence
   is penalized so borderline cases stay MEDIUM/LOW. Strong PII (CPF, EMAIL, CREDIT_CARD, SSN)
   still reports HIGH.
+- Open-source Markdown docs (README, CONTRIBUTING, …) with typical heading structure: same downgrade
+  as entertainment for ML-only highs (avoids ~99% on repo boilerplate scanned as filesystem targets).
+- Plain ``.txt`` files with many medium-short lines (typical lyric stanzas without ``verse`` headers)
+  and filenames with chord symbols in parentheses (e.g. ``Rosa(D).txt``) also widen entertainment context.
 """
 
 from pathlib import Path
@@ -442,6 +446,90 @@ def _looks_like_music_tab(sample: str) -> bool:
     ):
         return True
     return False
+
+
+# Basenames (without extension) that usually indicate OSS / project docs, not PII stores.
+_OSS_MARKDOWN_DOC_STEMS = frozenset(
+    {
+        "contributing",
+        "code_of_conduct",
+        "changelog",
+        "license",
+        "licence",
+        "copying",
+        "security",
+        "authors",
+        "governance",
+        "codeowners",
+        "support",
+        "maintaining",
+        "readme",
+        "history",
+    }
+)
+
+
+def _markdown_doc_basename_stem(file_name: str) -> str:
+    """Lowercase stem of final path component (``README.pt_BR.md`` → ``readme.pt_br``)."""
+    base = Path(file_name).name.lower()
+    for suf in (".md", ".markdown"):
+        if base.endswith(suf):
+            return base[: -len(suf)]
+    return base
+
+
+def _looks_like_open_source_markdown_doc(file_name: str, sample: str) -> bool:
+    """
+    Heuristic: file looks like a standard repository Markdown document (README, CONTRIBUTING, …)
+    with typical ``#`` headings. Used to downgrade ML-only false HIGH on scanned clone trees.
+    """
+    stem_full = _markdown_doc_basename_stem(file_name)
+    if not stem_full:
+        return False
+    # readme, readme.pt_br, contributing, etc.
+    first_part = stem_full.split(".")[0]
+    if first_part not in _OSS_MARKDOWN_DOC_STEMS and not first_part.startswith("readme"):
+        return False
+    if not (file_name.lower().endswith((".md", ".markdown"))):
+        return False
+    if not (sample or "").strip():
+        return False
+    heading_hits = len(re.findall(r"(?m)^#+\s+\S", sample))
+    if heading_hits >= 2:
+        return True
+    if heading_hits >= 1 and len(sample.strip()) > 400:
+        return True
+    return False
+
+
+def _looks_like_plain_lyrics_txt_file(file_name: str, sample: str) -> bool:
+    """
+    Heuristic: ``.txt`` with several non-empty lines of moderate length (song lyrics without
+    explicit ``verse``/``chorus`` headers). Catches cases where average line length exceeded
+    ``_looks_like_lyrics``'s stricter prose threshold.
+    """
+    if not file_name.lower().endswith(".txt"):
+        return False
+    lines = [ln.strip() for ln in sample.splitlines() if ln.strip()]
+    if len(lines) < 5:
+        return False
+    lengths = sorted(len(ln) for ln in lines)
+    med = lengths[len(lengths) // 2]
+    longest = lengths[-1]
+    if med > 78 or longest > 200:
+        return False
+    return True
+
+
+_FILENAME_CHORD_IN_PARENS = re.compile(
+    r"\([A-G](?:#|b|♭)?(?:m(?:aj|in)?|dim|aug|sus|add\d+|maj7?|m7|7)?\)",
+    re.IGNORECASE,
+)
+
+
+def _filename_suggests_chord_sheet(file_name: str) -> bool:
+    """``Rosa(D).txt``, ``Song(Am).txt`` — filename hints at chord chart / cifra."""
+    return bool(_FILENAME_CHORD_IN_PARENS.search(Path(file_name).name))
 
 
 def _load_regex_overrides(
@@ -949,9 +1037,13 @@ class SensitivityDetector:
             ml_dl_text = f"{col_for_ml} {sample_only}".strip()
         else:
             ml_dl_text = combined
-        entertainment_context = _looks_like_lyrics(
-            sample_only
-        ) or _looks_like_music_tab(sample_only)
+        entertainment_context = (
+            _looks_like_lyrics(sample_only)
+            or _looks_like_music_tab(sample_only)
+            or _looks_like_open_source_markdown_doc(column_name, sample_only)
+            or _looks_like_plain_lyrics_txt_file(column_name, sample_only)
+            or _filename_suggests_chord_sheet(column_name)
+        )
 
         # Heuristic: possible minor data based on DOB/age (EN + PT-BR)
         possible_minor = _detect_possible_minor(
