@@ -14,6 +14,17 @@ Você pode **definir as palavras de treino para ML e DL** no arquivo de config p
 
 **Risco de identificação agregada / cruzada:** Quando várias categorias de quasi-identificadores (ex.: gênero, cargo, saúde, endereço, telefone) aparecem na **mesma tabela ou arquivo**, o gerador de relatório sinaliza isso como **caso especial** para DPO e compliance (LGPD Art. 5, GDPR Recital 26 – identificabilidade pela combinação de dados). O relatório Excel inclui a aba **"Cross-ref data – ident. risk"** listando cada caso (alvo, tabela/arquivo, colunas envolvidas, categorias, explicação) e uma recomendação de alta prioridade. Isso é opcional e configurável via `detection.aggregated_identification_enabled`, `aggregated_min_categories` e `quasi_identifier_mapping`. Consulte [PLAN_AGGREGATED_IDENTIFICATION.md](plans/completed/PLAN_AGGREGATED_IDENTIFICATION.md) para o desenho e detalhes de config.
 
+### Contexto embutido: letras, tablaturas, Markdown de projeto, `.txt` de letra
+
+O detector aplica tratamento de **entretenimento / documento de baixo risco de PII** (penalidade na confiança; ML só **HIGH** limitado a **MEDIUM** com padrões como `ML_POTENTIAL_ENTERTAINMENT`) quando:
+
+- O conteúdo parece **letra de música** (palavras-chave ou muitas linhas curtas), **tablatura** ou **grade de acordes** (incluindo **cifras** brasileiras com vários acordes por linha).
+- O **nome do arquivo** sugere **Markdown** típico de repositório aberto (`README`, `CONTRIBUTING`, `CODE_OF_CONDUCT`, `CHANGELOG`, `LICENSE`, `SECURITY`, `HISTORY`, …) **e** o corpo tem títulos Markdown (`#` / `##`).
+- O arquivo é **`.txt`** com várias linhas de **tamanho médio curto** (estrofes sem cabeçalhos explícitos `Verse` / `Chorus`).
+- O **nome base** traz **acorde entre parênteses** (ex.: `Rosa(D).txt`), indicando cifra.
+
+**Regex forte** (CPF, e-mail, cartão, …) ainda produz **HIGH** quando aplicável. Subir **`medium_confidence_threshold`** afeta sobretudo a faixa MEDIUM; o limite padrão **70** para ML só **HIGH** não muda — essas heurísticas atacam **HIGH** falso em clones de repo e bibliotecas de música no filesystem.
+
 ---
 
 ## Formatos de CNPJ (Brasil): numérico legado e alfanumérico
