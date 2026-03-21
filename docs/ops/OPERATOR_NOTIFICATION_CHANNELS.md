@@ -45,6 +45,7 @@ Community setups often use **`signal-cli`** or **`signald`** (REST/gRPC) in **Do
 - **Operational:** container restarts, pairing/QR, backups—plan for **recovery** if the linked session breaks.
 - **Legal / ToS:** use only official or well-audited images; comply with **Signal** terms and local law.
 - **Automation:** the agent in Cursor **cannot** hold your Signal session; only **your** runners (home server, laptop script, CI with secrets you control) should call the API.
+- **LAB‑OP offload:** Running the Signal Docker image on **another lab machine** (not the dev PC) is a good fit: your workstation sends **`curl`** (headers + JSON body) to the REST API on the LAN—same integration style as **Uptime Kuma** webhooks. Lock the service to **private network**; store the URL/token only under **gitignored** `docs/private/notify/`. See **[private.example/notify/README.md](../private.example/notify/README.md)** § *Signal on a different machine*.
 
 **Not blocking:** treat Signal as **tier D** after GitHub + one messaging webhook.
 
