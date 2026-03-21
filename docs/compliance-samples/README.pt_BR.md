@@ -10,8 +10,8 @@ Arquivos de configuração de exemplo para habilitar **frameworks de conformidad
 | ---------                          | ------------                                                                                                                                                    |
 | **compliance-sample-lgpd.yaml**    | LGPD (Brasil): termos bilíngues PT-BR + EN (ex.: documento oficial / official document, RG, CNH / Driver License); regex RG/CEP; para implantações brasileiras. |
 | **compliance-sample-uk_gdpr.yaml** | UK GDPR (Reino Unido pós-Brexit + semelhante à UE): norm_tag e recommendation overrides alinhados à ICO e disposições britânicas.                               |
-| **compliance-sample-eu_gdpr.yaml** | EU GDPR (EEE): Art. 4(1) Reg. UE 2016/679, EDPB, autoridades nacionais; termos opcionais EN + DE/FR.                                                             |
-| **compliance-sample-benelux.yaml** | Benelux (BE, NL, LU): base EU GDPR + IDs nacionais (BSN, NISS, ID Luxemburgo) e overrides para DPAs nacionais; termos EN + NL/FR.                                |
+| **compliance-sample-eu_gdpr.yaml** | EU GDPR (EEE): Art. 4(1) Reg. UE 2016/679, EDPB, autoridades nacionais; termos opcionais EN + DE/FR.                                                            |
+| **compliance-sample-benelux.yaml** | Benelux (BE, NL, LU): base EU GDPR + IDs nacionais (BSN, NISS, ID Luxemburgo) e overrides para DPAs nacionais; termos EN + NL/FR.                               |
 | **compliance-sample-pipeda.yaml**  | PIPEDA (Canadá, setor privado federal): informação pessoal, consentimento e identificadores canadenses (ex.: SIN).                                              |
 | **compliance-sample-popia.yaml**   | POPIA (África do Sul): responsável pelo tratamento, informação pessoal e identificadores sul-africanos.                                                         |
 | **compliance-sample-appi.yaml**    | APPI (Japão): informação pessoal e dados pessoais retidos; termos e overrides alinhados à PPC.                                                                  |
@@ -23,26 +23,26 @@ Arquivos de configuração de exemplo para habilitar **frameworks de conformidad
 
 Ao escolher ou criar uma amostra, considere o(s) **idioma(s)** da região alvo para que nomes de colunas e rótulos nos dados sejam detectados:
 
-| Regulamento / região      | Idioma(s) recomendado(s) para termos e rótulos                                                           |
-| --------------------      | ------------------------------------------------                                                         |
-| **LGPD (Brasil)**         | Português (BR) e inglês (ex.: "documento oficial" e "official document", "CNH" e "Driver License").      |
-| **PIPEDA (Canadá)**       | Inglês e francês (ex.: "personal information" e "renseignements personnels") ao varrer dados canadenses. |
-| **UK GDPR**               | Inglês.                                                                                                  |
-| **EU GDPR (EEE)**         | Inglês; opcional alemão/francês para dados multilingues na UE.                                         |
-| **Benelux (BE, NL, LU)**  | Inglês mais holandês e/ou francês (ex.: BSN, NISS, nomes de coluna de ID nacional).                     |
-| **POPIA (África do Sul)** | Inglês; adicione idiomas locais nos termos se seus dados usarem.                                         |
-| **APPI (Japão)**          | Japonês e/ou inglês conforme os nomes de colunas.                                                        |
-| **PCI-DSS**               | Inglês.                                                                                                  |
-| **Filipinas (DPA)**       | Inglês.                                                                                                  |
-| **Austrália / NZ**        | Inglês.                                                                                                  |
-| **Singapura (PDPA)**      | Inglês.                                                                                                  |
-| **UAE / Arábia Saudita (PDPL)** | Inglês; opcional árabe para nomes de colunas.                                          |
-| **Argentina / Colômbia / Chile** | Espanhol e inglês (ex.: datos personales / personal data).                        |
-| **Quênia / Nigéria**      | Inglês.                                                                                                  |
-| **Marrocos**              | Francês e/ou árabe conforme relevante.                                                                   |
-| **Índia (DPDP)**          | Inglês.                                                                                                  |
-| **Turquia (KVKK)**        | Turco e inglês (ex.: kişisel veri / personal data).                                                      |
-| **Suíça (FADP)**          | Inglês; opcional DE/FR/IT.                                                                               |
+| Regulamento / região             | Idioma(s) recomendado(s) para termos e rótulos                                                           |
+| --------------------             | ------------------------------------------------                                                         |
+| **LGPD (Brasil)**                | Português (BR) e inglês (ex.: "documento oficial" e "official document", "CNH" e "Driver License").      |
+| **PIPEDA (Canadá)**              | Inglês e francês (ex.: "personal information" e "renseignements personnels") ao varrer dados canadenses. |
+| **UK GDPR**                      | Inglês.                                                                                                  |
+| **EU GDPR (EEE)**                | Inglês; opcional alemão/francês para dados multilingues na UE.                                           |
+| **Benelux (BE, NL, LU)**         | Inglês mais holandês e/ou francês (ex.: BSN, NISS, nomes de coluna de ID nacional).                      |
+| **POPIA (África do Sul)**        | Inglês; adicione idiomas locais nos termos se seus dados usarem.                                         |
+| **APPI (Japão)**                 | Japonês e/ou inglês conforme os nomes de colunas.                                                        |
+| **PCI-DSS**                      | Inglês.                                                                                                  |
+| **Filipinas (DPA)**              | Inglês.                                                                                                  |
+| **Austrália / NZ**               | Inglês.                                                                                                  |
+| **Singapura (PDPA)**             | Inglês.                                                                                                  |
+| **UAE / Arábia Saudita (PDPL)**  | Inglês; opcional árabe para nomes de colunas.                                                            |
+| **Argentina / Colômbia / Chile** | Espanhol e inglês (ex.: datos personales / personal data).                                               |
+| **Quênia / Nigéria**             | Inglês.                                                                                                  |
+| **Marrocos**                     | Francês e/ou árabe conforme relevante.                                                                   |
+| **Índia (DPDP)**                 | Inglês.                                                                                                  |
+| **Turquia (KVKK)**               | Turco e inglês (ex.: kişisel veri / personal data).                                                      |
+| **Suíça (FADP)**                 | Inglês; opcional DE/FR/IT.                                                                               |
 
 Documente no cabeçalho da amostra ou em [COMPLIANCE_FRAMEWORKS](../COMPLIANCE_FRAMEWORKS.pt_BR.md) quando uma amostra incluir termos em mais de um idioma. Veja também a regra **.cursor/rules/compliance-samples-language.mdc**.
 

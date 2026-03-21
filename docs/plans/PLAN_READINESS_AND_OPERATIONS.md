@@ -17,13 +17,13 @@
 
 ## 2. Workflow and automation (quick wins)
 
-| Item                                    | To-do / status                                                                                                                                                                                                                                                                 |
-| ------                                  | ----------------                                                                                                                                                                                                                                                               |
-| **Ruff in CI**                          | Done (lint job in `ci.yml`).                                                                                                                                                                                                                                                   |
-| **Pre-commit**                          | Done: Ruff check (--fix) and Ruff format (--check) run on commit. See `.pre-commit-config.yaml` and rule `pre-commit-ruff`. Optional: add markdown lint to pre-commit if desired.                                                                                              |
-| **Check-all script**                    | Done: `scripts/check-all.ps1` wraps `scripts/pre-commit-and-tests.ps1` so `.\scripts\check-all.ps1` runs lint/format (pre-commit) + full pytest in one command. Use as a local gate before Commit/PR when Agent Review is misbehaving.                                          |
-| **Release checklist**                   | Done: In CONTRIBUTING (audit, docs, secrets, lockfile). Release history = git + `docs/releases/`; no separate CHANGELOG required.                                                                                                                                              |
-| **QUALITY_WORKFLOW_RECOMMENDATIONS.md** | Done: Lists Bandit, Semgrep, mypy, SBOM. Adopt incrementally when you want an extra safety layer; not required for “being set.”                                                                                                                                                |
+| Item                                    | To-do / status                                                                                                                                                                                                                         |
+| ------                                  | ----------------                                                                                                                                                                                                                       |
+| **Ruff in CI**                          | Done (lint job in `ci.yml`).                                                                                                                                                                                                           |
+| **Pre-commit**                          | Done: Ruff check (--fix) and Ruff format (--check) run on commit. See `.pre-commit-config.yaml` and rule `pre-commit-ruff`. Optional: add markdown lint to pre-commit if desired.                                                      |
+| **Check-all script**                    | Done: `scripts/check-all.ps1` wraps `scripts/pre-commit-and-tests.ps1` so `.\scripts\check-all.ps1` runs lint/format (pre-commit) + full pytest in one command. Use as a local gate before Commit/PR when Agent Review is misbehaving. |
+| **Release checklist**                   | Done: In CONTRIBUTING (audit, docs, secrets, lockfile). Release history = git + `docs/releases/`; no separate CHANGELOG required.                                                                                                      |
+| **QUALITY_WORKFLOW_RECOMMENDATIONS.md** | Done: Lists Bandit, Semgrep, mypy, SBOM. Adopt incrementally when you want an extra safety layer; not required for “being set.”                                                                                                        |
 
 ---
 
@@ -74,21 +74,21 @@ Each item is a small doc update or script. Status: **Done** | **Not started** | 
 
 ### 4.6 Dependencies and upgrades
 
-| To-do                                                                                                                                                                                             | Status      |
-| -------                                                                                                                                                                                           | --------    |
-| Python/platform support sentence in README or CONTRIBUTING: we support Python 3.12 and 3.13 on Linux, macOS, Windows; we will announce deprecation of a version at least one minor release ahead. | Not started |
-| Optional: written “upgrade policy” (e.g. we refresh lockfile at least every N months or when a critical CVE appears).                                                                             | Optional    |
-| Docker/Dependabot vulnerability triage: for each release cycle, review GitHub Dependabot alerts and Docker Scout quickview for the base image; classify P0/P1 vulns and decide which to patch in-code vs via base-image bump.           | Tracked (partially done) |
-| Future Cursor rule/skill: add a security rule/skill that reminds the agent to check Dependabot and Docker Scout summaries before declaring a release “prod-ready”, within token constraints.                                           | Optional    |
+| To-do                                                                                                                                                                                                                         | Status                   |
+| -------                                                                                                                                                                                                                       | --------                 |
+| Python/platform support sentence in README or CONTRIBUTING: we support Python 3.12 and 3.13 on Linux, macOS, Windows; we will announce deprecation of a version at least one minor release ahead.                             | Not started              |
+| Optional: written “upgrade policy” (e.g. we refresh lockfile at least every N months or when a critical CVE appears).                                                                                                         | Optional                 |
+| Docker/Dependabot vulnerability triage: for each release cycle, review GitHub Dependabot alerts and Docker Scout quickview for the base image; classify P0/P1 vulns and decide which to patch in-code vs via base-image bump. | Tracked (partially done) |
+| Future Cursor rule/skill: add a security rule/skill that reminds the agent to check Dependabot and Docker Scout summaries before declaring a release “prod-ready”, within token constraints.                                  | Optional                 |
 
 ### 4.7 W-KPI baseline (release / CI / security ops)
 
 Token-aware baseline with 2 manual KPIs (no new tooling required):
 
-| KPI | How to measure | Cadence | Initial target |
-| --- | --- | --- | --- |
-| CI pass rate | Last 10 PRs to `main`: count green CI checks before merge (`successful PRs / total PRs`) | Weekly | >= 90% |
-| Security maintenance latency | Business days between opening and merge/mitigation of high/critical Dependabot alert/PR | Weekly | <= 5 business days for high/critical |
+| KPI                          | How to measure                                                                           | Cadence | Initial target                       |
+| ---                          | ---                                                                                      | ---     | ---                                  |
+| CI pass rate                 | Last 10 PRs to `main`: count green CI checks before merge (`successful PRs / total PRs`) | Weekly  | >= 90%                               |
+| Security maintenance latency | Business days between opening and merge/mitigation of high/critical Dependabot alert/PR  | Weekly  | <= 5 business days for high/critical |
 
 Notes:
 

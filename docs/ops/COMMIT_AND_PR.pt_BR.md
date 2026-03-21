@@ -86,13 +86,13 @@ Na raiz do repositório (PowerShell):
 
 Quando você quiser **verificar**, rodar **pre-commit**, **fazer commit**, **descrever** e criar um **PR seguro e sincronizado** usando os scripts do repositório (melhor para economizar tokens e ter uma única fonte de verdade), use estas **ações concretas nesta ordem** na raiz do repositório (PowerShell):
 
-| Passo | Objetivo | Comando |
-|-------|----------|---------|
-| 0 | **Opcional:** PRs Dependabot + Docker Scout quickview (somente leitura; exige `gh`, Docker opcional) | `.\scripts\maintenance-check.ps1` |
-| 1 | **Check + pre-commit** (Ruff lint, format, markdown, pytest completo em uma execução) | `.\scripts\check-all.ps1` |
-| 2 | **Preview** (ver o que seria commitado; sem stage, sem commit) | `.\scripts\preview-commit.ps1` |
-| 3 | **Propor** um título curto e corpo do PR em tópicos a partir da lista de arquivos e do contexto | (você ou o agente sugere título e corpo) |
-| 4 | **Commit + descrever + PR seguro e sincronizado** (commit com título/corpo, rodar testes de novo, fetch+rebase se atrás, push, abrir PR no navegador) | `.\scripts\commit-or-pr.ps1 -Action PR -Title "Seu título" -Body "Tópico1`nTópico2" -RunTests` |
+| Passo   | Objetivo                                                                                                                                              | Comando                                                                                        |
+| ------- | ----------                                                                                                                                            | ---------                                                                                      |
+| 0       | **Opcional:** PRs Dependabot + Docker Scout quickview (somente leitura; exige `gh`, Docker opcional)                                                  | `.\scripts\maintenance-check.ps1`                                                              |
+| 1       | **Check + pre-commit** (Ruff lint, format, markdown, pytest completo em uma execução)                                                                 | `.\scripts\check-all.ps1`                                                                      |
+| 2       | **Preview** (ver o que seria commitado; sem stage, sem commit)                                                                                        | `.\scripts\preview-commit.ps1`                                                                 |
+| 3       | **Propor** um título curto e corpo do PR em tópicos a partir da lista de arquivos e do contexto                                                       | (você ou o agente sugere título e corpo)                                                       |
+| 4       | **Commit + descrever + PR seguro e sincronizado** (commit com título/corpo, rodar testes de novo, fetch+rebase se atrás, push, abrir PR no navegador) | `.\scripts\commit-or-pr.ps1 -Action PR -Title "Seu título" -Body "Tópico1`nTópico2" -RunTests` |
 
 Para um **corpo de PR longo**, use:
 

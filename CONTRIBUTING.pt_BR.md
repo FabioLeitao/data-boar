@@ -46,6 +46,12 @@ Obrigado por considerar contribuir. Este documento cobre a configuração local,
 - **Segurança:** Não publique detalhes de exploração em público. Use o modelo [Security issue](.github/ISSUE_TEMPLATE/security.md) (apenas em alto nível) ou o processo em [SECURITY.md](SECURITY.md) ([pt-BR](SECURITY.pt_BR.md)).
 - **Pull requests:** Use o [modelo de PR](.github/PULL_REQUEST_TEMPLATE.md). Garanta que os testes passem (`uv run pytest -v -W error`; veja [docs/TESTING.md](docs/TESTING.md) ([pt-BR](docs/TESTING.pt_BR.md))) e que docs/README sejam atualizados quando o comportamento ou a configuração mudar.
 
+### Higiene do repositório público (LAN, credenciais)
+
+- **`config.yaml` na raiz:** Está no `.gitignore`—costuma ter **caminhos**, hosts de BD e senhas. **Não** use `git add -f config.yaml`. Copie de `deploy/config.example.yaml` e mantenha segredos só localmente. Se o arquivo já foi commitado por engano, use `git rm --cached config.yaml` para parar de rastreá-lo; o **histórico do Git** ainda pode ter blobs antigos—use `git filter-repo` / BFG e **troque** credenciais expostas se o repositório foi público.
+- **Homelab / notas do operador:** Evite **hostnames reais**, **IPs RFC1918**, **usuários Linux** ou caminhos de **`$HOME`** em Markdown versionado; use placeholders e guarde detalhes em **`docs/private/homelab/`** (gitignored) ou wiki externa. **Não** coloque links Markdown em docs públicos para caminhos dentro de `docs/private/`. Política: [docs/PRIVATE_OPERATOR_NOTES.pt_BR.md](docs/PRIVATE_OPERATOR_NOTES.pt_BR.md). Playbook genérico: [docs/ops/HOMELAB_VALIDATION.pt_BR.md](docs/ops/HOMELAB_VALIDATION.pt_BR.md) / §9 EN.
+- **Gestor de senhas (ex. Bitwarden):** Guardar senhas de BD, chaves de API e tokens do lab no **Bitwarden** (plano grátis costuma bastar para uso solo) é um bom **cofre do operador**; em runtime prefira **`pass_from_env`** / `*_from_env`. Veja [docs/ops/OPERATOR_SECRETS_BITWARDEN.pt_BR.md](docs/ops/OPERATOR_SECRETS_BITWARDEN.pt_BR.md).
+
 ### Estado do PR e conselhos ao assistente (sincronizar antes de citar número)
 
 Assistentes de IA e humanos **não** devem assumir que um PR ainda está aberto ou que o `main` local bate com o GitHub **sem verificar** — o contexto do chat pode citar um PR **já mergeado** (ex.: #80) enquanto o seguinte (#81) também já foi mergeado.
