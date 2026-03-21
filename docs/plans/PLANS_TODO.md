@@ -98,6 +98,8 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 
 ## Recommended sequence (aggregated, token-aware)
 
+**Optional PM view:** The same order is grouped into **token-aware sprints**, **milestones** (M-TRUST, M-OBS, M-LAB, …), **SRE/governance** notes, and **Mermaid Gantt / Kanban** patterns in **[SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md)** ([pt-BR](SPRINTS_AND_MILESTONES.pt_BR.md))—useful for retros, sidequests (housekeeping, lab rush), and **operator-only** tasks (Hub, hardware, study).
+
 The list below is ordered for the current billing cycle, with a focus on:
 
 - **Near-term, high-value work** that fits in the remaining Pro usage.
@@ -247,6 +249,8 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
 **Additional data soup formats:** [PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md](PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md) – additional formats (epub, parquet, avro, dbf) and rich media / steganography containers (images, audio, video). Prioritise after compressed + content-type; stego as optional future phase.
 
 **Brand micro-copy reminder (dashBOARd):** Revisit whether/how to label the **web dashboard** with the recommended sub-brand nickname `dashBOARd` (while keeping the decision-maker pitch unchanged). Keep changes low-noise and professional: prefer page title/header parenthetical (and minimal doc mentions in technical overview / USAGE / TECH_GUIDE). If we apply it, also update version bump / release notes accordingly. Status: ✅ Implemented (nav + About); revisit on next minor bump if needed.
+
+**Website + extra doc languages (pre-GTM / production-ready):** ⬜ **Reminder only** — when closer to **production-ready**, consider (1) **documentation** in additional locales that justify maintenance cost (e.g. **Spanish**, **Japanese** — examples only); (2) a **full public marketing site** (possibly **multilingual**) with pitch (short + optional deep), **use cases**, **how-tos**, links to **synced** technical docs and **GitHub/Docker releases**, and branding aligned with Data Boar / dashBOARd. *Inspiration for **content pillars** (not necessarily layout):* projects like **FreeBSD**, **Ubuntu**, **Snort**, **pfSense** — clear product story, downloads, docs entry, trust signals. Tracked detail: **[PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md)**; hosting memo: [HOSTING_AND_WEBSITE_OPTIONS.md](../HOSTING_AND_WEBSITE_OPTIONS.md).
 
 - **H4/U3 far horizon (post-lato / master's scenario):** Master's degree path and related portfolio milestones can be tracked here when activated. Status: ⬜ Backlog.
 - **H5/U3 dream horizon (PhD thesis scenario):** PhD thesis-aligned research/roadmap items can be tracked here when activated. Status: ⬜ Backlog.

@@ -10,4 +10,4 @@
 
 **Bitwarden Authenticator (ex. iPhone):** QR → **TOTP/OTP**, sincronização com a conta Bitwarden — alinhado ao mesmo cofre que extensão/desktop; capacidades exatas conforme plano e documentação atual da Bitwarden.
 
-**Confirmar `bw` em cada máquina:** o repositório **não** consegue ver o seu Latitude ou mini-PC. Em cada Linux: `command -v bw && bw --version`. Ou corra `scripts/homelab-host-report.sh` (inclui bloco `bw` se existir no `PATH`). Ver secção **“Verify bw”** no EN.
+**Confirmar `bw` em cada máquina:** o repositório **não** consegue ver o seu Latitude ou mini-PC. Em cada Linux: `command -v bw && bw --version`. Ou **execute** `scripts/homelab-host-report.sh` (inclui bloco `bw` se existir no `PATH`). Ver a seção **“Verify bw”** no EN.

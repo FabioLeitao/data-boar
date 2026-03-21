@@ -1,0 +1,205 @@
+# Sprints, milestones, and light PM traceability
+
+**Purpose:** Map [PLANS_TODO.md](PLANS_TODO.md) execution to **sprint-sized** focus windows, **milestones** you can celebrate, and optional **Gantt / Kanban** views—while staying **[token-aware](TOKEN_AWARE_USAGE.md)** and honest that **resources = you + agent** (not a PMO team).
+
+**Português (Brasil):** [SPRINTS_AND_MILESTONES.pt_BR.md](SPRINTS_AND_MILESTONES.pt_BR.md) — keep **EN + pt-BR** sections aligned when you change themes, milestones, or the SRE block.
+
+**Policy:** [PLANS_TODO.md](PLANS_TODO.md) stays **English-only** for plan history. This **sprint/SRE guide** is intentionally **bilingual** (like operator-facing docs) so you can skim in pt-BR when tired. The doc does **not** replace `PLANS_TODO`; it **aggregates** the same order into time-boxed **themes**. After each sprint (or mid-sprint), refresh the [status dashboard](PLANS_TODO.md) with `python scripts/plans-stats.py --write` when table rows change.
+
+---
+
+## 1. How this relates to PMBOK / PRINCE2 (scaled down)
+
+| Idea (big PM) | Here (2-person, repo-centric) |
+| ------------- | ----------------------------- |
+| **Charter / business case** | `README.md`, `PLANS_TODO.md` plan status line, commercial/licensing docs. |
+| **Stages / phases** | **Hygiene → Lab proof → Tier-2 feature slices → Release** (repeat). Sidequests (housekeeping, homelab “rush”) are **change requests**: they swap into the current sprint or get a **buffer** sprint. |
+| **Work breakdown** | Plan files + `PLANS_TODO` tables; **one row or one slice per agent session** when token-saving. |
+| **Roles** | **Operator:** manual (Hub, hardware, study, legal, merges). **Agent:** code/docs/tests/checklists in-repo. |
+| **Monitoring** | Git history, PRs, `plans-stats.py`, release notes under `docs/releases/`, optional GitHub Issues/Projects. |
+| **Risk / quality** | Priority band **A1–A3** before big feature bursts; `scripts/check-all.ps1`; home lab per [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md). |
+
+**PRINCE2-style tolerance:** For each sprint, define **time** (e.g. 1–2 weeks), **scope** (one primary theme + optional micro-fixes), and **quality** (tests + docs updated for shipped work). If scope explodes, **split** into the next sprint instead of inflating the current one.
+
+---
+
+## 2. Gantt-style visualization (Mermaid)
+
+GitHub (and many Markdown previews) render **Mermaid** `gantt` blocks. The chart below uses **placeholder dates** only to show **relative sequencing**—not a commitment calendar. When you run a real sprint, copy the block and set dates to your sprint start, or use GitHub Milestones with due dates.
+
+**Legend:** **O** = operator-led; **A** = agent-heavy; **M** = mixed.
+
+```mermaid
+gantt
+    title Indicative sprint lanes (edit dates when you schedule)
+    dateFormat  YYYY-MM-DD
+
+    section Hygiene (when critical)
+    Band A through A3 (trust baseline)     :crit, hyg1, 2026-03-01, 10d
+
+    section Operator manual
+    Home lab order –1L (HOMELAB 9–12)     :o1, after hyg1, 14d
+
+    section Agent-heavy (one plan / slice)
+    Tier-2 slice e.g. crypto / DS inv / FN  :a1, after o1, 14d
+
+    section Buffer / sidequests
+    Housekeeping PRs, docs, LAB-OP gaps     :b1, after a1, 10d
+```
+
+**How to use without lying to the chart:** keep **one active “primary” bar** per calendar week; park the rest in **Backlog** (Kanban below). **Sidequests** consume the **buffer** lane or replace the feature lane for that week—explicitly.
+
+---
+
+## 3. Kanban-style board (Markdown mirror)
+
+Copy this table into a GitHub **Project** board or a personal doc; move rows by **editing the Status** column each retro.
+
+| Status | Item | Owner | Source (plan order / doc) |
+| ------ | ---- | ----- | ------------------------- |
+| **Backlog** | Dependabot / alerts triage | M | `PLANS_TODO` –1, band A1 |
+| **Backlog** | Docker Scout + image rebuild | M | –1b, A2 |
+| **Backlog** | Hub tag hygiene | **Operator** | A3 |
+| **Backlog** | Home lab §1+§2 (+ connector) | **Operator** (agent: doc gaps) | –1L, [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md) |
+| **Backlog** | FN reduction priorities 5+ | A/M | [PLAN_ADDITIONAL_DETECTION…](PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md) |
+| **Backlog** | Strong crypto Phase 1 | A/M | `PLANS_TODO` order 4 |
+| **Backlog** | Data source inventory Phase 1 | A/M | order 5 |
+| **Backlog** | Notifications Phase 1 | A/M | order 6 |
+| **Selected** | *(one row only for token-aware week)* | — | Pick from “What to start next” |
+| **In progress** | *(current session scope)* | — | Same as TOKEN_AWARE “one plan or one slice” |
+| **Blocked** | *(waiting on operator: hardware, Hub, counsel)* | **Operator** | Note blocker in PR or private runbook |
+| **Done** | *(shipped + tests + doc tick)* | — | Update `PLANS_TODO` + plan file |
+
+**Kanban WIP limit:** **1** primary feature theme in **In progress** for agent sessions; **operator** tasks (study, lab hardware) can run **in parallel** on calendar time but should not add a second **agent-heavy** theme without explicit agreement.
+
+---
+
+## 4. Recommended sprints (aggregated, token-optimized)
+
+Sprints are **themes** of 1–2 weeks wall-clock; inside each, you still execute **one slice per agent session** per [TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md). **Reorder** when Priority band **A** is red.
+
+| Sprint | Theme | Primary outcomes | Operator moments (your calendar) | Agent sessions (typical) |
+| ------ | ----- | ---------------- | ---------------------------------- | ------------------------ |
+| **S0 – Trust burst** | Hygiene | A1–A3 (min), –1, –1b green or documented | GitHub Security, Hub UI, approve/merge PRs | `pyproject`/lock/export, Dockerfile/Scout notes, small doc PRs |
+| **S0b – Operability (optional)** | SRE slice | One **readiness** item: runbook pointer, backup note, or KPI hook—see §7 and [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) §4.3–4.7 | You validate steps on a real deploy path | Short doc/script PR only; no new feature plan |
+| **S1 – Lab proof** | –1L | HOMELAB baseline + ≥1 connector path; private dated note | SSH, VMs, Docker on second host, record evidence in `docs/private/` | Fix playbook gaps, `docs/ops` only if you find contradictions |
+| **S2 – Detection depth** | FN / hints | One or two rows from FN plan (e.g. 5, 6, or 10–11)—**not all** | Config review on real data if needed | Implementation + tests + SENSITIVITY_DETECTION docs |
+| **S3 – Inventory / crypto** | Tier-2 vertical | **Either** Strong crypto Ph1 **or** Data source Ph1 (pick one sprint) | Validate report/CLI behaviour on a real scan | Schema, wiring, tests, EN+pt-BR operator docs |
+| **S4 – Signals out** | Notifications | Phase 1 webhook (or first channel) + docs | Provide test webhook URL; decide channel policy | Config shape, module, examples |
+| **S5 – Buffer / maintenance** | Sidequest control | Housekeeping PRs, operator-help sync, branch cleanup, LAB-OP private notes | Manual merges, cert study blocks (separate calendar) | Small doc/test PRs; no new large plan |
+| **S6+** | Repeat or defer | Next row in “What to start next” or deferred tier | As needed | Same one-slice discipline |
+
+**Study / certifications:** Treat as a **parallel swimlane** (operator-only). Slot **fixed blocks** (e.g. 1–2×/week) **after** one agent slice that day, not mixed with deep coding—per `TOKEN_AWARE_USAGE.md` §3 and [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.2.
+
+**Homelab “rush”:** Same as **S1** or **S5**; if it **interrupts** S2–S4, **rename** the sprint to “Lab interrupt” and **resume** the previous theme next—preserves narrative for retros.
+
+### 4.1 Commercial entitlement, activation, and dashboard/API access (not yet a numbered sprint)
+
+The table **S0–S6** does **not** yet include a dedicated row for **subscription vs lab vs consulting SKUs**, **stronger runtime activation/blocking**, or **authentication / RBAC** on the **dashBOARd** and **API**. Today, **Phase 1** licensing is in-repo ([`LICENSING_SPEC.md`](../LICENSING_SPEC.md): `open` / `enforced`, JWT, trial watermarking, revocation); **partner / tier / consulting** claims are a **documented future** extension—see **Priority band A** (A4 private issuer, A7 legal) in [PLANS_TODO.md](PLANS_TODO.md).
+
+**Recommended placement in the timeline**
+
+- **Do not defer** until “after all of Tier 2” if you will expose the UI/API beyond a **single trusted operator** on loopback. As soon as **M-LAB** is credible and you aim at **paid subscription** or **shared network** deploys, treat **M-ACCESS** (below) as a **first-class theme**—often **one focused sprint** **interleaved with S2–S4** (e.g. after **S1** or swapping with one Tier-2 slice), **not** only in **S6+**.
+- **Order of work (pragmatic):** (1) **Legal + product:** SKU matrix (permanent subscription, trial, partner, lab/consulting) → JWT claims and issuer templates in the **private** issuer repo—**before** baking enforcement into sales contracts. (2) **Fast hardening:** document a **reference pattern** putting the app behind a **reverse proxy** with **OIDC** (e.g. OAuth2 Proxy, Traefik, Caddy) so Microsoft/Google/Entra-style login protects the surface **without** waiting for full in-app auth. (3) **In-app:** API keys or **Bearer** on sensitive routes; session or token gate for dashboard HTML/API used by the UI. (4) **RBAC:** roles such as viewer / operator / admin mapped to identity claims. (5) **Later:** first-class SSO integration, **TOTP**, **WebAuthn / passkeys** (passwordless, comparable to Microsoft Authenticator flows for Office 365). **Bitwarden** (or similar) fits best as **secrets vault** for deployment and client credentials—not usually as the primary **IdP**; align with the customer’s corporate identity (Entra ID, Okta, etc.).
+- **Consulting / lab:** distinguish **entitlement** (what the token allows: e.g. consulting-only, row caps, watermark) from **authentication** (who opened the dashBOARd). Both are needed for a clean commercial story.
+
+**Milestone:** **M-ACCESS** (see §5)—“subscription-ready” surfaces and documented identity path.
+
+---
+
+## 5. Milestones (every few sprints)
+
+Use GitHub **Milestones** or release tags; below is the **semantic** layer aligned with existing shipped work (e.g. **1.6.4**).
+
+| Milestone | Meaning | “Done when” (evidence) |
+| --------- | ------- | ---------------------- |
+| **M-TRUST** | Public artifacts trustworthy | A1–A3 satisfied; Dependabot/Scout documented; image policy clear |
+| **M-OBS** | Operability baseline (SRE) | `/health` (and `/status` where relevant) documented for your deploy path; optional SLO sentence in ops doc; any **one** of: runbook one-liner, backup/restore note, KPI export hook—per [OBSERVABILITY_SRE.md](../OBSERVABILITY_SRE.md) + [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) §4.3–4.7 |
+| **M-LAB** | Second-environment confidence | [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md) §12 + dated private note |
+| **M-SCAN+** | Tier-2 slice shipped | One vertical released (crypto **or** data source **or** major FN slice) with tests + user-facing docs |
+| **M-NOTIFY** | Out-of-band awareness | Notifications Ph1 usable with documented config |
+| **M-ACCESS** | Paid / shared-network readiness (licensing + identity) | Intended **commercial SKUs** and **enforced** path smoke-tested; dashBOARd/API **not anonymously usable** on the reference deploy—via **documented proxy+OIDC pattern** and/or **in-app** auth; RBAC or equivalent role story documented for at least one pattern |
+| **M-RELEASE x.y.z** | Versioned product cut | Existing VERSIONING checklist + `docs/releases/x.y.z.md` + Hub tags |
+
+**Cadence suggestion:** **M-TRUST** before a big feature push; **M-OBS** can trail **M-TRUST** in the same or next sprint (small docs/automation); **M-LAB** before customer/demo storytelling; **M-ACCESS** before promising **permanent subscription** or **multi-user** production on a reachable host; **M-RELEASE** whenever VERSIONING says ship.
+
+---
+
+## 6. Inside a sprint: sequencing (token-aware)
+
+1. **Start of sprint (15 min):** Pick **one** primary row from [PLANS_TODO.md](PLANS_TODO.md) “What to start next” (or band A if critical). Write it in your Kanban **Selected** cell or GitHub Milestone description.
+2. **Each agent session:** One **slice** + tests + doc touch; run `.\scripts\check-all.ps1` or `uv run pytest` as per repo policy.
+3. **Operator async:** Lab steps, Hub, study—**no** expectation the agent “does lab” for you.
+4. **End of sprint (retro, 15 min):** Update `PLANS_TODO` / plan tables; run `python scripts/plans-stats.py --write`; note **sidequests** and **blockers** for the next sprint theme. Optionally capture **one lesson learned** (bullet) or a **blameless** “what broke / what we change” line—see §7.3.
+5. **Git hygiene:** Ensure **local commits** recorded progress during the sprint (meaningful units or themed batches)—not a giant uncommitted diff before the next PR or release; see [COMMIT_AND_PR.md](../ops/COMMIT_AND_PR.md) ([pt-BR](../ops/COMMIT_AND_PR.pt_BR.md)) and **`.cursor/rules/execution-priority-and-pr-batching.mdc`**.
+
+---
+
+## 7. SRE / reliability, security, and governance (multidisciplinary, 2-person scale)
+
+This section ties **plans + PM + workflow + runtime** to practices SRE and platform teams use—**scaled down** so they reduce **chaos, vulnerabilities, dangling work, and rework** without enterprise overhead.
+
+### 7.1 Toil mitigation and automation
+
+| Toil (repetitive, manual) | Prefer |
+| ------------------------- | ------ |
+| “Did we run lint + tests?” | `scripts/check-all.ps1` (or `pre-commit` + `pytest`) before commit/PR. |
+| Dependency / alert drift | Priority band **A1**; lockfile + `requirements.txt` export in same PR as `pyproject` changes. |
+| Image hygiene | **A2/A3**, `scripts/docker-hub-publish.ps1` / docker README flows—avoid one-off tags. |
+| “What’s still open?” | `gh pr list --state open`; **AGENTS.md** dangling-PR guard at session edges. |
+| Plan table maintenance | `python scripts/plans-stats.py --write` when row statuses change. |
+
+**Rule:** If you do something **twice** manually and it’s the same steps, **open a slice** to script or document it (token-aware: one slice).
+
+### 7.2 SLI, SLO, SLA, and error budget (lightweight)
+
+- **SLI** = what you measure (e.g. health check 200 rate, scan completion rate). **SLO** = internal target (e.g. 99.9% checks OK). **SLA** = what you **promise** someone else (customers/partners)—often stricter or simpler than internal SLOs.
+- **Error budget:** When **M-TRUST** is red (Dependabot/Scout/alerts unaddressed), treat **feature work** as borrowing against reliability—**spend the budget** on A1–A3 first, same as [TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md) “security-first burst.”
+- **Detail and app hooks:** [OBSERVABILITY_SRE.md](../OBSERVABILITY_SRE.md) (`/health`, `/status`, optional metrics, logging policy).
+
+### 7.3 Blameless postmortem, RCA, and lessons learned
+
+Use for **production incidents** *and* for **process misses** (bad release, wrong merge, lost branch, “we forgot operator-help sync”).
+
+- **Blameless:** Focus on **systems and checks**, not who messed up; the team is you + agent + tooling.
+- **RCA (root cause):** Ask **why** until you hit a **fixable guardrail** (e.g. “no PR without check-all”, “merge `main` before long doc branch”).
+- **Output:** 3–5 lines: timeline, root cause, **action items** (doc, script, CI rule). Store in `docs/private/` for sensitive ops or a short **retro** subsection in your sprint notes.
+
+### 7.4 DevSecOps, cybersecurity, compliance, governance
+
+| Area | In this repo |
+| ---- | ------------- |
+| **DevSecOps** | Shift-left: tests, Ruff, pip-audit/CodeQL, secrets policy—see [OBSERVABILITY_SRE.md](../OBSERVABILITY_SRE.md) §3, [SECURITY.md](../SECURITY.md). |
+| **Governance** | Single execution truth in **PLANS_TODO**; commercial/licensing boundaries in dedicated docs; no secrets in tracked files ([AGENTS.md](../../AGENTS.md)). |
+| **Compliance narrative** | Tool supports audit **evidence**; you still define retention and process—[PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) §4.4. |
+
+### 7.5 Dangling work and rework prevention
+
+- **Branches / PRs:** One coherent PR per theme; merge or **close as superseded** with a pointer (avoid five stale docs PRs).
+- **Docs vs code:** After CLI/API changes, schedule **operator-help sync** ([OPERATOR_HELP_AUDIT.md](../OPERATOR_HELP_AUDIT.md)) in **S5** or the same sprint as the feature.
+- **Configuration:** Example configs in repo; **secrets** only env/private—never `git add -f` real config.
+
+### 7.6 Instrumentation and observability (application)
+
+- **Today:** Liveness via **`GET /health`**; scan visibility via **`GET /status`**; structured metrics optional—see [OBSERVABILITY_SRE.md](../OBSERVABILITY_SRE.md), [DEPLOY.md](../deploy/DEPLOY.md) healthchecks.
+- **Notifications (order 6):** Future **S4** improves **observability of outcomes** (scan finished, failures) for operators—complements metrics.
+
+---
+
+## 8. Optional tooling (beyond Markdown)
+
+- **GitHub Projects:** Columns = Kanban statuses above; issues = slices (link to plan anchors).
+- **Mermaid in PR descriptions:** Paste the same `gantt` block for **that** release’s timeline.
+- **Export:** If you need a real PM tool, export **CSV** from `PLANS_TODO` tables manually or script from `plans-stats.py` patterns—keep the **repo** as source of truth.
+
+---
+
+## See also
+
+- [PLANS_TODO.md](PLANS_TODO.md) — execution order and dashboard
+- [TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md) — one-slice sessions, study lane, band A
+- [SPRINTS_AND_MILESTONES.pt_BR.md](SPRINTS_AND_MILESTONES.pt_BR.md) — this guide in pt-BR (keep in sync)
+- [OBSERVABILITY_SRE.md](../OBSERVABILITY_SRE.md) — SLI/SLO/SLA, health endpoints, DevSecOps alignment
+- [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) — runbooks, KPI, onboarding checklist
+- [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md) — security/IP burst prompts
+- [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md) — lab completion criteria
