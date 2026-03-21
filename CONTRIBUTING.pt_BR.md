@@ -44,7 +44,7 @@ Obrigado por considerar contribuir. Este documento cobre a configuração local,
 
 - **Bugs e funcionalidades:** Abra uma issue usando os modelos [Bug report](.github/ISSUE_TEMPLATE/bug_report.md) ou [Feature request](.github/ISSUE_TEMPLATE/feature_request.md).
 - **Segurança:** Não publique detalhes de exploração em público. Use o modelo [Security issue](.github/ISSUE_TEMPLATE/security.md) (apenas em alto nível) ou o processo em [SECURITY.md](SECURITY.md) ([pt-BR](SECURITY.pt_BR.md)).
-- **Pull requests:** Use o [modelo de PR](.github/PULL_REQUEST_TEMPLATE.md). Garanta que os testes passem (`uv run pytest -v -W error`; veja [docs/TESTING.md](docs/TESTING.md) ([pt-BR](docs/TESTING.pt_BR.md))) e que docs/README sejam atualizados quando o comportamento ou a configuração mudar.
+- **Pull requests:** Use o [modelo de PR](.github/PULL_REQUEST_TEMPLATE.md). Antes do push, prefira **`.\scripts\check-all.ps1`** (gate completo: dashboard dos planos, pre-commit, pytest com avisos como erros)—veja [docs/ops/README.pt_BR.md](docs/ops/README.pt_BR.md) § *Antes de abrir um PR*. No mínimo: testes (`uv run pytest -v -W error`; [docs/TESTING.pt_BR.md](docs/TESTING.pt_BR.md)), lint (pre-commit / Ruff) e docs/README quando o comportamento mudar. **Modelo de layout privado (versionado):** copie de **`docs/private.example/`** para **`docs/private/`** (ignorado pelo git), conforme [docs/PRIVATE_OPERATOR_NOTES.pt_BR.md](docs/PRIVATE_OPERATOR_NOTES.pt_BR.md).
 
 ### Higiene do repositório público (LAN, credenciais)
 
