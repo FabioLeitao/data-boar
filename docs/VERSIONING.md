@@ -40,9 +40,9 @@ When you bump the version, update **all** of the following so the number is cons
 
 ### 3. Man pages
 
-| Location                  | What to change                                                                           |
-| ---                       | ---                                                                                      |
-| **`docs/data_boar.1`** | In the `.TH` line (e.g. `"Data Boar 1.5.4"`), set the version to the new one. |
+| Location               | What to change                                                                                                  |
+| ---                    | ---                                                                                                             |
+| **`docs/data_boar.1`** | In the `.TH` line (e.g. `"Data Boar 1.5.4"`), set the version to the new one.                                   |
 | **`docs/data_boar.5`** | Same: update the version in the `.TH` line. (Legacy: `lgpd_crawler` is a compatibility symlink to these pages.) |
 
 ### 4. Deploy and Docker

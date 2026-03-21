@@ -12,9 +12,9 @@ Today the Data Boar decides **what to scan** and **how to extract text** mainly 
 ## Goals
 
 1. **Content-based type detection (opt-in):** When enabled, read the first **N** bytes (e.g. 32–64) of each file and match against **magic-byte signatures** (and optionally MIME) to infer the real format. Use that **inferred type** for extraction and sensitivity scanning, so renamed files (e.g. PDF with `.txt` extension) are still scanned as PDF.
-2. **No regressions:** Default remains extension-based; new behaviour is **off by default** and gated by config/CLI/dashboard.
-3. **Resource awareness:** Peeking at headers is **one small read per file** (modest extra I/O and CPU). We recommend a **new opt-in** so operators who need it can enable it without surprising others with extra I/O.
-4. **Documentation:** Explain the option, the benefit (renamed-file and basic cloaking resistance), and that it is more I/O- and CPU-intensive than extension-only scanning.
+1. **No regressions:** Default remains extension-based; new behaviour is **off by default** and gated by config/CLI/dashboard.
+1. **Resource awareness:** Peeking at headers is **one small read per file** (modest extra I/O and CPU). We recommend a **new opt-in** so operators who need it can enable it without surprising others with extra I/O.
+1. **Documentation:** Explain the option, the benefit (renamed-file and basic cloaking resistance), and that it is more I/O- and CPU-intensive than extension-only scanning.
 
 ---
 
@@ -59,26 +59,26 @@ This keeps the default lightweight and lets operators who care about renamed fil
 ## Implementation outline
 
 1. **Magic-byte table:** Define a small module or mapping: format → (signature bytes, offset). For formats we already support (PDF, DOCX/XLSX/PPTX as ZIP, plain text, etc.), add entries. Reuse or align with the magic used in [PLAN_COMPRESSED_FILES.md](PLAN_COMPRESSED_FILES.md) for archives. (Step 1 helper implemented with coarse labels: `pdf`, `zip`, `text`.)
-2. **Content-type resolver:** Use `read_magic(path, n=64)` + `infer_content_type(path_or_bytes)` to infer a coarse internal label or `None`. When suggested type is in our supported set, use it to decide which existing extraction path to take; otherwise fall back to file extension or skip.
-3. **Optional libmagic / `file`-style backend (future, optional):** Consider wiring an **optional** backend based on libmagic (e.g. `python-magic` / `python-magic-bin`) as a second pass when the built-in helper returns `None`. Map only a **small, whitelisted set of MIME types** (e.g. `application/pdf`, Office OOXML, `text/*`) to our coarse labels and ignore everything else. This should be **dependency-optional** (best-effort; if the library is absent, we keep current behaviour).
-4. **Config / engine / connector:** Add and normalize `file_scan.use_content_type` (default false) and propagate it into filesystem/share connectors as `self.use_content_type`. When true, connectors **may** consult the resolver before choosing extraction strategy; when false, behaviour remains extension-only.
-5. **CLI:** Add `--content-type-check`; override config for that run when set.
-6. **API and dashboard:** Add optional `content_type_check` to scan-start body and a checkbox in the dashboard with short help text (benefit + “may increase I/O and run time”).
-7. **Tests:** Extension-only (default) unchanged; with option on, a renamed PDF (e.g. `file.txt` with PDF magic) is scanned and yields findings. No regressions.
-8. **Docs:** USAGE, TECH_GUIDE, dashboard help—explain the option, that it helps with renamed files and simple cloaking, and that it is more I/O- and CPU-intensive, plus that an optional libmagic backend (when installed) may improve coverage.
+1. **Content-type resolver:** Use `read_magic(path, n=64)` + `infer_content_type(path_or_bytes)` to infer a coarse internal label or `None`. When suggested type is in our supported set, use it to decide which existing extraction path to take; otherwise fall back to file extension or skip.
+1. **Optional libmagic / `file`-style backend (future, optional):** Consider wiring an **optional** backend based on libmagic (e.g. `python-magic` / `python-magic-bin`) as a second pass when the built-in helper returns `None`. Map only a **small, whitelisted set of MIME types** (e.g. `application/pdf`, Office OOXML, `text/*`) to our coarse labels and ignore everything else. This should be **dependency-optional** (best-effort; if the library is absent, we keep current behaviour).
+1. **Config / engine / connector:** Add and normalize `file_scan.use_content_type` (default false) and propagate it into filesystem/share connectors as `self.use_content_type`. When true, connectors **may** consult the resolver before choosing extraction strategy; when false, behaviour remains extension-only.
+1. **CLI:** Add `--content-type-check`; override config for that run when set.
+1. **API and dashboard:** Add optional `content_type_check` to scan-start body and a checkbox in the dashboard with short help text (benefit + “may increase I/O and run time”).
+1. **Tests:** Extension-only (default) unchanged; with option on, a renamed PDF (e.g. `file.txt` with PDF magic) is scanned and yields findings. No regressions.
+1. **Docs:** USAGE, TECH_GUIDE, dashboard help—explain the option, that it helps with renamed files and simple cloaking, and that it is more I/O- and CPU-intensive, plus that an optional libmagic backend (when installed) may improve coverage.
 
 ---
 
 ## To-dos (sequential)
 
-| #   | To-do                                                                                                                                                                                                 | Status |
-| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| 1   | Define magic-byte table for supported formats (PDF, ZIP, Office OOXML, plain text, etc.); implement `read_magic` and `infer_content_type`.                                                           | ✅ Done (helper `infer_content_type(path_or_bytes)` in `core/content_type.py`; basic PDF/ZIP/text coverage; uses existing `read_magic` and archive magic) |
-| 2   | Config: `file_scan.use_content_type` (default false); normalize in loader and pass to engine/connectors.                                                                                               | ✅ Done (loader normalizes; engine injects file_scan into target; connectors read use_content_type; test in test_config_encoding + test_file_scan_use_content_type_flag) |
-| 3   | FilesystemConnector: when `use_content_type` true, infer type from header and use it for extraction (fallback to extension). Share connectors: same when they use file-scan logic.                    | ✅ Done (choose_effective_pdf_extension used in filesystem, SMB, WebDAV, SharePoint when use_content_type true) |
-| 4   | CLI: `--content-type-check`; API/dashboard: optional `content_type_check` and checkbox with user warning (may increase I/O and run time).                                                            | ✅ Done   |
-| 5   | Tests: default behaviour unchanged; with option on, renamed PDF (or other) is scanned by content; no regressions.                                                                                       | ✅ Done (`tests/test_api_scan_content_type_check.py` + existing connector tests)   |
-| 6   | Docs: USAGE, TECH_GUIDE, help—content-type option, benefit (renamed/cloaking), and resource impact. Note: steganography out of scope for v1; possible future phase.                                  | ✅ Done (USAGE, USAGE.pt_BR, TECH_GUIDE EN/pt_BR; optional: man pages / OpenAPI examples later)   |
+| #   | To-do                                                                                                                                                                                                 | Status                                                                                                                                                                  |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------                                                                                                                                                                  |
+| 1   | Define magic-byte table for supported formats (PDF, ZIP, Office OOXML, plain text, etc.); implement `read_magic` and `infer_content_type`.                                                            | ✅ Done (helper `infer_content_type(path_or_bytes)` in `core/content_type.py`; basic PDF/ZIP/text coverage; uses existing `read_magic` and archive magic)                |
+| 2   | Config: `file_scan.use_content_type` (default false); normalize in loader and pass to engine/connectors.                                                                                              | ✅ Done (loader normalizes; engine injects file_scan into target; connectors read use_content_type; test in test_config_encoding + test_file_scan_use_content_type_flag) |
+| 3   | FilesystemConnector: when `use_content_type` true, infer type from header and use it for extraction (fallback to extension). Share connectors: same when they use file-scan logic.                    | ✅ Done (choose_effective_pdf_extension used in filesystem, SMB, WebDAV, SharePoint when use_content_type true)                                                          |
+| 4   | CLI: `--content-type-check`; API/dashboard: optional `content_type_check` and checkbox with user warning (may increase I/O and run time).                                                             | ✅ Done                                                                                                                                                                  |
+| 5   | Tests: default behaviour unchanged; with option on, renamed PDF (or other) is scanned by content; no regressions.                                                                                     | ✅ Done (`tests/test_api_scan_content_type_check.py` + existing connector tests)                                                                                         |
+| 6   | Docs: USAGE, TECH_GUIDE, help—content-type option, benefit (renamed/cloaking), and resource impact. Note: steganography out of scope for v1; possible future phase.                                   | ✅ Done (USAGE, USAGE.pt_BR, TECH_GUIDE EN/pt_BR; optional: man pages / OpenAPI examples later)                                                                          |
 
 **Sync:** When a step is done, mark **✅ Done** in this table and in [PLANS_TODO.md](PLANS_TODO.md).
 

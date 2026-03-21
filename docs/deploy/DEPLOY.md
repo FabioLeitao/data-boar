@@ -372,10 +372,10 @@ To run a single audit from the CLI in the cluster, use a **Job** that overrides 
 **Why this matters:** Public tags remain **pullable** until you delete them on Docker Hub. Cleaning up **obsolete** tags reduces casual reuse of old builds (CVEs, wrong defaults) and aligns docs with what you actually support.
 
 1. **Inventory:** In [Docker Hub](https://hub.docker.com/r/fabioleitao/data_boar/tags) list all tags; note which CI, partners, or docs pin each tag (e.g. `latest`, `1.6.4`).
-2. **Decide support policy:** Typically keep **`latest`** plus **current semver** (and optionally one previous semver for rollback). Document the supported set here and in [PLANS_TODO.md](../plans/PLANS_TODO.md) Priority band A if needed.
-3. **Delete on Hub:** Hub → repository → **Tags** → delete tags you no longer support. **Warning:** Anyone who already pulled a tag still has that image locally; deletion only stops *new* pulls from Hub.
-4. **Update automation:** Adjust CI/CD and `docker-compose` / Kubernetes manifests so nothing references removed tags.
-5. **Commercial / IP note:** Tag hygiene is **not** a substitute for licensing or private issuer repos; it complements them. See [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md).
+1. **Decide support policy:** Typically keep **`latest`** plus **current semver** (and optionally one previous semver for rollback). Document the supported set here and in [PLANS_TODO.md](../plans/PLANS_TODO.md) Priority band A if needed.
+1. **Delete on Hub:** Hub → repository → **Tags** → delete tags you no longer support. **Warning:** Anyone who already pulled a tag still has that image locally; deletion only stops *new* pulls from Hub.
+1. **Update automation:** Adjust CI/CD and `docker-compose` / Kubernetes manifests so nothing references removed tags.
+1. **Commercial / IP note:** Tag hygiene is **not** a substitute for licensing or private issuer repos; it complements them. See [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md).
 
 **Português (Brasil):** [DEPLOY.pt_BR.md §8](DEPLOY.pt_BR.md#8-docker-hub-tags-suportadas-e-descontinuar-imagens-antigas).
 
@@ -385,9 +385,9 @@ To run a single audit from the CLI in the cluster, use a **Job** that overrides 
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | Default (API + frontend) | Run image with no command override: `docker run`, Compose, Swarm, or Kubernetes                                                            |
 | CLI one-shot             | Override command: `docker run ... --entrypoint python IMAGE main.py --config /data/config.yaml`                                            |
-| Build image              | `docker build -t data_boar:latest .` or `docker build -t fabioleitao/data_boar:latest .`                                                    |
+| Build image              | `docker build -t data_boar:latest .` or `docker build -t fabioleitao/data_boar:latest .`                                                   |
 | Push to registry         | `docker tag ... fabioleitao/data_boar:latest` then `docker login` and `docker push fabioleitao/data_boar:latest`                           |
-| **Single container**     | `docker run -d -p 8088:8088 -v ./data:/data data_boar:latest` (section 3)                                                                   |
+| **Single container**     | `docker run -d -p 8088:8088 -v ./data:/data data_boar:latest` (section 3)                                                                  |
 | **Docker Compose**       | `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d` — prepare `./data/config.yaml` first (section 4) |
 | **Docker Swarm**         | `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit` (section 5)                            |
 | **Kubernetes**           | `kubectl apply -f deploy/kubernetes/` — see `deploy/kubernetes/README.md` for image and config (section 6)                                 |

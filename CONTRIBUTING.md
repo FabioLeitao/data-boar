@@ -46,6 +46,12 @@ Thank you for considering contributing. This document covers local setup, workfl
 - **Security:** Do not post exploit details publicly. Use the [Security issue](.github/ISSUE_TEMPLATE/security.md) template (high-level only) or the process in [SECURITY.md](SECURITY.md).
 - **Pull requests:** Use the [PR template](.github/PULL_REQUEST_TEMPLATE.md). Ensure tests pass (`uv run pytest -v -W error`; see [docs/TESTING.md](docs/TESTING.md)), the lint job passes (`uv run ruff check .`), and that docs/README are updated when behaviour or setup changes.
 
+### Public repo hygiene (LAN, credentials)
+
+- **Root `config.yaml`:** Listed in `.gitignore`—it often holds **filesystem paths**, DB hosts, and passwords. **Do not** `git add -f config.yaml`. Copy from `deploy/config.example.yaml` and keep secrets local. If the file was ever committed by mistake, run `git rm --cached config.yaml` so it stops tracking; **Git history** may still contain old blobs—use `git filter-repo` / BFG and **rotate** any exposed credentials if the repo was public.
+- **Homelab / operator notes:** Avoid putting **real hostnames**, **RFC1918 IPs**, **Linux usernames**, or **`$HOME` paths** in tracked Markdown; use placeholders in docs and keep specifics in the **gitignored** `docs/private/` tree (recommended: **`docs/private/homelab/`**) or an external wiki. **Do not** add Markdown links from public docs to paths under `docs/private/`. Policy and layout: [docs/PRIVATE_OPERATOR_NOTES.md](docs/PRIVATE_OPERATOR_NOTES.md). Playbook (generic only): [docs/ops/HOMELAB_VALIDATION.md](docs/ops/HOMELAB_VALIDATION.md) §9.
+- **Password manager (e.g. Bitwarden):** Storing DB passwords, API keys, and homelab tokens in **Bitwarden** (free tier is fine for solo use) is a good **operator vault**; at runtime still prefer **`pass_from_env`** / `*_from_env` so `config.yaml` stays lean. See [docs/ops/OPERATOR_SECRETS_BITWARDEN.md](docs/ops/OPERATOR_SECRETS_BITWARDEN.md).
+
 ### PR state and agent advice (sync before citing PR numbers)
 
 AI assistants and humans should **not** assume a PR is still open or that local `main` matches GitHub **without a fresh check** — chat context can reference an **already merged** PR (e.g. #80) while the next one (#81) is already merged.
