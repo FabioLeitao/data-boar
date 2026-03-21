@@ -14,6 +14,17 @@ You can **set the training words for both ML and DL** in the main config file (i
 
 **Aggregated / cross-referenced identification risk:** When multiple quasi-identifier categories (e.g. gender, job position, health, address, phone) appear in the **same table or file**, the report generator flags this as a **special case** for DPO and compliance (LGPD Art. 5, GDPR Recital 26 – identifiability from a combination of data). The Excel report includes a sheet **"Cross-ref data – ident. risk"** listing each case (target, table/file, columns involved, categories, explanation) and a high-priority recommendation. This is optional and configurable via `detection.aggregated_identification_enabled`, `aggregated_min_categories`, and `quasi_identifier_mapping`. See [PLAN_AGGREGATED_IDENTIFICATION.md](plans/completed/PLAN_AGGREGATED_IDENTIFICATION.md) for design and config details.
 
+### Built-in context: lyrics, tabs, OSS Markdown, lyric `.txt` files
+
+The detector applies **entertainment / low-PII document** treatment (confidence penalty; ML-only **HIGH** capped to **MEDIUM** with patterns such as `ML_POTENTIAL_ENTERTAINMENT`) when:
+
+- Content looks like **lyrics** (keywords or many short lines), **tablature**, or **chord grids** (including Brazilian **cifras** with multiple chords per line).
+- The **file name** suggests a standard **open-source Markdown** document (`README`, `CONTRIBUTING`, `CODE_OF_CONDUCT`, `CHANGELOG`, `LICENSE`, `SECURITY`, `HISTORY`, …) **and** the body has typical Markdown headings (`#` / `##`).
+- The file is a **`.txt`** with several **medium-short lines** (typical song stanzas without explicit `Verse` / `Chorus` headers).
+- The **basename** contains a **chord in parentheses** (e.g. `Rosa(D).txt`), hinting at a chord chart.
+
+**Strong regex matches** (CPF, email, credit card, …) still produce **HIGH** where applicable. Raising **`medium_confidence_threshold`** mainly affects the MEDIUM band; the default **70** boundary for ML-only **HIGH** is unchanged— these heuristics target false **HIGH** on cloned repos and music libraries scanned as filesystem targets.
+
 ---
 
 ## CNPJ formats (Brazil): legacy numeric and alphanumeric
