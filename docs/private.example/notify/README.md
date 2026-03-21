@@ -32,6 +32,15 @@ docker run --rm \
 
 Do **not** paste real host paths, tokens, or phone numbers into **tracked** Markdown.
 
+## Signal on a **different** machine (LAB‑OP — spare lab host)
+
+To **keep CPU/RAM off the dev workstation**, run **signald** / **signal-cli REST** in Docker on **another host** on your LAN (same idea as parking **Uptime Colleague-Ma** integrations on a server). Then **trigger** from anywhere that can reach it:
+
+- Put the **base URL** (and optional API token) in **`docs/private/notify/.env`** on the machine that *sends* the request — e.g. `SIGNAL_REST_URL=http://<lab-host>:<port>` — **never** commit.
+- **Call** the API with **`curl`** (headers + JSON body) exactly like you would from Uptime Colleague-Ma: same pattern, different endpoint and payload per your image’s docs.
+- **Network:** restrict who can hit that port (**firewall** / Docker publish only on **RFC1918**, or **Tailscale**); do not expose the Signal bridge to the public internet without hardening.
+- **Cursor / agent:** does **not** call your lab by itself; **you** run `curl` from the dev PC terminal, or a **local script**, or the lab host runs **cron** — the agent only helps **draft** the command if you paste a redacted example.
+
 ## Trigger script (your repo or local)
 
 Keep **`scripts/`** versions **generic**: read paths from env vars or default to `docs/private/notify/.env`. Optional `scripts/notify-operator-local.example.ps1` may be added later as a **stub** (no secrets, no real endpoints).

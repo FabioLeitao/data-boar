@@ -42,6 +42,7 @@ Configurações comuns usam **`signal-cli`** ou **`signald`** em **Docker**, com
 - **Operacional:** reinícios do container, pareamento/QR, recuperação de sessão.
 - **Legal / ToS:** imagens auditadas; cumprimento dos termos do Signal.
 - **Automação:** o agente no Cursor **não** guarda a sessão Signal; só **runners seus** (servidor em casa, script no laptop, CI com secrets **seus**) devem chamar a API.
+- **Descarregar no LAB‑OP:** Rodar a imagem Docker do Signal em **outra máquina do lab** (não no PC de dev) é um bom encaixe: o workstation manda **`curl`** (cabeçalhos + corpo JSON) para a API REST na LAN — o mesmo estilo de integração que **Uptime Colleague-Ma**. Trave o serviço na **rede privada**; URL/token só em **`docs/private/notify/`** (gitignored). Ver **[private.example/notify/README.md](../private.example/notify/README.md)** § *Signal on a different machine*.
 
 **Não bloqueante:** trate Signal como **tier D** depois de GitHub + um webhook de mensagens.
 
