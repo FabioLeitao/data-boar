@@ -13,3 +13,5 @@ When adding CI alerts, KPI jobs, or “ping the human” automation:
 1. **Secrets:** store `SLACK_WEBHOOK_URL`, Telegram bot token, or Signal API secrets only in **GitHub Actions secrets** or local `.env` (gitignored)—never in committed YAML beyond `${{ secrets.* }}` references.
 1. **Signal:** document-only until the operator finishes `signal-cli` / **signald** Docker pairing; do not assume the agent holds a Signal session.
 1. **KPI:** optional `kpi-export.py` in scheduled/workflow_dispatch workflows; artifacts with short retention or chat summary only.
+1. **EOD / sprint digest:** The agent **cannot** send SMS or email; see **OPERATOR_NOTIFICATION_CHANNELS.md §7**—workflows may assemble `git log`, `plans-stats.py`, release-notes links, Kanban/gantt text, then deliver via Twilio/SMTP/Telegram/Slack using secrets.
+1. **Local Docker + volume:** Operator may bind-mount **gitignored** `docs/private/notify/` (blueprint: **docs/private.example/notify/README.md**) for Signal/SMS tools; triggers are **local scripts** the operator runs—never commit `.env` or session data.
