@@ -20,6 +20,13 @@ Você pode limitar o commit/PR a arquivos específicos com **`-IncludeFiles`** (
 - **Depois:** execute com `-Action Commit` ou `-Action PR` e, se quiser incluir só alguns arquivos, adicione `-IncludeFiles "path1","path2"`.
 - **Guarda de segurança:** Commit/PR exigem um Preview anterior com o mesmo escopo; se o escopo mudar, rode Preview de novo.
 
+## Vários commits locais, um PR temático (bom para o histórico)
+
+**Sim — é suportado e costuma ser o ideal.** Você pode fazer **vários commits pequenos** no mesmo branch (cada um com mensagem clara), **sem dar push**, e depois rodar **Criar PR** uma vez: o push leva **todos os commits não enviados**, e o PR mostra **histórico legível** no branch. Alinha com **AGENTS.md** (agrupamento de commits + PR em lote): mantenha **fatias coerentes** separadas (`docs` vs `feature` vs `workflow`) quando ajudar revisores e o `git log`.
+
+- **Quando agrupar:** fim de sprint — um PR com descrição resumindo o conjunto, ou **dois PRs** se uma fatia for arriscada e outra só documentação.
+- **Estratégia de merge no GitHub:** **merge commit** preserva commits no `main`; **squash** colapsa o PR em um commit — escolha conforme a equipe; o repositório não impõe um estilo só nestes docs.
+
 ## Fazer manualmente
 
 ### Preview: lista de arquivos vs mensagem de commit

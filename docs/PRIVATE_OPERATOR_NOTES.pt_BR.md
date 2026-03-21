@@ -4,6 +4,8 @@
 
 **Documento completo (EN):** [PRIVATE_OPERATOR_NOTES.md](PRIVATE_OPERATOR_NOTES.md)
 
+- **Mapa LAB-PB / LAB-OP (rastreado):** [OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md](ops/OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md)
+
 ## Resumo
 
 - **`docs/private/`** está no **`.gitignore`** — **não** vai para o GitHub. Confirme com `git check-ignore -v docs/private/…`.
