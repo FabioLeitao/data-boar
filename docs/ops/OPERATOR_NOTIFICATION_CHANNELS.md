@@ -6,6 +6,8 @@
 
 **Scope:** Maintainer / operator pings (you + agents automating checks). Product **tenant** notifications (scan-complete, etc.) stay in the main **Notifications** plan ([PLANS_TODO.md](../plans/PLANS_TODO.md) order 6)—reuse the same channel list where appropriate.
 
+**Sequencing (maintainer):** **Channel A only**—GitHub **mobile app** plus watch/email settings—is **enough to start** for PRs, reviews, Dependabot, Security, and **failed Actions**. Tweak **GitHub → Settings → Notifications** and the official iOS/Android app. When you want **redundancy** or chat-native pings, add **B** (Slack) or **C** (Telegram) per §1; **D** (Signal) stays optional and higher-effort. This doc is the **integration reminder** for those next steps.
+
 ---
 
 ## 1. Recommended stack (least friction → most setup)
