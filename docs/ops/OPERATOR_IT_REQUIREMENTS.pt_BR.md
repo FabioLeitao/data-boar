@@ -20,19 +20,19 @@ Use as seções abaixo como **checklist** ao preparar seu pedido à TI. Onde a o
 
 ## Tabela resumo: acesso mínimo por tipo de fonte
 
-| Tipo de fonte     | O que pedir à TI (mínimo)                                                                 | O que **não** precisamos                     |
-| ----------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------- |
-| **Sistema de arquivos** | Leitura + listagem no(s) caminho(s) que varremos (ex.: conta de serviço somente leitura em `/data/audit`) | Gravar, excluir, executar, admin              |
-| **Bancos SQL**    | Função somente leitura: SELECT nas tabelas alvo; metadados (listar schemas/tabelas/colunas) | INSERT/UPDATE/DELETE, DDL, backup, admin      |
-| **MongoDB**       | Leitura no banco: listar coleções, find (ler documentos)                                   | Gravar, drop, admin                           |
-| **Redis**         | Comandos: SCAN (e conexão). Nenhum comando de escrita                                      | SET, DEL, FLUSH, CONFIG, admin                 |
-| **SMB / CIFS**    | Leitura + listagem no share/caminho (ex.: permissão Ler share, listar pasta, ler arquivos)  | Gravar, excluir, alterar permissões           |
-| **WebDAV**        | Leitura + listagem (PROPFIND, GET) no caminho base                                          | PUT, DELETE, PROPPATCH, escrita                |
-| **SharePoint**    | Ler pasta e arquivos (ex.: “Exibir” ou “Ler” no site/pasta); baixar conteúdo do arquivo      | Editar, excluir, gerenciar site                |
-| **NFS**           | Leitura + listagem no ponto de montagem (igual a filesystem; montagem geralmente feita pela TI) | Gravar, excluir, bypass de root squash    |
-| **REST / API**    | Acesso GET aos endpoints que varremos; token com somente leitura ou escopo mínimo            | POST/PUT/DELETE, escopo admin                 |
-| **Power BI**      | Leitura na API do Power BI (ex.: “Ler todos os datasets” ou leitura do workspace); escopo OAuth do conector | Publicar, editar relatórios, admin   |
-| **Dataverse**     | Leitura de tabelas/entidades (ex.: leitura do ambiente ou da tabela); escopo OAuth da API Dataverse | Criar/atualizar/excluir, admin          |
+| Tipo de fonte           | O que pedir à TI (mínimo)                                                                                   | O que **não** precisamos                      |
+| -----------------       | ------------------------------------------------------------------------------------------                  | --------------------------------------------- |
+| **Sistema de arquivos** | Leitura + listagem no(s) caminho(s) que varremos (ex.: conta de serviço somente leitura em `/data/audit`)   | Gravar, excluir, executar, admin              |
+| **Bancos SQL**          | Função somente leitura: SELECT nas tabelas alvo; metadados (listar schemas/tabelas/colunas)                 | INSERT/UPDATE/DELETE, DDL, backup, admin      |
+| **MongoDB**             | Leitura no banco: listar coleções, find (ler documentos)                                                    | Gravar, drop, admin                           |
+| **Redis**               | Comandos: SCAN (e conexão). Nenhum comando de escrita                                                       | SET, DEL, FLUSH, CONFIG, admin                |
+| **SMB / CIFS**          | Leitura + listagem no share/caminho (ex.: permissão Ler share, listar pasta, ler arquivos)                  | Gravar, excluir, alterar permissões           |
+| **WebDAV**              | Leitura + listagem (PROPFIND, GET) no caminho base                                                          | PUT, DELETE, PROPPATCH, escrita               |
+| **SharePoint**          | Ler pasta e arquivos (ex.: “Exibir” ou “Ler” no site/pasta); baixar conteúdo do arquivo                     | Editar, excluir, gerenciar site               |
+| **NFS**                 | Leitura + listagem no ponto de montagem (igual a filesystem; montagem geralmente feita pela TI)             | Gravar, excluir, bypass de root squash        |
+| **REST / API**          | Acesso GET aos endpoints que varremos; token com somente leitura ou escopo mínimo                           | POST/PUT/DELETE, escopo admin                 |
+| **Power BI**            | Leitura na API do Power BI (ex.: “Ler todos os datasets” ou leitura do workspace); escopo OAuth do conector | Publicar, editar relatórios, admin            |
+| **Dataverse**           | Leitura de tabelas/entidades (ex.: leitura do ambiente ou da tabela); escopo OAuth da API Dataverse         | Criar/atualizar/excluir, admin                |
 
 ---
 
@@ -47,14 +47,14 @@ Use as seções abaixo como **checklist** ao preparar seu pedido à TI. Onde a o
 ## 2. Bancos de dados SQL (PostgreSQL, MySQL, MariaDB, SQL Server, Oracle, SQLite)
 
 - **Pedir:** Um usuário/função **somente leitura** que possa:
-  - **Listar** schemas (quando aplicável), tabelas e colunas (acesso a metadados/catálogo).
-  - **SELECT** nas tabelas (ou schemas) que você pretende varrer.
-  - Sem INSERT, UPDATE, DELETE ou DDL (CREATE/ALTER/DROP). Sem backup/restore, sem admin.
+- **Listar** schemas (quando aplicável), tabelas e colunas (acesso a metadados/catálogo).
+- **SELECT** nas tabelas (ou schemas) que você pretende varrer.
+- Sem INSERT, UPDATE, DELETE ou DDL (CREATE/ALTER/DROP). Sem backup/restore, sem admin.
 - **Exemplos concretos:**
-  - **PostgreSQL:** Função com `CONNECT` no banco e `SELECT` nas tabelas (ou schema) a varrer; ou `pg_read_all_data` se for estritamente necessário (ainda somente leitura). Evitar `pg_read_all_settings` e superusuário.
-  - **MySQL / MariaDB:** Usuário com `SELECT` e metadados (ex.: `SHOW` ou acesso a `information_schema` dos bancos que varremos). Sem `INSERT`, `UPDATE`, `DELETE`, `CREATE`, `DROP`.
-  - **SQL Server:** Usuário com `db_datareader` (ou `SELECT` em tabelas específicas) e permissão para ler metadados (ex.: `sys.tables`, `sys.columns`). Sem `db_datawriter`, sem `db_owner`.
-  - **Oracle:** Usuário com `SELECT` nas tabelas/schemas alvo e `SELECT_CATALOG_ROLE` (ou equivalente) só se necessário para listar objetos. Sem DBA, sem escrita.
+- **PostgreSQL:** Função com `CONNECT` no banco e `SELECT` nas tabelas (ou schema) a varrer; ou `pg_read_all_data` se for estritamente necessário (ainda somente leitura). Evitar `pg_read_all_settings` e superusuário.
+- **MySQL / MariaDB:** Usuário com `SELECT` e metadados (ex.: `SHOW` ou acesso a `information_schema` dos bancos que varremos). Sem `INSERT`, `UPDATE`, `DELETE`, `CREATE`, `DROP`.
+- **SQL Server:** Usuário com `db_datareader` (ou `SELECT` em tabelas específicas) e permissão para ler metadados (ex.: `sys.tables`, `sys.columns`). Sem `db_datawriter`, sem `db_owner`.
+- **Oracle:** Usuário com `SELECT` nas tabelas/schemas alvo e `SELECT_CATALOG_ROLE` (ou equivalente) só se necessário para listar objetos. Sem DBA, sem escrita.
 - **Não precisamos:** Nenhum privilégio de escrita, DDL, backup, replicação ou admin do servidor.
 - **Por que basta:** Usamos as APIs de metadados do motor para descobrir schemas/tabelas/colunas e executamos **SELECT** com **LIMIT** pequeno por coluna para amostrar valores. Achados são metadados (tabela/coluna, tipo de padrão); não armazenamos conteúdo completo das linhas. Somente leitura é suficiente e alinhada a zero-trust.
 
@@ -118,7 +118,7 @@ Use as seções abaixo como **checklist** ao preparar seu pedido à TI. Onde a o
 
 ## 10. Power BI
 
-- **Pedir:** Acesso **leitura** na API do Power BI: ex. “Ler todos os datasets” ou leitura nos workspaces/datasets que varremos. Nosso conector usa o escopo `https://analysis.windows.net/powerbi/api/.default` (Azure AD). A TI deve conceder ao registro do app a permissão mínima do Power BI que permita listar workspaces/datasets e executar consultas somente leitura (ex.: Execute Queries para amostragem).
+- **Pedir:** Acesso **leitura** na API do Power BI: ex. “Ler todos os datasets” ou leitura nos workspaces/datasets que varremos. Nosso conector usa o escopo `<https://analysis.windows.net/powerbi/api/.defaul>t` (Azure AD). A TI deve conceder ao registro do app a permissão mínima do Power BI que permita listar workspaces/datasets e executar consultas somente leitura (ex.: Execute Queries para amostragem).
 - **Não precisamos:** Publicar, editar relatórios/datasets ou admin.
 - **Por que basta:** Listamos datasets e tabelas, executamos pequenas consultas DAX para amostrar dados e rodamos a detecção. Acesso somente leitura à API é suficiente.
 
@@ -137,10 +137,10 @@ Use as seções abaixo como **checklist** ao preparar seu pedido à TI. Onde a o
 Ao enviar o pedido, você pode incluir:
 
 1. **Escopo:** Caminho(s), banco(s), share(s) ou URL(s) base de API que acessaremos.
-2. **Identidade:** A conta ou app (ex.: conta de serviço, app Azure AD) que será usada.
-3. **Acesso necessário:** “Somente leitura e listagem” (ou a linha da tabela resumo acima para essa fonte).
-4. **O que não precisamos:** “Sem gravar, excluir ou admin.”
-5. **Justificativa:** “Auditoria de conformidade/LGPD: descobrir e amostrar conteúdo para detecção de sensibilidade; sem modificação de dados nem exportação de conteúdo completo; achados são só metadados (local e tipo de padrão).”
+1. **Identidade:** A conta ou app (ex.: conta de serviço, app Azure AD) que será usada.
+1. **Acesso necessário:** “Somente leitura e listagem” (ou a linha da tabela resumo acima para essa fonte).
+1. **O que não precisamos:** “Sem gravar, excluir ou admin.”
+1. **Justificativa:** “Auditoria de conformidade/LGPD: descobrir e amostrar conteúdo para detecção de sensibilidade; sem modificação de dados nem exportação de conteúdo completo; achados são só metadados (local e tipo de padrão).”
 
 Se a TI pedir justificativa por escrito, você pode indicar este documento e o fato de que a aplicação foi desenhada para operar com **mínimo de privilégios**, de modo a permanecer compatível com zero-trust e políticas IAM restritivas.
 

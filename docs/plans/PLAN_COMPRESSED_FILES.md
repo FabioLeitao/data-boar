@@ -85,9 +85,9 @@ This avoids crashes and accidental misuse when extension is wrong or file is cor
 We **do not** expand the whole archive to disk or memory first. The flow is:
 
 1. **Open** the archive (read header/directory only).
-2. **List** members (names, uncompressed sizes, type) — metadata only; no decompression yet.
-3. **Filter** by extension (allowed content types) and `max_inner_size`; skip directories and oversized members.
-4. **Decompress only** the members that passed the filter; scan each in turn (temp or memory), then discard.
+1. **List** members (names, uncompressed sizes, type) — metadata only; no decompression yet.
+1. **Filter** by extension (allowed content types) and `max_inner_size`; skip directories and oversized members.
+1. **Decompress only** the members that passed the filter; scan each in turn (temp or memory), then discard.
 
 So we first **evaluate** what’s inside (names and extensions) and only **dig deeper** (decompress and ingest) for members we intend to scan. This is safer for resource use and archive bombs: we never materialise the full archive at once. Implemented in `core/archives.iter_archive_members` (ZIP: `namelist` + `getinfo` then `read(name)` per member; TAR: `getmembers` then `extractfile(member)`; 7z: `files_list` then `read(targets=[...])`).
 
@@ -247,20 +247,20 @@ When implementing **scan inside compressed files**, ensure we do **not** run int
 
 **Current status:** All steps 1–12 are done. Share connectors (SMB, WebDAV, SharePoint) now apply the same “scan inside compressed” logic when `scan_compressed` is true; NFS already used FilesystemConnector so it was covered. See “Notes to remind later” below for optional follow-ups.
 
-| #   | To-do                                                                                                                                                                                                                         | Status     |   |
-| --- | -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------                         | ------     |   |
-| 1   | Add config keys: `file_scan.scan_compressed` (default false), optional `scan_compressed_max_inner_size`, optional `scan_compressed_extensions`; normalize in config/loader.py and pass to engine/connectors                   | ✅ Done    |   |
-| 2   | Add CLI argument `--scan-compressed` in main.py; override config for that run when present                                                                                                                                    | ✅ Done    |   |
-| 3   | Implement archive detection: COMPRESSED_EXTENSIONS set, read_magic(), is_zip/is_gzip/is_7z/… by magic bytes; add small module or section in connectors                                                                        | ✅ Done    |   |
-| 4   | Implement “open archive and iterate members” helper: ZIP (zipfile), TAR/GZ/BZ2/XZ (tarfile), 7z (py7zr, optional); yield (member_name, content_or_path) for members with supported content extensions; respect max_inner_size | ✅ Done    |   |
+| #   | To-do                                                                                                                                                                                                                         | Status     |        |
+| --- | -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------                         | ------     |        |
+| 1   | Add config keys: `file_scan.scan_compressed` (default false), optional `scan_compressed_max_inner_size`, optional `scan_compressed_extensions`; normalize in config/loader.py and pass to engine/connectors                   | ✅ Done     |        |
+| 2   | Add CLI argument `--scan-compressed` in main.py; override config for that run when present                                                                                                                                    | ✅ Done     |        |
+| 3   | Implement archive detection: COMPRESSED_EXTENSIONS set, read_magic(), is_zip/is_gzip/is_7z/… by magic bytes; add small module or section in connectors                                                                        | ✅ Done     |        |
+| 4   | Implement “open archive and iterate members” helper: ZIP (zipfile), TAR/GZ/BZ2/XZ (tarfile), 7z (py7zr, optional); yield (member_name, content_or_path) for members with supported content extensions; respect max_inner_size | ✅ Done     |        |
 | 5   | In FilesystemConnector: accept scan_compressed (and options); when true, for files with compressed extension validate magic, open archive, scan inner members, save_finding with path like archive.zip\                       | inner path | ✅ Done |
-| 6   | Add py7zr to optional extra `[compressed]` in pyproject.toml; handle missing py7zr when .7z is encountered (skip with reason or save_failure)                                                                                 | ✅ Done    |   |
-| 7   | Engine: pass scan_compressed (and options) from config to filesystem/share connectors; support run-time override from API body for that run                                                                                   | ✅ Done    |   |
-| 8   | API: extend ScanStartBody with scan_compressed; in start_scan apply override to config for that run; dashboard: add checkbox and send scan_compressed in POST body                                                            | ✅ Done    |   |
-| 9   | Share connectors (SMB, WebDAV, SharePoint, NFS): when scan_compressed true, apply same “open archive and scan members” logic for downloaded files with compressed extension (or document “filesystem only” for v1)            | ✅ Done    |   |
-| 10  | Tests: magic detection; scan_compressed=false no archive opening; scan_compressed=true findings from inside zip/tar; no regression in full suite                                                                              | ✅ Done    |   |
-| 11  | Docs: USAGE, TECH_GUIDE, man pages, help.html, README (EN and pt-BR) for scan_compressed and --scan-compressed                                                                                                                | ✅ Done    |   |
-| 12  | Resource exhaustion: enforce max_inner_size and optional temp caps; document and show user warning (dashboard + docs) when enabling scan-inside-compressed (disk, I/O, run time risks)                                          | ✅ Done    |   |
+| 6   | Add py7zr to optional extra `[compressed]` in pyproject.toml; handle missing py7zr when .7z is encountered (skip with reason or save_failure)                                                                                 | ✅ Done     |        |
+| 7   | Engine: pass scan_compressed (and options) from config to filesystem/share connectors; support run-time override from API body for that run                                                                                   | ✅ Done     |        |
+| 8   | API: extend ScanStartBody with scan_compressed; in start_scan apply override to config for that run; dashboard: add checkbox and send scan_compressed in POST body                                                            | ✅ Done     |        |
+| 9   | Share connectors (SMB, WebDAV, SharePoint, NFS): when scan_compressed true, apply same “open archive and scan members” logic for downloaded files with compressed extension (or document “filesystem only” for v1)            | ✅ Done     |        |
+| 10  | Tests: magic detection; scan_compressed=false no archive opening; scan_compressed=true findings from inside zip/tar; no regression in full suite                                                                              | ✅ Done     |        |
+| 11  | Docs: USAGE, TECH_GUIDE, man pages, help.html, README (EN and pt-BR) for scan_compressed and --scan-compressed                                                                                                                | ✅ Done     |        |
+| 12  | Resource exhaustion: enforce max_inner_size and optional temp caps; document and show user warning (dashboard + docs) when enabling scan-inside-compressed (disk, I/O, run time risks)                                        | ✅ Done     |        |
 
 **Sync:** When a step is done, mark **✅ Done** in this table and in [PLANS_TODO.md](PLANS_TODO.md) so both stay in sync.
 
@@ -271,11 +271,11 @@ When implementing **scan inside compressed files**, ensure we do **not** run int
 Follow-ups or optional improvements, **ordered by recommended execution** under typical token/session constraints (smallest-scope, high-value first):
 
 1. **Password-protected archives:** Add a test (and optionally sample data) that uses `file_scan.file_passwords` for ZIP/7z so we validate the config path end-to-end. (Focused change; existing config.)
-2. **Max members per archive:** Optional cap (e.g. 1000 members per archive) as an extra guard to limit resource use and mitigate archive bombs. (Single guard, small code surface.)
-3. **Optional max temp usage:** Consider a max total temp usage or cleanup policy when extracting to temp so one run does not fill the disk (in addition to `max_inner_size` per member). (Config/docs or small guard.)
-4. **Nested archives:** Zip-inside-zip (and tar inside zip) with a depth limit and size limit; document “one level only” for v1 or add recursion with a cap. (Larger design/code scope.)
-5. **Tier 3 archives:** LHA, ARJ, ZOO, PAK, ARC, ACE — via patool + external tools or dedicated libs; document and gate behind the same `scan_compressed` option. (New deps/formats.)
-6. **Test data:** RAR/ARJ samples only when/if support is added; keep test set small for CI. (Do when touching those formats.)
+1. **Max members per archive:** Optional cap (e.g. 1000 members per archive) as an extra guard to limit resource use and mitigate archive bombs. (Single guard, small code surface.)
+1. **Optional max temp usage:** Consider a max total temp usage or cleanup policy when extracting to temp so one run does not fill the disk (in addition to `max_inner_size` per member). (Config/docs or small guard.)
+1. **Nested archives:** Zip-inside-zip (and tar inside zip) with a depth limit and size limit; document “one level only” for v1 or add recursion with a cap. (Larger design/code scope.)
+1. **Tier 3 archives:** LHA, ARJ, ZOO, PAK, ARC, ACE — via patool + external tools or dedicated libs; document and gate behind the same `scan_compressed` option. (New deps/formats.)
+1. **Test data:** RAR/ARJ samples only when/if support is added; keep test set small for CI. (Do when touching those formats.)
 
 ---
 

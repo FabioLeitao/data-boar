@@ -365,6 +365,31 @@ def _looks_like_lyrics(sample: str) -> bool:
     return False
 
 
+def _chord_like_token_count(line: str) -> int:
+    """
+    Count tokens that look like chord symbols on one line (EN + PT-BR cifras).
+
+    Supports lines such as ``C  G  Am  F`` or ``dm7  g7  c`` (lowercase roots are
+    common in Brazilian chord sheets). The old heuristic only matched *single-chord*
+    lines with a capital root, so typical cifras failed detection and ML scores
+    stayed uncapped (looked like ~99% ``combined_confidence`` in reports).
+    """
+    if not (line or "").strip():
+        return 0
+    # One regex pass: chord tokens separated by whitespace or bar lines.
+    return len(
+        re.findall(
+            r"(?i)(?<![A-Za-z0-9])"
+            r"([A-Ga-g](?:#|b|♭)?"
+            r"(?:m(?:aj|in)?|dim|aug|sus(?:2|4|add\d)?|maj7?)?"
+            r"(?:[0-9]{1,2})?"
+            r"(?:/[A-Ga-g](?:#|b)?(?:m)?)?)"
+            r"(?=\s|$|\||/)",
+            line.strip(),
+        )
+    )
+
+
 def _looks_like_music_tab(sample: str) -> bool:
     """
     Heuristic: content resembles guitar/bass tablature or chord sheets.
@@ -375,16 +400,25 @@ def _looks_like_music_tab(sample: str) -> bool:
     lines = [ln.strip() for ln in sample.splitlines() if ln.strip()]
     tab_score = 0
     chord_score = 0
-    for ln in lines[:30]:
+    chord_token_lines = 0
+    total_chord_tokens = 0
+    for ln in lines[:40]:
         if len(ln) > 2:
             # Tab: digits, |, -, [, ], h, p, b, /, \
             tab_chars = sum(1 for c in ln if c in "0123456789|-[ ]hp/b\\")
             if tab_chars >= min(4, len(ln) // 2):
                 tab_score += 1
-            # Chord line: capital letter + optional m/7/dim etc.
+            # Legacy: single-token chord line (capital root only)
             if re.match(r"^[\sA-G][mM0-9#b\s/dim]*$", ln) and len(ln) >= 2:
                 chord_score += 1
+            ntok = _chord_like_token_count(ln)
+            total_chord_tokens += ntok
+            if ntok >= 2:
+                chord_token_lines += 1
     if tab_score >= 2 or chord_score >= 2:
+        return True
+    # Typical Brazilian / pop chord sheets: several lines with 2+ chords each
+    if chord_token_lines >= 2 or total_chord_tokens >= 6:
         return True
     lower = sample.lower()
     if any(
@@ -394,6 +428,11 @@ def _looks_like_music_tab(sample: str) -> bool:
             "tablature",
             "cifra",
             "chord",
+            "acordes",
+            "violão",
+            "violao",
+            "afinação",
+            "afinacao",
             "capo",
             "tuning",
             "e|---",
@@ -1021,13 +1060,14 @@ class SensitivityDetector:
                 return proto
         if combined_confidence >= 70:
             if entertainment_context:
-                # ML-only confidence in entertainment context (lyrics/tabs) → cap at MEDIUM so that
-                # these cases surface for human review without overwhelming the report with HIGH.
+                # ML-only confidence in entertainment context (lyrics/tabs/cifras) → cap at MEDIUM
+                # and cap the *reported* score (same band as weak-regex entertainment path) so the
+                # Excel column does not show ~99% for chord sheets that are not PII.
                 return (
                     "MEDIUM",
                     "ML_POTENTIAL_ENTERTAINMENT",
                     "Potential personal data in entertainment context",
-                    combined_confidence,
+                    min(combined_confidence, 55),
                 )
             return "HIGH", "ML_DETECTED", "LGPD/GDPR/CCPA context", combined_confidence
         if combined_confidence >= med_thr:

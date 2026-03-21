@@ -4,21 +4,26 @@ This folder groups **maintainer / operator** procedural docs. **Product usage** 
 
 **Languages:** Each runbook has an English file and a **pt-BR** twin (`*.pt_BR.md`). *Plan history under [`docs/plans/`](../plans/) is English-only.*
 
+## Before you open a PR (operators)
+
+1. Run **`.\scripts\check-all.ps1`** from the repo root on Windows (refreshes the plans dashboard, runs pre-commit, then full pytest). On Linux/macOS, run the same steps manually: `python scripts/plans-stats.py --write`, `uv run pre-commit run --all-files`, `uv run pytest -v -W error`.
+1. **Do not** commit **`docs/private/`** (real homelab inventory; gitignored) or **`git add -f config.yaml`**. Use the tracked template **`docs/private.example/`** and policy **[PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)**.
+
 ---
 
 ## Index
 
-| Topic | English | Português (pt-BR) |
-| ----- | ------- | ----------------- |
-| SonarQube (home lab, Docker, CI / IDE / MCP) | [SONARQUBE_HOME_LAB.md](SONARQUBE_HOME_LAB.md) | [SONARQUBE_HOME_LAB.pt_BR.md](SONARQUBE_HOME_LAB.pt_BR.md) |
-| Home lab — deploy smoke & data targets | [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md) | [HOMELAB_VALIDATION.pt_BR.md](HOMELAB_VALIDATION.pt_BR.md) |
-| Commit conventions & PR hygiene | [COMMIT_AND_PR.md](COMMIT_AND_PR.md) | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md) |
-| Remotes, `origin`, fork workflow | [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md) | [REMOTES_AND_ORIGIN.pt_BR.md](REMOTES_AND_ORIGIN.pt_BR.md) |
-| Branch + Docker cleanup (legacy remote §7) | [BRANCH_AND_DOCKER_CLEANUP.md](BRANCH_AND_DOCKER_CLEANUP.md) | [BRANCH_AND_DOCKER_CLEANUP.pt_BR.md](BRANCH_AND_DOCKER_CLEANUP.pt_BR.md) |
-| Operator notification channels | [OPERATOR_NOTIFICATION_CHANNELS.md](OPERATOR_NOTIFICATION_CHANNELS.md) | [OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md](OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md) |
-| Operator / IT minimal permissions | [OPERATOR_IT_REQUIREMENTS.md](OPERATOR_IT_REQUIREMENTS.md) | [OPERATOR_IT_REQUIREMENTS.pt_BR.md](OPERATOR_IT_REQUIREMENTS.pt_BR.md) |
-| Aggregated-identification practical tuning (Phase C) | [AGGREGATED_IDENTIFICATION_TUNING.md](AGGREGATED_IDENTIFICATION_TUNING.md) | [AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md](AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md) |
-| Troubleshooting Docker deployment | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.md) | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md) |
+| Topic                                                | English                                                                      | Português (pt-BR)                                                                        |
+| -----                                                | -------                                                                      | -----------------                                                                        |
+| SonarQube (home lab, Docker, CI / IDE / MCP)         | [SONARQUBE_HOME_LAB.md](SONARQUBE_HOME_LAB.md)                               | [SONARQUBE_HOME_LAB.pt_BR.md](SONARQUBE_HOME_LAB.pt_BR.md)                               |
+| Home lab — deploy smoke & data targets               | [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md)                               | [HOMELAB_VALIDATION.pt_BR.md](HOMELAB_VALIDATION.pt_BR.md)                               |
+| Commit conventions & PR hygiene                      | [COMMIT_AND_PR.md](COMMIT_AND_PR.md)                                         | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md)                                         |
+| Remotes, `origin`, fork workflow                     | [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md)                               | [REMOTES_AND_ORIGIN.pt_BR.md](REMOTES_AND_ORIGIN.pt_BR.md)                               |
+| Branch + Docker cleanup (legacy remote §7)           | [BRANCH_AND_DOCKER_CLEANUP.md](BRANCH_AND_DOCKER_CLEANUP.md)                 | [BRANCH_AND_DOCKER_CLEANUP.pt_BR.md](BRANCH_AND_DOCKER_CLEANUP.pt_BR.md)                 |
+| Operator notification channels                       | [OPERATOR_NOTIFICATION_CHANNELS.md](OPERATOR_NOTIFICATION_CHANNELS.md)       | [OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md](OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md)       |
+| Operator / IT minimal permissions                    | [OPERATOR_IT_REQUIREMENTS.md](OPERATOR_IT_REQUIREMENTS.md)                   | [OPERATOR_IT_REQUIREMENTS.pt_BR.md](OPERATOR_IT_REQUIREMENTS.pt_BR.md)                   |
+| Aggregated-identification practical tuning (Phase C) | [AGGREGATED_IDENTIFICATION_TUNING.md](AGGREGATED_IDENTIFICATION_TUNING.md)   | [AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md](AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md)   |
+| Troubleshooting Docker deployment                    | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.md) | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md) |
 
 **Related (not in this folder):** [SECURITY.md](../SECURITY.md) / [SECURITY.pt_BR.md](../SECURITY.pt_BR.md) and [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md) / [CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md) — security posture and **Priority band A** hardening next to the main security policy in [`docs/README.md`](../README.md).
 

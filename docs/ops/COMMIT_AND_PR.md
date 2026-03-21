@@ -58,10 +58,12 @@ From the repo root (PowerShell):
 
 # Commit only (example: FN reduction + commit-or-pr script)
 $body = @"
+
 - MEDIUM threshold: sensitivity_detection.medium_confidence_threshold (loader + detector + engine)
 - Suggested review: core/suggested_review, SQL persist_low_id_like_for_review, Excel sheet
 - commit-or-pr: empty default title; Preview NOTE; PR when already pushed requires -Title
 - Docs: SENSITIVITY_DETECTION, USAGE, TECH_GUIDE, PLANS_TODO, COMMIT_AND_PR; detection merge fix in loader
+
 "@
 .\scripts\commit-or-pr.ps1 -Action Commit -Title "feat: FN reduction slice + commit-or-pr message clarity" -Body $body
 
@@ -109,13 +111,13 @@ $body = @"
 
 When you want to **check**, run **pre-commit**, **commit**, **describe**, and create a **safe, synced PR** using repo scripts (best for saving tokens and one source of truth), use these **concrete actions in order** from the repo root (PowerShell):
 
-| Step | Goal | Command |
-|------|------|--------|
-| 0 | **Optional:** open Dependabot PRs + Docker Scout quickview (read-only; needs `gh`, optional Docker) | `.\scripts\maintenance-check.ps1` |
-| 1 | **Check + pre-commit** (Ruff lint, format, markdown, full pytest in one run) | `.\scripts\check-all.ps1` |
-| 2 | **Preview** (see what would be committed; no stage, no commit) | `.\scripts\preview-commit.ps1` |
-| 3 | **Propose** a short commit title and bullet-point PR body from the file list and context | (you or the agent suggest title and body) |
-| 4 | **Commit + describe + safe synced PR** (commit with title/body, run tests again, fetch+rebase if behind, push, open PR in browser) | `.\scripts\commit-or-pr.ps1 -Action PR -Title "Your title" -Body "Bullet1`nBullet2" -RunTests` |
+| Step   | Goal                                                                                                                               | Command                                                                                        |
+| ------ | ------                                                                                                                             | --------                                                                                       |
+| 0      | **Optional:** open Dependabot PRs + Docker Scout quickview (read-only; needs `gh`, optional Docker)                                | `.\scripts\maintenance-check.ps1`                                                              |
+| 1      | **Check + pre-commit** (Ruff lint, format, markdown, full pytest in one run)                                                       | `.\scripts\check-all.ps1`                                                                      |
+| 2      | **Preview** (see what would be committed; no stage, no commit)                                                                     | `.\scripts\preview-commit.ps1`                                                                 |
+| 3      | **Propose** a short commit title and bullet-point PR body from the file list and context                                           | (you or the agent suggest title and body)                                                      |
+| 4      | **Commit + describe + safe synced PR** (commit with title/body, run tests again, fetch+rebase if behind, push, open PR in browser) | `.\scripts\commit-or-pr.ps1 -Action PR -Title "Your title" -Body "Bullet1`nBullet2" -RunTests` |
 
 For a **long PR body**, use:
 

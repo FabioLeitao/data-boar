@@ -20,19 +20,19 @@ Use the sections below as a **checklist** when preparing your request to IT. Whe
 
 ## Summary table: minimal access by source type
 
-| Source type        | What to ask IT for (minimal)                                                                 | What we do **not** need                          |
-| ------------------ | --------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| **Filesystem**     | Read + list on the path(s) we scan (e.g. service account with read-only to `/data/audit`)     | Write, delete, execute, admin                     |
-| **SQL databases**  | Read-only role: SELECT on target tables; metadata (list schemas/tables/columns)              | INSERT/UPDATE/DELETE, DDL, backup, admin         |
-| **MongoDB**        | Read on database: list collections, find (read documents)                                    | Write, drop, admin                               |
-| **Redis**         | Commands: SCAN (and connection). No write commands                                            | SET, DEL, FLUSH, CONFIG, admin                    |
-| **SMB / CIFS**     | Read + list on share/path (e.g. Read share permission, list folder contents, read files)       | Write, delete, change permissions                 |
-| **WebDAV**         | Read + list (PROPFIND, GET) on the base path                                                  | PUT, DELETE, PROPPATCH, write                    |
-| **SharePoint**     | Read folder and files (e.g. “View” or “Read” on the site/folder); download file content       | Edit, delete, manage site                        |
-| **NFS**            | Read + list on the mounted path (same as filesystem; mount is usually done by IT)              | Write, delete, root squash bypass                |
-| **REST / API**     | GET access to the endpoints we scan; token with read-only or minimal scope                    | POST/PUT/DELETE, admin scope                     |
+| Source type        | What to ask IT for (minimal)                                                                    | What we do **not** need                          |
+| ------------------ | ---------------------------------------------------------------------------------------------   | ------------------------------------------------ |
+| **Filesystem**     | Read + list on the path(s) we scan (e.g. service account with read-only to `/data/audit`)       | Write, delete, execute, admin                    |
+| **SQL databases**  | Read-only role: SELECT on target tables; metadata (list schemas/tables/columns)                 | INSERT/UPDATE/DELETE, DDL, backup, admin         |
+| **MongoDB**        | Read on database: list collections, find (read documents)                                       | Write, drop, admin                               |
+| **Redis**          | Commands: SCAN (and connection). No write commands                                              | SET, DEL, FLUSH, CONFIG, admin                   |
+| **SMB / CIFS**     | Read + list on share/path (e.g. Read share permission, list folder contents, read files)        | Write, delete, change permissions                |
+| **WebDAV**         | Read + list (PROPFIND, GET) on the base path                                                    | PUT, DELETE, PROPPATCH, write                    |
+| **SharePoint**     | Read folder and files (e.g. “View” or “Read” on the site/folder); download file content         | Edit, delete, manage site                        |
+| **NFS**            | Read + list on the mounted path (same as filesystem; mount is usually done by IT)               | Write, delete, root squash bypass                |
+| **REST / API**     | GET access to the endpoints we scan; token with read-only or minimal scope                      | POST/PUT/DELETE, admin scope                     |
 | **Power BI**       | Power BI API read (e.g. “Read all datasets” or workspace read); OAuth scope as in our connector | Publish, edit reports, admin                     |
-| **Dataverse**      | Read tables/entities (e.g. environment read or table read); OAuth scope for Dataverse API    | Create/update/delete, admin                      |
+| **Dataverse**      | Read tables/entities (e.g. environment read or table read); OAuth scope for Dataverse API       | Create/update/delete, admin                      |
 
 ---
 
@@ -47,14 +47,14 @@ Use the sections below as a **checklist** when preparing your request to IT. Whe
 ## 2. SQL databases (PostgreSQL, MySQL, MariaDB, SQL Server, Oracle, SQLite)
 
 - **Ask for:** A **read-only** user/role that can:
-  - **List** schemas (where applicable), tables, and columns (metadata/catalog access).
-  - **SELECT** on the tables (or schemas) you intend to scan.
-  - No INSERT, UPDATE, DELETE, or DDL (CREATE/ALTER/DROP). No backup/restore, no admin.
+- **List** schemas (where applicable), tables, and columns (metadata/catalog access).
+- **SELECT** on the tables (or schemas) you intend to scan.
+- No INSERT, UPDATE, DELETE, or DDL (CREATE/ALTER/DROP). No backup/restore, no admin.
 - **Concrete examples:**
-  - **PostgreSQL:** Role with `CONNECT` on the database and `SELECT` on the tables (or schema) to scan; or `pg_read_all_data` if you must (still read-only). Avoid `pg_read_all_settings` and superuser.
-  - **MySQL / MariaDB:** User with `SELECT` and metadata (e.g. `SHOW` or access to `information_schema` for the databases we scan). No `INSERT`, `UPDATE`, `DELETE`, `CREATE`, `DROP`.
-  - **SQL Server:** User with `db_datareader` (or `SELECT` on specific tables) and permission to read metadata (e.g. `sys.tables`, `sys.columns`). No `db_datawriter`, no `db_owner`.
-  - **Oracle:** User with `SELECT` on the target tables/schemas and `SELECT_CATALOG_ROLE` (or equivalent) only if needed for listing objects. No DBA, no write.
+- **PostgreSQL:** Role with `CONNECT` on the database and `SELECT` on the tables (or schema) to scan; or `pg_read_all_data` if you must (still read-only). Avoid `pg_read_all_settings` and superuser.
+- **MySQL / MariaDB:** User with `SELECT` and metadata (e.g. `SHOW` or access to `information_schema` for the databases we scan). No `INSERT`, `UPDATE`, `DELETE`, `CREATE`, `DROP`.
+- **SQL Server:** User with `db_datareader` (or `SELECT` on specific tables) and permission to read metadata (e.g. `sys.tables`, `sys.columns`). No `db_datawriter`, no `db_owner`.
+- **Oracle:** User with `SELECT` on the target tables/schemas and `SELECT_CATALOG_ROLE` (or equivalent) only if needed for listing objects. No DBA, no write.
 - **We do not need:** Any write privilege, DDL, backup, replication, or server admin.
 - **Why this is enough:** We use the engine’s metadata APIs to discover schemas/tables/columns, then run **SELECT** with a small **LIMIT** per column to sample values. Findings are metadata (table/column, pattern type); we do not store full row content. Read-only is sufficient and aligns with zero-trust.
 
@@ -118,7 +118,7 @@ Use the sections below as a **checklist** when preparing your request to IT. Whe
 
 ## 10. Power BI
 
-- **Ask for:** Power BI API **read** access: e.g. “Read all datasets” or read access to the workspaces/datasets we scan. Our connector uses the scope `https://analysis.windows.net/powerbi/api/.default` (Azure AD). IT should grant the app registration the minimal Power BI permission that allows listing workspaces/datasets and executing read-only queries (e.g. Execute Queries for sampling).
+- **Ask for:** Power BI API **read** access: e.g. “Read all datasets” or read access to the workspaces/datasets we scan. Our connector uses the scope `<https://analysis.windows.net/powerbi/api/.defaul>t` (Azure AD). IT should grant the app registration the minimal Power BI permission that allows listing workspaces/datasets and executing read-only queries (e.g. Execute Queries for sampling).
 - **We do not need:** Publish, edit reports/datasets, or admin.
 - **Why this is enough:** We list datasets and tables, run small DAX queries to sample data, and run sensitivity detection. Read-only API access is sufficient.
 
@@ -137,10 +137,10 @@ Use the sections below as a **checklist** when preparing your request to IT. Whe
 When you send your request, you can include:
 
 1. **Scope:** Exact path(s), database(s), share(s), or API base URL(s) we will access.
-2. **Identity:** The account or app (e.g. service account, Azure AD app) that will be used.
-3. **Required access:** “Read and list only” (or the row from the summary table above for that source).
-4. **What we do not need:** “No write, delete, or admin.”
-5. **Justification:** “Compliance/LGPD audit: discover and sample content for sensitivity detection; no data modification or export of full content; findings are metadata only (location and pattern type).”
+1. **Identity:** The account or app (e.g. service account, Azure AD app) that will be used.
+1. **Required access:** “Read and list only” (or the row from the summary table above for that source).
+1. **What we do not need:** “No write, delete, or admin.”
+1. **Justification:** “Compliance/LGPD audit: discover and sample content for sensitivity detection; no data modification or export of full content; findings are metadata only (location and pattern type).”
 
 If IT asks for a written justification, you can point them to this document and to the fact that the application is designed to operate with **least privilege** so it remains compatible with zero-trust and strict IAM policies.
 

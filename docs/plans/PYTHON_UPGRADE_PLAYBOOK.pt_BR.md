@@ -10,12 +10,12 @@
 
 ## 1. Contrato atual (o que tem de continuar verdade)
 
-| Camada | Fonte da verdade | Hoje |
-| ------ | ------------------ | ---- |
-| Faixa declarada | `pyproject.toml` → `requires-python` | `>=3.12` |
-| Árvore fixada | `uv.lock` + `uv sync` | Resolvida para 3.12/3.13 (matriz de testes no CI em `main`) |
-| Imagem publicada | `Dockerfile` **`FROM`** + **`COPY .../python3.XY/site-packages`** | Tem de bater com **um** minor Python de ponta a ponta |
-| Sinal do CI | `.github/workflows/ci.yml` | Job **Test** deve cobrir todo **minor suportado** em SECURITY/CONTRIBUTING |
+| Camada           | Fonte da verdade                                                  | Hoje                                                                       |
+| ------           | ------------------                                                | ----                                                                       |
+| Faixa declarada  | `pyproject.toml` → `requires-python`                              | `>=3.12`                                                                   |
+| Árvore fixada    | `uv.lock` + `uv sync`                                             | Resolvida para 3.12/3.13 (matriz de testes no CI em `main`)                |
+| Imagem publicada | `Dockerfile` **`FROM`** + **`COPY .../python3.XY/site-packages`** | Tem de bater com **um** minor Python de ponta a ponta                      |
+| Sinal do CI      | `.github/workflows/ci.yml`                                        | Job **Test** deve cobrir todo **minor suportado** em SECURITY/CONTRIBUTING |
 
 **Armadilha:** Declarar **3.13** sem CI no 3.13 esconde regressões até o Docker ou o local falhar.
 
@@ -23,11 +23,11 @@
 
 ## 2. Por que 3.13 antes de 3.14?
 
-| | 3.13 | 3.14 |
-| --- | --- | --- |
-| **Ecossistema de wheels** | Wheels **cp313** maduros para boa parte do stack científico/BD | Wheels **cp314** ainda atrás; mais risco de **build a partir do fonte** |
-| **Atrito** | Menor: `python:3.13-slim` oficial, mesmo padrão do 3.12 | Maior: acompanhar PyPI para `cp314` em numpy/scipy/pandas/sklearn/psycopg2/oracledb/etc. |
-| **Segurança / CVE** | Interpretador mais novo + base Debian nas imagens slim | Mesma lógica, condicionada aos wheels das dependências |
+|                           | 3.13                                                           | 3.14                                                                                     |
+| ---                       | ---                                                            | ---                                                                                      |
+| **Ecossistema de wheels** | Wheels **cp313** maduros para boa parte do stack científico/BD | Wheels **cp314** ainda atrás; mais risco de **build a partir do fonte**                  |
+| **Atrito**                | Menor: `python:3.13-slim` oficial, mesmo padrão do 3.12        | Maior: acompanhar PyPI para `cp314` em numpy/scipy/pandas/sklearn/psycopg2/oracledb/etc. |
+| **Segurança / CVE**       | Interpretador mais novo + base Debian nas imagens slim         | Mesma lógica, condicionada aos wheels das dependências                                   |
 
 **Recomendação:** Tratar **3.13** como **próximo alvo** de produção em Docker + verificação do lockfile; **3.14** como **experimental** até `docker build` instalar **só wheels** (ou tempo de compilação aceitável) para o `requirements.txt` / `uv.lock` completos.
 
@@ -35,13 +35,13 @@
 
 ## 3. Matriz de compatibilidade a manter
 
-| Verificação | 3.12 | 3.13 | 3.14 (prep) |
-| ----------- | ---- | ---- | ----------- |
-| `uv sync` + `uv run pytest -v -W error` | CI | CI (matriz) | Manual ou job opcional |
-| `uv run ruff` | CI | Um job (ex.: 3.12) | N/A |
-| `pip-audit` | CI | Igual | N/A |
-| **Docker** `docker build` | Publicação padrão | Branch: alterar `FROM` + caminhos `python3.XY` | Só branch |
-| **Smoke:** container, `/health`, scan vazio | Homelab | Mesma família de tags | Idem |
+| Verificação                                 | 3.12              | 3.13                                           | 3.14 (prep)            |
+| -----------                                 | ----              | ----                                           | -----------            |
+| `uv sync` + `uv run pytest -v -W error`     | CI                | CI (matriz)                                    | Manual ou job opcional |
+| `uv run ruff`                               | CI                | Um job (ex.: 3.12)                             | N/A                    |
+| `pip-audit`                                 | CI                | Igual                                          | N/A                    |
+| **Docker** `docker build`                   | Publicação padrão | Branch: alterar `FROM` + caminhos `python3.XY` | Só branch              |
+| **Smoke:** container, `/health`, scan vazio | Homelab           | Mesma família de tags                          | Idem                   |
 
 **Dockerfile:** ao mudar o minor, substituir **todos** os `python3.12` em `find`/`COPY` por `python3.13` (ou `3.14`).
 
@@ -50,9 +50,9 @@
 ## 4. Preparar 3.14 (cedo ou tarde)
 
 1. **CI:** Manter **3.12 + 3.13** verdes; job opcional **`workflow_dispatch`** ou **semanal** em **3.14** com `uv sync` + `pytest` (**continue-on-error** até ficar verde).
-2. **Lockfile:** `uv lock` em ambiente **3.14** só quando a árvore for resolvível; PR dedicado.
-3. **Auditoria de wheels:** antes de subir o `FROM`, notar compilações longas no `pip install`.
-4. **`requires-python`:** subir para `>=3.13` ou `>=3.14` **só** ao **abandonar** o 3.12 — decisão de release/comunicação.
+1. **Lockfile:** `uv lock` em ambiente **3.14** só quando a árvore for resolvível; PR dedicado.
+1. **Auditoria de wheels:** antes de subir o `FROM`, notar compilações longas no `pip install`.
+1. **`requires-python`:** subir para `>=3.13` ou `>=3.14` **só** ao **abandonar** o 3.12 — decisão de release/comunicação.
 
 ---
 
@@ -89,4 +89,4 @@ Se o candidato falhar: manter imagem publicada em **3.12**; branch para nova ten
 
 ---
 
-*Última atualização: playbook em `docs/plans/`; matriz CI 3.12+3.13 nos testes.*
+## Última atualização: playbook em `docs/plans/`; matriz CI 3.12+3.13 nos testes.
