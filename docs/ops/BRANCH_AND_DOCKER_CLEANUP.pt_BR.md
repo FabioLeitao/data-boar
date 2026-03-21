@@ -19,13 +19,13 @@ git branch --merged origin/main
 git branch --no-merged origin/main
 ```
 
-**Regras:**
+## Regras:
 
 - **Não apague** branches listadas em `--no-merged` sem revisar (work in progress ou abandonado de propósito).
 - **Não apague** a branch em que você está; mude antes: `git checkout main`.
 - Alinhe o `main` antes: `git pull origin main`.
 
-**Apagar uma branch local mergeada:**
+## Apagar uma branch local mergeada:
 
 ```powershell
 git branch -d nome-da-branch
@@ -53,7 +53,7 @@ git log origin/main..origin/NOME-DA-BRANCH
 - Log **vazio** → em geral seguro apagar a branch remota (histórico já no `main`).
 - Log **não vazio** → há commits únicos; faça merge ou cherry-pick antes, ou abandone de propósito.
 
-**Apagar branch remota:**
+## Apagar branch remota:
 
 ```powershell
 git push origin --delete NOME-DA-BRANCH
@@ -66,7 +66,7 @@ git push origin --delete NOME-DA-BRANCH
 Manter cerca de **dois** **digests** de imagem localmente, por exemplo:
 
 1. `fabioleitao/data_boar:latest` ou a tag semver em uso (ex.: `1.6.2`).
-2. **Uma versão anterior** para comparação ou rollback rápido.
+1. **Uma versão anterior** para comparação ou rollback rápido.
 
 **Smokes / lab:** Testes de smoke **não** precisam de uma **tag nova a cada execução** (`data_boar:smoke-93`, …). Isso **ocupa disco** à toa. Prefira **uma** tag sobrescrita — **`docker build -t data_boar:lab .`** (igual ao passo 1.3 de [HOMELAB_VALIDATION.pt_BR.md](HOMELAB_VALIDATION.pt_BR.md)) — e apague tags experimentais antigas quando terminar.
 
@@ -86,10 +86,10 @@ docker builder prune -f
 ## 4. Ordem recomendada
 
 1. `git fetch origin --prune` e `git pull` no `main`.
-2. Revisar `git branch --no-merged origin/main`.
-3. Apagar branches **locais** já mergeadas (`git branch -d …`).
-4. No GitHub, apagar branches **remotas** mergeadas e sem uso.
-5. Docker: manter **latest + uma versão anterior** → `docker rmi` / `prune`.
+1. Revisar `git branch --no-merged origin/main`.
+1. Apagar branches **locais** já mergeadas (`git branch -d …`).
+1. No GitHub, apagar branches **remotas** mergeadas e sem uso.
+1. Docker: manter **latest + uma versão anterior** → `docker rmi` / `prune`.
 
 ---
 
@@ -100,8 +100,8 @@ docker builder prune -f
 ### Objetivos
 
 1. Branches **locais** que ainda apontam para o remote legado: `git branch -vv` e alinhar ou apagar.
-2. **Não fazer push** para o remoto legado a partir deste clone (política intencional).
-3. Repositório antigo no GitHub: opcional **arquivar** + README apontando para **data-boar**.
+1. **Não fazer push** para o remoto legado a partir deste clone (política intencional).
+1. Repositório antigo no GitHub: opcional **arquivar** + README apontando para **data-boar**.
 
 ---
 

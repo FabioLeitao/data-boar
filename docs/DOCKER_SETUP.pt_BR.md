@@ -147,22 +147,22 @@ Ou com Compose: `docker compose -f deploy/docker-compose.yml -f deploy/docker-co
 
 Execuções repetidas de `docker run` / `docker build` em testes de smoke ou no homelab deixam **vários containers parados** no Docker Desktop. Isso atrapalha portas, volumes e saber qual imagem está “ativa”.
 
-**Convenção do projeto:**
+## Convenção do projeto:
 
 1. Preferir **um** container principal local (ex.: `--name data-boar-audit`) ou **uma** stack Compose.
-2. No máximo **dois** containers com nome **só** quando houver **A/B** explícito (ex.: `fabioleitao/data_boar:latest` vs `data_boar:lab` construída localmente). Evitar containers anônimos “soltos”.
-3. Ao terminar um teste descartável, **parar e remover** os extras: `docker rm -f <nome>` (após confirmar que essa instância não é mais necessária).
+1. No máximo **dois** containers com nome **só** quando houver **A/B** explícito (ex.: `fabioleitao/data_boar:latest` vs `data_boar:lab` construída localmente). Evitar containers anônimos “soltos”.
+1. Ao terminar um teste descartável, **parar e remover** os extras: `docker rm -f <nome>` (após confirmar que essa instância não é mais necessária).
 
-**Listar candidatos a remoção:**
+## Listar candidatos a remoção:
 
 ```powershell
 docker ps -a --filter "name=data-boar"
 ```
 
-4. **Tags de imagem (evitar explosão):** **Não** é necessário criar **uma tag nova a cada smoke** (ex.: `data_boar:smoke-post93`). Cada tag extra dificulta ver o que importa e pode manter **muitas camadas grandes** até você fazer prune. Prefira **uma tag local mutável** que você **sobrescreve** a cada build, ex.: **`docker build -t data_boar:lab .`** — alinhado ao passo 1.3 de [HOMELAB_VALIDATION.pt_BR.md](ops/HOMELAB_VALIDATION.pt_BR.md). Só use **segunda** tag para A/B de verdade (ex.: `data_boar:lab-a` vs `data_boar:lab-b`, ou `fabioleitao/data_boar:latest` **pulled** vs `data_boar:lab` local).
-5. **Disco / retenção:** Depois do smoke, mantenha cerca de **duas** imagens úteis localmente (ex.: Hub **`latest`** + **`data_boar:lab`**, ou `latest` + um semver anterior). **Remova** tags de smoke antigas e use **`docker image prune`** / **`docker builder prune`** quando precisar — ver [BRANCH_AND_DOCKER_CLEANUP.pt_BR.md](ops/BRANCH_AND_DOCKER_CLEANUP.pt_BR.md) §3.
+1. **Tags de imagem (evitar explosão):** **Não** é necessário criar **uma tag nova a cada smoke** (ex.: `data_boar:smoke-post93`). Cada tag extra dificulta ver o que importa e pode manter **muitas camadas grandes** até você fazer prune. Prefira **uma tag local mutável** que você **sobrescreve** a cada build, ex.: **`docker build -t data_boar:lab .`** — alinhado ao passo 1.3 de [HOMELAB_VALIDATION.pt_BR.md](ops/HOMELAB_VALIDATION.pt_BR.md). Só use **segunda** tag para A/B de verdade (ex.: `data_boar:lab-a` vs `data_boar:lab-b`, ou `fabioleitao/data_boar:latest` **pulled** vs `data_boar:lab` local).
+1. **Disco / retenção:** Depois do smoke, mantenha cerca de **duas** imagens úteis localmente (ex.: Hub **`latest`** + **`data_boar:lab`**, ou `latest` + um semver anterior). **Remova** tags de smoke antigas e use **`docker image prune`** / **`docker builder prune`** quando precisar — ver [BRANCH_AND_DOCKER_CLEANUP.pt_BR.md](ops/BRANCH_AND_DOCKER_CLEANUP.pt_BR.md) §3.
 
-6. **Automação (Windows):** Na raiz do repo, **`.\scripts\docker-hub-pull.ps1`** (pull `latest` + semver + patch anterior), **`.\scripts\docker-lab-build.ps1`** (build **`data_boar:lab`**, opcional **`lab-prev`** / **`smoke`**), **`.\scripts\docker-prune-local.ps1 -WhatIf`** e depois sem `-WhatIf` para remover tags extra. Detalhes: [scripts/docker/README.md](../scripts/docker/README.md).
+1. **Automação (Windows):** Na raiz do repo, **`.\scripts\docker-hub-pull.ps1`** (pull `latest` + semver + patch anterior), **`.\scripts\docker-lab-build.ps1`** (build **`data_boar:lab`**, opcional **`lab-prev`** / **`smoke`**), **`.\scripts\docker-prune-local.ps1 -WhatIf`** e depois sem `-WhatIf` para remover tags extra. Detalhes: [scripts/docker/README.md](../scripts/docker/README.md).
 
 Orientação para agentes/automação: **`.cursor/rules/docker-local-smoke-cleanup.mdc`** e **`.cursor/skills/docker-smoke-container-hygiene/SKILL.md`** (opcional para quem usa Cursor).
 

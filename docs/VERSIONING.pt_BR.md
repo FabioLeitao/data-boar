@@ -40,9 +40,9 @@ Ao dar bump na versão, atualize **todos** os itens abaixo para manter o número
 
 ### 3. Páginas de manual (man)
 
-| Local                     | O que alterar                                                                      |
-| ---                       | ---                                                                                |
-| **`docs/data_boar.1`** | Na linha `.TH` (ex.: `"Data Boar 1.5.4"`), defina a versão para a nova. |
+| Local                  | O que alterar                                                                                  |
+| ---                    | ---                                                                                            |
+| **`docs/data_boar.1`** | Na linha `.TH` (ex.: `"Data Boar 1.5.4"`), defina a versão para a nova.                        |
 | **`docs/data_boar.5`** | Idem: atualize a versão na linha `.TH`. (Legado: `lgpd_crawler` é symlink de compatibilidade.) |
 
 ### 4. Deploy e Docker

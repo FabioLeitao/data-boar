@@ -53,10 +53,10 @@ If your regulation or compliance scope needs specific tuning (e.g. custom norm t
 
 ## Where to go next
 
-| Need | Document |
-|------|----------|
-| Configuration schema, credentials, examples | [USAGE.md](USAGE.md) · [USAGE.pt_BR.md](USAGE.pt_BR.md) |
-| List of frameworks and how to use samples | [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) · [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) |
-| Security (fixes, logging, body limit) | [SECURITY.md](SECURITY.md) · [SECURITY.pt_BR.md](SECURITY.pt_BR.md) |
-| Install, run, connectors, deploy | [TECH_GUIDE.md](TECH_GUIDE.md) · [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md) |
-| Full documentation index | [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md) |
+| Need                                        | Document                                                                                                                |
+| ------                                      | ----------                                                                                                              |
+| Configuration schema, credentials, examples | [USAGE.md](USAGE.md) · [USAGE.pt_BR.md](USAGE.pt_BR.md)                                                                 |
+| List of frameworks and how to use samples   | [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) · [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) |
+| Security (fixes, logging, body limit)       | [SECURITY.md](SECURITY.md) · [SECURITY.pt_BR.md](SECURITY.pt_BR.md)                                                     |
+| Install, run, connectors, deploy            | [TECH_GUIDE.md](TECH_GUIDE.md) · [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md)                                             |
+| Full documentation index                    | [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md)                                                             |

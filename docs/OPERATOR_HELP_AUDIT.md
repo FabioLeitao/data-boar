@@ -8,15 +8,15 @@
 
 ## Surfaces to keep in sync
 
-| Surface | Location / how | Notes |
-| ------- | -------------- | ----- |
-| **CLI `--help`** | `main.py` (`argparse`) | Source of truth for flags; contract tests in `tests/test_operator_help_sync.py` + manifest `tests/operator_help_sync_manifest.py`. |
-| **Man page** | `docs/data_boar.1` | Synopsis + `.SH OPTIONS`; install path varies by distro/package. |
-| **USAGE (EN + pt-BR)** | `docs/USAGE.md`, `docs/USAGE.pt_BR.md` | Tables and “REST API server” sections must match bind/port resolution (`core/host_resolution.py`). |
-| **README quick start** | `README.md`, `README.pt_BR.md` | At least link to USAGE for full flags; mention `--host` when discussing exposure. |
-| **Web in-app help** | Dashboard `/help` templates / static copy | Should not contradict USAGE for scan options and API entrypoints. |
-| **OpenAPI / Swagger** | `api/routes` and related | Request bodies (e.g. `/scan` JSON) and documented query params. |
-| **Deploy / security** | `docs/deploy/DEPLOY*.md`, `SECURITY.md` | Binding, `API_HOST`, reverse proxy — consistent with loopback-by-default story. |
+| Surface                | Location / how                            | Notes                                                                                                                              |
+| -------                | --------------                            | -----                                                                                                                              |
+| **CLI `--help`**       | `main.py` (`argparse`)                    | Source of truth for flags; contract tests in `tests/test_operator_help_sync.py` + manifest `tests/operator_help_sync_manifest.py`. |
+| **Man page**           | `docs/data_boar.1`                        | Synopsis + `.SH OPTIONS`; install path varies by distro/package.                                                                   |
+| **USAGE (EN + pt-BR)** | `docs/USAGE.md`, `docs/USAGE.pt_BR.md`    | Tables and “REST API server” sections must match bind/port resolution (`core/host_resolution.py`).                                 |
+| **README quick start** | `README.md`, `README.pt_BR.md`            | At least link to USAGE for full flags; mention `--host` when discussing exposure.                                                  |
+| **Web in-app help**    | Dashboard `/help` templates / static copy | Should not contradict USAGE for scan options and API entrypoints.                                                                  |
+| **OpenAPI / Swagger**  | `api/routes` and related                  | Request bodies (e.g. `/scan` JSON) and documented query params.                                                                    |
+| **Deploy / security**  | `docs/deploy/DEPLOY*.md`, `SECURITY.md`   | Binding, `API_HOST`, reverse proxy — consistent with loopback-by-default story.                                                    |
 
 ## Resolution order (API bind)
 

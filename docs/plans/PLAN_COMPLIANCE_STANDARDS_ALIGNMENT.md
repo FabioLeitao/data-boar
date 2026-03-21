@@ -47,13 +47,13 @@ Document how the product **supports** (does not certify) alignment with **audita
 
 ## Implementation to-dos (sequenced)
 
-| # | To-do | Status |
-|---|--------|--------|
-| 1 | Add subsection “Auditable and management standards (supporting role)” in COMPLIANCE_FRAMEWORKS.md: ISO/IEC 27701 and FELCA paragraphs; link to this plan. | ✅ Done |
-| 2 | Add equivalent subsection in COMPLIANCE_FRAMEWORKS.pt_BR.md (natural pt-BR). | ✅ Done |
-| 3 | Update roadmap sentence in README.md (decision-makers / “Why it holds up”): mention alignment with ISO/IEC 27701 (PIMS) and FELCA (minor-data mapping) documented; we continue to extend support for auditable and regional standards. | ✅ Done |
-| 4 | Update roadmap sentence in README.pt_BR.md equivalently (on-brand, minimal change). | ✅ Done |
-| 5 | In PLANS_TODO.md: add “Compliance standards alignment” to plan status and conflict/dependency table; add a short block with these to-dos; place in “What to start next” as smallest-scope (doc-only) so it can be done first under token constraints. | ✅ Done |
+| #   | To-do                                                                                                                                                                                                                                                 | Status   |
+| --- | --------                                                                                                                                                                                                                                              | -------- |
+| 1   | Add subsection “Auditable and management standards (supporting role)” in COMPLIANCE_FRAMEWORKS.md: ISO/IEC 27701 and FELCA paragraphs; link to this plan.                                                                                             | ✅ Done   |
+| 2   | Add equivalent subsection in COMPLIANCE_FRAMEWORKS.pt_BR.md (natural pt-BR).                                                                                                                                                                          | ✅ Done   |
+| 3   | Update roadmap sentence in README.md (decision-makers / “Why it holds up”): mention alignment with ISO/IEC 27701 (PIMS) and FELCA (minor-data mapping) documented; we continue to extend support for auditable and regional standards.                | ✅ Done   |
+| 4   | Update roadmap sentence in README.pt_BR.md equivalently (on-brand, minimal change).                                                                                                                                                                   | ✅ Done   |
+| 5   | In PLANS_TODO.md: add “Compliance standards alignment” to plan status and conflict/dependency table; add a short block with these to-dos; place in “What to start next” as smallest-scope (doc-only) so it can be done first under token constraints. | ✅ Done   |
 
 ---
 

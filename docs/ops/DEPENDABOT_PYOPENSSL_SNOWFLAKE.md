@@ -7,8 +7,8 @@
 **Upstream:** Snowflake is aware (e.g. [snowflake-connector-python#2789](https://github.com/snowflakedb/snowflake-connector-python/issues/2789)) — watch for a connector release that relaxes the upper bound to allow **pyOpenSSL 26+**, then:
 
 1. Bump **`snowflake-connector-python`** (or add an explicit **`pyopenssl>=26.0.0`** floor if the connector no longer caps it).
-2. Run **`uv lock`**, **`uv export --no-emit-package pyproject.toml -o requirements.txt`**, **`.\scripts\check-all.ps1`**.
-3. Merge; Dependabot should close **#9** / **#10** when the lockfile no longer contains a vulnerable range.
+1. Run **`uv lock`**, **`uv export --no-emit-package pyproject.toml -o requirements.txt`**, **`.\scripts\check-all.ps1`**.
+1. Merge; Dependabot should close **#9** / **#10** when the lockfile no longer contains a vulnerable range.
 
 **Risk note (operator judgment):** The advisories concern **DTLS cookie callbacks** and **SNI callback exception handling**. Typical Data Boar use of the Snowflake connector does not custom-wire these OpenSSL callbacks; residual risk is lower than the raw CVSS suggests for many deployments, but the lockfile remains in GitHub’s “vulnerable range” until upstream ships.
 
