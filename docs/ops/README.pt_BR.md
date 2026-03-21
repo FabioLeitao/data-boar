@@ -8,17 +8,17 @@ Esta pasta reúne documentação **procedural** para mantenedor/operador. Docume
 
 ## Índice
 
-| Tópico | English | Português (pt-BR) |
-| ------ | ------- | ----------------- |
-| SonarQube (home lab, Docker, CI / IDE / MCP) | [SONARQUBE_HOME_LAB.md](SONARQUBE_HOME_LAB.md) | [SONARQUBE_HOME_LAB.pt_BR.md](SONARQUBE_HOME_LAB.pt_BR.md) |
-| Home lab — smoke de deploy e alvos de dados | [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md) | [HOMELAB_VALIDATION.pt_BR.md](HOMELAB_VALIDATION.pt_BR.md) |
-| Convenções de commit e PR | [COMMIT_AND_PR.md](COMMIT_AND_PR.md) | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md) |
-| Remotes, `origin`, fluxo de fork | [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md) | [REMOTES_AND_ORIGIN.pt_BR.md](REMOTES_AND_ORIGIN.pt_BR.md) |
-| Limpeza de branches + Docker (remote legado §7) | [BRANCH_AND_DOCKER_CLEANUP.md](BRANCH_AND_DOCKER_CLEANUP.md) | [BRANCH_AND_DOCKER_CLEANUP.pt_BR.md](BRANCH_AND_DOCKER_CLEANUP.pt_BR.md) |
-| Canais de notificação ao operador | [OPERATOR_NOTIFICATION_CHANNELS.md](OPERATOR_NOTIFICATION_CHANNELS.md) | [OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md](OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md) |
-| Operador / TI (permissões mínimas) | [OPERATOR_IT_REQUIREMENTS.md](OPERATOR_IT_REQUIREMENTS.md) | [OPERATOR_IT_REQUIREMENTS.pt_BR.md](OPERATOR_IT_REQUIREMENTS.pt_BR.md) |
-| Ajuste prático de identificação agregada (Fase C) | [AGGREGATED_IDENTIFICATION_TUNING.md](AGGREGATED_IDENTIFICATION_TUNING.md) | [AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md](AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md) |
-| Resolução de problemas — implantação Docker | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.md) | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md) |
+| Tópico                                            | English                                                                      | Português (pt-BR)                                                                        |
+| ------                                            | -------                                                                      | -----------------                                                                        |
+| SonarQube (home lab, Docker, CI / IDE / MCP)      | [SONARQUBE_HOME_LAB.md](SONARQUBE_HOME_LAB.md)                               | [SONARQUBE_HOME_LAB.pt_BR.md](SONARQUBE_HOME_LAB.pt_BR.md)                               |
+| Home lab — smoke de deploy e alvos de dados       | [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md)                               | [HOMELAB_VALIDATION.pt_BR.md](HOMELAB_VALIDATION.pt_BR.md)                               |
+| Convenções de commit e PR                         | [COMMIT_AND_PR.md](COMMIT_AND_PR.md)                                         | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md)                                         |
+| Remotes, `origin`, fluxo de fork                  | [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md)                               | [REMOTES_AND_ORIGIN.pt_BR.md](REMOTES_AND_ORIGIN.pt_BR.md)                               |
+| Limpeza de branches + Docker (remote legado §7)   | [BRANCH_AND_DOCKER_CLEANUP.md](BRANCH_AND_DOCKER_CLEANUP.md)                 | [BRANCH_AND_DOCKER_CLEANUP.pt_BR.md](BRANCH_AND_DOCKER_CLEANUP.pt_BR.md)                 |
+| Canais de notificação ao operador                 | [OPERATOR_NOTIFICATION_CHANNELS.md](OPERATOR_NOTIFICATION_CHANNELS.md)       | [OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md](OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md)       |
+| Operador / TI (permissões mínimas)                | [OPERATOR_IT_REQUIREMENTS.md](OPERATOR_IT_REQUIREMENTS.md)                   | [OPERATOR_IT_REQUIREMENTS.pt_BR.md](OPERATOR_IT_REQUIREMENTS.pt_BR.md)                   |
+| Ajuste prático de identificação agregada (Fase C) | [AGGREGATED_IDENTIFICATION_TUNING.md](AGGREGATED_IDENTIFICATION_TUNING.md)   | [AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md](AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md)   |
+| Resolução de problemas — implantação Docker       | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.md) | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md) |
 
 **Relacionado (fora desta pasta):** [SECURITY.md](../SECURITY.md) / [SECURITY.pt_BR.md](../SECURITY.pt_BR.md) e [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md) / [CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md) — postura de segurança e endurecimento **Priority band A**, listados junto da política principal em [`docs/README.pt_BR.md`](../README.pt_BR.md).
 
