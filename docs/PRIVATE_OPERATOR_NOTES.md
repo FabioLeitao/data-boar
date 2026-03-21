@@ -30,6 +30,7 @@ Copy the **tracked template** from **`docs/private.example/`** into **`docs/priv
 | **`docs/private/homelab/solar.md`**           | Inverter/datalogger models, portal names, **references** to Bitwarden for keys (not plaintext passwords).                                                                                  |
 | **`docs/private/homelab/iso-inventory.md`**   | Optional: list of `.iso` / `.img` paths (e.g. under `~/Downloads/iso` on a lab machine). **Captured by you** (SSH `ls`, `find`, or script output pasted/edited here)—not stored on GitHub. |
 | **`docs/private/homelab/HARDWARE_CATALOG.md`** | **Bird’s-eye** hardware / roles / power / solar summary merged from other private notes; **gaps** section for unchecked items. |
+| **`docs/private/homelab/LAB_TAXONOMY.md`** | **LAB‑OP** (operator real homelab) vs **LAB‑PB** (public playbook) — use in chat to disambiguate. |
 | **`docs/private/homelab/OPERATOR_SYSTEM_MAP.md`** | **Master chart:** hardware + accessibility matrix + software inventory + Mermaid topology + doc index (agents **`read_file`** by default with homelab work). |
 | **`docs/private/homelab/OPERATOR_RETEACH.md`** | **Fill-in gaps** (B1–B6); agents **`read_file`** after **`OPERATOR_SYSTEM_MAP.md`**. |
 | **`docs/private/author_info/`**               | **Personal / career / education / certificates** (CV text, course progress, cert IDs, narrative history). Same gitignore rules as homelab; split from **`homelab/`** so you can sync or exclude policies differently. |
@@ -99,6 +100,7 @@ The assistant runs on **your** workstation. If **pCloud** maps the sync root to 
 
 ## 6. Related tracked docs
 
+- **[OPERATOR_LAB_DOCUMENT_MAP.md](ops/OPERATOR_LAB_DOCUMENT_MAP.md)** ([pt-BR](ops/OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md)) — **LAB‑PB vs LAB‑OP**: where every lab-related doc lives (public index + private filenames).
 - [CONTRIBUTING.md](../CONTRIBUTING.md) — public repo hygiene.
 - [SECURITY.md](../SECURITY.md) — secrets and `config.yaml`.
 - [HOMELAB_VALIDATION.md](ops/HOMELAB_VALIDATION.md) — **playbook** (generic); real results → private `homelab/`.
