@@ -20,6 +20,19 @@ Você pode limitar o commit/PR a arquivos específicos com **`-IncludeFiles`** (
 - **Depois:** execute com `-Action Commit` ou `-Action PR` e, se quiser incluir só alguns arquivos, adicione `-IncludeFiles "path1","path2"`.
 - **Guarda de segurança:** Commit/PR exigem um Preview anterior com o mesmo escopo; se o escopo mudar, rode Preview de novo.
 
+## Documentar progresso em commits locais (antes do PR, release ou publicação)
+
+**Por quê:** Trabalho **não commitado** por dias fica **difícil de revisar**, fácil de **perder** e **doloroso de rebase/merge** quando você abre o PR ou publica. **Commits locais** frequentes num **branch de feature** registram intenção e reduzem conflitos.
+
+| Situação | O que fazer |
+| -------- | ----------- |
+| **Uma mudança importante** | Commitar quando estiver completa e validada (ex.: `check-all` ou `lint-only` se for só doc). |
+| **Vários ajustes pequenos, mesmo tema** | Um commit para o “fio da meada” inteiro, *ou* poucos commits por subtema (`test:`, `docs:`, `feat:`)—cada mensagem deve ficar clara no `git log`. |
+| **Fim de sessão longa** | Preferir commitar trabalho coerente em vez de árvore suja; se precisar parar no meio, **um** commit bem rotulado (ex.: o que falta) **no branch**—combinar com o operador; não bagunçar o `main`. |
+| **Branch vivo por vários dias** | **`git fetch`** e merge ou rebase de **`origin/main`** com frequência para não acumular parede de conflito na hora do PR. |
+
+Isso complementa o **PR em lote**: muitos commits **locais** podem virar **um PR** só. Regras: **`.cursor/rules/execution-priority-and-pr-batching.mdc`**, **`.cursor/rules/git-pr-sync-before-advice.mdc`**.
+
 ## Vários commits locais, um PR temático (bom para o histórico)
 
 **Sim — é suportado e costuma ser o ideal.** Você pode fazer **vários commits pequenos** no mesmo branch (cada um com mensagem clara), **sem dar push**, e depois rodar **Criar PR** uma vez: o push leva **todos os commits não enviados**, e o PR mostra **histórico legível** no branch. Alinha com **AGENTS.md** (agrupamento de commits + PR em lote): mantenha **fatias coerentes** separadas (`docs` vs `feature` vs `workflow`) quando ajudar revisores e o `git log`.
