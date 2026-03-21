@@ -4,6 +4,11 @@ This folder groups **maintainer / operator** procedural docs. **Product usage** 
 
 **Languages:** Each runbook has an English file and a **pt-BR** twin (`*.pt_BR.md`). *Plan history under [`docs/plans/`](../plans/) is English-only.*
 
+## Before you open a PR (operators)
+
+1. Run **`.\scripts\check-all.ps1`** from the repo root on Windows (refreshes the plans dashboard, runs pre-commit, then full pytest). On Linux/macOS, run the same steps manually: `python scripts/plans-stats.py --write`, `uv run pre-commit run --all-files`, `uv run pytest -v -W error`.
+1. **Do not** commit **`docs/private/`** (real homelab inventory; gitignored) or **`git add -f config.yaml`**. Use the tracked template **`docs/private.example/`** and policy **[PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)**.
+
 ---
 
 ## Index

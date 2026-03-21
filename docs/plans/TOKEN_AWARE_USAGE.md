@@ -26,6 +26,7 @@
 - **Entry point:** Start from [PLANS_TODO.md](PLANS_TODO.md). Use the “What to start next” table and the “Order” column to pick the next step.
 - **AI-heavy vs manual-friendly:** PLANS_TODO marks which tasks benefit from AI (research, wording, design) vs which you can do by hand (regex wiring, tests, config). Use AI for the former; do the latter in small, focused sessions.
 - **After each step:** Run `uv run pytest -v -W error` (or `.\scripts\check-all.ps1` on Windows), update the plan and PLANS_TODO, then commit. Avoid stacking many uncommitted changes.
+- **Before a PR (token-saving checklist):** [docs/ops/README.md](../ops/README.md) § *Before you open a PR* (EN) · [docs/ops/README.pt_BR.md](../ops/README.pt_BR.md) § *Antes de abrir um PR* (pt-BR): run **check-all**, never commit **`docs/private/`** or **`git add -f config.yaml`**, use **`docs/private.example/`** for layout. Optional echo-only reminder: **`scripts/pr-hygiene-remind.ps1`**.
 
 ---
 
