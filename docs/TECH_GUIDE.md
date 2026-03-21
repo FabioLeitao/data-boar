@@ -38,9 +38,12 @@ sudo apt install -y python3.12 python3.12-venv python3.12-dev build-essential \
 - `python3.12[-dev]` and `build-essential` are required to build some drivers (e.g. database clients).
 - `libpq-dev`, `unixodbc-dev` and SSL/FFI headers help when using PostgreSQL, SQL Server, Oracle, or other SQLAlchemy drivers.
 
+**Other Linux distributions:** For **RHEL/Fedora/AlmaLinux** (`dnf`), **Arch/Manjaro** (`pacman`), **Gentoo** (`emerge`), **Void** (`xbps`), **Alpine** (`apk`), and other package managers, see **[OS_COMPATIBILITY_TESTING_MATRIX.md](ops/OS_COMPATIBILITY_TESTING_MATRIX.md)** for distro-specific package names and installation notes. **illumos** (OpenIndiana, etc.) / legacy **OpenSolaris** lineage is **exploratory** only — same matrix **Tier 4**; not a supported Linux target.
+
 On Windows:
 
 - Install **Python 3.12** from `python.org` and ensure "Add Python to PATH" is checked.
+- **WSL2:** Many developers run **`uv sync`** / **`pytest`** inside a **Linux** distro (Debian, Ubuntu, …) for parity with server docs; clone the repo on the **Linux filesystem** inside WSL, not only under `/mnt/c/...`. Optional **extra distros** for compatibility matrix: [WINDOWS_WSL_MULTI_DISTRO_LAB.md](ops/WINDOWS_WSL_MULTI_DISTRO_LAB.md).
 - Install database client tools as needed (e.g. Oracle Instant Client, SQL Server ODBC driver) following their vendor docs.
 
 ### Install uv
