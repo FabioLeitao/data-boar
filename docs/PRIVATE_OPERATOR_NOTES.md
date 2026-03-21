@@ -23,14 +23,18 @@ git check-ignore -v docs/private/anything.md
 
 Copy the **tracked template** from **`docs/private.example/`** into **`docs/private/`** (or create the same folders by hand):
 
-| Path (local only)                            | Use                                                                                                                                                                                        |
-| -----------------                            | ---                                                                                                                                                                                        |
-| **`docs/private/homelab/`**                  | **Real** descriptions: hostnames, RFC1918 IPs, SSH users, `homelab-host-report.sh` outputs, UPS load lists, HVAC model numbers, UniFi VLAN IDs, solar logger IP, **redacted** API samples. |
-| **`docs/private/homelab/validation-log.md`** | Dated §1–§2 pass/fail per host (optional filename).                                                                                                                                        |
-| **`docs/private/homelab/solar.md`**          | Inverter/datalogger models, portal names, **references** to Bitwarden for keys (not plaintext passwords).                                                                                  |
-| **`docs/private/`** (root of private)        | Optional catch-all: `WHAT_TO_SHARE_WITH_AGENT.md`, CV, certs, thesis PDFs—anything personal.                                                                                               |
+| Path (local only)                             | Use                                                                                                                                                                                        |
+| -----------------                             | ---                                                                                                                                                                                        |
+| **`docs/private/homelab/`**                   | **Real** homelab catalog: hostnames, RFC1918 IPs, SSH users, `homelab-host-report.sh` outputs, UPS load lists, HVAC model numbers, UniFi VLAN IDs, solar logger IP, **redacted** API samples. |
+| **`docs/private/homelab/validation-log.md`**  | Dated §1–§2 pass/fail per host (optional filename).                                                                                                                                        |
+| **`docs/private/homelab/solar.md`**           | Inverter/datalogger models, portal names, **references** to Bitwarden for keys (not plaintext passwords).                                                                                  |
+| **`docs/private/homelab/iso-inventory.md`**   | Optional: list of `.iso` / `.img` paths (e.g. under `~/Downloads/iso` on a lab machine). **Captured by you** (SSH `ls`, `find`, or script output pasted/edited here)—not stored on GitHub. |
+| **`docs/private/author_info/`**               | **Personal / career / education / certificates** (CV text, course progress, cert IDs, narrative history). Same gitignore rules as homelab; split from **`homelab/`** so you can sync or exclude policies differently. |
+| **`docs/private/`** (root of private)         | Optional catch-all: `WHAT_TO_SHARE_WITH_AGENT.md`, one-off exports—prefer **`homelab/`** vs **`author_info/`** when the topic is clear.                                                      |
 
-**Rule:** Prefer **`homelab/`** for anything that maps your **physical/network** reality so it is easy to exclude from pCloud sync or backups if you ever split policies.
+**Rule:** Prefer **`homelab/`** for **physical/network** reality and **`author_info/`** for **person-shaped** facts so you can attach or exclude trees in backups/sync tools independently.
+
+**Agents / Cursor:** The model only “sees” **`docs/private/`** when **you open a file** there or it is readable in the workspace—treat that as **intentional local disclosure**. For **repeatable** context across sessions, keep a short **`WHAT_TO_SHARE_WITH_AGENT.md`** (or bullets under **`author_info/`**) listing what the assistant is allowed to assume—still **never** commit that folder.
 
 ---
 
