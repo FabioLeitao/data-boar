@@ -9,6 +9,18 @@ This folder groups **maintainer / operator** procedural docs. **Product usage** 
 1. Run **`.\scripts\check-all.ps1`** from the repo root on Windows (refreshes the plans dashboard, runs pre-commit, then full pytest). On Linux/macOS, run the same steps manually: `python scripts/plans-stats.py --write`, `uv run pre-commit run --all-files`, `uv run pytest -v -W error`.
 1. **Do not** commit **`docs/private/`** (real homelab inventory; gitignored) or **`git add -f config.yaml`**. Use the tracked template **`docs/private.example/`** and policy **[PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)**.
 
+### Chat shorthand: `pmo-view` (plan / PMO docs, Markdown preview)
+
+**Token is English-only** (same for all session keywords—see **`AGENTS.md`** and **`.cursor/rules/session-mode-keywords.mdc`**). Type **`pmo-view`** exactly; you can write the rest of the message in pt-BR.
+
+In Cursor chat, say **`pmo-view`** when you want the assistant to **surface plan and PMO-style docs** and remind you how to read them **rendered** (tables, Gantt/Mermaid).
+
+- **You** open each file in the editor, then: **Windows / Linux:** `Ctrl+Shift+V` (Open Preview) or `Ctrl+K` then `V` (Preview to the Side). **macOS:** `Cmd+Shift+V` or `Cmd+K` then `V`.
+- The assistant **cannot** switch your tab to Preview automatically—that is an editor gesture.
+- **Typical files:** [`plans/PLANS_TODO.md`](../plans/PLANS_TODO.md), [`plans/SPRINTS_AND_MILESTONES.md`](../plans/SPRINTS_AND_MILESTONES.md) ([pt-BR](../plans/SPRINTS_AND_MILESTONES.pt_BR.md)), [`plans/TOKEN_AWARE_USAGE.md`](../plans/TOKEN_AWARE_USAGE.md), [COMMIT_AND_PR.md](COMMIT_AND_PR.md) ([pt-BR](COMMIT_AND_PR.pt_BR.md)), [OPERATOR_LAB_DOCUMENT_MAP.md](OPERATOR_LAB_DOCUMENT_MAP.md) ([pt-BR](OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md)).
+
+Defined in **`.cursor/rules/session-mode-keywords.mdc`**.
+
 ---
 
 ## Index

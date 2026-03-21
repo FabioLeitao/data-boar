@@ -9,6 +9,18 @@ Esta pasta reúne documentação **procedural** para mantenedor/operador. Docume
 1. Execute **`.\scripts\check-all.ps1`** na raiz do repositório no Windows (atualiza o dashboard dos planos, pre-commit e pytest completo). Em Linux/macOS, faça o equivalente: `python scripts/plans-stats.py --write`, `uv run pre-commit run --all-files`, `uv run pytest -v -W error`.
 1. **Não** versionar **`docs/private/`** (inventário real do lab; ignorado pelo git) nem **`git add -f config.yaml`**. Use o modelo versionado **`docs/private.example/`** e a política **[PRIVATE_OPERATOR_NOTES.pt_BR.md](../PRIVATE_OPERATOR_NOTES.pt_BR.md)**.
 
+### Atalho no chat: `pmo-view` (planos / docs estilo PMO, preview Markdown)
+
+**O atalho é só em inglês** (como **`deps`**, **`feature`**, … — ver **[AGENTS.md](../../AGENTS.md)** e **`.cursor/rules/session-mode-keywords.mdc`**). Digite **`pmo-view`** exatamente assim; o resto da mensagem pode ser pt-BR.
+
+No chat do Cursor, diga **`pmo-view`** quando quiser que o assistente **destaque planos e docs PMO** e lembre como lê-los **renderizados** (tabelas, Gantt/Mermaid).
+
+- **Você** abre cada arquivo no editor e usa: **Windows / Linux:** `Ctrl+Shift+V` (Abrir pré-visualização) ou `Ctrl+K` e depois `V` (lado a lado). **macOS:** `Cmd+Shift+V` ou `Cmd+K` e `V`.
+- O assistente **não consegue** mudar sua aba para Preview sozinho — é gesto do editor.
+- **Arquivos típicos:** [`plans/PLANS_TODO.md`](../plans/PLANS_TODO.md), [`plans/SPRINTS_AND_MILESTONES.pt_BR.md`](../plans/SPRINTS_AND_MILESTONES.pt_BR.md) ([EN](../plans/SPRINTS_AND_MILESTONES.md)), [`plans/TOKEN_AWARE_USAGE.md`](../plans/TOKEN_AWARE_USAGE.md), [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md) ([EN](COMMIT_AND_PR.md)), [OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md](OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md) ([EN](OPERATOR_LAB_DOCUMENT_MAP.md)).
+
+Definido em **`.cursor/rules/session-mode-keywords.mdc`**.
+
 ---
 
 ## Índice
