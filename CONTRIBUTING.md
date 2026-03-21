@@ -65,7 +65,8 @@ Cursor encodes this in **`.cursor/rules/git-pr-sync-before-advice.mdc`**. See al
 
 ### Reducing merge conflicts
 
-- **Merge or rebase `main` into your branch before opening a PR.** Run `git fetch origin main` then `git merge origin/main` (or `git rebase origin/main`) and fix any conflicts locally. That way the PR stays mergeable and reviewers see a clean diff.
+- **Commit locally as you go** on a feature branch (meaningful checkpoints or coherent batches—see [docs/ops/COMMIT_AND_PR.md](docs/ops/COMMIT_AND_PR.md) ([pt-BR](docs/ops/COMMIT_AND_PR.pt_BR.md)), **AGENTS.md**, `.cursor/rules/execution-priority-and-pr-batching.mdc`). Large **uncommitted** trees make conflicts and review harder at PR/release time.
+- **Merge or rebase `main` into your branch before opening a PR.** Run `git fetch origin main` then `git merge origin/main` (or `git rebase origin/main`) and fix any conflicts locally. That way the PR stays mergeable and reviewers see a clean diff. Repeat **during** long branches, not only at the end.
 - **`report/generator.py`:** Sheet-writing logic lives in `_write_excel_sheets` and helpers (`_build_report_info`, `_build_executive_summary_rows`, etc.). When adding or changing Excel sheets, update those helpers rather than inlining logic in `generate_report`. That keeps the same structure as `main` and avoids the merge conflicts we had when main had inlined code and the branch had the refactor.
 
 ## Code and docs

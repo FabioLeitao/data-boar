@@ -2,7 +2,11 @@
 
 **Purpose:** Keep progress effective when **token/context limits** apply (e.g. after an initial Pro+ burst). Use this doc and [PLANS_TODO.md](PLANS_TODO.md) as the main entry points so sessions stay focused and avoid loading the whole repo.
 
+**Readable view in Cursor:** Say **`pmo-view`** in chat for a reminder to open plan/PMO Markdown in **Preview** (`Ctrl+Shift+V` / `Ctrl+K` `V` on Windows). See [docs/ops/README.md](../ops/README.md) § *pmo-view*.
+
 **Policy:** Prefer **one plan or one feature at a time**; open only the files needed for that slice. Update PLANS_TODO and the relevant plan file when a step is done.
+
+**Sprints / milestones / Gantt–Kanban / SRE (light PM):** To time-box themes (hygiene → lab → Tier-2 slices), optional Mermaid Gantt, Kanban columns, milestones (**M-TRUST**, **M-OBS**, …), and SRE-style guardrails (toil, error budget, blameless retro pointers), see **[SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md)** ([pt-BR](SPRINTS_AND_MILESTONES.pt_BR.md)).
 
 **When to pause token-saving mode:** If **Docker Hub exposure**, **issuer keys**, **dependency CVEs**, or **commercial/IP posture** need attention first, open **[PLANS_TODO.md](PLANS_TODO.md)** and run the table **“Priority band A”**, then use **[CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md)** for copy-paste prompts. After **A1–A3** (minimum), return to one-row-per-session feature work.
 
@@ -21,6 +25,8 @@
 
 ## 2. Working under token constraints
 
+- **Chat language:** Operator preference is **concise pt-BR** in assistant replies with **English** for paths, commit types, and code identifiers—see **`AGENTS.md`** and **`docs/PRIVATE_OPERATOR_NOTES.md`** §5.1. Mixing languages in one message is fine; asking for **`short`** / **`token-aware`** (English tokens) saves tokens more than picking EN vs pt-BR for prose.
+- **Session shorthand:** Taxonomy keywords (`deps`, `feature`, `homelab`, `docs`, `houseclean`, `backlog`, `pmo-view`, …) are **English-only** in chat and in **`.cursor/rules/session-mode-keywords.mdc`**—see **`AGENTS.md`**.
 - **Single-context rule:** For each session, choose **one** of: (a) one plan’s next to-do, (b) one readiness item, or (c) one academic-plan section. Open only that plan file + the code/docs files you need to edit.
 - **Low complexity / high gain bias:** Prefer small-scope, high-value slices (see PLANS_TODO "What to start next"). For study: one cert at a time (CWL order in PORTFOLIO §3.2 and `docs/private/Learning_and_certs.md`); post-lato choice (stricto sensu vs MBA HUB vs Intercâmbio) is a separate, low-frequency decision – PORTFOLIO §4.2 has the comparison; open only one option per session.
 - **Entry point:** Start from [PLANS_TODO.md](PLANS_TODO.md). Use the “What to start next” table and the “Order” column to pick the next step.
