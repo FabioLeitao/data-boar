@@ -5,8 +5,8 @@ This directory is a **bootstrap** for a **compiled** license-issuance utility. I
 ## Operational rules
 
 1. **Copy** this tree into a **separate private Git repository** (neutral name). Do **not** push signing keys, operator blobs, or production audit databases to any host you do not trust.
-2. **Never** ship this tool inside Docker images, `.deb` packages, or customer deliverables.
-3. Keep **documentation for issuance ceremonies** in `docs/private/` or an offline runbook—not in the public app repo.
+1. **Never** ship this tool inside Docker images, `.deb` packages, or customer deliverables.
+1. Keep **documentation for issuance ceremonies** in `docs/private/` or an offline runbook—not in the public app repo.
 
 ## Build (Go)
 

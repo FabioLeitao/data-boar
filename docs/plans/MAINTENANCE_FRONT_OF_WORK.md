@@ -36,23 +36,23 @@
 
 Pick **one** per session when CI is green:
 
-| Track | Aligns to | Notes |
-| ----- | --------- | ----- |
-| `pr/docker-scout-high-slice` | Order **–1b** (Docker Hub Scout) | **Merged** (PR **#93**). |
-| **Docker base 3.13** | Order **–1b** | **Merged** — PR [**#99**](https://github.com/FabioLeitao/data-boar/pull/99) (`python:3.13-slim`). **Operator:** publish from `main`, then Scout — see [DOCKER_IMAGE_RELEASE_ORDER.md](../ops/DOCKER_IMAGE_RELEASE_ORDER.md). |
-| `pr/deps-security-refresh` | Dependabot / security hygiene (**A1** / **–1**) | **Merged** — PR [**#101**](https://github.com/FabioLeitao/data-boar/pull/101). **Open alerts:** pyOpenSSL **#9/#10** blocked by Snowflake connector pin — see [DEPENDABOT_PYOPENSSL_SNOWFLAKE.md](../ops/DEPENDABOT_PYOPENSSL_SNOWFLAKE.md); bump connector when PyPI allows **pyopenssl>=26**. |
-| `pr/api-report-path-hardening` | Security / API hardening | **Merged** — PR [**#98**](https://github.com/FabioLeitao/data-boar/pull/98). |
+| Track                          | Aligns to                                       | Notes                                                                                                                                                                                                                                                                                           |
+| -----                          | ---------                                       | -----                                                                                                                                                                                                                                                                                           |
+| `pr/docker-scout-high-slice`   | Order **–1b** (Docker Hub Scout)                | **Merged** (PR **#93**).                                                                                                                                                                                                                                                                        |
+| **Docker base 3.13**           | Order **–1b**                                   | **Merged** — PR [**#99**](https://github.com/FabioLeitao/data-boar/pull/99) (`python:3.13-slim`). **Operator:** publish from `main`, then Scout — see [DOCKER_IMAGE_RELEASE_ORDER.md](../ops/DOCKER_IMAGE_RELEASE_ORDER.md).                                                                    |
+| `pr/deps-security-refresh`     | Dependabot / security hygiene (**A1** / **–1**) | **Merged** — PR [**#101**](https://github.com/FabioLeitao/data-boar/pull/101). **Open alerts:** pyOpenSSL **#9/#10** blocked by Snowflake connector pin — see [DEPENDABOT_PYOPENSSL_SNOWFLAKE.md](../ops/DEPENDABOT_PYOPENSSL_SNOWFLAKE.md); bump connector when PyPI allows **pyopenssl>=26**. |
+| `pr/api-report-path-hardening` | Security / API hardening                        | **Merged** — PR [**#98**](https://github.com/FabioLeitao/data-boar/pull/98).                                                                                                                                                                                                                    |
 
 Do **not** stack these in one PR unless they are truly the same incident (e.g. one Scout round-trip).
 
 ### S4 progress (rolling)
 
-| Sub-track | Status |
-| --------- | ------ |
-| **–1b** Dockerfile / Scout | **Merged** — PR **#93** + PR **#99** (3.13-slim base). **Operator:** `docker-lab-build` → `docker-hub-publish` → `docker-prune-local` (see [DOCKER_IMAGE_RELEASE_ORDER.md](../ops/DOCKER_IMAGE_RELEASE_ORDER.md)). |
-| **A1** `pr/deps-security-refresh` | **#101 merged.** Remaining: **pyOpenSSL** alerts — wait for **`snowflake-connector-python`** release (or dismiss with doc link); then `uv lock` + export + `check-all`. |
-| API report paths | **Merged** — PR **#98**. Follow-up: [API_REPORT_PATH_CODEQL_FOLLOWUP.md](API_REPORT_PATH_CODEQL_FOLLOWUP.md). |
-| **–1L** second environment | **When ready** — [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md); not a blocker for merge/publish on `main`. |
+| Sub-track                         | Status                                                                                                                                                                                                             |
+| ---------                         | ------                                                                                                                                                                                                             |
+| **–1b** Dockerfile / Scout        | **Merged** — PR **#93** + PR **#99** (3.13-slim base). **Operator:** `docker-lab-build` → `docker-hub-publish` → `docker-prune-local` (see [DOCKER_IMAGE_RELEASE_ORDER.md](../ops/DOCKER_IMAGE_RELEASE_ORDER.md)). |
+| **A1** `pr/deps-security-refresh` | **#101 merged.** Remaining: **pyOpenSSL** alerts — wait for **`snowflake-connector-python`** release (or dismiss with doc link); then `uv lock` + export + `check-all`.                                            |
+| API report paths                  | **Merged** — PR **#98**. Follow-up: [API_REPORT_PATH_CODEQL_FOLLOWUP.md](API_REPORT_PATH_CODEQL_FOLLOWUP.md).                                                                                                      |
+| **–1L** second environment        | **When ready** — [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md); not a blocker for merge/publish on `main`.                                                                                                 |
 
 ### Quick housekeeping (local branches after a merged maintenance PR)
 
@@ -71,7 +71,7 @@ Use **`-D`** only when you accept dropping that local ref; **do not** delete bra
 ## Operating rule (minimal open fronts)
 
 1. `gh pr list --state open` before starting a new slice.
-2. Prefer **merge or close** existing open PRs before opening another **workflow** PR.
-3. Product features (`feat/*`) follow `PLANS_TODO.md` after maintenance gates are green.
+1. Prefer **merge or close** existing open PRs before opening another **workflow** PR.
+1. Product features (`feat/*`) follow `PLANS_TODO.md` after maintenance gates are green.
 
 *Last updated: **#98**–**#101** on `main`; **A1** — pyOpenSSL/Snowflake triage doc; publish + Scout per [DOCKER_IMAGE_RELEASE_ORDER.md](../ops/DOCKER_IMAGE_RELEASE_ORDER.md); **–1L** when second env is ready.*

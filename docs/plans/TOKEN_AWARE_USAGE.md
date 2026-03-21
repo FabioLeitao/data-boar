@@ -10,12 +10,12 @@
 
 ## 1. Short-term vs long-term (at a glance)
 
-| Horizon | Focus | Where it lives |
-| --------| ----- | --------------- |
-| **Short (this cycle)** | High-value slices: maintenance (–1/–1b), **home lab –1L** (manual, after maintenance), FN reduction (slices 1–4 baseline done; next optional aggregation/incomplete-data options), Strong crypto Phase 1, Data source inventory Phase 1, Notifications Phase 1; content-type optional follow-ups. **If critical:** Priority band A first. | PLANS_TODO § “Priority band A”, § “What to start next” (**–1L**), § “A. Near-term focus” |
-| **Medium** | Readiness: runbooks, compliance evidence subsection, data retention note, onboarding checklist, dependency policy sentence. | [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) |
-| **Long (academic)** | Lato sensu thesis (framing, case studies, evidence mapping); stricto sensu research path; compliance evidence mapping table. **After lato sensu:** choose one path when ready (stricto sensu, Faculdade HUB MBA IA, Universidade do Intercâmbio, or other) – see [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §4.2; open only that one plan or program link per session (token-aware). | [PLAN_LATO_SENSU_THESIS.md](PLAN_LATO_SENSU_THESIS.md), [PLAN_STRICTO_SENSU_RESEARCH_PATH.md](PLAN_STRICTO_SENSU_RESEARCH_PATH.md), [PLAN_COMPLIANCE_EVIDENCE_MAPPING.md](PLAN_COMPLIANCE_EVIDENCE_MAPPING.md); post-lato options in PORTFOLIO §4.2 |
-| **Deferred / backlog** | Secrets Phase B, Version check, Selenium QA, Synthetic data, SAP, Dashboard i18n, Additional data soup formats. | PLANS_TODO § “B. Deferred”, § “C. Backlog” |
+| Horizon                | Focus                                                                                                                                                                                                                                                                                                                                                                                                            | Where it lives                                                                                                                                                                                                                                      |
+| --------               | -----                                                                                                                                                                                                                                                                                                                                                                                                            | ---------------                                                                                                                                                                                                                                     |
+| **Short (this cycle)** | High-value slices: maintenance (–1/–1b), **home lab –1L** (manual, after maintenance), FN reduction (slices 1–4 baseline done; next optional aggregation/incomplete-data options), Strong crypto Phase 1, Data source inventory Phase 1, Notifications Phase 1; content-type optional follow-ups. **If critical:** Priority band A first.                                                                        | PLANS_TODO § “Priority band A”, § “What to start next” (**–1L**), § “A. Near-term focus”                                                                                                                                                            |
+| **Medium**             | Readiness: runbooks, compliance evidence subsection, data retention note, onboarding checklist, dependency policy sentence.                                                                                                                                                                                                                                                                                      | [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md)                                                                                                                                                                                |
+| **Long (academic)**    | Lato sensu thesis (framing, case studies, evidence mapping); stricto sensu research path; compliance evidence mapping table. **After lato sensu:** choose one path when ready (stricto sensu, Faculdade HUB MBA IA, Universidade do Intercâmbio, or other) – see [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §4.2; open only that one plan or program link per session (token-aware). | [PLAN_LATO_SENSU_THESIS.md](PLAN_LATO_SENSU_THESIS.md), [PLAN_STRICTO_SENSU_RESEARCH_PATH.md](PLAN_STRICTO_SENSU_RESEARCH_PATH.md), [PLAN_COMPLIANCE_EVIDENCE_MAPPING.md](PLAN_COMPLIANCE_EVIDENCE_MAPPING.md); post-lato options in PORTFOLIO §4.2 |
+| **Deferred / backlog** | Secrets Phase B, Version check, Selenium QA, Synthetic data, SAP, Dashboard i18n, Additional data soup formats.                                                                                                                                                                                                                                                                                                  | PLANS_TODO § “B. Deferred”, § “C. Backlog”                                                                                                                                                                                                          |
 
 ---
 
@@ -52,10 +52,10 @@ When you add new evidence, list it in PORTFOLIO_AND_EVIDENCE_SOURCES or in this 
 ## 4. One-session recipe (example)
 
 1. Open **PLANS_TODO.md** and pick one row from “What to start next” (e.g. Content-type Step 2).
-2. Open **PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md** and the one or two source files you need (e.g. config schema, filesystem connector).
-3. Implement the step; add tests; update USAGE or TECH_GUIDE if needed.
-4. Mark the to-do done in both the plan and PLANS_TODO; run tests; commit.
-5. Next session: repeat with the next row or the next step in the same plan.
+1. Open **PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md** and the one or two source files you need (e.g. config schema, filesystem connector).
+1. Implement the step; add tests; update USAGE or TECH_GUIDE if needed.
+1. Mark the to-do done in both the plan and PLANS_TODO; run tests; commit.
+1. Next session: repeat with the next row or the next step in the same plan.
 
 ---
 
@@ -68,9 +68,9 @@ When you add new evidence, list it in PORTFOLIO_AND_EVIDENCE_SOURCES or in this 
 
 ## 6. Security-first burst vs token-aware pace
 
-| Mode | When to use | What you ask the agent |
-| ---- | ------------ | ---------------------- |
+| Mode                    | When to use                                                                                              | What you ask the agent                                                                                                                                                                                              |
+| ----                    | ------------                                                                                             | ----------------------                                                                                                                                                                                              |
 | **Security / IP burst** | Stale public images, open Dependabot alerts, or issuer/commercial boundary is blocking trust or revenue. | One step at a time: *“Priority band A, step A2: help triage Dockerfile / Scout output and propose minimal changes.”* Full prompts: [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md). |
-| **Token-aware pace** | After A1–A3 (or when nothing above is urgent). | *“PLANS_TODO order N only”* or *“Content-type Step 4 only; don’t load other plans.”* |
+| **Token-aware pace**    | After A1–A3 (or when nothing above is urgent).                                                           | *“PLANS_TODO order N only”* or *“Content-type Step 4 only; don’t load other plans.”*                                                                                                                                |
 
 **Rule of thumb:** If skipping A1–A3 could leave **known-bad dependencies** or **easy pull of obsolete images** in the wild, do the burst first; profitability follows **trust + hygiene**, not only feature velocity.

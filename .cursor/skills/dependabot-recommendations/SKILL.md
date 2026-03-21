@@ -59,6 +59,7 @@ Use this skill when updating dependencies, reviewing Dependabot PRs, or preparin
 ## Checklist (copy and track)
 
 ```
+
 - [ ] Dependabot PRs / recommendations identified
 - [ ] Version bumps verified as viable and compatible
 - [ ] pyproject.toml (and/or workflows) updated; uv lock run; requirements.txt refreshed if used
@@ -66,6 +67,7 @@ Use this skill when updating dependencies, reviewing Dependabot PRs, or preparin
 - [ ] Pre-commit / Ruff (or project equivalent) — clean
 - [ ] Regression test added if update fixes a bug or enforces a contract
 - [ ] Ready for PR; Dependabot PR can be closed if same change applied locally
+
 ```
 
 ## Notes

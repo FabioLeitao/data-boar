@@ -13,25 +13,25 @@ Use this decision order every session:
    - Prefer finishing the critical slice to a stable commit state before starting new feature work.
    - If needed, make multiple **local commits** in the same branch while stabilizing.
 
-2. **Then product work by matrix**
+1. **Then product work by matrix**
    - When no critical blocker exists, prioritize feature/bugfix work according to `docs/plans/PLANS_TODO.md` taxonomy and sequencing (H0/H1/H2..., U0/U1/U2...).
    - Stay token-aware: bias to low-cost, low-complexity, high-gain increments.
 
-3. **Commit cadence**
+1. **Commit cadence**
    - Local commits are encouraged for progress safety and rollback granularity.
    - Do not force a PR for every commit.
    - Batch coherent commits into one PR when the slice is reviewable and useful to collaborators.
 
-4. **PR timing**
+1. **PR timing**
    - Open PR when a coherent slice is complete/stable, tests/docs for that slice are updated, and sharing feedback value is clear.
    - Micro-PRs are fine only when the change is truly tiny, safe, and complete.
 
-5. **Chaos prevention guardrails**
+1. **Chaos prevention guardrails**
    - Before Commit/PR: run `git status -sb` and script Preview (`.\scripts\commit-or-pr.ps1 -Action Preview`).
    - Prefer script workflow (`check-all`, `preview-commit`, `commit-or-pr`) over ad-hoc git commands when possible.
    - Avoid mixing unrelated subjects in the same branch/PR.
 
-6. **Commit grouping taxonomy (feature/workflow/documentation)**
+1. **Commit grouping taxonomy (feature/workflow/documentation)**
    - Classify each planned phase as one of:
      - `feature`: product behavior (detector logic, report output, config semantics, runtime behavior)
      - `workflow`: delivery/process/tooling (scripts, CI flow, branch/PR guardrails, contributor process)
@@ -43,16 +43,15 @@ Use this decision order every session:
        - `workflow + documentation` for process/tooling changes that need operator/contributor guidance.
    - Disallow mixed `feature + workflow` in one commit/PR unless explicitly requested for an emergency fix.
 
-7. **Phase-to-commit-to-PR policy (non-micro slices)**
+1. **Phase-to-commit-to-PR policy (non-micro slices)**
    - For a multi-phase next step, first map each phase to the taxonomy above.
    - Create one or more coherent local commits per track (not per tiny edit), preserving review intent.
    - Open PR when a track reaches a stable checkpoint (tests/docs for that track pass and diff is reviewable).
    - If a branch carries multiple tracks, ensure commits are clearly separated by intent and keep PR title/body explicit about included tracks.
 
-8. **Conventional Commit types (subject line) vs grouping (feature/workflow/docs)**
+1. **Conventional Commit types (subject line) vs grouping (feature/workflow/docs)**
    - **Types:** `feat`, `fix`, `security` (optional top-level for primary hardening), `refactor`, `docs`, `chore`, `ci`, `test`, `perf`, `style`.
    - **Bugfix:** use **`fix:`** (not a separate invented prefix). **`fix(security):`** when the fix is security-critical.
    - **Refactor vs feat+fix:** Prefer **`refactor:`** for behavior-preserving moves. **Do not** combine unrelated **`feat` + `fix`** in one commit; split into two commits (or two PRs) unless the work is truly atomic. If it is both a feature and a fix, separate commits almost always read clearer in history.
    - **Scopes:** Optional — `feat(detector):`, `docs(ops):`, `fix(api):`.
    - Grouping rules (`feature + documentation`, etc.) still apply; the type line tells *what* changed, grouping tells *which narrative bucket*.
-

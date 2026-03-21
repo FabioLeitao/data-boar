@@ -13,13 +13,13 @@ Complementa [`.cursor/rules/sonarqube_mcp_instructions.mdc`](../../.cursor/rules
 
 ## 1. O que precisa no servidor de lab
 
-| Recurso | Mínimo prático | Notas |
-| ------- | -------------- | ----- |
-| **RAM** | **4 GB** (SonarQube + BD) | 8 GB+ é mais confortável. |
-| **Disco** | **20 GB+** livres | SSD recomendado; histórico cresce. |
-| **CPU** | 2 vCPU | Mais núcleos ajudam. |
-| **SO** | Linux x86_64 | Docker ou Podman. |
-| **Rede** | Acessível do seu PC | Para IDE/MCP. Para **runners hospedados no GitHub**, veja §6. |
+| Recurso   | Mínimo prático            | Notas                                                         |
+| -------   | --------------            | -----                                                         |
+| **RAM**   | **4 GB** (SonarQube + BD) | 8 GB+ é mais confortável.                                     |
+| **Disco** | **20 GB+** livres         | SSD recomendado; histórico cresce.                            |
+| **CPU**   | 2 vCPU                    | Mais núcleos ajudam.                                          |
+| **SO**    | Linux x86_64              | Docker ou Podman.                                             |
+| **Rede**  | Acessível do seu PC       | Para IDE/MCP. Para **runners hospedados no GitHub**, veja §6. |
 
 ---
 
@@ -58,7 +58,7 @@ Abra `http://<ip-do-servidor>:9000`, login inicial **admin/admin**, **altere a s
 Scripts locais:
 
 ```bash
-export SONAR_HOST_URL=http://192.168.1.50:9000
+export SONAR_HOST_URL=http://<seu-host-sonar>:9000   # hostname ou IP da LAN; não commite valores reais no repositório público
 export SONAR_TOKEN=squ_xxxxxxxx
 uv run python scripts/sonar_issues.py
 ```

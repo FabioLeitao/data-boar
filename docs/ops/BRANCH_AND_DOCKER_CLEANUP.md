@@ -26,7 +26,7 @@ git branch --merged origin/main
 git branch --no-merged origin/main
 ```
 
-**Rules:**
+## Rules:
 
 - **Do not delete** a branch listed under `--no-merged` unless you are sure the work is abandoned or saved elsewhere (e.g. another branch, a patch, or a GitHub fork).
 - **Do not delete** the branch you are currently on; switch first: `git checkout main` (or another branch).
@@ -106,7 +106,7 @@ Or use the GitHub UI: **Repository → Branches →** delete stale feature branc
 **Goal:** Keep roughly **two** distinct image **digests** for this product locally, for example:
 
 1. **`fabioleitao/data_boar:latest`** (or the semver tag you are actively using, e.g. `1.6.2`).
-2. **One previous** digest (older semver tag or last local `docker build`), so you can compare or roll back quickly.
+1. **One previous** digest (older semver tag or last local `docker build`), so you can compare or roll back quickly.
 
 **Smoke / lab builds are not special:** Repeated smoke tests do **not** require a unique tag each time (`data_boar:smoke-93`, `data_boar:smoke-foo`, …). That pattern **wastes disk** and mental overhead. Prefer **one** overwritten tag — **`docker build -t data_boar:lab .`** (matches [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md) step 1.3) — and delete old experimental tags when done.
 
@@ -152,10 +152,10 @@ docker builder prune -af
 ## 5. Order of operations (recommended)
 
 1. `git fetch origin --prune` and `git pull` on `main`.
-2. Note `git branch --no-merged origin/main` — **do not delete** without review.
-3. Delete **local** merged branches you no longer need (`git branch -d …`).
-4. On GitHub, delete **remote** branches that are merged and unused (or `git push origin --delete …`).
-5. Docker: list images → keep **latest + one previous** digest → `docker rmi` old tags/IDs → `docker image prune` / `docker builder prune`.
+1. Note `git branch --no-merged origin/main` — **do not delete** without review.
+1. Delete **local** merged branches you no longer need (`git branch -d …`).
+1. On GitHub, delete **remote** branches that are merged and unused (or `git push origin --delete …`).
+1. Docker: list images → keep **latest + one previous** digest → `docker rmi` old tags/IDs → `docker image prune` / `docker builder prune`.
 
 ---
 
@@ -177,8 +177,8 @@ docker builder prune -af
 ### Tidy-up goals
 
 1. **Local branches** that still track `python3-lgpd-crawler-legacy-and-history-only/*`: list with `git branch -vv | Select-String legacy` (or `grep legacy` on Unix). For each, either **delete locally** if abandoned or **repoint** the upstream to `origin` on `data-boar` if the work should continue there ([REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md) § reassign upstream).
-2. **No pushes** to the legacy GitHub repo from this workspace; that policy is intentional.
-3. **Old repo on GitHub** (if you still own it): optional archive, or leave read-only for history—**do not** delete if others may have fork links; prefer **archived** state + README pointing to **data-boar**.
+1. **No pushes** to the legacy GitHub repo from this workspace; that policy is intentional.
+1. **Old repo on GitHub** (if you still own it): optional archive, or leave read-only for history—**do not** delete if others may have fork links; prefer **archived** state + README pointing to **data-boar**.
 
 This is **documentation and discipline**, not an app feature. Schedule a short maintenance slot after `main` is stable.
 
