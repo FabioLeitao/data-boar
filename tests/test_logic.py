@@ -82,6 +82,26 @@ class TestAuditLogic(unittest.TestCase):
         self.assertIn(result["sensitivity_level"], ("LOW", "MEDIUM"))
         self.assertNotEqual(result["sensitivity_level"], "HIGH")
 
+    def test_brazilian_cifra_chord_grid_detected_as_entertainment(self):
+        """Multi-chord lines (typical cifra) must trigger entertainment context so ML is not ~99%."""
+        scanner = DataScanner()
+        # No words "cifra"/"verse"/"chorus" — only chord grids (often missed by old single-chord regex).
+        cifra = """intro
+C    G    Am   F
+C    G    Am   F
+Dm7  G7   C
+F    C    Dm   G
+"""
+        result = scanner.scan_column("partitura", cifra)
+        self.assertIn(result["sensitivity_level"], ("LOW", "MEDIUM"))
+        self.assertNotEqual(result["sensitivity_level"], "HIGH")
+        if result["sensitivity_level"] == "MEDIUM":
+            self.assertLessEqual(
+                result.get("ml_confidence", 100),
+                55,
+                "Reported confidence should be capped in entertainment ML path",
+            )
+
     def test_phone_column_names_flagged_sensitive(self):
         """Phone-related column names (home phone, mobile, celular, téléphone, etc.) are recognised and flagged."""
         scanner = DataScanner()
