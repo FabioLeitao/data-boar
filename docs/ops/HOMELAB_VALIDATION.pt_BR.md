@@ -14,7 +14,7 @@
 
 1. **Automatizar primeiro no repo:** `.\scripts\check-all.ps1` ou `uv run pytest -v -W error` na raiz.
 1. **Lab = integração:** caminhos, volumes Docker, portas de BD, firewall.
-1. **Sintético por omissão:** ficheiros `.txt` / `.csv` com padrões **falsos** (inspire-se nos testes do projeto, **não** use dados reais de terceiros).
+1. **Por padrão, sintético:** arquivos `.txt` / `.csv` com padrões **falsos** (inspire-se nos testes do projeto, **não** use dados reais de terceiros).
 1. **Real só com permissão:** cópias não produtivas, anonimizadas ou documentos seus.
 1. **Containers Docker:** Prefira `docker run --rm` em checagens pontuais. Se mantiver um container **Data Boar** nomeado entre execuções, objetive **uma** instância principal—ou **duas** só para **A/B** explícito. Remova containers descartáveis ao fim para não confundir portas (`8088`) e volumes. Ver [DOCKER_SETUP.pt_BR.md](../DOCKER_SETUP.pt_BR.md) §7.
 1. **Docker CE + Swarm já ativo:** Num **manager** Swarm (incluindo **um só nó** em homelab), `docker build` e `docker run -p …` continuam a servir para §1.3–1.5; a porta publicada liga-se ao host salvo conflito com outro serviço. Se usar **stacks** (`docker stack deploy`), traduza o `docker run` do guia para Compose com `ports:` e volume para `/data`; em rede overlay o **nome do serviço** faz DNS (como `lab-net` na §4 em inglês). Nomes de serviços e papéis dos nós só em notas privadas.
@@ -43,11 +43,11 @@
 
 ## 2. Filesystem sintético
 
-Crie um diretório no host, ficheiros `notes.txt` / `sheet.csv` com CPF/e-mail **de teste**; monte em `/data/...`; defina alvo `type: filesystem` como em [HOMELAB_VALIDATION.md §2](HOMELAB_VALIDATION.md#2-synthetic-filesystem-target-fastest-real-connector-test).
+Crie um diretório no host, arquivos `notes.txt` / `sheet.csv` com CPF/e-mail **de teste**; monte em `/data/...`; defina alvo `type: filesystem` como em [HOMELAB_VALIDATION.md §2](HOMELAB_VALIDATION.md#2-synthetic-filesystem-target-fastest-real-connector-test).
 
 ---
 
-## 3. SQLite como ficheiro
+## 3. SQLite como arquivo
 
 Pequena base `.db` com tabela de texto sintético; `scan_sqlite_as_db` ou alvo database conforme [USAGE.md](../USAGE.md).
 
