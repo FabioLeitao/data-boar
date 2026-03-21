@@ -11,7 +11,7 @@ Use this skill when **creating or editing** user-facing documentation (docs/, RE
 
 1. **Code and application behaviour** – Config, API, CLI, and capabilities are the deepest source of truth. Docs must describe what the app actually does.
 1. **English (EN)** – The canonical written source. Update EN first when behaviour or options change; EN must accurately reflect the code.
-1. **Brazilian Portuguese (pt-BR)** – Translation of the EN doc; same structure and coverage. Sync pt-BR after updating EN.
+1. **Brazilian Portuguese (pt-BR)** – Translation of the EN doc; same structure and coverage. Sync pt-BR after updating EN. Use **Brazil** vocabulary and spelling, **not** European Portuguese (pt-PT): e.g. **arquivo** not *ficheiro*, **compartilhar** not *partilhar*, **seção** not *secção*, **padrão** for IT “default” not *defeito*. See **`.cursor/rules/docs-policy.mdc`**.
 
 ## Navigability (no dead ends)
 
