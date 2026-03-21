@@ -146,6 +146,10 @@ For a **long PR body**, use:
 
 **Why this order:** One full gate before committing; one preview to confirm scope; one PR step that re-runs tests and syncs (fetch + rebase if behind) before push, so the PR is safe and synced. No ad-hoc `git add`/`git commit`/`git push` or raw `pytest`/`ruff` in between when these scripts cover the need.
 
+## Conventional Commits: types and scopes (homelab / ops fronts)
+
+Use **`type(scope):` short subject** (see root **`AGENTS.md`** for the canonical list). **Types:** `feat`, `fix`, `refactor`, `docs`, `chore`, `ci`, `test`, … — dependency-only work → **`chore(deps):`**. **Scopes** that match common “fronts” include **`homelab`**, **`ops`**, **`workflow`**, **`private-layout`**, **`plans`**, **`cursor`**, **`detector`**, **`report`**, **`api`**, **`docker`** — full table and examples in **`AGENTS.md`**.
+
 **Documentation index** (all topics, both languages): [README.md](../README.md) · [README.pt_BR.md](../README.pt_BR.md).
 
 **Docker image:** PR-friendly order for **merge → version bump → build → Docker Hub** (and Scout): [DOCKER_IMAGE_RELEASE_ORDER.md](DOCKER_IMAGE_RELEASE_ORDER.md).

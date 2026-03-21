@@ -110,7 +110,7 @@ Quick checklist before PR:
 
 ### Conventional commit types (subject line)
 
-See **`AGENTS.md`** for the full list: `feat`, `fix`, **`fix(security):`** or top-level **`security:`**, **`refactor`** (prefer over mixing **`feat` + `fix`** in one commit), `docs`, `chore`, `ci`, optional scopes. If a slice mixes unrelated feature work and a bugfix, use **two commits** (or PRs), not one ambiguous combo.
+See **`AGENTS.md`** for types and the **scope table** (`homelab`, `ops`, `workflow`, `private-layout`, `plans`, `cursor`, `detector`, …). **`chore(deps):`** for dependency-only bumps. Full list: `feat`, `fix`, **`fix(security):`** or top-level **`security:`**, **`refactor`**, `docs`, `chore`, `ci`, optional scopes. If a slice mixes unrelated feature work and a bugfix, use **two commits** (or PRs), not one ambiguous combo.
 
 Avoid running raw `pytest`, `ruff`, `pre-commit`, or manual git commit/push when a script already does the same thing; the scripts are the single source of behaviour and keep sessions token-efficient. For **Docker** homelab hygiene, avoid long custom `docker build`/`rmi` sequences when **`docker-lab-build.ps1`**, **`docker-hub-pull.ps1`**, or **`docker-prune-local.ps1`** cover the need.
 
