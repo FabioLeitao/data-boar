@@ -53,10 +53,10 @@ Se sua regulamentação ou escopo exigir ajuste específico (ex.: norm tags, tex
 
 ## Próximos passos
 
-| Necessidade | Documento |
-|-------------|-----------|
-| Esquema de config, credenciais, exemplos | [USAGE.pt_BR.md](USAGE.pt_BR.md) · [USAGE.md](USAGE.md) |
-| Lista de frameworks e como usar amostras | [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) · [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) |
-| Segurança (correções, logging, limite de body) | [SECURITY.pt_BR.md](SECURITY.pt_BR.md) · [SECURITY.md](SECURITY.md) |
-| Instalação, execução, conectores, deploy | [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md) · [TECH_GUIDE.md](TECH_GUIDE.md) |
-| Índice completo da documentação | [README.pt_BR.md](README.pt_BR.md) · [README.md](README.md) |
+| Necessidade                                    | Documento                                                                                                               |
+| -------------                                  | -----------                                                                                                             |
+| Esquema de config, credenciais, exemplos       | [USAGE.pt_BR.md](USAGE.pt_BR.md) · [USAGE.md](USAGE.md)                                                                 |
+| Lista de frameworks e como usar amostras       | [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) · [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) |
+| Segurança (correções, logging, limite de body) | [SECURITY.pt_BR.md](SECURITY.pt_BR.md) · [SECURITY.md](SECURITY.md)                                                     |
+| Instalação, execução, conectores, deploy       | [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md) · [TECH_GUIDE.md](TECH_GUIDE.md)                                             |
+| Índice completo da documentação                | [README.pt_BR.md](README.pt_BR.md) · [README.md](README.md)                                                             |

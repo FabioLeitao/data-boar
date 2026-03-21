@@ -7,5 +7,5 @@ alwaysApply: false
 # Host-binding best practice
 
 1. Never change the CLI/desktop default away from `127.0.0.1` unless explicitly requested by config/CLI.
-2. For Docker/container runs, prefer an image/runtime-specific override (e.g. Docker sets `API_HOST=0.0.0.0`) so port publishing works from outside, without making non-container runs public.
-3. If you touch `resolve_api_host` or docs/USAGE host paragraphs, also update/extend `tests/test_host_resolution.py` to prevent regressions.
+1. For Docker/container runs, prefer an image/runtime-specific override (e.g. Docker sets `API_HOST=0.0.0.0`) so port publishing works from outside, without making non-container runs public.
+1. If you touch `resolve_api_host` or docs/USAGE host paragraphs, also update/extend `tests/test_host_resolution.py` to prevent regressions.

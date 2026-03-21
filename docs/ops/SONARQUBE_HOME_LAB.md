@@ -13,13 +13,13 @@ It complements [`.cursor/rules/sonarqube_mcp_instructions.mdc`](../../.cursor/ru
 
 ## 1. What you need on the lab server
 
-| Resource | Practical minimum | Notes |
-| -------- | ----------------- | ----- |
-| **RAM** | **4 GB** for SonarQube + DB | 8 GB+ is more comfortable; Elasticsearch embedded in Sonar is memory-hungry. |
-| **Disk** | **20 GB+** free | Grows with analysis history; SSD recommended. |
-| **CPU** | 2 vCPU | More helps parallel analysis. |
-| **OS** | Linux x86_64 | Docker Engine or Podman; VM or bare metal. |
-| **Network** | Reachable from your PC | For IDE/MCP. For **GitHub-hosted runners**, see §6 — they must reach the URL from the **public internet** unless you use a **self-hosted runner**. |
+| Resource    | Practical minimum           | Notes                                                                                                                                              |
+| --------    | -----------------           | -----                                                                                                                                              |
+| **RAM**     | **4 GB** for SonarQube + DB | 8 GB+ is more comfortable; Elasticsearch embedded in Sonar is memory-hungry.                                                                       |
+| **Disk**    | **20 GB+** free             | Grows with analysis history; SSD recommended.                                                                                                      |
+| **CPU**     | 2 vCPU                      | More helps parallel analysis.                                                                                                                      |
+| **OS**      | Linux x86_64                | Docker Engine or Podman; VM or bare metal.                                                                                                         |
+| **Network** | Reachable from your PC      | For IDE/MCP. For **GitHub-hosted runners**, see §6 — they must reach the URL from the **public internet** unless you use a **self-hosted runner**. |
 
 ---
 
@@ -59,11 +59,15 @@ services:
       SONAR_ES_JAVA_OPTS: "-Xms512m -Xmx512m"
       SONAR_WEB_JAVA_OPTS: "-Xms256m -Xmx512m"
     volumes:
+
       - sonarqube_data:/opt/sonarqube/data
       - sonarqube_extensions:/opt/sonarqube/extensions
       - sonarqube_logs:/opt/sonarqube/logs
+
     ports:
+
       - "9000:9000"
+
     ulimits:
       nofile:
         soft: 65535
@@ -76,7 +80,9 @@ services:
       POSTGRES_PASSWORD: ${SONAR_DB_PASSWORD:?set SONAR_DB_PASSWORD in .env}
       POSTGRES_DB: sonar
     volumes:
+
       - postgresql_data:/var/lib/postgresql/data
+
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U sonar -d sonar"]
       interval: 5s
@@ -116,13 +122,13 @@ Open `http://<server-ip>:9000`. Default login is **admin / admin** — you **mus
    - The MCP rule file [`.cursor/rules/sonarqube_mcp_instructions.mdc`](../../.cursor/rules/sonarqube_mcp_instructions.mdc) states SonarQube expects **user** tokens for API/MCP-style use.
 1. **GitHub repository secrets** (for `ci.yml` sonar job):
    - `SONAR_TOKEN` — the user token.
-   - `SONAR_HOST_URL` — base URL of your server, e.g. `https://sonarqube.home.example` (no trailing slash).
+   - `SONAR_HOST_URL` — base URL of your server, e.g. `<https://sonarqube.home.exampl>e` (no trailing slash).
    - Do **not** set `sonar.organization` in `sonar-project.properties` for SonarQube Server (that is for SonarCloud).
 
 Local scripts (e.g. `scripts/sonar_issues.py`) use the same variables:
 
 ```bash
-export SONAR_HOST_URL=http://192.168.1.50:9000   # example LAN URL
+export SONAR_HOST_URL=http://<your-sonar-host>:9000   # LAN hostname or IP; do not commit real values to the public repo
 export SONAR_TOKEN=squ_xxxxxxxx
 uv run python scripts/sonar_issues.py
 ```
@@ -177,13 +183,13 @@ Add the MCP server in **Cursor Settings → MCP** per the MCP provider’s READM
 
 ## 9. Troubleshooting
 
-| Symptom | What to check |
-| ------- | ------------- |
-| Container exits on start | `vm.max_map_count`, `docker compose logs sonarqube`, RAM (OOM). |
-| `Not authorized` (API/MCP) | User token vs project token; token type and expiry. |
-| CI cannot connect | Hosted runner vs private IP — use tunnel or self-hosted runner (§6). |
-| IDE connects, CI fails | Different URLs or missing `SONAR_HOST_URL` secret; trailing slash on URL. |
-| Quality gate always red | Narrow rules in SonarQube UI or first analysis baseline; fix or adjust gate for new projects. |
+| Symptom                    | What to check                                                                                 |
+| -------                    | -------------                                                                                 |
+| Container exits on start   | `vm.max_map_count`, `docker compose logs sonarqube`, RAM (OOM).                               |
+| `Not authorized` (API/MCP) | User token vs project token; token type and expiry.                                           |
+| CI cannot connect          | Hosted runner vs private IP — use tunnel or self-hosted runner (§6).                          |
+| IDE connects, CI fails     | Different URLs or missing `SONAR_HOST_URL` secret; trailing slash on URL.                     |
+| Quality gate always red    | Narrow rules in SonarQube UI or first analysis baseline; fix or adjust gate for new projects. |
 
 ---
 

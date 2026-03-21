@@ -10,15 +10,15 @@
 
 Use this when you want **one published image** to match **one released app version** (About page, report footer, `fabioleitao/data_boar:1.6.x`).
 
-| Step | Action |
-| ---- | ------ |
-| 1. **Merge** | All **code** PRs on `main` (Dockerfile, fixes, etc.) — e.g. **#99** ✅ |
-| 2. **Merge** | **Version bump PR** (build `1.6.4` → `1.6.5` per [VERSIONING.md](../VERSIONING.md)) so `pyproject.toml` on `main` is the version you are releasing |
-| 3. **Pull** | `git checkout main && git pull origin main` |
-| 4. **Build** | `.\scripts\docker-lab-build.ps1` (from repo root) |
-| 5. **Smoke** | Short `docker run` (see [DOCKER_SETUP.md](../DOCKER_SETUP.md) §7 / [DEPLOY.md](../deploy/DEPLOY.md)) |
-| 6. **Push** | `.\scripts\docker-hub-publish.ps1 -SkipBuild` (after `docker login`) — tags **`:latest`** and **`:<semver from pyproject>`**, runs **`scout quickview`** + **`scout recommendations`** |
-| 7. **Prune** | `.\scripts\docker-prune-local.ps1 -WhatIf` then without `-WhatIf` on the homelab |
+| Step         | Action                                                                                                                                                                                 |
+| ----         | ------                                                                                                                                                                                 |
+| 1. **Merge** | All **code** PRs on `main` (Dockerfile, fixes, etc.) — e.g. **#99** ✅                                                                                                                  |
+| 2. **Merge** | **Version bump PR** (build `1.6.4` → `1.6.5` per [VERSIONING.md](../VERSIONING.md)) so `pyproject.toml` on `main` is the version you are releasing                                     |
+| 3. **Pull**  | `git checkout main && git pull origin main`                                                                                                                                            |
+| 4. **Build** | `.\scripts\docker-lab-build.ps1` (from repo root)                                                                                                                                      |
+| 5. **Smoke** | Short `docker run` (see [DOCKER_SETUP.md](../DOCKER_SETUP.md) §7 / [DEPLOY.md](../deploy/DEPLOY.md))                                                                                   |
+| 6. **Push**  | `.\scripts\docker-hub-publish.ps1 -SkipBuild` (after `docker login`) — tags **`:latest`** and **`:<semver from pyproject>`**, runs **`scout quickview`** + **`scout recommendations`** |
+| 7. **Prune** | `.\scripts\docker-prune-local.ps1 -WhatIf` then without `-WhatIf` on the homelab                                                                                                       |
 
 **Why version before build/push:** The image **`COPY . .`** includes `pyproject.toml`. Building **after** the bump PR means the running app **inside the container** reports the same version as the **Hub semver tag** you push.
 
