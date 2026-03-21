@@ -4,6 +4,8 @@
 
 A aplicação auxilia times de DPO, segurança e compliance a descobrir e mapear dados pessoais ou sensíveis em linha com múltiplas regulamentações. Este documento descreve quais frameworks são referenciados explicitamente hoje, onde encontrar exemplos de configuração e como estender o suporte a outros (ex.: UK GDPR, PIPEDA, APPI, POPIA) sem alterar código.
 
+**Tomadores de decisão (jurídico / compliance):** Para visão executiva, evidências de relatório e serviços opcionais, veja primeiro [COMPLIANCE_AND_LEGAL.pt_BR.md](COMPLIANCE_AND_LEGAL.pt_BR.md). Detalhes técnicos (codificações, limites de API, timeouts) estão em [COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md](COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md).
+
 ## Regulamentações que já suportamos (embutidas e exemplos de config)
 
 **Embutidas (prontas para uso):** O detector e os relatórios referenciam explicitamente **LGPD** (Brasil), **GDPR** (UE), **CCPA** (Califórnia), **HIPAA** (saúde EUA) e **GLBA** (financeiro EUA). Os achados usam essas norm tags e textos de recomendação por padrão.
