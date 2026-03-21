@@ -6,6 +6,8 @@
 
 **Âmbito:** Alertas para **mantenedor/operador** (você + automações). Notificações de **produto** (fim de scan, etc.) seguem o plano **Notifications** em [PLANS_TODO.md](../plans/PLANS_TODO.md) (ordem 6) — pode reutilizar a mesma lista de canais.
 
+**Sequenciamento (mantenedor):** Por ora, **só o canal A** — app **GitHub** no celular + watch/e-mail nas configurações — **basta** para PRs, reviews, Dependabot, Security e **Actions com falha**. Ajuste em **GitHub → Configurações → Notificações** e no app oficial iOS/Android. Quando quiser **redundância** ou alertas no estilo “chat”, acrescente **B** (Slack) ou **C** (Telegram) conforme §1; **D** (Signal) segue **opcional** e com mais operação. **Este doc é o lembrete de integração** para esses próximos passos.
+
 ---
 
 ## 1. Pilha recomendada (menos atrito → mais montagem)
