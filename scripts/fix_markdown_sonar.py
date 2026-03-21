@@ -14,7 +14,7 @@ Rules addressed:
 - MD047: File ends with single newline
 - MD060: Table column style "aligned" (pad cells so pipes align with header)
 
-Excludes: .git, node_modules, .venv, etc. .cursor is included so rules/skills (.md, .mdc) pass MD031, MD060, etc.
+Excludes: .git, node_modules, .venv, **docs/private**, **.cursor/private**, etc. `.cursor/` rules/skills stay included so `.md`/`.mdc` pass MD031, MD060, etc. — **never** rewrite the operator’s gitignored real inventory.
 
 Code quality (SonarQube): avoid S6326 (prefer simple string checks over regex where possible),
 S3776 (keep functions simple; extract helpers to reduce cognitive complexity), S1481 (remove
@@ -28,7 +28,17 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 EXCLUDE_DIRS = frozenset(
-    {".git", "node_modules", "__pycache__", ".venv", "venv", ".tox", "build", "dist"}
+    {
+        ".git",
+        "node_modules",
+        "__pycache__",
+        ".venv",
+        "venv",
+        ".tox",
+        "build",
+        "dist",
+        "private",  # docs/private/ and any other .../private/ (real inventory; gitignored)
+    }
 )
 
 
