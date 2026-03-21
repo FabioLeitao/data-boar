@@ -24,49 +24,49 @@ Arquivos de configuração de amostra para **UK GDPR**, **EU GDPR**, **Benelux**
 
 ### Lista de amostras e links
 
-| Regulamento / região | Arquivo | Finalidade |
-| -------------------- | ------- | ---------- |
-| **LGPD (Brasil)** | [compliance-sample-lgpd.yaml](compliance-samples/compliance-sample-lgpd.yaml) | Termos PT-BR + EN; regex RG/CEP; implantações brasileiras. |
-| **UK GDPR** | [compliance-sample-uk_gdpr.yaml](compliance-samples/compliance-sample-uk_gdpr.yaml) | Pós-Brexit, ICO; norm_tag e recommendation overrides. |
-| **EU GDPR (EEE)** | [compliance-sample-eu_gdpr.yaml](compliance-samples/compliance-sample-eu_gdpr.yaml) | Regulamento 2016/679 Art. 4(1), EDPB, DPAs nacionais; EN + DE/FR opcionais. |
-| **Benelux (BE, NL, LU)** | [compliance-sample-benelux.yaml](compliance-samples/compliance-sample-benelux.yaml) | Base EU GDPR + IDs nacionais (BSN, NISS, LU); overrides DPA nacionais; EN + NL/FR. |
-| **PIPEDA (Canadá)** | [compliance-sample-pipeda.yaml](compliance-samples/compliance-sample-pipeda.yaml) | Informação pessoal, consentimento; identificadores canadenses (ex.: SIN); EN + FR. |
-| **POPIA (África do Sul)** | [compliance-sample-popia.yaml](compliance-samples/compliance-sample-popia.yaml) | Responsável, informação pessoal; identificadores sul-africanos. |
-| **APPI (Japão)** | [compliance-sample-appi.yaml](compliance-samples/compliance-sample-appi.yaml) | Informação pessoal, dados pessoais retidos; alinhamento PPC. |
-| **PCI-DSS** | [compliance-sample-pci_dss.yaml](compliance-samples/compliance-sample-pci_dss.yaml) | Padrões de cartão de pagamento e recommendation overrides para comerciantes/avaliadores. |
-| **Filipinas (DPA)** | [compliance-sample-philippines_dpa.yaml](compliance-samples/compliance-sample-philippines_dpa.yaml) | RA 10173, NPC; informação pessoal/sensível. |
-| **Austrália (Privacy Act)** | [compliance-sample-australia_privacy.yaml](compliance-samples/compliance-sample-australia_privacy.yaml) | Privacy Act 1988, OAIC, APPs; regex TFN opcional. |
-| **Singapura (PDPA)** | [compliance-sample-singapore_pdpa.yaml](compliance-samples/compliance-sample-singapore_pdpa.yaml) | PDPA 2012, PDPC; dados pessoais, DNC; regex NRIC. |
-| **UAE (PDPL)** | [compliance-sample-uae_pdpl.yaml](compliance-samples/compliance-sample-uae_pdpl.yaml) | Decreto-Lei 45/2021; dados pessoais/sensíveis; EN + AR opcional. |
-| **Argentina (PDPA)** | [compliance-sample-argentina_pdpa.yaml](compliance-samples/compliance-sample-argentina_pdpa.yaml) | Ley 25.326, DNPDP; datos personales; ES + EN; regex CUIT/CUIL/DNI. |
-| **Quênia (DPA)** | [compliance-sample-kenya_dpa.yaml](compliance-samples/compliance-sample-kenya_dpa.yaml) | Data Protection Act 2019, ODPC; dados pessoais, controlador. |
-| **Índia (DPDP)** | [compliance-sample-india_dpdp.yaml](compliance-samples/compliance-sample-india_dpdp.yaml) | DPDP Act 2023, DPBI; regex Aadhaar/PAN; EN. |
-| **Turquia (KVKK)** | [compliance-sample-turkey_kvkk.yaml](compliance-samples/compliance-sample-turkey_kvkk.yaml) | Lei 6698, Conselho KVKK; kişisel veri; EN + TR; regex TC Kimlik. |
-| **Nova Zelândia (Privacy Act)** | [compliance-sample-new_zealand_privacy.yaml](compliance-samples/compliance-sample-new_zealand_privacy.yaml) | Privacy Act 2020, OPC; informação pessoal, IPPs. |
-| **Arábia Saudita (PDPL)** | [compliance-sample-saudi_pdpl.yaml](compliance-samples/compliance-sample-saudi_pdpl.yaml) | Royal Decree M/19, SDAIA; dados pessoais/sensíveis. |
-| **Israel (PPL)** | [compliance-sample-israel_ppl.yaml](compliance-samples/compliance-sample-israel_ppl.yaml) | Privacy Protection Law, PPA; informação pessoal, registrador de base. |
-| **Colômbia (Lei 1581)** | [compliance-sample-colombia_1581.yaml](compliance-samples/compliance-sample-colombia_1581.yaml) | Ley 1581/2012, SIC; datos personales; ES + EN; regex CC/NIT. |
-| **Chile (Privacidade)** | [compliance-sample-chile_privacy.yaml](compliance-samples/compliance-sample-chile_privacy.yaml) | Lei 19.628; datos personales; ES + EN; regex RUT. |
-| **Nigéria (NDPR)** | [compliance-sample-nigeria_ndpr.yaml](compliance-samples/compliance-sample-nigeria_ndpr.yaml) | NDPR 2019, NITDA; dados pessoais, controlador. |
-| **Marrocos (Lei 09-08)** | [compliance-sample-morocco_09_08.yaml](compliance-samples/compliance-sample-morocco_09_08.yaml) | Lei 09-08, CNDP; données à caractère personnel; FR + EN; regex CIN. |
-| **Suíça (FADP)** | [compliance-sample-switzerland_fadp.yaml](compliance-samples/compliance-sample-switzerland_fadp.yaml) | FADP revisada, FDPIC; dados pessoais; EN + DE/FR/IT opcionais; regex AHV/UID. |
+| Regulamento / região            | Arquivo                                                                                                     | Finalidade                                                                               |
+| --------------------            | -------                                                                                                     | ----------                                                                               |
+| **LGPD (Brasil)**               | [compliance-sample-lgpd.yaml](compliance-samples/compliance-sample-lgpd.yaml)                               | Termos PT-BR + EN; regex RG/CEP; implantações brasileiras.                               |
+| **UK GDPR**                     | [compliance-sample-uk_gdpr.yaml](compliance-samples/compliance-sample-uk_gdpr.yaml)                         | Pós-Brexit, ICO; norm_tag e recommendation overrides.                                    |
+| **EU GDPR (EEE)**               | [compliance-sample-eu_gdpr.yaml](compliance-samples/compliance-sample-eu_gdpr.yaml)                         | Regulamento 2016/679 Art. 4(1), EDPB, DPAs nacionais; EN + DE/FR opcionais.              |
+| **Benelux (BE, NL, LU)**        | [compliance-sample-benelux.yaml](compliance-samples/compliance-sample-benelux.yaml)                         | Base EU GDPR + IDs nacionais (BSN, NISS, LU); overrides DPA nacionais; EN + NL/FR.       |
+| **PIPEDA (Canadá)**             | [compliance-sample-pipeda.yaml](compliance-samples/compliance-sample-pipeda.yaml)                           | Informação pessoal, consentimento; identificadores canadenses (ex.: SIN); EN + FR.       |
+| **POPIA (África do Sul)**       | [compliance-sample-popia.yaml](compliance-samples/compliance-sample-popia.yaml)                             | Responsável, informação pessoal; identificadores sul-africanos.                          |
+| **APPI (Japão)**                | [compliance-sample-appi.yaml](compliance-samples/compliance-sample-appi.yaml)                               | Informação pessoal, dados pessoais retidos; alinhamento PPC.                             |
+| **PCI-DSS**                     | [compliance-sample-pci_dss.yaml](compliance-samples/compliance-sample-pci_dss.yaml)                         | Padrões de cartão de pagamento e recommendation overrides para comerciantes/avaliadores. |
+| **Filipinas (DPA)**             | [compliance-sample-philippines_dpa.yaml](compliance-samples/compliance-sample-philippines_dpa.yaml)         | RA 10173, NPC; informação pessoal/sensível.                                              |
+| **Austrália (Privacy Act)**     | [compliance-sample-australia_privacy.yaml](compliance-samples/compliance-sample-australia_privacy.yaml)     | Privacy Act 1988, OAIC, APPs; regex TFN opcional.                                        |
+| **Singapura (PDPA)**            | [compliance-sample-singapore_pdpa.yaml](compliance-samples/compliance-sample-singapore_pdpa.yaml)           | PDPA 2012, PDPC; dados pessoais, DNC; regex NRIC.                                        |
+| **UAE (PDPL)**                  | [compliance-sample-uae_pdpl.yaml](compliance-samples/compliance-sample-uae_pdpl.yaml)                       | Decreto-Lei 45/2021; dados pessoais/sensíveis; EN + AR opcional.                         |
+| **Argentina (PDPA)**            | [compliance-sample-argentina_pdpa.yaml](compliance-samples/compliance-sample-argentina_pdpa.yaml)           | Ley 25.326, DNPDP; datos personales; ES + EN; regex CUIT/CUIL/DNI.                       |
+| **Quênia (DPA)**                | [compliance-sample-kenya_dpa.yaml](compliance-samples/compliance-sample-kenya_dpa.yaml)                     | Data Protection Act 2019, ODPC; dados pessoais, controlador.                             |
+| **Índia (DPDP)**                | [compliance-sample-india_dpdp.yaml](compliance-samples/compliance-sample-india_dpdp.yaml)                   | DPDP Act 2023, DPBI; regex Aadhaar/PAN; EN.                                              |
+| **Turquia (KVKK)**              | [compliance-sample-turkey_kvkk.yaml](compliance-samples/compliance-sample-turkey_kvkk.yaml)                 | Lei 6698, Conselho KVKK; kişisel veri; EN + TR; regex TC Kimlik.                         |
+| **Nova Zelândia (Privacy Act)** | [compliance-sample-new_zealand_privacy.yaml](compliance-samples/compliance-sample-new_zealand_privacy.yaml) | Privacy Act 2020, OPC; informação pessoal, IPPs.                                         |
+| **Arábia Saudita (PDPL)**       | [compliance-sample-saudi_pdpl.yaml](compliance-samples/compliance-sample-saudi_pdpl.yaml)                   | Royal Decree M/19, SDAIA; dados pessoais/sensíveis.                                      |
+| **Israel (PPL)**                | [compliance-sample-israel_ppl.yaml](compliance-samples/compliance-sample-israel_ppl.yaml)                   | Privacy Protection Law, PPA; informação pessoal, registrador de base.                    |
+| **Colômbia (Lei 1581)**         | [compliance-sample-colombia_1581.yaml](compliance-samples/compliance-sample-colombia_1581.yaml)             | Ley 1581/2012, SIC; datos personales; ES + EN; regex CC/NIT.                             |
+| **Chile (Privacidade)**         | [compliance-sample-chile_privacy.yaml](compliance-samples/compliance-sample-chile_privacy.yaml)             | Lei 19.628; datos personales; ES + EN; regex RUT.                                        |
+| **Nigéria (NDPR)**              | [compliance-sample-nigeria_ndpr.yaml](compliance-samples/compliance-sample-nigeria_ndpr.yaml)               | NDPR 2019, NITDA; dados pessoais, controlador.                                           |
+| **Marrocos (Lei 09-08)**        | [compliance-sample-morocco_09_08.yaml](compliance-samples/compliance-sample-morocco_09_08.yaml)             | Lei 09-08, CNDP; données à caractère personnel; FR + EN; regex CIN.                      |
+| **Suíça (FADP)**                | [compliance-sample-switzerland_fadp.yaml](compliance-samples/compliance-sample-switzerland_fadp.yaml)       | FADP revisada, FDPIC; dados pessoais; EN + DE/FR/IT opcionais; regex AHV/UID.            |
 
 ### O que vai em cada arquivo
 
 Cada amostra pode fornecer até três tipos de conteúdo. Seu **config principal** referencia ou mescla assim:
 
-| Chave de config / arquivo | Finalidade | O que a amostra fornece |
-| ------------------------- | ---------- | ----------------------- |
-| **`regex_overrides_file`** | Padrões regex customizados; match → achado HIGH com `norm_tag` dado. | Lista de `{ name, pattern, norm_tag }` (ex.: NIN UK, SIN canadense, ID SA). Amostras podem usar chave `regex` ou `patterns`. |
+| Chave de config / arquivo                                     | Finalidade                                                                                                     | O que a amostra fornece                                                                                                                                                  |
+| -------------------------                                     | ----------                                                                                                     | -----------------------                                                                                                                                                  |
+| **`regex_overrides_file`**                                    | Padrões regex customizados; match → achado HIGH com `norm_tag` dado.                                           | Lista de `{ name, pattern, norm_tag }` (ex.: NIN UK, SIN canadense, ID SA). Amostras podem usar chave `regex` ou `patterns`.                                             |
 | **`ml_patterns_file`** / **`sensitivity_detection.ml_terms`** | Termos de treinamento ML (e DL); nomes de coluna e texto amostrado classificados como sensitive/non_sensitive. | Lista de `{ text, label }` com termos por framework (ex.: “data subject”, “personal information”, “responsible party”). Amostras podem usar chave `terms` ou `ml_terms`. |
-| **`report.recommendation_overrides`** | Override de “Base legal”, “Risco”, “Recomendação”, “Prioridade”, “Relevante para” por `norm_tag`. | Lista de `{ norm_tag_pattern, base_legal, risk, recommendation, priority, relevant_for }` para mesclar no config. |
+| **`report.recommendation_overrides`**                         | Override de “Base legal”, “Risco”, “Recomendação”, “Prioridade”, “Relevante para” por `norm_tag`.              | Lista de `{ norm_tag_pattern, base_legal, risk, recommendation, priority, relevant_for }` para mesclar no config.                                                        |
 
 O mesmo arquivo YAML pode conter **regex**, **terms** e **recommendation_overrides**; defina `regex_overrides_file` e `ml_patterns_file` com o caminho desse arquivo e copie o bloco **recommendation_overrides** para o config principal em `report.recommendation_overrides`.
 
 ### Como usar uma amostra
 
 1. **Escolha a amostra** do seu regulamento na tabela acima (ou em [compliance-samples/README.pt_BR.md](compliance-samples/README.pt_BR.md)).
-2. **Defina os caminhos no config principal** (ex.: `config.yaml`):
+1. **Defina os caminhos no config principal** (ex.: `config.yaml`):
 
    ```yaml
    regex_overrides_file: docs/compliance-samples/compliance-sample-pipeda.yaml
@@ -74,8 +74,9 @@ O mesmo arquivo YAML pode conter **regex**, **terms** e **recommendation_overrid
    ```
 
    Use o mesmo arquivo para ambos se a amostra tiver `regex` e `terms`.
-3. **Mescle os recommendation overrides:** Copie a lista `recommendation_overrides` do arquivo da amostra para o config em `report.recommendation_overrides` (mescle com overrides que você já tiver). Veja [USAGE.pt_BR.md](USAGE.pt_BR.md) (seção de relatório) para a estrutura.
-4. **Execute a varredura** (CLI ou API). Os achados usarão as norm tags e o texto de recomendação da amostra; o relatório Excel exibirá Base legal, Risco, Recomendação e Prioridade do framework.
+
+1. **Mescle os recommendation overrides:** Copie a lista `recommendation_overrides` do arquivo da amostra para o config em `report.recommendation_overrides` (mescle com overrides que você já tiver). Veja [USAGE.pt_BR.md](USAGE.pt_BR.md) (seção de relatório) para a estrutura.
+1. **Execute a varredura** (CLI ou API). Os achados usarão as norm tags e o texto de recomendação da amostra; o relatório Excel exibirá Base legal, Risco, Recomendação e Prioridade do framework.
 
 ---
 
@@ -92,12 +93,15 @@ Seja qual for o **idioma**, **encoding** ou **região** da sua sopa de dados, a 
 ### Como habilitar e operar
 
 1. **Escolha a amostra certa para sua região**
+
    Veja a tabela no [README de compliance-samples](compliance-samples/README.pt_BR.md) e a seção “Idioma e público-alvo”. Exemplos: Brasil → LGPD (PT-BR+EN); Canadá → PIPEDA (EN+FR); Reino Unido → UK GDPR; EEE → EU GDPR; Benelux → amostra Benelux; Japão → APPI; África do Sul → POPIA.
 
-2. **Salve config e amostras em UTF-8 (recomendado)**
+1. **Salve config e amostras em UTF-8 (recomendado)**
+
    Salvar tudo em **UTF-8** evita problemas de encoding com termos multilíngues. O config principal ainda será carregado se estiver em outro encoding (auto-detecção).
 
-3. **Defina os caminhos e o encoding no config**
+1. **Defina os caminhos e o encoding no config**
+
    No seu `config.yaml` (ou `config.json`) principal:
 
    ```yaml
@@ -110,7 +114,8 @@ Seja qual for o **idioma**, **encoding** ou **região** da sua sopa de dados, a 
 
    Depois mescle os **`recommendation_overrides`** da amostra no seu config em `report.recommendation_overrides` (veja [USAGE.pt_BR](USAGE.pt_BR.md) seção de relatório).
 
-4. **Execute a varredura**
+1. **Execute a varredura**
+
    Use o CLI ou a API como de costume. Os achados usarão as norm tags e o texto de recomendação da amostra; o relatório Excel exibirá Unicode corretamente.
 
 Para todas as opções de encoding e exemplos, veja [USAGE – File encoding](USAGE.md#file-encoding-config-and-pattern-files) (EN) e [USAGE.pt_BR – Encoding de arquivos](USAGE.pt_BR.md#file-encoding-config-and-pattern-files) (pt-BR).

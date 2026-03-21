@@ -29,11 +29,11 @@ Do **not** duplicate the whole USAGE guide in `/help` or epilog — only enough 
 
 ## Files
 
-| File | Role |
-|------|------|
+| File                                   | Role                                   |
+| ------                                 | ------                                 |
 | `tests/operator_help_sync_manifest.py` | Contract data (single place to extend) |
-| `tests/test_operator_help_sync.py` | Asserts CLI + `/help` + man §1 |
-| `docs/OPERATOR_HELP_AUDIT.md` | Human checklist + changelog |
+| `tests/test_operator_help_sync.py`     | Asserts CLI + `/help` + man §1         |
+| `docs/OPERATOR_HELP_AUDIT.md`          | Human checklist + changelog            |
 
 ## Rule
 

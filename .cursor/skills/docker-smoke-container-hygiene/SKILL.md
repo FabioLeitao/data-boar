@@ -19,25 +19,25 @@ description: >-
 
 1. **Inventory** local Data Boar-related containers (name filter is enough for most cases):
    - `docker ps -a` and look for `data-boar`, `data_boar`, or compose project service names from `deploy/`.
-2. **Retention policy**
+1. **Retention policy**
    - **Normal:** keep **one** container (or one compose stack) for day-to-day dev.
    - **A/B or regression:** keep **at most two** intentionally named containers (e.g. different tags or configs). Anything else is **throwaway**.
-3. **Cleanup suggestion** (confirm with the operator before `rm -f`):
+1. **Cleanup suggestion** (confirm with the operator before `rm -f`):
    - Stop: `docker stop <name>`
    - Remove: `docker rm <name>`
    - Compose: `docker compose -f deploy/docker-compose.yml … down` (add override file if used).
-4. **Document** in the session or PR description if smoke was run and **which** container name/tag was kept, so the next run does not spawn duplicates.
-5. **Agents:** do not delete containers autonomously; **propose** commands and remind the operator to keep only 1–2 instances unless A/B is required.
+1. **Document** in the session or PR description if smoke was run and **which** container name/tag was kept, so the next run does not spawn duplicates.
+1. **Agents:** do not delete containers autonomously; **propose** commands and remind the operator to keep only 1–2 instances unless A/B is required.
 
 ## Instructions — images and disk (homelab)
 
 Smoke tests **do not** require a **new Docker tag every time**. Tags like `data_boar:smoke-post93`, `data_boar:smoke-foo` accumulate and waste **disk** (many digests/layers stay referenced until pruned).
 
 1. **Default build command for local smoke:** `docker build -t data_boar:lab -f Dockerfile .` — **reuse `data_boar:lab`** and overwrite it on each build (same idea as [docs/ops/HOMELAB_VALIDATION.md](../../../docs/ops/HOMELAB_VALIDATION.md) step 1.3).
-2. **Second tag only when needed:** e.g. true A/B (`data_boar:lab-a` vs `data_boar:lab-b`) or compare **pulled** `fabioleitao/data_boar:latest` vs local `data_boar:lab`.
-3. **Retention:** keep roughly **two** useful lines locally (e.g. Hub `latest` + `data_boar:lab`, or `latest` + one older semver). Remove stale tags: `docker rmi data_boar:OLD_TAG`, then `docker image prune -f` and optionally `docker builder prune -f` — see [docs/ops/BRANCH_AND_DOCKER_CLEANUP.md](../../../docs/ops/BRANCH_AND_DOCKER_CLEANUP.md) §4.
-4. **Scripts (Windows, repo root):** [scripts/docker-hub-pull.ps1](../../../scripts/docker-hub-pull.ps1) (pull Hub tags), [scripts/docker-lab-build.ps1](../../../scripts/docker-lab-build.ps1) (build `data_boar:lab` + optional `lab-prev`/`smoke`), [scripts/docker-prune-local.ps1](../../../scripts/docker-prune-local.ps1) `-WhatIf` first — see [scripts/docker/README.md](../../../scripts/docker/README.md).
-5. **Agents:** propose list/prune commands; do not run destructive `docker rmi` / `prune` without operator confirmation.
+1. **Second tag only when needed:** e.g. true A/B (`data_boar:lab-a` vs `data_boar:lab-b`) or compare **pulled** `fabioleitao/data_boar:latest` vs local `data_boar:lab`.
+1. **Retention:** keep roughly **two** useful lines locally (e.g. Hub `latest` + `data_boar:lab`, or `latest` + one older semver). Remove stale tags: `docker rmi data_boar:OLD_TAG`, then `docker image prune -f` and optionally `docker builder prune -f` — see [docs/ops/BRANCH_AND_DOCKER_CLEANUP.md](../../../docs/ops/BRANCH_AND_DOCKER_CLEANUP.md) §4.
+1. **Scripts (Windows, repo root):** [scripts/docker-hub-pull.ps1](../../../scripts/docker-hub-pull.ps1) (pull Hub tags), [scripts/docker-lab-build.ps1](../../../scripts/docker-lab-build.ps1) (build `data_boar:lab` + optional `lab-prev`/`smoke`), [scripts/docker-prune-local.ps1](../../../scripts/docker-prune-local.ps1) `-WhatIf` first — see [scripts/docker/README.md](../../../scripts/docker/README.md).
+1. **Agents:** propose list/prune commands; do not run destructive `docker rmi` / `prune` without operator confirmation.
 
 ## Rationale
 

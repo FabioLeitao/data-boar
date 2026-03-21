@@ -10,12 +10,12 @@
 
 ## 1. Pilha recomendada (menos atrito → mais montagem)
 
-| Prioridade | Canal | Por quê | Uso típico |
-| ---------- | ----- | ------- | ----------- |
-| **A** | **GitHub** | Já ligado ao repositório; **app móvel** para assign, review, **workflow falho**, Dependabot, Security. | Watch em **data-boar**; falhas em **Actions**; opcional **Issue** aberta por automação com `@mention`. |
-| **B** | **Slack** | **Webhook** ou bot; fácil com `curl` no GitHub Actions. | Canal `#data-boar-ops`; secret `SLACK_WEBHOOK_URL`. |
-| **C** | **Telegram** | **Bot API HTTP**; token + **chat_id**; scripts pequenos. | BotFather → token como secret; mensagem para você ou grupo. |
-| **D** | **Signal** | Privacidade forte; **mais operação** (dispositivo vinculado / `signal-cli` / imagens **signald** em Docker). | Opcional; ver §3. Respeite **Termos do Signal** e a legislação local. |
+| Prioridade | Canal        | Por quê                                                                                                      | Uso típico                                                                                             |
+| ---------- | -----        | -------                                                                                                      | -----------                                                                                            |
+| **A**      | **GitHub**   | Já ligado ao repositório; **app móvel** para assign, review, **workflow falho**, Dependabot, Security.       | Watch em **data-boar**; falhas em **Actions**; opcional **Issue** aberta por automação com `@mention`. |
+| **B**      | **Slack**    | **Webhook** ou bot; fácil com `curl` no GitHub Actions.                                                      | Canal `#data-boar-ops`; secret `SLACK_WEBHOOK_URL`.                                                    |
+| **C**      | **Telegram** | **Bot API HTTP**; token + **chat_id**; scripts pequenos.                                                     | BotFather → token como secret; mensagem para você ou grupo.                                            |
+| **D**      | **Signal**   | Privacidade forte; **mais operação** (dispositivo vinculado / `signal-cli` / imagens **signald** em Docker). | Opcional; ver §3. Respeite **Termos do Signal** e a legislação local.                                  |
 
 **Mínimo prático:** **A + B** ou **A + C**. **Só A** já ajuda; dois canais reduzem “perdi o único ping”.
 
@@ -47,11 +47,11 @@ Configurações comuns usam **`signal-cli`** ou **`signald`** em **Docker**, com
 
 ## 4. Slack vs Telegram (comparação rápida)
 
-| | Slack | Telegram |
-| --- | --- | --- |
-| **Montagem** | App Slack → Incoming Webhook | BotFather → token; obter `chat_id` uma vez |
-| **A partir do Actions** | `curl` POST JSON no webhook | `sendMessage` na API do bot |
-| **Uso** | Bom se você já vive no Slack | Bom para **push direto** no celular |
+|                         | Slack                        | Telegram                                   |
+| ---                     | ---                          | ---                                        |
+| **Montagem**            | App Slack → Incoming Webhook | BotFather → token; obter `chat_id` uma vez |
+| **A partir do Actions** | `curl` POST JSON no webhook  | `sendMessage` na API do bot                |
+| **Uso**                 | Bom se você já vive no Slack | Bom para **push direto** no celular        |
 
 Um passo genérico “notify” pode tentar **Slack** e, se falhar, **Telegram** (sem loops infinitos).
 
@@ -60,8 +60,8 @@ Um passo genérico “notify” pode tentar **Slack** e, se falhar, **Telegram**
 ## 5. Padrão multi-canal
 
 1. **Primário:** GitHub (comentário em Issue ou check falho).
-2. **Secundário:** Slack *ou* Telegram.
-3. **Terciário opcional:** Signal (homelab até estabilizar).
+1. **Secundário:** Slack *ou* Telegram.
+1. **Terciário opcional:** Signal (homelab até estabilizar).
 
 **Não** commitar webhooks nem tokens; usar **secrets** do GitHub e/ou `.env` no `.gitignore`.
 
