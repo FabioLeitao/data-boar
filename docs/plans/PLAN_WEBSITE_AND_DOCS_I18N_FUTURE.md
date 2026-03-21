@@ -35,18 +35,18 @@
 
 ## 3. Dependencies and sequencing (high level)
 
-1. **Stable product story** — version cadence, support posture, and what we promise publicly.  
-2. **Legal / trademark** — counsel pass on public claims and name use where needed.  
-3. **Content owner** — who approves site copy and translations.  
+1. **Stable product story** — version cadence, support posture, and what we promise publicly.
+2. **Legal / trademark** — counsel pass on public claims and name use where needed.
+3. **Content owner** — who approves site copy and translations.
 4. **Automation** — optional CI to publish from a `website/` repo or branch; link checker for docs URLs.
 
 ---
 
 ## 4. Related tracked material
 
-- [HOSTING_AND_WEBSITE_OPTIONS.md](../HOSTING_AND_WEBSITE_OPTIONS.md) — hosting memo.  
-- [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](../LICENSING_OPEN_CORE_AND_COMMERCIAL.md) — pitch and open-core boundary.  
-- [PLANS_TODO.md](PLANS_TODO.md) — backlog pointer to this file.  
+- [HOSTING_AND_WEBSITE_OPTIONS.md](../HOSTING_AND_WEBSITE_OPTIONS.md) — hosting memo.
+- [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](../LICENSING_OPEN_CORE_AND_COMMERCIAL.md) — pitch and open-core boundary.
+- [PLANS_TODO.md](PLANS_TODO.md) — backlog pointer to this file.
 - [README.md](../../README.md) — current public entry point until a site exists.
 
 ---
@@ -55,8 +55,8 @@
 
 Promote this from “reminder” to a **sprint-sized** initiative when:
 
-- Homelab / second-environment confidence is in a good state (**–1L** / **M-LAB**), and  
-- Priority band **A** hygiene is not blocking, and  
+- Homelab / second-environment confidence is in a good state (**–1L** / **M-LAB**), and
+- Priority band **A** hygiene is not blocking, and
 - You have bandwidth for **ongoing** translation + site maintenance.
 
 Until then, **no obligation** to implement; this file is the **memory hook**.
