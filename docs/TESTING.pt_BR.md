@@ -20,7 +20,13 @@ uv run pytest tests/test_routes_responses.py -v -W error
 
 # Executar testes que correspondem a uma palavra-chave
 uv run pytest -v -W error -k "session_id"
+
+# Opcional: lint do docs/private/ ignorado pelo git (Markdown + *.ps1 / *.sh)
+uv run pytest -v -W error --include-private
+# Ou: INCLUDE_PRIVATE_LINT=1 (mesmo efeito para markdown e scripts privados)
 ```
+
+**Opcional — `docs/private/`:** Por padrão, os testes de **lint de Markdown** e **sintaxe de scripts** **ignoram** a árvore **`docs/private/`** (gitignored). Para incluí-la localmente (ex.: após editar notas privadas), use **`pytest --include-private`** ou defina **`INCLUDE_PRIVATE_LINT=1`**. Para corrigir Markdown lá: **`uv run python scripts/fix_markdown_sonar.py --include-private`** (ou a mesma variável de ambiente). O **CI não** define essa flag.
 
 **Requisitos:** Python **3.12 ou 3.13** (veja `CONTRIBUTING.md` / `SECURITY.md`), dependências instaladas (`uv sync --group dev` ou `pip install -e .`). Nenhum serviço externo é necessário; os testes usam configs temporários e SQLite em memória ou temporário quando preciso.
 
@@ -39,14 +45,14 @@ uv run pytest -v -W error -k "session_id"
 | **test_learned_patterns.py**          | Padrões aprendidos: coleta (sensibilidade, padrão, filesystem), grava YAML, exclusões.                                                                                                                                                                            |
 | **test_logic.py**                     | Lógica de auditoria: CPF no conteúdo, downgrade de letras/tablatura, compatibilidade retroativa dos resultados do scan.                                                                                                                                           |
 | **test_minor_detection.py**           | Detecção de menor: heurísticas de idade/DOB, flag possible_minor, fiação de config, priorização no relatório.                                                                                                                                                     |
-| **test_markdown_lint.py**             | Regras estilo SonarQube/markdownlint nos arquivos .md do projeto: MD009, MD012, MD024, MD036, MD051, MD060, MD031 (espaços em torno de cercas), MD034 (sem URLs nuas), alinhamento de tabelas. Exclui .venv, .cursor, .git.                                       |
+| **test_markdown_lint.py**             | Regras estilo SonarQube/markdownlint em `.md` / `.mdc` (incl. `.cursor/`). Exclui **`private/`** por padrão; opcional **`--include-private`** ou **`INCLUDE_PRIVATE_LINT=1`** para **`docs/private/`**. Veja [Executando os testes](#executando-os-testes).         |
 | **test_ml_engine.py**                 | MLSensitivityScanner: seed random_state (S6709), hiperparâmetros (S6973), nomenclatura de variáveis locais (S117), comportamento de predict.                                                                                                                      |
 | **test_rate_limit_api.py**            | Limite de taxa: 429 quando máximo de scans concorrentes ou min_interval excedido; desabilitado por padrão para configs legados.                                                                                                                                   |
 | **test_report_path_safety.py**        | Caminhos de relatório/heatmap (`FileResponse`) sob `report.output_dir`: contenção (CodeQL py/path-injection), basenames permitidos, rejeita caminhos fora do diretório configurado.                                                                               |
 | **test_report_recommendations.py**    | Recomendações do relatório, overrides, resumo executivo, min_sensitivity, linha/prioridade possible_minor, config_scope_hash.                                                                                                                                     |
 | **test_report_trends.py**             | Aba de tendências e informações do relatório (tenant, technician) nos relatórios gerados.                                                                                                                                                                         |
 | **test_routes_responses.py**          | Contrato da API e OpenAPI: session_id inválido → 400; 429/400/404 documentados no OpenAPI; página de config usa constante do template.                                                                                                                            |
-| **test_scripts.py**                   | Verificações de scripts Shell/PowerShell: sintaxe bash de `prep_audit.sh`, parse do `scripts/commit-or-pr.ps1`. Veja [Testes de scripts](#testes-de-scripts) abaixo.                                                                                              |
+| **test_scripts.py**                   | Verificações de scripts Shell/PowerShell: sintaxe bash de `prep_audit.sh`, parse do `scripts/commit-or-pr.ps1`. Opcional **`--include-private`**: `*.ps1` / `*.sh` em **`docs/private/`**. Veja [Testes de scripts](#testes-de-scripts).                                                                                              |
 | **test_security.py**                  | Resistência a injeção SQL, validação de session_id (path traversal), uso apenas ORM para session_id, YAML safe_load. Veja [SECURITY.md](../SECURITY.md).                                                                                                          |
 | **test_sonarqube_python.py**          | Guardas estilo SonarQube: regex session_id, constantes de resposta/relatório, helpers de refatoração, sem except nu em módulos chave.                                                                                                                             |
 | **test_sql_connector.py**             | Conector SQL: skip de schemas (Oracle vs padrão), should_skip_schema, discover (fallback SQLite).                                                                                                                                                                 |
@@ -57,11 +63,17 @@ Esses testes codificam regras **SonarQube** ou de **contrato da API** para que r
 
 ### Testes de scripts
 
-Scripts são validados apenas quanto a **sintaxe e estrutura**; não é necessário root nem rede. O `commit-or-pr.ps1` é verificado via parse do PowerShell (sem execução).
+Scripts são validados apenas quanto a **sintaxe e estrutura**; não é necessário root nem rede:
+
+- **prep_audit.sh** – Em não-Windows: `bash -n prep_audit.sh`. Em todas as plataformas: shebang e uso explícito de `exit 1` quando não root. Os testes não executam o script.
+- **scripts/commit-or-pr.ps1** – Parse do PowerShell (`Parser::ParseFile`, sem execução); bloco `param` com `ValidateSet('Preview','Commit','PR')`.
+- **`docs/private/`** (opcional) – Com **`pytest --include-private`** ou **`INCLUDE_PRIVATE_LINT=1`**, todo **`*.ps1`** em **`docs/private/`** passa por parse; em não-Windows, **`*.sh`** recebe **`bash -n`**. Ignorado se a flag/variável estiver desligada ou o diretório não existir.
 
 ### Markdown lint
 
-Os arquivos `.md` do projeto são verificados quanto a regras estilo SonarQube/markdownlint (MD009, MD012, MD024, MD036, MD051, MD060, MD031, MD034, alinhamento de tabelas). Execute: `uv run pytest tests/test_markdown_lint.py -v -W error`.
+Arquivos `.md` / `.mdc` do projeto (excl. `.venv`, `.git`, etc.) seguem regras estilo SonarQube/markdownlint (MD009, MD012, MD024, MD036, MD051, MD060, MD031, MD034, tabelas alinhadas). Para corrigir automaticamente em árvores rastreadas: `uv run python scripts/fix_markdown_sonar.py`; use **`--include-private`** ou **`INCLUDE_PRIVATE_LINT=1`** para incluir **`docs/private/`**.
+
+Execute: `uv run pytest tests/test_markdown_lint.py -v -W error`.
 
 ## CI
 
