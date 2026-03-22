@@ -2,7 +2,7 @@
 
 **Status:** **Target architecture agreed** — implementation **deferred** until higher-priority product slices ship; milestones and sequencing below are **planning only** until scheduled.
 
-**Synced with:** [PLANS_TODO.md](PLANS_TODO.md), [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md), [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) (**#86**).
+**Synced with:** [PLANS_TODO.md](PLANS_TODO.md), [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md), [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) (**#86**). **Future public website** (marketing + doc hub) should **reuse the same locale model** (path prefix, cookie, `Accept-Language`, JSON catalogs) — see [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) §2.2.
 
 ## When implementing: update docs and tests; then update PLANS_TODO.md, sprints, and this file.
 

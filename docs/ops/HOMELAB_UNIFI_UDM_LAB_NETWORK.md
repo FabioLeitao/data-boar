@@ -37,6 +37,8 @@ The OID `1.3.6.1.2.1.2.2` is the standard **interfaces** table (traffic counters
 
 Use VLANs to **separate** roles without putting **real VLAN IDs, subnet names, or passwords** in this public repo—keep those in **`docs/private/homelab/`** (gitignored) or your runbook ([PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)).
 
+**Operator snapshot (private):** when synced, see **`docs/private/homelab/LAB_SECURITY_POSTURE.md`** **§1.1** (*DMSE Casa*, **LAB-ROUTER-01-SE**, **Oficial** / **IoT** / **Default** subnets, **SNMP v3**, **CyberSecure** — valores mudam com o tempo).
+
 ## Typical pattern (names are examples only):
 
 | VLAN role (example) | Use                                                                                 |

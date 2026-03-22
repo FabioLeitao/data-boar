@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Data Boar — homelab inventory helper (run ON each Linux host; redact output before sharing).
 # Usage: bash scripts/homelab-host-report.sh
+# After clone: chmod +x scripts/homelab-host-report.sh   (typos: chmos / chmosd → chmod)
 # See: docs/ops/HOMELAB_HOST_PACKAGE_INVENTORY.md
 
 set -u
@@ -37,7 +38,13 @@ else
 fi
 
 echo "--- pip (user warning: may be system pip) ---"
-command -v pip3 >/dev/null && pip3 --version || echo "pip3: not in PATH"
+if command -v pip3 >/dev/null; then
+  pip3 --version
+elif command -v python3 >/dev/null && python3 -m pip --version >/dev/null 2>&1; then
+  python3 -m pip --version
+else
+  echo "pip3: not in PATH (try: python3 -m pip --version)"
+fi
 
 echo "--- Docker ---"
 if command -v docker >/dev/null; then
@@ -82,7 +89,64 @@ else
 fi
 
 echo "--- Lynis (if installed) ---"
-command -v lynis >/dev/null && lynis --version 2>/dev/null || echo "lynis: not in PATH"
+# Debian/Ubuntu install to /usr/sbin/lynis — often missing from PATH in non-login scripts.
+# Run from /tmp + sanitized env: some builds mis-resolve language/DB paths when cwd is the repo
+# or when stale LYNIS_* / PWD leaks from the shell.
+_lynis_resolve_bin() {
+  local p deb_paths
+  for p in /usr/sbin/lynis /usr/bin/lynis /usr/local/sbin/lynis; do
+    if [[ -f "$p" ]] && [[ -r "$p" ]]; then
+      if [[ -x "$p" ]]; then echo "$p"; return 0; fi
+    fi
+  done
+  if command -v dpkg-query >/dev/null; then
+    while IFS= read -r deb_paths; do
+      [[ -z "$deb_paths" ]] && continue
+      if [[ -f "$deb_paths" && -x "$deb_paths" ]]; then
+        echo "$deb_paths"
+        return 0
+      fi
+    done < <(dpkg-query -L lynis 2>/dev/null | grep -E '^/(usr/)?(s)?bin/lynis$' || true)
+  fi
+  PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+  command -v lynis 2>/dev/null || true
+}
+
+_lynis_show_version() {
+  local bin="$1"
+  [[ -n "$bin" ]] || return 1
+  [[ -f "$bin" ]] || return 1
+  (
+    cd /tmp 2>/dev/null || cd / 2>/dev/null || true
+    unset OLDPWD LYNIS_HOME LYNIS_CONFIG_DIR 2>/dev/null || true
+    # `show version` avoids some full-init code paths; fall back to --version.
+    env -i \
+      HOME="${HOME:-/tmp}" \
+      PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" \
+      LANG="${LANG:-C.UTF-8}" \
+      LC_ALL="${LC_ALL:-C.UTF-8}" \
+      TERM="${TERM:-dumb}" \
+      USER="${USER:-}" \
+      "$bin" show version 2>&1 \
+      || env -i \
+        HOME="${HOME:-/tmp}" \
+        PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" \
+        LANG="${LANG:-C.UTF-8}" \
+        LC_ALL="${LC_ALL:-C.UTF-8}" \
+        TERM="${TERM:-dumb}" \
+        USER="${USER:-}" \
+        "$bin" --version 2>&1
+  )
+}
+
+LYNIS_BIN="$(_lynis_resolve_bin)"
+if [[ -n "$LYNIS_BIN" ]]; then
+  if ! _lynis_show_version "$LYNIS_BIN"; then
+    echo "lynis: binary at $LYNIS_BIN but version query failed (try: sudo apt install --reinstall lynis; type -a lynis)"
+  fi
+else
+  echo "lynis: not installed or not found under /usr/sbin, /usr/bin, dpkg -L lynis, or standard PATH"
+fi
 
 echo "--- Optional dev toolColleague-Nns (not required for Data Boar) ---"
 command -v go >/dev/null && go version || echo "go: not in PATH"
