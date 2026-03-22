@@ -77,10 +77,11 @@ Copy this table into a GitHub **Project** board or a personal doc; move rows by 
 
 ### 3.1 Study and certification lane (operator calendar)
 
-- **Through ~mid-April 2026:** Primary study focus = **CCA** (Claude Certified Architect); see [OPERATOR_MANUAL_ACTIONS.md](../ops/OPERATOR_MANUAL_ACTIONS.md) and [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.0.
+- **Primary focus (2026):** **Anthropic Academy** production curriculum (Claude 101 → Claude API → MCP → Claude Code / agent skills) — see [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.0 and [Anthropic courses](https://docs.claude.com/en/docs/resources/courses). **Cursor** = toolColleague-Nn; **credibility** = shipped work + compliance narrative + course progress. **CCA** (Claude Certified Architect) = **capstone exam when eligible**—not a fixed April deadline.
 - **Same window:** Keep a **thin** **Priority band A** thread so dependency/image hygiene does not stall—see [PLANS_TODO.md](PLANS_TODO.md) **–1** / **–1b**.
-- **After mid-April (or after a CCA attempt):** Shift primary study blocks to **paid cyber courses** (e.g. CWL §3.2 in PORTFOLIO), still **one major cert lane at a time** where possible.
-- **Retakes:** If an exam is not passed on the first try, capture notes in `docs/private/` and schedule a **later** attempt; knowledge still supports production work.
+- **Interleave / after Academy rhythm:** **Paid cyber courses** (e.g. CWL §3.2 in PORTFOLIO), **BTF → C3SA** first—still **one major cert lane at a time** where possible.
+- **Optional:** Short **third-party** courses with completion certificates (e.g. Cursor on Coursera/Codecademy) if you want a PDF for HR—non-official vs Anthropic/CCA.
+- **Retakes:** If **CCA** (or another exam) is not passed on the first try, capture notes in `docs/private/` and schedule a **later** attempt; knowledge still supports production work.
 
 ---
 
