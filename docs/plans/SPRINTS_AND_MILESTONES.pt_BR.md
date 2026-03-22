@@ -77,11 +77,11 @@ Copie esta tabela para um board **GitHub Projects** ou doc pessoal; mova linhas 
 
 ### 3.1 Faixa de estudo e certificação (calendário do operador)
 
-- **Foco principal (2026):** currículo **Anthropic Academy** (Claude 101 → API Claude → MCP → Claude Code / agent skills) — ver [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.0 e [Anthropic courses](https://docs.claude.com/en/docs/resources/courses). **Cursor** = ferramenta de entrega; **credibilidade** = produto entregue + narrativa de compliance + progresso nos cursos. **CCA** = **exame capstone quando houver elegibilidade** — **sem** prazo fixo em abril.
-- **Na mesma janela:** manter um **fio fino** da **faixa prioritária A** para higiene de dependências/imagem não parar—ver [PLANS_TODO.md](PLANS_TODO.md) **–1** / **–1b**.
-- **Entrelaçar / depois do ritmo Academy:** **cursos de cyber já pagos** (ex. CWL §3.2 no PORTFOLIO), **BTF → C3SA** primeiro — ainda que possível **uma grande faixa de cert por vez**.
-- **Opcional:** cursos **terceiros** com certificado de conclusão (ex. Cursor em Coursera/Codecademy) para CV — **não** equivalem a credencial oficial Anthropic/CCA.
-- **Retakes:** Se **CCA** (ou outro exame) não passar na primeira tentativa, anotar em `docs/private/` e agendar **nova** tentativa; o aprendizado ainda apoia produção.
+- **Foco principal (2026):** **Cyber pago (CWL)** — concluir **BTF → C3SA** e sequência §3.2 em [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md); **credibilidade** = **essas conclusões** + **Data Boar entregue** + narrativa de compliance. O editor neste repo pode usar **vários** modelos; **não** tratar estudo **só Anthropic** como faixa principal.
+- **Alternando ao longo do ano:** **Anthropic Academy** (ou outros cursos de IA) quando couber no calendário — [Anthropic courses](https://docs.claude.com/en/docs/resources/courses); **CCA** = **capstone quando elegível**, sem prazo fixo.
+- **Na mesma janela:** **fio fino** da **faixa prioritária A** — [PLANS_TODO.md](PLANS_TODO.md) **–1** / **–1b**.
+- **Opcional:** certificados de conclusão **terceiros** (ex. Cursor no Coursera) — só polimento de CV.
+- **Retakes:** Se **CCA** (ou outro) falhar, notas em `docs/private/` e **nova** tentativa depois.
 
 ---
 
