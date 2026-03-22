@@ -7,7 +7,10 @@ file_scan:
   extensions: [.txt, .csv, .pdf, .docx, .xlsx]
   recursive: true
   scan_sqlite_as_db: true
+  # Rows / TOPN for DB-like sampling and SQLite-as-DB per column (not plain-text char budget).
   sample_limit: 5
+  # UTF-8 characters read per plain-text file (.txt, .md, …) for lyrics/cifra heuristics.
+  file_sample_max_chars: 12000
 
 report:
   output_dir: /data

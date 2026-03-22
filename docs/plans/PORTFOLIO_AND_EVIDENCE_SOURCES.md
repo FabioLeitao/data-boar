@@ -6,6 +6,19 @@
 
 ---
 
+## 0. Stakeholder pitch — keep in sync with README
+
+**Canonical copy** for decision-makers lives in the root **[README.md](../../README.md)** and **[README.pt_BR.md](../../README.pt_BR.md)** (*For decision-makers / Para gestores*). When you refresh decks, CV blurbs, or thesis “product” paragraphs, start there.
+
+**Differentiators to cite (hireability / commercial story):**
+
+- **Filesystem judgment:** Configurable plain-text depth plus **calmer ML triage** on entertainment-shaped and common OSS-doc content—**review band** vs **priority** violations—so legal and DPO time goes to real risk.
+- **Roadmap — richer data soup:** Optional **image metadata and OCR**, **audio/video** tags, **subtitle** sidecars ([PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md](PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md), [USAGE.md](../../USAGE.md))—same **boar / soup** metaphor for media-heavy estates.
+- **Roadmap — enterprise extensions:** **SAP** plus **HR / SST / ERP / CRM**-class systems (research-first integration patterns: [PLAN_SAP_CONNECTOR.md](PLAN_SAP_CONNECTOR.md), [PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md](PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md)).
+- **Roadmap — operability:** **Scan-complete notifications** ([PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md](PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md)); **identity / subscription-ready** access for multi-operator deploys (**M-ACCESS**, [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md)).
+
+---
+
 ## 1. Docker images and Dockerfiles
 
 | Image           | Docker Hub                                                                                   | GitHub / Dockerfile                                                                                                                                                             | Notes (fetched or from you)                                                                                                      |
@@ -50,6 +63,21 @@ Add only what you are comfortable making reference to in docs; keep wording fact
 | *(Optional)* Talks, blog, articles                                                                              | Add URLs or one-liners here when you want them in the narrative.                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 **Learning platforms (Udemy, Alura, etc.):** Certifications and courses from CV are listed in §3.2. We don’t have your full course/cert list from CV or LinkedIn here. For in-progress or paid-not-started, add or update `docs/private/Learning_and_certs.md` for prioritisation.
+
+---
+
+### 3.0 Study priority window (Q1–Q2 2026) — CCA, then cyber, thin hygiene
+
+**Intent:** Align calendar with **production readiness** (Data Boar, agentic workflow) without dropping **trust/hygiene**.
+
+| Phase | Focus | Notes |
+| ----- | ----- | ----- |
+| **Through ~mid-April 2026** | **Claude Certified Architect (CCA)** | Production-oriented credential (agents, MCP, Claude Code, architecture). Unofficial overview: [Claude Certified Architect — guide](https://aitoolsclub.com/how-to-become-a-claude-certified-architect-complete-guide/). Official prep: **Anthropic Academy** (Skilljar); exam fees/format = Anthropic at registration. |
+| **In parallel (thin)** | **Priority band A** (–1, –1b) | Dependabot, Docker Scout, `check-all` before merges—keeps **M-TRUST** from slipping. See [PLANS_TODO.md](PLANS_TODO.md). |
+| **After mid-April (or after first CCA attempt)** | **Paid cyber track** (e.g. CWL §3.2 below) | Resume **BTF → C3SA** (and onward) as already sequenced. |
+| **If first exam attempt fails** | **Learning + later retake** | Keep notes in `docs/private/`; **retake later in the year** opportunistically—knowledge gained still supports the product; adjust prep, not shame. |
+
+**Tracked operator checklist:** [OPERATOR_MANUAL_ACTIONS.md](../ops/OPERATOR_MANUAL_ACTIONS.md) ([pt-BR](../ops/OPERATOR_MANUAL_ACTIONS.pt_BR.md)). **Sprint mirror:** [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) §3.1.
 
 ---
 
