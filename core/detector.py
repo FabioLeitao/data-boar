@@ -624,7 +624,9 @@ def _looks_like_open_source_markdown_doc(file_name: str, sample: str) -> bool:
         return False
     # readme, readme.pt_br, contributing, etc.
     first_part = stem_full.split(".")[0]
-    if first_part not in _OSS_MARKDOWN_DOC_STEMS and not first_part.startswith("readme"):
+    if first_part not in _OSS_MARKDOWN_DOC_STEMS and not first_part.startswith(
+        "readme"
+    ):
         return False
     if not (file_name.lower().endswith((".md", ".markdown"))):
         return False
