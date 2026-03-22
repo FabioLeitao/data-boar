@@ -14,6 +14,7 @@ from typing import Any
 
 import yaml
 
+from config.scan_defaults import clamp_file_sample_max_chars
 from utils.file_encoding import read_text_auto_encoding
 
 # Optional JSON support without requiring top-level json for YAML-first flow
@@ -158,6 +159,10 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         ".msg",
         ".tex",
         ".bib",
+        ".srt",
+        ".vtt",
+        ".ass",
+        ".ssa",
     ]
     fs_cfg = data.get("file_scan", {}) or {}
     out["file_scan"] = {
@@ -165,6 +170,11 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         "recursive": fs_cfg.get("recursive", True),
         "scan_sqlite_as_db": fs_cfg.get("scan_sqlite_as_db", True),
         "sample_limit": fs_cfg.get("sample_limit", 5),
+        # Max UTF-8 characters read per plain-text file (.txt, .md, …) on filesystem/shares.
+        # Separate from sample_limit (rows / TOPN for DBs and Power BI / Dataverse).
+        "file_sample_max_chars": clamp_file_sample_max_chars(
+            fs_cfg.get("file_sample_max_chars")
+        ),
         # Optional: scan inside compressed files (zip, tar, gz, bz2, xz, 7z, …)
         # This flag is deliberately conservative: default False so existing configs
         # keep current behaviour until explicitly opted-in.
@@ -178,11 +188,19 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         # will use a sensible default Tier 1 + Tier 2 list (see PLAN_COMPRESSED_FILES.md).
         "compressed_extensions": fs_cfg.get("compressed_extensions"),
         "file_passwords": _normalize_file_passwords(fs_cfg.get("file_passwords")),
-        # Planned: optional content-based type detection helper (magic bytes) to
-        # help with renamed/cloaked files. Currently an inert toggle; future
-        # phases will wire this into filesystem/share connectors behind an opt-in flag.
+        # Optional: magic-byte inference for renamed/cloaked files (PDF + rich media)
+        # when filesystem/share connectors enable it. See docs/USAGE.md.
         "use_content_type": bool(fs_cfg.get("use_content_type", False)),
+        # Rich media: optional EXIF / ID3 / ffprobe metadata and optional image OCR (see docs/USAGE.md).
+        "scan_rich_media_metadata": bool(fs_cfg.get("scan_rich_media_metadata", False)),
+        "scan_image_ocr": bool(fs_cfg.get("scan_image_ocr", False)),
+        "ocr_lang": str(fs_cfg.get("ocr_lang") or "eng").strip() or "eng",
     }
+    try:
+        _ocr_md = int(fs_cfg.get("ocr_max_dimension", 2000))
+    except (TypeError, ValueError):
+        _ocr_md = 2000
+    out["file_scan"]["ocr_max_dimension"] = max(256, min(8000, _ocr_md))
     # Normalize extensions to list of suffixes (e.g. "*.pdf" -> ".pdf")
     exts = out["file_scan"]["extensions"]
     out["file_scan"]["extensions"] = [

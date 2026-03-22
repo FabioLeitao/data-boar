@@ -20,7 +20,11 @@ from core.archives import (
     is_supported_archive,
     normalize_compressed_extensions,
 )
-from core.content_type import choose_effective_pdf_extension
+from core.content_type import (
+    choose_effective_pdf_extension,
+    choose_effective_rich_media_extension,
+)
+from utils.subtitle_text import SUBTITLE_EXTENSIONS, normalize_subtitle_sample
 
 # Default cap for total uncompressed bytes per member when scanning inside archives.
 DEFAULT_MAX_INNER_SIZE = 10_000_000
@@ -96,6 +100,11 @@ _TEXT_EXTENSIONS = {
     ".svgz",
     ".diff",
     ".patch",
+    # Sidecar subtitles / captions (timing stripped before sensitivity scan; see utils/subtitle_text.py)
+    ".srt",
+    ".vtt",
+    ".ass",
+    ".ssa",
 }
 
 # Binary/document formats with dedicated extractors
@@ -161,17 +170,53 @@ def _read_text_sample(
     ext: str,
     max_chars: int = 10000,
     file_passwords: dict[str, str] | None = None,
+    *,
+    rich_media_metadata: bool = False,
+    scan_image_ocr: bool = False,
+    ocr_max_dimension: int = 2000,
+    ocr_lang: str = "eng",
 ) -> str:
     """Extract text from file for sensitivity scan; return empty on error. No content stored after return.
+
+    ``max_chars`` is a **character budget** for plain-text-like types (``.txt``, ``.md``, …).
+    It comes from ``file_scan.file_sample_max_chars`` (not ``sample_limit``, which is still used
+    for SQL row caps and similar).
     When file_passwords is provided (e.g. {'.pdf': 'secret', 'default': 'fallback'}), use it to open
     password-protected PDF and ZIP-based (e.g. .pptx) files. Unsupported or wrong password yields empty string.
+
+    When *rich_media_metadata* or *scan_image_ocr* is true, image/audio/video extensions invoke
+    ``connectors.rich_media_sample.build_rich_media_text_sample`` (optional mutagen, ffprobe, tesseract).
     """
     pw = file_passwords or {}
     try:
+        from connectors.rich_media_sample import (
+            IMAGE_EXTENSIONS,
+            RICH_MEDIA_SCAN_EXTENSIONS,
+            build_rich_media_text_sample,
+        )
+
+        if ext.lower() in RICH_MEDIA_SCAN_EXTENSIONS and (
+            rich_media_metadata or scan_image_ocr
+        ):
+            return build_rich_media_text_sample(
+                path,
+                ext,
+                max_chars,
+                metadata=rich_media_metadata,
+                image_ocr=bool(
+                    scan_image_ocr and ext.lower() in IMAGE_EXTENSIONS
+                ),
+                ocr_max_dimension=ocr_max_dimension,
+                ocr_lang=ocr_lang,
+            )
+
         # Plain text and markup: read as text
         if ext in _TEXT_EXTENSIONS:
             with open(path, "r", encoding="utf-8", errors="replace") as f:
-                return f.read(max_chars)
+                raw = f.read(max_chars)
+            if ext in SUBTITLE_EXTENSIONS:
+                return normalize_subtitle_sample(raw, ext)[:max_chars]
+            return raw
 
         if ext == ".pdf":
             from pypdf import PdfReader
@@ -366,6 +411,7 @@ class FilesystemConnector:
         extensions: set[str] | list[str] | None = None,
         scan_sqlite_as_db: bool = True,
         sample_limit: int = 5,
+        file_sample_max_chars: int = 12_000,
         file_passwords: dict[str, str] | None = None,
     ):
         self.config = target_config
@@ -373,6 +419,7 @@ class FilesystemConnector:
         self.db_manager = db_manager
         self.scan_sqlite_as_db = scan_sqlite_as_db
         self.sample_limit = sample_limit
+        self.file_sample_max_chars = int(file_sample_max_chars)
         self.file_passwords = file_passwords or {}
         # Optional: scan inside compressed files (archives) – wiring only; extraction handled later.
         fs_opts = target_config.get("file_scan") or {}
@@ -388,6 +435,16 @@ class FilesystemConnector:
         # with renamed/cloaked files. Currently an inert toggle; future phases will
         # consult this flag before choosing how to extract/scan content.
         self.use_content_type = bool(fs_opts.get("use_content_type", False))
+        self.scan_rich_media_metadata = bool(
+            fs_opts.get("scan_rich_media_metadata", False)
+        )
+        self.scan_image_ocr = bool(fs_opts.get("scan_image_ocr", False))
+        try:
+            self.ocr_max_dimension = int(fs_opts.get("ocr_max_dimension", 2000))
+        except (TypeError, ValueError):
+            self.ocr_max_dimension = 2000
+        self.ocr_max_dimension = max(256, min(8000, self.ocr_max_dimension))
+        self.ocr_lang = str(fs_opts.get("ocr_lang") or "eng").strip() or "eng"
         # "*" or "all" in list => use full SUPPORTED_EXTENSIONS; else use provided list or default
         use_all = False
         if extensions:
@@ -404,6 +461,12 @@ class FilesystemConnector:
         self.extensions = {
             e if e.startswith(".") else f".{e.lstrip('*')}" for e in self.extensions
         }
+        from core.rich_media_magic import IMAGE_EXTENSIONS, RICH_MEDIA_SCAN_EXTENSIONS
+
+        if self.scan_rich_media_metadata:
+            self.extensions = set(self.extensions) | set(RICH_MEDIA_SCAN_EXTENSIONS)
+        elif self.scan_image_ocr:
+            self.extensions = set(self.extensions) | set(IMAGE_EXTENSIONS)
 
     def _scan_archive_contents(self, file_path: Path, target_name: str) -> None:
         """Open archive and scan inner members with supported extensions; save findings with path like archive.zip|inner/path.txt."""
@@ -417,7 +480,12 @@ class FilesystemConnector:
             extensions=self.extensions,
             max_inner_size=self.max_inner_size,
             file_passwords=self.file_passwords,
-            sample_limit=self.sample_limit,
+            file_sample_max_chars=self.file_sample_max_chars,
+            rich_media_metadata=self.scan_rich_media_metadata,
+            scan_image_ocr=self.scan_image_ocr,
+            ocr_max_dimension=self.ocr_max_dimension,
+            ocr_lang=self.ocr_lang,
+            use_content_type=self.use_content_type,
         )
 
     def run(self) -> None:
@@ -496,8 +564,18 @@ class FilesystemConnector:
             effective_ext = choose_effective_pdf_extension(
                 ext, self.use_content_type, file_path
             )
+            effective_ext = choose_effective_rich_media_extension(
+                effective_ext, self.use_content_type, file_path
+            )
             content = _read_text_sample(
-                file_path, effective_ext, self.sample_limit, self.file_passwords
+                file_path,
+                effective_ext,
+                self.file_sample_max_chars,
+                self.file_passwords,
+                rich_media_metadata=self.scan_rich_media_metadata,
+                scan_image_ocr=self.scan_image_ocr,
+                ocr_max_dimension=self.ocr_max_dimension,
+                ocr_lang=self.ocr_lang,
             )
             res = self.scanner.scan_file_content(content, file_path)
             if res is None:
@@ -538,11 +616,17 @@ def scan_archive_at_path(
     extensions: set[str],
     max_inner_size: int | None,
     file_passwords: dict[str, str],
-    sample_limit: int,
+    file_sample_max_chars: int,
+    rich_media_metadata: bool = False,
+    scan_image_ocr: bool = False,
+    ocr_max_dimension: int = 2000,
+    ocr_lang: str = "eng",
+    use_content_type: bool = False,
 ) -> None:
     """
     Open archive at path and scan inner members; save findings with file_name like archive.zip|inner/path.txt.
     Used by FilesystemConnector and by share connectors (SMB, WebDAV, SharePoint) when scan_compressed is True.
+    Inner plain-text reads use *file_sample_max_chars* (not SQL row limits).
     """
     archive_type = detect_archive_type(archive_path)
     if not archive_type:
@@ -567,8 +651,23 @@ def scan_archive_at_path(
                 with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
                     tmp.write(data)
                     tmp_path = Path(tmp.name)
-                content = _read_text_sample(tmp_path, ext, sample_limit, file_passwords)
-                res = scanner.scan_file_content(content, tmp_path)
+                ext_use = choose_effective_pdf_extension(
+                    ext, use_content_type, tmp_path
+                )
+                ext_use = choose_effective_rich_media_extension(
+                    ext_use, use_content_type, tmp_path
+                )
+                content = _read_text_sample(
+                    tmp_path,
+                    ext_use,
+                    file_sample_max_chars,
+                    file_passwords,
+                    rich_media_metadata=rich_media_metadata,
+                    scan_image_ocr=scan_image_ocr,
+                    ocr_max_dimension=ocr_max_dimension,
+                    ocr_lang=ocr_lang,
+                )
+                res = scanner.scan_file_content(content, member_name)
                 if res is None:
                     continue
                 db_manager.save_finding(
