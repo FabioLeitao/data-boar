@@ -6,7 +6,10 @@ from pathlib import Path
 import pytest
 
 from core.content_type import choose_effective_rich_media_extension
-from core.rich_media_magic import infer_rich_media_suffix, infer_rich_media_suffix_from_source
+from core.rich_media_magic import (
+    infer_rich_media_suffix,
+    infer_rich_media_suffix_from_source,
+)
 
 
 @pytest.mark.parametrize(

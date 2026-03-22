@@ -203,9 +203,7 @@ def _read_text_sample(
                 ext,
                 max_chars,
                 metadata=rich_media_metadata,
-                image_ocr=bool(
-                    scan_image_ocr and ext.lower() in IMAGE_EXTENSIONS
-                ),
+                image_ocr=bool(scan_image_ocr and ext.lower() in IMAGE_EXTENSIONS),
                 ocr_max_dimension=ocr_max_dimension,
                 ocr_lang=ocr_lang,
             )
