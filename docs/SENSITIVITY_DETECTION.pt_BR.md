@@ -14,12 +14,14 @@ Você pode **definir as palavras de treino para ML e DL** no arquivo de config p
 
 **Risco de identificação agregada / cruzada:** Quando várias categorias de quasi-identificadores (ex.: gênero, cargo, saúde, endereço, telefone) aparecem na **mesma tabela ou arquivo**, o gerador de relatório sinaliza isso como **caso especial** para DPO e compliance (LGPD Art. 5, GDPR Recital 26 – identificabilidade pela combinação de dados). O relatório Excel inclui a aba **"Cross-ref data – ident. risk"** listando cada caso (alvo, tabela/arquivo, colunas envolvidas, categorias, explicação) e uma recomendação de alta prioridade. Isso é opcional e configurável via `detection.aggregated_identification_enabled`, `aggregated_min_categories` e `quasi_identifier_mapping`. Consulte [PLAN_AGGREGATED_IDENTIFICATION.md](plans/completed/PLAN_AGGREGATED_IDENTIFICATION.md) para o desenho e detalhes de config.
 
-### Contexto embutido: letras, tablaturas, Markdown de projeto, `.txt` de letra
+### Contexto embutido: letras, tablaturas, Markdown de projeto, `.txt` de letra, legendas, texto tipo OCR
 
 O detector aplica tratamento de **entretenimento / documento de baixo risco de PII** (penalidade na confiança; ML só **HIGH** limitado a **MEDIUM** com padrões como `ML_POTENTIAL_ENTERTAINMENT`) quando:
 
-- O conteúdo parece **letra de música** (palavras-chave ou muitas linhas curtas), **tablatura** ou **grade de acordes** (incluindo **cifras** brasileiras com vários acordes por linha).
-- O **nome do arquivo** sugere **Markdown** típico de repositório aberto (`README`, `CONTRIBUTING`, `CODE_OF_CONDUCT`, `CHANGELOG`, `LICENSE`, `SECURITY`, `HISTORY`, …) **e** o corpo tem títulos Markdown (`#` / `##`).
+- O conteúdo parece **letra de música** (palavras-chave ou muitas linhas curtas), **tablatura**, **grade de acordes** (incluindo **cifras** com vários acordes por linha) ou **cifra entrelaçada** (linhas de acorde alternando com linhas de letra; grafias podem misturar maiúsculas/minúsculas, ex.: `C`, `Am`, `EM7`, `D2sus9`).
+- O caminho ou o conteúdo parecem **legenda ou transcrição** (ex.: `.srt` / `.vtt` / `.ass` / `.ssa`, ou padrões de *cue*/tempo após normalização). **Regex forte de PII** ainda gera **HIGH** (prioridade a não perder verdadeiros positivos).
+- Texto vindo de **OCR de imagem** (`file_scan.scan_image_ocr`) costuma ser ruidoso; quando o markup é parecido com legenda, o teto do ML segue a mesma lógica de entretenimento. **Falsos positivos** ainda podem ocorrer em formulários ou placas fotografados — revisar no contexto.
+- O **nome do arquivo** sugere **Markdown** típico de repositório aberto (`README`, `CONTRIBUTING`, `CODE_OF_CONDUCT`, `CHANGELOG`, `LICENSE`, `SECURITY`, `HISTORY`, …) **e** o corpo tem títulos Markdown (`#` / `##`). Se a **amostra for curta**, **um** título de nível superior e pelo menos **~60 caracteres** de corpo já bastam quando o *stem* bate com esses nomes OSS — o primeiro recorte não precisa de dois títulos. No filesystem, o orçamento de texto plano é **`file_scan.file_sample_max_chars`** (padrão 12 mil caracteres); **`sample_limit`** continua sendo o limite no estilo linhas/TOPN para bancos e colunas no modo SQLite como DB.
 - O arquivo é **`.txt`** com várias linhas de **tamanho médio curto** (estrofes sem cabeçalhos explícitos `Verse` / `Chorus`).
 - O **nome base** traz **acorde entre parênteses** (ex.: `Rosa(D).txt`), indicando cifra.
 
