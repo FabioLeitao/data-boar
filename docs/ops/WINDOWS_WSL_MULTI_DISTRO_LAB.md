@@ -48,6 +48,32 @@ After first boot: **`sudo apt update`**, install **`git`**, **`python3.12`** (or
 
 ---
 
+## 3.5 `uv` on WSL: “Failed to hardlink files”
+
+If **`uv sync`** prints **Failed to hardlink files; falling back to full copy**, the **`uv` cache** (often **`~/.cache/uv`** on the distro **ext4** VHD) and the project **`.venv`** may sit on **different filesystems** or the kernel may refuse hardlinks across mounts. Behaviour is **correct** (copy fallback); performance may be slightly worse.
+
+**Options:**
+
+- **`export UV_LINK_MODE=copy`** (or **`uv sync --link-mode=copy`**) to silence the warning when copies are expected.
+- Keep clones under **`~/project`** on the **same** VHD as the cache (typical default) — avoid putting **only** **`.venv`** on **`/mnt/c/...`** while cache stays on **ext4**.
+
+---
+
+## 3.6 Claude Code: `claude` in WSL vs `claude.exe` on Windows
+
+**Claude Code** on the **Windows host** installs **`claude.exe`** (see [Anthropic Claude Code setup](https://docs.anthropic.com/en/docs/claude-code/setup)). A **WSL2** distro uses its **own** Linux **`PATH`**: the name **`claude`** is **not** the same binary unless you install the **Linux** build **inside** that distro.
+
+| Shell | Typical command | Notes |
+| ----- | ----------------- | ----- |
+| **PowerShell / CMD** (Windows) | **`claude`**, **`claude.exe`** | Host install |
+| **bash** (Debian WSL) | **`claude`** → often *command not found* | Expected if you never ran the **Linux** installer in WSL |
+| **bash** (WSL) — optional | **`cmd.exe /c claude --version`** | **Interop**; depends on Windows **`PATH`** |
+| **bash** (WSL) — optional | **`curl -fsSL https://claude.ai/install.sh \| bash`** then **`~/.local/bin`** on **`PATH`** | Second **Claude Code** install (Linux), separate updates from **Win** |
+
+Private lab matrix: **`OPERATOR_SYSTEM_MAP.md`** §4.1 vs §4.1b, **`LAB_SECURITY_POSTURE.md`** §5.0.1 vs §5.1.5.
+
+---
+
 ## 4. Limit WSL2 resource use (`.wslconfig`)
 
 Create or edit **`C:\Users\<you>\.wslconfig`** to avoid starving Windows when running **multiple** distros + Docker:
@@ -71,7 +97,7 @@ From repo root:
 pwsh -File scripts/windows-dev-report.ps1
 ```
 
-Captures **`wsl -l -v`**, **Go/Rust/uv/Docker/zig/odin`** when on **`PATH`**, **vswhere** output (**`-prerelease`** so **Visual Studio Insiders** shows up), and **`C:`** free space. **Redact** hostnames if you paste output.
+Captures **`wsl -l -v`**, **Go/Rust/uv/Docker/zig/odin`** when on **`PATH`**, **vswhere** (**`-prerelease`** for Insiders; summary via **`-format json`** — **`vswhere` does not accept a comma-separated `-property` list**), and **`C:`** used/free. **Redact** hostnames if you paste output.
 
 ---
 
