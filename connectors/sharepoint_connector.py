@@ -22,7 +22,10 @@ from connectors.filesystem_connector import (
     _scan_sqlite_file_as_db,
     scan_archive_at_path,
 )
-from core.content_type import choose_effective_pdf_extension
+from core.content_type import (
+    choose_effective_pdf_extension,
+    choose_effective_rich_media_extension,
+)
 
 try:
     import requests
@@ -61,6 +64,7 @@ class SharePointConnector:
         extensions: set[str] | list[str] | None = None,
         scan_sqlite_as_db: bool = True,
         sample_limit: int = 5,
+        file_sample_max_chars: int = 12_000,
         file_passwords: dict[str, str] | None = None,
     ):
         self.config = target_config
@@ -68,6 +72,7 @@ class SharePointConnector:
         self.db_manager = db_manager
         self.scan_sqlite_as_db = scan_sqlite_as_db
         self.sample_limit = sample_limit
+        self.file_sample_max_chars = int(file_sample_max_chars)
         self.extensions = _normalize_extensions(extensions)
         self.file_passwords = file_passwords or {}
         fs_opts = target_config.get("file_scan") or {}
@@ -79,6 +84,22 @@ class SharePointConnector:
         # Planned: optional content-based type detection (magic bytes) for renamed/cloaked files.
         # Wiring only; actual use in extraction will be controlled by a future opt-in toggle.
         self.use_content_type = bool(fs_opts.get("use_content_type", False))
+        self.scan_rich_media_metadata = bool(
+            fs_opts.get("scan_rich_media_metadata", False)
+        )
+        self.scan_image_ocr = bool(fs_opts.get("scan_image_ocr", False))
+        try:
+            self.ocr_max_dimension = int(fs_opts.get("ocr_max_dimension", 2000))
+        except (TypeError, ValueError):
+            self.ocr_max_dimension = 2000
+        self.ocr_max_dimension = max(256, min(8000, self.ocr_max_dimension))
+        self.ocr_lang = str(fs_opts.get("ocr_lang") or "eng").strip() or "eng"
+        from core.rich_media_magic import IMAGE_EXTENSIONS, RICH_MEDIA_SCAN_EXTENSIONS
+
+        if self.scan_rich_media_metadata:
+            self.extensions = set(self.extensions) | set(RICH_MEDIA_SCAN_EXTENSIONS)
+        elif self.scan_image_ocr:
+            self.extensions = set(self.extensions) | set(IMAGE_EXTENSIONS)
 
     def run(self) -> None:
         if not _REQUESTS_NTLM_AVAILABLE:
@@ -177,7 +198,12 @@ class SharePointConnector:
                         extensions=self.extensions,
                         max_inner_size=self.max_inner_size,
                         file_passwords=self.file_passwords,
-                        sample_limit=self.sample_limit,
+                        file_sample_max_chars=self.file_sample_max_chars,
+                        rich_media_metadata=self.scan_rich_media_metadata,
+                        scan_image_ocr=self.scan_image_ocr,
+                        ocr_max_dimension=self.ocr_max_dimension,
+                        ocr_lang=self.ocr_lang,
+                        use_content_type=self.use_content_type,
                     )
                 elif self.scan_sqlite_as_db and ext in SQLITE_EXTENSIONS:
                     for finding in _scan_sqlite_file_as_db(
@@ -201,11 +227,18 @@ class SharePointConnector:
                     effective_ext = choose_effective_pdf_extension(
                         ext, self.use_content_type, Path(temp_path)
                     )
+                    effective_ext = choose_effective_rich_media_extension(
+                        effective_ext, self.use_content_type, Path(temp_path)
+                    )
                     text = _read_text_sample(
                         Path(temp_path),
                         effective_ext,
-                        self.sample_limit,
+                        self.file_sample_max_chars,
                         self.file_passwords,
+                        rich_media_metadata=self.scan_rich_media_metadata,
+                        scan_image_ocr=self.scan_image_ocr,
+                        ocr_max_dimension=self.ocr_max_dimension,
+                        ocr_lang=self.ocr_lang,
                     )
                     res = self.scanner.scan_file_content(text, Path(name))
                     if res is not None:

@@ -14,12 +14,14 @@ You can **set the training words for both ML and DL** in the main config file (i
 
 **Aggregated / cross-referenced identification risk:** When multiple quasi-identifier categories (e.g. gender, job position, health, address, phone) appear in the **same table or file**, the report generator flags this as a **special case** for DPO and compliance (LGPD Art. 5, GDPR Recital 26 – identifiability from a combination of data). The Excel report includes a sheet **"Cross-ref data – ident. risk"** listing each case (target, table/file, columns involved, categories, explanation) and a high-priority recommendation. This is optional and configurable via `detection.aggregated_identification_enabled`, `aggregated_min_categories`, and `quasi_identifier_mapping`. See [PLAN_AGGREGATED_IDENTIFICATION.md](plans/completed/PLAN_AGGREGATED_IDENTIFICATION.md) for design and config details.
 
-### Built-in context: lyrics, tabs, OSS Markdown, lyric `.txt` files
+### Built-in context: lyrics, tabs, OSS Markdown, lyric `.txt` files, subtitles, OCR-like samples
 
 The detector applies **entertainment / low-PII document** treatment (confidence penalty; ML-only **HIGH** capped to **MEDIUM** with patterns such as `ML_POTENTIAL_ENTERTAINMENT`) when:
 
-- Content looks like **lyrics** (keywords or many short lines), **tablature**, or **chord grids** (including Brazilian **cifras** with multiple chords per line).
-- The **file name** suggests a standard **open-source Markdown** document (`README`, `CONTRIBUTING`, `CODE_OF_CONDUCT`, `CHANGELOG`, `LICENSE`, `SECURITY`, `HISTORY`, …) **and** the body has typical Markdown headings (`#` / `##`).
+- Content looks like **lyrics** (keywords or many short lines), **tablature**, **chord grids** (including Brazilian **cifras** with multiple chords per line), or **interleaved cifra** (alternating chord rows and lyric rows; chord spellings may mix cases, e.g. `C`, `Am`, `EM7`, `D2sus9`).
+- The path or content looks like **subtitles or a transcript** (e.g. `.srt` / `.vtt` / `.ass` / `.ssa`, or cue/timing patterns after normalization). **Strong regex PII** still yields **HIGH** (FN-first).
+- Optional **image OCR** text (`file_scan.scan_image_ocr`) is often noisy and line-broken; when subtitle-like markup is detected, ML-only highs are capped similarly to entertainment. **False positives** remain possible on scans of forms or signage—review findings in context.
+- The **file name** suggests a standard **open-source Markdown** document (`README`, `CONTRIBUTING`, `CODE_OF_CONDUCT`, `CHANGELOG`, `LICENSE`, `SECURITY`, `HISTORY`, …) **and** the body has typical Markdown headings (`#` / `##`). If the **sample is short**, **one** top-level heading plus at least **~60 characters** of body still counts when the stem matches those OSS names—so the first chunk does not need two headings. For filesystem scans, plain-text budget is **`file_scan.file_sample_max_chars`** (defaults to 12k characters); **`sample_limit`** remains the row/TOPN-style cap for databases and SQLite-as-DB columns.
 - The file is a **`.txt`** with several **medium-short lines** (typical song stanzas without explicit `Verse` / `Chorus` headers).
 - The **basename** contains a **chord in parentheses** (e.g. `Rosa(D).txt`), hinting at a chord chart.
 

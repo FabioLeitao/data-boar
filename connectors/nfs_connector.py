@@ -28,6 +28,8 @@ class NFSConnector:
         extensions: set[str] | list[str] | None = None,
         scan_sqlite_as_db: bool = True,
         sample_limit: int = 5,
+        file_sample_max_chars: int = 12_000,
+        file_passwords: dict[str, str] | None = None,
     ):
         self.config = dict(target_config)
         self.scanner = scanner
@@ -39,6 +41,8 @@ class NFSConnector:
             extensions=extensions,
             scan_sqlite_as_db=scan_sqlite_as_db,
             sample_limit=sample_limit,
+            file_sample_max_chars=file_sample_max_chars,
+            file_passwords=file_passwords,
         )
 
     def run(self) -> None:
