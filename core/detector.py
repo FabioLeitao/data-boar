@@ -17,7 +17,9 @@ Pipeline:
    borderline low-confidence columns may elevate to MEDIUM (EMBEDDING_PROTOTYPE_HINT); default off (Plan §5).
 
 To reduce false positives on song lyrics and music tablature/chord sheets:
-- Content heuristics detect lyrics (verse/chorus keywords, short lines) and tabs (digit/pipe lines).
+- Content heuristics detect lyrics (verse/chorus keywords, short lines), tabs (digit/pipe lines),
+  and **interleaved cifra** rows (chord lines alternating with lyric lines; chords may mix cases,
+  e.g. ``C``, ``Am``, ``EM7``, ``D2sus9``).
 - In that context, weak patterns (DATE_DMY, PHONE_BR) are downgraded to MEDIUM; ML/DL confidence
   is penalized so borderline cases stay MEDIUM/LOW. Strong PII (CPF, EMAIL, CREDIT_CARD, SSN)
   still reports HIGH.
@@ -25,6 +27,11 @@ To reduce false positives on song lyrics and music tablature/chord sheets:
   as entertainment for ML-only highs (avoids ~99% on repo boilerplate scanned as filesystem targets).
 - Plain ``.txt`` files with many medium-short lines (typical lyric stanzas without ``verse`` headers)
   and filenames with chord symbols in parentheses (e.g. ``Rosa(D).txt``) also widen entertainment context.
+- Known OSS Markdown stems (``README*``, ``CONTRIBUTING``, …): if the **sample is short**, **one** ``#``
+  heading plus modest body length still triggers OSS-doc context so ML-only HIGH does not require two
+  headings in the first chunk. Plain-text reads use ``file_scan.file_sample_max_chars`` (see config loader).
+- **Subtitles / captions** (``.srt``, ``.vtt``, ``.ass``/``.ssa``): timing stripped before scan; path or
+  cue-shaped text triggers the same entertainment-style ML cap as lyrics (strong PII regex unchanged).
 """
 
 from pathlib import Path
@@ -369,29 +376,158 @@ def _looks_like_lyrics(sample: str) -> bool:
     return False
 
 
+# Chord suffix atoms: longest-first, matched with .match(); each pattern is linear (no nested
+# ambiguous quantifiers) to avoid ReDoS (CodeQL py/redos) from the old ``(?:...)*`` chord regex.
+_CHORD_SUFFIX_ATOMS: tuple[re.Pattern[str], ...] = tuple(
+    re.compile(p, re.I)
+    for p in (
+        r"maj9",
+        r"maj7",
+        r"maj\d{1,2}",  # maj13, etc.
+        r"maj",
+        r"min7",
+        r"min",
+        r"dim7",
+        r"dim",
+        r"aug",
+        r"sus\d*",
+        r"add\d*",
+        r"m7",
+        r"m(?!aj)",  # minor triad; not start of "maj"
+        r"\d",
+    )
+)
+_CHORD_TOKEN_END_OK = re.compile(r"(?=\s|\||/|$)")
+_SLASH_BASS = re.compile(r"/[A-Ga-g](?:#|b|♭)?(?:m|min)?", re.I)
+_CHORD_ROOT_START = re.compile(r"(?<![A-Za-z0-9])(?=[A-Ga-g])", re.I)
+
+
+def _consume_chord_token(s: str, start: int) -> int | None:
+    """
+    If a chord-like token starts at ``start``, return the index just past it; else ``None``.
+
+    Linear time in line length: bounded suffix steps, each step picks the longest matching atom.
+    """
+    n = len(s)
+    if start >= n or s[start] not in "ABCDEFGabcdefg":
+        return None
+    j = start + 1
+    if j < n and s[j] in "#b♭":
+        j += 1
+    if j < n and s[j].isdigit():
+        j += 1
+        if j < n and s[j].isdigit():
+            j += 1
+    for _ in range(48):
+        if j >= n:
+            break
+        best = 0
+        rest = s[j:]
+        for rx in _CHORD_SUFFIX_ATOMS:
+            m = rx.match(rest)
+            if m:
+                elen = m.end()
+                if elen > best:
+                    best = elen
+        if best == 0:
+            break
+        j += best
+    sb = _SLASH_BASS.match(s, j)
+    if sb:
+        j = sb.end()
+    if j < n and not _CHORD_TOKEN_END_OK.match(s, j):
+        return None
+    return j
+
+
 def _chord_like_token_count(line: str) -> int:
     """
     Count tokens that look like chord symbols on one line (EN + PT-BR cifras).
 
-    Supports lines such as ``C  G  Am  F`` or ``dm7  g7  c`` (lowercase roots are
-    common in Brazilian chord sheets). The old heuristic only matched *single-chord*
-    lines with a capital root, so typical cifras failed detection and ML scores
-    stayed uncapped (looked like ~99% ``combined_confidence`` in reports).
+    Covers typical spellings: ``C  G  Am  F``, ``dm7``, ``EM7``, ``D2sus9``, slash bass
+    (``G/B``). Mixed case is common in handwritten-style exports (major roots uppercase,
+    ``m``/``sus``/extensions lower or upper).
+
+    Implementation avoids a single big ``re.findall`` with a repeated ambiguous alternation
+    (CodeQL py/redos); see ``_CHORD_SUFFIX_ATOMS`` / ``_consume_chord_token``.
     """
     if not (line or "").strip():
         return 0
-    # One regex pass: chord tokens separated by whitespace or bar lines.
-    return len(
-        re.findall(
-            r"(?i)(?<![A-Za-z0-9])"
-            r"([A-Ga-g](?:#|b|♭)?"
-            r"(?:m(?:aj|in)?|dim|aug|sus(?:2|4|add\d)?|maj7?)?"
-            r"(?:[0-9]{1,2})?"
-            r"(?:/[A-Ga-g](?:#|b)?(?:m)?)?)"
-            r"(?=\s|$|\||/)",
-            line.strip(),
-        )
-    )
+    s = line.strip()
+    count = 0
+    for m in _CHORD_ROOT_START.finditer(s):
+        i = m.start()
+        end = _consume_chord_token(s, i)
+        if end is not None:
+            count += 1
+    return count
+
+
+def _is_prose_lyric_line(line: str) -> bool:
+    """Non-empty line that reads like words, not a chord row (allows one stray chord token)."""
+    s = (line or "").strip()
+    if len(s) < 12:
+        return False
+    if _chord_like_token_count(s) >= 2:
+        return False
+    vowels = sum(1 for c in s.lower() if c in "aeiouáéíóúãõâêôàèìòùü")
+    if vowels < 2:
+        return False
+    alpha = sum(1 for c in s if c.isalpha())
+    if alpha < 8:
+        return False
+    return True
+
+
+def _is_mostly_chord_line(line: str) -> bool:
+    """Line dominated by chord symbols (traditional cifra row)."""
+    s = (line or "").strip()
+    if not s:
+        return False
+    ntok = _chord_like_token_count(s)
+    words = s.split()
+    if not words:
+        return False
+    if ntok >= 2:
+        return True
+    if len(words) == 1 and ntok == 1:
+        return True
+    if ntok >= 1 and len(s) <= 48 and all(len(w) <= 10 for w in words):
+        if ntok >= max(1, (len(words) + 1) // 2):
+            return True
+    return False
+
+
+def _looks_like_interleaved_chord_lyric_sheet(sample: str) -> bool:
+    """
+    Layout: chord row, lyric row, chord row, … Common in BR cifras; lyrics mention names/dates
+    and can spuriously trigger regex + ML unless this context is detected.
+    """
+    stripped = (sample or "").strip()
+    if len(stripped) < 50:
+        return False
+    lines = [ln.strip() for ln in sample.splitlines() if ln.strip()][:72]
+    if len(lines) < 5:
+        return False
+    transitions = 0
+    chord_rows = 0
+    n = len(lines)
+    for i in range(n - 1):
+        a, b = lines[i], lines[i + 1]
+        if (_is_mostly_chord_line(a) and _is_prose_lyric_line(b)) or (
+            _is_prose_lyric_line(a) and _is_mostly_chord_line(b)
+        ):
+            transitions += 1
+    for i in range(n):
+        if _is_mostly_chord_line(lines[i]):
+            chord_rows += 1
+    if chord_rows < 2:
+        return False
+    if transitions >= 2:
+        return True
+    if transitions >= 1 and chord_rows >= 4:
+        return True
+    return False
 
 
 def _looks_like_music_tab(sample: str) -> bool:
@@ -499,6 +635,15 @@ def _looks_like_open_source_markdown_doc(file_name: str, sample: str) -> bool:
         return True
     if heading_hits >= 1 and len(sample.strip()) > 400:
         return True
+    # Short samples: scanners often pass only the first N lines. One H1 + a bit of body is enough
+    # for known OSS doc names (README*, CONTRIBUTING.md, …) to match entertainment / low-PII doc context.
+    stripped = (sample or "").strip()
+    if (
+        heading_hits >= 1
+        and len(stripped) >= 60
+        and (first_part.startswith("readme") or first_part in _OSS_MARKDOWN_DOC_STEMS)
+    ):
+        return True
     return False
 
 
@@ -530,6 +675,22 @@ _FILENAME_CHORD_IN_PARENS = re.compile(
 def _filename_suggests_chord_sheet(file_name: str) -> bool:
     """``Rosa(D).txt``, ``Song(Am).txt`` — filename hints at chord chart / cifra."""
     return bool(_FILENAME_CHORD_IN_PARENS.search(Path(file_name).name))
+
+
+def _looks_like_subtitle_or_transcript(column_name: str, sample: str) -> bool:
+    """
+    Sidecar subtitles, pasted cue text, or OCR'd image text: dialogue-like content often
+    triggers ML false positives. FN-first: strong regex matches still yield HIGH elsewhere.
+    """
+    from core.rich_media_magic import IMAGE_EXTENSIONS
+    from utils.subtitle_text import SUBTITLE_EXTENSIONS, looks_like_subtitle_markup
+
+    suf = Path(column_name).suffix.lower()
+    if suf in SUBTITLE_EXTENSIONS:
+        return True
+    if suf in IMAGE_EXTENSIONS and looks_like_subtitle_markup(sample or ""):
+        return True
+    return looks_like_subtitle_markup(sample or "")
 
 
 def _load_regex_overrides(
@@ -1040,9 +1201,11 @@ class SensitivityDetector:
         entertainment_context = (
             _looks_like_lyrics(sample_only)
             or _looks_like_music_tab(sample_only)
+            or _looks_like_interleaved_chord_lyric_sheet(sample_only)
             or _looks_like_open_source_markdown_doc(column_name, sample_only)
             or _looks_like_plain_lyrics_txt_file(column_name, sample_only)
             or _filename_suggests_chord_sheet(column_name)
+            or _looks_like_subtitle_or_transcript(column_name, sample_only)
         )
 
         # Heuristic: possible minor data based on DOB/age (EN + PT-BR)

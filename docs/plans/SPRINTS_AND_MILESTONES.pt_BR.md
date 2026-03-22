@@ -65,12 +65,18 @@ Copie esta tabela para um board **GitHub Projects** ou doc pessoal; mova linhas 
 | **Backlog** | Strong crypto Fase 1 | A/M | `PLANS_TODO` ordem 4 |
 | **Backlog** | Inventário de fontes de dados Fase 1 | A/M | ordem 5 |
 | **Backlog** | Notificações Fase 1 | A/M | ordem 6 |
-| **Selecionado** | *(uma linha só por semana consciente de tokens)* | — | Escolher em “What to start next” |
-| **Em progresso** | *(escopo da sessão atual)* | — | Igual ao TOKEN_AWARE: “um plano ou uma fatia” |
+| **Selecionado** | *(uma linha só por semana consciente de tokens)* | — | Escolher em “What to start next” ou **Integration / WIP** no [PLANS_TODO.md](PLANS_TODO.md) |
+| **Em progresso** | *(escopo atual — ex.: rich media Tier 3 até merge)* | — | TOKEN_AWARE: uma fatia primária; ver **Integration / WIP** ao fechar rich media + **1.6.5** |
 | **Bloqueado** | *(aguardando operador: hardware, Hub, assessoria)* | **Operador** | Anotar bloqueio no PR ou runbook privado |
 | **Feito** | *(entregue + testes + doc marcada)* | — | Atualizar `PLANS_TODO` + arquivo do plano |
 
 **Limite WIP no Kanban:** **1** tema de feature primário em **Em progresso** nas sessões com agente; tarefas do **operador** (estudo, hardware de lab) podem **paralelizar** no calendário, mas evitem **dois** temas pesados no agente sem acordo explícito.
+
+### 3.1 Faixa de estudo e certificação (calendário do operador)
+
+- **Até ~meados de abril de 2026:** foco principal de estudo = **CCA** (Claude Certified Architect); ver [OPERATOR_MANUAL_ACTIONS.pt_BR.md](../ops/OPERATOR_MANUAL_ACTIONS.pt_BR.md) e [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.0.
+- **Na mesma janela:** manter um **fio fino** da **faixa prioritária A** para higiene de dependências/imagem não parar—ver [PLANS_TODO.md](PLANS_TODO.md) **–1** / **–1b**.
+- **Depois de meados de abril (ou após tentativa de CCA):** deslocar blocos principais de estudo para **cursos de cyber já pagos** (ex. CWL §3.2 no PORTFOLIO), ainda que possível **uma grande faixa de cert por vez**.
 
 ---
 
@@ -117,11 +123,25 @@ Use **Milestones** do GitHub ou tags de release; abaixo, camada **semântica** a
 | **M-OBS** | Baseline operacional (SRE) | `/health` (e `/status` quando couber) documentados para **seu** caminho de deploy; frase opcional de SLO em doc de ops; **qualquer um** entre: runbook de uma linha, nota backup/restore, hook de export de KPI—conforme [OBSERVABILITY_SRE.md](../OBSERVABILITY_SRE.pt_BR.md) + [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) §4.3–4.7 |
 | **M-LAB** | Confiança em segundo ambiente | [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.pt_BR.md) §12 + nota datada em privado |
 | **M-SCAN+** | Fatia Tier-2 entregue | Um vertical liberado (crypto **ou** data source **ou** fatia FN maior) com testes + docs voltados ao usuário |
+| **M-RICH** | Data soup — rich media Tier 3 | **Em `main`:** legendas + metadados/OCR opcional + cloaking por magic bytes; `docs/releases/1.6.5.md` (ou patch escolhido); testes verdes — ver [PLANS_TODO.md](PLANS_TODO.md) **Integration / WIP** enquanto a branch estiver aberta |
 | **M-NOTIFY** | Consciência fora de banda | Notificações F1 utilizáveis com config documentada |
 | **M-ACCESS** | Prontidão para pago / rede compartilhada (licenciamento + identidade) | **SKUs comerciais** pretendidos e caminho **enforced** testados; dashBOARd/API **sem uso anônimo** no deploy de referência—via **proxy+OIDC documentado** e/ou auth **na app**; RBAC ou história de papéis equivalente documentada em pelo menos um padrão |
 | **M-RELEASE x.y.z** | Corte versionado do produto | Checklist VERSIONING existente + `docs/releases/x.y.z.md` + tags no Hub |
 
-**Cadência sugerida:** **M-TRUST** antes de rajada grande de feature; **M-OBS** pode vir no mesmo sprint ou no seguinte a **M-TRUST** (docs/automação pequena); **M-LAB** antes de narrativa para cliente/demo; **M-ACCESS** antes de prometer **subscrição permanente** ou **multiusuário** em host alcançável; **M-RELEASE** quando VERSIONING mandar publicar.
+**Cadência sugerida:** **M-TRUST** antes de rajada grande de feature; **M-OBS** pode vir no mesmo sprint ou no seguinte a **M-TRUST** (docs/automação pequena); **M-LAB** antes de narrativa para cliente/demo; **M-RICH** quando o PR de rich media entrar em `main`; **M-ACCESS** antes de prometer **subscrição permanente** ou **multiusuário** em host alcançável; **M-RELEASE** quando VERSIONING mandar publicar.
+
+---
+
+## 5.1 Quando abrir um PR (gate rápido)
+
+| Situação | Abrir PR? | Versão |
+| -------- | --------- | ------ |
+| Feature + testes + doc prontos; **`main` ok no CI** | **Sim** — um tema por PR | Bump no mesmo PR ou no seguinte, conforme hábito em [VERSIONING](../releases/) |
+| Só typo / markdown em `docs/` | Sim — PR pequeno | Muitas vezes **sem** bump; **patch** opcional se etiquetar no Hub |
+| Branch mistura temas **não relacionados** | **Dividir** antes do PR | Revisão e release notes mais limpas |
+| Dependência / segurança | Sim — urgente | **Patch** + export do lockfile |
+
+**Após merge:** checklist de release (tabela **1.6.5** em [PLANS_TODO.md](PLANS_TODO.md)); **patch** para recursos opcionais aditivos; **minor** para pacote “marketing” ou mudança incompatível.
 
 ---
 

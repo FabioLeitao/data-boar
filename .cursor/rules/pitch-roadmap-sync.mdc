@@ -38,6 +38,8 @@ Result: the pitch stays honest about what we are accomplishing and what we are w
 
 - **README.md** — section "For decision-makers and compliance leads", including "What we surface", "Why it holds up" (with the **Roadmap** sentence), and "Typical scenarios".
 - **README.pt_BR.md** — same structure; "Para gestores e líderes de conformidade", "O que trazemos à tona", "Por que sustenta" (with roadmap), "Cenários típicos".
+- **docs/plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md** — §0 *Stakeholder pitch* holds **short bullet reminders** for thesis/CV/decks; keep aligned when you change hireability or roadmap wording in the READMEs.
+- **docs/COMPLIANCE_AND_LEGAL.md** (and **.pt_BR**) — *What we surface* may echo filesystem triage and media roadmap for **legal/compliance** readers; sync when the README pitch changes materially.
 
 ## Reference
 

@@ -1314,6 +1314,15 @@ wheels = [
 ]
 
 [[package]]
+name = "mutagen"
+version = "1.47.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/81/e6/64bc71b74eef4b68e61eb921dcf72dabd9e4ec4af1e11891bbd312ccbb77/mutagen-1.47.0.tar.gz", hash = "sha256:719fadef0a978c31b4cf3c956261b3c58b6948b32023078a2117b1de09f0fc99", size = 1274186, upload-time = "2023-09-03T16:33:33.411Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b0/7a/620f945b96be1f6ee357d211d5bf74ab1b7fe72a9f1525aafbfe3aee6875/mutagen-1.47.0-py3-none-any.whl", hash = "sha256:edd96f50c5907a9539d8e5bba7245f62c9f520aef333d13392a79a4f70aca719", size = 194391, upload-time = "2023-09-03T16:33:29.955Z" },
+]
+
+[[package]]
 name = "mysql"
 version = "0.0.3"
 source = { registry = "https://pypi.org/simple" }
@@ -2273,6 +2282,19 @@ wheels = [
 ]
 
 [[package]]
+name = "pytesseract"
+version = "0.3.13"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+    { name = "pillow" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9f/a6/7d679b83c285974a7cb94d739b461fa7e7a9b17a3abfd7bf6cbc5c2394b0/pytesseract-0.3.13.tar.gz", hash = "sha256:4bf5f880c99406f52a3cfc2633e42d9dc67615e69d8a509d74867d3baddb5db9", size = 17689, upload-time = "2024-08-16T02:33:56.762Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7a/33/8312d7ce74670c9d39a532b2c246a853861120486be9443eebf048043637/pytesseract-0.3.13-py3-none-any.whl", hash = "sha256:7a99c6c2ac598360693d83a416e36e0b33a67638bb9d77fdcac094a3589d4b34", size = 14705, upload-time = "2024-08-16T02:36:10.09Z" },
+]
+
+[[package]]
 name = "pytest"
 version = "9.0.2"
 source = { registry = "https://pypi.org/simple" }
@@ -2443,6 +2465,10 @@ nosql = [
     { name = "pymongo" },
     { name = "redis" },
 ]
+richmedia = [
+    { name = "mutagen" },
+    { name = "pytesseract" },
+]
 shares = [
     { name = "requests-ntlm" },
     { name = "smbprotocol" },
@@ -2491,6 +2517,7 @@ requires-dist = [
     { name = "mariadb", specifier = ">=1.1.14" },
     { name = "markupsafe", specifier = ">=3.0.3" },
     { name = "matplotlib", specifier = ">=3.10.8" },
+    { name = "mutagen", marker = "extra == 'richmedia'", specifier = ">=1.47.0" },
     { name = "mysql", specifier = ">=0.0.3" },
     { name = "mysqlclient", specifier = ">=2.2.7" },
     { name = "numpy", specifier = ">=2.4.2" },
@@ -2513,6 +2540,7 @@ requires-dist = [
     { name = "pyodbc", specifier = ">=5.3.0" },
     { name = "pyparsing", specifier = ">=3.3.2" },
     { name = "pypdf", specifier = ">=6.9.1" },
+    { name = "pytesseract", marker = "extra == 'richmedia'", specifier = ">=0.3.13" },
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "python-dateutil", specifier = ">=2.9.0.post0" },
     { name = "python-docx", specifier = ">=1.2.0" },
@@ -2543,7 +2571,7 @@ requires-dist = [
     { name = "webdavclient3", marker = "extra == 'shares'", specifier = ">=0.14.0" },
     { name = "werkzeug", specifier = ">=3.1.6" },
 ]
-provides-extras = ["nosql", "bigdata", "shares", "compressed", "dl", "detection-fuzzy"]
+provides-extras = ["nosql", "bigdata", "shares", "compressed", "dl", "detection-fuzzy", "richmedia"]
 
 [package.metadata.requires-dev]
 dev = [
