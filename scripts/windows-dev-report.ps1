@@ -26,9 +26,20 @@ if (Get-Command odin -ErrorAction SilentlyContinue) { odin version 2>&1 }
 Write-Host "--- Visual Studio (vswhere) ---"
 $vswhere = Join-Path ${env:ProgramFiles(x86)} "Microsoft Visual Studio\Installer\vswhere.exe"
 if (Test-Path $vswhere) {
-    # Stable + Preview/Insiders (without -prerelease, Insiders often does not appear)
-    Write-Host "(all products, including prerelease / Insiders):"
-    & $vswhere -all -prerelease -products * -property displayName, installationVersion, installationPath 2>&1
+    # Insiders/Preview need -prerelease. -property accepts only ONE name per run (comma list -> Error 0x57).
+    Write-Host "(summary — JSON):"
+    $jsonText = & $vswhere -all -prerelease -products * -format json 2>&1
+    if ($LASTEXITCODE -eq 0 -and $jsonText) {
+        try {
+            $inst = $jsonText | ConvertFrom-Json
+            $list = if ($null -eq $inst) { @() } elseif ($inst -is [System.Array]) { $inst } else { @($inst) }
+            foreach ($o in $list) {
+                Write-Host "  $($o.displayName) | $($o.installationVersion) | $($o.installationPath)"
+            }
+        } catch {
+            Write-Host "  (JSON parse failed: $_)"
+        }
+    }
     Write-Host "`n(text dump):"
     & $vswhere -all -prerelease -products * -format text 2>&1
 } else {

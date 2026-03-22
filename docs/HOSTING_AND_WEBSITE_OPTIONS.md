@@ -24,7 +24,7 @@ This memo supports the **Licensing, Enforcement, and GTM** program: where to hos
 
 **Recommendation:** **Cloudflare Pages** or **GitHub Pages** for a static site; keep **canonical product truth** in the main app repo README/pitch; mirror short copy on the site with a **contact form** or `mailto:` / Calendly link.
 
-**Future (not scheduled):** A richer **multilingual** site (pitch, use cases, how-tos, doc hub, release links) and **extra doc languages** (e.g. es, ja) are captured as a backlog reminder in **[plans/PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](plans/PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md)** — activate closer to **production-ready** / GTM.
+**Future (not scheduled):** A richer **multilingual** site (pitch, use cases, how-tos, doc hub, release links) and **extra doc languages** (e.g. es, ja) are captured in **[plans/PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](plans/PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md)** — activate closer to **production-ready** / GTM. **Important:** the **website’s technical depth** (full guides, scenarios, releases, roadmap fronts, Hub/GitHub links) is **intentionally heavier** than the **stakeholder pitch** or **presentation** — see that plan **§2.1** and sprint milestone **M-SITE-READY** in [SPRINTS_AND_MILESTONES.md](plans/SPRINTS_AND_MILESTONES.md). **Locale UX** on the site should align with **dashBOARd** i18n ([PLAN_DASHBOARD_I18N.md](plans/PLAN_DASHBOARD_I18N.md)).
 
 ## Contact and sales
 
