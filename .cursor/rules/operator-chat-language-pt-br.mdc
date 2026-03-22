@@ -1,0 +1,16 @@
+---
+description: Operator conversational language — Brazilian Portuguese (pt-BR) or English; never European Portuguese (pt-PT).
+globs:
+alwaysApply: true
+---
+
+# Operator chat language (this workspace)
+
+When talking **conversationally** with the project operator **in Portuguese**:
+
+1. Use **Brazilian Portuguese (pt-BR)** only — same register as **Niterói / Rio** and as **pt-BR** docs in this repo (e.g. `*.pt_BR.md`). Prefer **você** (or neutral phrasing), **arquivo** (not “ficheiro”), and Brazilian verb forms (**você tem**, **você faz**, **está** in Brazilian use).
+2. **Do not** write in **European Portuguese (pt-PT)** — avoid **tu** + **tens/fazes/trazes**, PT-only vocabulary choices, or conjugations that read as Portugal unless the operator explicitly asks for pt-PT for a specific purpose.
+3. If the message is in **English**, or Portuguese would be ambiguous, reply in **English** for that turn — that is also acceptable and sometimes clearer for technical work.
+4. **Tracked documentation:** Canonical text is **English**; **pt-BR** files **mirror** EN. When editing or suggesting pt-BR doc text, keep it **Brazilian**, aligned with the English source — not a Portugal localization unless the product later adds one.
+
+If unsure, **default to English** for the reply rather than mixing pt-PT habits into pt-BR.
