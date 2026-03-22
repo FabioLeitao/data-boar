@@ -17,7 +17,6 @@ from typing import Any
 from core.rich_media_magic import (
     AUDIO_EXTENSIONS,
     IMAGE_EXTENSIONS,
-    RICH_MEDIA_SCAN_EXTENSIONS,
     VIDEO_EXTENSIONS,
 )
 

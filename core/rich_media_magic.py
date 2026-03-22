@@ -83,7 +83,9 @@ def infer_rich_media_suffix(data: bytes) -> str | None:
     return None
 
 
-def infer_rich_media_suffix_from_source(source: Union[Path, str, bytes, bytearray]) -> str | None:
+def infer_rich_media_suffix_from_source(
+    source: Union[Path, str, bytes, bytearray],
+) -> str | None:
     if isinstance(source, (bytes, bytearray)):
         return infer_rich_media_suffix(bytes(source[:64]))
     data = read_magic(Path(source), n=32)
