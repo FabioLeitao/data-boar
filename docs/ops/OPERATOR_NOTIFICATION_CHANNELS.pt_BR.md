@@ -75,7 +75,7 @@ Um passo genérico “notify” pode tentar **Slack** e, se falhar, **Telegram**
 Script base: [scripts/kpi-export.py](../../scripts/kpi-export.py) (requer `gh auth`). **Extensão em backlog:**
 
 - Workflow **semanal** ou `workflow_dispatch`: gerar `kpi_snapshot.md`, **artefato**, ou enviar trecho ao Slack/Telegram.
-- Evitar commit de snapshots com dados sensíveis; retenção curta de artefactos.
+- Evitar commit de snapshots com dados sensíveis; retenção curta de artefatos.
 
 Ver [PLAN_READINESS_AND_OPERATIONS.md](../plans/PLAN_READINESS_AND_OPERATIONS.md) §4.7.
 
