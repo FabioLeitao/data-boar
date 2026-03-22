@@ -8,11 +8,11 @@
 
 ## 1. Study and certification window (2026)
 
-- **Primary focus:** **Anthropic Academy** (free courses on Skilljar; index: [Anthropic courses](https://docs.claude.com/en/docs/resources/courses)) — sequence in [PORTFOLIO_AND_EVIDENCE_SOURCES.md](../plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.0. **Cursor** is the **toolchain**; **stakeholder proof** is **releases + compliance narrative + this repo**. **CCA** (Claude Certified Architect) is a **later exam** when you meet Anthropic’s experience bar—not a fixed April target. Exam/prep links: Skilljar CCA page + unofficial [guide](https://aitoolsclub.com/how-to-become-a-claude-certified-architect-complete-guide/).
-- **In parallel (thin thread):** Keep **Priority band A** moving at **minimum healthy cadence** (Dependabot, Docker Scout, `check-all` before merges) so **M-TRUST** does not slip—see [PLANS_TODO.md](../plans/PLANS_TODO.md) orders **–1** / **–1b**.
-- **Interleave / after Academy rhythm:** **Paid cyber courses** (CWL list in [PORTFOLIO_AND_EVIDENCE_SOURCES.md](../plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.2), starting with **BTF** → **C3SA** as already recommended there.
-- **Optional:** Third-party **completion certificates** (e.g. Cursor on Coursera/Codecademy) for CV—clearly **not** first-party Cursor/Anthropic credentials.
-- **If a CCA attempt does not pass:** Treat as **learning**; notes in `docs/private/`; **retake** later—prep still supports this repo.
+- **Primary focus:** **Paid cyber (CWL)** — complete **BTF** → **C3SA** and the §3.2 list in [PORTFOLIO_AND_EVIDENCE_SOURCES.md](../plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md); **stakeholder proof** = those certs + **shipped Data Boar** + compliance story. The IDE may use **non-Claude** models day to day; Anthropic study is **not** the top priority for **this** project track.
+- **Alternating over the year:** **Anthropic Academy** (free; [Anthropic courses](https://docs.claude.com/en/docs/resources/courses)) — sequence in PORTFOLIO §3.0 when you slot AI blocks. **CCA** later when eligible; Skilljar CCA page + unofficial [guide](https://aitoolsclub.com/how-to-become-a-claude-certified-architect-complete-guide/).
+- **In parallel (thin thread):** **Priority band A** (Dependabot, Docker Scout, `check-all`)—[PLANS_TODO.md](../plans/PLANS_TODO.md) **–1** / **–1b**.
+- **Optional:** Third-party **completion certificates** for CV—not vendor proctored exams.
+- **If a CCA attempt does not pass:** Notes in `docs/private/`; **retake** later.
 
 Sequencing rationale also appears in [SPRINTS_AND_MILESTONES.md](../plans/SPRINTS_AND_MILESTONES.md) §3.1 and [PORTFOLIO_AND_EVIDENCE_SOURCES.md](../plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.0.
 
