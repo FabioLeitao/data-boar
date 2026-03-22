@@ -4,6 +4,8 @@
 
 Obrigado por considerar contribuir. Este documento cobre a configuração local, o fluxo de trabalho e as boas práticas para que você possa executar o app, os testes e abrir alterações com segurança.
 
+**Equipe (mantenedor + colaborador, Cursor + Git):** fluxo com **comandos**, **prompts** sugeridos e alinhamento com **rules** — **[docs/COLLABORATION_TEAM.pt_BR.md](docs/COLLABORATION_TEAM.pt_BR.md)** ([EN stub](docs/COLLABORATION_TEAM.md)). Regra aplicada: **`.cursor/rules/collaboration-maintainer-contributor.mdc`**.
+
 ## Início rápido (desenvolvimento)
 
 1. **Clone e entre no repositório**
