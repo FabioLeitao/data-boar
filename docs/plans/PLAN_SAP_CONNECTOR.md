@@ -82,6 +82,12 @@ When prioritising which connectors to add after SAP, the following are strong ca
 
 ---
 
+## See also
+
+- **[PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md](PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md)** — Umbrella backlog for Brazilian SST (e.g. SOC), HR/folha suites, ERP/CRM beyond SAP, helpdesk, and URM-class tools; research-first and data-minimisation for health data.
+
+---
+
 ## Reference
 
 - **Connector guide:** [ADDING_CONNECTORS.md](../ADDING_CONNECTORS.md).
