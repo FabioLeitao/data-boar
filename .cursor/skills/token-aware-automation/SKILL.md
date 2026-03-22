@@ -82,6 +82,7 @@ Workflow that saves tokens (shorter form):
 
 - If a **critical blocker** exists (broken script flow, sync/merge confusion, failing safety gate), prioritize that first and stabilize to local commits before resuming feature work.
 - If no critical blocker exists, prioritize product slices by `docs/plans/PLANS_TODO.md` taxonomy, with token-aware bias (low cost / high gain).
+- **Active sprint theme:** Chunk the **current** milestone/Kanban row—do **not** jump to unrelated low-token work every session unless the **operator** reprioritises. See **`.cursor/rules/execution-priority-and-pr-batching.mdc`** §3 and **`docs/plans/TOKEN_AWARE_USAGE.md`** §2.
 - Do **not** force a PR on every commit. Keep coherent local commits, then open one PR when the slice is reviewable and useful.
 - Micro-PRs are for truly tiny, complete, low-risk changes only.
 
