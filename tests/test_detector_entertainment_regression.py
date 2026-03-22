@@ -60,6 +60,62 @@ La la la la la"""
         self.assertLessEqual(result["ml_confidence"], 55)
         self.assertNotIn("ML_DETECTED", result["pattern_detected"])
 
+    def test_patched_high_ml_readme_short_sample_one_heading_entertainment(self) -> None:
+        """Filesystem-sized chunks: one # line + short body must still trigger OSS Markdown context."""
+        body = (
+            "# Data Boar\n\n"
+            "Short readme sample for scan; fewer than two headings in this chunk only.\n"
+        )
+        assert len(body.strip()) >= 60
+        with patch.object(
+            self.scanner.detector._model,
+            "predict_proba",
+            side_effect=_almost_certain_sensitive_proba,
+        ):
+            result = self.scanner.scan_file_content(body, "README.md")
+        self.assertIsNotNone(result)
+        assert result is not None
+        self.assertEqual(result["sensitivity_level"], "MEDIUM")
+        self.assertEqual(result["pattern_detected"], "ML_POTENTIAL_ENTERTAINMENT")
+        self.assertLessEqual(result["ml_confidence"], 55)
+
+    def test_patched_high_ml_subtitle_srt_path_entertainment(self) -> None:
+        """Sidecar .srt path + dialogue text → ML-only HIGH capped (patched proba)."""
+        body = "\n".join(f"Cue line {i} with sensitive_token_xyz mention" for i in range(10))
+        with patch.object(
+            self.scanner.detector._model,
+            "predict_proba",
+            side_effect=_almost_certain_sensitive_proba,
+        ):
+            result = self.scanner.scan_file_content(body, "movie.pt_BR.srt")
+        self.assertIsNotNone(result)
+        assert result is not None
+        self.assertEqual(result["sensitivity_level"], "MEDIUM")
+        self.assertEqual(result["pattern_detected"], "ML_POTENTIAL_ENTERTAINMENT")
+        self.assertLessEqual(result["ml_confidence"], 55)
+
+    def test_patched_high_ml_interleaved_cifra_mixed_case_chords_entertainment(self) -> None:
+        """Alternating chord rows (C, D2sus9, EM7, Am, …) and lyric lines → entertainment context."""
+        body = (
+            "C    D2sus9    EM7    Am\n"
+            "Maria called on Tuesday saying she would wait at the station downtown\n"
+            "G    C    F    dm7\n"
+            "Walking down the long avenue in the summer rain again tonight\n"
+            "F    G    C\n"
+            "The doctor said tomorrow never knows what sensitive_token_xyz meant anyway\n"
+        )
+        with patch.object(
+            self.scanner.detector._model,
+            "predict_proba",
+            side_effect=_almost_certain_sensitive_proba,
+        ):
+            result = self.scanner.scan_file_content(body, "Song idea.txt")
+        self.assertIsNotNone(result)
+        assert result is not None
+        self.assertEqual(result["sensitivity_level"], "MEDIUM")
+        self.assertEqual(result["pattern_detected"], "ML_POTENTIAL_ENTERTAINMENT")
+        self.assertLessEqual(result["ml_confidence"], 55)
+
     def test_patched_high_ml_in_contributing_md_is_medium_ml_potential_entertainment(self) -> None:
         body = """# Contributing
 
