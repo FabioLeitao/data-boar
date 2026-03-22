@@ -57,6 +57,18 @@ See [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md), [TECH_GUIDE.md](../T
 - **Conflicts with:** None; additive flags, default preserves today’s behaviour until enabled.
 - **Token-aware:** Treat as **one plan file + one implementation slice per session**; start with Phase 0–1 only.
 
+### Sequencing with dashboard i18n ([PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md))
+
+**Shared risk:** Changing HTML routes **twice** (once unprefixed for RBAC, again for `/{locale}/…`) wastes review and tokens.
+
+| Step | Track | Action |
+| ---- | ----- | ------ |
+| **D-WEB** | Both | **Design-only:** URL map + **middleware order** (API key, locale resolution for HTML, route-class / RBAC). Cross-link between this file and the i18n plan. |
+| **Implementation** | i18n first (recommended) | **M-LOCALE-V1:** path-prefixed HTML + `en` / `pt-BR` JSON + negotiation; **no** new RBAC semantics required on first merge if defaults unchanged. |
+| **Implementation** | #86 | Phase **0** (docs) can ship anytime. Phase **1+** gates should target the **same prefixed paths** as i18n (e.g. `/{locale}/reports`), not legacy unprefixed HTML — unless a **security exception** forces early guards on old paths (then budget a **migration** slice). |
+
+Details and anti-footgun rules: **PLAN_DASHBOARD_I18N.md** § *Meshing with dashboard reports RBAC*.
+
 ---
 
 ## Completion checklist (when implementing)
@@ -71,7 +83,7 @@ See [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md), [TECH_GUIDE.md](../T
 
 | Plan / doc | Overlap | How to treat it |
 | ---------- | ------- | ---------------- |
-| [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) | Same routes and templates (`/`, `/reports`, …). | **Coordinate:** If you add locale path prefixes, define them **before** or **together with** route-class / role gates so middleware order and URL patterns stay coherent. i18n does not replace RBAC. |
+| [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) | Same routes and templates (`/`, `/reports`, …). | **Coordinate:** **D-WEB** design checkpoint first; then implement **locale prefix** before or with **Phase 1+** RBAC on **prefixed** paths — see **§ Sequencing with dashboard i18n** above. i18n does not replace RBAC. |
 | [LICENSING_SPEC.md](../LICENSING_SPEC.md) / commercial JWT | Product **license** claims (`dbtier`, …) vs **session** roles (`reports_reader`, …). | **Optional convergence** in a far enterprise phase: both might read JWT-shaped claims; keep **specs separate** until requirements are explicit—no need to fold this plan into licensing docs. |
 | [completed/PLAN_RATE_LIMIT_SCANS.md](completed/PLAN_RATE_LIMIT_SCANS.md) | GET `/reports`, `/heatmap` intentionally not rate-limited for reads. | **Compatible:** RBAC restricts *who*; rate limits restrict *how hard*. Changing either should mention the other in release notes. |
 | [PLAN_SELENIUM_QA_TEST_SUITE.md](PLAN_SELENIUM_QA_TEST_SUITE.md) | Future E2E on dashboard flows. | When RBAC lands, QA plan should add cases for **forbidden** vs **allowed** roles on `/reports`. |
