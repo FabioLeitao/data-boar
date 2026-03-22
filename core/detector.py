@@ -376,6 +376,70 @@ def _looks_like_lyrics(sample: str) -> bool:
     return False
 
 
+# Chord suffix atoms: longest-first, matched with .match(); each pattern is linear (no nested
+# ambiguous quantifiers) to avoid ReDoS (CodeQL py/redos) from the old ``(?:...)*`` chord regex.
+_CHORD_SUFFIX_ATOMS: tuple[re.Pattern[str], ...] = tuple(
+    re.compile(p, re.I)
+    for p in (
+        r"maj9",
+        r"maj7",
+        r"maj\d{1,2}",  # maj13, etc.
+        r"maj",
+        r"min7",
+        r"min",
+        r"dim7",
+        r"dim",
+        r"aug",
+        r"sus\d*",
+        r"add\d*",
+        r"m7",
+        r"m(?!aj)",  # minor triad; not start of "maj"
+        r"\d",
+    )
+)
+_CHORD_TOKEN_END_OK = re.compile(r"(?=\s|\||/|$)")
+_SLASH_BASS = re.compile(r"/[A-Ga-g](?:#|b|♭)?(?:m|min)?", re.I)
+_CHORD_ROOT_START = re.compile(r"(?<![A-Za-z0-9])(?=[A-Ga-g])", re.I)
+
+
+def _consume_chord_token(s: str, start: int) -> int | None:
+    """
+    If a chord-like token starts at ``start``, return the index just past it; else ``None``.
+
+    Linear time in line length: bounded suffix steps, each step picks the longest matching atom.
+    """
+    n = len(s)
+    if start >= n or s[start] not in "ABCDEFGabcdefg":
+        return None
+    j = start + 1
+    if j < n and s[j] in "#b♭":
+        j += 1
+    if j < n and s[j].isdigit():
+        j += 1
+        if j < n and s[j].isdigit():
+            j += 1
+    for _ in range(48):
+        if j >= n:
+            break
+        best = 0
+        rest = s[j:]
+        for rx in _CHORD_SUFFIX_ATOMS:
+            m = rx.match(rest)
+            if m:
+                elen = m.end()
+                if elen > best:
+                    best = elen
+        if best == 0:
+            break
+        j += best
+    sb = _SLASH_BASS.match(s, j)
+    if sb:
+        j = sb.end()
+    if j < n and not _CHORD_TOKEN_END_OK.match(s, j):
+        return None
+    return j
+
+
 def _chord_like_token_count(line: str) -> int:
     """
     Count tokens that look like chord symbols on one line (EN + PT-BR cifras).
@@ -383,20 +447,20 @@ def _chord_like_token_count(line: str) -> int:
     Covers typical spellings: ``C  G  Am  F``, ``dm7``, ``EM7``, ``D2sus9``, slash bass
     (``G/B``). Mixed case is common in handwritten-style exports (major roots uppercase,
     ``m``/``sus``/extensions lower or upper).
+
+    Implementation avoids a single big ``re.findall`` with a repeated ambiguous alternation
+    (CodeQL py/redos); see ``_CHORD_SUFFIX_ATOMS`` / ``_consume_chord_token``.
     """
     if not (line or "").strip():
         return 0
-    return len(
-        re.findall(
-            r"(?i)(?<![A-Za-z0-9])"
-            r"([A-Ga-g](?:#|b|♭)?"
-            r"(?:\d{1,2})?"
-            r"(?:m(?:aj(?:7|9)?|in(?:7)?)?|M7|Maj7|maj7?|dim7?|aug|sus\d*|add\d+|maj\d{1,2}|\d)*"
-            r"(?:/[A-Ga-g](?:#|b|♭)?(?:m|min)?)?)"
-            r"(?=\s|$|\||/)",
-            line.strip(),
-        )
-    )
+    s = line.strip()
+    count = 0
+    for m in _CHORD_ROOT_START.finditer(s):
+        i = m.start()
+        end = _consume_chord_token(s, i)
+        if end is not None:
+            count += 1
+    return count
 
 
 def _is_prose_lyric_line(line: str) -> bool:

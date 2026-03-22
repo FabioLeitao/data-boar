@@ -17,11 +17,13 @@ runs the same suite. No separate registration needed.
 
 from __future__ import annotations
 
+import time
 import unittest
 from unittest.mock import patch
 
 import numpy as np
 
+from core.detector import _chord_like_token_count
 from core.scanner import DataScanner
 
 # Minimal terms so a real vectorizer + RF exist; ML score comes from the patch below.
@@ -93,6 +95,19 @@ La la la la la"""
         self.assertEqual(result["sensitivity_level"], "MEDIUM")
         self.assertEqual(result["pattern_detected"], "ML_POTENTIAL_ENTERTAINMENT")
         self.assertLessEqual(result["ml_confidence"], 55)
+
+    def test_chord_like_token_count_linear_on_redos_style_tail(self) -> None:
+        """CodeQL py/redos: old ``(?:suffix)*`` chord regex backtracked on ``a`` + many ``m7``."""
+        poison = "a" + ("m7" * 800)
+        t0 = time.perf_counter()
+        _chord_like_token_count(poison)
+        elapsed = time.perf_counter() - t0
+        self.assertLess(
+            elapsed,
+            0.2,
+            f"chord token scan should stay linear (took {elapsed:.3f}s)",
+        )
+        self.assertGreaterEqual(_chord_like_token_count("C    G    Am   F"), 3)
 
     def test_patched_high_ml_interleaved_cifra_mixed_case_chords_entertainment(self) -> None:
         """Alternating chord rows (C, D2sus9, EM7, Am, …) and lyric lines → entertainment context."""
