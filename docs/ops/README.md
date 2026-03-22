@@ -39,6 +39,12 @@ Defined in **`.cursor/rules/session-mode-keywords.mdc`**.
 
 **Related (not in this folder):** [SECURITY.md](../SECURITY.md) / [SECURITY.pt_BR.md](../SECURITY.pt_BR.md) and [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md) / [CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md) — security posture and **Priority band A** hardening next to the main security policy in [`docs/README.md`](../README.md).
 
+### Optional helper scripts (repo `scripts/`)
+
+| Script | Purpose |
+| ------ | ------- |
+| [`poll_dashboard_scan.py`](../../scripts/poll_dashboard_scan.py) | POST `/scan`, poll `/status` until idle, print a report download hint. Set **`DATA_BOAR_BASE`** (default `http://127.0.0.1:8088`) or pass **`--base URL`**. Per **[AGENTS.md](../../AGENTS.md)**, do not commit real lab hostnames—keep the real URL in env or **`docs/private/`** only. |
+
 ---
 
 ## Link-audit checklist (after moving or renaming docs)
