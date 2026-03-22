@@ -65,6 +65,7 @@ Copy this table into a GitHub **Project** board or a personal doc; move rows by 
 | **Backlog** | Strong crypto Phase 1 | A/M | `PLANS_TODO` order 4 |
 | **Backlog** | Data source inventory Phase 1 | A/M | order 5 |
 | **Backlog** | Notifications Phase 1 | A/M | order 6 |
+| **Backlog** | Dashboard reports RBAC (issue #86) | A/M | [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md); `[H2][U2]` |
 | **Selected** | *(one row only for token-aware week)* | — | Pick from “What to start next” or **Integration / WIP** in [PLANS_TODO.md](PLANS_TODO.md) |
 | **In progress** | *(current session scope — e.g. rich media Tier 3 until merged)* | — | TOKEN_AWARE: one primary slice; see **Integration / WIP** when landing rich media + **1.6.5** |
 | **Blocked** | *(waiting on operator: hardware, Hub, counsel)* | **Operator** | Note blocker in PR or private runbook |
