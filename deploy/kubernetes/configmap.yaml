@@ -12,6 +12,7 @@ data:
       recursive: true
       scan_sqlite_as_db: true
       sample_limit: 5
+      file_sample_max_chars: 12000
     report:
       output_dir: /data
     api:
