@@ -26,15 +26,15 @@ Do not edit this block manually; refresh with `python scripts/plans-stats.py --w
 - **Status rows counted:** 103  (Done: 51 | Incomplete: 52)
 - **Incomplete breakdown:** Pending `⬜`=50, Tracked `🔄` / `Tracked (partially done)`=2, Under consideration=0, Backlog-marked rows=0
 
-| Horizon       | Total rows  | Done  | Incomplete  |
-| -------       | ----------: | ----: | ----------: |
-| `H0`          | 20          | 18    | 2           |
-| `H1`          | 0           | 0     | 0           |
-| `H2`          | 0           | 0     | 0           |
-| `H3`          | 83          | 33    | 50          |
-| `H4`          | 0           | 0     | 0           |
-| `H5`          | 0           | 0     | 0           |
-| `UNSPECIFIED` | 0           | 0     | 0           |
+| Horizon | Total rows | Done | Incomplete |
+| ------- | ----------: | ----: | ----------: |
+| `H0` | 20 | 18 | 2 |
+| `H1` | 0 | 0 | 0 |
+| `H2` | 0 | 0 | 0 |
+| `H3` | 83 | 33 | 50 |
+| `H4` | 0 | 0 | 0 |
+| `H5` | 0 | 0 | 0 |
+| `UNSPECIFIED` | 0 | 0 | 0 |
 <!-- PLANS_STATUS_DASHBOARD:END -->
 
 **Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Commercial licensing (runtime + docs + issuer bootstrap)** ✅ Phase 1 in repo (see `docs/LICENSING_SPEC.md`, `core/licensing/`); operational hardening ⬜ Priority band A · **Release 1.6.4** ✅ shipped **2026-03-20** (GitHub Release **v1.6.4**, Docker Hub **`fabioleitao/data_boar:1.6.4`** + **`:latest`**, `docs/releases/1.6.4.md`; maintenance sprint **#99–#104** on `main`) · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ✅ Done · **Compliance standards alignment (ISO/IEC 27701, FELCA)** ✅ Done (doc only) · **Additional detection techniques & FN reduction** 🔄 Slices 1–4 done (`fuzzy_column_match`, `FUZZY_COLUMN_MATCH`, `connector_format_id_hint`, `FORMAT_LENGTH_HINT_ID`); next: optional aggregated/incomplete-data modes and semantic hints (priorities 5+). · **Compressed files** ✅ Done (steps 1–12; follow-ups 13–14 optional) · **Content type & cloaking detection** ✅ Core plan done (optional: man pages / OpenAPI examples) · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ✅ Phase 4 done (Phase 5 checksum future) · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **Dashboard reports RBAC** ⬜ Tracked (GitHub [#86](https://github.com/FabioLeitao/data-boar/issues/86); [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md)) · **SAP connector** ⬜ Not started · **Additional data soup formats** 🔄 Tier 3 rich media **in flight** (branch / unmerged work; see § Integration / WIP above); Tier 1 (epub, parquet, …) + **stego** ⬜ backlog · **Home lab (–1L)** 🔄 Partial: LAN dashBOARd + `uv`/git on a second host; playbook [§9 multi-host Linux](../ops/HOMELAB_VALIDATION.md#9-multi-host-linux-optional-matrix-dns-ssh-different-distros) (DNS/SSH; Void/Pi notes; no agent-side OS installs). **Done** when [§12](../ops/HOMELAB_VALIDATION.md#12-when-you-are-done-with-a-lab-pass) criteria + dated note (e.g. `docs/private/`).

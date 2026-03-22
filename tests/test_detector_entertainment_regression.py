@@ -81,7 +81,9 @@ class TestChordLikeTokenizerRedosRegression(unittest.TestCase):
         self.assertEqual(_chord_like_token_count("G/B"), 2)
         self.assertEqual(_chord_like_token_count("F#m7  Bb"), 2)
 
-    def test_chord_like_token_count_implementation_avoids_findall_redos_shape(self) -> None:
+    def test_chord_like_token_count_implementation_avoids_findall_redos_shape(
+        self,
+    ) -> None:
         """AST guard: no ``re.findall(...)`` in the tokenizer (docstring may mention the word)."""
         src = inspect.getsource(detector_module._chord_like_token_count)
         tree = ast.parse(src)
@@ -108,7 +110,9 @@ class TestChordLikeTokenizerRedosRegression(unittest.TestCase):
             tuple,
             "Keep module-level _CHORD_SUFFIX_ATOMS for auditable linear suffix matching.",
         )
-        self.assertGreater(len(atoms), 5, "Suffix atom table should cover major chord families.")
+        self.assertGreater(
+            len(atoms), 5, "Suffix atom table should cover major chord families."
+        )
 
 
 class TestDetectorEntertainmentRegression(unittest.TestCase):
@@ -119,7 +123,9 @@ class TestDetectorEntertainmentRegression(unittest.TestCase):
         if not getattr(self.scanner.detector, "_model", None):
             self.skipTest("sklearn ML stack not available")
 
-    def test_patched_high_ml_in_lyrics_is_medium_ml_potential_entertainment(self) -> None:
+    def test_patched_high_ml_in_lyrics_is_medium_ml_potential_entertainment(
+        self,
+    ) -> None:
         lyrics = """Verse 1
 This line has sensitive_token_xyz in it
 Chorus
@@ -135,7 +141,9 @@ La la la la la"""
         self.assertLessEqual(result["ml_confidence"], 55)
         self.assertNotIn("ML_DETECTED", result["pattern_detected"])
 
-    def test_patched_high_ml_readme_short_sample_one_heading_entertainment(self) -> None:
+    def test_patched_high_ml_readme_short_sample_one_heading_entertainment(
+        self,
+    ) -> None:
         """Filesystem-sized chunks: one # line + short body must still trigger OSS Markdown context."""
         body = (
             "# Data Boar\n\n"
@@ -156,7 +164,9 @@ La la la la la"""
 
     def test_patched_high_ml_subtitle_srt_path_entertainment(self) -> None:
         """Sidecar .srt path + dialogue text → ML-only HIGH capped (patched proba)."""
-        body = "\n".join(f"Cue line {i} with sensitive_token_xyz mention" for i in range(10))
+        body = "\n".join(
+            f"Cue line {i} with sensitive_token_xyz mention" for i in range(10)
+        )
         with patch.object(
             self.scanner.detector._model,
             "predict_proba",
@@ -169,7 +179,9 @@ La la la la la"""
         self.assertEqual(result["pattern_detected"], "ML_POTENTIAL_ENTERTAINMENT")
         self.assertLessEqual(result["ml_confidence"], 55)
 
-    def test_patched_high_ml_interleaved_cifra_mixed_case_chords_entertainment(self) -> None:
+    def test_patched_high_ml_interleaved_cifra_mixed_case_chords_entertainment(
+        self,
+    ) -> None:
         """Alternating chord rows (C, D2sus9, EM7, Am, …) and lyric lines → entertainment context."""
         body = (
             "C    D2sus9    EM7    Am\n"
@@ -191,7 +203,9 @@ La la la la la"""
         self.assertEqual(result["pattern_detected"], "ML_POTENTIAL_ENTERTAINMENT")
         self.assertLessEqual(result["ml_confidence"], 55)
 
-    def test_patched_high_ml_in_contributing_md_is_medium_ml_potential_entertainment(self) -> None:
+    def test_patched_high_ml_in_contributing_md_is_medium_ml_potential_entertainment(
+        self,
+    ) -> None:
         body = """# Contributing
 
 ## How to report
