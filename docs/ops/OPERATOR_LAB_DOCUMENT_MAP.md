@@ -22,6 +22,7 @@
 | Document | Role |
 | -------- | ---- |
 | **[HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md)** · [pt-BR](HOMELAB_VALIDATION.pt_BR.md) | Validation playbook, §9 multi-host, order **–1L** alignment |
+| **[CURSOR_UBUNTU_APPARMOR.md](CURSOR_UBUNTU_APPARMOR.md)** · [pt-BR](CURSOR_UBUNTU_APPARMOR.pt_BR.md) | Cursor on Ubuntu/Zorin with **AppArmor** (install, diagnose DENIED, `local/` overrides) |
 | **[OS_COMPATIBILITY_TESTING_MATRIX.md](OS_COMPATIBILITY_TESTING_MATRIX.md)** | OS / musl / arch matrix for lab testing |
 | **[PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)** · [pt-BR](../PRIVATE_OPERATOR_NOTES.pt_BR.md) | Policy: **`docs/private/`** layout, Git vs Cursor |
 | **[../plans/PLANS_TODO.md](../plans/PLANS_TODO.md)** | Sequencing, **–1L** home lab smoke, tiers |
@@ -43,6 +44,8 @@
 | **`OPERATOR_RETEACH.md`** | **Gaps** checklist (B1–B6) — fill when you have energy |
 | **`HARDWARE_CATALOG.md`** | Hardware-focused summary (points to system map) |
 | **`iso-inventory.md`** | ISO paths on lab Linux host |
+| **`LAB_SECURITY_POSTURE.md`** | LAB‑OP **security inventory**: WAN posture, **sshd**/UFW/Fail2ban/nftables snapshots, **improvement backlog** (operator-maintained; not on GitHub) |
+| **`LAB_SOFTWARE_INVENTORY.md`** | LAB‑OP **software/runtime matrix** (Python, Docker, Data Boar paths, **TBD** gaps); refresh with **`scripts/homelab-host-report.sh`** per Linux host |
 
 **Also private (repo root of `docs/private/`):** **`WHAT_TO_SHARE_WITH_AGENT.md`**, **`SOLAR_SYSTEM_NOTES.md`**, **`From Docker hub list of repositories.md`**, **`Learning_and_certs.md`**, **`CONTEXT_ACADEMIC_AND_FAMILY.md`** (spouse work + long-term academic links — **you** fill when ready), optional **`reports/*.xlsx`**, scratch **`.txt`** files — keep or migrate into **`homelab/`** over time.
 
@@ -53,7 +56,7 @@
 ## Maturity + GTD (token-aware)
 
 - **Small sessions:** one of — fill **`OPERATOR_RETEACH.md`**, or one **HOMELAB_VALIDATION** section on LAB‑OP, or one **PLANS_TODO** row. See **[TOKEN_AWARE_USAGE.md](../plans/TOKEN_AWARE_USAGE.md)**.
-- **Software / toolchains (LAB‑OP):** extend **`OPERATOR_SYSTEM_MAP.md` §4** (and **`WHAT_TO_SHARE`** toolchain table on L14) when you add **Selenium**, extra **Python extras**, lab browsers, etc. — **no** secrets in files.
+- **Software / toolchains (LAB‑OP):** extend **`LAB_SOFTWARE_INVENTORY.md`** + **`OPERATOR_SYSTEM_MAP.md` §4** (and **`WHAT_TO_SHARE`** toolchain table on L14) when you add **Selenium**, extra **Python extras**, lab browsers, etc. — **no** secrets in files.
 - **Tracked product plans** for **Selenium QA**, **synthetic data**, etc. remain in **`docs/plans/`**; LAB‑OP is **where you run** them.
 
 ---
