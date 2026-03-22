@@ -15,7 +15,12 @@ Use this decision order every session:
 
 1. **Then product work by matrix**
    - When no critical blocker exists, prioritize feature/bugfix work according to `docs/plans/PLANS_TODO.md` taxonomy and sequencing (H0/H1/H2..., U0/U1/U2...).
-   - Stay token-aware: bias to low-cost, low-complexity, high-gain increments.
+   - Stay token-aware: bias to low-cost, low-complexity, high-gain increments **within** that taxonomy and the **active sprint theme** (§3)—not unrelated “cheap” tasks by default.
+
+1. **Sprint theme vs token-cherry-picking (coherence)**
+   - After **Priority band A** (when invoked) and critical gates, anchor sessions on the **active milestone or sprint theme** from [PLANS_TODO.md](../../docs/plans/PLANS_TODO.md) and [SPRINTS_AND_MILESTONES.md](../../docs/plans/SPRINTS_AND_MILESTONES.md) (e.g. Kanban **Selected** / **In progress**).
+   - **Token-aware** means splitting **that theme** into small, reviewable chunks—not jumping to a different product thread every session **only** because it would use fewer tokens. If the **operator** reprioritises, switch theme explicitly.
+   - Detail: [TOKEN_AWARE_USAGE.md](../../docs/plans/TOKEN_AWARE_USAGE.md) §2.
 
 1. **Commit cadence (document progress locally — avoid pre-PR / pre-release chaos)**
    - **Commit locally** at sensible checkpoints: (a) a **single important** change, or (b) a **batch of related edits** that share one “train of thought” / theme—use **one commit** for that batch *or* split into a few commits by sub-theme (`docs` vs `test` vs core), each with a clear Conventional Commit message.
@@ -56,5 +61,5 @@ Use this decision order every session:
    - **Types:** `feat`, `fix`, `security` (optional top-level for primary hardening), `refactor`, `docs`, `chore`, `ci`, `test`, `perf`, `style`.
    - **Bugfix:** use **`fix:`** (not a separate invented prefix). **`fix(security):`** when the fix is security-critical.
    - **Refactor vs feat+fix:** Prefer **`refactor:`** for behavior-preserving moves. **Do not** combine unrelated **`feat` + `fix`** in one commit; split into two commits (or two PRs) unless the work is truly atomic. If it is both a feature and a fix, separate commits almost always read clearer in history.
-   - **Scopes:** Optional — `feat(detector):`, `docs(ops):`, `fix(api):`, **`chore(deps):`** for dependency-only bumps. **Homelab / operator fronts:** `docs(homelab):`, `docs(workflow):`, `chore(cursor):`, `docs(private-layout):`, `docs(plans):` — full scope table in root **`AGENTS.md`**.
+   - **Scopes:** Optional — `feat(detector):`, `docs(ops):`, `fix(api):`, **`chore(deps):`** for dependency-only bumps. **Homelab / operator fronts:** `docs(homelab):`, `docs(workflow):`, `chore(cursor):`, `docs(private-layout):`, `docs(plans):` — full scope table in root **`AGENTS.md`** (including **`private-layout`** vs real inventory).
    - Grouping rules (`feature + documentation`, etc.) still apply; the type line tells *what* changed, grouping tells *which narrative bucket*.
