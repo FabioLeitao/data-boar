@@ -43,7 +43,7 @@ Defined in **`.cursor/rules/session-mode-keywords.mdc`**.
 
 | Script | Purpose |
 | ------ | ------- |
-| [`poll_dashboard_scan.py`](../../scripts/poll_dashboard_scan.py) | POST `/scan`, poll `/status` until idle, print a report download hint. Set **`DATA_BOAR_BASE`** (default `http://127.0.0.1:8088`) or pass **`--base URL`**. Per **[AGENTS.md](../../AGENTS.md)**, do not commit real lab hostnames—keep the real URL in env or **`docs/private/`** only. |
+| [`poll_dashboard_scan.py`](../../scripts/poll_dashboard_scan.py) | POST `/scan`, poll `/status` until idle, print a report download hint. Set **`DATA_BOAR_BASE`** or **`--base`**; optional **`DATA_BOAR_API_KEY`** / **`--api-key`** when `require_api_key` is on; **`--interval`** / **`--max-polls`** to tune waits. Run **`uv run python scripts/poll_dashboard_scan.py --help`**. Per **[AGENTS.md](../../AGENTS.md)**, do not commit hostnames or keys—use env or **`docs/private/`** only. |
 
 ---
 
