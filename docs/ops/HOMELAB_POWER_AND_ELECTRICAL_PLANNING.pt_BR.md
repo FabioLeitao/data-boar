@@ -10,7 +10,7 @@ Conta de luz **mais barata ou compensada** **não** elimina a necessidade de pla
 
 ### UniFi “power bank” / SmartPower vs segundo nobreak
 
-Para **tirar o UDM-SE** (e talvez o switch) do **Attiv** e **liberar watts**: a Ubiquiti documenta **SmartPower** com **USP-RPS** + cabo **USP** para gateways compatíveis — o **UDM-SE** aparece na tabela oficial com até **220 W em 52 V CC** na porta SmartPower (ver [Power Redundancy](https://help.ui.com/hc/en-us/articles/360042834933-Power-Redundancy)). Alternativa simples: **segundo nobreak** só para **stack de rede** (modem + UDM + switch). O RPS/UPS UniFi continua a precisar de **tomada AC**; confirme firmware/recursos antes de comprar **UPS 2U**. Detalhes em **§5.2** do documento em inglês.
+Para **tirar o UDM-SE** (e talvez o switch) do **Attiv** e **liberar watts**: a Ubiquiti documenta **SmartPower** com **USP-RPS** + cabo **USP** para gateways compatíveis — o **UDM-SE** aparece na tabela oficial com até **220 W em 52 V CC** na porta SmartPower (ver [Power Redundancy](https://help.ui.com/hc/en-us/articles/360042834933-Power-Redundancy)). Alternativa simples: **segundo nobreak** só para **stack de rede** (modem + UDM + switch). O RPS/UPS UniFi continua precisando de **tomada AC**; confirme firmware/recursos antes de comprar **UPS 2U**. Detalhes em **§5.2** do documento em inglês.
 
 ### Nobreak Intelbras **Attiv 1500 VA** (120 V)
 
