@@ -35,6 +35,7 @@ def test_filesystem_connector_reads_use_content_type_flag() -> None:
         extensions=[".txt"],
         scan_sqlite_as_db=False,
         sample_limit=1,
+        file_sample_max_chars=1,
     )
     assert connector.use_content_type is True
 
@@ -90,6 +91,7 @@ def test_use_content_type_forces_pdf_extraction_when_enabled(
         extensions=[".txt"],
         scan_sqlite_as_db=False,
         sample_limit=1,
+        file_sample_max_chars=1,
     )
 
     connector.run()
@@ -144,6 +146,7 @@ def test_use_content_type_keeps_extension_when_disabled(
         extensions=[".txt"],
         scan_sqlite_as_db=False,
         sample_limit=1,
+        file_sample_max_chars=1,
     )
 
     connector.run()
