@@ -26,15 +26,15 @@ Do not edit this block manually; refresh with `python scripts/plans-stats.py --w
 - **Status rows counted:** 103  (Done: 51 | Incomplete: 52)
 - **Incomplete breakdown:** Pending `⬜`=50, Tracked `🔄` / `Tracked (partially done)`=2, Under consideration=0, Backlog-marked rows=0
 
-| Horizon | Total rows | Done | Incomplete |
-| ------- | ----------: | ----: | ----------: |
-| `H0` | 20 | 18 | 2 |
-| `H1` | 0 | 0 | 0 |
-| `H2` | 0 | 0 | 0 |
-| `H3` | 83 | 33 | 50 |
-| `H4` | 0 | 0 | 0 |
-| `H5` | 0 | 0 | 0 |
-| `UNSPECIFIED` | 0 | 0 | 0 |
+| Horizon       | Total rows  | Done  | Incomplete  |
+| -------       | ----------: | ----: | ----------: |
+| `H0`          | 20          | 18    | 2           |
+| `H1`          | 0           | 0     | 0           |
+| `H2`          | 0           | 0     | 0           |
+| `H3`          | 83          | 33    | 50          |
+| `H4`          | 0           | 0     | 0           |
+| `H5`          | 0           | 0     | 0           |
+| `UNSPECIFIED` | 0           | 0     | 0           |
 <!-- PLANS_STATUS_DASHBOARD:END -->
 
 **Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Commercial licensing (runtime + docs + issuer bootstrap)** ✅ Phase 1 in repo (see `docs/LICENSING_SPEC.md`, `core/licensing/`); operational hardening ⬜ Priority band A · **Release 1.6.4** ✅ shipped **2026-03-20** (GitHub Release **v1.6.4**, Docker Hub **`fabioleitao/data_boar:1.6.4`** + **`:latest`**, `docs/releases/1.6.4.md`; maintenance sprint **#99–#104** on `main`) · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ✅ Done · **Compliance standards alignment (ISO/IEC 27701, FELCA)** ✅ Done (doc only) · **Additional detection techniques & FN reduction** 🔄 Slices 1–4 done (`fuzzy_column_match`, `FUZZY_COLUMN_MATCH`, `connector_format_id_hint`, `FORMAT_LENGTH_HINT_ID`); next: optional aggregated/incomplete-data modes and semantic hints (priorities 5+). · **Compressed files** ✅ Done (steps 1–12; follow-ups 13–14 optional) · **Content type & cloaking detection** ✅ Core plan done (optional: man pages / OpenAPI examples) · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ✅ Phase 4 done (Phase 5 checksum future) · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **Dashboard reports RBAC** ⬜ Tracked (GitHub [#86](https://github.com/FabioLeitao/data-boar/issues/86); [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md)) · **SAP connector** ⬜ Not started · **Additional data soup formats** 🔄 Tier 3 rich media **in flight** (branch / unmerged work; see § Integration / WIP above); Tier 1 (epub, parquet, …) + **stego** ⬜ backlog · **Home lab (–1L)** 🔄 Partial: LAN dashBOARd + `uv`/git on a second host; playbook [§9 multi-host Linux](../ops/HOMELAB_VALIDATION.md#9-multi-host-linux-optional-matrix-dns-ssh-different-distros) (DNS/SSH; Void/Pi notes; no agent-side OS installs). **Done** when [§12](../ops/HOMELAB_VALIDATION.md#12-when-you-are-done-with-a-lab-pass) criteria + dated note (e.g. `docs/private/`).
@@ -56,39 +56,43 @@ When revising **license terms** for IP, commerciality, and profitability, explic
 
 Refresh periodically: `gh issue list --state open --limit 50` (requires [`gh`](https://cli.github.com/) auth). This table is **not** the full product backlog—only **open** issues linked into plans so they are not lost.
 
-| # | Short title | Type | Plan | Sequence (token-aware) |
-| - | ----------- | ---- | ---- | ------------------------ |
+| #                                                        | Short title                                      | Type                  | Plan                                                                                 | Sequence (token-aware)                                                                   |
+| -                                                        | -----------                                      | ----                  | ----                                                                                 | ------------------------                                                                 |
 | [86](https://github.com/FabioLeitao/data-boar/issues/86) | Reports / dashboard access by role or permission | Feature + security UX | [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) | `[H2][U2]` after **Priority band A**; Phase 0 = docs + proxy patterns; in-app RBAC later |
 
 **Dashboard web surface cluster:** [#86](https://github.com/FabioLeitao/data-boar/issues/86) (RBAC) and [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) (locale) share `api/routes.py` / templates but are **separate plans**—coordinate middleware and path design when both are in play; see **§ Relationship to other plans** in PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.
+
+### Doc housekeeping — workflow guardrails (✅ 2026-03-01)
+
+Post–PR **#118**: clarified **`private-layout`** vs **`docs/private/homelab`**, and **sprint theme vs token-cherry-picking**, in **`AGENTS.md`**, **`CONTRIBUTING.md`**, **`PRIVATE_OPERATOR_NOTES.md`**, **`.cursor/rules/execution-priority-and-pr-batching.mdc`**, **`TOKEN_AWARE_USAGE.md`**, **`.cursor/skills/token-aware-automation/SKILL.md`**. Ongoing source: **`AGENTS.md`** scope table + execution rule §3.
 
 ---
 
 ## Conflict and dependency analysis
 
-| Plan                                           | Depends on                                       | Conflicts with | Notes                                                                                                                                                                                                     |
-| ----                                           | ----------                                       | -------------- | -----                                                                                                                                                                                                     |
-| Security hardening                             | —                                                | None           | Additive (validation, docs, audit). Do first to strengthen base.                                                                                                                                          |
-| Secrets vault                                  | —                                                | None           | Phase A (redact, env) improves config safety before vault.                                                                                                                                                |
-| Version check / self-upgrade                   | —                                                | None           | Backup excludes secrets (manifest); compatible with Secrets A. Optional Phase 9: .deb, apt repo, signing, bytecode-only (see plan §9).                                                                    |
-| Additional compliance samples                  | —                                                | None           | Config-only; samples and docs additive.                                                                                                                                                                   |
-| Compressed files                               | Config loader (new keys)                         | None           | Additive feature; optional dependency py7zr.                                                                                                                                                              |
-| Content type & cloaking detection              | —                                                | None           | Opt-in magic-byte/MIME detection for renamed/cloaked files; more I/O/CPU; steganography out of scope for v1.                                                                                              |
-| Dashboard i18n                                 | Approach decided                                 | None           | No concrete to-dos until routing/translation approach chosen. When adding locale path prefixes, **coordinate** with [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) (issue **#86**) on middleware order.                                                                                                                                             |
-| Data source versions & hardening               | —                                                | None           | Additive: new table data_source_inventory, new report sheets; optional CVE lookup.                                                                                                                        |
-| Strong crypto & controls validation            | —                                                | None           | Optional flag (CLI + dashboard); new table or extend inventory; report sheet "Crypto & controls"; inference best-effort.                                                                                  |
-| CNPJ alphanumeric format validation            | —                                                | None           | Format spec + regex/override; optional built-in or config flag; compatibility report; no change to legacy LGPD_CNPJ.                                                                                      |
-| Selenium QA test suite                         | —                                                | None           | On-demand; optional [qa] deps; tests_qa/; report + recommendations; exclude from default pytest.                                                                                                          |
-| Synthetic data & confidence validation         | —                                                | None           | Fixtures (files, SQL, NoSQL, shares); FP/FN + ground truth; confidence bands + operator guidance; timeouts/connectivity docs.                                                                             |
-| Configurable timeouts                          | —                                                | None           | Global + per-target connect/read timeouts; sane defaults; connector wiring; recommendations (avoid DoS, too-fast).                                                                                        |
-| Notifications (off-band + scan-complete)       | Optional: Secrets Phase A                        | None           | Webhook notifier; scan-complete brief to operator/tenant (Slack, Teams, Telegram, etc.); recommendations.                                                                                                 |
-| SAP connector                                  | Optional: Configurable timeouts                  | None           | Add SAP (HANA/OData/RFC) to data soup; same discovery/sample/finding flow; optional [sap] extra. See PLAN_SAP_CONNECTOR.                                                                                  |
-| Enterprise HR / SST / ERP / CRM / ITSM         | Optional: SAP, REST/SQL patterns, timeouts       | None           | Umbrella: SOC (SST software), TOTVS-class ERP, CRM, folha/ponto, GLPI-class helpdesk, URM tools. Research per vendor; minimise health-data sampling. See PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.           |
-| Additional data soup formats                   | Optional: Compressed, content-type               | None           | Tier 3 rich media **ready to merge** (branch; EXIF/tags, OCR opt-in, sidecar subs, cloaking); Tier 1 (epub, parquet, avro, dbf) + **stego** still backlog. See PLAN_ADDITIONAL_DATA_SOUP_FORMATS + **Integration / WIP**.            |
-| Additional detection techniques & FN reduction | Optional: Synthetic data (for validation)        | None           | Additive: optional engines (fuzzy, stemming, format hint, embedding prototype); config thresholds; “suggested review”; reduce false negatives. See PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION. |
-| Home lab validation (production-readiness)     | Optional: –1/–1b maintenance in acceptable state | None           | Manual second-machine smoke per [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md); proves deploy + ≥1 connector path before demo/customer confidence; low token.                                      |
-| Compliance standards alignment                 | —                                                | None           | Doc only: ISO/IEC 27701 (PIMS), FELCA (minor data); COMPLIANCE_FRAMEWORKS + roadmap sentence; no code. See PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.                                                           |
-| Dashboard reports access control               | Optional: licensing / JWT claims; existing API-key middleware | None    | Role- or group-based gates for `/reports` and downloads; GitHub **#86**. Default behaviour unchanged until opt-in config. See PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.                                        |
+| Plan                                           | Depends on                                                    | Conflicts with | Notes                                                                                                                                                                                                                                         |
+| ----                                           | ----------                                                    | -------------- | -----                                                                                                                                                                                                                                         |
+| Security hardening                             | —                                                             | None           | Additive (validation, docs, audit). Do first to strengthen base.                                                                                                                                                                              |
+| Secrets vault                                  | —                                                             | None           | Phase A (redact, env) improves config safety before vault.                                                                                                                                                                                    |
+| Version check / self-upgrade                   | —                                                             | None           | Backup excludes secrets (manifest); compatible with Secrets A. Optional Phase 9: .deb, apt repo, signing, bytecode-only (see plan §9).                                                                                                        |
+| Additional compliance samples                  | —                                                             | None           | Config-only; samples and docs additive.                                                                                                                                                                                                       |
+| Compressed files                               | Config loader (new keys)                                      | None           | Additive feature; optional dependency py7zr.                                                                                                                                                                                                  |
+| Content type & cloaking detection              | —                                                             | None           | Opt-in magic-byte/MIME detection for renamed/cloaked files; more I/O/CPU; steganography out of scope for v1.                                                                                                                                  |
+| Dashboard i18n                                 | Approach decided                                              | None           | No concrete to-dos until routing/translation approach chosen. When adding locale path prefixes, **coordinate** with [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) (issue **#86**) on middleware order. |
+| Data source versions & hardening               | —                                                             | None           | Additive: new table data_source_inventory, new report sheets; optional CVE lookup.                                                                                                                                                            |
+| Strong crypto & controls validation            | —                                                             | None           | Optional flag (CLI + dashboard); new table or extend inventory; report sheet "Crypto & controls"; inference best-effort.                                                                                                                      |
+| CNPJ alphanumeric format validation            | —                                                             | None           | Format spec + regex/override; optional built-in or config flag; compatibility report; no change to legacy LGPD_CNPJ.                                                                                                                          |
+| Selenium QA test suite                         | —                                                             | None           | On-demand; optional [qa] deps; tests_qa/; report + recommendations; exclude from default pytest.                                                                                                                                              |
+| Synthetic data & confidence validation         | —                                                             | None           | Fixtures (files, SQL, NoSQL, shares); FP/FN + ground truth; confidence bands + operator guidance; timeouts/connectivity docs.                                                                                                                 |
+| Configurable timeouts                          | —                                                             | None           | Global + per-target connect/read timeouts; sane defaults; connector wiring; recommendations (avoid DoS, too-fast).                                                                                                                            |
+| Notifications (off-band + scan-complete)       | Optional: Secrets Phase A                                     | None           | Webhook notifier; scan-complete brief to operator/tenant (Slack, Teams, Telegram, etc.); recommendations.                                                                                                                                     |
+| SAP connector                                  | Optional: Configurable timeouts                               | None           | Add SAP (HANA/OData/RFC) to data soup; same discovery/sample/finding flow; optional [sap] extra. See PLAN_SAP_CONNECTOR.                                                                                                                      |
+| Enterprise HR / SST / ERP / CRM / ITSM         | Optional: SAP, REST/SQL patterns, timeouts                    | None           | Umbrella: SOC (SST software), TOTVS-class ERP, CRM, folha/ponto, GLPI-class helpdesk, URM tools. Research per vendor; minimise health-data sampling. See PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.                                               |
+| Additional data soup formats                   | Optional: Compressed, content-type                            | None           | Tier 3 rich media **ready to merge** (branch; EXIF/tags, OCR opt-in, sidecar subs, cloaking); Tier 1 (epub, parquet, avro, dbf) + **stego** still backlog. See PLAN_ADDITIONAL_DATA_SOUP_FORMATS + **Integration / WIP**.                     |
+| Additional detection techniques & FN reduction | Optional: Synthetic data (for validation)                     | None           | Additive: optional engines (fuzzy, stemming, format hint, embedding prototype); config thresholds; “suggested review”; reduce false negatives. See PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.                                     |
+| Home lab validation (production-readiness)     | Optional: –1/–1b maintenance in acceptable state              | None           | Manual second-machine smoke per [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md); proves deploy + ≥1 connector path before demo/customer confidence; low token.                                                                          |
+| Compliance standards alignment                 | —                                                             | None           | Doc only: ISO/IEC 27701 (PIMS), FELCA (minor data); COMPLIANCE_FRAMEWORKS + roadmap sentence; no code. See PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.                                                                                               |
+| Dashboard reports access control               | Optional: licensing / JWT claims; existing API-key middleware | None           | Role- or group-based gates for `/reports` and downloads; GitHub **#86**. Default behaviour unchanged until opt-in config. See PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.                                                                          |
 
 **Regression and tests:** No plan modifies wipe behaviour, SQLite schema (except Self-upgrade adds optional upgrade_log, Data source versions adds data_source_inventory, Strong crypto adds optional crypto_controls_audit or extends inventory), or existing config keys in a breaking way. New tests per plan must pass together with the full suite (`uv run pytest -v -W error`). Document each new feature in the relevant docs (EN + pt-BR where applicable).
 
@@ -296,14 +300,14 @@ Counted rows below celebrate the **maintenance + publish** sprint; see **`docs/r
 
 **Trigger:** Merge integration branch with Tier 3 rich media (subtitles, optional metadata/OCR, magic bytes, share wiring), enterprise umbrella **plan doc only**, and any aligned USAGE/TECH_GUIDE/SENSITIVITY updates. **SemVer:** patch (additive, defaults off).
 
-| Milestone | Status | Notes |
-| --------- | ------ | ----- |
-| **PR** green on `main` | ⬜ Pending | `pytest -W error`; optional `check-all` |
-| **VERSIONING** → **1.6.5** | ⬜ Pending | `pyproject.toml`, `core/about.py` fallback, man pages if versioned, `uv.lock` if deps changed |
-| **`docs/releases/1.6.5.md`** + README “current release” | ⬜ Pending | Summarise rich media flags + optional `.[richmedia]` |
-| **Git tag `v1.6.5` + GitHub Release** | ⬜ Pending | Operator |
-| **Docker Hub** `:1.6.5` + `:latest` | ⬜ Pending | After image build |
-| **`PLAN_ADDITIONAL_DATA_SOUP_FORMATS`** table row #5–7 | ⬜ Pending | Set Tier 3 slice to **✅ Done on main** after ship |
+| Milestone                                               | Status    | Notes                                                                                         |
+| ---------                                               | ------    | -----                                                                                         |
+| **PR** green on `main`                                  | ⬜ Pending | `pytest -W error`; optional `check-all`                                                       |
+| **VERSIONING** → **1.6.5**                              | ⬜ Pending | `pyproject.toml`, `core/about.py` fallback, man pages if versioned, `uv.lock` if deps changed |
+| **`docs/releases/1.6.5.md`** + README “current release” | ⬜ Pending | Summarise rich media flags + optional `.[richmedia]`                                          |
+| **Git tag `v1.6.5` + GitHub Release**                   | ⬜ Pending | Operator                                                                                      |
+| **Docker Hub** `:1.6.5` + `:latest`                     | ⬜ Pending | After image build                                                                             |
+| **`PLAN_ADDITIONAL_DATA_SOUP_FORMATS`** table row #5–7  | ⬜ Pending | Set Tier 3 slice to **✅ Done on main** after ship                                             |
 
 ### Additional detection techniques & false-negative reduction – [PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md](PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md)
 
@@ -463,12 +467,12 @@ Core flow first (sections 1–7); then optional Phase 9 (complexity/gain: high c
 
 **Status:** Planning / backlog catalogue only (no implementation commitment).
 
-| Phase | To-do | Status |
-| ----- | ----- | ------ |
+| Phase   | To-do                                                                                                                              | Status    |
+| -----   | -----                                                                                                                              | ------    |
 | A.1–A.4 | Research priority vendors per category; map API vs SQL vs export-folder; risk-only finding shape; SOX vs product SOC note for docs | ⬜ Pending |
-| B.1–B.3 | Generic enablers (OAuth REST, entity allowlists, tiered sampling) when a pilot is chosen | ⬜ Pending |
-| C.1–C.3 | Pilot connector(s); report tags for source family; recommendation linkage | ⬜ Pending |
-| D.1–D.2 | URM / productivity monitoring — policy checklist first; integration only with explicit legal basis | ⬜ Pending |
+| B.1–B.3 | Generic enablers (OAuth REST, entity allowlists, tiered sampling) when a pilot is chosen                                           | ⬜ Pending |
+| C.1–C.3 | Pilot connector(s); report tags for source family; recommendation linkage                                                          | ⬜ Pending |
+| D.1–D.2 | URM / productivity monitoring — policy checklist first; integration only with explicit legal basis                                 | ⬜ Pending |
 
 ---
 
