@@ -1,77 +1,89 @@
 # Dashboard i18n and multi-language web UI
 
-**Status:** Under consideration (no approach decided yet)
-**Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central plan status)
+**Status:** **Target architecture agreed** — implementation **deferred** until higher-priority product slices ship; milestones and sequencing below are **planning only** until scheduled.
 
-## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
+**Synced with:** [PLANS_TODO.md](PLANS_TODO.md), [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md), [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) (**#86**).
 
-Goal: allow users to use the web dashboard (and related pages) in **Brazilian Portuguese** and, in the future, other languages — with a clear way to switch language (e.g. footer link, optional flag) and without breaking existing behaviour or tests.
+## When implementing: update docs and tests; then update PLANS_TODO.md, sprints, and this file.
 
-This document sets out **options and recommendations** for you to decide on. **There is no fixed to-do list yet;** once you choose an approach, the concrete steps and to-dos can be added to this plan and to [PLANS_TODO.md](PLANS_TODO.md).
-
----
-
-## Current state
-
-- **Routes:** HTML pages at `/`, `/config`, `/reports`, `/help`, `/about` ([api/routes.py](../api/routes.py)); API endpoints (`/status`, `/scan`, `/report`, `/reports/{session_id}`, etc.) are locale-agnostic.
-- **Templates:** [api/templates/base.html](../api/templates/base.html), dashboard, reports, config, help, about — all copy is hard-coded English.
-- **JS:** [api/static/dashboard.js](../api/static/dashboard.js) has a few user-visible strings (e.g. Running, Idle, Starting…, Error).
-
-No i18n/l10n exists in the web UI today.
-
-### Related: dashboard access control (issue #86)
-
-**Different problem, same files:** [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) tracks **who may open** `/reports` and related download routes (roles / permissions vs today’s global API key or open LAN). **i18n** does not solve that.
-
-**Sequencing:** If you adopt **path-prefixed locales** (e.g. `/pt-br/reports`), sketch **middleware order** and **URL patterns** together with any **RBAC** work so you do not refactor `api/routes.py` twice. The two plans stay **separate documents**; the **sprint** may batch “dashboard web surface” design when both are active.
+**Goal:** Dashboard HTML (`/`, `/config`, `/reports`, `/help`, `/about`, …) in **`en`** + **`pt-BR`** first, optional **`es`** / **`fr`**, and a **fifth “market” locale** when demand appears — with **cookie → `Accept-Language` → configured fallback**, **path-prefixed** URLs, **JSON** message catalogs (**no gettext in v1**), and **unchanged** JSON API semantics (`/status`, `/scan`, …).
 
 ---
 
-## Options and recommendations (for decision)
+## Target architecture (anti-footgun notes)
 
-### 1. How to represent locale in the UI (routing)
-
-| Option                                             | Description                                                         | Pros                                                                                                  | Cons                                                                                                         |
-| --------                                           | -------------                                                       | ------                                                                                                | ------                                                                                                       |
-| **Path prefix** (e.g. `/en/`, `/pt-br/`)           | HTML pages live under `/{locale}/`; API stays at current paths.     | Bookmarkable per language; clear URL = language; adding a new language is a new prefix + locale file. | All internal links and redirects must include locale; route registration changes.                            |
-| **Query or cookie** (e.g. `?lang=pt-BR` or cookie) | Same URLs; locale from query param or cookie; templates/JS read it. | Fewer route changes; same URLs for all languages.                                                     | Not bookmarkable per language unless you force `?lang=` everywhere; less obvious for “add another language”. |
-
-**Recommendation (to decide):** Path prefix is usually better for clarity and adding languages later; query/cookie is simpler to implement initially but messier for multiple locales.
-
-### 2. How to store and apply translations
-
-| Option                                                                                                             | Description                                                | Pros                                                                                                               | Cons                                                                         |
-| --------                                                                                                           | -------------                                              | ------                                                                                                             | ------                                                                       |
-| **JSON locale files** (e.g. `api/locales/en.json`, `pt_BR.json`) + template helper `t(key)` + inject subset for JS | One JSON per language; templates and JS use the same keys. | No gettext toolchain; easy to add a language (new file + route prefix); keys can be injected into the page for JS. | All strings must be keyed; you maintain the JSON files.                      |
-| **gettext (.po/.mo)**                                                                                              | Standard gettext with extract/compile.                     | Familiar, scalable for large apps, good tooling.                                                                   | Requires extract/compile workflow; JS needs a separate approach; more setup. |
-
-**Recommendation (to decide):** JSON + `t(key)` is a good fit for the current size and keeps adding a language to “new JSON + prefix”; gettext is better if you expect many languages and heavy reuse.
-
-### 3. Language switcher and discoverability
-
-- **Placement:** e.g. footer in [base.html](../api/templates/base.html) so every page offers a way to change language.
-- **Content:** Link to the same logical page in the other locale (e.g. from `/pt-br/reports` to `/en/reports`), with label (e.g. “English”, “Português (Brasil)”) and optionally a small flag or icon for quick recognition.
-- **Default:** Root `/` can redirect to `/en/` or, if you want, to a locale inferred from `Accept-Language` (optional).
-
-### 4. Complexity (rough guide)
-
-- **Path prefix + JSON + footer switcher:** medium (route and template changes, locale loading, link generation).
-- **Query/cookie only:** low–medium (no path change; need to pass locale everywhere and optionally remember it).
-- **Full gettext:** medium–high (toolchain + template changes + JS strategy).
+| Decision | Choice | Why / later migration |
+| -------- | ------ | --------------------- |
+| **HTML URLs** | **Path prefix** — e.g. `/en/`, `/pt-br/`, `/es/`, `/fr/` (slugs configurable; map to BCP 47 in config). | Bookmarkable; adding a language = new JSON + slug + switcher entry. **RBAC (#86)** should target **the same** path pattern from day one of implementation — see meshing § below. |
+| **API** | **No locale prefix**; stable JSON keys and values as today. | Keeps **clients, scripts, and tests** simple. Optional later: localized **human** `detail` strings — not v1. |
+| **Strings** | **`api/locales/{tag}.json`** (or agreed path) + **`t(key)`** in Jinja; inject a **subset** into pages for `dashboard.js`. | **Abstraction:** implement `t()` as “load JSON dict” now; a later swap to gettext can **keep the same helper signature** if keys stay stable. Avoid baking English sentences as *only* msgids until you need gettext. |
+| **Default locale** | **(1)** Valid **preference cookie** → **(2)** **`Accept-Language`** vs `supported_locales` → **(3)** **`default_locale`** in config (fallback often `en`). | User does **not** re-pick language every visit. |
+| **Catalog size** | **Long-term cap ~5** shipped UI locales (`en`, `pt-BR`, + optional `es`, `fr`, + one **token** slot). **gettext** reconsider only if **many** locales or **heavy** translator workflow — typically **not** for months/years at this scale. | JSON + **CI key-parity** checks across locale files stays token- and maintainer-friendly. |
+| **Plurals / gender** | Prefer **label + number** patterns in copy to limit grammar pain; if rich phrases appear later, consider **ICU MessageFormat in JSON** or migrate string layer — **without** changing URL or API design. | Avoids locking out Japanese etc. when you add them. |
 
 ---
 
-## Possible next steps (only after you decide)
+## Meshing with dashboard reports RBAC (issue #86)
 
-Once you have chosen:
+**Different concerns:** i18n = **which language**; #86 = **who may access** which routes.
 
-- **Routing:** path prefix vs query/cookie (and, if path, default locale and redirect rule),
-- **Translations:** JSON vs gettext (and, if JSON, where files live and how JS gets them),
-- **Switcher:** where it goes (e.g. footer), whether to use flags/icons,
+**Same code paths:** `api/routes.py`, templates, middleware stack.
 
-then:
+### Planning rule
 
-1. Add a **concrete to-do list** to this plan (and to [PLANS_TODO.md](PLANS_TODO.md)) for the chosen approach.
-1. Implement step by step, with tests and docs updated as in other plans.
+Before **either** implementation PR changes route shape:
 
-Until then, this plan remains **under consideration** with no committed to-dos.
+1. Produce a **short URL + middleware order diagram** (can live in this section or in **#86** plan — keep cross-links). Include: unprefixed API; prefixed HTML; where **API key** runs; where **locale** is resolved; where **route class / RBAC** runs (exact order TBD in design pass — typically: normalize path → optional API key → locale for HTML → RBAC for resource class).
+
+2. **Recommended implementation order (when work actually starts):**
+   - **Slice A — Locale skeleton:** introduce `/{locale}/…` for HTML with **`en`** + **`pt-BR`** JSON and negotiation; **no** RBAC behaviour change yet (defaults unchanged).
+   - **Slice B — #86 Phase 0–1:** docs + optional middleware on **that same** path layout (avoid gating `/reports` on legacy paths then re-gating on prefixed paths in a second refactor).
+   - **Slice C — #86 Phase 2+** and **optional `es`/`fr`/token locale** as separate PRs.
+
+**Higher rework cost (avoid unless security forces it):** ship #86 only on **legacy** unprefixed paths, then add locale prefix later — implies **second** pass on every guard and link.
+
+---
+
+## Milestones (planning — not calendar dates)
+
+| ID | Name | Type | Done when |
+| -- | ---- | ---- | --------- |
+| **D-WEB** | **Dashboard web surface design** | Doc / diagram | URL map + middleware order agreed; cross-linked from **#86** plan; no feature code required. |
+| **M-LOCALE-V1** | **Locale v1 on `main`** | Code | Path-prefixed HTML; `en` + `pt-BR` JSON; cookie + `Accept-Language` + config fallback; switcher; tests; USAGE/TECH_GUIDE touch; CI key parity for shipped locales. |
+| **M-LOCALE-PLUS** | **Optional locales** | Code | `es` and/or `fr` and/or fifth market locale — same mechanics; still no gettext unless reprioritised. |
+
+**Sprint placement:** **D-WEB** can run in a **buffer** sprint or **ahead of** the first implementation slice; **M-LOCALE-V1** is **Tier 4 / H2** alongside **#86** — see [PLANS_TODO.md](PLANS_TODO.md) and [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) §4.2. **Do not** schedule **M-LOCALE-V1** until explicit priority after current Tier-2 / integration work unless the operator promotes it.
+
+---
+
+## Implementation checklist (execute only when scheduled)
+
+1. **Config:** `supported_locales`, `default_locale`, cookie name/TTL; document in USAGE + pt-BR (+ TECH_GUIDE if needed).
+2. **Middleware:** Negotiation for unprefixed `/` → `/{best}/…`; register HTML under prefix; **leave API routes unprefixed**.
+3. **Locales:** JSON files per locale; `t(key)` + missing-key fallback (e.g. English).
+4. **Templates:** Replace hard-coded copy; footer **switcher** + **Set-Cookie** on choice.
+5. **JS:** `dashboard.js` strings from server-injected map; align keys with JSON.
+6. **Tests:** Redirect order; one template or key-resolution test; update operator-help sync manifest if `/help` paths change.
+7. **CI:** Script or test: **key sets match** across all **shipped** locale JSON files.
+8. **#86:** Apply RBAC / route classes to **prefixed** HTML paths per joint diagram.
+
+---
+
+## Current state (baseline)
+
+- **Routes:** HTML at `/`, `/config`, `/reports`, `/help`, `/about` ([api/routes.py](../api/routes.py)); API endpoints locale-agnostic.
+- **Templates:** English hard-coded in Jinja.
+- **JS:** [api/static/dashboard.js](../api/static/dashboard.js) — a few visible strings.
+
+---
+
+## Options reference (historical)
+
+Earlier comparisons of path vs query/cookie and JSON vs gettext remain valid for **edge cases**; **target stack** is fixed in § Target architecture above unless the operator explicitly revisits this file.
+
+---
+
+## See also
+
+- [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) — **#86**; **coordinate** D-WEB and route order.
+- [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) — public marketing site (separate from in-app dashboard).

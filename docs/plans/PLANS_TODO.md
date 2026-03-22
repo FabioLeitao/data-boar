@@ -60,7 +60,7 @@ Refresh periodically: `gh issue list --state open --limit 50` (requires [`gh`](h
 | -                                                        | -----------                                      | ----                  | ----                                                                                 | ------------------------                                                                 |
 | [86](https://github.com/FabioLeitao/data-boar/issues/86) | Reports / dashboard access by role or permission | Feature + security UX | [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) | `[H2][U2]` after **Priority band A**; Phase 0 = docs + proxy patterns; in-app RBAC later |
 
-**Dashboard web surface cluster:** [#86](https://github.com/FabioLeitao/data-boar/issues/86) (RBAC) and [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) (locale) share `api/routes.py` / templates but are **separate plans**—coordinate middleware and path design when both are in play; see **§ Relationship to other plans** in PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.
+**Dashboard web surface cluster:** [#86](https://github.com/FabioLeitao/data-boar/issues/86) (RBAC) and [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) (locale) share `api/routes.py` / templates. **Target architecture** and **milestone IDs (D-WEB, M-LOCALE-V1, …)** are in the i18n plan; **#86** references **D-WEB** before route-changing PRs. See [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) §4.2.
 
 ### Doc housekeeping — workflow guardrails (✅ 2026-03-22)
 
@@ -78,7 +78,7 @@ Post–PR **#118**: clarified **`private-layout`** vs **`docs/private/homelab`**
 | Additional compliance samples                  | —                                                             | None           | Config-only; samples and docs additive.                                                                                                                                                                                                       |
 | Compressed files                               | Config loader (new keys)                                      | None           | Additive feature; optional dependency py7zr.                                                                                                                                                                                                  |
 | Content type & cloaking detection              | —                                                             | None           | Opt-in magic-byte/MIME detection for renamed/cloaked files; more I/O/CPU; steganography out of scope for v1.                                                                                                                                  |
-| Dashboard i18n                                 | Approach decided                                              | None           | No concrete to-dos until routing/translation approach chosen. When adding locale path prefixes, **coordinate** with [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) (issue **#86**) on middleware order. |
+| Dashboard i18n                                 | Target architecture documented; **impl deferred**             | None           | **Path prefix + JSON + cookie/`Accept-Language`/fallback**; **~5 locales** long-term; gettext backlog. **D-WEB** design before code; **M-LOCALE-V1** after higher-priority slices. Mesh **#86** on **prefixed** paths — [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md). |
 | Data source versions & hardening               | —                                                             | None           | Additive: new table data_source_inventory, new report sheets; optional CVE lookup.                                                                                                                                                            |
 | Strong crypto & controls validation            | —                                                             | None           | Optional flag (CLI + dashboard); new table or extend inventory; report sheet "Crypto & controls"; inference best-effort.                                                                                                                      |
 | CNPJ alphanumeric format validation            | —                                                             | None           | Format spec + regex/override; optional built-in or config flag; compatibility report; no change to legacy LGPD_CNPJ.                                                                                                                          |
@@ -113,7 +113,7 @@ The recommended order below is chosen to:
 - **Tier 1 – Foundation (completed):** Security hardening, Configurable timeouts, Secrets Phase A.
 - **Tier 2 – Scan and report (in progress, token-efficient slices first):** Compressed files, Content type & cloaking detection, Data source versions & hardening, Strong crypto & controls, Compliance samples (completed), SAP connector (later).
 - **Tier 3 – Secrets and upgrade (deferred unless extra capacity):** Secrets Phase B, Version check & self-upgrade.
-- **Tier 4 – Validation and ops (partial, high-value slices first):** CNPJ alphanumeric, Additional detection techniques & FN reduction, **Home lab smoke** (order **–1L**, after maintenance), Notifications (early phases), Selenium QA, Synthetic data & confidence, Dashboard i18n, **Dashboard reports RBAC** (issue **#86**; doc-first phases).
+- **Tier 4 – Validation and ops (partial, high-value slices first):** CNPJ alphanumeric, Additional detection techniques & FN reduction, **Home lab smoke** (order **–1L**, after maintenance), Notifications (early phases), Selenium QA, Synthetic data & confidence, **Dashboard web surface** — **D-WEB** (design) then **M-LOCALE-V1** (i18n impl) + **Dashboard reports RBAC** (issue **#86** on prefixed paths; doc-first phases) — see [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) §4.2.
 
 Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). Within a plan, execute phases in order.
 
@@ -263,7 +263,7 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
 1. **Selenium QA test suite** – full UI automation suite, stress tests, QA reports.
 1. **Synthetic data & confidence validation** – fixtures across all formats, precision/recall tooling, confidence bands in reports (feeds **W-CONTRACT**).
 1. **SAP connector** – research, connector module for HANA/OData/RFC, docs and tests.
-1. **Dashboard i18n** – routing and translation strategy decision, then implementation.
+1. **Dashboard i18n** – **target architecture locked** in [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) (**D-WEB** / **M-LOCALE-V1**); **implementation deferred** behind current Tier-2 / integration priorities unless promoted. Run **D-WEB** (doc-only) before any route refactor; coordinate **#86** on same path layout.
 
 ### H3/U3 C. Backlog (catalogue)
 
@@ -478,7 +478,18 @@ Core flow first (sections 1–7); then optional Phase 9 (complexity/gain: high c
 
 ### Dashboard i18n – [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md)
 
-**Status:** Under consideration. No to-do list until routing (path prefix vs query/cookie) and translation storage (JSON vs gettext) are decided. After decision, add concrete steps to this plan and to [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md).
+**Status:** **Target architecture agreed** — **code not started** until scheduled after other product work.
+
+| Milestone | Purpose | When |
+| --------- | ------- | ---- |
+| **D-WEB** | URL map + **middleware order** (API key, locale, RBAC) — **doc / diagram**; cross-link **#86** plan | Before any HTML route refactor |
+| **M-LOCALE-V1** | Path-prefixed HTML; **`en` + `pt-BR`** JSON; negotiation; switcher; tests; CI locale key parity | After D-WEB + explicit schedule |
+| **M-LOCALE-PLUS** | Optional **`es` / `fr` / fifth** locale | Separate slices |
+| **gettext** | Revisit only if **many** locales or **heavy** translator process | Months/years — not v1 |
+
+**RBAC (#86):** Implement Phase **1+** on **prefixed** paths aligned with i18n — see [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) § *Sequencing with dashboard i18n*.
+
+**Full checklist:** [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) (implementation section — run when milestone is **Selected**).
 
 ---
 
