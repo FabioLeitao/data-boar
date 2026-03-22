@@ -1,6 +1,6 @@
 # Plan: Additional "data soup" formats and rich media
 
-**Status:** Not started (planning / backlog)
+**Status:** Tier 3 **metadata + subtitles + magic-byte cloaking** — **merged to `main` when shipped** (see [PLANS_TODO.md](PLANS_TODO.md) **Integration / WIP** until then); Tier 1 formats and **stego** remain backlog (see to-dos below).
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md)
 
 **Related plans:** [PLAN_COMPRESSED_FILES.md](PLAN_COMPRESSED_FILES.md) (scan inside archives), [PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md](PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md) (magic-byte/cloaking), [PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md](PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md#steganography-future--optional) (steganography as future phase).
@@ -122,9 +122,9 @@ Suggested order:
 | 2   | **Tier 1 – Parquet / Avro:** Add .parquet, .avro; read schema + sample rows; run scanner on column names and sample values.                                                | ⬜      |
 | 3   | **Tier 1 – ORC / Feather:** Add .orc, .feather; read via pyarrow; run scanner on column names and sample values.                                                           | ⬜      |
 | 4   | **Tier 1 – DBF:** Add .dbf; extract column names + sample rows; run scanner.                                                                                               | ⬜      |
-| 5   | **Tier 3 – Metadata only:** Optional extractors for image EXIF/XMP, audio ID3, video metadata/subtitles (no stego).                                                        | ⬜      |
+| 5   | **Tier 3 – Metadata only:** Optional extractors for image EXIF/XMP, audio ID3, video metadata/subtitles (no stego).                                                        | ✅ Done (`file_scan.scan_rich_media_metadata`, `scan_image_ocr`, sidecar `.srt`/`.vtt`/`.ass`/`.ssa`; mutagen/ffprobe/Tesseract optional; see USAGE / TECH_GUIDE). |
 | 6   | **Stego phase (future):** Document image/audio/video as stego containers; design opt-in `scan_for_stego`; CLI `--scan-stego` and web/dashboard option; implement or defer. | ⬜      |
-| 7   | **Docs:** When adding formats, update USAGE, TECH_GUIDE, SUPPORTED_EXTENSIONS list; note behaviour inside compressed and when cloaked.                                     | ⬜      |
+| 7   | **Docs:** When adding formats, update USAGE, TECH_GUIDE, SUPPORTED_EXTENSIONS list; note behaviour inside compressed and when cloaked.                                     | ✅ Updated for rich media slice; revisit when Tier 1 formats land. |
 
 **Sync:** When a step is done, update this table and [PLANS_TODO.md](PLANS_TODO.md). This plan remains a **backlog/catalogue** until we prioritise a specific phase.
 
@@ -142,4 +142,4 @@ Suggested order:
 
 ## Last updated
 
-Plan created. Updated with default vs opt-in section, ORC/Feather in Tier 1, corporate relevance column, pyarrow dependency note, and stego opt-in (CLI + web). Update when new formats are prioritised or when stego phase is scoped.
+Plan created. Updated with default vs opt-in section, ORC/Feather in Tier 1, corporate relevance column, pyarrow dependency note, and stego opt-in (CLI + web). **2026-03:** Rich media Tier 3 (metadata OCR, subtitles, magic bytes with `use_content_type`) implemented in code; stego remains explicitly future opt-in.

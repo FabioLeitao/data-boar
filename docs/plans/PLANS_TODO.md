@@ -23,27 +23,34 @@ Use these tags in headings to keep priorities explicit and machine-countable:
 
 Do not edit this block manually; refresh with `python scripts/plans-stats.py --write`.
 
-- **Status rows counted:** 93  (Done: 50 | Incomplete: 43)
-- **Incomplete breakdown:** Pending `⬜`=41, Tracked `🔄` / `Tracked (partially done)`=2, Under consideration=0, Backlog-marked rows=0
+- **Status rows counted:** 103  (Done: 51 | Incomplete: 52)
+- **Incomplete breakdown:** Pending `⬜`=50, Tracked `🔄` / `Tracked (partially done)`=2, Under consideration=0, Backlog-marked rows=0
 
 | Horizon | Total rows | Done | Incomplete |
 | ------- | ----------: | ----: | ----------: |
 | `H0` | 20 | 18 | 2 |
 | `H1` | 0 | 0 | 0 |
 | `H2` | 0 | 0 | 0 |
-| `H3` | 73 | 32 | 41 |
+| `H3` | 83 | 33 | 50 |
 | `H4` | 0 | 0 | 0 |
 | `H5` | 0 | 0 | 0 |
 | `UNSPECIFIED` | 0 | 0 | 0 |
 <!-- PLANS_STATUS_DASHBOARD:END -->
 
-**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Commercial licensing (runtime + docs + issuer bootstrap)** ✅ Phase 1 in repo (see `docs/LICENSING_SPEC.md`, `core/licensing/`); operational hardening ⬜ Priority band A · **Release 1.6.4** ✅ shipped **2026-03-20** (GitHub Release **v1.6.4**, Docker Hub **`fabioleitao/data_boar:1.6.4`** + **`:latest`**, `docs/releases/1.6.4.md`; maintenance sprint **#99–#104** on `main`) · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ✅ Done · **Compliance standards alignment (ISO/IEC 27701, FELCA)** ✅ Done (doc only) · **Additional detection techniques & FN reduction** 🔄 Slices 1–4 done (`fuzzy_column_match`, `FUZZY_COLUMN_MATCH`, `connector_format_id_hint`, `FORMAT_LENGTH_HINT_ID`); next: optional aggregated/incomplete-data modes and semantic hints (priorities 5+). · **Compressed files** ✅ Done (steps 1–12; follow-ups 13–14 optional) · **Content type & cloaking detection** ✅ Core plan done (optional: man pages / OpenAPI examples) · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ✅ Phase 4 done (Phase 5 checksum future) · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started · **Additional data soup formats** ⬜ Backlog (catalogue) · **Home lab (–1L)** 🔄 Partial: LAN dashBOARd + `uv`/git on a second host; playbook [§9 multi-host Linux](../ops/HOMELAB_VALIDATION.md#9-multi-host-linux-optional-matrix-dns-ssh-different-distros) (DNS/SSH; Void/Pi notes; no agent-side OS installs). **Done** when [§12](../ops/HOMELAB_VALIDATION.md#12-when-you-are-done-with-a-lab-pass) criteria + dated note (e.g. `docs/private/`).
+**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Commercial licensing (runtime + docs + issuer bootstrap)** ✅ Phase 1 in repo (see `docs/LICENSING_SPEC.md`, `core/licensing/`); operational hardening ⬜ Priority band A · **Release 1.6.4** ✅ shipped **2026-03-20** (GitHub Release **v1.6.4**, Docker Hub **`fabioleitao/data_boar:1.6.4`** + **`:latest`**, `docs/releases/1.6.4.md`; maintenance sprint **#99–#104** on `main`) · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ✅ Done · **Compliance standards alignment (ISO/IEC 27701, FELCA)** ✅ Done (doc only) · **Additional detection techniques & FN reduction** 🔄 Slices 1–4 done (`fuzzy_column_match`, `FUZZY_COLUMN_MATCH`, `connector_format_id_hint`, `FORMAT_LENGTH_HINT_ID`); next: optional aggregated/incomplete-data modes and semantic hints (priorities 5+). · **Compressed files** ✅ Done (steps 1–12; follow-ups 13–14 optional) · **Content type & cloaking detection** ✅ Core plan done (optional: man pages / OpenAPI examples) · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ✅ Phase 4 done (Phase 5 checksum future) · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **SAP connector** ⬜ Not started · **Additional data soup formats** 🔄 Tier 3 rich media **in flight** (branch / unmerged work; see § Integration / WIP above); Tier 1 (epub, parquet, …) + **stego** ⬜ backlog · **Home lab (–1L)** 🔄 Partial: LAN dashBOARd + `uv`/git on a second host; playbook [§9 multi-host Linux](../ops/HOMELAB_VALIDATION.md#9-multi-host-linux-optional-matrix-dns-ssh-different-distros) (DNS/SSH; Void/Pi notes; no agent-side OS installs). **Done** when [§12](../ops/HOMELAB_VALIDATION.md#12-when-you-are-done-with-a-lab-pass) criteria + dated note (e.g. `docs/private/`).
 
 ### Commercial licensing — future reminder (partner / tiered SKUs)
 
 When revising **license terms** for IP, commerciality, and profitability, explicitly design **multiple SKUs** (e.g. **direct end-user commercial** vs **partner / pro / enterprise**—names TBD) so **consulting partners** can deliver to **their customers** under a **partner-appropriate** subscription and price point, with different objectives and cost-to-serve (analogous to tiered DB licensing: Express / Standard / Enterprise / options). **Legal + pricing first;** then JWT claims and runtime enforcement. Documented in [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](../LICENSING_OPEN_CORE_AND_COMMERCIAL.md) and [LICENSING_SPEC.md](../LICENSING_SPEC.md) (future extensions).
 
 **Brand and experience IP (same pass):** Include **mascot**, **Data Boar / dashBOARd** naming, **data soup** metaphor and connector narrative, **UI/report appearance**, documented **operation** (CLI/API/Docker story), and **companion artifacts** (Docker image branding, website, related repos) in trademark and commercial-license review — see [LICENSING_OPEN_CORE_AND_COMMERCIAL.md § Brand, narrative, and experience IP](../LICENSING_OPEN_CORE_AND_COMMERCIAL.md#brand-narrative-and-experience-ip-inventory-for-counsel-and-commercial-policy) and [COPYRIGHT_AND_TRADEMARK.md](../COPYRIGHT_AND_TRADEMARK.md#6-brand-narrative-and-product-experience-inventory).
+
+### Integration / WIP — refresh when merged (2026-03-01)
+
+- **Active branch (example):** `docs/compliance-maccess-and-doc-updates` — already contains merged **`main`**, recent **detector** entertainment / OSS-Markdown / lyric `.txt` fixes (`37db478`, `e84f95c`), and **compliance / M-ACCESS / operator-ops** doc slices (`150facc`, `47f2252`, …). **Large uncommitted set** on top: **rich media Tier 3** (subtitles, optional metadata/OCR, magic-byte cloaking, share connectors, tests), **`PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md`**, assorted doc/config touches — **not** on `main` until PR + merge.
+- **When to open a PR:** After **`uv run pytest -v -W error`** (and `scripts/check-all.ps1` if you use it). Prefer **one PR = one theme** (e.g. “Rich media + docs + tests”) or split **docs-only** vs **feature** if reviews get heavy — see [COMMIT_AND_PR.md](../ops/COMMIT_AND_PR.md) and `.cursor/rules/execution-priority-and-pr-batching.mdc`.
+- **Version bump after merge:** **Patch `1.6.5`** fits this drop (additive `file_scan` keys, defaults **false**, backward compatible). Use **`1.7.0` minor** when you ship a **marketed** capability bundle or any **backward-incompatible** config/API change. **Doc-only** typo fixes can stay on **1.6.4** or ride the next patch for Hub tag hygiene — operator choice. Follow the VERSIONING checklist in the latest `docs/releases/*.md` pattern + `core/about.py` fallback alignment.
+- **Sprint mirror:** [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) §3 Kanban + §5 **M-RICH** — keep in sync when this lands on `main`.
 
 ---
 
@@ -66,7 +73,8 @@ When revising **license terms** for IP, commerciality, and profitability, explic
 | Configurable timeouts                          | —                                                | None           | Global + per-target connect/read timeouts; sane defaults; connector wiring; recommendations (avoid DoS, too-fast).                                                                                        |
 | Notifications (off-band + scan-complete)       | Optional: Secrets Phase A                        | None           | Webhook notifier; scan-complete brief to operator/tenant (Slack, Teams, Telegram, etc.); recommendations.                                                                                                 |
 | SAP connector                                  | Optional: Configurable timeouts                  | None           | Add SAP (HANA/OData/RFC) to data soup; same discovery/sample/finding flow; optional [sap] extra. See PLAN_SAP_CONNECTOR.                                                                                  |
-| Additional data soup formats                   | Optional: Compressed, content-type               | None           | Catalogue: epub, parquet, avro, dbf; rich media (images, audio, video) as stego containers; metadata-only or stego phase. See PLAN_ADDITIONAL_DATA_SOUP_FORMATS.                                          |
+| Enterprise HR / SST / ERP / CRM / ITSM         | Optional: SAP, REST/SQL patterns, timeouts       | None           | Umbrella: SOC (SST software), TOTVS-class ERP, CRM, folha/ponto, GLPI-class helpdesk, URM tools. Research per vendor; minimise health-data sampling. See PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.           |
+| Additional data soup formats                   | Optional: Compressed, content-type               | None           | Tier 3 rich media **ready to merge** (branch; EXIF/tags, OCR opt-in, sidecar subs, cloaking); Tier 1 (epub, parquet, avro, dbf) + **stego** still backlog. See PLAN_ADDITIONAL_DATA_SOUP_FORMATS + **Integration / WIP**.            |
 | Additional detection techniques & FN reduction | Optional: Synthetic data (for validation)        | None           | Additive: optional engines (fuzzy, stemming, format hint, embedding prototype); config thresholds; “suggested review”; reduce false negatives. See PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION. |
 | Home lab validation (production-readiness)     | Optional: –1/–1b maintenance in acceptable state | None           | Manual second-machine smoke per [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md); proves deploy + ≥1 connector path before demo/customer confidence; low token.                                      |
 | Compliance standards alignment                 | —                                                | None           | Doc only: ISO/IEC 27701 (PIMS), FELCA (minor data); COMPLIANCE_FRAMEWORKS + roadmap sentence; no code. See PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.                                                           |
@@ -82,7 +90,7 @@ The recommended order below is chosen to:
 - **Strengthen the base first:** Security hardening and Configurable timeouts reduce risk and improve robustness for all later work. **Both are already completed.**
 - **Respect dependencies:** Secrets Phase A (redact, env) before Phase B (vault); Notifications can optionally use Secrets A for webhook URLs. **Phase A is completed; Phase B is deferred to a later billing cycle unless extra capacity is available.**
 - **Batch additive features:** Compliance samples, Compressed files, Data source versions, and Strong crypto add config/report/sheets without breaking existing flows. **Near-term focus is on small, high-leverage slices of these plans.**
-- **Defer optional or heavy work:** Version check, Selenium QA, Synthetic data, Notifications (later phases), SAP connector, Dashboard i18n, and Additional data soup formats come after core security and scan/report features or when more usage budget is available.
+- **Defer optional or heavy work:** Version check, Selenium QA, Synthetic data, Notifications (later phases), SAP connector, Dashboard i18n, and remaining **Additional data soup** items (Tier 1 formats, stego) come after core security and scan/report features or when more usage budget is available.
 
 ## Tier summary (for planning):
 
@@ -143,7 +151,7 @@ After **A1–A3** (minimum), you can **resume token-aware pace** on Tier 2 featu
 | 5     | **Data source versions & hardening**                      | Phase 1: `data_source_inventory` schema + save + one connector (e.g. SQL) + report sheet; one clear slice.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | 6     | **Notifications (off-band + scan-complete)**              | Phase 1: config shape + notifier module + one channel (e.g. webhook); docs and examples; medium scope.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
-**Deferred (larger or later):** Secrets Phase B, Version check & self-upgrade (incl. optional Phase 9: .deb/apt repo, signed packages, bytecode-only install, winget-like), Selenium QA, Synthetic data, SAP connector, Dashboard i18n. **Backlog:** Additional data soup formats.
+**Deferred (larger or later):** Secrets Phase B, Version check & self-upgrade (incl. optional Phase 9: .deb/apt repo, signed packages, bytecode-only install, winget-like), Selenium QA, Synthetic data, SAP connector, Dashboard i18n. **Backlog:** Additional data soup (Tier 1 + stego; Tier 3 rich media → merge pending, see **Integration / WIP** above).
 
 #### Resume next session (security/maintenance first, then feature work)
 
@@ -156,7 +164,7 @@ After **A1–A3** (minimum), you can **resume token-aware pace** on Tier 2 featu
 1. **CodeQL:** Runs on push/PR to main; weekly schedule. No action unless **Security → Code scanning** shows new findings; then fix and re-run.
 1. **CodeQL triage runbook skill (future, token-aware):** Create a compact Agent skill for one-command-like CodeQL triage sessions (fetch alerts, map with P0/P1/P2 matrix, propose minimal fix order, and output safe-next actions). Add when maintenance is green and we want faster recurring triage.
 1. **After bots and Scout are green:** Either run **order –1L** (home lab) if you want second-environment proof before the next feature burst, or continue the table: **Content type** optional follow-ups, **FN reduction** plan §4 (format hints), **Strong crypto** Phase 1, or **Data source versions** Phase 1.
-1. **Study (your task):** CWL paid courses are listed and prioritised in [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.2 and in `docs/private/Learning_and_certs.md`. Recommended order: BTF → C3SA → MCBTA → PTF → …; one cert at a time. Slot fixed study blocks (e.g. 1–2 sessions/week) after one feature slice; don’t mix deep study with same-day agent-heavy coding (token-aware). **After lato sensu:** post-lato options (stricto sensu, Faculdade HUB MBA IA, Universidade do Intercâmbio) are in PORTFOLIO §4.2; choose one when ready – no need to open all academic plans in one session.
+1. **Study (your task):** **Through ~mid-April 2026**, primary focus = **Claude Certified Architect (CCA)** prep (Anthropic Academy / Skilljar; overview link in [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.0). Keep **band A** on a thin cadence in parallel. **After that window** (or after a first CCA attempt), resume **paid cyber** (CWL §3.2, `docs/private/Learning_and_certs.md`): BTF → C3SA → MCBTA → PTF → …; one major lane at a time. Retake CCA later in the year if needed—knowledge still helps the product. Slot fixed study blocks (e.g. 1–2 sessions/week) after one feature slice; don’t mix deep study with same-day agent-heavy coding (token-aware). **Checklist:** [OPERATOR_MANUAL_ACTIONS.md](../ops/OPERATOR_MANUAL_ACTIONS.md). **After lato sensu:** post-lato options in PORTFOLIO §4.2.
 
 ### Compliance standards alignment (ISO/IEC 27701, FELCA) – [PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md](PLAN_COMPLIANCE_STANDARDS_ALIGNMENT.md)
 
@@ -246,7 +254,9 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
 
 **Narrative & architecture history (single doc):** Placeholder [NARRATIVE_AND_ARCHITECTURE_HISTORY.md](../NARRATIVE_AND_ARCHITECTURE_HISTORY.md) ([pt-BR](../NARRATIVE_AND_ARCHITECTURE_HISTORY.pt_BR.md)) — **⬜ Pending operator material** (e.g. old blog export, timeline, or dictated milestones). **Cursor / agents:** when expanding onboarding, partner-facing story, or roadmap context, **ask the operator** to supply source narrative so it can be curated here; keep [TECH_GUIDE.md](../TECH_GUIDE.md) as the technical source of truth for current behaviour.
 
-**Additional data soup formats:** [PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md](PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md) – additional formats (epub, parquet, avro, dbf) and rich media / steganography containers (images, audio, video). Prioritise after compressed + content-type; stego as optional future phase.
+**Additional data soup formats:** [PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md](PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md) – **Tier 3 rich media:** implemented on integration branch; mark plan table **✅** and sync status line **after merge to `main`**. **Still backlog:** Tier 1 (epub, parquet, avro, dbf) and **stego** (`scan_for_stego` / future CLI).
+
+**Enterprise back-office / SST / HR / ERP / CRM / helpdesk:** [PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md](PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md) – **⬜ Backlog (plan only).** Clarifies **SOC (software SST)** vs **SOX (Sarbanes-Oxley)**; phased **research-first** approach for APIs/DB/exports; data minimisation for health-like data; URM tools last. No implementation until pilot vendor is chosen.
 
 **Brand micro-copy reminder (dashBOARd):** Revisit whether/how to label the **web dashboard** with the recommended sub-brand nickname `dashBOARd` (while keeping the decision-maker pitch unchanged). Keep changes low-noise and professional: prefer page title/header parenthetical (and minimal doc mentions in technical overview / USAGE / TECH_GUIDE). If we apply it, also update version bump / release notes accordingly. Status: ✅ Implemented (nav + About); revisit on next minor bump if needed.
 
@@ -270,6 +280,19 @@ Counted rows below celebrate the **maintenance + publish** sprint; see **`docs/r
 | **Git** tag + **GitHub Release**                                                                                       | ✅ Done | **`v1.6.4`**                                                    |
 | **Docker Hub** `:1.6.4` + `:latest` (image matches app version)                                                        | ✅ Done | Same digest as tag above; base **`python:3.13-slim`** (**#99**) |
 | **Ops docs** (merge→bump→build→push, Dependabot pyOpenSSL triage, `maintenance-check` alerts)                          | ✅ Done | **#100–#103** on `main`                                         |
+
+### H3/U2 Release **1.6.5** (planned patch) — rich media + detector doc sync
+
+**Trigger:** Merge integration branch with Tier 3 rich media (subtitles, optional metadata/OCR, magic bytes, share wiring), enterprise umbrella **plan doc only**, and any aligned USAGE/TECH_GUIDE/SENSITIVITY updates. **SemVer:** patch (additive, defaults off).
+
+| Milestone | Status | Notes |
+| --------- | ------ | ----- |
+| **PR** green on `main` | ⬜ Pending | `pytest -W error`; optional `check-all` |
+| **VERSIONING** → **1.6.5** | ⬜ Pending | `pyproject.toml`, `core/about.py` fallback, man pages if versioned, `uv.lock` if deps changed |
+| **`docs/releases/1.6.5.md`** + README “current release” | ⬜ Pending | Summarise rich media flags + optional `.[richmedia]` |
+| **Git tag `v1.6.5` + GitHub Release** | ⬜ Pending | Operator |
+| **Docker Hub** `:1.6.5` + `:latest` | ⬜ Pending | After image build |
+| **`PLAN_ADDITIONAL_DATA_SOUP_FORMATS`** table row #5–7 | ⬜ Pending | Set Tier 3 slice to **✅ Done on main** after ship |
 
 ### Additional detection techniques & false-negative reduction – [PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md](PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md)
 
@@ -422,6 +445,19 @@ Core flow first (sections 1–7); then optional Phase 9 (complexity/gain: high c
 | 1.1–1.3 | Research SAP access (HANA/OData/RFC); decide primary path; define config shape                    | ⬜ Pending |
 | 2.1–2.3 | Connector module (discovery, sampling, scan_column, save_finding); register; optional [sap] extra | ⬜ Pending |
 | 3.1–3.3 | USAGE/TECH_GUIDE (EN + pt-BR); tests; pitch/roadmap update in README                              | ⬜ Pending |
+
+---
+
+### Enterprise HR / SST / ERP / CRM / helpdesk (umbrella) – [PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md](PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md)
+
+**Status:** Planning / backlog catalogue only (no implementation commitment).
+
+| Phase | To-do | Status |
+| ----- | ----- | ------ |
+| A.1–A.4 | Research priority vendors per category; map API vs SQL vs export-folder; risk-only finding shape; SOX vs product SOC note for docs | ⬜ Pending |
+| B.1–B.3 | Generic enablers (OAuth REST, entity allowlists, tiered sampling) when a pilot is chosen | ⬜ Pending |
+| C.1–C.3 | Pilot connector(s); report tags for source family; recommendation linkage | ⬜ Pending |
+| D.1–D.2 | URM / productivity monitoring — policy checklist first; integration only with explicit legal basis | ⬜ Pending |
 
 ---
 

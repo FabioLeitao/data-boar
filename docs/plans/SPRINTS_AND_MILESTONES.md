@@ -65,12 +65,19 @@ Copy this table into a GitHub **Project** board or a personal doc; move rows by 
 | **Backlog** | Strong crypto Phase 1 | A/M | `PLANS_TODO` order 4 |
 | **Backlog** | Data source inventory Phase 1 | A/M | order 5 |
 | **Backlog** | Notifications Phase 1 | A/M | order 6 |
-| **Selected** | *(one row only for token-aware week)* | — | Pick from “What to start next” |
-| **In progress** | *(current session scope)* | — | Same as TOKEN_AWARE “one plan or one slice” |
+| **Selected** | *(one row only for token-aware week)* | — | Pick from “What to start next” or **Integration / WIP** in [PLANS_TODO.md](PLANS_TODO.md) |
+| **In progress** | *(current session scope — e.g. rich media Tier 3 until merged)* | — | TOKEN_AWARE: one primary slice; see **Integration / WIP** when landing rich media + **1.6.5** |
 | **Blocked** | *(waiting on operator: hardware, Hub, counsel)* | **Operator** | Note blocker in PR or private runbook |
 | **Done** | *(shipped + tests + doc tick)* | — | Update `PLANS_TODO` + plan file |
 
 **Kanban WIP limit:** **1** primary feature theme in **In progress** for agent sessions; **operator** tasks (study, lab hardware) can run **in parallel** on calendar time but should not add a second **agent-heavy** theme without explicit agreement.
+
+### 3.1 Study and certification lane (operator calendar)
+
+- **Through ~mid-April 2026:** Primary study focus = **CCA** (Claude Certified Architect); see [OPERATOR_MANUAL_ACTIONS.md](../ops/OPERATOR_MANUAL_ACTIONS.md) and [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.0.
+- **Same window:** Keep a **thin** **Priority band A** thread so dependency/image hygiene does not stall—see [PLANS_TODO.md](PLANS_TODO.md) **–1** / **–1b**.
+- **After mid-April (or after a CCA attempt):** Shift primary study blocks to **paid cyber courses** (e.g. CWL §3.2 in PORTFOLIO), still **one major cert lane at a time** where possible.
+- **Retakes:** If an exam is not passed on the first try, capture notes in `docs/private/` and schedule a **later** attempt; knowledge still supports production work.
 
 ---
 
@@ -117,11 +124,25 @@ Use GitHub **Milestones** or release tags; below is the **semantic** layer align
 | **M-OBS** | Operability baseline (SRE) | `/health` (and `/status` where relevant) documented for your deploy path; optional SLO sentence in ops doc; any **one** of: runbook one-liner, backup/restore note, KPI export hook—per [OBSERVABILITY_SRE.md](../OBSERVABILITY_SRE.md) + [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) §4.3–4.7 |
 | **M-LAB** | Second-environment confidence | [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md) §12 + dated private note |
 | **M-SCAN+** | Tier-2 slice shipped | One vertical released (crypto **or** data source **or** major FN slice) with tests + user-facing docs |
+| **M-RICH** | Data soup — rich media Tier 3 | **On `main`:** subtitles + optional metadata/OCR + magic-byte cloaking wired; `docs/releases/1.6.5.md` (or chosen patch); tests green — see [PLANS_TODO.md](PLANS_TODO.md) **Integration / WIP** while branch open |
 | **M-NOTIFY** | Out-of-band awareness | Notifications Ph1 usable with documented config |
 | **M-ACCESS** | Paid / shared-network readiness (licensing + identity) | Intended **commercial SKUs** and **enforced** path smoke-tested; dashBOARd/API **not anonymously usable** on the reference deploy—via **documented proxy+OIDC pattern** and/or **in-app** auth; RBAC or equivalent role story documented for at least one pattern |
 | **M-RELEASE x.y.z** | Versioned product cut | Existing VERSIONING checklist + `docs/releases/x.y.z.md` + Hub tags |
 
-**Cadence suggestion:** **M-TRUST** before a big feature push; **M-OBS** can trail **M-TRUST** in the same or next sprint (small docs/automation); **M-LAB** before customer/demo storytelling; **M-ACCESS** before promising **permanent subscription** or **multi-user** production on a reachable host; **M-RELEASE** whenever VERSIONING says ship.
+**Cadence suggestion:** **M-TRUST** before a big feature push; **M-OBS** can trail **M-TRUST** in the same or next sprint (small docs/automation); **M-LAB** before customer/demo storytelling; **M-RICH** when the rich-media PR merges; **M-ACCESS** before promising **permanent subscription** or **multi-user** production on a reachable host; **M-RELEASE** whenever VERSIONING says ship.
+
+---
+
+## 5.1 When to open a PR (quick gate)
+
+| Situation | Open PR? | Version |
+| --------- | -------- | ------- |
+| Feature + tests + operator docs ready; **`main` passes CI** | **Yes** — prefer one theme per PR | Bump in same or follow-up PR per [VERSIONING](../releases/) habit |
+| Only typo / markdown in `docs/` | Yes — small PR | Often **no** bump; optional **patch** if you tag Hub for traceability |
+| Local branch mixes **unrelated** themes (M-ACCESS docs + huge feature) | **Split** before PR | Easier review + cleaner release notes |
+| Dependency / security fix | Yes — urgent | **Patch** + lockfile export |
+
+**After merge:** run release checklist (see **1.6.5** table in [PLANS_TODO.md](PLANS_TODO.md)); **patch** for additive optional features (e.g. rich media); **minor** for marketed bundles or breaking changes.
 
 ---
 
