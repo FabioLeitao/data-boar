@@ -51,6 +51,7 @@ When the site ships, **reuse the same i18n design choices** planned for the dash
 
 - As **capabilities** grow (new connectors, report types, governance features), expect to produce a **new stakeholder presentation pair** (e.g. refreshed `.pptx` or `slides.yaml` **EN + pt-BR** under `docs/private/pitch/`).
 - **Heuristic:** when you **rewrite the pitch** for a new selling story, treat it as a **trigger** to **schedule** (not necessarily ship immediately) a **website content pass**: roadmap section, release links, technical hub TOC, and “what’s new” — so the **public** story does not lag the **private** deck.
+- **pt-BR copy** in the deck (and later on the **public** `pt-br/` site) should follow **Brazilian** Portuguese, not European forms — same bar as **`*.pt_BR.md`** (see **`.cursor/rules/docs-pt-br-locale.mdc`**). If `slides.yaml` or flattened **`SLIDES_WEBSITE_SYNC.pt_BR.md`** ever live in **tracked** paths, extend **`tests/test_docs_pt_br_locale.py`** (`_extra_locale_scan_paths`) so CI catches regressions.
 - The **website** remains the **deep** layer; the **presentation** stays **derivative and shallow-technical**, seeded from the same brand narrative.
 
 ---

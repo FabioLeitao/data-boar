@@ -24,7 +24,7 @@ Este guia resume **como trabalhar em conjunto** (ex.: **Fabio** como mantenedor 
 ## 2. Git e GitHub sabem quem commitou; o Cursor não adivinha sozinho
 
 - **`user.name` / `user.email`** em cada máquina definem o **autor do commit**. No GitHub, isso aparece no histórico e nos PRs.
-- O **assistente no Cursor** não recebe um sinal confiável do tipo “quem está no teclado”. Ele vê o **workspace**, ficheiros e o que escrevem no chat.
+- O **assistente no Cursor** não recebe um sinal confiável do tipo “quem está no teclado”. Ele vê o **workspace**, arquivos e o que escrevem no chat.
 - **Conclusão:** coesão vem de **processo** (branches, PRs, issues) + **documentação** (`AGENTS.md`, este guia, opcionalmente labels no GitHub), não de “memória mágica” do modelo.
 
 ---
@@ -145,7 +145,7 @@ gh pr list --state open
 
 **No início de uma sessão (mantenedor):**
 
-> Sou o **mantenedor**. Posso referir políticas em `docs/private/` apenas em notas locais — não sugerir colar segredos ou IPs reais em ficheiros rastreados. Prioridade: alinhar com [docs/plans/PLANS_TODO.md](plans/PLANS_TODO.md) e [`.cursor/rules/execution-priority-and-pr-batching.mdc`](../.cursor/rules/execution-priority-and-pr-batching.mdc).
+> Sou o **mantenedor**. Posso referir políticas em `docs/private/` apenas em notas locais — não sugerir colar segredos ou IPs reais em arquivos rastreados. Prioridade: alinhar com [docs/plans/PLANS_TODO.md](plans/PLANS_TODO.md) e [`.cursor/rules/execution-priority-and-pr-batching.mdc`](../.cursor/rules/execution-priority-and-pr-batching.mdc).
 
 **Para reduzir interferência entre pessoas:**
 
@@ -165,11 +165,11 @@ gh pr list --state open
 
 | Artefato | Função |
 | -------- | ------ |
-| **[`AGENTS.md`](../AGENTS.md)** | Contrato global do assistente: idioma, segredos, homelab, Git/PR, testes. **Ambos** devem ler uma vez; o Ivan segue o mesmo ficheiro ao clonar. |
+| **[`AGENTS.md`](../AGENTS.md)** | Contrato global do assistente: idioma, segredos, homelab, Git/PR, testes. **Ambos** devem ler uma vez; o Ivan segue o mesmo arquivo ao clonar. |
 | **[`.cursor/rules/`](../.cursor/rules/)** | Regras automáticas ou por contexto (ex.: `git-pr-sync-before-advice.mdc`, `execution-priority-and-pr-batching.mdc`). **Colaboração:** `collaboration-maintainer-contributor.mdc`. |
 | **[`.cursor/skills/`](../.cursor/skills/)** | Playbooks longos (Docker, token-aware, etc.). Use quando a tarefa combinar. |
 | **[`CONTRIBUTING.md`](../CONTRIBUTING.md)** / **[`CONTRIBUTING.pt_BR.md`](../CONTRIBUTING.pt_BR.md)** | Fluxo de contribuição e testes. |
-| **Este ficheiro** | Papéis, comandos e prompts — **maturidade de equipe** sem substituir o CONTRIBUTING. |
+| **Este arquivo** | Papéis, comandos e prompts — **maturidade de equipe** sem substituir o CONTRIBUTING. |
 
 ### 7.1 Ajustes opcionais quando a equipe crescer
 

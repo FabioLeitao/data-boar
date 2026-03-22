@@ -47,7 +47,7 @@
 **Caminhos típicos** (podem mudar entre versões):
 
 - Binário: `/usr/bin/cursor` → costuma apontar para `/usr/share/cursor/`
-- Dados do utilizador: `~/.config/Cursor/`, `~/.cursor/` (extensões, regras)
+- Dados do usuário: `~/.config/Cursor/`, `~/.cursor/` (extensões, regras)
 
 ---
 
@@ -72,7 +72,7 @@ cursor --verbose 2>&1 | tee /tmp/cursor-launch.log
 
 ## 4. Quando o AppArmor *bloqueia* o Cursor
 
-Sintomas: crash ao abrir, **terminal integrado** a falhar, **Git** a falhar, ou **gravar ficheiros** em certas árvores—**e** o log do kernel mostra **AppArmor DENIED** para `cursor`, `cursor-sandbox` ou um filho (ex.: `node`, `bash`).
+Sintomas: crash ao abrir, **terminal integrado** falhando, **Git** falhando, ou **gravar arquivos** em certas árvores—**e** o log do kernel mostra **AppArmor DENIED** para `cursor`, `cursor-sandbox` ou um filho (ex.: `node`, `bash`).
 
 ### 4.1 Recolher evidência
 
@@ -95,7 +95,7 @@ Se aparecer um perfil **relacionado com o Cursor** em modo **enforce** e houver 
 
 ## 5. Remediação (privilégio mínimo primeiro)
 
-### 5.1 Actualizar o Cursor
+### 5.1 Atualizar o Cursor
 
 Instale o `.deb` mais recente; o *layout* ou compatibilidade pode mudar.
 
@@ -109,7 +109,7 @@ sudo aa-complain /etc/apparmor.d/<nome-do-perfil>
 sudo aa-enforce /etc/apparmor.d/<nome-do-perfil>
 ```
 
-Substitua `<nome-do-perfil>` pelo ficheiro em `/etc/apparmor.d/` que corresponde à negação (`ls /etc/apparmor.d/ | grep -i cursor`).
+Substitua `<nome-do-perfil>` pelo arquivo em `/etc/apparmor.d/` que corresponde à negação (`ls /etc/apparmor.d/ | grep -i cursor`).
 
 ### 5.3 Sobreposições *local* (preferível a longo prazo)
 
@@ -121,11 +121,11 @@ Pacotes estilo Ubuntu incluem frequentemente **`#include <local/...>`** no perfi
    grep -ril cursor /etc/apparmor.d/ 2>/dev/null
    ```
 
-2. Abrir o ficheiro e confirmar um include do tipo:
+2. Abrir o arquivo e confirmar um include do tipo:
 
    `#include <local/usr.bin.cursor>`
 
-3. Criar o ficheiro local (nome de exemplo—**tem de coincidir** com o include **no seu** sistema):
+3. Criar o arquivo local (nome de exemplo—**precisa coincidir** com o include **no seu** sistema):
 
    ```bash
    sudo install -m 644 /dev/null /etc/apparmor.d/local/usr.bin.cursor
