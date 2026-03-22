@@ -4,6 +4,8 @@
 
 Thank you for considering contributing. This document covers local setup, workflow, and best practices so you can run the app, tests, and open changes safely.
 
+**Team workflow (maintainer + contributor, Cursor + Git):** see **[docs/COLLABORATION_TEAM.md](docs/COLLABORATION_TEAM.md)** ([pt-BR](docs/COLLABORATION_TEAM.pt_BR.md)) and **`.cursor/rules/collaboration-maintainer-contributor.mdc`**.
+
 ## Quick start (development)
 
 1. **Clone and enter the repo**
