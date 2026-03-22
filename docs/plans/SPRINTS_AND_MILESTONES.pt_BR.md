@@ -65,7 +65,9 @@ Copie esta tabela para um board **GitHub Projects** ou doc pessoal; mova linhas 
 | **Backlog** | Strong crypto Fase 1 | A/M | `PLANS_TODO` ordem 4 |
 | **Backlog** | Inventário de fontes de dados Fase 1 | A/M | ordem 5 |
 | **Backlog** | Notificações Fase 1 | A/M | ordem 6 |
-| **Backlog** | RBAC de relatórios no dashboard (issue #86) | A/M | [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md); `[H2][U2]` |
+| **Backlog** | **D-WEB** — desenho superfície web (i18n + #86 URLs/middleware) | A/M | [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) § marcos; [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) § sequência |
+| **Backlog** | RBAC relatórios no dashboard — **implementação** (issue #86) | A/M | Depois do **D-WEB**; mirar caminhos HTML **prefixados**; `[H2][U2]` |
+| **Backlog** | Locale dashboard **M-LOCALE-V1** (implementação) | A | Depois do **D-WEB** + agenda; [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) |
 | **Selecionado** | *(uma linha só por semana consciente de tokens)* | — | Escolher em “What to start next” ou **Integration / WIP** no [PLANS_TODO.md](PLANS_TODO.md) |
 | **Em progresso** | *(escopo atual — ex.: rich media Tier 3 até merge)* | — | TOKEN_AWARE: uma fatia primária; ver **Integration / WIP** ao fechar rich media + **1.6.5** |
 | **Bloqueado** | *(aguardando operador: hardware, Hub, assessoria)* | **Operador** | Anotar bloqueio no PR ou runbook privado |
@@ -112,6 +114,20 @@ A tabela **S0–S6** **ainda não** tem linha dedicada para **subscrição perma
 
 **Marco:** **M-ACCESS** (§5)—superfícies “prontas para assinatura” e caminho de identidade documentado.
 
+### 4.2 Cluster da superfície web do dashboard (idioma **+** issue #86)
+
+**Planos:** [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) e [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md). Mesmos arquivos (`api/routes.py`, templates, middleware); **critérios de aceite distintos** (língua vs autorização).
+
+| Ordem | Item | Dono | Notas |
+| ----- | ---- | ---- | ----- |
+| 1 | **D-WEB** | A/M | **Só documentação:** mapa de URLs + **ordem do middleware** (API sem prefixo; HTML `/{locale}/…`; onde entram API key, negociação de locale, RBAC). **Antes** de qualquer PR que mova rotas HTML. |
+| 2 | Fatias de produto de maior prioridade | — | Conforme [PLANS_TODO.md](PLANS_TODO.md) **near-term** / **Integration / WIP** — implementação i18n **adiada** salvo promoção explícita pelo operador. |
+| 3 | **M-LOCALE-V1** | A | Primeira fatia de **código:** prefixo de locale + JSON `en` / `pt-BR` + cookie / `Accept-Language` / fallback em config — checklist no plano i18n. |
+| 4 | **#86 Fase 0** | A/M | Docs / matriz proxy — pode sobrepor no calendário ao prep. do passo 3. |
+| 5 | **#86 Fase 1+** | A | Middleware / classes de rota nos **mesmos caminhos prefixados** do i18n — evita refatoração dupla. |
+
+**Kanban:** coloque **D-WEB** em **Backlog** ou **Selecionado** ao agendar o passe de desenho; mantenha **um** tema pesado no agente em **Em progresso**, conforme [TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md).
+
 ---
 
 ## 5. Marcos (a cada poucos sprints)
@@ -127,6 +143,8 @@ Use **Milestones** do GitHub ou tags de release; abaixo, camada **semântica** a
 | **M-RICH** | Data soup — rich media Tier 3 | **Em `main`:** legendas + metadados/OCR opcional + cloaking por magic bytes; `docs/releases/1.6.5.md` (ou patch escolhido); testes verdes — ver [PLANS_TODO.md](PLANS_TODO.md) **Integration / WIP** enquanto a branch estiver aberta |
 | **M-NOTIFY** | Consciência fora de banda | Notificações F1 utilizáveis com config documentada |
 | **M-ACCESS** | Prontidão para pago / rede compartilhada (licenciamento + identidade) | **SKUs comerciais** pretendidos e caminho **enforced** testados; dashBOARd/API **sem uso anônimo** no deploy de referência—via **proxy+OIDC documentado** e/ou auth **na app**; RBAC ou história de papéis equivalente documentada em pelo menos um padrão |
+| **D-WEB** | **Desenho** da superfície web do dashboard (i18n ∩ #86) | Mapa de URLs + ordem do middleware **escritos** e com cross-links; **sem** código de produto obrigatório (diagrama + planos OK) |
+| **M-LOCALE-V1** | **Locale v1** do HTML do dashboard | Conforme [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md): HTML prefixado, `en`+`pt-BR`, negociação, seletor, testes, paridade de chaves no CI |
 | **M-RELEASE x.y.z** | Corte versionado do produto | Checklist VERSIONING existente + `docs/releases/x.y.z.md` + tags no Hub |
 
 **Cadência sugerida:** **M-TRUST** antes de rajada grande de feature; **M-OBS** pode vir no mesmo sprint ou no seguinte a **M-TRUST** (docs/automação pequena); **M-LAB** antes de narrativa para cliente/demo; **M-RICH** quando o PR de rich media entrar em `main`; **M-ACCESS** antes de prometer **subscrição permanente** ou **multiusuário** em host alcançável; **M-RELEASE** quando VERSIONING mandar publicar.
