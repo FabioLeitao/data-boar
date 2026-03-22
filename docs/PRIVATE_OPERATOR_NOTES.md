@@ -21,20 +21,20 @@ git check-ignore -v docs/private/anything.md
 
 ## 2. Recommended layout (you create this locally)
 
-Copy the **tracked template** from **`docs/private.example/`** into **`docs/private/`** (or create the same folders by hand):
+Copy the **tracked template** from **`docs/private.example/`** into **`docs/private/`** (or create the same folders by hand). **Conventional Commits:** changes to **those tracked** policy/template files use scope **`docs(private-layout):`**; **LAB-OP** specifics stay **only** under **`docs/private/`** and never ship in **`private-layout`** commits.
 
-| Path (local only)                             | Use                                                                                                                                                                                        |
-| -----------------                             | ---                                                                                                                                                                                        |
-| **`docs/private/homelab/`**                   | **Real** homelab catalog: hostnames, RFC1918 IPs, SSH users, `homelab-host-report.sh` outputs, UPS load lists, HVAC model numbers, UniFi VLAN IDs, solar logger IP, **redacted** API samples. **`AGENT_LAB_ACCESS.md`** — operator directive for LAN/DNS/SSH/API; agents **read it when relevant** (no **`@`** required). |
-| **`docs/private/homelab/validation-log.md`**  | Dated §1–§2 pass/fail per host (optional filename).                                                                                                                                        |
-| **`docs/private/homelab/solar.md`**           | Inverter/datalogger models, portal names, **references** to Bitwarden for keys (not plaintext passwords).                                                                                  |
-| **`docs/private/homelab/iso-inventory.md`**   | Optional: list of `.iso` / `.img` paths (e.g. under `~/Downloads/iso` on a lab machine). **Captured by you** (SSH `ls`, `find`, or script output pasted/edited here)—not stored on GitHub. |
-| **`docs/private/homelab/HARDWARE_CATALOG.md`** | **Bird’s-eye** hardware / roles / power / solar summary merged from other private notes; **gaps** section for unchecked items. |
-| **`docs/private/homelab/LAB_TAXONOMY.md`** | **LAB‑OP** (operator real homelab) vs **LAB‑PB** (public playbook) — use in chat to disambiguate. |
-| **`docs/private/homelab/OPERATOR_SYSTEM_MAP.md`** | **Master chart:** hardware + accessibility matrix + software inventory + Mermaid topology + doc index (agents **`read_file`** by default with homelab work). |
-| **`docs/private/homelab/OPERATOR_RETEACH.md`** | **Fill-in gaps** (B1–B6); agents **`read_file`** after **`OPERATOR_SYSTEM_MAP.md`**. |
-| **`docs/private/author_info/`**               | **Personal / career / education / certificates** (CV text, course progress, cert IDs, narrative history). Same gitignore rules as homelab; split from **`homelab/`** so you can sync or exclude policies differently. |
-| **`docs/private/`** (root of private)         | Optional catch-all: `WHAT_TO_SHARE_WITH_AGENT.md`, one-off exports—prefer **`homelab/`** vs **`author_info/`** when the topic is clear.                                                      |
+| Path (local only)                                 | Use                                                                                                                                                                                                                                                                                                                       |
+| -----------------                                 | ---                                                                                                                                                                                                                                                                                                                       |
+| **`docs/private/homelab/`**                       | **Real** homelab catalog: hostnames, RFC1918 IPs, SSH users, `homelab-host-report.sh` outputs, UPS load lists, HVAC model numbers, UniFi VLAN IDs, solar logger IP, **redacted** API samples. **`AGENT_LAB_ACCESS.md`** — operator directive for LAN/DNS/SSH/API; agents **read it when relevant** (no **`@`** required). |
+| **`docs/private/homelab/validation-log.md`**      | Dated §1–§2 pass/fail per host (optional filename).                                                                                                                                                                                                                                                                       |
+| **`docs/private/homelab/solar.md`**               | Inverter/datalogger models, portal names, **references** to Bitwarden for keys (not plaintext passwords).                                                                                                                                                                                                                 |
+| **`docs/private/homelab/iso-inventory.md`**       | Optional: list of `.iso` / `.img` paths (e.g. under `~/Downloads/iso` on a lab machine). **Captured by you** (SSH `ls`, `find`, or script output pasted/edited here)—not stored on GitHub.                                                                                                                                |
+| **`docs/private/homelab/HARDWARE_CATALOG.md`**    | **Bird’s-eye** hardware / roles / power / solar summary merged from other private notes; **gaps** section for unchecked items.                                                                                                                                                                                            |
+| **`docs/private/homelab/LAB_TAXONOMY.md`**        | **LAB‑OP** (operator real homelab) vs **LAB‑PB** (public playbook) — use in chat to disambiguate.                                                                                                                                                                                                                         |
+| **`docs/private/homelab/OPERATOR_SYSTEM_MAP.md`** | **Master chart:** hardware + accessibility matrix + software inventory + Mermaid topology + doc index (agents **`read_file`** by default with homelab work).                                                                                                                                                              |
+| **`docs/private/homelab/OPERATOR_RETEACH.md`**    | **Fill-in gaps** (B1–B6); agents **`read_file`** after **`OPERATOR_SYSTEM_MAP.md`**.                                                                                                                                                                                                                                      |
+| **`docs/private/author_info/`**                   | **Personal / career / education / certificates** (CV text, course progress, cert IDs, narrative history). Same gitignore rules as homelab; split from **`homelab/`** so you can sync or exclude policies differently.                                                                                                     |
+| **`docs/private/`** (root of private)             | Optional catch-all: `WHAT_TO_SHARE_WITH_AGENT.md`, one-off exports—prefer **`homelab/`** vs **`author_info/`** when the topic is clear.                                                                                                                                                                                   |
 
 **Rule:** Prefer **`homelab/`** for **physical/network** reality and **`author_info/`** for **person-shaped** facts so you can attach or exclude trees in backups/sync tools independently.
 
@@ -59,12 +59,12 @@ Copy the **tracked template** from **`docs/private.example/`** into **`docs/priv
 
 The assistant **does not** have a separate network connection to your house. It **can** still work on the homelab (e.g. **Latitude** as a server) by running **`ssh` in the Cursor integrated terminal on your dev workstation**, using **your** SSH client, keys, and `~/.ssh/config` (PowerShell, **WSL**, or **Git SSH** — whichever you use day to day).
 
-**Default expectation (this repo / this operator):**
+## Default expectation (this repo / this operator):
 
 1. **Document a `Host` alias** under **`docs/private/homelab/`** (see **[private.example/homelab/README.md](private.example/homelab/README.md)**) — e.g. `Host latitude-lab` with `HostName`, `User`, `IdentityFile` / agent — **gitignored**, never committed.
-2. When you ask the assistant to **list files, pull reports, check Docker, or run diagnostics** on that machine, it should use commands like **`ssh latitude-lab '…'`** (or non-interactive flags you prefer) **from the project terminal**, not assume files appear magically in the workspace.
-3. **You** must have **LAN or VPN reachability** from the dev PC to the homelab; **key-based auth** is strongly preferred so sessions are non-interactive where possible.
-4. If a command fails with “connection refused” / “timed out” / “Permission denied”, fix **network, `sshd`, user, keys** on your side — the assistant can only suggest checks (`ssh -G latitude-lab`, `ping`, etc.).
+1. When you ask the assistant to **list files, pull reports, check Docker, or run diagnostics** on that machine, it should use commands like **`ssh latitude-lab '…'`** (or non-interactive flags you prefer) **from the project terminal**, not assume files appear magically in the workspace.
+1. **You** must have **LAN or VPN reachability** from the dev PC to the homelab; **key-based auth** is strongly preferred so sessions are non-interactive where possible.
+1. If a command fails with “connection refused” / “timed out” / “Permission denied”, fix **network, `sshd`, user, keys** on your side — the assistant can only suggest checks (`ssh -G latitude-lab`, `ping`, etc.).
 
 This replaces any older wording that implied “the model cannot touch the lab” without also saying **“use SSH from the dev terminal.”**
 
@@ -86,23 +86,23 @@ This replaces any older wording that implied “the model cannot touch the lab�
 
 **Agent entry point:** **`AGENTS.md`** (chat language + shorthand bullets) encodes this for Cursor/Copilot.
 
-| Layer | What happens |
-| ----- | ------------ |
-| **Git / GitHub** | **`docs/private/`** is **gitignored** — not committed, not pushed. **Never** paste private paths or secrets into **issues, PR descriptions, or tracked files.** |
-| **Cursor / chat** | The assistant may use **`read_file`** on **`docs/private/`** when relevant—**shared workspace secret vs GitHub only**; **`@` / open tab optional**, not the default gate. Plus editor context and chat. **Disclosure to Cursor’s stack** per their terms—avoid plaintext **passwords / production keys** in files; prefer **Bitwarden** and placeholders. |
-| **pCloud / other sync** | Same as today: convenient for **you** across machines, **not** a secrets vault. On **Windows**, the synced folder is often drive **`P:`** (see **`docs/private/WHAT_TO_SHARE_WITH_AGENT.md`** if you use that layout). |
+| Layer                   | What happens                                                                                                                                                                                                                                                                                                                                              |
+| -----                   | ------------                                                                                                                                                                                                                                                                                                                                              |
+| **Git / GitHub**        | **`docs/private/`** is **gitignored** — not committed, not pushed. **Never** paste private paths or secrets into **issues, PR descriptions, or tracked files.**                                                                                                                                                                                           |
+| **Cursor / chat**       | The assistant may use **`read_file`** on **`docs/private/`** when relevant—**shared workspace secret vs GitHub only**; **`@` / open tab optional**, not the default gate. Plus editor context and chat. **Disclosure to Cursor’s stack** per their terms—avoid plaintext **passwords / production keys** in files; prefer **Bitwarden** and placeholders. |
+| **pCloud / other sync** | Same as today: convenient for **you** across machines, **not** a secrets vault. On **Windows**, the synced folder is often drive **`P:`** (see **`docs/private/WHAT_TO_SHARE_WITH_AGENT.md`** if you use that layout).                                                                                                                                    |
 
 ### Windows: `P:` (pCloud on the dev PC)
 
 The assistant runs on **your** workstation. If **pCloud** maps the sync root to **`P:`**, the assistant can **`dir` / `Get-ChildItem P:\`** and **read files** under **`P:\...`** in-session (terminal or tools)—same as any local path. **Requirements:** pCloud client **running** and drive **mounted**; Cursor must allow access to that path (if a command fails with “path not found,” check the client). **Do not** record operator-specific **`P:\...`** paths in **Git-tracked** Markdown; keep them in **`docs/private/`** or mention them only in chat.
 
-**Default (this operator / repo):**
+## Default (this operator / repo):
 
 1. **`docs/private/`** — **Not on GitHub**; **is** normal workspace context for the assistant. Agents **`read_file`** **`docs/private/homelab/AGENT_LAB_ACCESS.md`** (and other private paths as needed) when homelab, Data Boar on LAN, **`P:`**, or operator inventory applies—**without** requiring you to **`@`** or open files.
-2. **Stable narrative** — Keep **`WHAT_TO_SHARE_WITH_AGENT.md`** and **`homelab/`** updated; the assistant loads them **on demand** via tools, not only via **`@`**.
-3. **Minimal paste** — For one-off extras, paste redacted snippets in chat if you prefer.
-4. **Tracked repo** — **Patterns** only in public docs; **real hostnames/IPs** only under **`docs/private/`** or chat, never in commits.
-5. **Stricter boundary (opt-in)** — To **force** “only when `@`,” add **`docs/private/`** to **`.cursorignore`** (not the default here).
+1. **Stable narrative** — Keep **`WHAT_TO_SHARE_WITH_AGENT.md`** and **`homelab/`** updated; the assistant loads them **on demand** via tools, not only via **`@`**.
+1. **Minimal paste** — For one-off extras, paste redacted snippets in chat if you prefer.
+1. **Tracked repo** — **Patterns** only in public docs; **real hostnames/IPs** only under **`docs/private/`** or chat, never in commits.
+1. **Stricter boundary (opt-in)** — To **force** “only when `@`,” add **`docs/private/`** to **`.cursorignore`** (not the default here).
 
 **Homelab:** See **§4** — SSH/API details in **`docs/private/homelab/`**; agents read **`AGENT_LAB_ACCESS.md`** when doing lab work.
 
