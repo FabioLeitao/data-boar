@@ -2,7 +2,7 @@
 
 **Objetivo:** Usar o **UniFi Dream Machine SE** para **tráfego de lab isolado** e **SNMP local** enquanto o **Proxmox / stack de monitoração** não está pronto.
 
-**Importante:** O repositório e o assistente **não** acedem à sua LAN. SNMP e a UI UniFi são configurados **por si**, a partir de uma máquina na rede.
+**Importante:** O repositório e o assistente **não** acessam sua LAN. SNMP e a UI UniFi são configurados **por você**, a partir de uma máquina na rede.
 
 **Referência oficial:** [SNMP Monitoring in UniFi Network](https://help.ui.com/hc/en-us/articles/33502980942615-SNMP-Monitoring-in-UniFi-Network) (Ubiquiti).
 
