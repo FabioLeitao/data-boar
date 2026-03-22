@@ -9,4 +9,5 @@ Write-Host "2. Never commit:  docs/private/   (real inventory — gitignored)"
 Write-Host "3. Never:  git add -f config.yaml   (secrets / LAN paths)"
 Write-Host "4. Template:  docs/private.example/  -> copy to docs/private/  (policy: PRIVATE_OPERATOR_NOTES.md)"
 Write-Host "5. Agents: no real hostnames, RFC1918 IPs, serials, or home paths in tracked Markdown/code comments."
+Write-Host "6. Commit subjects: type(scope): ... — e.g. chore(deps):, docs(homelab):, docs(workflow): — see AGENTS.md table."
 Write-Host "=== end ===" -ForegroundColor Cyan

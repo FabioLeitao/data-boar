@@ -121,4 +121,8 @@ Para um **corpo de PR longo**, use:
 
 **Por que essa ordem:** Um gate completo antes de commitar; um preview para confirmar o escopo; um passo de PR que reexecuta os testes e sincroniza (fetch + rebase se atrás) antes do push, deixando o PR seguro e sincronizado. Nada de `git add`/`git commit`/`git push` ou `pytest`/`ruff` soltos no meio quando esses scripts atendem.
 
+## Conventional Commits: tipos e escopos (frentes homelab / ops)
+
+Use **`tipo(escopo):` assunto curto** (lista canônica no **`AGENTS.md`** na raiz). **Tipos:** `feat`, `fix`, `refactor`, `docs`, `chore`, `ci`, `test`, … — só dependências → **`chore(deps):`**. **Escopos** alinhados às frentes comuns: **`homelab`**, **`ops`**, **`workflow`**, **`private-layout`**, **`plans`**, **`cursor`**, **`detector`**, **`report`**, **`api`**, **`docker`** — tabela completa e exemplos em **`AGENTS.md`** (inglês).
+
 **Índice da documentação** (todos os tópicos, ambos os idiomas): [README.md](../README.md) · [README.pt_BR.md](../README.pt_BR.md).
