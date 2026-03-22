@@ -8,11 +8,11 @@
 
 ## 1. Janela de estudo e certificação (2026)
 
-- **Foco principal:** **Anthropic Academy** (cursos gratuitos no Skilljar; índice: [Anthropic courses](https://docs.claude.com/en/docs/resources/courses)) — sequência em [PORTFOLIO_AND_EVIDENCE_SOURCES.md](../plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.0. **Cursor** é a **ferramenta de entrega**; **prova para stakeholders** = **releases + narrativa de compliance + este repositório**. **CCA** é **exame posterior** quando você atingir a barra de experiência da Anthropic — **sem** meta fixa em abril. Links: página CCA no Skilljar + [guia](https://aitoolsclub.com/how-to-become-a-claude-certified-architect-complete-guide/) não oficial.
-- **Em paralelo (fio fino):** Manter a **faixa prioritária A** com **cadência mínima saudável** (Dependabot, Docker Scout, `check-all` antes de merges) para **M-TRUST** não degradar—ver [PLANS_TODO.md](../plans/PLANS_TODO.md) ordens **–1** / **–1b**.
-- **Entrelaçar / depois do ritmo Academy:** **Cursos de cyber já pagos** (lista CWL em [PORTFOLIO_AND_EVIDENCE_SOURCES.md](../plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.2), começando por **BTF** → **C3SA** como já recomendado.
-- **Opcional:** **certificados de conclusão** de cursos terceiros (ex. Cursor em Coursera/Codecademy) para CV — **não** são credenciais oficiais Cursor/Anthropic.
-- **Se uma tentativa de CCA não passar:** Tratar como **aprendizado**; anotações em `docs/private/`; **nova tentativa** depois — o preparo ainda apoia este repositório.
+- **Foco principal:** **Cyber pago (CWL)** — concluir **BTF** → **C3SA** e a lista §3.2 em [PORTFOLIO_AND_EVIDENCE_SOURCES.md](../plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md); **prova para stakeholders** = esses certificados + **Data Boar entregue** + narrativa de compliance. O dia a dia no IDE pode **não** ser Claude; estudo Anthropic **não** é a prioridade máxima **deste** trilho de produto.
+- **Alternando no ano:** **Anthropic Academy** (grátis; [Anthropic courses](https://docs.claude.com/en/docs/resources/courses)) — sequência no PORTFOLIO §3.0 quando couberem blocos de IA. **CCA** depois, quando elegível; página CCA no Skilljar + [guia](https://aitoolsclub.com/how-to-become-a-claude-certified-architect-complete-guide/) não oficial.
+- **Em paralelo (fio fino):** **Faixa prioritária A** (Dependabot, Docker Scout, `check-all`)—[PLANS_TODO.md](../plans/PLANS_TODO.md) **–1** / **–1b**.
+- **Opcional:** certificados de conclusão **terceiros** para CV — não são exames oficiais do fornecedor.
+- **Se CCA não passar:** anotações em `docs/private/`; **nova tentativa** depois.
 
 O racional de sequência também está em [SPRINTS_AND_MILESTONES.pt_BR.md](../plans/SPRINTS_AND_MILESTONES.pt_BR.md) §3.1 e [PORTFOLIO_AND_EVIDENCE_SOURCES.md](../plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.0.
 
