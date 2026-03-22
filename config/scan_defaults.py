@@ -14,7 +14,9 @@ MIN_FILE_SAMPLE_MAX_CHARS = 256
 MAX_FILE_SAMPLE_MAX_CHARS = 500_000
 
 
-def clamp_file_sample_max_chars(raw: object, *, default: int = DEFAULT_FILE_SAMPLE_MAX_CHARS) -> int:
+def clamp_file_sample_max_chars(
+    raw: object, *, default: int = DEFAULT_FILE_SAMPLE_MAX_CHARS
+) -> int:
     """Clamp ``file_sample_max_chars`` to a safe range; invalid values → *default*."""
     try:
         n = int(raw)
