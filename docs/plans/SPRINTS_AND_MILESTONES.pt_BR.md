@@ -77,9 +77,11 @@ Copie esta tabela para um board **GitHub Projects** ou doc pessoal; mova linhas 
 
 ### 3.1 Faixa de estudo e certificação (calendário do operador)
 
-- **Até ~meados de abril de 2026:** foco principal de estudo = **CCA** (Claude Certified Architect); ver [OPERATOR_MANUAL_ACTIONS.pt_BR.md](../ops/OPERATOR_MANUAL_ACTIONS.pt_BR.md) e [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.0.
+- **Foco principal (2026):** currículo **Anthropic Academy** (Claude 101 → API Claude → MCP → Claude Code / agent skills) — ver [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.0 e [Anthropic courses](https://docs.claude.com/en/docs/resources/courses). **Cursor** = ferramenta de entrega; **credibilidade** = produto entregue + narrativa de compliance + progresso nos cursos. **CCA** = **exame capstone quando houver elegibilidade** — **sem** prazo fixo em abril.
 - **Na mesma janela:** manter um **fio fino** da **faixa prioritária A** para higiene de dependências/imagem não parar—ver [PLANS_TODO.md](PLANS_TODO.md) **–1** / **–1b**.
-- **Depois de meados de abril (ou após tentativa de CCA):** deslocar blocos principais de estudo para **cursos de cyber já pagos** (ex. CWL §3.2 no PORTFOLIO), ainda que possível **uma grande faixa de cert por vez**.
+- **Entrelaçar / depois do ritmo Academy:** **cursos de cyber já pagos** (ex. CWL §3.2 no PORTFOLIO), **BTF → C3SA** primeiro — ainda que possível **uma grande faixa de cert por vez**.
+- **Opcional:** cursos **terceiros** com certificado de conclusão (ex. Cursor em Coursera/Codecademy) para CV — **não** equivalem a credencial oficial Anthropic/CCA.
+- **Retakes:** Se **CCA** (ou outro exame) não passar na primeira tentativa, anotar em `docs/private/` e agendar **nova** tentativa; o aprendizado ainda apoia produção.
 
 ---
 

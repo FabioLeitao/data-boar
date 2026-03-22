@@ -66,16 +66,24 @@ Add only what you are comfortable making reference to in docs; keep wording fact
 
 ---
 
-### 3.0 Study priority window (Q1–Q2 2026) — CCA, then cyber, thin hygiene
+### 3.0 Study priority window (2026) — toolchain, outcomes, Anthropic Academy; CCA when eligible
 
-**Intent:** Align calendar with **production readiness** (Data Boar, agentic workflow) without dropping **trust/hygiene**.
+**Intent:** Treat **Cursor** (and similar) as the **delivery toolchain**; **certify the outcome** for stakeholders—**shipped product**, **compliance narrative**, **tests/docs/CI**, **public releases**—and add **vendor-aligned learning** where it helps. **Claude Certified Architect (CCA)** is a **capstone exam** when Anthropic’s **experience bar** is met (~production-style work with API, Claude Code, MCP, agents); **partner / early-access** paths affect **exam pricing/access**, not whether you can take **free Academy courses**.
+
+**Official Anthropic courses (free on Skilljar; index on Claude Docs):** [Anthropic courses](https://docs.claude.com/en/docs/resources/courses) — enroll via [anthropic.skilljar.com](https://anthropic.skilljar.com/). **Suggested sequence** (skills + stakeholder story): **Claude 101** → **Building with the Claude API** → **Introduction to Model Context Protocol** (+ **MCP: Advanced Topics** when integrating seriously) → **Claude Code in Action** → **Introduction to agent skills** / **Introduction to subagents** (ties to real repo: rules, Skills, automation).
+
+**CCA exam (later):** Official landing (access/fees vary): [Claude Certified Architect — Anthropic Academy](https://anthropic.skilljar.com/claude-certified-architect-foundations-access-request). Unofficial explainer: [Claude Certified Architect — guide](https://aitoolsclub.com/how-to-become-a-claude-certified-architect-complete-guide/). **Do not** treat **April** as a fixed exam deadline; schedule the **attempt** when prep + honest production depth align.
+
+**Optional third-party “certificates of completion”** (Cursor-focused or Claude-adjacent on Coursera, Codecademy, Educative, etc.): useful for **CV/LinkedIn** and structured learning—**not** the same as a first-party proctored credential. Prefer **one finished** short course over several half-done.
+
+**Stakeholder line (short):** *We align with Anthropic’s production curriculum (API, MCP, Claude Code); the product demonstrates that stack in practice. Formal certification is a validation milestone once delivery volume meets the bar—the roadmap is course-backed and release-backed.*
 
 | Phase | Focus | Notes |
 | ----- | ----- | ----- |
-| **Through ~mid-April 2026** | **Claude Certified Architect (CCA)** | Production-oriented credential (agents, MCP, Claude Code, architecture). Unofficial overview: [Claude Certified Architect — guide](https://aitoolsclub.com/how-to-become-a-claude-certified-architect-complete-guide/). Official prep: **Anthropic Academy** (Skilljar); exam fees/format = Anthropic at registration. |
-| **In parallel (thin)** | **Priority band A** (–1, –1b) | Dependabot, Docker Scout, `check-all` before merges—keeps **M-TRUST** from slipping. See [PLANS_TODO.md](PLANS_TODO.md). |
-| **After mid-April (or after first CCA attempt)** | **Paid cyber track** (e.g. CWL §3.2 below) | Resume **BTF → C3SA** (and onward) as already sequenced. |
-| **If first exam attempt fails** | **Learning + later retake** | Keep notes in `docs/private/`; **retake later in the year** opportunistically—knowledge gained still supports the product; adjust prep, not shame. |
+| **Primary (Q1–Q2 2026, ongoing)** | **Anthropic Academy track** + **release-backed proof** | Fixed study blocks (1–2×/week) on the sequence above; **same** calendar: ship slices on Data Boar so **evidence** precedes any exam. |
+| **In parallel (thin)** | **Priority band A** (–1, –1b) | Dependabot, Docker Scout, `check-all`—keeps **M-TRUST** from slipping. [PLANS_TODO.md](PLANS_TODO.md). |
+| **Interleave / after Academy momentum** | **Paid cyber track** (CWL §3.2) | **BTF → C3SA** (then onward)—still **one major cert lane at a time** where possible. |
+| **When eligible + prepared** | **CCA attempt** | Partner perks optional; **$99**/attempt (or promos) per Anthropic at registration. If an attempt fails: notes in `docs/private/`, **retake** later—prep still supports the product. |
 
 **Tracked operator checklist:** [OPERATOR_MANUAL_ACTIONS.md](../ops/OPERATOR_MANUAL_ACTIONS.md) ([pt-BR](../ops/OPERATOR_MANUAL_ACTIONS.pt_BR.md)). **Sprint mirror:** [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) §3.1.
 
