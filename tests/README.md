@@ -15,6 +15,13 @@ All tests must pass with **no errors or warnings**. See **[docs/TESTING.md](../d
 - Quality and security-related tests (SonarQube, OpenAPI, docs)
 - CI and CodeQL
 
+## Optional real-world text samples (maintainer corpus)
+
+For **local** experiments (scanner, subtitles, OCR, “entertainment-style” text heuristics), Portuguese **cifras / tablaturas / letras** are useful:
+
+- **Public repo:** [FabioLeitao/cifras](https://github.com/FabioLeitao/cifras) — clone to a path **outside** this product repo (or keep a small copy under `tmp/` / gitignored) and point scans at it. Prefer **not** vendoring large lyric bodies into **committed** fixtures unless licensing is explicit.
+- **Third-party sites** (e.g. [cifraclub.cc](https://cifraclub.cc)): often **copyright + ToS** on song text — OK for **personal** local checks; **avoid** scraping into **CI** or committing full pages as repo fixtures without rights.
+
 ## Test files (summary)
 
 | File                                | Purpose                                                                 |

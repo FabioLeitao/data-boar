@@ -42,6 +42,10 @@ If you sync the same tree to **Linux** (`~/pCloudDrive`) and **Windows** (**`P:`
 - UDM-SE: management URL (private), VLAN IDs, …
 - UPS: what is plugged into the Attiv (W measured)
 
+## Security posture (optional but recommended)
+
+Maintain **`LAB_SECURITY_POSTURE.md`** next to this README (copy from a filled `docs/private/homelab/` tree or create empty from scratch): WAN/NAT assumptions, **`sshd -T`** / **UFW** / **Fail2ban** / **`nft list ruleset`** snapshots per host, and a short **improvement backlog**. Tracked index: **`docs/ops/OPERATOR_LAB_DOCUMENT_MAP.md`** (LAB‑PB vs LAB‑OP).
+
 ## Validation log
 
 - YYYY-MM-DD: host X — §1.1–1.2 pass/fail — …
