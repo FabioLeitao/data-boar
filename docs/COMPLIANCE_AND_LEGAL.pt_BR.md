@@ -15,6 +15,7 @@ Esta página descreve **o que o Data Boar revela**, **o que não faz**, **com qu
 - **Possíveis dados relativos a menores:** Indicadores alinhados ao **LGPD art. 14** e **GDPR art. 8** (revisão humana pode ser necessária).
 - **Identificadores regionais e ambíguos:** Rótulos específicos de documentos e campos ambíguos sinalizados para **confirmação manual** quando a automação não pode afirmar certeza.
 - **Visibilidade multi-fonte:** Uma visão coerente da **sopa de dados** que a organização configurar—bancos, arquivos, APIs, sistemas de BI e colaboração e outros **conectores** descritos em alto nível em [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) e [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md)—sem afirmar completude de todo legado até que os alvos estejam no escopo.
+- **Disciplina de triagem em arquivos:** O motor pode **amostrar contexto suficiente** em arquivos textuais para aplicar critério—reduzindo fadiga de alertas onde o conteúdo parece **entretenimento ou boilerplate**, mantendo **correspondências fortes por padrão** em destaque para remediação. Há **roadmap** para metadados de **imagem, áudio e vídeo** (e OCR opcional) documentado para organizações cuja sopa inclui mídia rica; conectores de **RH/SST e sistemas de back-office** (SAP, ERP/CRM/folha) estão em [PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md](plans/PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md) e [PLAN_SAP_CONNECTOR.md](plans/PLAN_SAP_CONNECTOR.md).
 
 ---
 
