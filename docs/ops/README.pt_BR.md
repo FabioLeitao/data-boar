@@ -39,6 +39,12 @@ Definido em **`.cursor/rules/session-mode-keywords.mdc`**.
 
 **Relacionado (fora desta pasta):** [SECURITY.md](../SECURITY.md) / [SECURITY.pt_BR.md](../SECURITY.pt_BR.md) e [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md) / [CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md) — postura de segurança e endurecimento **Priority band A**, listados junto da política principal em [`docs/README.pt_BR.md`](../README.pt_BR.md).
 
+### Scripts auxiliares opcionais (`scripts/`)
+
+| Script | Finalidade |
+| ------ | ---------- |
+| [`poll_dashboard_scan.py`](../../scripts/poll_dashboard_scan.py) | Faz POST em `/scan`, consulta `/status` até ficar ocioso e sugere download do relatório. Use **`DATA_BOAR_BASE`** (padrão `http://127.0.0.1:8088`) ou **`--base URL`**. Por **[AGENTS.md](../../AGENTS.md)**, não versionar hostname real do lab—URL real só em variável de ambiente ou em **`docs/private/`**. |
+
 ---
 
 ## Checklist de auditoria de links (após mover ou renomear docs)
