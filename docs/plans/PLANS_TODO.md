@@ -62,6 +62,13 @@ Refresh periodically: `gh issue list --state open --limit 50` (requires [`gh`](h
 
 **Dashboard web surface cluster:** [#86](https://github.com/FabioLeitao/data-boar/issues/86) (RBAC) and [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) (locale) share `api/routes.py` / templates but are **separate plans**—coordinate middleware and path design when both are in play; see **§ Relationship to other plans** in PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.
 
+### Queued doc housekeeping (low cost — soon after current merge settles)
+
+**Reminder only — not started.** One small **`docs(workflow):`** PR when convenient:
+
+1. **Stricter audience guardrails (`private-layout` vs real lab):** In **`AGENTS.md`** (Conventional Commit scope table) and optionally **`CONTRIBUTING.md`** / **`PRIVATE_OPERATOR_NOTES.md`**, spell out: **`docs(private-layout):`** applies to **tracked** policy/templates (`PRIVATE_OPERATOR_NOTES`, `docs/private.example/`) — **never** real hostnames, credentials, or LAB-OP inventory in those paths. **Truth** for hardware/network/secrets stays under **gitignored** **`docs/private/`** (e.g. **`homelab/`**); public homelab runbooks (**`HOMELAB_VALIDATION*`**, etc.) stay **generic**.
+2. **Sprint theme vs token-cherry-picking:** Add **one short paragraph** to **`.cursor/rules/execution-priority-and-pr-batching.mdc`** and a **cross-link** from **[TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md)** — after **Priority band A** / critical work, **token-aware** means choosing **chunks inside** the active **milestone/sprint theme** from this file + Kanban; avoid hopping to unrelated “cheap” tasks every session unless the **operator** reprioritises. (Keeps coherence with [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md).)
+
 ---
 
 ## Conflict and dependency analysis

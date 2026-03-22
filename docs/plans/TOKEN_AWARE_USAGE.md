@@ -34,6 +34,8 @@
 - **After each step:** Run `uv run pytest -v -W error` (or `.\scripts\check-all.ps1` on Windows), update the plan and PLANS_TODO, then commit. Avoid stacking many uncommitted changes.
 - **Before a PR (token-saving checklist):** [docs/ops/README.md](../ops/README.md) § *Before you open a PR* (EN) · [docs/ops/README.pt_BR.md](../ops/README.pt_BR.md) § *Antes de abrir um PR* (pt-BR): run **check-all**, never commit **`docs/private/`** or **`git add -f config.yaml`**, use **`docs/private.example/`** for layout. Optional echo-only reminder: **`scripts/pr-hygiene-remind.ps1`**.
 
+**Queued (post-merge, low cost):** Tighten **private-layout vs `docs/private/homelab`** wording in **`AGENTS.md`** / **`PRIVATE_OPERATOR_NOTES`** (tracked templates vs real inventory); add **one paragraph** on **milestone theme vs token-cherry-picking** in **`.cursor/rules/execution-priority-and-pr-batching.mdc`** and link it here. Tracked in [PLANS_TODO.md](PLANS_TODO.md) § **Queued doc housekeeping**.
+
 ---
 
 ## 3. Artifacts and evidence (for narrative and thesis)
