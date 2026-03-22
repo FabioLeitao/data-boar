@@ -4,8 +4,12 @@ POST ``/scan`` on a Data Boar web dashboard, then poll ``/status`` until idle.
 
 Operator / homelab helper — not used by CI. For a scan on another host, set the
 base URL via environment **``DATA_BOAR_BASE``** or **``--base``** (e.g.
-``http://127.0.0.1:8088``). Do **not** commit real lab hostnames or LAN URLs in
-this repo; see root **``AGENTS.md``** and **``docs/PRIVATE_OPERATOR_NOTES.md``**.
+``http://127.0.0.1:8088``). If **``api.require_api_key``** is enabled, pass
+**``DATA_BOAR_API_KEY``** or **``--api-key``** (never commit keys). Do **not**
+commit real lab hostnames or LAN URLs in this repo; see root **``AGENTS.md``**
+and **``docs/PRIVATE_OPERATOR_NOTES.md``**.
+
+**Token-aware reuse:** one documented entry point — ``uv run python scripts/poll_dashboard_scan.py --help`` — no per-host script names in the repo.
 """
 
 from __future__ import annotations
@@ -19,21 +23,46 @@ import urllib.error
 import urllib.request
 
 DEFAULT_BASE = "http://127.0.0.1:8088"
+DEFAULT_POLL_INTERVAL = 10
+DEFAULT_MAX_POLLS = 120
 
 
-def get_json(base: str, path: str) -> dict:
-    req = urllib.request.Request(f"{base.rstrip('/')}{path}", method="GET")
+def _extra_headers(api_key: str | None) -> dict[str, str]:
+    h: dict[str, str] = {}
+    if api_key:
+        h["X-API-Key"] = api_key
+    return h
+
+
+def get_json(
+    base: str,
+    path: str,
+    *,
+    extra_headers: dict[str, str] | None = None,
+) -> dict:
+    headers = dict(extra_headers or {})
+    req = urllib.request.Request(
+        f"{base.rstrip('/')}{path}", method="GET", headers=headers
+    )
     with urllib.request.urlopen(req, timeout=60) as r:
         return json.loads(r.read().decode())
 
 
-def post_json(base: str, path: str, body: dict) -> dict:
+def post_json(
+    base: str,
+    path: str,
+    body: dict,
+    *,
+    extra_headers: dict[str, str] | None = None,
+) -> dict:
+    headers = {"Content-Type": "application/json"}
+    headers.update(extra_headers or {})
     data = json.dumps(body).encode()
     req = urllib.request.Request(
         f"{base.rstrip('/')}{path}",
         data=data,
         method="POST",
-        headers={"Content-Type": "application/json"},
+        headers=headers,
     )
     with urllib.request.urlopen(req, timeout=60) as r:
         return json.loads(r.read().decode())
@@ -46,27 +75,54 @@ def main(argv: list[str] | None = None) -> int:
         default=os.environ.get("DATA_BOAR_BASE", DEFAULT_BASE).rstrip("/"),
         help=f"Dashboard root URL (default: env DATA_BOAR_BASE or {DEFAULT_BASE})",
     )
+    p.add_argument(
+        "--api-key",
+        default=(os.environ.get("DATA_BOAR_API_KEY") or "").strip() or None,
+        help="X-API-Key when require_api_key is true (default: env DATA_BOAR_API_KEY)",
+    )
+    p.add_argument(
+        "--interval",
+        type=int,
+        default=DEFAULT_POLL_INTERVAL,
+        metavar="SEC",
+        help=f"Seconds between /status polls (default: {DEFAULT_POLL_INTERVAL})",
+    )
+    p.add_argument(
+        "--max-polls",
+        type=int,
+        default=DEFAULT_MAX_POLLS,
+        metavar="N",
+        help=f"Max poll iterations before timeout (default: {DEFAULT_MAX_POLLS})",
+    )
     args = p.parse_args(argv)
     base = args.base.rstrip("/")
+    if args.interval < 1:
+        p.error("--interval must be >= 1")
+    if args.max_polls < 1:
+        p.error("--max-polls must be >= 1")
+    xh = _extra_headers(args.api_key)
 
     print("POST /scan ...")
-    start = post_json(base, "/scan", {})
+    start = post_json(base, "/scan", {}, extra_headers=xh)
     print(json.dumps(start, indent=2))
     sid = start.get("session_id", "")
-    for i in range(120):
-        time.sleep(10)
-        st = get_json(base, "/status")
+    for i in range(args.max_polls):
+        time.sleep(args.interval)
+        st = get_json(base, "/status", extra_headers=xh)
         print(
             f"[{i}] running={st.get('running')} findings={st.get('findings_count')} "
             f"session={st.get('current_session_id')!r}"
         )
         if not st.get("running"):
             print("idle")
-            print(json.dumps(get_json(base, "/status"), indent=2))
+            print(json.dumps(get_json(base, "/status", extra_headers=xh), indent=2))
             if sid:
                 print(f"\nDownload report: curl -sOJ {base}/reports/{sid}")
             return 0
-    print("timeout 20min still running")
+    total_s = args.max_polls * args.interval
+    print(
+        f"timeout after {args.max_polls} polls × {args.interval}s ≈ {total_s}s, still running"
+    )
     return 1
 
 
