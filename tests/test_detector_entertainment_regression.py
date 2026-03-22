@@ -13,16 +13,23 @@ sensitive probability so we always exercise the ``>= 70`` branch after the enter
 
 **Gate:** Full pytest is run by ``scripts/check-all.ps1`` (``pre-commit-and-tests.ps1``); CI
 runs the same suite. No separate registration needed.
+
+**ReDoS / CodeQL:** ``TestChordLikeTokenizerRedosRegression`` guards the chord tokenizer
+(``py/redos``, CWE-1333). It runs **without** the ML stack so CI never skips it when
+``sklearn`` is absent.
 """
 
 from __future__ import annotations
 
+import ast
+import inspect
 import time
 import unittest
 from unittest.mock import patch
 
 import numpy as np
 
+from core import detector as detector_module
 from core.detector import _chord_like_token_count
 from core.scanner import DataScanner
 
@@ -36,6 +43,72 @@ _MIN_ML_TERMS: list[dict[str, str]] = [
 def _almost_certain_sensitive_proba(_X) -> np.ndarray:
     """Binary classifier: class index 1 = sensitive (~100%)."""
     return np.array([[0.001, 0.999]], dtype=float)
+
+
+class TestChordLikeTokenizerRedosRegression(unittest.TestCase):
+    """
+    Prevent CodeQL ``py/redos`` regression on chord-like line heuristics.
+
+    Do **not** fold these into ``TestDetectorEntertainmentRegression``: that class skips the
+    whole case when sklearn is missing, and the tokenizer must stay covered everywhere.
+    """
+
+    def test_chord_token_count_stays_fast_on_codeql_poison_tail(self) -> None:
+        """CodeQL example: input shaped like ``a`` + many ``m7`` must not blow up matching."""
+        poison = "a" + ("m7" * 800)
+        t0 = time.perf_counter()
+        _chord_like_token_count(poison)
+        elapsed = time.perf_counter() - t0
+        self.assertLess(
+            elapsed,
+            0.2,
+            f"chord token scan should stay linear (took {elapsed:.3f}s)",
+        )
+
+    def test_chord_token_count_stays_fast_on_maj_prefix_ambiguity_tail(self) -> None:
+        """Extra tail: ``A`` + repeated ``maj7`` fragments (historically ambiguous with ``m``)."""
+        poison = "A" + ("maj7" * 400)
+        t0 = time.perf_counter()
+        _chord_like_token_count(poison)
+        self.assertLess(time.perf_counter() - t0, 0.2)
+
+    def test_chord_like_token_count_golden_cifra_lines(self) -> None:
+        """Stable counts for real cifra spellings (regression if lexer is tightened wrong)."""
+        self.assertEqual(_chord_like_token_count("C    G    Am   F"), 4)
+        self.assertEqual(_chord_like_token_count("C    D2sus9    EM7    Am"), 4)
+        self.assertEqual(_chord_like_token_count("Dm7  G7   C"), 3)
+        # Slash bass: lexer counts the bass letter as a second root (still chord-heavy line).
+        self.assertEqual(_chord_like_token_count("G/B"), 2)
+        self.assertEqual(_chord_like_token_count("F#m7  Bb"), 2)
+
+    def test_chord_like_token_count_implementation_avoids_findall_redos_shape(self) -> None:
+        """AST guard: no ``re.findall(...)`` in the tokenizer (docstring may mention the word)."""
+        src = inspect.getsource(detector_module._chord_like_token_count)
+        tree = ast.parse(src)
+        bad_lines: list[int] = []
+
+        class _FindReFindall(ast.NodeVisitor):
+            def visit_Call(self, node: ast.Call) -> None:
+                func = node.func
+                if isinstance(func, ast.Attribute) and func.attr == "findall":
+                    if isinstance(func.value, ast.Name) and func.value.id == "re":
+                        bad_lines.append(getattr(node, "lineno", 0))
+                self.generic_visit(node)
+
+        _FindReFindall().visit(tree)
+        self.assertEqual(
+            bad_lines,
+            [],
+            f"Do not use re.findall in _chord_like_token_count (py/redos); found at lines {bad_lines}",
+        )
+        self.assertIn("_consume_chord_token", src)
+        atoms = getattr(detector_module, "_CHORD_SUFFIX_ATOMS", None)
+        self.assertIsInstance(
+            atoms,
+            tuple,
+            "Keep module-level _CHORD_SUFFIX_ATOMS for auditable linear suffix matching.",
+        )
+        self.assertGreater(len(atoms), 5, "Suffix atom table should cover major chord families.")
 
 
 class TestDetectorEntertainmentRegression(unittest.TestCase):
@@ -95,19 +168,6 @@ La la la la la"""
         self.assertEqual(result["sensitivity_level"], "MEDIUM")
         self.assertEqual(result["pattern_detected"], "ML_POTENTIAL_ENTERTAINMENT")
         self.assertLessEqual(result["ml_confidence"], 55)
-
-    def test_chord_like_token_count_linear_on_redos_style_tail(self) -> None:
-        """CodeQL py/redos: old ``(?:suffix)*`` chord regex backtracked on ``a`` + many ``m7``."""
-        poison = "a" + ("m7" * 800)
-        t0 = time.perf_counter()
-        _chord_like_token_count(poison)
-        elapsed = time.perf_counter() - t0
-        self.assertLess(
-            elapsed,
-            0.2,
-            f"chord token scan should stay linear (took {elapsed:.3f}s)",
-        )
-        self.assertGreaterEqual(_chord_like_token_count("C    G    Am   F"), 3)
 
     def test_patched_high_ml_interleaved_cifra_mixed_case_chords_entertainment(self) -> None:
         """Alternating chord rows (C, D2sus9, EM7, Am, …) and lyric lines → entertainment context."""
