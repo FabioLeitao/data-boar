@@ -65,6 +65,7 @@ Copie esta tabela para um board **GitHub Projects** ou doc pessoal; mova linhas 
 | **Backlog** | Strong crypto Fase 1 | A/M | `PLANS_TODO` ordem 4 |
 | **Backlog** | Inventário de fontes de dados Fase 1 | A/M | ordem 5 |
 | **Backlog** | Notificações Fase 1 | A/M | ordem 6 |
+| **Backlog** | RBAC de relatórios no dashboard (issue #86) | A/M | [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md); `[H2][U2]` |
 | **Selecionado** | *(uma linha só por semana consciente de tokens)* | — | Escolher em “What to start next” ou **Integration / WIP** no [PLANS_TODO.md](PLANS_TODO.md) |
 | **Em progresso** | *(escopo atual — ex.: rich media Tier 3 até merge)* | — | TOKEN_AWARE: uma fatia primária; ver **Integration / WIP** ao fechar rich media + **1.6.5** |
 | **Bloqueado** | *(aguardando operador: hardware, Hub, assessoria)* | **Operador** | Anotar bloqueio no PR ou runbook privado |
