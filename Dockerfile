@@ -40,6 +40,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq5 libffi8 unixodbc libmariadb3 \
     && rm -rf /var/lib/apt/lists/*
 
+# Optional rich media (not installed by default — keeps image small): if you set
+# file_scan.scan_image_ocr or need ffprobe for video tags, extend this stage with e.g.
+# tesseract-ocr, tesseract-ocr-eng, ffmpeg (provides ffprobe), and pip install ".[richmedia]".
+
 WORKDIR /app
 
 # Copy installed packages from builder (no gcc/dev in this image)

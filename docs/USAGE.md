@@ -329,6 +329,12 @@ ml_patterns_file: docs/compliance-samples/compliance-sample-pipeda.yaml
 > **Optional (opt-in) toggle:** The `file_scan` block also accepts a boolean `use_content_type` key. When enabled, the scanner may consult a small content-type helper (magic bytes) to better detect renamed or cloaked files. As of version 1.6.0 this is a **narrow** feature: it helps catch PDFs renamed as `.txt` on filesystem and share targets (SMB/WebDAV/SharePoint) by treating them as PDF for extraction when the header looks like `%PDF-...`. The default remains extension-based; leave this off if you prefer the original behaviour and lowest I/O.
 >
 > **One-shot overrides (same run only):** CLI **`--content-type-check`** sets `use_content_type: true` for that process (like **`--scan-compressed`** for archives). The dashboard **Start scan** checkbox and **`POST /scan`** / **`POST /start`** JSON field **`content_type_check: true`** do the same for that API-triggered run only; the on-disk config is unchanged after the scan finishes.
+>
+> **Rich media (opt-in):** With **`file_scan.scan_rich_media_metadata: true`**, the scanner reads **bounded** text samples from image EXIF (Pillow), audio tags (**mutagen** — install `uv pip install -e ".[richmedia]"`), and video container/format tags via **ffprobe** when the `ffprobe` binary is on `PATH`. With **`file_scan.scan_image_ocr: true`**, it also runs **Tesseract** on a downscaled image (`pytesseract` in `.[richmedia]` plus system **`tesseract-ocr`**). **Privacy:** OCR processes **visible pixels**; only enable on paths you are allowed to read at that depth. Defaults for both flags are **false** to avoid surprise I/O and CPU.
+>
+> **`ocr_lang`** (default `eng`) and **`ocr_max_dimension`** (default `2000`, clamped 256–8000) tune OCR. When **`use_content_type`** is on, magic bytes can remap a **wrong extension** to image/audio/video (in addition to the existing PDF slice) so metadata/OCR runs on renamed files.
+>
+> **Subtitles (default):** Sidecar **`.srt`**, **`.vtt`**, **`.ass`**, **`.ssa`** are in the default `file_scan.extensions` list and are read as UTF-8 text (timing cues normalized) like other text files—no extra flag.
 
 ### Credentials from environment (secrets not in config)
 
@@ -523,7 +529,7 @@ The Snowflake connector uses the same pattern as other SQL engines: discover tab
     recursive: true
 ```
 
-No credentials. Uses `file_scan` settings (extensions, recursive, scan_sqlite_as_db, sample_limit) from config.
+No credentials. Uses `file_scan` settings (extensions, recursive, scan_sqlite_as_db, `sample_limit`, `file_sample_max_chars`) from config.
 
 ### Targets: APIs (REST) – Basic, Bearer, OAuth2, custom
 
@@ -695,7 +701,7 @@ Install optional deps: `uv pip install -e ".[shares]"`.
     path: "/mnt/nfs_data"   # local mount point
 ```
 
-All share types use the same `file_scan` settings (extensions, recursive, scan_sqlite_as_db, sample_limit, file_passwords). Findings appear in the **Filesystem findings** sheet.
+All share types use the same `file_scan` settings (extensions, recursive, scan_sqlite_as_db, `sample_limit`, `file_sample_max_chars`, file_passwords). Findings appear in the **Filesystem findings** sheet.
 
 ### Global options (excerpt)
 
@@ -704,7 +710,8 @@ file_scan:
   extensions: [.txt, .csv, .pdf, .docx, .xlsx]
   recursive: true
   scan_sqlite_as_db: true
-  sample_limit: 5
+  sample_limit: 5   # row-style caps (e.g. SQLite-as-DB per column, Power BI / Dataverse TOPN)
+  file_sample_max_chars: 12000   # UTF-8 chars read per plain-text file (.txt, .md, …) on FS/shares
   # Optional: scan inside compressed files (off by default)
   # When true, candidate archives (zip, tar, gz, bz2, xz, 7z, etc.) are opened and inner members
   # with supported extensions are scanned as if they were regular files. Inner paths appear in
