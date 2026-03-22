@@ -8,10 +8,11 @@
 
 ## 1. Janela de estudo e certificação (2026)
 
-- **Prioridade até ~meados de abril de 2026:** **Claude Certified Architect (CCA)** — alinha com como você constrói com Claude (Agent SDK, MCP, Claude Code, desenho em estilo produção). Visão geral não oficial: [How to Become a Claude Certified Architect — guide](https://aitoolsclub.com/how-to-become-a-claude-certified-architect-complete-guide/). Preparação oficial: **Anthropic Academy** (Skilljar). Taxas e formato do exame seguem a Anthropic no registro.
+- **Foco principal:** **Anthropic Academy** (cursos gratuitos no Skilljar; índice: [Anthropic courses](https://docs.claude.com/en/docs/resources/courses)) — sequência em [PORTFOLIO_AND_EVIDENCE_SOURCES.md](../plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.0. **Cursor** é a **ferramenta de entrega**; **prova para stakeholders** = **releases + narrativa de compliance + este repositório**. **CCA** é **exame posterior** quando você atingir a barra de experiência da Anthropic — **sem** meta fixa em abril. Links: página CCA no Skilljar + [guia](https://aitoolsclub.com/how-to-become-a-claude-certified-architect-complete-guide/) não oficial.
 - **Em paralelo (fio fino):** Manter a **faixa prioritária A** com **cadência mínima saudável** (Dependabot, Docker Scout, `check-all` antes de merges) para **M-TRUST** não degradar—ver [PLANS_TODO.md](../plans/PLANS_TODO.md) ordens **–1** / **–1b**.
-- **Depois de meados de abril (ou após uma primeira tentativa de CCA):** Voltar o **foco principal de estudo** aos **cursos de cyber já pagos** (ex. lista CWL em [PORTFOLIO_AND_EVIDENCE_SOURCES.md](../plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.2), começando por **BTF** → **C3SA** como já recomendado.
-- **Se a primeira tentativa de exame não passar:** Tratar como **aprendizado**—você ainda ganha **profundidade de arquitetura e de ferramentas** útil para este repositório. Manter anotações em `docs/private/` e planejar **nova tentativa mais tarde no ano**, de forma oportunística junto com outros cursos; ajustar o preparo e tentar de novo—sem ciclo de culpa.
+- **Entrelaçar / depois do ritmo Academy:** **Cursos de cyber já pagos** (lista CWL em [PORTFOLIO_AND_EVIDENCE_SOURCES.md](../plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.2), começando por **BTF** → **C3SA** como já recomendado.
+- **Opcional:** **certificados de conclusão** de cursos terceiros (ex. Cursor em Coursera/Codecademy) para CV — **não** são credenciais oficiais Cursor/Anthropic.
+- **Se uma tentativa de CCA não passar:** Tratar como **aprendizado**; anotações em `docs/private/`; **nova tentativa** depois — o preparo ainda apoia este repositório.
 
 O racional de sequência também está em [SPRINTS_AND_MILESTONES.pt_BR.md](../plans/SPRINTS_AND_MILESTONES.pt_BR.md) §3.1 e [PORTFOLIO_AND_EVIDENCE_SOURCES.md](../plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.0.
 
