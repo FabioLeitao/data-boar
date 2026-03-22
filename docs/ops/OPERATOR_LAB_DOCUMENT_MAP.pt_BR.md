@@ -35,7 +35,7 @@
 
 **Pasta:** **`docs/private/homelab/`** (e raiz de **`docs/private/`** para notas soltas).
 
-| Ficheiro em `homelab/` | Função |
+| Arquivo em `homelab/` | Função |
 | ---------------------- | ------ |
 | **`LAB_TAXONOMY.md`** | LAB‑PB vs LAB‑OP; lembrete para rever nome LAB‑OP |
 | **`OPERATOR_SYSTEM_MAP.md`** | Mapa mestre (hardware + acessos + software) |
@@ -44,7 +44,7 @@
 | **`HARDWARE_CATALOG.md`** | Foco hardware |
 | **`iso-inventory.md`** | Inventário de ISOs |
 | **`LAB_SECURITY_POSTURE.md`** | **Inventário de segurança LAB‑OP:** WAN, snapshots **sshd**/UFW/Fail2ban/nftables, **fila de melhorias** (só local, não vai ao GitHub) |
-| **`LAB_SOFTWARE_INVENTORY.md`** | **Matriz software/runtime LAB‑OP** (Python, Docker, caminhos Data Boar, lacunas **TBD**); actualizar com **`scripts/homelab-host-report.sh`** em cada Linux |
+| **`LAB_SOFTWARE_INVENTORY.md`** | **Matriz software/runtime LAB‑OP** (Python, Docker, caminhos Data Boar, lacunas **TBD**); atualizar com **`scripts/homelab-host-report.sh`** em cada Linux |
 
 **Raiz `docs/private/`:** também **`CONTEXT_ACADEMIC_AND_FAMILY.md`** (trabalho da esposa + planos académicos — preencher quando quiser).
 

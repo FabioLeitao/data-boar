@@ -1,6 +1,6 @@
 # Monitoração solar no homelab — o que dá para integrar (e o que não dá)
 
-**O assistente/repo não acede** à sua **LAN**, **VLAN** nem às **APIs do fabricante** com as suas credenciais.
+**O assistente/repo não acessa** sua **LAN**, **VLAN** nem as **APIs do fabricante** com suas credenciais.
 
 **Documento completo (EN):** [HOMELAB_SOLAR_MONITORING_INTEGRATION.md](HOMELAB_SOLAR_MONITORING_INTEGRATION.md)
 

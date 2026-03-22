@@ -52,7 +52,7 @@ Abra `http://<ip-do-servidor>:9000`, login inicial **admin/admin**, **altere a s
 ## 4. Projeto e token
 
 1. Crie projeto com **Project key** igual a `sonar.projectKey` no repositório (`python3-lgpd-crawler`).
-1. **Token de utilizador** (não token de projeto): **My Account → Security → Generate Tokens** (ver regra MCP sobre tokens de utilizador).
+1. **Token de usuário** (não token de projeto): **My Account → Security → Generate Tokens** (ver regra MCP sobre tokens de usuário).
 1. **Secrets no GitHub:** `SONAR_TOKEN`, `SONAR_HOST_URL` (URL base, sem barra final). Em servidor próprio **não** use `sonar.organization` (isso é SonarCloud).
 
 Scripts locais:
@@ -67,7 +67,7 @@ uv run python scripts/sonar_issues.py
 
 ## 5. Extensão SonarQube no Cursor/VS Code
 
-Instale a extensão SonarSource, ligue **connected mode** com a mesma URL e token de utilizador, projeto alinhado a `sonar-project.properties`.
+Instale a extensão SonarSource, ligue **connected mode** com a mesma URL e token de usuário, projeto alinhado a `sonar-project.properties`.
 
 ---
 
@@ -94,7 +94,7 @@ Ver detalhes em [SONARQUBE_HOME_LAB.md §6](SONARQUBE_HOME_LAB.md#6-github-actio
 
 ## 8. MCP no Cursor
 
-Variáveis típicas: URL base + token de utilizador (iguais à extensão). Comportamento do agente: [`.cursor/rules/sonarqube_mcp_instructions.mdc`](../../.cursor/rules/sonarqube_mcp_instructions.mdc). Configure em **Cursor Settings → MCP** conforme o README do servidor MCP que instalar.
+Variáveis típicas: URL base + token de usuário (iguais à extensão). Comportamento do agente: [`.cursor/rules/sonarqube_mcp_instructions.mdc`](../../.cursor/rules/sonarqube_mcp_instructions.mdc). Configure em **Cursor Settings → MCP** conforme o README do servidor MCP que instalar.
 
 ---
 
