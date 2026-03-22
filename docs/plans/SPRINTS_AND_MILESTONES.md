@@ -77,11 +77,11 @@ Copy this table into a GitHub **Project** board or a personal doc; move rows by 
 
 ### 3.1 Study and certification lane (operator calendar)
 
-- **Primary focus (2026):** **Anthropic Academy** production curriculum (Claude 101 → Claude API → MCP → Claude Code / agent skills) — see [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.0 and [Anthropic courses](https://docs.claude.com/en/docs/resources/courses). **Cursor** = toolchain; **credibility** = shipped work + compliance narrative + course progress. **CCA** (Claude Certified Architect) = **capstone exam when eligible**—not a fixed April deadline.
-- **Same window:** Keep a **thin** **Priority band A** thread so dependency/image hygiene does not stall—see [PLANS_TODO.md](PLANS_TODO.md) **–1** / **–1b**.
-- **Interleave / after Academy rhythm:** **Paid cyber courses** (e.g. CWL §3.2 in PORTFOLIO), **BTF → C3SA** first—still **one major cert lane at a time** where possible.
-- **Optional:** Short **third-party** courses with completion certificates (e.g. Cursor on Coursera/Codecademy) if you want a PDF for HR—non-official vs Anthropic/CCA.
-- **Retakes:** If **CCA** (or another exam) is not passed on the first try, capture notes in `docs/private/` and schedule a **later** attempt; knowledge still supports production work.
+- **Primary focus (2026):** **Paid cyber (CWL)** — finish **BTF → C3SA** then §3.2 sequence in [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md); **credibility** = **those completions** + **shipped Data Boar** + compliance narrative. This repo’s editor may use **various** models; do **not** treat **Anthropic-only** study as the top lane.
+- **Alternating over the year:** **Anthropic Academy** (or other AI courses) when calendar allows — [Anthropic courses](https://docs.claude.com/en/docs/resources/courses); **CCA** = **capstone when eligible**, not a fixed deadline.
+- **Same window:** Keep a **thin** **Priority band A** thread—see [PLANS_TODO.md](PLANS_TODO.md) **–1** / **–1b**.
+- **Optional:** Third-party **completion certificates** (e.g. Cursor on Coursera)—HR polish only.
+- **Retakes:** If **CCA** (or another exam) fails once, notes in `docs/private/` and **later** attempt.
 
 ---
 
