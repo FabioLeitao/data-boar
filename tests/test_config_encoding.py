@@ -133,6 +133,21 @@ def test_normalize_config_max_inner_size_validation():
     assert out5["file_scan"]["max_inner_size"] is None
 
 
+def test_normalize_config_file_sample_max_chars_default():
+    """file_scan.file_sample_max_chars defaults for plain-text read budget; clamped when invalid."""
+    out = normalize_config({"targets": [], "report": {"output_dir": "."}})
+    assert out["file_scan"].get("file_sample_max_chars") == 12000
+
+    out2 = normalize_config(
+        {
+            "targets": [],
+            "report": {"output_dir": "."},
+            "file_scan": {"file_sample_max_chars": 50_000},
+        }
+    )
+    assert out2["file_scan"]["file_sample_max_chars"] == 50_000
+
+
 def test_normalize_config_use_content_type():
     """file_scan.use_content_type is normalized (default False); engine/connectors receive it via target file_scan."""
     out = normalize_config({"targets": [], "report": {"output_dir": "."}})
@@ -155,3 +170,40 @@ def test_normalize_config_use_content_type():
         }
     )
     assert out3["file_scan"]["use_content_type"] is False
+
+
+def test_normalize_config_rich_media_and_ocr_keys():
+    """file_scan rich-media flags and ocr_max_dimension clamp (256–8000)."""
+    out = normalize_config({"targets": [], "report": {"output_dir": "."}})
+    fs = out["file_scan"]
+    assert fs.get("scan_rich_media_metadata") is False
+    assert fs.get("scan_image_ocr") is False
+    assert fs.get("ocr_lang") == "eng"
+    assert fs.get("ocr_max_dimension") == 2000
+
+    out2 = normalize_config(
+        {
+            "targets": [],
+            "report": {"output_dir": "."},
+            "file_scan": {
+                "scan_rich_media_metadata": True,
+                "scan_image_ocr": True,
+                "ocr_lang": "por",
+                "ocr_max_dimension": 99999,
+            },
+        }
+    )
+    fs2 = out2["file_scan"]
+    assert fs2["scan_rich_media_metadata"] is True
+    assert fs2["scan_image_ocr"] is True
+    assert fs2["ocr_lang"] == "por"
+    assert fs2["ocr_max_dimension"] == 8000
+
+    out3 = normalize_config(
+        {
+            "targets": [],
+            "report": {"output_dir": "."},
+            "file_scan": {"ocr_max_dimension": 100},
+        }
+    )
+    assert out3["file_scan"]["ocr_max_dimension"] == 256

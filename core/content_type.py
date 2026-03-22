@@ -4,7 +4,7 @@ Content-based type detection helper (magic bytes and simple heuristics).
 Step 1 for PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION: provide a lightweight helper
 that infers an internal content-type label (e.g. 'pdf', 'zip', 'text') from the
 first bytes of a file or a bytes buffer. No connectors use this yet; wiring it
-into filesystem/share scanning will be an opt-in flag in a later phase.
+into filesystem/share scanning when ``file_scan.use_content_type`` is true (PDF slice and rich-media remapping).
 """
 
 from __future__ import annotations
@@ -95,3 +95,29 @@ def choose_effective_pdf_extension(
     if label == "pdf":
         return ".pdf"
     return ext
+
+
+def choose_effective_rich_media_extension(
+    ext: str,
+    use_content_type: bool,
+    source: Union[Path, str, bytes, bytearray],
+) -> str:
+    """
+    If the path's extension is not already a known image/audio/video suffix but magic bytes
+    match a rich-media container, return that suffix so ``_read_text_sample`` uses the right branch.
+    """
+    if not use_content_type:
+        return ext
+    ext_l = (ext or "").lower()
+    from core.rich_media_magic import (
+        RICH_MEDIA_SCAN_EXTENSIONS,
+        infer_rich_media_suffix_from_source,
+    )
+
+    if ext_l in RICH_MEDIA_SCAN_EXTENSIONS:
+        return ext
+    try:
+        inferred = infer_rich_media_suffix_from_source(source)
+    except Exception:
+        return ext
+    return inferred if inferred else ext

@@ -8,6 +8,8 @@ import hashlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
+from config.scan_defaults import DEFAULT_FILE_SAMPLE_MAX_CHARS
+
 
 def _compute_config_scope_hash(config: dict[str, Any]) -> str:
     """
@@ -219,6 +221,9 @@ class AuditEngine:
         target_with_fs = {**target, "file_scan": fs_config}
         scan_sqlite_as_db = fs_config.get("scan_sqlite_as_db", True)
         sample_limit = fs_config.get("sample_limit", 5)
+        file_sample_max_chars = int(
+            fs_config.get("file_sample_max_chars", DEFAULT_FILE_SAMPLE_MAX_CHARS)
+        )
         file_passwords = fs_config.get("file_passwords") or {}
         ext = fs_config.get("extensions")
         if t == "filesystem":
@@ -230,6 +235,7 @@ class AuditEngine:
                     extensions=ext,
                     scan_sqlite_as_db=scan_sqlite_as_db,
                     sample_limit=sample_limit,
+                    file_sample_max_chars=file_sample_max_chars,
                     file_passwords=file_passwords,
                 )
             else:
@@ -239,6 +245,7 @@ class AuditEngine:
                     self.db_manager,
                     scan_sqlite_as_db=scan_sqlite_as_db,
                     sample_limit=sample_limit,
+                    file_sample_max_chars=file_sample_max_chars,
                     file_passwords=file_passwords,
                 )
         elif t in ("sharepoint", "webdav", "smb", "cifs", "nfs"):
@@ -249,6 +256,7 @@ class AuditEngine:
                 extensions=ext,
                 scan_sqlite_as_db=scan_sqlite_as_db,
                 sample_limit=sample_limit,
+                file_sample_max_chars=file_sample_max_chars,
                 file_passwords=file_passwords,
             )
         elif t in ("powerbi", "dataverse", "powerapps"):

@@ -93,6 +93,8 @@ compressed = ["py7zr>=0.20.0"]
 dl = ["sentence-transformers>=3.0.0"]
 # Optional typo-tolerant column name vs sensitive terms (see sensitivity_detection.fuzzy_column_match)
 detection-fuzzy = ["rapidfuzz>=3.9.0"]
+# Rich media: ID3/Vorbis/FLAC tags (mutagen), OCR wrapper (pytesseract; install system tesseract-ocr)
+richmedia = ["mutagen>=1.47.0", "pytesseract>=0.3.13"]
 
 [tool.pytest.ini_options]
 # Fail on any warning (DeprecationWarning, ResourceWarning, etc.) so the suite stays clean
