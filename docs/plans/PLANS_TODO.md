@@ -62,7 +62,7 @@ Refresh periodically: `gh issue list --state open --limit 50` (requires [`gh`](h
 
 **Dashboard web surface cluster:** [#86](https://github.com/FabioLeitao/data-boar/issues/86) (RBAC) and [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) (locale) share `api/routes.py` / templates but are **separate plans**—coordinate middleware and path design when both are in play; see **§ Relationship to other plans** in PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.
 
-### Doc housekeeping — workflow guardrails (✅ 2026-03-01)
+### Doc housekeeping — workflow guardrails (✅ 2026-03-22)
 
 Post–PR **#118**: clarified **`private-layout`** vs **`docs/private/homelab`**, and **sprint theme vs token-cherry-picking**, in **`AGENTS.md`**, **`CONTRIBUTING.md`**, **`PRIVATE_OPERATOR_NOTES.md`**, **`.cursor/rules/execution-priority-and-pr-batching.mdc`**, **`TOKEN_AWARE_USAGE.md`**, **`.cursor/skills/token-aware-automation/SKILL.md`**. Ongoing source: **`AGENTS.md`** scope table + execution rule §3.
 
