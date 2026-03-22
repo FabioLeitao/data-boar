@@ -19,6 +19,12 @@ This document sets out **options and recommendations** for you to decide on. **T
 
 No i18n/l10n exists in the web UI today.
 
+### Related: dashboard access control (issue #86)
+
+**Different problem, same files:** [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) tracks **who may open** `/reports` and related download routes (roles / permissions vs today’s global API key or open LAN). **i18n** does not solve that.
+
+**Sequencing:** If you adopt **path-prefixed locales** (e.g. `/pt-br/reports`), sketch **middleware order** and **URL patterns** together with any **RBAC** work so you do not refactor `api/routes.py` twice. The two plans stay **separate documents**; the **sprint** may batch “dashboard web surface” design when both are active.
+
 ---
 
 ## Options and recommendations (for decision)
