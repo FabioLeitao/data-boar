@@ -13,3 +13,15 @@ repos:
       - id: ruff-format
         args: [--check]
         # Enforce format on commit; fix with: uv run ruff format .
+  - repo: local
+    hooks:
+      - id: markdown-lint-guard
+        name: markdown lint guard (pytest)
+        entry: uv run pytest tests/test_markdown_lint.py::test_markdown_lint_no_violations -q -W error
+        language: system
+        pass_filenames: false
+      - id: pt-br-locale-guard
+        name: pt-BR locale guard (pytest)
+        entry: uv run pytest tests/test_docs_pt_br_locale.py -q -W error
+        language: system
+        pass_filenames: false
