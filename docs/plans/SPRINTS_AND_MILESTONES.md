@@ -78,6 +78,7 @@ Copy this table into a GitHub **Project** board or a personal doc; move rows by 
 ### 3.1 Study and certification lane (operator calendar)
 
 - **Primary focus (2026):** **Paid cyber (CWL)** — finish **BTF → C3SA** then §3.2 sequence in [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md); **credibility** = **those completions** + **shipped Data Boar** + compliance narrative. This repo’s editor may use **various** models; do **not** treat **Anthropic-only** study as the top lane.
+- **Weekly cadence (suggested):** **2** CWL + **1** AI; next week **2** CWL + **1** other subject; repeat—see PORTFOLIO §3.0 and [OPERATOR_MANUAL_ACTIONS.md](../ops/OPERATOR_MANUAL_ACTIONS.md) §1. Ease off when band **A** or shipping spikes.
 - **Alternating over the year:** **Anthropic Academy** (or other AI courses) when calendar allows — [Anthropic courses](https://docs.claude.com/en/docs/resources/courses); **CCA** = **capstone when eligible**, not a fixed deadline.
 - **Same window:** Keep a **thin** **Priority band A** thread—see [PLANS_TODO.md](PLANS_TODO.md) **–1** / **–1b**.
 - **Optional:** Third-party **completion certificates** (e.g. Cursor on Coursera)—HR polish only.
@@ -130,6 +131,18 @@ The table **S0–S6** does **not** yet include a dedicated row for **subscriptio
 
 **Kanban:** Add **D-WEB** to **Backlog** or **Selected** when you schedule the design pass; keep **one** agent-heavy theme in **In progress** per [TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md).
 
+### 4.3 Future public website (content split vs pitch) — **not active**
+
+**Status:** Planning only — we are **not** building the site yet.
+
+| Topic | Note |
+| ----- | ---- |
+| **Pitch / presentation** | Private or stakeholder-facing **short** narrative (e.g. `docs/private/pitch/`); **low technical** depth; seeds **brand** only. |
+| **GitHub compliance-legal** | `COMPLIANCE_AND_LEGAL`, frameworks, licensing — **governance** depth, not a full HOWTO site. |
+| **Future website** | **Deep** layer: USAGE, TECH_GUIDE, TESTING, Docker/deploy, scenarios, samples, **release notes**, **roadmap with named fronts**, **Docker Hub** + **GitHub**; **synced** to repo versions. |
+| **i18n** | Same **locale negotiation pattern** as **dashBOARd** ([PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md), [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) §2.2). |
+| **Cadence** | New **EN+pt-BR pitch deck generation** → **reminder** to schedule a **website** content/roadmap pass so public depth does not lag. |
+
 ---
 
 ## 5. Milestones (every few sprints)
@@ -147,9 +160,10 @@ Use GitHub **Milestones** or release tags; below is the **semantic** layer align
 | **M-ACCESS** | Paid / shared-network readiness (licensing + identity) | Intended **commercial SKUs** and **enforced** path smoke-tested; dashBOARd/API **not anonymously usable** on the reference deploy—via **documented proxy+OIDC pattern** and/or **in-app** auth; RBAC or equivalent role story documented for at least one pattern |
 | **D-WEB** | Dashboard web surface **design** (i18n ∩ #86) | URL map + middleware order **written** and cross-linked; **no** required product code (diagram + plan edits OK) |
 | **M-LOCALE-V1** | Dashboard HTML **locale v1** | As [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md): prefixed HTML, `en`+`pt-BR`, negotiation, switcher, tests, CI key parity |
+| **M-SITE-READY** | **First public website + technical doc hub** (GTM-ready slice) | **Live** static/marketing site with: (1) **non-technical** story pages (aligned with **stakeholder pitch**, not a dump of TECH_GUIDE); (2) **technical hub** — deep links or embedded paths to **version-aligned** USAGE, TECH_GUIDE, TESTING, deploy/Docker, scenarios, compliance-samples entry, **release notes**, **Docker Hub** + **GitHub**; (3) **roadmap** listing **specific active fronts** (connectors, dashboard, notifications, …); (4) **locale** UX **consistent** with dashBOARd i18n plan (prefix / cookie / `Accept-Language` / JSON catalogs). See [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) §2.1–2.3. |
 | **M-RELEASE x.y.z** | Versioned product cut | Existing VERSIONING checklist + `docs/releases/x.y.z.md` + Hub tags |
 
-**Cadence suggestion:** **M-TRUST** before a big feature push; **M-OBS** can trail **M-TRUST** in the same or next sprint (small docs/automation); **M-LAB** before customer/demo storytelling; **M-RICH** when the rich-media PR merges; **M-ACCESS** before promising **permanent subscription** or **multi-user** production on a reachable host; **M-RELEASE** whenever VERSIONING says ship.
+**Cadence suggestion:** **M-TRUST** before a big feature push; **M-OBS** can trail **M-TRUST** in the same or next sprint (small docs/automation); **M-LAB** before customer/demo storytelling; **M-RICH** when the rich-media PR merges; **M-ACCESS** before promising **permanent subscription** or **multi-user** production on a reachable host; **M-SITE-READY** when you intentionally ship a **public** doc/marketing surface (after **M-LOCALE-V1** is wise if you want matching locale UX); **M-RELEASE** whenever VERSIONING says ship.
 
 ---
 

@@ -39,6 +39,7 @@ For all other new docs (guides, reference, deploy, testing, observability, etc.)
 1. **Add the doc to docs/README.md** in the appropriate table (Usage, Deploy, Internal, etc.). Include both EN and pt-BR links in the row once pt-BR exists.
 1. **Create the pt-BR file** with the same structure and sections. Top line: `**English:** [Filename.md](Filename.md)`. Keep coverage and structure aligned with EN.
 1. **Run markdown fix and lint:** `uv run python scripts/fix_markdown_sonar.py` then `uv run pytest tests/test_markdown_lint.py -v -W error`. Restore semantic list numbering (1. 2. 3.) by hand if the fix script changed step lists. Fix MD024 (unique headings), MD022/MD032/MD041/MD026 as needed (see markdown-lint rule and quality skill).
+1. **pt-BR locale guard:** `uv run pytest tests/test_docs_pt_br_locale.py -v` so pt-BR files do not pick up **European Portuguese** habits (*ficheiro*, *partilhar*, *secção*, *utilizador*, *tem de*, etc.). See **`.cursor/rules/docs-pt-br-locale.mdc`**.
 
 ## When updating existing documentation
 
@@ -46,6 +47,7 @@ For all other new docs (guides, reference, deploy, testing, observability, etc.)
 1. Update the **English** doc so it matches the application.
 1. **Sync the pt-BR** file: same sections, same meaning; update links and examples as needed.
 1. Run the markdown fix script and lint test; fix any new violations.
+1. Run **`uv run pytest tests/test_docs_pt_br_locale.py -v`** on updated **`*.pt_BR.md`** files.
 
 ## Plan files (location and completion)
 
