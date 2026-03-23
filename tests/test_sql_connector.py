@@ -87,6 +87,39 @@ def test_sql_connector_discover_sqlite_in_memory(tmp_path):
     assert "b" in col_names
 
 
+def test_sql_connector_run_saves_inventory_row(tmp_path):
+    """run() persists one inventory row through db_manager.save_data_source_inventory."""
+    db_path = tmp_path / "inventory_scan.db"
+    conn = sqlite3.connect(str(db_path))
+    conn.execute("CREATE TABLE t1 (a TEXT)")
+    conn.execute("INSERT INTO t1 VALUES ('x')")
+    conn.commit()
+    conn.close()
+
+    target = {
+        "type": "database",
+        "driver": "sqlite",
+        "database": str(db_path),
+        "name": "SQLiteTarget",
+    }
+    scanner = MagicMock()
+    scanner.scan_column.return_value = {
+        "sensitivity_level": "LOW",
+        "pattern_detected": "SUGGESTED_REVIEW_ID_LIKE",
+        "norm_tag": "Generic identifier",
+        "ml_confidence": 10,
+    }
+    db_manager = MagicMock()
+    connector = SQLConnector(target, scanner, db_manager)
+    connector.run()
+
+    assert db_manager.save_data_source_inventory.called
+    kwargs = db_manager.save_data_source_inventory.call_args.kwargs
+    assert kwargs["target_name"] == "SQLiteTarget"
+    assert kwargs["source_type"] == "database"
+    assert kwargs["product"] == "sqlite"
+
+
 def test_discover_fallback_no_schemas_returns_list():
     """_discover_fallback_no_schemas returns a list (empty or with tables)."""
     engine = create_engine("sqlite:///:memory:")

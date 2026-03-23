@@ -5,6 +5,7 @@ Config target: type: database, driver: redis, host, port, (optional password).
 """
 
 from typing import Any
+import json
 
 try:
     import redis
@@ -30,11 +31,13 @@ class RedisConnector:
         scanner: Any,
         db_manager: Any,
         sample_limit: int = 100,
+        detection_config: dict[str, Any] | None = None,
     ):
         self.config = target_config
         self.scanner = scanner
         self.db_manager = db_manager
         self.sample_limit = sample_limit
+        self.detection_config = detection_config or {}
         self._client = None
 
     def connect(self) -> None:
@@ -75,6 +78,7 @@ class RedisConnector:
             from utils.logger import log_connection
 
             log_connection(target_name, "redis", self.config.get("host", "localhost"))
+            self._save_inventory_snapshot(target_name)
             keys = []
             for k in self._client.scan_iter(count=self.sample_limit):
                 keys.append(k)
@@ -119,6 +123,33 @@ class RedisConnector:
             self.db_manager.save_failure(target_name, "error", str(e))
         finally:
             self.close()
+
+    def _save_inventory_snapshot(self, target_name: str) -> None:
+        """Persist one Redis inventory row (best effort)."""
+        if not hasattr(self.db_manager, "save_data_source_inventory"):
+            return
+        product_version = None
+        raw_details: dict[str, str] = {}
+        try:
+            info = self._client.info("server")
+            product_version = str(info.get("redis_version", "") or "") or None
+            raw_details["version_probe"] = str(info)[:500]
+        except Exception:
+            pass
+        transport = "tls=enabled" if self.config.get("tls") else "unknown"
+        raw_details["driver"] = "redis"
+        try:
+            self.db_manager.save_data_source_inventory(
+                target_name=target_name,
+                source_type="database",
+                product="redis",
+                product_version=product_version,
+                protocol_or_api_version="redis",
+                transport_security=transport,
+                raw_details=json.dumps(raw_details, ensure_ascii=False),
+            )
+        except Exception:
+            pass
 
 
 if _REDIS_AVAILABLE:
