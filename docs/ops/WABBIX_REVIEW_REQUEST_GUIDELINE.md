@@ -4,6 +4,13 @@
 
 Use this template when asking Wabbix for a new report after meaningful project changes.
 
+## Workflow when drafting a new WRB request (review + persist)
+
+1. **Show for review:** surface the full message in the chat/UI so you can proofread before sending to Wabbix.
+2. **Persist in-repo:** save the same text in `docs/ops/WABBIX_REVIEW_REQUEST_GUIDELINE.md` (the “Prompt mestre completo” ` ```text ` block) and mirror it in `docs/ops/WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md` when you use that package; **commit** so drafts are not lost to session history or clipboard issues.
+
+*(PT-BR: ao criar um pedido, mostrar o texto na tela para revisão **e** gravar no repositório + commit.)*
+
 ## Persistent operator tip (always include)
 
 Always include a **concrete context reminder** in the request because external reviewers may
