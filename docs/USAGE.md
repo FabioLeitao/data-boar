@@ -867,6 +867,14 @@ scan:
 - Reports are generated on demand for a given session (from SQLite findings). The heatmap PNG is written next to the Excel file when the report is generated.
 - No built-in retention policy; reports are files on disk. Clean up or archive them as needed.
 
+### 5.1 Operator notifications (optional)
+
+After a scan finishes (CLI one-shot or `POST /scan` / `POST /start` background run), the app can **POST a short pt-BR brief** to **Slack**, **Microsoft Teams**, **Telegram**, or a **generic JSON webhook** (e.g. automation tools). Default is **off** (`notifications.enabled: false`).
+
+- **Config:** optional block `notifications` with `operator.slack_webhook_url`, `teams_webhook_url`, `telegram_bot_token` + `telegram_chat_id`, or `generic_webhook_url`. URLs may use `${ENV_VAR}` so secrets stay out of the repo. Outbound webhook POSTs retry a few times on HTTP 5xx or transient network errors.
+- **Manual / CI:** `python scripts/notify_webhook.py "message"` (same config file; requires `notifications.enabled: true` and a channel URL).
+- **Details:** [PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md](plans/PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md).
+
 ---
 
 ## 6. Quick reference
