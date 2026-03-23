@@ -8,10 +8,10 @@
 
 ## Taxonomia (resumo)
 
-| Código | Significado | Mnemónico |
+| Código | Significado | Mnemônico |
 | ------ | ----------- | --------- |
 | **LAB‑PB** | Homelab **Playbook** — guias **públicos** | **P**lay**B**ook · **Pu**blic |
-| **LAB‑OP** | Homelab **operador** — **a sua** infra real (**só local**) | **OP**erador — nome pode ser revisto; ver **`LAB_TAXONOMY.md`** em `docs/private/homelab/` |
+| **LAB‑OP** | Homelab **operador** — **sua** infra real (**só local**) | **OP**erador — nome pode ser revisto; ver **`LAB_TAXONOMY.md`** em `docs/private/homelab/` |
 
 **No chat:** “homelab” costuma ser **LAB‑OP**. Diga **LAB‑PB** ou “playbook homelab” para **só** docs públicos.
 
@@ -28,6 +28,7 @@
 | **[../plans/PLANS_TODO.md](../plans/PLANS_TODO.md)** | Sequência e tiers |
 | **[../plans/TOKEN_AWARE_USAGE.md](../plans/TOKEN_AWARE_USAGE.md)** | Sessões token-aware |
 | **`AGENTS.md`** · **`.cursor/rules/`** | Comportamento do agente |
+| **[../private.example/homelab/OPERATOR_RETEACH.md](../private.example/homelab/OPERATOR_RETEACH.md)** · [pt-BR](../private.example/homelab/OPERATOR_RETEACH.pt_BR.md) | **Modelo:** reensino / lacunas (**B1–B6**); **sem** hostnames reais — copiar para **`docs/private/homelab/`** |
 
 ---
 

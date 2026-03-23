@@ -46,6 +46,15 @@ If you sync the same tree to **Linux** (`~/pCloudDrive`) and **Windows** (**`P:`
 
 Maintain **`LAB_SECURITY_POSTURE.md`** next to this README (copy from a filled `docs/private/homelab/` tree or create empty from scratch): WAN/NAT assumptions, **`sshd -T`** / **UFW** / **Fail2ban** / **`nft list ruleset`** snapshots per host, and a short **improvement backlog**. Tracked index: **`docs/ops/OPERATOR_LAB_DOCUMENT_MAP.md`** (LAB‑PB vs LAB‑OP).
 
+## Operator re-teach template (EN + pt-BR)
+
+Tracked **placeholders** (copy structure into private `homelab/`, then fill with **your** facts — **never** commit `docs/private/`):
+
+- **[OPERATOR_RETEACH.md](OPERATOR_RETEACH.md)** (English)
+- **[OPERATOR_RETEACH.pt_BR.md](OPERATOR_RETEACH.pt_BR.md)** (Brazilian Portuguese)
+
+Your private tree may keep **one** file (e.g. only pt-BR) or **both**; either way, follow **`.cursor/rules/docs-pt-br-locale.mdc`** for Portuguese prose. For **POST /scan** + poll **`/status`**, use **`scripts/poll_dashboard_scan.py`** (`--base` / `DATA_BOAR_BASE`), not a hardcoded host script.
+
 ## Validation log
 
 - YYYY-MM-DD: host X — §1.1–1.2 pass/fail — …
