@@ -39,7 +39,7 @@ python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Sil
 
 - Loads config, runs a full audit of all targets (databases, filesystems, APIs, shares as configured).
 - Creates a new session (UUID + timestamp), writes findings to the local SQLite DB (including optional `tenant_name` and `technician_name`), then generates the Excel report (and heatmap) for that session.
-- **Output:** Console prints `Scan session: <session_id>` and `Report written: <path>` (or "No findings to report.").
+- **Output:** Console prints runtime trust `INFO` lines (stdout + stderr), then `Scan session: <session_id>` and `Report written: <path>` (or "No findings to report."). If trust is unexpected, the CLI explicitly warns: **THERE IS SOMETHING DIFFERENT AND UNEXPECTED IN THIS RUNTIME**.
 - Report path is under `report.output_dir` from config (default: current directory). File name: `Relatorio_Auditoria_<session_id>.xlsx` (and `heatmap_<session_id>.png`).
 
 ## REST API server (`--web`)
