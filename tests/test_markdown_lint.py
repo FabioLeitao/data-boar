@@ -52,6 +52,8 @@ MARKDOWN_LINT_EXCLUDE_DIRS = frozenset(
         "build",
         "dist",
         "private",
+        # External review copies (e.g. Corporate-Entity-C); not maintained to markdownlint bar.
+        "feedbacks, reviews, comments and criticism",
     }
 )
 
