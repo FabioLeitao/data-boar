@@ -7,7 +7,7 @@ Session id comes from core.session (UUID + timestamp); set via set_current_sessi
 from datetime import datetime, timezone
 from typing import Any
 
-from sqlalchemy import Column, DateTime, Integer, String, Text, create_engine, text
+from sqlalchemy import Column, DateTime, Integer, String, Text, create_engine, func, text
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.pool import NullPool
 
@@ -392,6 +392,81 @@ class LocalDBManager:
                 [db_to_dict(r) for r in fs_rows],
                 [db_to_dict(r) for r in fail_rows],
             )
+        finally:
+            session.close()
+
+    def get_session_scan_summary_for_notification(self, session_id: str) -> dict[str, Any]:
+        """
+        Aggregate counts for operator scan-complete notifications (brief text, not full export).
+
+        sensitivity_level buckets: HIGH, MEDIUM, LOW. DOB_POSSIBLE_MINOR counts pattern_detected matches.
+        """
+        sid = (session_id or "").strip()
+        out: dict[str, Any] = {
+            "session_id": sid,
+            "status": "unknown",
+            "tenant_name": None,
+            "technician_name": None,
+            "high": 0,
+            "medium": 0,
+            "low": 0,
+            "total_findings": 0,
+            "dob_possible_minor": 0,
+            "scan_failures": 0,
+        }
+        if not sid:
+            return out
+        session = self._session_factory()
+        try:
+            rec = (
+                session.query(ScanSession)
+                .filter(ScanSession.session_id == sid)
+                .first()
+            )
+            if rec:
+                out["status"] = (rec.status or "unknown").strip()
+                out["tenant_name"] = rec.tenant_name
+                out["technician_name"] = rec.technician_name
+            buckets = {"HIGH": 0, "MEDIUM": 0, "LOW": 0}
+            for model in (DatabaseFinding, FilesystemFinding):
+                rows = (
+                    session.query(model.sensitivity_level, func.count(model.id))
+                    .filter(model.session_id == sid)
+                    .group_by(model.sensitivity_level)
+                    .all()
+                )
+                for lev, cnt in rows:
+                    k = (lev or "").strip().upper()
+                    if k in buckets:
+                        buckets[k] += int(cnt)
+            out["high"] = buckets["HIGH"]
+            out["medium"] = buckets["MEDIUM"]
+            out["low"] = buckets["LOW"]
+            out["total_findings"] = out["high"] + out["medium"] + out["low"]
+            dob_db = (
+                session.query(func.count(DatabaseFinding.id))
+                .filter(
+                    DatabaseFinding.session_id == sid,
+                    DatabaseFinding.pattern_detected.like("%DOB_POSSIBLE_MINOR%"),
+                )
+                .scalar()
+            )
+            dob_fs = (
+                session.query(func.count(FilesystemFinding.id))
+                .filter(
+                    FilesystemFinding.session_id == sid,
+                    FilesystemFinding.pattern_detected.like("%DOB_POSSIBLE_MINOR%"),
+                )
+                .scalar()
+            )
+            out["dob_possible_minor"] = int(dob_db or 0) + int(dob_fs or 0)
+            fail_n = (
+                session.query(func.count(ScanFailure.id))
+                .filter(ScanFailure.session_id == sid)
+                .scalar()
+            )
+            out["scan_failures"] = int(fail_n or 0)
+            return out
         finally:
             session.close()
 

@@ -825,6 +825,9 @@ async def start_scan(
                     engine.config["file_scan"]["use_content_type"] = (
                         prev_use_content_type
                     )
+        from utils.notify import notify_scan_complete_background
+
+        notify_scan_complete_background(engine.config, engine.db_manager, session_id)
 
     background_tasks.add_task(run_targets)
     _invalidate_sessions_cache()
@@ -1078,6 +1081,9 @@ async def scan_database(config: DatabaseConfig, background_tasks: BackgroundTask
         finally:
             engine._is_running = False
             engine.db_manager.finish_session(session_id, "completed")
+        from utils.notify import notify_scan_complete_background
+
+        notify_scan_complete_background(engine.config, engine.db_manager, session_id)
 
     background_tasks.add_task(run_one_target)
     _invalidate_sessions_cache()
