@@ -239,6 +239,8 @@ Thanks.
 
 ## Prompt mestre completo (PT-BR) — copiar para e-mail ou colar em IA
 
+**Pacote para envio:** matriz de conformidade (guideline × *long form*), texto pronto para colar e modelo WhatsApp em [`WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md`](WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md).
+
 Use este bloco como **pedido único, completo e em prosa**. Pode ser colado em e-mail, ticket ou como **prompt de IA** para um assistente que prepara o relatório: o texto abaixo articula intervalos temporais, capítulos, focos e formato de saída, em tom profissional e cordial.
 
 **Antes de enviar:** ajuste apenas se necessário a data do último relatório Wabbix, o caminho do PDF local e o nome do branch padrão; **não fixe** número de versão sem conferir `README.md`, `docs/releases/`, GitHub Releases e Docker Hub — ou peça explicitamente que o revisor **derive** a última tag do repo.
@@ -272,9 +274,12 @@ Para não perder o fio da meada, lembramos o relatório anterior de vocês com d
 
 Seria extremamente útil que, neste novo ciclo, vocês retomassem as recomendações daquele relatório e nos ajudassem a perceber o que já foi plenamente atendido, o que ficou em parte, ou o que ainda permanece em aberto — tema que desenvolvemos mais adiante neste pedido.
 
+Se possível, pedimos também que indiquem logo na abertura do novo relatório qual foi o marco técnico de comparação que vocês adotaram (por exemplo PR principal e/ou commit-base), junto da data do último relatório, para facilitar a consciência de contexto e rastreabilidade da análise.
+
 Resumo (âncora rápida):
 - Último relatório Wabbix: 2026-03-18; tracking em WABBIX_ANALISE_2026-03-18.md.
 - Pedido: retomar recomendações daquele ciclo e distinguir atendido / parcial / aberto.
+- Na abertura do novo PDF: explicitar data de referência + PR/commit-base usado na comparação.
 
 ---
 
@@ -357,6 +362,7 @@ Resumo (âncora rápida):
 - Cap. 2 — técnico: integra tudo o que pedimos acima.
 - Cap. 3 — DevSecOps: vulnerabilidades, deps, priorização para sprint/backlog.
 - Opcional: severidade, esforço, janela, taxonomia de tipo de trabalho.
+- No início do PDF: registrar baseline de contexto (data do último relatório + PR/commit-base).
 
 ---
 
