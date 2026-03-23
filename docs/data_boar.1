@@ -25,6 +25,12 @@ data_boar, lgpd_crawler \- audit databases and filesystems for personal and sens
 .B \-\-reset\-data
 ]
 [
+.B \-\-export\-audit\-trail
+[
+.I PATH
+]
+]
+[
 .B \-\-tenant
 .I NAME
 ]
@@ -160,6 +166,22 @@ and records a row in the
 table.
 No scan is started; the process exits after the reset.
 See SECURITY.md before use in production.
+.
+.TP
+.BI "\-\-export\-audit\-trail " PATH
+Export a JSON audit trail from the SQLite database (wipe log, session summary; future: integrity anchor). Does not modify the database. If
+.I PATH
+is omitted or is
+.BR \- ,
+write to standard output; otherwise write to the given file. Cannot be combined with
+.B \-\-web
+or
+.BR \-\-reset\-data .
+See
+.I docs/USAGE.md
+and
+.I PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md
+in the repository.
 .
 .TP
 .BI "\-\-tenant " NAME

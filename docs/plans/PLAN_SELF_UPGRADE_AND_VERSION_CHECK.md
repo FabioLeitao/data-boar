@@ -1,5 +1,7 @@
 # Plan: Version check and self-upgrade (with container-aware behaviour)
 
+**Related:** [PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md](PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md) — **local** build string (`release` vs `dev`, optional manifest) shown at startup and in the dashboard; this plan focuses on **remote** “latest” and **upgrade** paths.
+
 **Status:** Not started
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
