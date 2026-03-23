@@ -75,8 +75,7 @@
 
 ## C. Last update (private)
 
-**Date:** YYYY-MM-DD  
-**By:** operator  
+**Date:** YYYY-MM-DD · **By:** operator
 
 **Notes:** Free text — still **no passwords** or **API keys** in this file.
 
