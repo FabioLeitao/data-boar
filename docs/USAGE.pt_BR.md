@@ -26,6 +26,7 @@ O ponto de entrada é `main.py`.
 | `--port`               | `8088`        | Porta da API quando `--web` é usado. Pode ser sobrescrita por `api.port` no config, salvo se você passar `--port` explicitamente. Ignorado em modo varredura única.                                    |
 | `--host`               | *(resolvido)* | Endereço de bind quando `--web` (ex.: `127.0.0.1`, `0.0.0.0`). **Prevalece** sobre `api.host` e `API_HOST`. Se omitido: `api.host` → `API_HOST` → padrão seguro **`127.0.0.1`**. Ver §2.               |
 | `--reset-data`         | *(flag)*      | Operação de manutenção perigosa: apaga todas as sessões/achados/falhas do SQLite, remove relatórios/heatmaps em `report.output_dir` e registra o wipe na tabela `data_wipe_log`. Não inicia varredura. |
+| `--export-audit-trail` | *(caminho opcional)* | Exporta trilha de auditoria em JSON a partir do SQLite (`data_wipe_log`, resumo de sessões; futuro: integridade). Sem caminho ou com `-` → **stdout**; caso contrário grava no arquivo. **Não** altera o banco. Incompatível com `--web` e `--reset-data`. |
 | `--tenant`             | *(vazio)*     | Nome do cliente/tenant na execução CLI; gravado na sessão e exibido em dashboard/relatórios.                                                                                                           |
 | `--technician`         | *(vazio)*     | Nome do técnico/operador na execução CLI; também gravado na sessão e relatórios.                                                                                                                       |
 | `--scan-compressed`    | *(flag)*      | Sobrescrita pontual: ativa varredura dentro de arquivos compactados como se `file_scan.scan_compressed` estivesse true.                                                                                |
@@ -46,6 +47,7 @@ python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Sil
 - Carrega a configuração, varre todos os alvos (`targets`) e grava achados em `audit_results.db`.
 - Cria uma nova sessão (UUID + timestamp) com metadados (`tenant_name`, `technician_name` opcionais).
 - Gera um relatório Excel e um heatmap PNG para essa sessão.
+- Imprime linhas `INFO` de confiança do runtime (stdout + stderr); em estado inesperado, alerta explícito: **THERE IS SOMETHING DIFFERENT AND UNEXPECTED IN THIS RUNTIME**.
 - No console, você verá algo como:
 - `Scan session: <session_id>`
 - `Report written: <caminho_do_relatorio>`

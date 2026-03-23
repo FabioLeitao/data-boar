@@ -1,5 +1,5 @@
 #!/usr/bin/env pwsh
-# Run pre-commit (Ruff lint + format check) and the full pytest suite via uv.
+# Run pre-commit (Ruff lint/format + markdown + pt-BR locale guards) and full pytest via uv.
 # Usage (from repo root):
 #   .\scripts\pre-commit-and-tests.ps1
 #   .\scripts\pre-commit-and-tests.ps1 -SkipPreCommit   # only pytest
@@ -13,7 +13,7 @@ $repoRoot = (Get-Item $PSScriptRoot).Parent.FullName
 Set-Location $repoRoot
 
 if (-not $SkipPreCommit) {
-    Write-Host "Running pre-commit (Ruff lint + format check)..." -ForegroundColor Cyan
+    Write-Host "Running pre-commit (Ruff + markdown + pt-BR locale guards)..." -ForegroundColor Cyan
     uv run pre-commit run --all-files
     if ($LASTEXITCODE -ne 0) {
         Write-Host "pre-commit failed. Attempting to auto-apply Ruff formatting and re-run pre-commit once..." -ForegroundColor Yellow

@@ -4,8 +4,10 @@ CLI entry point: load config (YAML/JSON), run audit and report (optionally tagge
 """
 
 import argparse
+import json
 import sys
 from pathlib import Path
+from typing import Any
 
 # Ensure project root on path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -14,6 +16,35 @@ from config.loader import load_config
 from core.database import LocalDBManager
 from core.engine import AuditEngine
 from core.licensing import LicenseBlockedError
+from core.runtime_trust import get_runtime_trust_snapshot
+
+
+def _emit_runtime_trust_info(
+    snapshot: dict[str, Any], *, to_stdout: bool = True, to_stderr: bool = True
+) -> None:
+    info_line = (
+        "[INFO] runtime-trust: "
+        f"{snapshot['trust_level'].upper()} "
+        f"(license_state={snapshot['license_state']}, "
+        f"mode={snapshot['license_mode']})"
+    )
+    if to_stdout:
+        print(info_line)
+    if to_stderr:
+        print(info_line, file=sys.stderr)
+
+    if not snapshot["is_unexpected"]:
+        return
+
+    attention_line = (
+        "[INFO] runtime-trust attention: "
+        "THERE IS SOMETHING DIFFERENT AND UNEXPECTED IN THIS RUNTIME. "
+        "Review license/integrity state before trusting scan or report outputs."
+    )
+    if to_stdout:
+        print(attention_line)
+    if to_stderr:
+        print(attention_line, file=sys.stderr)
 
 
 def main() -> None:
@@ -109,6 +140,19 @@ def main() -> None:
         ),
     )
     parser.add_argument(
+        "--export-audit-trail",
+        metavar="PATH",
+        nargs="?",
+        const="-",
+        default=None,
+        help=(
+            "Export a JSON audit trail from SQLite (data_wipe_log, session summary; "
+            "future: integrity anchor). PATH optional: omit or '-' for stdout; "
+            "otherwise write to PATH. Does not modify the database. "
+            "Incompatible with --web and --reset-data."
+        ),
+    )
+    parser.add_argument(
         "--tenant",
         default=None,
         help=(
@@ -166,7 +210,47 @@ def main() -> None:
     if args.content_type_check:
         config.setdefault("file_scan", {})["use_content_type"] = True
 
+    runtime_trust = get_runtime_trust_snapshot(config)
+
+    if args.export_audit_trail is not None:
+        # Keep stdout clean for JSON when export destination is stdout.
+        _emit_runtime_trust_info(runtime_trust, to_stdout=False, to_stderr=True)
+        if args.web:
+            print(
+                "Cannot combine --export-audit-trail with --web.",
+                file=sys.stderr,
+            )
+            sys.exit(2)
+        if args.reset_data:
+            print(
+                "Cannot combine --export-audit-trail with --reset-data.",
+                file=sys.stderr,
+            )
+            sys.exit(2)
+        from core.audit_export import build_audit_trail_payload
+
+        engine = AuditEngine(config)
+        try:
+            sqlite_path = config.get("sqlite_path", "audit_results.db")
+            payload = build_audit_trail_payload(
+                engine.db_manager,
+                config=config,
+                config_path=args.config,
+                sqlite_path=sqlite_path,
+            )
+            body = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+            dest = args.export_audit_trail
+            if dest in ("-", None):
+                sys.stdout.write(body)
+            else:
+                Path(dest).write_text(body, encoding="utf-8")
+                print(f"Audit trail exported to {dest}", file=sys.stderr)
+        finally:
+            engine.db_manager.dispose()
+        return
+
     if args.web and not args.reset_data:
+        _emit_runtime_trust_info(runtime_trust, to_stdout=True, to_stderr=True)
         import uvicorn
         from api.routes import app
         from core.host_resolution import resolve_api_host
@@ -181,6 +265,7 @@ def main() -> None:
     engine = AuditEngine(config)
 
     if args.reset_data:
+        _emit_runtime_trust_info(runtime_trust, to_stdout=True, to_stderr=True)
         # Require explicit confirmation: no undo, no going back.
         print()
         print("*** WIPE ALL GATHERED DATA ***")
@@ -270,6 +355,7 @@ def main() -> None:
     technician = sanitize_tenant_technician(args.technician)
     # scan_compressed / use_content_type already merged above when CLI flags were passed
     try:
+        _emit_runtime_trust_info(runtime_trust, to_stdout=True, to_stderr=True)
         session_id = engine.start_audit(tenant_name=tenant, technician_name=technician)
         print(f"Scan session: {session_id}")
         report_path = engine.generate_final_reports(session_id)

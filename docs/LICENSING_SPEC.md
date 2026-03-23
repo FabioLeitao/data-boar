@@ -118,3 +118,24 @@ When you **change or harden licensing** for IP and profitability, you may introd
 | **Issuance**          | Private issuer (`tools/license-studio` or successor) issues different token **templates** per SKU; audit log records program/tier. |             |                                                                                                   |
 
 Keep this section in sync with [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md) (“Future product tiers” and **Brand, narrative, and experience IP** — mascot, data soup, dashBOARd, report/UI presentation, companion resources). **Do not add claims to production tokens until contracts and pricing are defined.**
+
+### Future extension: entitlement-driven feature packs and kill switch
+
+Not implemented yet. Planning target: when tier contracts are frozen, license claims can drive
+which optional capabilities are available at runtime and which installer extras are permitted.
+
+| Claim / control idea | Purpose |
+| --- | --- |
+| `dbtier` (`standard`, `pro`, `partner`, `enterprise`) | Single source of truth for entitlement tier in runtime, report info, and audit trail. |
+| `dbfeatures` (string list) | Explicit feature flags independent from tier defaults (e.g. `compressed_scan`, `content_type_cloaking`, future `ai_heuristics_plus`). |
+| `dbkill` / revocation overlays | Emergency disable for vulnerable/abused capabilities without shipping a full app update. |
+| `dbextras_profile` (`core`, `plus`, `full`) | Maps entitlement to allowed dependency packs (`.[nosql]`, `.[datalake]`, etc.) in controlled environments. |
+
+**Operational policy sketch (to refine in plan + legal):**
+
+1. **Enterprise**: allow all vetted extras profiles (`full`) and all optional runtime controls.
+2. **Pro / Partner**: allow a curated subset (for example cloaking/content-type checks and selected premium heuristics), deny high-cost packs by default.
+3. **Standard**: core runtime only, with a short allowlist of low-risk options (example: compressed archive scan).
+4. **Enforcement posture**: fail closed for disallowed premium options in `enforced` mode, but keep explicit operator guidance in logs/docs.
+
+**`uv`/extras note:** automatic dependency installation must be **opt-in** and auditable (prefer explicit operator command or installer profile), never silent package mutation during scan runtime. Record entitlement decisions in audit surfaces once implemented.
