@@ -8,10 +8,10 @@
 
 ## Taxonomia (resumo)
 
-| Código | Significado | Mnemónico |
+| Código | Significado | Mnemônico |
 | ------ | ----------- | --------- |
 | **LAB‑PB** | Homelab **Playbook** — guias **públicos** | **P**lay**B**ook · **Pu**blic |
-| **LAB‑OP** | Homelab **operador** — **a sua** infra real (**só local**) | **OP**erador — nome pode ser revisto; ver **`LAB_TAXONOMY.md`** em `docs/private/homelab/` |
+| **LAB‑OP** | Homelab **operador** — **sua** infra real (**só local**) | **OP**erador — nome pode ser revisto; ver **`LAB_TAXONOMY.md`** em `docs/private/homelab/` |
 
 **No chat:** “homelab” costuma ser **LAB‑OP**. Diga **LAB‑PB** ou “playbook homelab” para **só** docs públicos.
 
@@ -22,11 +22,13 @@
 | Documento | Função |
 | --------- | ------ |
 | **[HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md)** · [pt-BR](HOMELAB_VALIDATION.pt_BR.md) | Playbook de validação, §9 multi-host, ordem **–1L** |
+| **[CURSOR_UBUNTU_APPARMOR.md](CURSOR_UBUNTU_APPARMOR.md)** · [pt-BR](CURSOR_UBUNTU_APPARMOR.pt_BR.md) | Cursor no Ubuntu/Zorin com **AppArmor** (instalar, diagnosticar DENIED, overrides em `local/`) |
 | **[OS_COMPATIBILITY_TESTING_MATRIX.md](OS_COMPATIBILITY_TESTING_MATRIX.md)** | Matriz de SO / musl / arch |
 | **[PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)** | Política `docs/private/` |
 | **[../plans/PLANS_TODO.md](../plans/PLANS_TODO.md)** | Sequência e tiers |
 | **[../plans/TOKEN_AWARE_USAGE.md](../plans/TOKEN_AWARE_USAGE.md)** | Sessões token-aware |
 | **`AGENTS.md`** · **`.cursor/rules/`** | Comportamento do agente |
+| **[../private.example/homelab/OPERATOR_RETEACH.md](../private.example/homelab/OPERATOR_RETEACH.md)** · [pt-BR](../private.example/homelab/OPERATOR_RETEACH.pt_BR.md) | **Modelo:** reensino / lacunas (**B1–B6**); **sem** hostnames reais — copiar para **`docs/private/homelab/`** |
 
 ---
 
@@ -34,7 +36,7 @@
 
 **Pasta:** **`docs/private/homelab/`** (e raiz de **`docs/private/`** para notas soltas).
 
-| Ficheiro em `homelab/` | Função |
+| Arquivo em `homelab/` | Função |
 | ---------------------- | ------ |
 | **`LAB_TAXONOMY.md`** | LAB‑PB vs LAB‑OP; lembrete para rever nome LAB‑OP |
 | **`OPERATOR_SYSTEM_MAP.md`** | Mapa mestre (hardware + acessos + software) |
@@ -42,6 +44,8 @@
 | **`OPERATOR_RETEACH.md`** | Lacunas B1–B6 |
 | **`HARDWARE_CATALOG.md`** | Foco hardware |
 | **`iso-inventory.md`** | Inventário de ISOs |
+| **`LAB_SECURITY_POSTURE.md`** | **Inventário de segurança LAB‑OP:** WAN, snapshots **sshd**/UFW/Fail2ban/nftables, **fila de melhorias** (só local, não vai ao GitHub) |
+| **`LAB_SOFTWARE_INVENTORY.md`** | **Matriz software/runtime LAB‑OP** (Python, Docker, caminhos Data Boar, lacunas **TBD**); atualizar com **`scripts/homelab-host-report.sh`** em cada Linux |
 
 **Raiz `docs/private/`:** também **`CONTEXT_ACADEMIC_AND_FAMILY.md`** (trabalho da esposa + planos académicos — preencher quando quiser).
 

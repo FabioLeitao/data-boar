@@ -95,21 +95,70 @@ docker info 2>/dev/null | head -30   # optional; may show swarm — redact if ne
 command -v bw && bw --version
 ```
 
+## Claude Code CLI (optional)
+
+```bash
+command -v claude && claude --version
+```
+
+**Install (vendor-recommended, glibc Linux / macOS / WSL):** per [Claude Code setup](https://docs.anthropic.com/en/docs/claude-code/setup):
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+# Ensure ~/.local/bin is on PATH, then:
+claude --version
+```
+
+**musl hosts (Void Linux, Alpine):** the same installer may need extra packages and settings analogous to Anthropic’s **Alpine** notes (**`libgcc`**, **`libstdc++`**, **`ripgrep`**, and sometimes **`USE_BUILTIN_RIPGREP=0`** in `settings.json`) — see **Advanced setup** in the doc above. **RAM:** vendor specifies **4 GB+** (fine on **mini-bt**; **not** on **Pi 3B** class hardware).
+
+## Ollama (optional — local LLM runtime)
+
+```bash
+command -v ollama && ollama --version
+ollama list
+```
+
+**Lab note:** pulled models live under Ollama’s store (often **`~/.ollama`** or distro package path) and can consume **many GiB** — include them in disk planning next to Docker layers and ISOs. Default API port is **11434**; bind to **localhost** or **LAN** only; do **not** expose to the public Internet without a deliberate reverse proxy + auth.
+
+**WSL2 vs another Linux host:** each distro’s **ext4 VHD** has its **own** **`~/.ollama`** (and **`ollama list`**). Same **semver** (**`ollama --version`**) on **WSL** and **latitude** does **not** imply shared weights — **`ollama pull`** must be run where you want the model to run.
+
 ## Debian/Ubuntu: installed packages (filtered)
 
 ```bash
 dpkg-query -W -f='${Package}\t${Version}\n' \
   python3.12 python3.12-venv python3.12-dev build-essential \
-  libpq-dev libssl-dev libffi-dev unixodbc-dev \
+  libpq-dev libssl-dev libffi-dev libmariadb-dev unixodbc-dev \
   docker-ce docker.io containerd lynis bitwarden-cli 2>/dev/null || true
 # Full list (large): dpkg -l > dpkg-l.txt
 ```
+
+**`uv sync` / PyPI `mariadb` + `mysqlclient` (Debian, Ubuntu, Raspberry Pi OS):** if the build fails with **`mariadb_config: not found`** / **`MariaDB Connector/C … not found`**, install the C connector **development** package (provides **`mariadb_config`** and headers):
+
+```bash
+sudo apt install -y libmariadb-dev pkg-config build-essential
+command -v mariadb_config   # expect /usr/bin/mariadb_config on trixie/bookworm
+```
+
+Then **`uv sync`** again from the repo root. On **aarch64** (e.g. **Pi 3/4**) wheels may be missing — expect **compile** + **RAM** use; **`scan.max_workers: 1`** already recommended for the Pi. If the utility lives elsewhere, set **`MARIADB_CONFIG=/path/to/mariadb_config`**.
 
 ## Void Linux
 
 ```bash
 xbps-query -l | grep -E 'python3|docker|uv|build-essential|openssl|lynis' || xbps-query -l
 ```
+
+**Native wheels / `uv sync` (e.g. `mysqlclient`):** the linker error **`cannot find -lz`** means **`zlib-devel`** is missing (Debian/Ubuntu call it `zlib1g-dev`). For **`mysqlclient`** you also need MariaDB/MySQL **C client headers** and **`pkg-config`** files so the build can find `mysqlclient` / `mariadb`:
+
+```bash
+sudo xbps-install -S zlib-devel pkg-config
+# MariaDB C headers + libs for mysqlclient (name on Void is usually mariadb-devel):
+sudo xbps-install -S mariadb-devel
+# If unsure: xbps-query -Rs mariadb | grep -i devel
+```
+
+Then **`uv sync`** again from the repo root. **`uv`** may use its own **CPython 3.13.x** even when **`python3` on PATH** is **3.14** — that is normal unless you pin **`UV_PYTHON`** / **`.python-version`**.
+
+**No Docker/Podman on host:** use **`uv sync`** on the metal (with the packages above) or run tests in a **Linux/glibc** environment (e.g. **latitude** or the published **Docker** image) when **musl** builds are too painful.
 
 ## Alpine
 
@@ -130,6 +179,14 @@ bash scripts/homelab-host-report.sh
 The script prints **`bw` (Bitwarden CLI)** when it is on **`PATH`** (path + `bw --version`). It does **not** run `bw status` (that can include your **email** in JSON—run manually if needed, redact before sharing).
 
 Save stdout to a file, **redact**, then share if you want a structured review.
+
+### 4.1 Lynis line looks wrong (`db/languages/.../data-boar` or `lynis: not in PATH`)
+
+**Cause (common on Debian/Ubuntu/Zorin):** the real binary is **`/usr/sbin/lynis`**, but **non-login** environments sometimes omit **`/usr/sbin`** from **`PATH`**, so **`command -v lynis`** fails. Running **`lynis`** from the repo directory can also confuse some builds that resolve paths relative to **cwd**.
+
+**What the script does:** resolve **`/usr/sbin/lynis`** (or **`dpkg-query -L lynis`**) first, **`cd /tmp`**, then run **`lynis show version`** with a minimal **`env -i`** **`PATH`**.
+
+**Manual check:** `( cd /tmp && /usr/sbin/lynis show version )` — if that works, the script should match after you **`git pull`** the updated **`scripts/homelab-host-report.sh`**.
 
 ---
 
