@@ -118,6 +118,16 @@ A tabela **S0–S6** **ainda não** tem linha dedicada para **assinatura permane
 
 **Marco:** **M-ACCESS** (§5)—superfícies “prontas para assinatura” e caminho de identidade documentado.
 
+#### Fatias priorizadas (controles de licenciamento + pacotes por tier)
+
+| Prioridade | Fatia | Saída esperada |
+| --- | --- | --- |
+| P1 | Definir contrato de claims (`dbtier`, `dbfeatures`, opcional `dbextras_profile`) | Rascunho de esquema + exemplos de token em `LICENSING_SPEC`; sem bloqueio novo em runtime ainda. |
+| P2 | Matriz de gating em runtime | Tabela determinística de allow/deny: Standard vs Pro/Partner vs Enterprise para recursos opcionais (incluindo heurísticas futuras de IA e cloaking/content-type). |
+| P3 | Controles de kill switch | Caminho de desativação de emergência (claim e/ou overlay de revogação) documentado para operação/suporte. |
+| P4 | Política de perfis de dependência (`uv` extras) | Fluxo de instalador/operação para perfis permitidos (`.[nosql]`, `.[datalake]`, etc.) por entitlement, com trilha de auditoria e sem mutação silenciosa durante varredura. |
+| P5 | Transparência para operador/cliente | Docs + mensagens explícitas em runtime + campos em relatório/auditoria mostrando quais controles de entitlement estão ativos. |
+
 ### 4.2 Cluster da superfície web do dashboard (idioma **+** issue #86)
 
 **Planos:** [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) e [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md). Mesmos arquivos (`api/routes.py`, templates, middleware); **critérios de aceite distintos** (língua vs autorização).
@@ -158,7 +168,7 @@ Use **Milestones** do GitHub ou tags de release; abaixo, camada **semântica** a
 | **M-SCAN+** | Fatia Tier-2 entregue | Um vertical liberado (crypto **ou** data source **ou** fatia FN maior) com testes + docs voltados ao usuário |
 | **M-RICH** | Data soup — rich media Tier 3 | **Em `main`:** legendas + metadados/OCR opcional + cloaking por magic bytes; `docs/releases/1.6.5.md` (ou patch escolhido); testes verdes — ver [PLANS_TODO.md](PLANS_TODO.md) **Integration / WIP** enquanto a branch estiver aberta |
 | **M-NOTIFY** | Consciência fora de banda | Notificações F1 utilizáveis com config documentada |
-| **M-ACCESS** | Prontidão para pago / rede compartilhada (licenciamento + identidade) | **SKUs comerciais** pretendidos e caminho **enforced** testados; dashBOARd/API **sem uso anônimo** no deploy de referência—via **proxy+OIDC documentado** e/ou auth **na app**; RBAC ou história de papéis equivalente documentada em pelo menos um padrão |
+| **M-ACCESS** | Prontidão para pago / rede compartilhada (licenciamento + identidade) | **SKUs comerciais** pretendidos e caminho **enforced** testados; política de tiers + feature packs (incluindo kill switch) documentada; dashBOARd/API **sem uso anônimo** no deploy de referência—via **proxy+OIDC documentado** e/ou auth **na app**; RBAC ou história de papéis equivalente documentada em pelo menos um padrão |
 | **D-WEB** | **Desenho** da superfície web do dashboard (i18n ∩ #86) | Mapa de URLs + ordem do middleware **escritos** e com cross-links; **sem** código de produto obrigatório (diagrama + planos OK) |
 | **M-LOCALE-V1** | **Locale v1** do HTML do dashboard | Conforme [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md): HTML prefixado, `en`+`pt-BR`, negociação, seletor, testes, paridade de chaves no CI |
 | **M-SITE-READY** | **Primeiro site público + hub técnico de documentação** (fatia GTM) | Site **no ar** (estático/marketing) com: (1) páginas de **história não técnicas** (alinhadas ao **pitch** para stakeholder, sem “dump” do TECH_GUIDE); (2) **hub técnico** — links profundos ou caminhos **alinhados à versão** para USAGE, TECH_GUIDE, TESTING, deploy/Docker, cenários, entrada em compliance-samples, **release notes**, **Docker Hub** + **GitHub**; (3) **roadmap** com **frentes ativas específicas**; (4) **locale** **consistente** com o plano i18n do dashBOARd (prefixo / cookie / `Accept-Language` / JSON). Ver [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) §2.1–2.3. |

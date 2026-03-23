@@ -23,7 +23,7 @@ Use these tags in headings to keep priorities explicit and machine-countable:
 
 Do not edit this block manually; refresh with `python scripts/plans-stats.py --write`.
 
-- **Status rows counted:** 110  (Done: 52 | Incomplete: 58)
+- **Status rows counted:** 111  (Done: 53 | Incomplete: 58)
 - **Incomplete breakdown:** Pending `⬜`=56, Tracked `🔄` / `Tracked (partially done)`=2, Under consideration=0, Backlog-marked rows=0
 
 | Horizon | Total rows | Done | Incomplete |
@@ -31,7 +31,7 @@ Do not edit this block manually; refresh with `python scripts/plans-stats.py --w
 | `H0` | 20 | 18 | 2 |
 | `H1` | 0 | 0 | 0 |
 | `H2` | 0 | 0 | 0 |
-| `H3` | 90 | 34 | 56 |
+| `H3` | 91 | 35 | 56 |
 | `H4` | 0 | 0 | 0 |
 | `H5` | 0 | 0 | 0 |
 | `UNSPECIFIED` | 0 | 0 | 0 |
@@ -41,7 +41,7 @@ Do not edit this block manually; refresh with `python scripts/plans-stats.py --w
 
 ### Commercial licensing — future reminder (partner / tiered SKUs)
 
-When revising **license terms** for IP, commerciality, and profitability, explicitly design **multiple SKUs** (e.g. **direct end-user commercial** vs **partner / pro / enterprise**—names TBD) so **consulting partners** can deliver to **their customers** under a **partner-appropriate** subscription and price point, with different objectives and cost-to-serve (analogous to tiered DB licensing: Express / Standard / Enterprise / options). **Legal + pricing first;** then JWT claims and runtime enforcement. Documented in [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](../LICENSING_OPEN_CORE_AND_COMMERCIAL.md) and [LICENSING_SPEC.md](../LICENSING_SPEC.md) (future extensions).
+When revising **license terms** for IP, commerciality, and profitability, explicitly design **multiple SKUs** (e.g. **direct end-user commercial** vs **partner / pro / enterprise**—names TBD) so **consulting partners** can deliver to **their customers** under a **partner-appropriate** subscription and price point, with different objectives and cost-to-serve (analogous to tiered DB licensing: Express / Standard / Enterprise / options). **Legal + pricing first;** then JWT claims and runtime enforcement. Include a prioritized matrix for **tier-driven feature packs**, **`uv` extras profiles** (`.[nosql]`, `.[datalake]`, etc.), and an explicit **kill switch** path for emergency disable/restriction. Documented in [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](../LICENSING_OPEN_CORE_AND_COMMERCIAL.md) and [LICENSING_SPEC.md](../LICENSING_SPEC.md) (future extensions).
 
 **Brand and experience IP (same pass):** Include **mascot**, **Data Boar / dashBOARd** naming, **data soup** metaphor and connector narrative, **UI/report appearance**, documented **operation** (CLI/API/Docker story), and **companion artifacts** (Docker image branding, website, related repos) in trademark and commercial-license review — see [LICENSING_OPEN_CORE_AND_COMMERCIAL.md § Brand, narrative, and experience IP](../LICENSING_OPEN_CORE_AND_COMMERCIAL.md#brand-narrative-and-experience-ip-inventory-for-counsel-and-commercial-policy) and [COPYRIGHT_AND_TRADEMARK.md](../COPYRIGHT_AND_TRADEMARK.md#6-brand-narrative-and-product-experience-inventory).
 
@@ -378,8 +378,9 @@ Core flow first (sections 1–7); then optional Phase 9 (complexity/gain: high c
 | B.1–B.2 | Pre-release convention + CI env / bump                                                 | ⬜ Pending |
 | C.1–C.4 | Optional manifest; signed manifest (stretch)                                           | ⬜ Pending |
 | E.1–E.10 | SQLite `build_integrity_anchor`; first-run validate/import; **no wipe** on `--reset-data`; startup re-verify; tamper → trust level + Report info / status / health | ⬜ Pending |
-| E.11 | **`--export-audit-trail`** JSON: `data_wipe_log`, `scan_sessions_summary`, placeholders for integrity; stdout or file; no DB mutation | ✅ Done (baseline; see plan §E.6) |
+| E.11 | **`--export-audit-trail`** JSON: `runtime_trust`, `data_wipe_log`, `scan_sessions_summary`, placeholders for integrity; stdout or file; no DB mutation | ✅ Done (baseline; see plan §E.6) |
 | E.12 | Extend export with `integrity_events`, per-run version checks, optional execution-log pointers when tables exist | ⬜ Pending |
+| E.13 | Runtime trust warning surface in CLI `INFO` (stdout + stderr) for unexpected states | ✅ Done (baseline message + audit export linkage) |
 | D.1–D.4 | `scripts/release/` + `workflow_dispatch` + `docs/ops/RELEASE_TRAIN.md`               | ⬜ Pending |
 
 ---
