@@ -37,6 +37,7 @@ Esta página descreve **o que o Data Boar revela**, **o que não faz**, **com qu
 - **Relatórios Excel** por **sessão** de varredura: achados por fonte, campo/caminho, tipo de padrão, sensibilidade e texto de recomendação orientado a framework (base legal, risco, ação sugerida, prioridade quando configurado).
 - **Heatmaps** e **visões de tendência** entre sessões para mostrar **evolução**, não só um instantâneo.
 - **Execuções repetíveis** (incluindo automação via API) para alinhar ao **modelo operacional**; detalhe técnico de agendamento e limites: [COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md](COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md).
+- **Identidade de build (roadmap):** os relatórios já registram a **versão da aplicação** na folha “Report info”; há plano para exibir de forma explícita **release vs desenvolvimento** e, opcionalmente, **sinais de integridade** para ambientes enterprise — ver [PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md](plans/PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md) (sem alteração do alcance jurídico até implementar).
 
 ---
 

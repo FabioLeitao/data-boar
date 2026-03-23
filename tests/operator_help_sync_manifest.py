@@ -39,6 +39,7 @@ _MAN_CONFIG = r"\-\-config"
 _MAN_SCAN_COMPRESSED = r"\-\-scan\-compressed"
 _MAN_CONTENT_TYPE = r"\-\-content\-type\-check"
 _MAN_RESET = r"\-\-reset\-data"
+_MAN_EXPORT_AUDIT = r"\-\-export\-audit\-trail"
 _MAN_TENANT = r"\-\-tenant"
 _MAN_TECH = r"\-\-technician"
 
@@ -60,6 +61,12 @@ OPERATOR_HELP_MARKERS: tuple[OperatorHelpMarker, ...] = (
         _MAN_CONTENT_TYPE,
     ),
     OperatorHelpMarker("reset_data", "--reset-data", "--reset-data", _MAN_RESET),
+    OperatorHelpMarker(
+        "export_audit_trail",
+        "--export-audit-trail",
+        "--export-audit-trail",
+        _MAN_EXPORT_AUDIT,
+    ),
     OperatorHelpMarker("tenant", "--tenant", '--tenant "Acme Corp"', _MAN_TENANT),
     OperatorHelpMarker(
         "technician",
