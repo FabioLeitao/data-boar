@@ -1,7 +1,8 @@
 """
 Guard: Brazilian Portuguese (pt-BR) docs must not use common European Portuguese (pt-PT) markers.
 
-Scans tracked-style paths ``**/*.pt_BR.md`` under the repo root (excluding ``.venv``, ``node_modules``).
+Scans ``**/*.pt_BR.md`` under the repo root (excluding ``.venv``, ``node_modules``, and ``docs/private/**`` —
+that tree is gitignored operator notes; use **``.cursor/rules/docs-pt-br-locale.mdc``** there without failing CI).
 Lines that only *illustrate* forbidden forms (policy examples) are skipped — see ``_line_is_locale_example``.
 
 When adding copy for the private pitch (``docs/private/pitch/slides.yaml``) or future website, either keep it
@@ -27,9 +28,18 @@ _extra_locale_scan_paths: tuple[str, ...] = ()
 def _iter_pt_br_markdown_files() -> list[Path]:
     out: list[Path] = []
     for p in REPO_ROOT.rglob("*.pt_BR.md"):
-        parts = set(p.parts)
-        if ".venv" in parts or "node_modules" in parts:
+        parts = p.parts
+        parts_set = set(parts)
+        if ".venv" in parts_set or "node_modules" in parts_set:
             continue
+        # Gitignored operator workspace — technical dumps may contain EU-looking substrings (e.g. CPU "partilhada").
+        if "private" in parts_set and "docs" in parts_set:
+            try:
+                di = parts.index("docs")
+                if di + 1 < len(parts) and parts[di + 1] == "private":
+                    continue
+            except ValueError:
+                pass
         out.append(p)
     for rel in _extra_locale_scan_paths:
         candidate = REPO_ROOT / rel
