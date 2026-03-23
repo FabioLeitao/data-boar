@@ -69,6 +69,10 @@ jobs:
       - name: Ruff format
         run: uv run ruff format --check .
         # extend-exclude in pyproject.toml applies to both check and format; same as pre-commit.
+      - name: Markdown lint guard
+        run: uv run pytest tests/test_markdown_lint.py::test_markdown_lint_no_violations -q -W error
+      - name: pt-BR locale guard
+        run: uv run pytest tests/test_docs_pt_br_locale.py -q -W error
 
   audit:
     name: Dependency audit
