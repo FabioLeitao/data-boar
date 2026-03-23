@@ -14,3 +14,6 @@
 - **Dependências Python da aplicação:** `uv sync` / `pyproject.toml`; extras (`nosql`, etc.) conforme uso.
 - **Inventário:** na raiz do repo, `bash scripts/homelab-host-report.sh` (Linux); envie saída **redigida** + papel do host + conectores que usa.
 - **Go / Rust / Zig / Odin / Homebrew:** **opcionais** para o Data Boar (o produto é **Python 3.12+**); o script imprime versões se estiverem no `PATH`. Ver **§2.5** no EN.
+- **Lynis:** se aparecer **`db/languages/.../data-boar`** ou **`lynis: not in PATH`**, ver **§4.1** no documento em inglês — o binário costuma ser **`/usr/sbin/lynis`** e o script atualizado resolve isso.
+- **Void + `uv sync` / `mysqlclient`:** se o linker disser **`cannot find -lz`**, instalar **`zlib-devel`**, **`pkg-config`**, **`mariadb-devel`** — ver seção **Void Linux** no EN.
+- **Debian/Ubuntu/Pi + pacote PyPI `mariadb`:** erro **`mariadb_config: not found`** → **`sudo apt install libmariadb-dev pkg-config build-essential`** — ver bloco após **Debian/Ubuntu** no EN.

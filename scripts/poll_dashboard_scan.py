@@ -9,7 +9,7 @@ base URL via environment **``DATA_BOAR_BASE``** or **``--base``** (e.g.
 commit real lab hostnames or LAN URLs in this repo; see root **``AGENTS.md``**
 and **``docs/PRIVATE_OPERATOR_NOTES.md``**.
 
-**Token-aware reuse:** one documented entry point — ``uv run python scripts/poll_dashboard_scan.py --help`` — no per-host script names in the repo.
+**Token-aware reuse:** one documented entry point — ``uv run python scripts/poll_dashboard_scan.py --help`` — no per-host script names in the repo (do **not** add one-off ``.cursor/*.py`` files with hardcoded lab hostnames).
 """
 
 from __future__ import annotations

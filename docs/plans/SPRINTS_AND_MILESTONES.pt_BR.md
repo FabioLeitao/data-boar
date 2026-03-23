@@ -68,6 +68,7 @@ Copie esta tabela para um board **GitHub Projects** ou doc pessoal; mova linhas 
 | **Backlog** | **D-WEB** — desenho superfície web (i18n + #86 URLs/middleware) | A/M | [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) § marcos; [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) § sequência |
 | **Backlog** | RBAC relatórios no dashboard — **implementação** (issue #86) | A/M | Depois do **D-WEB**; mirar caminhos HTML **prefixados**; `[H2][U2]` |
 | **Backlog** | Locale dashboard **M-LOCALE-V1** (implementação) | A | Depois do **D-WEB** + agenda; [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) |
+| **Backlog** | **Site público + hub de docs** (**M-SITE-READY**) — profundidade **≠** pitch/PPTX | M | [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) §2.1–2.3; guias técnicos/releases/roadmap com **frentes nomeadas** no **site**; deck para stakeholder permanece **raso** tecnicamente; i18n alinhado a **D-WEB** / **M-LOCALE** |
 | **Selecionado** | *(uma linha só por semana consciente de tokens)* | — | Escolher em “What to start next” ou **Integration / WIP** no [PLANS_TODO.md](PLANS_TODO.md) |
 | **Em progresso** | *(escopo atual — ex.: rich media Tier 3 até merge)* | — | TOKEN_AWARE: uma fatia primária; ver **Integration / WIP** ao fechar rich media + **1.6.5** |
 | **Bloqueado** | *(aguardando operador: hardware, Hub, assessoria)* | **Operador** | Anotar bloqueio no PR ou runbook privado |
@@ -78,6 +79,7 @@ Copie esta tabela para um board **GitHub Projects** ou doc pessoal; mova linhas 
 ### 3.1 Faixa de estudo e certificação (calendário do operador)
 
 - **Foco principal (2026):** **Cyber pago (CWL)** — concluir **BTF → C3SA** e sequência §3.2 em [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md); **credibilidade** = **essas conclusões** + **Data Boar entregue** + narrativa de compliance. O editor neste repo pode usar **vários** modelos; **não** tratar estudo **só Anthropic** como faixa principal.
+- **Ritmo semanal (sugestão):** **2** CWL + **1** IA; na semana seguinte **2** CWL + **1** outro assunto; repetir—ver PORTFOLIO §3.0 e [OPERATOR_MANUAL_ACTIONS.pt_BR.md](../ops/OPERATOR_MANUAL_ACTIONS.pt_BR.md) §1. Reduzir quando **faixa A** ou release apertar.
 - **Alternando ao longo do ano:** **Anthropic Academy** (ou outros cursos de IA) quando couber no calendário — [Anthropic courses](https://docs.claude.com/en/docs/resources/courses); **CCA** = **capstone quando elegível**, sem prazo fixo.
 - **Na mesma janela:** **fio fino** da **faixa prioritária A** — [PLANS_TODO.md](PLANS_TODO.md) **–1** / **–1b**.
 - **Opcional:** certificados de conclusão **terceiros** (ex. Cursor no Coursera) — só polimento de CV.
@@ -106,12 +108,12 @@ Sprints são **temas** de 1–2 semanas no relógio; dentro de cada um, ainda va
 
 ### 4.1 Licenciamento (SKUs), ativação e acesso ao dashBOARd/API (ainda sem sprint numerado)
 
-A tabela **S0–S6** **ainda não** tem linha dedicada para **subscrição permanente vs lab vs consultoria**, **reforço de ativação/bloqueio em runtime** ou **autenticação / RBAC** no **dashBOARd** e nas **APIs**. Hoje a **Fase 1** de licenciamento está no repositório ([`LICENSING_SPEC.md`](../LICENSING_SPEC.md): `open` / `enforced`, JWT, trial com watermark, revogação); claims de **parceiro / tier / consultoria** estão como **extensão futura** documentada—ver faixa prioritária **A** (A4 emissor privado, A7 jurídico) em [PLANS_TODO.md](PLANS_TODO.md).
+A tabela **S0–S6** **ainda não** tem linha dedicada para **assinatura permanente vs lab vs consultoria**, **reforço de ativação/bloqueio em runtime** ou **autenticação / RBAC** no **dashBOARd** e nas **APIs**. Hoje a **Fase 1** de licenciamento está no repositório ([`LICENSING_SPEC.md`](../LICENSING_SPEC.md): `open` / `enforced`, JWT, trial com watermark, revogação); claims de **parceiro / tier / consultoria** estão como **extensão futura** documentada—ver faixa prioritária **A** (A4 emissor privado, A7 jurídico) em [PLANS_TODO.md](PLANS_TODO.md).
 
 #### Onde encaixar na linha do tempo
 
-- **Não adie** até “depois de todo o Tier 2” se a UI/API for exposta além de **um operador de confiança** em loopback. Assim que **M-LAB** for crível e o objetivo for **subscrição paga** ou deploy em **rede compartilhada**, trate **M-ACCESS** (abaixo) como **tema de sprint**—em geral **um sprint focado** **entrelaçado com S2–S4** (ex.: após **S1** ou trocando com uma fatia Tier-2), **não** só em **S6+**.
-- **Sequência recomendada (pragmática):** (1) **Jurídico + produto:** matriz de SKUs (subscrição permanente, trial, parceiro, lab/consultoria) → claims JWT e modelos no repositório **privado** do emissor—**antes** de cravar contratos. (2) **Endurecimento rápido:** documentar padrão com **reverse proxy** + **OIDC** (ex.: OAuth2 Proxy, Traefik, Caddy) para login estilo Microsoft/Google/Entra **sem** esperar auth completa dentro da app. (3) **Na aplicação:** chaves de API ou **Bearer** em rotas sensíveis; sessão ou token para o HTML/API do dashboard. (4) **RBAC:** papéis (ex.: leitor / operador / admin) ligados à identidade. (5) **Depois:** SSO de primeira classe, **TOTP**, **WebAuthn / passkeys** (passwordless, no espírito do fluxo com Authenticator no Office 365). **Bitwarden** (ou similar) casa melhor como **cofre de segredos** de deploy e credenciais de cliente—**não** costuma ser o IdP corporativo principal; alinhar com o IAM do cliente (Entra ID, Okta, etc.).
+- **Não adie** até “depois de todo o Tier 2” se a UI/API for exposta além de **um operador de confiança** em loopback. Assim que **M-LAB** for crível e o objetivo for **assinatura paga** ou deploy em **rede compartilhada**, trate **M-ACCESS** (abaixo) como **tema de sprint**—em geral **um sprint focado** **entrelaçado com S2–S4** (ex.: após **S1** ou trocando com uma fatia Tier-2), **não** só em **S6+**.
+- **Sequência recomendada (pragmática):** (1) **Jurídico + produto:** matriz de SKUs (assinatura permanente, trial, parceiro, lab/consultoria) → claims JWT e modelos no repositório **privado** do emissor—**antes** de cravar contratos. (2) **Endurecimento rápido:** documentar padrão com **reverse proxy** + **OIDC** (ex.: OAuth2 Proxy, Traefik, Caddy) para login estilo Microsoft/Google/Entra **sem** esperar auth completa dentro da app. (3) **Na aplicação:** chaves de API ou **Bearer** em rotas sensíveis; sessão ou token para o HTML/API do dashboard. (4) **RBAC:** papéis (ex.: leitor / operador / admin) ligados à identidade. (5) **Depois:** SSO de primeira classe, **TOTP**, **WebAuthn / passkeys** (passwordless, no espírito do fluxo com Authenticator no Office 365). **Bitwarden** (ou similar) casa melhor como **cofre de segredos** de deploy e credenciais de cliente—**não** costuma ser o IdP corporativo principal; alinhar com o IAM do cliente (Entra ID, Okta, etc.).
 - **Consultoria / lab:** separar **direito de uso** (o que o token permite: só consultoria, limite de linhas, watermark) de **quem acessa** o dashBOARd. Os dois fecham a narrativa comercial.
 
 **Marco:** **M-ACCESS** (§5)—superfícies “prontas para assinatura” e caminho de identidade documentado.
@@ -130,6 +132,18 @@ A tabela **S0–S6** **ainda não** tem linha dedicada para **subscrição perma
 
 **Kanban:** coloque **D-WEB** em **Backlog** ou **Selecionado** ao agendar o passe de desenho; mantenha **um** tema pesado no agente em **Em progresso**, conforme [TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md).
 
+### 4.3 Site público futuro (separação de conteúdo vs pitch) — **não ativo**
+
+**Estado:** Só planejamento — **não** estamos construindo o site agora.
+
+| Tópico | Nota |
+| ------ | ---- |
+| **Pitch / apresentação** | Narrativa **curta** para stakeholder (ex. `docs/private/pitch/`); pouca **profundidade técnica**; só **marca** / metáfora. |
+| **Compliance-legal no GitHub** | `COMPLIANCE_AND_LEGAL`, frameworks, licenciamento — profundidade de **governança**, não site HOWTO completo. |
+| **Site futuro** | Camada **profunda**: USAGE, TECH_GUIDE, TESTING, Docker/deploy, cenários, amostras, **release notes**, **roadmap com frentes ativas nomeadas**, **Docker Hub** + **GitHub**; **sincronizado** com versões do repo. |
+| **i18n** | **Mesmo padrão** de negociação de locale do **dashBOARd** ([PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md), [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) §2.2). |
+| **Cadência** | Nova geração de **deck EN+pt-BR** → **lembrar** de agendar revisão de **conteúdo/roadmap do site** para o público não ficar defasado. |
+
 ---
 
 ## 5. Marcos (a cada poucos sprints)
@@ -147,9 +161,10 @@ Use **Milestones** do GitHub ou tags de release; abaixo, camada **semântica** a
 | **M-ACCESS** | Prontidão para pago / rede compartilhada (licenciamento + identidade) | **SKUs comerciais** pretendidos e caminho **enforced** testados; dashBOARd/API **sem uso anônimo** no deploy de referência—via **proxy+OIDC documentado** e/ou auth **na app**; RBAC ou história de papéis equivalente documentada em pelo menos um padrão |
 | **D-WEB** | **Desenho** da superfície web do dashboard (i18n ∩ #86) | Mapa de URLs + ordem do middleware **escritos** e com cross-links; **sem** código de produto obrigatório (diagrama + planos OK) |
 | **M-LOCALE-V1** | **Locale v1** do HTML do dashboard | Conforme [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md): HTML prefixado, `en`+`pt-BR`, negociação, seletor, testes, paridade de chaves no CI |
+| **M-SITE-READY** | **Primeiro site público + hub técnico de documentação** (fatia GTM) | Site **no ar** (estático/marketing) com: (1) páginas de **história não técnicas** (alinhadas ao **pitch** para stakeholder, sem “dump” do TECH_GUIDE); (2) **hub técnico** — links profundos ou caminhos **alinhados à versão** para USAGE, TECH_GUIDE, TESTING, deploy/Docker, cenários, entrada em compliance-samples, **release notes**, **Docker Hub** + **GitHub**; (3) **roadmap** com **frentes ativas específicas**; (4) **locale** **consistente** com o plano i18n do dashBOARd (prefixo / cookie / `Accept-Language` / JSON). Ver [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) §2.1–2.3. |
 | **M-RELEASE x.y.z** | Corte versionado do produto | Checklist VERSIONING existente + `docs/releases/x.y.z.md` + tags no Hub |
 
-**Cadência sugerida:** **M-TRUST** antes de rajada grande de feature; **M-OBS** pode vir no mesmo sprint ou no seguinte a **M-TRUST** (docs/automação pequena); **M-LAB** antes de narrativa para cliente/demo; **M-RICH** quando o PR de rich media entrar em `main`; **M-ACCESS** antes de prometer **subscrição permanente** ou **multiusuário** em host alcançável; **M-RELEASE** quando VERSIONING mandar publicar.
+**Cadência sugerida:** **M-TRUST** antes de rajada grande de feature; **M-OBS** pode vir no mesmo sprint ou no seguinte a **M-TRUST** (docs/automação pequena); **M-LAB** antes de narrativa para cliente/demo; **M-RICH** quando o PR de rich media entrar em `main`; **M-ACCESS** antes de prometer **assinatura permanente** ou **multiusuário** em host alcançável; **M-SITE-READY** quando **publicarem de propósito** a superfície marketing/docs (faz sentido depois de **M-LOCALE-V1** se quiserem UX de idioma coerente); **M-RELEASE** quando VERSIONING mandar publicar.
 
 ---
 

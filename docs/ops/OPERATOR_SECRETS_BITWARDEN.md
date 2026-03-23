@@ -33,6 +33,27 @@
 
 ---
 
+## Sharing secrets (partner, lab-op, small team)
+
+**Bitwarden sharing is not “add a friend to my personal vault.”** You use an **Organization** (paid tier: **Teams**, **Enterprise**, or **Families** for household-style sharing). Everyone keeps their **own** Bitwarden login; the org owns **shared collections**.
+
+**Typical setup:**
+
+1. **Decide the billing owner** (one account creates or upgrades the org on [bitwarden.com](https://bitwarden.com/pricing/) — verify current plan names and limits).
+2. **Create the organization** in the web vault (**Admin console**): name it e.g. `Homelab` or `Lab-op`.
+3. **Invite members** by email → they **accept** and join with their existing Bitwarden account (or create one).
+4. **Create collections** (logical folders the org shares), e.g. `UniFi`, `SNMP`, `GitHub`, `Solar API`, `SSH jump`, `LAB-OP — hardware receipts` — **no secrets in the collection name** if it’s sensitive.
+5. **Move or duplicate items** into those collections and set **member access** (read-only vs can edit) per collection.
+6. **2FA:** Require **2FA on the Bitwarden account** for anyone who can read production creds; store **recovery codes** safely (offline or per Bitwarden’s emergency guidance).
+
+**Families vs Teams:** **Families** is often enough for **two adults + shared household** secrets; **Teams** fits **named collaborators** and more **admin/audit** style features — compare pricing and features on Bitwarden’s site before you commit.
+
+**CLI (`bw`) with org items:** After `bw login` / `bw unlock`, org vault items are available to the CLI the same as personal items, subject to your **permissions** on each collection. Prefer **`BW_SESSION`** with short TTL for scripts; never commit session tokens.
+
+**If you only need occasional handoff:** A **single** operator can still use **export** (encrypted) or **emergency access** — not a substitute for ongoing shared ops; use an **org** when two people must **routinely** use the same rotating secrets.
+
+---
+
 ## Practices that work well with this repo
 
 1. **One item per logical secret** (e.g. “Lab Postgres read-only”) with **custom fields** for host, user, DB name, password.

@@ -16,6 +16,20 @@
 
 Sequencing rationale also appears in [SPRINTS_AND_MILESTONES.md](../plans/SPRINTS_AND_MILESTONES.md) §3.1 and [PORTFOLIO_AND_EVIDENCE_SOURCES.md](../plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.0.
 
+**Weekly rhythm (suggested):** **2** CWL blocks + **1** AI block; next week **2** CWL + **1** other (thesis, LGPD, homelab note); loop. Lighten when **Priority band A** (–1/–1b) or shipping spikes—see §4.
+
+**Cursor / agent:** The assistant is guided to surface a **brief** study reminder at **natural code breakpoints** (slice done, session end)—see **`.cursor/rules/study-cadence-reminders.mdc`**. For an **immediate** recap in chat, type the English token **`study-check`** (see **`.cursor/rules/session-mode-keywords.mdc`**).
+
+### What helps the agent on **Band A** and **homelab**
+
+| Topic | What to pass (no secrets in chat—paths or “done/not”) |
+| ----- | ------------------------------------------------------ |
+| **Band A1** | Dependabot / GitHub Security: **open alerts count**, or “triage this week yes/no”. |
+| **Band A2** | Docker Scout / image: **any CVE you care about** or “rebuild done / pending”. |
+| **Band A3** | Hub tags / publish: **operator-only** status in one line. |
+| **Homelab –1L** | Which **matrix row** you’re on ([HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md) §9); **done / blocked** on §1–§2; paste outputs into `docs/private/` if you want the agent to cite them. |
+| **Blockers** | e.g. “no second host until date X”—stops wrong assumptions in plans. |
+
 ---
 
 ## 2. Evidence you can collect for the agent (manual)
