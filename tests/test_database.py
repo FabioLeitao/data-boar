@@ -361,6 +361,57 @@ def test_wipe_all_data_logs_and_clears(tmp_path):
         mgr.dispose()
 
 
+def test_normalize_config_notifications_defaults():
+    out = normalize_config({"targets": []})
+    assert "notifications" in out
+    assert out["notifications"]["enabled"] is False
+    assert out["notifications"]["operator"]["slack_webhook_url"] is None
+
+
+def test_normalize_config_notifications_env(monkeypatch):
+    monkeypatch.setenv("TEST_NOTIFY_SLACK", "https://hooks.example/test")
+    out = normalize_config(
+        {
+            "targets": [],
+            "notifications": {
+                "enabled": True,
+                "operator": {"slack_webhook_url": "${TEST_NOTIFY_SLACK}"},
+            },
+        }
+    )
+    assert (
+        out["notifications"]["operator"]["slack_webhook_url"]
+        == "https://hooks.example/test"
+    )
+
+
+def test_get_session_scan_summary_for_notification(tmp_path):
+    db = tmp_path / "notify_sum.db"
+    mgr = LocalDBManager(str(db))
+    mgr.set_current_session_id("n1")
+    mgr.create_session_record("n1", tenant_name="ACME", technician_name="op")
+    mgr.save_finding(
+        "database",
+        target_name="T",
+        schema_name="s",
+        table_name="t",
+        column_name="c",
+        data_type="VARCHAR",
+        sensitivity_level="HIGH",
+        pattern_detected="DOB_POSSIBLE_MINOR, CPF",
+        norm_tag="LGPD",
+        ml_confidence=80,
+    )
+    mgr.save_failure("x", "timeout", "slow")
+    mgr.finish_session("n1", "completed")
+    s = mgr.get_session_scan_summary_for_notification("n1")
+    assert s["high"] == 1
+    assert s["dob_possible_minor"] >= 1
+    assert s["scan_failures"] == 1
+    assert s["tenant_name"] == "ACME"
+    assert s["status"] == "completed"
+
+
 def test_load_config_file(config_path=None):
     path = Path("config.yaml")
     if not path.exists():

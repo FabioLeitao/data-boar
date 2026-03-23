@@ -186,6 +186,7 @@ class AuditEngine:
         self._is_running = True
         session_id = self.db_manager.current_session_id
         targets = self.config.get("targets", [])
+        final_status = "completed"
         try:
             if self._max_workers <= 1:
                 for target in targets:
@@ -198,11 +199,38 @@ class AuditEngine:
                     for fut in as_completed(futures):
                         try:
                             fut.result()
-                        except Exception:
-                            pass
+                        except Exception as e:
+                            # Target-level errors are usually caught inside _run_target; this
+                            # path handles unexpected worker failures so sessions are not
+                            # silently marked completed without trace.
+                            tgt = futures.get(fut) or {}
+                            tname = (
+                                tgt.get("name", "unknown")
+                                if isinstance(tgt, dict)
+                                else "unknown"
+                            )
+                            try:
+                                from utils.logger import get_logger
+
+                                get_logger().exception(
+                                    "Parallel target worker failed: session=%s target=%s",
+                                    session_id,
+                                    tname,
+                                )
+                            except Exception:
+                                pass
+                            try:
+                                self.db_manager.save_failure(
+                                    tname,
+                                    "error",
+                                    f"Uncaught worker error: {e!s}",
+                                )
+                            except Exception:
+                                pass
+                            final_status = "completed_errors"
         finally:
             self._is_running = False
-            self.db_manager.finish_session(session_id, "completed")
+            self.db_manager.finish_session(session_id, final_status)
 
     def _run_target(self, target: dict[str, Any]) -> None:
         """Run one target: resolve connector, instantiate, run()."""
