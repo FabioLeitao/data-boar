@@ -45,7 +45,7 @@ Typical cross-link targets: deploy (Docker, Kubernetes), testing, topology, comm
 
 ## Locale guard (pt-BR vs pt-PT)
 
-After substantive edits to **`*.pt_BR.md`**, run **`uv run pytest tests/test_docs_pt_br_locale.py -v`** so common **European Portuguese** markers (e.g. *ficheiro*, *partilhar*, *secção*, *utilizador*, *tem de*, *continua a usar*) do not slip back in. See **`.cursor/rules/docs-pt-br-locale.mdc`** for the preference table and how to extend the scan (e.g. tracked pitch/website YAML).
+After substantive edits to **`*.pt_BR.md`**, run **`uv run pytest tests/test_docs_pt_br_locale.py -v`** so common **European Portuguese** markers (e.g. *ficheiro*, *partilhar*, *secção*, *utilizador*, *tem de*, *continua a usar*) do not slip back in. The scan includes **`docs/private/**/*.pt_BR.md`** when that tree exists locally (same bar as markdown lint for operator notes). See **`.cursor/rules/docs-pt-br-locale.mdc`** for the preference table and how to extend the scan (e.g. tracked pitch/website YAML).
 
 ## Reference
 
