@@ -8,6 +8,9 @@ Optional **local notify** (Signal/SMS/SMTP credentials for operator digests): co
 # From repo root (Linux/macOS/Git Bash)
 mkdir -p docs/private/homelab docs/private/author_info docs/private/notify
 cp docs/private.example/homelab/README.md docs/private/homelab/
+# Optional: seed re-teach structure (EN and/or pt-BR); rename locally e.g. to a single OPERATOR_RETEACH.md
+# cp docs/private.example/homelab/OPERATOR_RETEACH.md docs/private/homelab/
+# cp docs/private.example/homelab/OPERATOR_RETEACH.pt_BR.md docs/private/homelab/
 cp docs/private.example/author_info/README.md docs/private/author_info/
 cp docs/private.example/notify/README.md docs/private/notify/
 ```
@@ -16,6 +19,7 @@ cp docs/private.example/notify/README.md docs/private/notify/
 # Windows (PowerShell, repo root)
 New-Item -ItemType Directory -Force -Path docs/private/homelab, docs/private/author_info, docs/private/notify | Out-Null
 Copy-Item docs/private.example/homelab/README.md docs/private/homelab/
+# Optional: Copy-Item docs/private.example/homelab/OPERATOR_RETEACH*.md docs/private/homelab/
 Copy-Item docs/private.example/author_info/README.md docs/private/author_info/
 Copy-Item docs/private.example/notify/README.md docs/private/notify/
 ```

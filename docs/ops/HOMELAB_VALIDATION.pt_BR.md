@@ -31,7 +31,7 @@
 | 1.4   | `data/config.yaml` a partir de [config.example.yaml](../deploy/config.example.yaml) | YAML válido                                                                                                                                          |
 | 1.5   | `docker run` com volume `/data` e `CONFIG_PATH`                                     | Dashboard em `:8088`, `/health` OK                                                                                                                   |
 | 1.6   | Scan com `targets: []`                                                              | Termina sem crash                                                                                                                                    |
-| 1.7   | *(Opcional)* Abrir o dashboard em **vários** browsers no desktop                    | Páginas principais carregam; consola DevTools sem erros graves em fluxos centrais                                                                    |
+| 1.7   | *(Opcional)* Abrir o dashboard em **vários** browsers no desktop                    | Páginas principais carregam; **Console** DevTools sem erros graves em fluxos centrais                                                                    |
 
 **Modo Swarm:** Se o host já for **manager** Swarm, os passos acima mantêm-se. Use outra porta se `8088` estiver ocupada por outra stack; registe conflitos no runbook privado.
 
@@ -55,7 +55,7 @@ Pequena base `.db` com tabela de texto sintético; `scan_sqlite_as_db` ou alvo d
 
 ## 4. PostgreSQL / MySQL em Docker
 
-Suba contentor na mesma rede Docker que a app; utilizador **read-only** se possível; alvo `database` com host = nome do serviço. Detalhes: [HOMELAB_VALIDATION.md §4](HOMELAB_VALIDATION.md#4-postgresql-or-mysqlmariadb-in-docker-lab-sql).
+Suba contentor na mesma rede Docker que a app; usuário **read-only** se possível; alvo `database` com host = nome do serviço. Detalhes: [HOMELAB_VALIDATION.md §4](HOMELAB_VALIDATION.md#4-postgresql-or-mysqlmariadb-in-docker-lab-sql).
 
 ---
 

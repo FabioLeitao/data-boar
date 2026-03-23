@@ -70,7 +70,9 @@ Add only what you are comfortable making reference to in docs; keep wording fact
 
 **Intent:** **Cursor** (and whichever models the IDE uses) is the **delivery toolColleague-Nn** for **this repo**—we do **not** assume the runtime product is “Claude-only.” **Stakeholder proof** stays **shipped Data Boar**, **compliance narrative**, **tests/docs/CI**, **releases**. **Already-paid cyber (CWL)** is the **main** structured cert lane to **finish**—it matches security, audit, and production-hardening story. **Anthropic Academy** (free) is a **useful alternating track** over the year (API, MCP, agent patterns—portable concepts even when the editor uses other providers). **CCA** remains a **later capstone** when Anthropic’s **experience bar** is met; partner perks affect **exam access/pricing**, not the free courses.
 
-**CWL (primary paid lane):** §3.2 — start **BTF → C3SA**, then onward; **alternate** weeks or blocks with AI study so neither track stalls.
+**CWL (primary paid lane):** §3.2 — start **BTF → C3SA**, then onward; **alternate** blocks with AI so neither track stalls.
+
+**Suggested weekly cadence (operator-tunable):** **2** blocks **cyber (CWL)** + **1** block **IA** (Anthropic Academy ou outro); na semana seguinte **2** cyber + **1** **outro assunto** (ex.: tese, LGPD, doc de homelab, leitura de plano); **repetir** o ciclo até fechar marcos CWL. Se **faixa A** ou **release** pesarem, reduzir a 1+1 ou só manter o fio fino A.
 
 **Anthropic Academy (secondary / alternating):** [Anthropic courses](https://docs.claude.com/en/docs/resources/courses) — [anthropic.skilljar.com](https://anthropic.skilljar.com/). Suggested sequence when you open that lane: **Claude 101** → **Building with the Claude API** → **Introduction to Model Context Protocol** (+ **Advanced** when relevant) → **Claude Code in Action** → **agent skills / subagents**.
 

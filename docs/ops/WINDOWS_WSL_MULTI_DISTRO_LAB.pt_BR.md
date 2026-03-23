@@ -7,3 +7,5 @@
 **Documento completo (EN):** [WINDOWS_WSL_MULTI_DISTRO_LAB.md](WINDOWS_WSL_MULTI_DISTRO_LAB.md)
 
 **Resumo:** Já conta **Debian WSL2** + **Docker Desktop**; distros extra (ex. **Ubuntu-24.04**) custam **VHDX + RAM**. Limite com **`%UserProfile%\.wslconfig`**. Script: `pwsh -File scripts/windows-dev-report.ps1` (inclui **vswhere** com **`-prerelease`** para **Visual Studio Insiders**). O produto continua **Python**; Go/Rust/etc. são **opcionais**.
+
+**Claude Code no WSL:** no **bash** do Debian WSL, **`claude`** pode dar *command not found* mesmo com **`claude.exe`** no **Windows** — são **PATH** diferentes. Ver **[§3.6 (EN)](WINDOWS_WSL_MULTI_DISTRO_LAB.md#36-claude-code-claude-in-wsl-vs-claudeexe-on-windows)** e **`LAB_SECURITY_POSTURE.md`** **§5.1.5** / mapa **§4.1b**.

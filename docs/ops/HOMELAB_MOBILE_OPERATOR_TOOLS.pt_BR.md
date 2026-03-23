@@ -1,6 +1,6 @@
 # Dispositivos móveis como ferramentas do operador (iOS + Android)
 
-**Objetivo:** Usar **telefone e tablet** como **consola do operador** na rede de casa/lab (UniFi, GitHub, Bitwarden, SSH na LAN, smoke da UI web, fotos de placas de modelo para notas **privadas**).
+**Objetivo:** Usar **telefone e tablet** como **console do operador** na rede de casa/lab (UniFi, GitHub, Bitwarden, SSH na LAN, smoke da UI web, fotos de placas de modelo para notas **privadas**).
 
 **Documento completo (EN):** [HOMELAB_MOBILE_OPERATOR_TOOLS.md](HOMELAB_MOBILE_OPERATOR_TOOLS.md)
 
