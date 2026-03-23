@@ -1,8 +1,8 @@
 """
 Guard: Brazilian Portuguese (pt-BR) docs must not use common European Portuguese (pt-PT) markers.
 
-Scans ``**/*.pt_BR.md`` under the repo root (excluding ``.venv``, ``node_modules``, and ``docs/private/**`` —
-that tree is gitignored operator notes; use **``.cursor/rules/docs-pt-br-locale.mdc``** there without failing CI).
+Scans ``**/*.pt_BR.md`` under the repo root (excluding ``.venv`` and ``node_modules`` only), including
+``docs/private/**`` when present — same bar as markdown lint for tracked + local operator notes.
 Lines that only *illustrate* forbidden forms (policy examples) are skipped — see ``_line_is_locale_example``.
 
 When adding copy for the private pitch (``docs/private/pitch/slides.yaml``) or future website, either keep it
@@ -32,14 +32,6 @@ def _iter_pt_br_markdown_files() -> list[Path]:
         parts_set = set(parts)
         if ".venv" in parts_set or "node_modules" in parts_set:
             continue
-        # Gitignored operator workspace — technical dumps may contain EU-looking substrings (e.g. CPU "partilhada").
-        if "private" in parts_set and "docs" in parts_set:
-            try:
-                di = parts.index("docs")
-                if di + 1 < len(parts) and parts[di + 1] == "private":
-                    continue
-            except ValueError:
-                pass
         out.append(p)
     for rel in _extra_locale_scan_paths:
         candidate = REPO_ROOT / rel
@@ -64,7 +56,10 @@ def _line_is_locale_example(line: str) -> bool:
 # (label, regex) — use word boundaries; avoid matching inside compartilhar/compartilhamento.
 PT_PT_MARKERS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("ficheiro", re.compile(r"\bficheiros?\b", re.IGNORECASE)),
-    ("partilha(r)?", re.compile(r"\bpartilh(ar|a|as|amos|em|ado|ada|ados|adas)\b", re.IGNORECASE)),
+    (
+        "partilha(r)?",
+        re.compile(r"\bpartilh(ar|a|as|amos|em|ado|ada|ados|adas)\b", re.IGNORECASE),
+    ),
     ("secção", re.compile(r"\bsecção\b", re.IGNORECASE)),
     ("acções", re.compile(r"\bacções\b", re.IGNORECASE)),
     ("sítio (web sense)", re.compile(r"\bsítio\b", re.IGNORECASE)),
@@ -72,7 +67,10 @@ PT_PT_MARKERS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("equipa", re.compile(r"\bequipa\b", re.IGNORECASE)),
     ("utilizador", re.compile(r"\butilizadores?\b", re.IGNORECASE)),
     ("artefacto", re.compile(r"\bartefactos?\b", re.IGNORECASE)),
-    ("actualizar", re.compile(r"\bactualiza(r|ção|ções|va|vam|mos|ste|ram)\b", re.IGNORECASE)),
+    (
+        "actualizar",
+        re.compile(r"\bactualiza(r|ção|ções|va|vam|mos|ste|ram)\b", re.IGNORECASE),
+    ),
     ("subscrição", re.compile(r"\bsubscri(ção|ções)\b", re.IGNORECASE)),
     ("aceder", re.compile(r"\baced(e|em|es|eu|emos|em)\b", re.IGNORECASE)),
     ("consola (IT)", re.compile(r"\bconsolas?\b", re.IGNORECASE)),
@@ -80,7 +78,10 @@ PT_PT_MARKERS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("foste", re.compile(r"\bfoste\b", re.IGNORECASE)),
     ("podes", re.compile(r"\bpodes\b", re.IGNORECASE)),
     # Infinitive + "a" + gerund (European periphrasis): "continua a usar"
-    ("continua a + inf.", re.compile(r"\bcontinua\s+a\s+(usar|precisar|fazer|ter|ser)\b", re.IGNORECASE)),
+    (
+        "continua a + inf.",
+        re.compile(r"\bcontinua\s+a\s+(usar|precisar|fazer|ter|ser)\b", re.IGNORECASE),
+    ),
     # "X a falhar" (European)
     ("… a falhar", re.compile(r"\s+a\s+falhar\b", re.IGNORECASE)),
     # Obligation "tem de" (prefer "precisa", "tem que", "deve" in BR marketing/tech copy)
@@ -97,11 +98,15 @@ def _violations_in_file(path: Path) -> list[str]:
             continue
         for label, rx in PT_PT_MARKERS:
             if rx.search(line):
-                bad.append(f"{path.relative_to(REPO_ROOT)}:{i}: [{label}] {line.strip()[:200]}")
+                bad.append(
+                    f"{path.relative_to(REPO_ROOT)}:{i}: [{label}] {line.strip()[:200]}"
+                )
     return bad
 
 
-@pytest.mark.parametrize("path", _iter_pt_br_markdown_files(), ids=lambda p: str(p.relative_to(REPO_ROOT)))
+@pytest.mark.parametrize(
+    "path", _iter_pt_br_markdown_files(), ids=lambda p: str(p.relative_to(REPO_ROOT))
+)
 def test_pt_br_markdown_avoids_european_portuguese_markers(path: Path) -> None:
     issues = _violations_in_file(path)
     if issues:
