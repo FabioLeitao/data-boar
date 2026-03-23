@@ -29,6 +29,7 @@
 | **[../plans/TOKEN_AWARE_USAGE.md](../plans/TOKEN_AWARE_USAGE.md)** | Token-aware sessions, one-plan-per-session |
 | **[DEPLOY.md](../deploy/DEPLOY.md)** · Docker **[README.md](../../scripts/docker/README.md)** | Deploy / image tags (generic) |
 | **`AGENTS.md`** (repo root) · **`.cursor/rules/*.mdc`** | Agent defaults (homelab + private **`read_file`**) |
+| **[../private.example/homelab/OPERATOR_RETEACH.md](../private.example/homelab/OPERATOR_RETEACH.md)** · [pt-BR](../private.example/homelab/OPERATOR_RETEACH.pt_BR.md) | **Template:** re-teach / gaps (**B1–B6**); **no** real hostnames — copy to **`docs/private/homelab/`** |
 
 ---
 
