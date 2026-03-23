@@ -8,13 +8,13 @@
 
 ---
 
-## 1. Contrato atual (o que tem de continuar verdade)
+## 1. Contrato atual (o que precisa continuar verdadeiro)
 
 | Camada           | Fonte da verdade                                                  | Hoje                                                                       |
 | ------           | ------------------                                                | ----                                                                       |
 | Faixa declarada  | `pyproject.toml` → `requires-python`                              | `>=3.12`                                                                   |
 | Árvore fixada    | `uv.lock` + `uv sync`                                             | Resolvida para 3.12/3.13 (matriz de testes no CI em `main`)                |
-| Imagem publicada | `Dockerfile` **`FROM`** + **`COPY .../python3.XY/site-packages`** | Tem de bater com **um** minor Python de ponta a ponta                      |
+| Imagem publicada | `Dockerfile` **`FROM`** + **`COPY .../python3.XY/site-packages`** | Precisa bater com **um** minor Python de ponta a ponta                      |
 | Sinal do CI      | `.github/workflows/ci.yml`                                        | Job **Test** deve cobrir todo **minor suportado** em SECURITY/CONTRIBUTING |
 
 **Armadilha:** Declarar **3.13** sem CI no 3.13 esconde regressões até o Docker ou o local falhar.
@@ -76,7 +76,7 @@ Se o candidato falhar: manter imagem publicada em **3.12**; branch para nova ten
 
 - **Upgrade de Python ≠ CVE resolvido:** Muitos achados vêm de **pacotes Debian** ou **PyPI** — atualizar **tag slim**, política de `apt` e **Dependabot** na mesma.
 - **`pylock.toml`:** export pode mostrar `requires-python` do **ambiente**; **fonte:** `uv.lock` + `pyproject.toml`.
-- **Mirror (JFrog / privado):** garantir artefactos **cp313** / **cp314** para versões fixadas.
+- **Mirror (JFrog / privado):** garantir artefatos **cp313** / **cp314** para versões fixadas.
 
 ---
 

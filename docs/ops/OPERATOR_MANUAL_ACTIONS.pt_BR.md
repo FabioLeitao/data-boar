@@ -16,6 +16,20 @@
 
 O racional de sequência também está em [SPRINTS_AND_MILESTONES.pt_BR.md](../plans/SPRINTS_AND_MILESTONES.pt_BR.md) §3.1 e [PORTFOLIO_AND_EVIDENCE_SOURCES.md](../plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.0.
 
+**Ritmo semanal (sugestão):** **2** blocos **CWL** + **1** **IA**; na semana seguinte **2** CWL + **1** **outro** (tese, LGPD, nota de homelab); repetir o ciclo. Aliviar quando **faixa A** (–1/–1b) ou release apertar—ver §4.
+
+**Cursor / agente:** O assistente pode lembrar **em poucas linhas** o combinado de estudo em **pontos naturais** (fatia pronta, fim de sessão)—ver **`.cursor/rules/study-cadence-reminders.mdc`**. Para **recap na hora** no chat, digite o token em inglês **`study-check`** (ver **`.cursor/rules/session-mode-keywords.mdc`**).
+
+### O que ajuda o agente em **faixa A** e **homelab**
+
+| Tema | O que passar (sem segredo no chat—só status ou caminho em `docs/private/`) |
+| ---- | --------------------------------------------------------------------------- |
+| **A1** | Dependabot / Security: **quantos alertas abertos** ou “triagem esta semana sim/não”. |
+| **A2** | Docker Scout / imagem: **CVE que te preocupa** ou “rebuild feito / pendente”. |
+| **A3** | Hub / tags: **uma linha** (só operador). |
+| **–1L** | **Qual linha** da matriz §9 do [HOMELAB_VALIDATION](HOMELAB_VALIDATION.pt_BR.md); §1–§2 **feito / bloqueado**; saídas em `docs/private/` se quiser que o agente leia. |
+| **Bloqueios** | Ex.: “segundo host só depois de data X”—evita plano errado. |
+
 ---
 
 ## 2. Evidências que você pode juntar para o agente (manual)

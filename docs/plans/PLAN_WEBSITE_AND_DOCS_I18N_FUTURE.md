@@ -31,6 +31,29 @@
 
 **i18n on the site:** If the site is multilingual, define **which locales** ship first and how they stay aligned with EN source copy (same discipline as repo docs).
 
+### 2.1 Website vs pitch deck vs GitHub docs — **depth contract** (not scheduled yet)
+
+**We are not building the public website now** — this subsection is a **planning memory** so GTM work does not collapse everything into one surface.
+
+| Surface | Role | **Depth** — what belongs here |
+| ------- | ---- | ------------------------------ |
+| **Stakeholder pitch** (e.g. private `docs/private/pitch/`, `.pptx` pairs, short live talk) | Convince and qualify; **Data Boar** story, mascot / **data soup** metaphor, outcomes, trust framing | **Shallow technical:** almost no HOWTO, no config dumps, no operator runbooks. **Not** a substitute for compliance review. |
+| **GitHub — README + “compliance & legal” tree** (`docs/COMPLIANCE_AND_LEGAL.md`, frameworks, licensing, SECURITY) | Canonical **legal/compliance narrative**, exportable PDFs mindset, open-core boundary | **Legal and governance depth** — still **not** the full HOWTO layer; deep **usage** stays in `USAGE` / `TECH_GUIDE` etc. |
+| **Future public website** | Discovery, downloads, **documentation hub**, credibility, CTA | **Major difference vs pitch:** hosts (or **deep-links in a version-aware way**) the **full technical layer**: **USAGE**, **TECH_GUIDE**, **TESTING**, **DOCKER_SETUP** / deploy, **compliance-samples** walkthroughs, **scenario** pages, **release notes** (`docs/releases/`), a **richer roadmap** naming **specific active fronts** (what you are actually building — connectors, dashboard, notifications, …), prominent **Docker Hub** and **GitHub repo** links, changelog / security pointers. **Keep in sync** with the repo as capabilities evolve (CI link checks, same major/minor as tagged releases). |
+
+**Rule of thumb:** If a buyer **needs to install, tune, or audit** behaviour, that content **lives on the future site (or linked canonical docs)** — not in the pitch deck or the compliance-legal **summary** tone of the presentation.
+
+### 2.2 Same multilingual “tricks” as **dashBOARd**
+
+When the site ships, **reuse the same i18n design choices** planned for the dashboard HTML surface — see [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md): **path-prefixed** locales (e.g. `/en/`, `/pt-br/`), **cookie → `Accept-Language` → configured fallback**, **JSON** message catalogs (or mirrored pattern for static site generators), and **CI key parity** across locale files where applicable. **D-WEB** / **M-LOCALE-V1** remain the **product** implementation; the **marketing site** should **not invent a conflicting** locale scheme.
+
+### 2.3 Presentation refresh ↔ website readiness (cadence cue)
+
+- As **capabilities** grow (new connectors, report types, governance features), expect to produce a **new stakeholder presentation pair** (e.g. refreshed `.pptx` or `slides.yaml` **EN + pt-BR** under `docs/private/pitch/`).
+- **Heuristic:** when you **rewrite the pitch** for a new selling story, treat it as a **trigger** to **schedule** (not necessarily ship immediately) a **website content pass**: roadmap section, release links, technical hub TOC, and “what’s new” — so the **public** story does not lag the **private** deck.
+- **pt-BR copy** in the deck (and later on the **public** `pt-br/` site) should follow **Brazilian** Portuguese, not European forms — same bar as **`*.pt_BR.md`** (see **`.cursor/rules/docs-pt-br-locale.mdc`**). If `slides.yaml` or flattened **`SLIDES_WEBSITE_SYNC.pt_BR.md`** ever live in **tracked** paths, extend **`tests/test_docs_pt_br_locale.py`** (`_extra_locale_scan_paths`) so CI catches regressions.
+- The **website** remains the **deep** layer; the **presentation** stays **derivative and shallow-technical**, seeded from the same brand narrative.
+
 ---
 
 ## 3. Dependencies and sequencing (high level)
@@ -44,6 +67,7 @@
 
 ## 4. Related tracked material
 
+- [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) — milestone **M-SITE-READY** (first public site + doc hub) and Kanban pointer.
 - [HOSTING_AND_WEBSITE_OPTIONS.md](../HOSTING_AND_WEBSITE_OPTIONS.md) — hosting memo.
 - [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](../LICENSING_OPEN_CORE_AND_COMMERCIAL.md) — pitch and open-core boundary.
 - [PLANS_TODO.md](PLANS_TODO.md) — backlog pointer to this file.
