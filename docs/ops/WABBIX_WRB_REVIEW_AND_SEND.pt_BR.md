@@ -2,18 +2,19 @@
 
 **Nome interno:** **WRB** (*Wabbix Review Briefing*).
 
-Este ficheiro complementa o guia canónico [`WABBIX_REVIEW_REQUEST_GUIDELINE.md`](WABBIX_REVIEW_REQUEST_GUIDELINE.md): aqui tens a **matriz de conformidade** (o que o guideline e o *long form* pedem vs o que o prompt PT-BR cobre), o **texto pronto para colar** no e-mail (espelho do bloco “Prompt mestre completo”) e uma **versão curta para WhatsApp**.
+Este arquivo complementa o guia canônico [`WABBIX_REVIEW_REQUEST_GUIDELINE.md`](WABBIX_REVIEW_REQUEST_GUIDELINE.md): aqui está a **matriz de conformidade** (o que o guideline e o *long form* pedem vs o que o prompt PT-BR cobre), o **texto pronto para colar** no e-mail (espelho do bloco “Prompt mestre completo”) e uma **versão curta para WhatsApp**.
 
 **Fonte de verdade do texto longo:** o bloco ` ```text ` em `WABBIX_REVIEW_REQUEST_GUIDELINE.md` — se divergir, prevalece o guia; atualiza este espelho quando alterares o prompt mestre.
 
-**Notas in-repo alinhadas ao último ciclo:** `docs/plans/WABBIX_ANALISE_2026-03-18.md` e referências em `docs/plans/PLANS_TODO.md` (secção Wabbix).
+**Notas in-repo alinhadas ao último ciclo:** `docs/plans/WABBIX_ANALISE_2026-03-18.md` e referências em `docs/plans/PLANS_TODO.md` (seção Wabbix).
 
 ### Ao criar um pedido WRB no futuro
 
 1. **Mostrar na tela** o texto completo (chat/IDE) para revisão antes de enviar à Wabbix.
-2. **Guardar no repositório** o mesmo conteúdo: atualizar o bloco “Prompt mestre completo” em [`WABBIX_REVIEW_REQUEST_GUIDELINE.md`](WABBIX_REVIEW_REQUEST_GUIDELINE.md) e, se usares este pacote, a secção §2 abaixo; fazer **`git commit`** para não perder o rascunho se a sessão ou o histórico sumirem.
+2. **Guardar no repositório** o mesmo conteúdo: atualizar o bloco “Prompt mestre completo” em [`WABBIX_REVIEW_REQUEST_GUIDELINE.md`](WABBIX_REVIEW_REQUEST_GUIDELINE.md) e, se usar este pacote, a seção §2 abaixo; fazer **`git commit`** para não perder o rascunho se a sessão ou o histórico sumirem.
+3. **Validar** antes de commitar: **`uv run pytest tests/test_markdown_lint.py::test_markdown_lint_no_violations tests/test_docs_pt_br_locale.py -q`** — alinhado a **`.cursor/rules/docs-pt-br-locale.mdc`**, **`.cursor/rules/docs-policy.mdc`** e à barra de **`.cursor/rules/operator-chat-language-pt-br.mdc`** (pt-BR, não pt-PT; termos técnicos em inglês quando fizer sentido).
 
-*(Espelha o workflow em inglês na secção “Workflow when drafting a new WRB request” do guideline.)*
+*(Espelha o workflow em inglês na seção “Workflow when drafting a new WRB request” do guideline.)*
 
 ---
 
@@ -28,7 +29,7 @@ Legenda: **Sim** = coberto de forma clara; **Parcial** = coberto por implicaçã
 | Data / versão do último relatório | **Sim** (2026-03-18, 9,1/10) |
 | Caminho da nota de tracking | **Sim** (`WABBIX_ANALISE_2026-03-18.md`) |
 | Janela “desde o último relatório até agora” | **Parcial** (implícito nas três camadas + retorno sobre recomendações) |
-| Temas alterados (código vs docs vs planos) | **Sim** (secção “Código, documentação e planos”) |
+| Temas alterados (código vs docs vs planos) | **Sim** (seção “Código, documentação e planos”) |
 | Baseline de release vs estado atual (tag vs `main`) | **Sim** (terceira camada temporal) |
 | Baseline técnico no PDF (data + PR/commit) | **Sim** (parágrafo + âncoras) |
 
@@ -40,7 +41,7 @@ Legenda: **Sim** = coberto de forma clara; **Parcial** = coberto por implicaçã
 | Inferir **qual release** o repo refletia “na altura” do último relatório deles | **Parcial** — o guideline pede explicitamente; o PT foca delta temporal e recomendações, não essa inferência como linha dedicada |
 | Última tag hoje vs `main` / trabalho não retagueado | **Sim** |
 | Delta “última entrega mercado” vs só “desde o PDF” | **Sim** (terceira camada) |
-| Taxonomia de esforço no intervalo (security, integrity, features, docs, ops, refactor) | **Parcial** — o resumo do formato menciona “taxonomia de tipo de trabalho”; o guideline lista categorias na secção “Ask for this explicit structure” |
+| Taxonomia de esforço no intervalo (security, integrity, features, docs, ops, refactor) | **Parcial** — o resumo do formato menciona “taxonomia de tipo de trabalho”; o guideline lista categorias na seção “Ask for this explicit structure” |
 | Estrutura explícita “o que foi enviado / melhorou vs regrediu / riscos novos” no intervalo | **Parcial** — espírito coberto; não é lista fechada como no guideline |
 
 ### 1.3 Focos e checks (guideline + *long form* em inglês)
@@ -49,7 +50,7 @@ Legenda: **Sim** = coberto de forma clara; **Parcial** = coberto por implicaçã
 | ---- | ---------------- | ------------ |
 | Código / docs / planos em separado | Listas **específicas** (runtime trust, tinted/draft, session seal, off-band, etc.) | **Parcial** — mesmas **famílias** e temas (confiança, auditoria, compliance, planos); não enumera cada bullet do *long form* |
 | A–E (consistência, cadeia de custódia, severidade, MVP, wording) | Explícito | **Parcial** — A/B/C/E cobertos em “Pontos de atenção” e drift; **MVP sequencing** não aparece com esse nome |
-| F — modelo linguístico | Explícito | **Sim** (secção dedicada) |
+| F — modelo linguístico | Explícito | **Sim** (seção dedicada) |
 | G — três lentes temporais | Explícito | **Sim** |
 | H — verificação de recomendações anteriores | Explícito | **Sim** |
 | Agrupamento de achados: Critical/Important/Improvement × prazo × Code/Docs/Plans | Pedido no *long form* | **Parcial** — PT pede severidade, esforço, janela e tipo de esforço; **não** exige o agrupamento triaxial literal |
@@ -64,20 +65,20 @@ Legenda: **Sim** = coberto de forma clara; **Parcial** = coberto por implicaçã
 | Cap. 2 — técnico profundo | **Sim** |
 | Cap. 3 — DevSecOps / vulnerabilidades / deps / remediação | **Sim** |
 | Tags preferidas (Critical/Important/Improvement × esforço × janela) | **Parcial** — espírito (severidade, esforço, janela); não repete as três dimensões do guideline palavra a palavra |
-| Secção obrigatória “linguistic category model” | **Sim** |
+| Seção obrigatória “linguistic category model” | **Sim** |
 | Anexo opcional “roadmap tips” | **Sim** |
 
 ### 1.5 Síntese
 
 - **Completude geral:** o prompt PT-BR está **alinhado** ao objetivo do guideline: contexto, três ângulos temporais, código/docs/planos, linguística, pontos de foco de confiança/evidência, verificação de recomendações anteriores, **três capítulos** + anexo opcional, baseline **data + PR/commit** na abertura.
-- **Onde o *long form* EN é mais “checklist”:** listas fechadas de **artefactos** (itens de código/plano) e **agrupamento triaxial** de achados; o PT-BR privilegia **prosa + âncoras** — por desenho, não por omissão grave.
-- **Se quiseres paridade máxima com o EN** (opcional): acrescentar uma frase pedindo agrupamento por severidade × prazo × artefacto, e/ou uma linha pedindo inferência da **release provável na data do último relatório**; ou remeter explicitamente ao *long form* no repositório.
+- **Onde o *long form* EN é mais “checklist”:** listas fechadas de **artefatos** (itens de código/plano) e **agrupamento triaxial** de achados; o PT-BR privilegia **prosa + âncoras** — por desenho, não por omissão grave.
+- **Se quiser paridade máxima com o EN** (opcional): acrescentar uma frase pedindo agrupamento por severidade × prazo × artefato, e/ou uma linha pedindo inferência da **release provável na data do último relatório**; ou remeter explicitamente ao *long form* no repositório.
 
 ---
 
 ## 2. Texto pronto para envio (e-mail)
 
-Copiar o bloco abaixo. **Ajustar antes de enviar:** data/caminhos se mudarem; preencher **PR/commit** se já souberes o marco técnico.
+Copiar o bloco abaixo. **Ajustar antes de enviar:** data/caminhos se mudarem; preencher **PR/commit** se já souber o marco técnico.
 
 ```text
 Olá, equipe Wabbix,
@@ -223,7 +224,7 @@ Equipe Data Boar
 
 ## 3. Versão resumida (WhatsApp)
 
-Use quando o canal for curto; o pedido completo continua no repositório (`WABBIX_REVIEW_REQUEST_GUIDELINE.md`, secção “Prompt mestre completo”). Podes anexar o PDF local ou colar o texto longo numa mensagem de seguimento.
+Use quando o canal for curto; o pedido completo continua no repositório (`WABBIX_REVIEW_REQUEST_GUIDELINE.md`, seção “Prompt mestre completo”). Você pode anexar o PDF local ou colar o texto longo numa mensagem de seguimento.
 
 ```text
 Olá! Pedido WRB — Data Boar: novo relatório de revisão, por favor.
@@ -234,7 +235,7 @@ Pedimos 3 camadas de tempo separadas (não misturar): (1) visão acumulada; (2) 
 
 Entregável: 1 PDF com cap.1 executivo (≤2p), cap.2 técnico profundo, cap.3 DevSecOps/hardening; mais anexo opcional de ideias de roadmap (bem separado, especulativo).
 
-O briefing completo em prosa está em docs/ops/WABBIX_REVIEW_REQUEST_GUIDELINE.md — podem seguir esse ficheiro como fonte.
+O briefing completo em prosa está em docs/ops/WABBIX_REVIEW_REQUEST_GUIDELINE.md — podem seguir esse arquivo como fonte.
 
 Obrigado!
 — Fabio Leitao, Equipe Data Boar
