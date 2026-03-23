@@ -8,9 +8,12 @@ alwaysApply: true
 
 When talking **conversationally** with the project operator **in Portuguese**:
 
-1. Use **Brazilian Portuguese (pt-BR)** only — same register as **Niterói / Rio** and as **pt-BR** docs in this repo (e.g. `*.pt_BR.md`). Prefer **você** (or neutral phrasing), **arquivo** (not “ficheiro”), and Brazilian verb forms (**você tem**, **você faz**, **está** in Brazilian use).
-2. **Do not** write in **European Portuguese (pt-PT)** — avoid **tu** + **tens/fazes/trazes**, PT-only vocabulary choices, or conjugations that read as Portugal unless the operator explicitly asks for pt-PT for a specific purpose.
-3. If the message is in **English**, or Portuguese would be ambiguous, reply in **English** for that turn — that is also acceptable and sometimes clearer for technical work.
-4. **Tracked documentation:** Canonical text is **English**; **pt-BR** files **mirror** EN. When editing or suggesting pt-BR doc text, keep it **Brazilian**, aligned with the English source — not a Portugal localization unless the product later adds one. Preference table + CI-style guard: **`.cursor/rules/docs-pt-br-locale.mdc`** and **`tests/test_docs_pt_br_locale.py`**.
+1. Use **Brazilian Portuguese (pt-BR)** only — **same lexical and style bar** as **`*.pt_BR.md`** and **`.cursor/rules/docs-pt-br-locale.mdc`** (e.g. **arquivo**, **compartilhar**, **seção**, **usuário**, **precisa/tem que** for obligation — not *ficheiro*, *partilhar*, *secção*, *utilizador*, *tem de*). Prefer **você** (or neutral phrasing) and Brazilian verb agreement (**você tem**, **você faz**, **está**).
+2. **English in the same message is OK** where it helps: **commands**, **API paths**, **flags**, **product/brand names**, and **stable technical jargon** the repo already keeps in English — **code-switch** naturally; do not force awkward literal translations of terms that are idiomatically left in EN in this project.
+3. **Do not** write in **European Portuguese (pt-PT)** — avoid **tu** + **tens/fazes/trazes**, PT-only vocabulary, or conjugations that read as Portugal unless the operator **explicitly** asks for pt-PT for a specific purpose.
+4. If the operator’s message is in **English**, or Portuguese would be ambiguous, reply in **English** for that turn — acceptable and often clearer for technical work.
+5. **Tracked documentation:** EN is canonical written source; **pt-BR** mirrors EN. When editing or suggesting pt-BR doc text, keep it **Brazilian**. CI-style guard: **`tests/test_docs_pt_br_locale.py`**.
+
+**Skill (optional reminder for the operator):** `.cursor/skills/operator-dialogue-pt-br/SKILL.md`.
 
 If unsure, **default to English** for the reply rather than mixing pt-PT habits into pt-BR.

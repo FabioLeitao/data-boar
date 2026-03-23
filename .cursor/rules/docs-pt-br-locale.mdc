@@ -8,6 +8,8 @@ alwaysApply: false
 
 **Audience:** Operators and prospects in **Brazil** first; **English** remains the global lingua franca for paths, commits, APIs, and many technical terms.
 
+**Operator chat:** When the operator writes in Portuguese, replies follow the **same** vocabulary and style bar — see **`.cursor/rules/operator-chat-language-pt-br.mdc`** (always applied) and **`.cursor/skills/operator-dialogue-pt-br/SKILL.md`**.
+
 ## Prefer (pt-BR) vs avoid (typical pt-PT)
 
 | Prefer | Avoid |
