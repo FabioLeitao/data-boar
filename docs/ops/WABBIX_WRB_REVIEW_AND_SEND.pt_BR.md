@@ -8,6 +8,13 @@ Este ficheiro complementa o guia canónico [`Corporate-Entity-C_REVIEW_REQUEST_G
 
 **Notas in-repo alinhadas ao último ciclo:** `docs/plans/Corporate-Entity-C_ANALISE_2026-03-18.md` e referências em `docs/plans/PLANS_TODO.md` (secção Corporate-Entity-C).
 
+### Ao criar um pedido WRB no futuro
+
+1. **Mostrar na tela** o texto completo (chat/IDE) para revisão antes de enviar à Corporate-Entity-C.
+2. **Guardar no repositório** o mesmo conteúdo: atualizar o bloco “Prompt mestre completo” em [`Corporate-Entity-C_REVIEW_REQUEST_GUIDELINE.md`](Corporate-Entity-C_REVIEW_REQUEST_GUIDELINE.md) e, se usares este pacote, a secção §2 abaixo; fazer **`git commit`** para não perder o rascunho se a sessão ou o histórico sumirem.
+
+*(Espelha o workflow em inglês na secção “Workflow when drafting a new WRB request” do guideline.)*
+
 ---
 
 ## 1. Revisão cruzada (guideline × long form × prompt PT-BR)
