@@ -15,7 +15,7 @@ When you maintain **`docs/private/homelab/`** (gitignored), prefer **two files p
 - **`iso-inventory`:** **`iso-inventory.md`** keeps the **`find`** path list; **`iso-inventory.pt_BR.md`** mirrors layout + policy in pt-BR and tells you to **sync** the file list with EN.
 - **Large matrices:** **`LAB_SOFTWARE_INVENTORY.pt_BR.md`** may stay a **structured summary** with the **full table** in EN — reduce drift.
 
-**Automation:** Tracked **`*.pt_BR.md`** (e.g. under **`docs/private.example/`**) is scanned by **`tests/test_docs_pt_br_locale.py`**. Paths under **`docs/private/**`** are **excluded** from that test (gitignored; technical dumps may contain ambiguous substrings). Still follow **`.cursor/rules/docs-pt-br-locale.mdc`** when editing private prose.
+**Automation:** **`tests/test_docs_pt_br_locale.py`** scans **every** **`*.pt_BR.md`** under the repo (excluding **`.venv`** / **`node_modules`** only), **including** **`docs/private/**`** when that tree exists locally — same bar as markdown lint for operator notes. Still avoid pasting raw **pt-PT** into prose; use **`.cursor/rules/docs-pt-br-locale.mdc`** as the style guide.
 
 ## Templates
 

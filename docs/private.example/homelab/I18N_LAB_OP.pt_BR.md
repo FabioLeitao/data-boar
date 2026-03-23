@@ -17,7 +17,7 @@ Ao manter **`docs/private/homelab/`** (gitignored), prefira **dois arquivos por 
 
 ## Automação
 
-Arquivos **`*.pt_BR.md`** versionados entram em **`tests/test_docs_pt_br_locale.py`**; **`docs/private/**`** fica **fora** desse scan (gitignored). Mesmo assim, siga **`.cursor/rules/docs-pt-br-locale.mdc`** no texto privado.
+O teste **`tests/test_docs_pt_br_locale.py`** percorre **todos** os **`*.pt_BR.md`** do repositório (só ignora **`.venv`** e **`node_modules`**), **incluindo** **`docs/private/**`** quando existir no clone — mesmo critério do lint de Markdown para notas do operador. Evite colar **pt-PT** no texto; use **`.cursor/rules/docs-pt-br-locale.mdc`**.
 
 ## Modelos
 
