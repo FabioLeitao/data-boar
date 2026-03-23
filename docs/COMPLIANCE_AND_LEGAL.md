@@ -37,6 +37,7 @@ This page states **what Data Boar reveals**, **what it does not do**, **which re
 - **Excel reports** per scan **session**: findings by source, field/path, pattern type, sensitivity, and framework-oriented recommendation text (legal basis, risk, suggested action, priority where configured).
 - **Heatmaps** and **trend views** across sessions to show **evolution**, not only a point-in-time snapshot.
 - **Repeatable runs** (including automation via API) so monitoring can match your **operating model**; technical detail of scheduling and limits: [COMPLIANCE_TECHNICAL_REFERENCE.md](COMPLIANCE_TECHNICAL_REFERENCE.md).
+- **Build identity (roadmap):** Reports already record **application version** in “Report info”; a planned enhancement exposes **release vs development** builds and optional **integrity** signals for enterprises—see [PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md](plans/PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md) (no change to legal scope until implemented).
 
 ---
 
