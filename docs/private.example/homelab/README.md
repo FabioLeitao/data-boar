@@ -46,6 +46,10 @@ If you sync the same tree to **Linux** (`~/pCloudDrive`) and **Windows** (**`P:`
 
 Maintain **`LAB_SECURITY_POSTURE.md`** next to this README (copy from a filled `docs/private/homelab/` tree or create empty from scratch): WAN/NAT assumptions, **`sshd -T`** / **UFW** / **Fail2ban** / **`nft list ruleset`** snapshots per host, and a short **improvement backlog**. Tracked index: **`docs/ops/OPERATOR_LAB_DOCUMENT_MAP.md`** (LAB‑PB vs LAB‑OP).
 
+## LAB-OP doc language pairs (policy)
+
+- **[I18N_LAB_OP.md](I18N_LAB_OP.md)** · [pt-BR](I18N_LAB_OP.pt_BR.md) — when to use **`File.md`** vs **`File.pt_BR.md`** under your private `homelab/` tree (gitignored).
+
 ## Operator re-teach template (EN + pt-BR)
 
 Tracked **placeholders** (copy structure into private `homelab/`, then fill with **your** facts — **never** commit `docs/private/`):
