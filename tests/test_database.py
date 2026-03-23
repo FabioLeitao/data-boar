@@ -5,7 +5,7 @@ import pytest
 from pathlib import Path
 
 from config.loader import load_config, normalize_config
-from core.database import LocalDBManager, DataWipeLog, failure_hint
+from core.database import DataSourceInventory, DataWipeLog, LocalDBManager, failure_hint
 
 
 def test_normalize_config_empty():
@@ -197,6 +197,30 @@ def test_local_db_manager(tmp_path):
         mgr.dispose()
 
 
+def test_data_source_inventory_save_and_get(tmp_path):
+    db_path = str(tmp_path / "test_inventory.db")
+    mgr = LocalDBManager(db_path)
+    try:
+        mgr.set_current_session_id("inv-session-1")
+        mgr.create_session_record("inv-session-1")
+        mgr.save_data_source_inventory(
+            target_name="pg-main",
+            source_type="database",
+            product="postgresql",
+            product_version="PostgreSQL 16.2",
+            protocol_or_api_version="postgresql",
+            transport_security="sslmode=require",
+            raw_details='{"driver":"postgresql"}',
+        )
+        rows = mgr.get_data_source_inventory("inv-session-1")
+        assert len(rows) == 1
+        assert rows[0]["target_name"] == "pg-main"
+        assert rows[0]["product"] == "postgresql"
+        assert rows[0]["transport_security"] == "sslmode=require"
+    finally:
+        mgr.dispose()
+
+
 def test_get_previous_session(tmp_path):
     db_path = str(tmp_path / "test_prev.db")
     mgr = LocalDBManager(db_path)
@@ -305,6 +329,12 @@ def test_wipe_all_data_logs_and_clears(tmp_path):
             ml_confidence=85,
         )
         mgr.finish_session("s2")
+        mgr.save_data_source_inventory(
+            target_name="db-host",
+            source_type="database",
+            product="sqlite",
+            product_version="3.x",
+        )
 
         # Sanity check: we have sessions and findings
         assert mgr.list_sessions()
@@ -323,6 +353,8 @@ def test_wipe_all_data_logs_and_clears(tmp_path):
             wipes = s.query(DataWipeLog).all()
             assert len(wipes) == 1
             assert "pytest wipe" in wipes[0].reason
+            inventories = s.query(DataSourceInventory).all()
+            assert inventories == []
         finally:
             s.close()
     finally:

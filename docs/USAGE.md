@@ -41,6 +41,7 @@ python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Sil
 - Creates a new session (UUID + timestamp), writes findings to the local SQLite DB (including optional `tenant_name` and `technician_name`), then generates the Excel report (and heatmap) for that session.
 - **Output:** Console prints runtime trust `INFO` lines (stdout + stderr), then `Scan session: <session_id>` and `Report written: <path>` (or "No findings to report."). If trust is unexpected, the CLI explicitly warns: **THERE IS SOMETHING DIFFERENT AND UNEXPECTED IN THIS RUNTIME**.
 - Report path is under `report.output_dir` from config (default: current directory). File name: `Relatorio_Auditoria_<session_id>.xlsx` (and `heatmap_<session_id>.png`).
+- Report now includes a **Data source inventory** sheet with best-effort source metadata (target, source type, product/version, API/protocol hint, transport security hint, raw details).
 
 ## REST API server (`--web`)
 
@@ -639,7 +640,7 @@ If you omit `auth` but set `user`/`username` and `pass`/`password` on the target
     client_secret: "${DATAVERSE_CLIENT_SECRET}"
 ```
 
-Findings from Power BI and Dataverse appear in the **Database findings** sheet. Sampling uses `file_scan.sample_limit` (default 5).
+Findings from Power BI and Dataverse appear in the **Database findings** sheet. Sampling uses `file_scan.sample_limit` (default 5). Inventory metadata for these connectors (API version hints and transport) appears in the **Data source inventory** sheet.
 
 ### Targets: shared content (SMB, WebDAV, SharePoint, NFS)
 
