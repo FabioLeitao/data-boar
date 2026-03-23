@@ -114,15 +114,15 @@ Alternatively, hardening rows can be **generated at report time** from inventory
 
 | #   | To-do                                                                                                                                                                                 | Status |
 | --- | ---------------------------------------------------------------------                                                                                                                 | ------ |
-| 1.1 | Add `data_source_inventory` table and migration in `core/database.py`                                                                                                                 | ⬜      |
-| 1.2 | Add `LocalDBManager.save_data_source_inventory(...)` and wire to session                                                                                                              | ⬜      |
-| 1.3 | SQL connector: after connect, run dialect-specific version query (e.g. `SELECT version()`, `SELECT @@version`), get TLS from connection if available; call save_data_source_inventory | ⬜      |
-| 1.4 | MongoDB connector: run `buildInfo` or equivalent; call save_data_source_inventory                                                                                                     | ⬜      |
-| 1.5 | Redis connector: run `INFO server`, parse redis_version; call save_data_source_inventory                                                                                              | ⬜      |
-| 1.6 | Power BI / Dataverse / REST: record API version (from URL path or headers); call save_data_source_inventory                                                                           | ⬜      |
-| 1.7 | Report: add "Data source inventory" sheet from inventory table                                                                                                                        | ⬜      |
-| 1.8 | Tests: unit tests for new table and save; test that SQL/Mongo/Redis version is stored; report test for new sheet                                                                      | ⬜      |
-| 1.9 | Docs: USAGE/TECH_GUIDE and config (if any new keys) for inventory feature                                                                                                             | ⬜      |
+| 1.1 | Add `data_source_inventory` table and migration in `core/database.py`                                                                                                                 | ✅      |
+| 1.2 | Add `LocalDBManager.save_data_source_inventory(...)` and wire to session                                                                                                              | ✅      |
+| 1.3 | SQL connector: after connect, run dialect-specific version query (e.g. `SELECT version()`, `SELECT @@version`), get TLS from connection if available; call save_data_source_inventory | ✅      |
+| 1.4 | MongoDB connector: run `buildInfo` or equivalent; call save_data_source_inventory                                                                                                     | ✅      |
+| 1.5 | Redis connector: run `INFO server`, parse redis_version; call save_data_source_inventory                                                                                              | ✅      |
+| 1.6 | Power BI / Dataverse / REST: record API version (from URL path or headers); call save_data_source_inventory                                                                           | ✅      |
+| 1.7 | Report: add "Data source inventory" sheet from inventory table                                                                                                                        | ✅      |
+| 1.8 | Tests: unit tests for new table and save; test that SQL/Mongo/Redis version is stored; report test for new sheet                                                                      | ✅ (unit coverage for SQL + connector inventory snapshots + report sheet) |
+| 1.9 | Docs: USAGE/TECH_GUIDE and config (if any new keys) for inventory feature                                                                                                             | ✅      |
 
 ### Phase 2: Remaining connectors (SMB, Snowflake, SharePoint, WebDAV, NFS)
 

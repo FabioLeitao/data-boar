@@ -47,6 +47,7 @@ python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Sil
 - Carrega a configuração, varre todos os alvos (`targets`) e grava achados em `audit_results.db`.
 - Cria uma nova sessão (UUID + timestamp) com metadados (`tenant_name`, `technician_name` opcionais).
 - Gera um relatório Excel e um heatmap PNG para essa sessão.
+- O relatório também inclui a aba **Data source inventory** com metadados best-effort das fontes (alvo, tipo, produto/versão, dica de versão de API/protocolo, dica de transporte e detalhes brutos).
 - Imprime linhas `INFO` de confiança do runtime (stdout + stderr); em estado inesperado, alerta explícito: **THERE IS SOMETHING DIFFERENT AND UNEXPECTED IN THIS RUNTIME**.
 - No console, você verá algo como:
 - `Scan session: <session_id>`
