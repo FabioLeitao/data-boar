@@ -250,11 +250,19 @@ Esperamos que se encontrem bem. Viemos por este meio solicitar, com o máximo de
 
 O texto abaixo funciona como um briefing único: pode orientar a própria análise de vocês ou servir de base para quem estruture o relatório (incluindo assistentes de IA), sempre com o rigor e a educação que o assunto merece. Nada aqui pretende ser uma ordem; são pedidos e sugestões de foco, que vocês podem adaptar conforme a metodologia de vocês.
 
+Resumo (âncora rápida):
+- Novo relatório de revisão e recomendações sobre o Data Boar.
+- Briefing único; sugestões adaptáveis à metodologia de vocês (não instruções rígidas).
+
 ---
 
 Contexto e fonte de verdade
 
 Sabemos que conversas e e-mails não preservam todo o contexto. Por isso, seria muito valioso para nós que a análise se apoie, sempre que possível, nos artefatos do repositório — código, documentação, planos, notas de release, tags no GitHub, configuração de imagem e CI — e não apenas na memória do último contato. Como referência não exaustiva, mencionamos README, docs/releases, docs/plans/PLANS_TODO.md, tags e releases no GitHub, Dockerfile e documentação de deploy, pyproject.toml, SECURITY.md e os fluxos de trabalho de integração contínua. Se algo no repositório estiver mais atualizado do que este e-mail, pedimos que prevaleça o que estiver no repo.
+
+Resumo (âncora rápida):
+- Priorizar evidência no repositório (código, docs, releases, CI) em relação a este e-mail.
+- Lista de caminhos acima é exemplificativa, não fechada.
 
 ---
 
@@ -263,6 +271,10 @@ Referência ao último relatório de vocês
 Para não perder o fio da meada, lembramos o relatório anterior de vocês com data de referência em 18 de março de 2026, com nota global de 9,1 em dez na nossa anotação interna. O acompanhamento no repositório está em docs/plans/WABBIX_ANALISE_2026-03-18.md. O PDF correspondente, quando existir no ambiente do operador, costuma estar na pasta de feedbacks e revisões com nome semelhante a analise_evolucao_data_boar_2026-03-18.pdf.
 
 Seria extremamente útil que, neste novo ciclo, vocês retomassem as recomendações daquele relatório e nos ajudassem a perceber o que já foi plenamente atendido, o que ficou em parte, ou o que ainda permanece em aberto — tema que desenvolvemos mais adiante neste pedido.
+
+Resumo (âncora rápida):
+- Último relatório Wabbix: 2026-03-18; tracking em WABBIX_ANALISE_2026-03-18.md.
+- Pedido: retomar recomendações daquele ciclo e distinguir atendido / parcial / aberto.
 
 ---
 
@@ -276,6 +288,11 @@ Segundo, o que mudou desde o último relatório de vocês: o que já tratamos, o
 
 Terceiro, o que mudou desde a última release pública que identificarem no GitHub (tag de versão) e na imagem Docker correspondente, até o estado atual do branch principal. Se ainda houver commits no branch principal após a última tag, esse trabalho ainda não foi “entregue” como nova versão nomeada a testadores, parceiros ou mercado; pedimos que isso fique explícito, para que ninguém confunda o que o mercado instala com o que o repositório já contém hoje.
 
+Resumo (âncora rápida):
+- Camada 1 — acumulado histórico (maturidade e tendência).
+- Camada 2 — desde o último relatório Wabbix (tratamento das recomendações deles).
+- Camada 3 — desde última tag GitHub/Docker até o tip do branch (inclui trabalho ainda não “retagueado”).
+
 ---
 
 Código, documentação e planos
@@ -286,11 +303,20 @@ Na documentação, agradecemos qualquer observação sobre operação (USAGE, de
 
 Nos planos, em docs/plans e em PLANS_TODO.md, interessa-nos a coerência entre roadmap, dependências entre iniciativas e distinção clara entre o que já está entregue e o que ainda é intenção futura, para que o leitor não confunda planejamento com produto disponível.
 
+Resumo (âncora rápida):
+- Código: qualidade, testes, segurança, consistência CLI/API/relatório; temas de confiança e auditoria quando relevante.
+- Documentação: operação, compliance, i18n; sem overclaim.
+- Planos: roadmap vs entregue; dependências entre iniciativas.
+
 ---
 
 Modelo linguístico e níveis de abstração
 
 Ficaríamos gratos se, no capítulo técnico, pudessem dedicar um espaço ao que chamamos de modelo linguistic category: ou seja, se o nível de abstração está adequado a cada tipo de documento e audiência. Em linhas gerais, os planos tendem a ser mais estruturais; a documentação operacional, mais concreta; o material de compliance e pitch, uma abstração controlada em valor e risco, sem prometer o que ainda não está implementado. Sempre que possível, apontar trechos abstratos demais para serem verificáveis, trechos concretos demais no lugar errado, ou ambiguidade entre estado atual e roadmap seria uma contribuição enorme.
+
+Resumo (âncora rápida):
+- Avaliar abstração por tipo de documento e audiência.
+- Sinalizar trechos demasiado abstratos, demasiado concretos no lugar errado, ou ambíguos (atual vs roadmap).
 
 ---
 
@@ -298,11 +324,19 @@ Pontos de atenção que nos preocupam além do habitual
 
 Além da maturidade geral, segurança e vulnerabilidades que vocês já costumam cobrir, pedimos atenção especial, se o tempo de vocês permitir, a: cadeia de confiança e evidência do runtime ao SQLite, exportação e relatório; clareza de severidade para operador e cliente; linguagem adequada entre tamper-evident e tamper-proof; encaixe futuro de observabilidade e alertas off-band; e drift entre código, documentação e planos, incluindo regressões que não apareçam como falhas de teste.
 
+Resumo (âncora rápida):
+- Além do “checklist” habitual: evidência ponta a ponta, severidade, wording jurídico defensável.
+- Observabilidade/alertas (futuro) e drift código/docs/planos.
+
 ---
 
 Retorno sobre as recomendações do relatório anterior
 
 Para cada recomendação relevante do relatório de 18 de março de 2026 que vocês retomarem, seria muito útil receber um estado resumido (por exemplo não iniciado, parcial, concluído ou validado), uma nota de progresso em que façam sentido, e um comentário honesto se a correção parece efetiva ou apenas formal — incluindo o caso em que a sensação de “feito” não corresponde ao efeito real.
+
+Resumo (âncora rápida):
+- Por recomendação retomada: estado, nota de progresso, comentário “efetivo vs formal”.
+- Chamar atenção para falso “feito” quando o problema persistir.
 
 ---
 
@@ -318,11 +352,21 @@ O terceiro capítulo seria dedicado a DevSecOps e hardening: vulnerabilidades, d
 
 Sempre que possível, agradeceríamos que as recomendações viessem acompanhadas de uma indicação de severidade, esforço aproximado e janela de tempo sugerida, e, quando fizer sentido, uma classificação do tipo de esforço (por exemplo segurança, integridade e evidência, funcionalidades, documentação e governança, operações e observabilidade, ou refatoração e dívida técnica).
 
+Resumo (âncora rápida):
+- Cap. 1 — executivo (≤2 páginas): TI, jurídico, parceiros.
+- Cap. 2 — técnico: integra tudo o que pedimos acima.
+- Cap. 3 — DevSecOps: vulnerabilidades, deps, priorização para sprint/backlog.
+- Opcional: severidade, esforço, janela, taxonomia de tipo de trabalho.
+
 ---
 
 Anexo opcional de ideias de roadmap
 
 Se a metodologia e o tempo de vocês permitirem, um anexo separado com ideias especulativas de lacunas de capacidade e caminhos para um produto production-ready e competitivo nos mercados que visamos seria bem-vindo. Pedimos que esse anexo fique claramente identificado como opcional e especulativo, separado dos achados que vocês fundamentam diretamente no código e na documentação atual.
+
+Resumo (âncora rápida):
+- Anexo separado, claramente opcional e especulativo.
+- Ideias de lacunas e production-ready; não misturar com achados evidenciados no repo.
 
 ---
 
@@ -331,7 +375,8 @@ Encerramento
 Agradecemos de antemão a paciência e o rigor de sempre. Qualquer ajuste deste briefing ao que for mais natural para o processo de vocês é bem-vindo. Permanecemos à disposição para esclarecimentos.
 
 Com estima,
-[Equipe Data Boar]
+Fabio Leitao
+Equipe Data Boar
 ```
 
 ---
