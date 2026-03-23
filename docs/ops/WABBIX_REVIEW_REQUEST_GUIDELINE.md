@@ -8,8 +8,9 @@ Use this template when asking Corporate-Entity-C for a new report after meaningf
 
 1. **Show for review:** surface the full message in the chat/UI so you can proofread before sending to Corporate-Entity-C.
 2. **Persist in-repo:** save the same text in `docs/ops/Corporate-Entity-C_REVIEW_REQUEST_GUIDELINE.md` (the “Prompt mestre completo” ` ```text ` block) and mirror it in `docs/ops/Corporate-Entity-C_WRB_REVIEW_AND_SEND.pt_BR.md` when you use that package; **commit** so drafts are not lost to session history or clipboard issues.
+3. **Validate (pt-BR + lint):** run `uv run pytest tests/test_markdown_lint.py::test_markdown_lint_no_violations tests/test_docs_pt_br_locale.py -q`. Portuguese prose must follow **Brazilian Portuguese** (`.cursor/rules/docs-pt-br-locale.mdc`, `docs-policy.mdc`, `operator-chat-language-pt-br.mdc`); English for paths, APIs, and established technical terms is fine.
 
-*(PT-BR: ao criar um pedido, mostrar o texto na tela para revisão **e** gravar no repositório + commit.)*
+*(PT-BR: ao criar um pedido, mostrar o texto na tela para revisão **e** gravar no repositório + commit + validar lint e locale pt-BR.)*
 
 ## Persistent operator tip (always include)
 
