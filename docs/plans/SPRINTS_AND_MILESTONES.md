@@ -117,6 +117,16 @@ The table **S0–S6** does **not** yet include a dedicated row for **subscriptio
 
 **Milestone:** **M-ACCESS** (see §5)—“subscription-ready” surfaces and documented identity path.
 
+#### Prioritized follow-up slices (licensing controls + tiered capability packs)
+
+| Priority | Slice | Expected output |
+| --- | --- | --- |
+| P1 | Define claim contract (`dbtier`, `dbfeatures`, optional `dbextras_profile`) | Draft schema + token examples in `LICENSING_SPEC`; no runtime gating yet. |
+| P2 | Runtime gating matrix | Deterministic allow/deny table: Standard vs Pro/Partner vs Enterprise for optional features (including future AI heuristics and cloaking checks). |
+| P3 | Kill switch controls | Emergency disable path (token claim and/or revocation overlay) documented for operator and support playbooks. |
+| P4 | Dependency profile policy (`uv` extras) | Installer/operator flow for allowed extras packs (`.[nosql]`, `.[datalake]`, etc.) per entitlement, with audit logging and no silent mutation during scans. |
+| P5 | Operator-facing transparency | Explicit docs + runtime info messages + report/audit fields so client/operator can see which entitlement controls are active. |
+
 ### 4.2 Dashboard web surface cluster (locale **+** issue #86)
 
 **Plans:** [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) and [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md). Same files (`api/routes.py`, templates, middleware); **separate acceptance criteria** (language vs authorization).
@@ -157,7 +167,7 @@ Use GitHub **Milestones** or release tags; below is the **semantic** layer align
 | **M-SCAN+** | Tier-2 slice shipped | One vertical released (crypto **or** data source **or** major FN slice) with tests + user-facing docs |
 | **M-RICH** | Data soup — rich media Tier 3 | **On `main`:** subtitles + optional metadata/OCR + magic-byte cloaking wired; `docs/releases/1.6.5.md` (or chosen patch); tests green — see [PLANS_TODO.md](PLANS_TODO.md) **Integration / WIP** while branch open |
 | **M-NOTIFY** | Out-of-band awareness | Notifications Ph1 usable with documented config |
-| **M-ACCESS** | Paid / shared-network readiness (licensing + identity) | Intended **commercial SKUs** and **enforced** path smoke-tested; dashBOARd/API **not anonymously usable** on the reference deploy—via **documented proxy+OIDC pattern** and/or **in-app** auth; RBAC or equivalent role story documented for at least one pattern |
+| **M-ACCESS** | Paid / shared-network readiness (licensing + identity) | Intended **commercial SKUs** and **enforced** path smoke-tested; tier claims + feature-pack policy (including kill switch path) documented; dashBOARd/API **not anonymously usable** on the reference deploy—via **documented proxy+OIDC pattern** and/or **in-app** auth; RBAC or equivalent role story documented for at least one pattern |
 | **D-WEB** | Dashboard web surface **design** (i18n ∩ #86) | URL map + middleware order **written** and cross-linked; **no** required product code (diagram + plan edits OK) |
 | **M-LOCALE-V1** | Dashboard HTML **locale v1** | As [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md): prefixed HTML, `en`+`pt-BR`, negotiation, switcher, tests, CI key parity |
 | **M-SITE-READY** | **First public website + technical doc hub** (GTM-ready slice) | **Live** static/marketing site with: (1) **non-technical** story pages (aligned with **stakeholder pitch**, not a dump of TECH_GUIDE); (2) **technical hub** — deep links or embedded paths to **version-aligned** USAGE, TECH_GUIDE, TESTING, deploy/Docker, scenarios, compliance-samples entry, **release notes**, **Docker Hub** + **GitHub**; (3) **roadmap** listing **specific active fronts** (connectors, dashboard, notifications, …); (4) **locale** UX **consistent** with dashBOARd i18n plan (prefix / cookie / `Accept-Language` / JSON catalogs). See [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) §2.1–2.3. |

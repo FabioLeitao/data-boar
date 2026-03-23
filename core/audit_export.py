@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from core.about import get_about_info
+from core.runtime_trust import get_runtime_trust_snapshot
 
 # Bump when JSON shape changes in a breaking way.
 AUDIT_TRAIL_SCHEMA_VERSION = 1
@@ -28,6 +29,7 @@ def _iso_utc(dt: datetime | None) -> str | None:
 def build_audit_trail_payload(
     db_manager: Any,
     *,
+    config: dict[str, Any],
     config_path: str,
     sqlite_path: str,
 ) -> dict[str, Any]:
@@ -44,6 +46,7 @@ def build_audit_trail_payload(
         Resolved SQLite path from config.
     """
     about = get_about_info()
+    runtime_trust = get_runtime_trust_snapshot(config)
     wipe_rows = db_manager.list_data_wipe_log_entries()
     session_summary = db_manager.get_scan_sessions_summary()
 
@@ -60,6 +63,7 @@ def build_audit_trail_payload(
             "config": config_path,
             "sqlite": sqlite_path,
         },
+        "runtime_trust": runtime_trust,
         "data_wipe_log": wipe_rows,
         "scan_sessions_summary": session_summary,
         # Populated when PLAN_BUILD_IDENTITY Phase E ships (integrity anchor,
@@ -70,7 +74,8 @@ def build_audit_trail_payload(
             "integrity_anchor and integrity_events are reserved for "
             "PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY Phase E. "
             "data_wipe_log rows are append-only and are never removed by "
-            "wipe_all_data() / --reset-data."
+            "wipe_all_data() / --reset-data. "
+            "runtime_trust marks if this execution context looked unexpected."
         ),
     }
     return payload
