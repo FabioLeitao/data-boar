@@ -23,21 +23,21 @@ Use these tags in headings to keep priorities explicit and machine-countable:
 
 Do not edit this block manually; refresh with `python scripts/plans-stats.py --write`.
 
-- **Status rows counted:** 103  (Done: 51 | Incomplete: 52)
-- **Incomplete breakdown:** Pending `⬜`=50, Tracked `🔄` / `Tracked (partially done)`=2, Under consideration=0, Backlog-marked rows=0
+- **Status rows counted:** 110  (Done: 52 | Incomplete: 58)
+- **Incomplete breakdown:** Pending `⬜`=56, Tracked `🔄` / `Tracked (partially done)`=2, Under consideration=0, Backlog-marked rows=0
 
 | Horizon | Total rows | Done | Incomplete |
 | ------- | ----------: | ----: | ----------: |
 | `H0` | 20 | 18 | 2 |
 | `H1` | 0 | 0 | 0 |
 | `H2` | 0 | 0 | 0 |
-| `H3` | 83 | 33 | 50 |
+| `H3` | 90 | 34 | 56 |
 | `H4` | 0 | 0 | 0 |
 | `H5` | 0 | 0 | 0 |
 | `UNSPECIFIED` | 0 | 0 | 0 |
 <!-- PLANS_STATUS_DASHBOARD:END -->
 
-**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Commercial licensing (runtime + docs + issuer bootstrap)** ✅ Phase 1 in repo (see `docs/LICENSING_SPEC.md`, `core/licensing/`); operational hardening ⬜ Priority band A · **Release 1.6.4** ✅ shipped **2026-03-20** (GitHub Release **v1.6.4**, Docker Hub **`fabioleitao/data_boar:1.6.4`** + **`:latest`**, `docs/releases/1.6.4.md`; maintenance sprint **#99–#104** on `main`) · **Version check & self-upgrade** ⬜ Not started · **Additional compliance samples** ✅ Done · **Compliance standards alignment (ISO/IEC 27701, FELCA)** ✅ Done (doc only) · **Additional detection techniques & FN reduction** 🔄 Slices 1–4 done (`fuzzy_column_match`, `FUZZY_COLUMN_MATCH`, `connector_format_id_hint`, `FORMAT_LENGTH_HINT_ID`); next: optional aggregated/incomplete-data modes and semantic hints (priorities 5+). · **Compressed files** ✅ Done (steps 1–12; follow-ups 13–14 optional) · **Content type & cloaking detection** ✅ Core plan done (optional: man pages / OpenAPI examples) · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ✅ Phase 4 done (Phase 5 checksum future) · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **Dashboard reports RBAC** ⬜ Tracked (GitHub [#86](https://github.com/FabioLeitao/data-boar/issues/86); [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md)) · **SAP connector** ⬜ Not started · **Additional data soup formats** 🔄 Tier 3 rich media **in flight** (branch / unmerged work; see § Integration / WIP above); Tier 1 (epub, parquet, …) + **stego** ⬜ backlog · **Home lab (–1L)** 🔄 Partial: LAN dashBOARd + `uv`/git on a second host; playbook [§9 multi-host Linux](../ops/HOMELAB_VALIDATION.md#9-multi-host-linux-optional-matrix-dns-ssh-different-distros) (DNS/SSH; Void/Pi notes; no agent-side OS installs). **Done** when [§12](../ops/HOMELAB_VALIDATION.md#12-when-you-are-done-with-a-lab-pass) criteria + dated note (e.g. `docs/private/`).
+**Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Commercial licensing (runtime + docs + issuer bootstrap)** ✅ Phase 1 in repo (see `docs/LICENSING_SPEC.md`, `core/licensing/`); operational hardening ⬜ Priority band A · **Release 1.6.4** ✅ shipped **2026-03-20** (GitHub Release **v1.6.4**, Docker Hub **`fabioleitao/data_boar:1.6.4`** + **`:latest`**, `docs/releases/1.6.4.md`; maintenance sprint **#99–#104** on `main`) · **Version check & self-upgrade** ⬜ Not started · **Build identity & release integrity** 🔄 Partial (Phase **E.11** CLI audit export on `main`; anchor/integrity still ⬜) ([PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md](PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md)) · **Additional compliance samples** ✅ Done · **Compliance standards alignment (ISO/IEC 27701, FELCA)** ✅ Done (doc only) · **Additional detection techniques & FN reduction** 🔄 Slices 1–4 done (`fuzzy_column_match`, `FUZZY_COLUMN_MATCH`, `connector_format_id_hint`, `FORMAT_LENGTH_HINT_ID`); next: optional aggregated/incomplete-data modes and semantic hints (priorities 5+). · **Compressed files** ✅ Done (steps 1–12; follow-ups 13–14 optional) · **Content type & cloaking detection** ✅ Core plan done (optional: man pages / OpenAPI examples) · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ✅ Phase 4 done (Phase 5 checksum future) · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ⬜ Not started · **Dashboard i18n** ⬜ Under consideration · **Dashboard reports RBAC** ⬜ Tracked (GitHub [#86](https://github.com/FabioLeitao/data-boar/issues/86); [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md)) · **SAP connector** ⬜ Not started · **Additional data soup formats** 🔄 Tier 3 rich media **in flight** (branch / unmerged work; see § Integration / WIP above); Tier 1 (epub, parquet, …) + **stego** ⬜ backlog · **Home lab (–1L)** 🔄 Partial: LAN dashBOARd + `uv`/git on a second host; playbook [§9 multi-host Linux](../ops/HOMELAB_VALIDATION.md#9-multi-host-linux-optional-matrix-dns-ssh-different-distros) (DNS/SSH; Void/Pi notes; no agent-side OS installs). **Done** when [§12](../ops/HOMELAB_VALIDATION.md#12-when-you-are-done-with-a-lab-pass) criteria + dated note (e.g. `docs/private/`).
 
 ### Commercial licensing — future reminder (partner / tiered SKUs)
 
@@ -75,6 +75,7 @@ Post–PR **#118**: clarified **`private-layout`** vs **`docs/private/homelab`**
 | Security hardening                             | —                                                             | None           | Additive (validation, docs, audit). Do first to strengthen base.                                                                                                                                                                              |
 | Secrets vault                                  | —                                                             | None           | Phase A (redact, env) improves config safety before vault.                                                                                                                                                                                    |
 | Version check / self-upgrade                   | —                                                             | None           | Backup excludes secrets (manifest); compatible with Secrets A. Optional Phase 9: .deb, apt repo, signing, bytecode-only (see plan §9).                                                                                                        |
+| Build identity & release integrity             | Optional: C.1 manifest; SQLite migration (anchor table)         | None           | **Phase E:** persist hashes in SQLite; **`--reset-data` preserves** anchor; startup re-verify; tamper → **`-alpha`** in reports/status. Coordinate with `data_wipe` — [PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md](PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md). |
 | Additional compliance samples                  | —                                                             | None           | Config-only; samples and docs additive.                                                                                                                                                                                                       |
 | Compressed files                               | Config loader (new keys)                                      | None           | Additive feature; optional dependency py7zr.                                                                                                                                                                                                  |
 | Content type & cloaking detection              | —                                                             | None           | Opt-in magic-byte/MIME detection for renamed/cloaked files; more I/O/CPU; steganography out of scope for v1.                                                                                                                                  |
@@ -364,6 +365,22 @@ Core flow first (sections 1–7); then optional Phase 9 (complexity/gain: high c
 | 6.1–6.3 | No data loss; config/overrides backup; audit trail                                                                                                                                                           | ⬜ Pending |
 | 7.1–7.3 | Tests; USAGE/DEPLOY docs; release notes                                                                                                                                                                      | ⬜ Pending |
 | 9.1–9.5 | **Optional (after 1–7):** .deb package (ensure package name available; include/bundle deps for easy deployment), own apt repo, GPG signing, bytecode-only install (no raw .py), winget-like UX; see plan §9. | ⬜ Pending |
+
+---
+
+### Build identity, runtime version & release integrity – [PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md](PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md)
+
+**Do first:** Phase A (startup `INFO`, dashboard `build`, PEP 440 / git dirty). **Then:** C.1 manifest format → **Phase E** (SQLite anchor, survive `--reset-data`, startup re-verify, tamper → **`-alpha`** in reports/`/status`/logs) → Phase B/D as needed; C.2–C.4 signing optional.
+
+| #     | To-do                                                                                    | Status    |
+| ----- | -----                                                                                    | ------    |
+| A.1–A.5 | `get_build_identity()`, CLI log line, dashboard/API, Docker labels                     | ⬜ Pending |
+| B.1–B.2 | Pre-release convention + CI env / bump                                                 | ⬜ Pending |
+| C.1–C.4 | Optional manifest; signed manifest (stretch)                                           | ⬜ Pending |
+| E.1–E.10 | SQLite `build_integrity_anchor`; first-run validate/import; **no wipe** on `--reset-data`; startup re-verify; tamper → trust level + Report info / status / health | ⬜ Pending |
+| E.11 | **`--export-audit-trail`** JSON: `data_wipe_log`, `scan_sessions_summary`, placeholders for integrity; stdout or file; no DB mutation | ✅ Done (baseline; see plan §E.6) |
+| E.12 | Extend export with `integrity_events`, per-run version checks, optional execution-log pointers when tables exist | ⬜ Pending |
+| D.1–D.4 | `scripts/release/` + `workflow_dispatch` + `docs/ops/RELEASE_TRAIN.md`               | ⬜ Pending |
 
 ---
 

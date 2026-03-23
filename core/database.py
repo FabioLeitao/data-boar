@@ -613,11 +613,65 @@ class LocalDBManager:
         finally:
             session.close()
 
+    def list_data_wipe_log_entries(self) -> list[dict[str, Any]]:
+        """Return all rows from data_wipe_log (newest last), ISO timestamps, for audit export."""
+        session = self._session_factory()
+        try:
+            rows = session.query(DataWipeLog).order_by(DataWipeLog.id.asc()).all()
+            out: list[dict[str, Any]] = []
+            for r in rows:
+                wiped = r.wiped_at
+                out.append(
+                    {
+                        "id": r.id,
+                        "wiped_at": wiped.isoformat() if wiped else None,
+                        "reason": r.reason,
+                    }
+                )
+            return out
+        finally:
+            session.close()
+
+    def get_scan_sessions_summary(self) -> dict[str, Any]:
+        """Aggregate counts for audit export (sessions may be empty after a wipe)."""
+        session = self._session_factory()
+        try:
+            n = session.query(ScanSession).count()
+            if n == 0:
+                return {
+                    "count": 0,
+                    "first_started_at": None,
+                    "last_started_at": None,
+                }
+            first = (
+                session.query(ScanSession)
+                .order_by(ScanSession.started_at.asc())
+                .first()
+            )
+            last = (
+                session.query(ScanSession)
+                .order_by(ScanSession.started_at.desc())
+                .first()
+            )
+            fa = first.started_at if first else None
+            la = last.started_at if last else None
+            return {
+                "count": n,
+                "first_started_at": fa.isoformat() if fa else None,
+                "last_started_at": la.isoformat() if la else None,
+            }
+        finally:
+            session.close()
+
     def wipe_all_data(self, reason: str) -> None:
         """
         Delete all scan sessions and findings from the SQLite database, but keep an audit entry
         in data_wipe_log so there is a record of when and why the wipe happened.
         Intended to be called from maintenance/CLI tooling (e.g. --reset-data).
+
+        Rows in ``data_wipe_log`` are **append-only** (never deleted here). Future
+        integrity/audit tables (see PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY) must also
+        be preserved by this method unless a separate explicit maintenance flag exists.
         """
         session = self._session_factory()
         try:

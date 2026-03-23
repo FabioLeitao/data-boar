@@ -4,6 +4,7 @@ CLI entry point: load config (YAML/JSON), run audit and report (optionally tagge
 """
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -109,6 +110,19 @@ def main() -> None:
         ),
     )
     parser.add_argument(
+        "--export-audit-trail",
+        metavar="PATH",
+        nargs="?",
+        const="-",
+        default=None,
+        help=(
+            "Export a JSON audit trail from SQLite (data_wipe_log, session summary; "
+            "future: integrity anchor). PATH optional: omit or '-' for stdout; "
+            "otherwise write to PATH. Does not modify the database. "
+            "Incompatible with --web and --reset-data."
+        ),
+    )
+    parser.add_argument(
         "--tenant",
         default=None,
         help=(
@@ -165,6 +179,40 @@ def main() -> None:
         config.setdefault("file_scan", {})["scan_compressed"] = True
     if args.content_type_check:
         config.setdefault("file_scan", {})["use_content_type"] = True
+
+    if args.export_audit_trail is not None:
+        if args.web:
+            print(
+                "Cannot combine --export-audit-trail with --web.",
+                file=sys.stderr,
+            )
+            sys.exit(2)
+        if args.reset_data:
+            print(
+                "Cannot combine --export-audit-trail with --reset-data.",
+                file=sys.stderr,
+            )
+            sys.exit(2)
+        from core.audit_export import build_audit_trail_payload
+
+        engine = AuditEngine(config)
+        try:
+            sqlite_path = config.get("sqlite_path", "audit_results.db")
+            payload = build_audit_trail_payload(
+                engine.db_manager,
+                config_path=args.config,
+                sqlite_path=sqlite_path,
+            )
+            body = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+            dest = args.export_audit_trail
+            if dest in ("-", None):
+                sys.stdout.write(body)
+            else:
+                Path(dest).write_text(body, encoding="utf-8")
+                print(f"Audit trail exported to {dest}", file=sys.stderr)
+        finally:
+            engine.db_manager.dispose()
+        return
 
     if args.web and not args.reset_data:
         import uvicorn
