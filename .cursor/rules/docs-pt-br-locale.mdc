@@ -34,7 +34,7 @@ Keep **English** for commands, product names, and jargon where the repo already 
 
 ## Automation
 
-- Run **`uv run pytest tests/test_docs_pt_br_locale.py -v`** after large doc edits.
+- Run **`uv run pytest tests/test_docs_pt_br_locale.py -v`** after large doc edits. The scan includes **`docs/private/**/*.pt_BR.md`** when present (not gitignored from pytest’s point of view), same idea as markdown lint for local operator trees.
 - Extend **`tests/test_docs_pt_br_locale.py`** (`_extra_locale_scan_paths`) if **`docs/private/pitch/slides.yaml`** or website copy becomes tracked and includes pt-BR strings.
 
 ## Related
