@@ -7,6 +7,16 @@ description: Use when deciding how to run lint, tests, commit/PR, or Docker home
 
 When you need to **verify lint or tests**, or when the user asks to **commit, create a description, push, or create a PR**, use the repo scripts from the project root so behaviour is consistent and token use stays low.
 
+## Always consider adding automation after fixes
+
+For any meaningful fix or repetitive operator flow, proactively decide whether to add/update:
+
+- a **regression test** (`tests/`),
+- a **script** (`scripts/`) that standardizes repeated steps,
+- or a **pre-commit/CI hook** for lightweight, high-signal checks.
+
+If not added, state a short reason (for example runtime too high, flaky signal, already covered elsewhere).
+
 ## Which script to use (lint and tests)
 
 | Goal                       | Script                                                                          | When it saves tokens                                      |
