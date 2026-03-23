@@ -19,6 +19,7 @@ The main entry point is `main.py`. Prefer it over `run.py`.
 | `--port`               | `8088`        | Port for the API when `--web` is set. Can be overridden by `api.port` in config unless you pass `--port` explicitly. Ignored in one-shot mode.                                                                          |
 | `--host`               | *(resolved)*  | Bind address when `--web` is set (e.g. `127.0.0.1`, `0.0.0.0`). **Overrides** `api.host` and `API_HOST`. If omitted: `api.host` → `API_HOST` → default **`127.0.0.1`**. Ignored in one-shot mode. See §2.               |
 | `--reset-data`         | *(flag)*      | Dangerous maintenance operation: wipe all scan sessions, findings and failures from SQLite, delete generated reports/heatmaps under `report.output_dir`, and record the wipe in `data_wipe_log`. Does not start a scan. |
+| `--export-audit-trail` | *(optional path)* | Export a JSON audit trail from SQLite (`data_wipe_log`, session summary; future: integrity rows). Omit path or use `-` for **stdout**; otherwise write to the given file. Does **not** modify the DB. Cannot be combined with `--web` or `--reset-data`. |
 | `--tenant`             | *(none)*      | Optional customer/tenant name for the scan in CLI mode. Stored on the session and surfaced on dashboard and reports.                                                                                                    |
 | `--technician`         | *(none)*      | Optional technician/operator responsible for the scan in CLI mode. Stored on the session and surfaced on dashboard and reports.                                                                                         |
 | `--scan-compressed`    | *(flag)*      | One-shot override: enable archive scanning as if `file_scan.scan_compressed` were true (zip, tar, 7z, …).                                                                                                               |
@@ -38,7 +39,7 @@ python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Sil
 
 - Loads config, runs a full audit of all targets (databases, filesystems, APIs, shares as configured).
 - Creates a new session (UUID + timestamp), writes findings to the local SQLite DB (including optional `tenant_name` and `technician_name`), then generates the Excel report (and heatmap) for that session.
-- **Output:** Console prints `Scan session: <session_id>` and `Report written: <path>` (or "No findings to report.").
+- **Output:** Console prints runtime trust `INFO` lines (stdout + stderr), then `Scan session: <session_id>` and `Report written: <path>` (or "No findings to report."). If trust is unexpected, the CLI explicitly warns: **THERE IS SOMETHING DIFFERENT AND UNEXPECTED IN THIS RUNTIME**.
 - Report path is under `report.output_dir` from config (default: current directory). File name: `Relatorio_Auditoria_<session_id>.xlsx` (and `heatmap_<session_id>.png`).
 
 ## REST API server (`--web`)
