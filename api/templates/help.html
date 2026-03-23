@@ -40,6 +40,7 @@ uv run python main.py --config config.yaml --scan-compressed --content-type-chec
 uv run python main.py --config config.yaml --web --host 0.0.0.0 --port 8088</code></pre>
   <p class="muted">Bind order when using <code>--web</code>: <code>--host</code> overrides <code>api.host</code> in config and <code>API_HOST</code>; if none are set, the default is <code>127.0.0.1</code> (Docker image often sets <code>API_HOST=0.0.0.0</code>). Port: <code>api.port</code> in config vs <code>--port</code> — see <code>docs/USAGE.md</code>.</p>
   <p><strong>Dangerous maintenance</strong> (lab/demo only): <code>--reset-data</code> wipes SQLite sessions/findings and deletes generated reports under <code>report.output_dir</code>. See <code>SECURITY.md</code> before using in production.</p>
+  <p><strong>Audit trail export</strong> (CLI only): <code>--export-audit-trail</code> or <code>--export-audit-trail path.json</code> writes a JSON snapshot (wipe log, session summary; future: integrity rows). Does not modify the database. Omit the path or use <code>-</code> for stdout.</p>
 </section>
 
 <section class="card">
