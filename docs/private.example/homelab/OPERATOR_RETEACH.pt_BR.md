@@ -75,8 +75,7 @@
 
 ## C. Último preenchimento (privado)
 
-**Data:** AAAA-MM-DD  
-**Por:** operador  
+**Data:** AAAA-MM-DD · **Por:** operador
 
 **Notas:** Texto livre — ainda **sem senhas** nem **chaves de API** neste arquivo.
 
