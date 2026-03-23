@@ -6,6 +6,7 @@ Config target: type: database, driver: mongodb, host, port, database (and option
 
 from typing import Any
 from urllib.parse import quote
+import json
 
 try:
     from pymongo import MongoClient
@@ -86,6 +87,7 @@ class MongoDBConnector:
             from utils.logger import log_connection
 
             log_connection(target_name, "mongodb", self.config.get("host", "localhost"))
+            self._save_inventory_snapshot(target_name)
             for coll_name in self._db.list_collection_names():
                 coll = self._db[coll_name]
                 sample_docs = list(coll.find().limit(self.sample_limit))
@@ -142,6 +144,33 @@ class MongoDBConnector:
             self.db_manager.save_failure(target_name, "error", str(e))
         finally:
             self.close()
+
+    def _save_inventory_snapshot(self, target_name: str) -> None:
+        """Persist one MongoDB inventory row (best effort; must not break scanning)."""
+        if not hasattr(self.db_manager, "save_data_source_inventory"):
+            return
+        product_version = None
+        raw_details: dict[str, str] = {}
+        try:
+            info = self._db.command("buildInfo")
+            product_version = str(info.get("version", "") or "") or None
+            raw_details["version_probe"] = str(info)[:500]
+        except Exception:
+            pass
+        transport = "tls=enabled" if self.config.get("tls") else "unknown"
+        raw_details["driver"] = "mongodb"
+        try:
+            self.db_manager.save_data_source_inventory(
+                target_name=target_name,
+                source_type="database",
+                product="mongodb",
+                product_version=product_version,
+                protocol_or_api_version="mongodb",
+                transport_security=transport,
+                raw_details=json.dumps(raw_details, ensure_ascii=False),
+            )
+        except Exception:
+            pass
 
 
 if _MONGO_AVAILABLE:

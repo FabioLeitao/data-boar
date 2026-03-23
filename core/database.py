@@ -1,6 +1,6 @@
 """
-Single SQLite schema for audit results: sessions, database_findings, filesystem_findings, scan_failures.
-LocalDBManager: save_finding(source_type, **kwargs), save_failure, get_findings, list_sessions.
+Single SQLite schema for audit results: sessions, findings/failures and inventory metadata.
+LocalDBManager persists findings, failures, and data-source inventory rows by session.
 Session id comes from core.session (UUID + timestamp); set via set_current_session_id.
 """
 
@@ -159,6 +159,27 @@ class AggregatedIdentificationRisk(Base):
     created_at = Column(DateTime, default=_utc_now)
 
 
+class DataSourceInventory(Base):
+    """
+    Best-effort inventory of source technology/version/protocol for a scan target.
+
+    Phase 1 scope: keep schema generic and additive so connectors can populate partially
+    (unknown values are allowed). Hardening/CVE correlation can build on top later.
+    """
+
+    __tablename__ = "data_source_inventory"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    session_id = Column(String(64), nullable=False, index=True)
+    target_name = Column(String(100), nullable=False)
+    source_type = Column(String(40), nullable=False)  # database, api, bi, share, etc.
+    product = Column(String(120), nullable=True)
+    product_version = Column(String(120), nullable=True)
+    protocol_or_api_version = Column(String(120), nullable=True)
+    transport_security = Column(String(120), nullable=True)
+    raw_details = Column(Text, nullable=True)  # JSON/text payload from connector probe
+    created_at = Column(DateTime, default=_utc_now)
+
+
 class LocalDBManager:
     """Single SQLite DB for all audit results; session id set externally (core.session)."""
 
@@ -170,6 +191,7 @@ class LocalDBManager:
         self._ensure_tenant_column()
         self._ensure_technician_column()
         self._ensure_config_scope_hash_column()
+        self._ensure_data_source_inventory_table()
         self._session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
         self._current_session_id: str | None = None
 
@@ -224,6 +246,10 @@ class LocalDBManager:
     def _ensure_aggregated_table(self) -> None:
         """Create aggregated_identification_risk table if it does not exist."""
         AggregatedIdentificationRisk.__table__.create(self.engine, checkfirst=True)
+
+    def _ensure_data_source_inventory_table(self) -> None:
+        """Create data_source_inventory table if it does not exist."""
+        DataSourceInventory.__table__.create(self.engine, checkfirst=True)
 
     def set_current_session_id(self, session_id: str) -> None:
         self._current_session_id = session_id
@@ -396,6 +422,63 @@ class LocalDBManager:
         except Exception:
             sess.rollback()
             raise
+        finally:
+            sess.close()
+
+    def save_data_source_inventory(
+        self,
+        target_name: str,
+        source_type: str,
+        product: str | None = None,
+        product_version: str | None = None,
+        protocol_or_api_version: str | None = None,
+        transport_security: str | None = None,
+        raw_details: str | None = None,
+    ) -> None:
+        """Persist one inventory row for the current session (best effort metadata)."""
+        sid = self._current_session_id
+        if not sid:
+            return
+        sess = self._session_factory()
+        try:
+            sess.add(
+                DataSourceInventory(
+                    session_id=sid,
+                    target_name=target_name,
+                    source_type=source_type,
+                    product=product,
+                    product_version=product_version,
+                    protocol_or_api_version=protocol_or_api_version,
+                    transport_security=transport_security,
+                    raw_details=raw_details,
+                )
+            )
+            sess.commit()
+        except Exception:
+            sess.rollback()
+            raise
+        finally:
+            sess.close()
+
+    def get_data_source_inventory(self, session_id: str | None = None) -> list[dict]:
+        """Return inventory rows for session_id or current session."""
+        sid = session_id or self._current_session_id
+        if not sid:
+            return []
+        sess = self._session_factory()
+        try:
+            rows = (
+                sess.query(DataSourceInventory)
+                .filter(DataSourceInventory.session_id == sid)
+                .all()
+            )
+            return [
+                {
+                    c.key: getattr(r, c.key)
+                    for c in DataSourceInventory.__table__.columns
+                }
+                for r in rows
+            ]
         finally:
             sess.close()
 
@@ -681,6 +764,7 @@ class LocalDBManager:
             session.query(AggregatedIdentificationRisk).delete(
                 synchronize_session=False
             )
+            session.query(DataSourceInventory).delete(synchronize_session=False)
             session.query(ScanFailure).delete(synchronize_session=False)
             # Delete all scan session rows
             session.query(ScanSession).delete(synchronize_session=False)
