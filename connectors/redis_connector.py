@@ -136,8 +136,9 @@ class RedisConnector:
             info = self._client.info("server")
             product_version = str(info.get("redis_version", "") or "") or None
             raw_details["version_probe"] = str(info)[:500]
-        except Exception:
-            pass
+        except Exception as e:
+            # Probe is optional; preserve scan flow when INFO is unavailable.
+            raw_details["version_probe_error"] = str(e)[:200]
         transport = "tls=enabled" if self.config.get("tls") else "unknown"
         raw_details["driver"] = "redis"
         try:
