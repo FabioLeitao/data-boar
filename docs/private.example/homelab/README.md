@@ -33,6 +33,8 @@ The AI **cannot** open your LAN by itself. **Default:** it runs **`ssh`** from *
 
 **L3 / DHCP / DNS / CyberSecure (UniFi):** [LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md](LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md) ([pt-BR](LAB_NETWORK_L3_DHCP_AND_CYBERSEC.pt_BR.md)) — per-VLAN gateway and DNS intent, honeypot alignment, verification commands; fill the private inventory table only under `docs/private/homelab/`.
 
+**Sequenced lab plan (firewall → access → Loki → Wazuh):** [PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.md](../../plans/PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.md) ([pt-BR](../../plans/PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.pt_BR.md)) in `docs/plans/` — sprint checklist ties to [PLAN_LAB_OP_OBSERVABILITY_STACK.md](../../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md).
+
 ### Windows: pCloud as `P:` (optional)
 
 If you sync the same tree to **Linux** (`~/pCloudDrive`) and **Windows** (**`P:`**), note that here (e.g. “reports copy also under `P:\Backups\…`”). The assistant can use **`P:\…`** from the **Cursor terminal on Windows** when pCloud is mounted—still **gitignore** any paths you write in this file.
