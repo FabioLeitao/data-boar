@@ -7,6 +7,7 @@ Optional: register only when httpx is available. Used for type "api" or "rest" t
 
 import os
 from typing import Any
+import json
 
 from core.connector_registry import register
 from core.suggested_review import (
@@ -177,7 +178,8 @@ class RESTConnector:
             try:
                 self._client.close()
             except Exception:
-                pass
+                # Best-effort close: ignore client shutdown errors.
+                return
             self._client = None
 
     def run(self) -> None:
@@ -219,6 +221,7 @@ class RESTConnector:
                 )
                 return
             target_name = self.config.get("name", "API")
+            self._save_inventory_snapshot(target_name)
             seen_path_key: set[tuple[str, str]] = (
                 set()
             )  # (path_str, key) to avoid duplicate findings per field
@@ -287,6 +290,50 @@ class RESTConnector:
                         _save_if_sensitive(key, sample)
         finally:
             self.close()
+
+    def _save_inventory_snapshot(self, target_name: str) -> None:
+        """Persist one REST/API inventory row with API version hints."""
+        if not hasattr(self.db_manager, "save_data_source_inventory"):
+            return
+        version_hint = (
+            self.config.get("api_version")
+            or self.config.get("version")
+            or self._infer_api_version_from_paths()
+        )
+        transport = (
+            "tls=https"
+            if str(self.config.get("base_url", "")).lower().startswith("https://")
+            else "unknown"
+        )
+        details = {
+            "base_url": str(
+                self.config.get("base_url") or self.config.get("url") or ""
+            ),
+            "auth_type": str((self.config.get("auth") or {}).get("type") or "none"),
+        }
+        try:
+            self.db_manager.save_data_source_inventory(
+                target_name=target_name,
+                source_type="api",
+                product=self.config.get("product") or "rest-api",
+                product_version=None,
+                protocol_or_api_version=str(version_hint or "") or None,
+                transport_security=transport,
+                raw_details=json.dumps(details, ensure_ascii=False),
+            )
+        except Exception:
+            # Inventory snapshot is best-effort; scan should continue without it.
+            return
+
+    def _infer_api_version_from_paths(self) -> str | None:
+        paths = self.config.get("paths") or self.config.get("endpoints") or []
+        for p in paths:
+            path_str = p if isinstance(p, str) else p.get("path", p.get("url", ""))
+            low = str(path_str).lower()
+            for token in ("/v1", "/v2", "/v3", "/v4"):
+                if token in low:
+                    return token.strip("/")
+        return None
 
 
 if _HTTPX_AVAILABLE:
