@@ -236,6 +236,8 @@ Second review cycle (premium WABIX, 2026-03-23): PDF `docs/feedbacks, reviews, c
 
 **LAB-OP (batch sync + inventory):** ✅ Docs + script aligned — [HOMELAB_HOST_PACKAGE_INVENTORY.md](../ops/HOMELAB_HOST_PACKAGE_INVENTORY.md) §4, **`scripts/lab-op-sync-and-collect.ps1`**, manifest + runbook under **`docs/private/homelab/`** (gitignored; template **`docs/private.example/homelab/LAB_OP_SYNC_RUNBOOK.md`**). **Open on hosts:** **`<lab-host-2>`** / **`pi3b`** — resolve local edits blocking **`git pull`** on **`scripts/homelab-host-report.sh`**, then re-run collect (or **`-SkipGitPull`** for report-only).
 
+**LAB-OP — URGENT (operator, electrical + purchasing):** ⬜ **Pending** — Photograph **Enel meter** (visible limits/demand if shown), **main house circuit breaker** (nominal **A**), and **floor distribution panel** for the lab circuit; add summary to **`docs/private/homelab/LAB_OP_SHOPPING_LIST_AND_POWER.md`** §7. **Blocks** safe UPS sizing, optional power-wall planning, and Enel load-increase requests. Tracked cover note (no prices): [LAB_OP_SHOPPING_LIST_COVER_NOTE.md](../private.example/homelab/LAB_OP_SHOPPING_LIST_COVER_NOTE.md). See [HOMELAB_POWER_AND_ELECTRICAL_PLANNING.md](../ops/HOMELAB_POWER_AND_ELECTRICAL_PLANNING.md).
+
 **LAB-OP — Wazuh (optional SIEM):** ⬜ **Deferred** — vuln mapping, hardening/CIS-style dashboards, centralized security reports on homelab hosts. **After** [LAB_OP_MINIMAL_CONTAINER_STACK.md](../ops/LAB_OP_MINIMAL_CONTAINER_STACK.md) §1–§3 stable; prefer dedicated VM/LXC for manager (§6). Not required to validate Data Boar itself.
 
 **Next slices (same trail — after lab-op stable + –1L policy):**
