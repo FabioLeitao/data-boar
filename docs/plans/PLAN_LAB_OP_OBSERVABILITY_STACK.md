@@ -47,6 +47,7 @@ URLs, retention, LDAP, and LAN firewall rules belong in **`docs/private/homelab/
 ## 4. Tracking
 
 - **PLANS_TODO.md** — LAB-OP observability row + **H2** deferred bullet.
+- **Sequencing spine (firewall → access → logs → Wazuh):** [PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.md](PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.md) ([pt-BR](PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.pt_BR.md)) — use when UniFi/L3 work is active **before** or **alongside** phases A–E below.
 - **LAB_OP_MINIMAL_CONTAINER_STACK.md** §7 — short pointer here.
 - **Reminder (when hardware allows):** deploy **syslog/logs** first (**Promtail + Loki + Grafana**, phase **C**); add **Wazuh** (phase **E**) on a **VM/tower** with enough RAM — minimal operator checklist: [OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.md](../private.example/homelab/OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.md) ([pt-BR](../private.example/homelab/OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.pt_BR.md)).
 
