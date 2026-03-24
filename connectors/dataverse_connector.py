@@ -295,7 +295,8 @@ class DataverseConnector:
                 raw_details=json.dumps(details, ensure_ascii=False),
             )
         except Exception:
-            pass
+            # Inventory snapshot is best-effort; never break scan execution on persist errors.
+            return
 
 
 if _HTTPX_AVAILABLE:
