@@ -47,6 +47,7 @@ URLs, retenção, LDAP e regras de firewall na LAN ficam em **`docs/private/home
 ## 4. Acompanhamento
 
 - **PLANS_TODO.md** — linha LAB-OP observabilidade + bullet **H2**.
+- **Sequenciamento (firewall → acesso → logs → Wazuh):** [PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.pt_BR.md](PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.pt_BR.md) ([EN](PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.md)) — usar quando o trabalho UniFi/L3 estiver ativo **antes** ou **em paralelo** com as fases A–E abaixo.
 - **LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md** §7 — ponteiro para este plano.
 - **Lembrete (quando houver hardware):** primeiro **syslog/logs** (**Promtail + Loki + Grafana**, fase **C**); depois **Wazuh** (fase **E**) numa **VM/torre** com RAM suficiente — checklist mínimo: [OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.pt_BR.md](../private.example/homelab/OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.pt_BR.md) ([EN](../private.example/homelab/OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.md)).
 
