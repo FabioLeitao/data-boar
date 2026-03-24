@@ -7,6 +7,7 @@ tenant_id, client_id, client_secret (or auth block).
 
 import os
 from typing import Any
+import json
 
 from core.connector_registry import register
 from core.suggested_review import (
@@ -192,6 +193,7 @@ class DataverseConnector:
             self.db_manager.save_failure(target_name, "unreachable", str(e))
             return
         try:
+            self._save_inventory_snapshot(target_name)
             entities = self._get_entity_definitions()
             for ent in entities:
                 logical = ent.get("LogicalName", "")
@@ -266,6 +268,35 @@ class DataverseConnector:
             self.db_manager.save_failure(target_name, "error", str(e))
         finally:
             self.close()
+
+    def _save_inventory_snapshot(self, target_name: str) -> None:
+        """Persist one Dataverse API inventory row."""
+        if not hasattr(self.db_manager, "save_data_source_inventory"):
+            return
+        org_url = self.config.get("org_url") or self.config.get("environment_url") or ""
+        base = _api_base(org_url) if org_url else ""
+        details = {
+            "org_url": org_url,
+            "api_base": base,
+            "tenant_id": str(
+                (self.config.get("auth") or {}).get("tenant_id")
+                or self.config.get("tenant_id")
+                or ""
+            ),
+        }
+        try:
+            self.db_manager.save_data_source_inventory(
+                target_name=target_name,
+                source_type="api",
+                product="dataverse",
+                product_version=None,
+                protocol_or_api_version="v9.2",
+                transport_security="tls=https",
+                raw_details=json.dumps(details, ensure_ascii=False),
+            )
+        except Exception:
+            # Inventory snapshot is best-effort; never break scan execution on persist errors.
+            return
 
 
 if _HTTPX_AVAILABLE:

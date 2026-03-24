@@ -4,6 +4,7 @@ run detector, save_finding. Supports PostgreSQL, MySQL, MariaDB, SQLite, MSSQL, 
 """
 
 from collections.abc import Set
+import json
 from typing import Any
 from urllib.parse import quote
 
@@ -344,6 +345,7 @@ class SQLConnector:
 
             log_connection(target_name, "database", server_ip or "local")
             engine_name = self.engine.dialect.name if self.engine else "sql"
+            self._save_inventory_snapshot(target_name, engine_name)
             for item in self.discover():
                 schema = item["schema"]
                 table = item["table"]
@@ -361,6 +363,71 @@ class SQLConnector:
             self.db_manager.save_failure(target_name, "error", str(e))
         finally:
             self.close()
+
+    def _save_inventory_snapshot(self, target_name: str, engine_name: str) -> None:
+        """
+        Persist one best-effort inventory row (product/version/protocol/transport).
+
+        Phase 1 intentionally keeps this lightweight and resilient: failures here must not
+        break scanning.
+        """
+        if not hasattr(self.db_manager, "save_data_source_inventory"):
+            return
+        product_version = None
+        raw_details: dict[str, str] = {}
+        try:
+            if engine_name == "postgresql":
+                product_version = str(
+                    self._connection.execute(text("SELECT version()")).scalar() or ""
+                )
+            elif engine_name in ("mysql", "mariadb"):
+                product_version = str(
+                    self._connection.execute(text("SELECT VERSION()")).scalar() or ""
+                )
+            elif engine_name == "sqlite":
+                product_version = str(
+                    self._connection.execute(text("SELECT sqlite_version()")).scalar()
+                    or ""
+                )
+            elif engine_name == "mssql":
+                product_version = str(
+                    self._connection.execute(text("SELECT @@VERSION")).scalar() or ""
+                )
+            elif engine_name == "oracle":
+                product_version = str(
+                    self._connection.execute(
+                        text("SELECT banner FROM v$version WHERE ROWNUM = 1")
+                    ).scalar()
+                    or ""
+                )
+        except Exception:
+            # Inventory is best effort; keep scanner execution stable.
+            product_version = None
+        raw_details["driver"] = (self.config.get("driver") or "").strip()
+        if product_version:
+            raw_details["version_probe"] = product_version[:500]
+
+        sslmode = str(self.config.get("sslmode") or "").strip().lower()
+        if sslmode:
+            transport_security = f"sslmode={sslmode}"
+        elif "sslmode=" in str(self.config.get("url") or "").lower():
+            transport_security = "sslmode(from-url)"
+        else:
+            transport_security = "unknown"
+
+        try:
+            self.db_manager.save_data_source_inventory(
+                target_name=target_name,
+                source_type="database",
+                product=engine_name,
+                product_version=product_version,
+                protocol_or_api_version=engine_name,
+                transport_security=transport_security,
+                raw_details=json.dumps(raw_details, ensure_ascii=False),
+            )
+        except Exception:
+            # Never fail a scan because inventory persistence failed.
+            pass
 
 
 # Register for common SQL engines

@@ -4,6 +4,8 @@
 
 Use this template when asking Corporate-Entity-C for a new report after meaningful project changes.
 
+**In-repo baseline paths (for reviewers — avoids “file not found” in reports):** [Corporate-Entity-C_IN_REPO_BASELINE.md](Corporate-Entity-C_IN_REPO_BASELINE.md).
+
 ## Workflow when drafting a new WRB request (review + persist)
 
 1. **Show for review:** surface the full message in the chat/UI so you can proofread before sending to Corporate-Entity-C.

@@ -26,6 +26,23 @@ except ImportError:
 import os
 
 
+def _notification_env_value(val: Any) -> str | None:
+    """
+    Resolve optional notification secrets: inline string or ${ENV_VAR} from the environment.
+    """
+    if val is None:
+        return None
+    if not isinstance(val, str):
+        return None
+    t = val.strip()
+    if not t:
+        return None
+    if t.startswith("${") and t.endswith("}"):
+        var = t[2:-1].strip()
+        return (os.environ.get(var) or "").strip() or None
+    return t
+
+
 def load_config(path: str | Path) -> dict[str, Any]:
     """
     Load configuration from a YAML or JSON file.
@@ -562,6 +579,40 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         "revocation_list_path": str(lic.get("revocation_list_path") or "").strip(),
         "manifest_path": str(lic.get("manifest_path") or "").strip(),
         "machine_bind_strict": bool(lic.get("machine_bind_strict", False)),
+    }
+
+    # Optional operator notifications (webhooks; default off). Secrets via ${VAR} or env-only docs.
+    n_raw = data.get("notifications")
+    if not isinstance(n_raw, dict):
+        n_raw = {}
+    op_raw = n_raw.get("operator")
+    if not isinstance(op_raw, dict):
+        op_raw = {}
+    out["notifications"] = {
+        "enabled": bool(n_raw.get("enabled", False)),
+        "on_scan_complete": bool(n_raw.get("on_scan_complete", True)),
+        "notify_only_if_high_or_critical": bool(
+            n_raw.get("notify_only_if_high_or_critical", False)
+        ),
+        "notify_on_failure": bool(n_raw.get("notify_on_failure", True)),
+        "public_base_url": _notification_env_value(n_raw.get("public_base_url")),
+        "operator": {
+            "generic_webhook_url": _notification_env_value(
+                op_raw.get("generic_webhook_url")
+            ),
+            "slack_webhook_url": _notification_env_value(
+                op_raw.get("slack_webhook_url")
+            ),
+            "teams_webhook_url": _notification_env_value(
+                op_raw.get("teams_webhook_url")
+            ),
+            "telegram_bot_token": _notification_env_value(
+                op_raw.get("telegram_bot_token")
+            ),
+            "telegram_chat_id": _notification_env_value(
+                op_raw.get("telegram_chat_id")
+            ),
+        },
     }
 
     return out

@@ -68,6 +68,9 @@ def main():
             print(f"Report written: {report_path}")
         else:
             print("No findings to report.")
+        from utils.notify import notify_scan_complete_background
+
+        notify_scan_complete_background(engine.config, engine.db_manager, session_id)
 
 
 if __name__ == "__main__":
