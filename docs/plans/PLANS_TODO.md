@@ -23,15 +23,15 @@ Use these tags in headings to keep priorities explicit and machine-countable:
 
 Do not edit this block manually; refresh with `python scripts/plans-stats.py --write`.
 
-- **Status rows counted:** 111  (Done: 53 | Incomplete: 58)
-- **Incomplete breakdown:** Pending `⬜`=56, Tracked `🔄` / `Tracked (partially done)`=2, Under consideration=0, Backlog-marked rows=0
+- **Status rows counted:** 113  (Done: 54 | Incomplete: 59)
+- **Incomplete breakdown:** Pending `⬜`=55, Tracked `🔄` / `Tracked (partially done)`=4, Under consideration=0, Backlog-marked rows=0
 
 | Horizon | Total rows | Done | Incomplete |
 | ------- | ----------: | ----: | ----------: |
-| `H0` | 20 | 18 | 2 |
+| `H0` | 22 | 18 | 4 |
 | `H1` | 0 | 0 | 0 |
 | `H2` | 0 | 0 | 0 |
-| `H3` | 91 | 35 | 56 |
+| `H3` | 91 | 36 | 55 |
 | `H4` | 0 | 0 | 0 |
 | `H5` | 0 | 0 | 0 |
 | `UNSPECIFIED` | 0 | 0 | 0 |
@@ -198,6 +198,8 @@ Doc-only; supports pitch and audit narrative. No code changes.
 
 External review PDF (local): `docs/feedbacks, reviews, comments and criticism/analise_evolucao_data_boar_2026-03-18.pdf`. **In-repo tracking:** [WABBIX_ANALISE_2026-03-18.md](WABBIX_ANALISE_2026-03-18.md).
 
+Second review cycle (premium WABIX, 2026-03-23): PDF `docs/feedbacks, reviews, comments and criticism/analise_evolucao_data_boar_2026-03-23_premium_wabix.pdf`. **In-repo tracking:** [WABBIX_ANALISE_2026-03-23_EVOLUTIVA.md](WABBIX_ANALISE_2026-03-23_EVOLUTIVA.md).
+
 | Follow-up                                            | Status                         | Notes                                                                                                                                                                                                                                                                                                                |
 | ---------                                            | ------                         | -----                                                                                                                                                                                                                                                                                                                |
 | KPI panel (release / CI / security ops)              | ✅ Done (baseline) (**W-KPI**)  | Baseline defined in `PLAN_READINESS_AND_OPERATIONS.md` §4.7 with 2 manual KPIs (CI pass rate, security maintenance latency). Next slice: optional lightweight automation/export.                                                                                                                                     |
@@ -208,6 +210,8 @@ External review PDF (local): `docs/feedbacks, reviews, comments and criticism/an
 | **Release 1.6.4** (VERSIONING + GitHub + Docker Hub) | ✅ Done (**W-REL-164**)         | **#104** on `main`; tag **`v1.6.4`**; [GitHub Release](https://github.com/FabioLeitao/data-boar/releases/tag/v1.6.4); **`fabioleitao/data_boar:1.6.4`** and **`:latest`** (digest `sha256:9081adbb03193a0a6c57b8218d57fc5fb47e7dc5867dccfdad81aac788f27623`); maintenance **#99–#103** + publish-order / Scout docs. |
 | Aggregated “incomplete sample” wording               | ✅ Done                         | Cross-ref sheet note row + recommendation text.                                                                                                                                                                                                                                                                      |
 | Staging fuzzy config                                 | ✅ Example                      | `deploy/config.staging.example.yaml`, `deploy/STAGING_CONFIG.md`.                                                                                                                                                                                                                                                    |
+| Baseline path clarity for next Wabbix exchange       | ✅ Doc done / 🔄 email pending | Canonical list: [docs/ops/WABBIX_IN_REPO_BASELINE.md](../ops/WABBIX_IN_REPO_BASELINE.md). Next operator email to Wabbix should still cite `docs/plans/WABBIX_ANALISE_2026-03-18.md` explicitly.                                                                                                                        |
+| Notifications track (off-band + scan-complete)       | 🔄 Phase 3+ optional            | Baseline shipped: config + webhooks + scan-complete message; see plan for tenant/multi-channel/retries.                                                                                                                                                                                                           |
 
 ### Secure default host binding (Wabix P0/P1 follow-up)
 
@@ -252,9 +256,8 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
    - Use AI for: fuzzy-match design (plan §3), aggregation wording, optional format hints.
    - Do manually: config + detector wiring, tests, docs (EN + pt-BR).
 
-1. **Notifications (off-band + scan-complete) – Phase 1 only** *(AI for schema/templates, manual implementation)*
-   - Use AI for: notifications config shape, notifier interface, initial message templates for CI/script usage.
-   - Do manually: notifier module, config parsing, basic docs and examples; later phases after reset.
+1. **Notifications (off-band + scan-complete) – Phase 1–2 baseline** *(done on main: config, `utils/notify.py`, scan-complete brief, parallel worker error semantics)*
+   - **Next optional:** tenant routing, multi-channel list, retries/rate limits, audit log of sends ([PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md](PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md) Phase 3+).
 
 ### H2/U2 B. Deferred to after billing reset (or if on-demand spend is enabled)
 
@@ -419,7 +422,7 @@ Core flow first (sections 1–7); then optional Phase 9 (complexity/gain: high c
 
 | Phase   | To-do                                                                                                                                                            | Status    |
 | -----   | -----                                                                                                                                                            | ------    |
-| 1.1–1.9 | Data model (data_source_inventory), save method; SQL/MongoDB/Redis/Power BI/Dataverse/REST version collection; Report "Data source inventory" sheet; tests; docs | ⬜ Pending |
+| 1.1–1.9 | Data model (data_source_inventory), save method; SQL/MongoDB/Redis/Power BI/Dataverse/REST version collection; Report "Data source inventory" sheet; tests; docs | ✅ Done |
 | 2.1–2.5 | Snowflake, SMB, SharePoint, WebDAV, NFS version/protocol collection; tests; docs                                                                                 | ⬜ Pending |
 | 3.1–3.6 | CVE/hardening rules, hardening engine, "Hardening recommendations" sheet, mitigation from public docs only; tests; docs                                          | ⬜ Pending |
 | 4.1–4.4 | Hardening summary in report; optional standalone guide; docs/hardening-guide.md; full regression                                                                 | ⬜ Pending |

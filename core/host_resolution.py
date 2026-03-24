@@ -34,3 +34,33 @@ def resolve_api_host(config: dict[str, Any], cli_host: str | None = None) -> str
 
     # Safer default for desktop/CLI: bind only to loopback unless explicitly overridden.
     return "127.0.0.1"
+
+
+def api_bind_exposes_non_loopback(host: str) -> bool:
+    """
+    True when the API listens beyond loopback (e.g. 0.0.0.0, LAN IP, ::), so clients on
+    other hosts can reach the service without SSH port forwarding.
+    """
+    h = (host or "").strip().lower()
+    if not h:
+        return False
+    if h in ("127.0.0.1", "::1", "localhost"):
+        return False
+    return True
+
+
+def should_warn_insecure_api_bind(config: dict[str, Any], host: str) -> bool:
+    """
+    Wabbix / SECURITY: warn when the bind address is reachable beyond loopback but API key
+    is not effectively required (open scan/config surface on untrusted networks).
+    """
+    if not api_bind_exposes_non_loopback(host):
+        return False
+    api_cfg = config.get("api")
+    if not isinstance(api_cfg, dict):
+        api_cfg = {}
+    if bool(api_cfg.get("require_api_key")):
+        key = (api_cfg.get("api_key") or "").strip()
+        if key:
+            return False
+    return True

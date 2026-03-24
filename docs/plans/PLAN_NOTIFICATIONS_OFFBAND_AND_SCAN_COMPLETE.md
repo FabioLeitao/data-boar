@@ -1,6 +1,6 @@
 # Plan: Off-band notifications and scan-completion notifications
 
-**Status:** Not started
+**Status:** Phase 1–2 baseline implemented (config + notifier + scan-complete trigger + docs); Phase 3+ backlog.
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
@@ -136,18 +136,18 @@ Secrets: prefer env vars (e.g. `NOTIFY_SLACK_WEBHOOK`) or a secrets vault (see S
 
 | #   | To-do                                                                                                                                                                        | Status |
 | --- | ---------------------------------------------------------------------                                                                                                        | ------ |
-| 1.1 | Add optional config section `notifications` (enabled, on_scan_complete, operator webhook/channel, tenant optional). Secrets from env or config; document no secrets in repo. | ⬜      |
-| 1.2 | Implement small notifier (e.g. utils/notify.py or scripts/notify_webhook.py): generic HTTP POST, optional Slack/Teams/Telegram adapters; message body as JSON or form.       | ⬜      |
-| 1.3 | Document how to get Slack/Teams/Telegram webhooks and how to trigger “task/milestone” notification from CI or manually (Part A).                                             | ⬜      |
+| 1.1 | Add optional config section `notifications` (enabled, on_scan_complete, operator webhook/channel, tenant optional). Secrets from env or config; document no secrets in repo. | ✅ Done (`config/loader.py`) |
+| 1.2 | Implement small notifier (e.g. utils/notify.py or scripts/notify_webhook.py): generic HTTP POST, optional Slack/Teams/Telegram adapters; message body as JSON or form.       | ✅ Done (`utils/notify.py`, `scripts/notify_webhook.py`) |
+| 1.3 | Document how to get Slack/Teams/Telegram webhooks and how to trigger “task/milestone” notification from CI or manually (Part A).                                             | ✅ Done (`docs/USAGE.md` §5.1, `USAGE.pt_BR.md`) |
 
 ### Phase 2: Scan-complete summary and trigger
 
 | #   | To-do                                                                                                                                                                                                         | Status |
 | --- | ---------------------------------------------------------------------                                                                                                                                         | ------ |
-| 2.1 | Add helper to build **scan-complete summary** from session: total findings, by sensitivity_level (HIGH, MEDIUM, LOW), DOB possible minor count, scan failures count, tenant/technician.                       | ⬜      |
-| 2.2 | After report generation (CLI one-shot in main.py, and web background scan completion in api/routes.py), if notifications.enabled and on_scan_complete, call notifier with summary and “how to download” text. | ⬜      |
-| 2.3 | Include in message: session_id, brief counts, link or instructions for report download (Reports page, GET /report, GET /reports/{session_id}).                                                                | ⬜      |
-| 2.4 | Optional: notify_only_if_high_or_critical and failure notification (notify on scan failure).                                                                                                                  | ⬜      |
+| 2.1 | Add helper to build **scan-complete summary** from session: total findings, by sensitivity_level (HIGH, MEDIUM, LOW), DOB possible minor count, scan failures count, tenant/technician.                       | ✅ Done (`LocalDBManager.get_session_scan_summary_for_notification`) |
+| 2.2 | After report generation (CLI one-shot in main.py, and web background scan completion in api/routes.py), if notifications.enabled and on_scan_complete, call notifier with summary and “how to download” text. | ✅ Done (background thread; CLI after report; API after `run_targets` / `scan_database`) |
+| 2.3 | Include in message: session_id, brief counts, link or instructions for report download (Reports page, GET /report, GET /reports/{session_id}).                                                                | ✅ Done (`build_scan_complete_message`) |
+| 2.4 | Optional: notify_only_if_high_or_critical and failure notification (notify on scan failure).                                                                                                                  | ✅ Partial (`notify_only_if_high_or_critical`, `notify_on_failure` for `completed_errors`; worker failure semantics in `core/engine.py`) |
 
 ### Phase 3: Tenant and multi-channel
 
@@ -155,7 +155,7 @@ Secrets: prefer env vars (e.g. `NOTIFY_SLACK_WEBHOOK`) or a secrets vault (see S
 | --- | ---------------------------------------------------------------------                                                     | ------ |
 | 3.1 | If tenant_name is set and notifications.tenant is configured, send a copy to tenant channel/webhook (or default_webhook). | ⬜      |
 | 3.2 | Support multiple operator channels (e.g. Slack + Telegram) from config list.                                              | ⬜      |
-| 3.3 | Retry on 5xx/timeout; rate limit per session per channel.                                                                 | ⬜      |
+| 3.3 | Retry on 5xx/timeout; rate limit per session per channel.                                                                 | 🔄 Partial (retries on 5xx + URLError in `utils/notify.py`; rate limit per session → backlog) |
 
 ### Phase 4: Docs, audit, and improvements
 

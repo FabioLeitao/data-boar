@@ -17,7 +17,7 @@ No chat do Cursor, diga **`pmo-view`** quando quiser que o assistente **destaque
 
 - **Você** abre cada arquivo no editor e usa: **Windows / Linux:** `Ctrl+Shift+V` (Abrir pré-visualização) ou `Ctrl+K` e depois `V` (lado a lado). **macOS:** `Cmd+Shift+V` ou `Cmd+K` e `V`.
 - O assistente **não consegue** mudar sua aba para Preview sozinho — é gesto do editor.
-- **Arquivos típicos:** [`plans/PLANS_TODO.md`](../plans/PLANS_TODO.md), [`plans/SPRINTS_AND_MILESTONES.pt_BR.md`](../plans/SPRINTS_AND_MILESTONES.pt_BR.md) ([EN](../plans/SPRINTS_AND_MILESTONES.md)), [`plans/TOKEN_AWARE_USAGE.md`](../plans/TOKEN_AWARE_USAGE.md), [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md) ([EN](COMMIT_AND_PR.md)), [OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md](OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md) ([EN](OPERATOR_LAB_DOCUMENT_MAP.md)).
+- **Arquivos típicos:** [`plans/PLANS_TODO.md`](../plans/PLANS_TODO.md), [`plans/SPRINTS_AND_MILESTONES.pt_BR.md`](../plans/SPRINTS_AND_MILESTONES.pt_BR.md) ([EN](../plans/SPRINTS_AND_MILESTONES.md)), [`plans/TOKEN_AWARE_USAGE.md`](../plans/TOKEN_AWARE_USAGE.md), [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md) ([EN](COMMIT_AND_PR.md)), [OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md](OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md) ([EN](OPERATOR_LAB_DOCUMENT_MAP.md)), [WABBIX_IN_REPO_BASELINE.md](WABBIX_IN_REPO_BASELINE.md) (caminhos no repositório para revisores Wabbix).
 
 Definido em **`.cursor/rules/session-mode-keywords.mdc`**.
 
@@ -30,6 +30,7 @@ Definido em **`.cursor/rules/session-mode-keywords.mdc`**.
 | SonarQube (home lab, Docker, CI / IDE / MCP)      | [SONARQUBE_HOME_LAB.md](SONARQUBE_HOME_LAB.md)                               | [SONARQUBE_HOME_LAB.pt_BR.md](SONARQUBE_HOME_LAB.pt_BR.md)                               |
 | Home lab — smoke de deploy e alvos de dados       | [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md)                               | [HOMELAB_VALIDATION.pt_BR.md](HOMELAB_VALIDATION.pt_BR.md)                               |
 | Convenções de commit e PR                         | [COMMIT_AND_PR.md](COMMIT_AND_PR.md)                                         | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md)                                         |
+| Wabbix — caminhos baseline no repositório (revisores) | [WABBIX_IN_REPO_BASELINE.md](WABBIX_IN_REPO_BASELINE.md)                     | — (nota EN; pedidos WRB em [WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md](WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md)) |
 | Remotes, `origin`, fluxo de fork                  | [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md)                               | [REMOTES_AND_ORIGIN.pt_BR.md](REMOTES_AND_ORIGIN.pt_BR.md)                               |
 | Limpeza de branches + Docker (remote legado §7)   | [BRANCH_AND_DOCKER_CLEANUP.md](BRANCH_AND_DOCKER_CLEANUP.md)                 | [BRANCH_AND_DOCKER_CLEANUP.pt_BR.md](BRANCH_AND_DOCKER_CLEANUP.pt_BR.md)                 |
 | Canais de notificação ao operador                 | [OPERATOR_NOTIFICATION_CHANNELS.md](OPERATOR_NOTIFICATION_CHANNELS.md)       | [OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md](OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md)       |

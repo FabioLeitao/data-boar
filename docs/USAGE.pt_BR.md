@@ -47,6 +47,7 @@ python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Sil
 - Carrega a configuração, varre todos os alvos (`targets`) e grava achados em `audit_results.db`.
 - Cria uma nova sessão (UUID + timestamp) com metadados (`tenant_name`, `technician_name` opcionais).
 - Gera um relatório Excel e um heatmap PNG para essa sessão.
+- O relatório também inclui a aba **Data source inventory** com metadados best-effort das fontes (alvo, tipo, produto/versão, dica de versão de API/protocolo, dica de transporte e detalhes brutos).
 - Imprime linhas `INFO` de confiança do runtime (stdout + stderr); em estado inesperado, alerta explícito: **THERE IS SOMETHING DIFFERENT AND UNEXPECTED IN THIS RUNTIME**.
 - No console, você verá algo como:
 - `Scan session: <session_id>`
@@ -375,5 +376,18 @@ Para o **CNPJ** brasileiro, o detector inclui dois padrões regex embutidos:
 - `LGPD_CNPJ_ALNUM` – formato **alfanumérico** em que as 12 primeiras posições podem conter `A–Z` ou `0–9`, e as duas últimas posições permanecem dígitos (check digits); a pontuação é opcional nos mesmos lugares.
 
 Ambos usam o mesmo `norm_tag` (`LGPD Art. 5`). Nesta etapa a detecção é apenas por **compatibilidade de formato** (sem validação de dígito verificador); veja [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md#formatos-de-cnpj-brasil-numérico-legado-e-alfanumérico) para detalhes e para saber como estender/substituir padrões via `regex_overrides_file`.
+
+### Notificações ao operador (opcional)
+
+Após o fim da varredura (CLI ou `POST /scan` / `POST /start` em segundo plano), a aplicação pode enviar um **resumo curto em pt-BR** para **Slack**, **Microsoft Teams**, **Telegram** ou um **webhook JSON genérico**. O padrão é **desligado** (`notifications.enabled: false`).
+
+- **Config (caminho único legado):** `notifications.operator` com `slack_webhook_url`, `teams_webhook_url`, `telegram_bot_token` + `telegram_chat_id` ou `generic_webhook_url` — vale o primeiro tipo configurado (Slack → Teams → Telegram → genérico).
+- **Config (vários canais ao operador):** `notifications.operator.channels` como **lista** de objetos; cada item é **um** canal (ex.: um webhook Slack e um Telegram). Todos recebem a mesma mensagem (varredura concluída ou script manual).
+- **Cópia ao tenant (opcional):** `notifications.tenant.by_tenant` mapeia o nome do tenant em **minúsculas** para um bloco de webhook (ou string URL para POST genérico). `default_slack_webhook_url` / `default_generic_webhook_url` aplicam quando há `tenant_name` na sessão mas não há entrada específica. Exige `tenant_name` não vazio na sessão.
+- **Deduplicação:** `notifications.dedupe_scan_complete_per_session` (padrão `true`) evita um segundo POST para o mesmo `session_id` depois de **pelo menos um** envio bem-sucedido (por processo; use `false` só se precisar repetir em todo hook de conclusão).
+- **Registro de auditoria (opcional):** `notifications.notify_audit_log` (padrão `true`) grava uma linha por tentativa/canal na tabela SQLite **`notification_send_log`** (sessão, *trigger*, destino `operator`/`tenant`, canal, sucesso, texto de erro redigido, carimbo de tempo). **Não** armazena o corpo da mensagem. Use `false` para desligar escritas.
+- **Segredos:** URLs podem usar `${VAR_DE_AMBIENTE}`. Os POSTs repetem algumas vezes em HTTP 5xx ou erro de rede transitório.
+- **Manual / CI:** `python scripts/notify_webhook.py "mensagem"` (mesmo `config.yaml`; exige `notifications.enabled: true` e um canal configurado). Por padrão o script abre o SQLite em ``sqlite_path`` e grava auditoria por canal (como no fim de varredura); use ``--no-audit`` quando não houver banco local (ex.: alguns jobs de CI).
+- **Detalhes:** [PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md](plans/PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md).
 
 **Documentação relacionada:** Índice completo da documentação (todos os tópicos, ambos os idiomas): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md). Guia técnico: [TECH_GUIDE.md](TECH_GUIDE.md) · [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md). [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md) (termos de treino ML/DL; [inglês](SENSITIVITY_DETECTION.md)). Para `recommendation_overrides` cobrindo categorias sensíveis (saúde, religião, política, PEP, raça, sindicato, genético, biométrico, vida sexual), veja o exemplo acima (Notas sobre configuração) e [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](plans/completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md). Para adicionar um novo conector (banco, API, share), veja [ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md) ou [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md) (inglês). Deploy: [deploy/DEPLOY.pt_BR.md](deploy/DEPLOY.pt_BR.md) · [deploy/DEPLOY.md](deploy/DEPLOY.md). Mais: [TESTING.pt_BR.md](TESTING.pt_BR.md) ([EN](TESTING.md)), [TOPOLOGY.pt_BR.md](TOPOLOGY.pt_BR.md) ([EN](TOPOLOGY.md)), [COMMIT_AND_PR.pt_BR.md](ops/COMMIT_AND_PR.pt_BR.md) ([EN](ops/COMMIT_AND_PR.md)), [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) ([EN](COMPLIANCE_FRAMEWORKS.md)). Em sistemas com `man`: `man data_boar` ou `man lgpd_crawler` (comando e API), e `man 5 data_boar` ou `man 5 lgpd_crawler` (config e formatos).

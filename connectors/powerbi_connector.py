@@ -7,6 +7,7 @@ Target type: powerbi. Required: name, tenant_id, client_id, client_secret (or au
 
 import os
 from typing import Any
+import json
 
 from core.connector_registry import register
 from core.suggested_review import (
@@ -112,7 +113,8 @@ class PowerBIConnector:
             try:
                 self._client.close()
             except Exception:
-                pass
+                # Best-effort close: ignore client shutdown errors.
+                return
             self._client = None
         self._token = None
 
@@ -193,6 +195,7 @@ class PowerBIConnector:
             self.db_manager.save_failure(target_name, "unreachable", str(e))
             return
         try:
+            self._save_inventory_snapshot(target_name)
             workspace_ids = self._get_workspace_ids()
             if not workspace_ids:
                 workspace_ids = [None]
@@ -256,7 +259,8 @@ class PowerBIConnector:
                                             ml_confidence=res.get("ml_confidence", 0),
                                         )
                             except Exception:
-                                pass
+                                # Sampling fallback is best-effort for table metadata gaps.
+                                continue
                             continue
                         sample_rows = self._execute_dax(
                             ds_id,
@@ -308,6 +312,33 @@ class PowerBIConnector:
             self.db_manager.save_failure(target_name, "error", str(e))
         finally:
             self.close()
+
+    def _save_inventory_snapshot(self, target_name: str) -> None:
+        """Persist one Power BI API inventory row."""
+        if not hasattr(self.db_manager, "save_data_source_inventory"):
+            return
+        details = {
+            "api_base": _PBI_BASE,
+            "scope": _PBI_SCOPE,
+            "tenant_id": str(
+                (self.config.get("auth") or {}).get("tenant_id")
+                or self.config.get("tenant_id")
+                or ""
+            ),
+        }
+        try:
+            self.db_manager.save_data_source_inventory(
+                target_name=target_name,
+                source_type="bi",
+                product="powerbi",
+                product_version=None,
+                protocol_or_api_version="v1.0",
+                transport_security="tls=https",
+                raw_details=json.dumps(details, ensure_ascii=False),
+            )
+        except Exception:
+            # Inventory snapshot is best-effort; do not interrupt scanning.
+            return
 
 
 if _HTTPX_AVAILABLE:
