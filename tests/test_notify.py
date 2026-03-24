@@ -35,7 +35,8 @@ def test_build_scan_complete_message_includes_session_and_counts():
     )
     assert "sess_abc" in text
     assert "HIGH: 1" in text
-    assert "https://example.test:8088" in text
+    assert "Base URL (se configurada):" in text
+    assert "example.test:8088" in text
 
 
 def test_should_send_respects_enabled_and_filters():

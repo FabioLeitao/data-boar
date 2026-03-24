@@ -339,8 +339,9 @@ def _maybe_record_notification_audit(
             success=success,
             error_message=err,
         )
-    except Exception:
-        pass
+    except Exception as e:
+        # Audit rows are best-effort; keep notification flow non-blocking.
+        _LOGGER.debug("notification audit row skipped: %s", e)
 
 
 def notify_scan_complete_sync(
