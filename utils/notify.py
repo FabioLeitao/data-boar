@@ -21,6 +21,11 @@ _LOGGER = logging.getLogger("LGPDAudit")
 # Phase 3 (Corporate-Entity-C / PLAN_NOTIFICATIONS): transient webhook failures (5xx, network).
 _WEBHOOK_MAX_ATTEMPTS = 3
 
+# Dedupe successful scan-complete rounds per session (process-local; avoids duplicate POSTs).
+_SCAN_COMPLETE_OK_LOCK = threading.Lock()
+_SCAN_COMPLETE_OK_SESSIONS: set[str] = set()
+_MAX_DEDUPE_SESSIONS = 10_000
+
 
 def _post_json(url: str, payload: dict[str, Any], timeout_s: float = 15.0) -> None:
     data = json.dumps(payload).encode("utf-8")
@@ -92,22 +97,26 @@ def send_telegram(
     _post_form(api, {"chat_id": chat_id, "text": text}, timeout_s=timeout_s)
 
 
-def send_to_first_configured_operator_channel(
-    notifications_cfg: dict[str, Any],
+def _str_or_empty(v: Any) -> str:
+    if v is None:
+        return ""
+    if isinstance(v, str):
+        return v.strip()
+    return str(v).strip()
+
+
+def send_single_operator_channel_block(
+    block: dict[str, Any],
     text: str,
     *,
     timeout_s: float = 15.0,
 ) -> tuple[str | None, bool, str | None]:
     """
-    Send `text` using the first configured operator channel (Slack → Teams → Telegram → generic).
+    Send ``text`` to the first configured URL in one channel block (Slack → Teams → Telegram → generic).
 
-    Returns (channel_or_none, success, error_message).
+    ``block`` is a flat dict (e.g. one entry from ``operator.channels`` or legacy ``operator``).
     """
-    op = notifications_cfg.get("operator") or {}
-    if not isinstance(op, dict):
-        op = {}
-
-    slack = (op.get("slack_webhook_url") or "").strip()
+    slack = _str_or_empty(block.get("slack_webhook_url"))
     if slack:
         try:
             send_slack_webhook(slack, text, timeout_s=timeout_s)
@@ -115,7 +124,7 @@ def send_to_first_configured_operator_channel(
         except (urllib.error.URLError, OSError, ValueError) as e:
             return "slack", False, str(e)
 
-    teams = (op.get("teams_webhook_url") or "").strip()
+    teams = _str_or_empty(block.get("teams_webhook_url"))
     if teams:
         try:
             send_teams_webhook(teams, text, timeout_s=timeout_s)
@@ -123,8 +132,8 @@ def send_to_first_configured_operator_channel(
         except (urllib.error.URLError, OSError, ValueError) as e:
             return "teams", False, str(e)
 
-    token = (op.get("telegram_bot_token") or "").strip()
-    chat = (op.get("telegram_chat_id") or "").strip()
+    token = _str_or_empty(block.get("telegram_bot_token"))
+    chat = _str_or_empty(block.get("telegram_chat_id"))
     if token and chat:
         try:
             send_telegram(token, chat, text, timeout_s=timeout_s)
@@ -132,7 +141,7 @@ def send_to_first_configured_operator_channel(
         except (urllib.error.URLError, OSError, ValueError) as e:
             return "telegram", False, str(e)
 
-    generic = (op.get("generic_webhook_url") or "").strip()
+    generic = _str_or_empty(block.get("generic_webhook_url"))
     if generic:
         try:
             send_generic_webhook(generic, text, timeout_s=timeout_s)
@@ -141,6 +150,93 @@ def send_to_first_configured_operator_channel(
             return "generic", False, str(e)
 
     return None, False, "no operator webhook configured"
+
+
+def send_to_first_configured_operator_channel(
+    notifications_cfg: dict[str, Any],
+    text: str,
+    *,
+    timeout_s: float = 15.0,
+) -> tuple[str | None, bool, str | None]:
+    """
+    Send ``text`` using legacy flat ``operator`` keys (ignores ``operator.channels``).
+
+    For multi-channel lists, use :func:`send_all_operator_notifications`.
+
+    Returns (channel_or_none, success, error_message).
+    """
+    op = notifications_cfg.get("operator") or {}
+    if not isinstance(op, dict):
+        op = {}
+    flat = {k: v for k, v in op.items() if k != "channels"}
+    return send_single_operator_channel_block(flat, text, timeout_s=timeout_s)
+
+
+def send_all_operator_notifications(
+    notifications_cfg: dict[str, Any],
+    text: str,
+    *,
+    timeout_s: float = 15.0,
+) -> list[tuple[str | None, bool, str | None]]:
+    """
+    Send to every configured operator target.
+
+    If ``operator.channels`` is a non-empty list, each item is one channel block. Otherwise uses
+    legacy single-path priority (same as :func:`send_to_first_configured_operator_channel`).
+    """
+    n = notifications_cfg if isinstance(notifications_cfg, dict) else {}
+    op = n.get("operator") or {}
+    if not isinstance(op, dict):
+        op = {}
+    raw_ch = op.get("channels")
+    if isinstance(raw_ch, list) and len(raw_ch) > 0:
+        results: list[tuple[str | None, bool, str | None]] = []
+        for item in raw_ch:
+            if not isinstance(item, dict):
+                continue
+            results.append(
+                send_single_operator_channel_block(item, text, timeout_s=timeout_s)
+            )
+        return results if results else [
+            (None, False, "no operator webhook configured")
+        ]
+    return [send_to_first_configured_operator_channel(n, text, timeout_s=timeout_s)]
+
+
+def _channel_block_is_configured(block: dict[str, Any]) -> bool:
+    return bool(
+        _str_or_empty(block.get("slack_webhook_url"))
+        or _str_or_empty(block.get("teams_webhook_url"))
+        or (
+            _str_or_empty(block.get("telegram_bot_token"))
+            and _str_or_empty(block.get("telegram_chat_id"))
+        )
+        or _str_or_empty(block.get("generic_webhook_url"))
+    )
+
+
+def _resolve_tenant_channel_block(
+    tenant_cfg: dict[str, Any], tenant_name: str | None
+) -> dict[str, Any] | None:
+    """Return one channel block for a tenant webhook, or None."""
+    if not isinstance(tenant_cfg, dict):
+        return None
+    name = _str_or_empty(tenant_name)
+    if not name:
+        return None
+    key = name.lower()
+    by_t = tenant_cfg.get("by_tenant") or {}
+    if isinstance(by_t, dict) and key in by_t:
+        block = by_t[key]
+        if isinstance(block, dict) and _channel_block_is_configured(block):
+            return block
+    if _str_or_empty(tenant_cfg.get("default_slack_webhook_url")):
+        return {"slack_webhook_url": tenant_cfg.get("default_slack_webhook_url")}
+    if _str_or_empty(tenant_cfg.get("default_generic_webhook_url")):
+        return {
+            "generic_webhook_url": tenant_cfg.get("default_generic_webhook_url"),
+        }
+    return None
 
 
 def build_scan_complete_message(
@@ -203,13 +299,57 @@ def should_send_scan_complete_notification(
     return True
 
 
+def _dedupe_should_skip(session_id: str, n: dict[str, Any]) -> bool:
+    if not bool(n.get("dedupe_scan_complete_per_session", True)):
+        return False
+    with _SCAN_COMPLETE_OK_LOCK:
+        return session_id in _SCAN_COMPLETE_OK_SESSIONS
+
+
+def _dedupe_mark_success(session_id: str) -> None:
+    with _SCAN_COMPLETE_OK_LOCK:
+        if len(_SCAN_COMPLETE_OK_SESSIONS) >= _MAX_DEDUPE_SESSIONS:
+            _SCAN_COMPLETE_OK_SESSIONS.clear()
+        _SCAN_COMPLETE_OK_SESSIONS.add(session_id)
+
+
+def _maybe_record_notification_audit(
+    db_manager: Any,
+    config: dict[str, Any],
+    *,
+    session_id: str | None,
+    trigger: str,
+    recipient: str,
+    channel: str | None,
+    success: bool,
+    err: str | None,
+) -> None:
+    """Append one row to notification_send_log when enabled (default on). Never raises."""
+    n = config.get("notifications") if isinstance(config, dict) else None
+    if not isinstance(n, dict) or not bool(n.get("notify_audit_log", True)):
+        return
+    if not hasattr(db_manager, "record_notification_send_log"):
+        return
+    try:
+        db_manager.record_notification_send_log(
+            session_id=session_id,
+            trigger=trigger,
+            recipient=recipient,
+            channel=channel,
+            success=success,
+            error_message=err,
+        )
+    except Exception:
+        pass
+
+
 def notify_scan_complete_sync(
     config: dict[str, Any],
     db_manager: Any,
     session_id: str,
 ) -> None:
     """
-    If configured, send one operator notification with session summary.
+    If configured, send operator notification(s) and optional tenant copy with session summary.
 
     Call after the session is finished and (for CLI) after report generation if desired.
     Does not raise on webhook errors; logs warnings.
@@ -218,24 +358,77 @@ def notify_scan_complete_sync(
     if not should_send_scan_complete_notification(config, summary):
         return
     n = config.get("notifications") or {}
-    public_base = None
-    if isinstance(n, dict):
-        public_base = (n.get("public_base_url") or "").strip() or None
-    text = build_scan_complete_message(summary, public_base_url=public_base)
-    channel, ok, err = send_to_first_configured_operator_channel(n, text)
-    if ok:
+    if not isinstance(n, dict):
+        n = {}
+    if _dedupe_should_skip(session_id, n):
         _LOGGER.info(
-            "Notification sent (scan complete): session=%s channel=%s",
+            "Notification skipped (dedupe scan-complete): session=%s",
             session_id,
-            channel,
         )
-    else:
-        _LOGGER.warning(
-            "Notification failed (scan complete): session=%s channel=%s err=%s",
-            session_id,
-            channel,
-            err,
+        return
+    public_base = (n.get("public_base_url") or "").strip() or None
+    text = build_scan_complete_message(summary, public_base_url=public_base)
+    op_results = send_all_operator_notifications(n, text)
+    any_ok = any(r[1] for r in op_results)
+    for channel, ok, err in op_results:
+        if ok:
+            _LOGGER.info(
+                "Notification sent (scan complete): session=%s channel=%s",
+                session_id,
+                channel,
+            )
+        else:
+            _LOGGER.warning(
+                "Notification failed (scan complete): session=%s channel=%s err=%s",
+                session_id,
+                channel,
+                err,
+            )
+        _maybe_record_notification_audit(
+            db_manager,
+            config,
+            session_id=session_id,
+            trigger="scan_complete",
+            recipient="operator",
+            channel=channel,
+            success=ok,
+            err=err,
         )
+
+    tenant_cfg = n.get("tenant") or {}
+    if isinstance(tenant_cfg, dict):
+        tblock = _resolve_tenant_channel_block(
+            tenant_cfg, summary.get("tenant_name") if isinstance(summary, dict) else None
+        )
+        if tblock:
+            tch, tok, terr = send_single_operator_channel_block(tblock, text)
+            if tok:
+                any_ok = True
+                _LOGGER.info(
+                    "Tenant notification sent (scan complete): session=%s channel=%s",
+                    session_id,
+                    tch,
+                )
+            else:
+                _LOGGER.warning(
+                    "Tenant notification failed (scan complete): session=%s channel=%s err=%s",
+                    session_id,
+                    tch,
+                    terr,
+                )
+            _maybe_record_notification_audit(
+                db_manager,
+                config,
+                session_id=session_id,
+                trigger="scan_complete",
+                recipient="tenant",
+                channel=tch,
+                success=tok,
+                err=terr,
+            )
+
+    if any_ok:
+        _dedupe_mark_success(session_id)
 
 
 def notify_scan_complete_background(
@@ -263,12 +456,36 @@ def send_manual_operator_message(
     text: str,
     *,
     timeout_s: float = 15.0,
+    db_manager: Any | None = None,
 ) -> tuple[str | None, bool, str | None]:
     """
     Part A (off-band): send a free-form message if notifications.enabled is true
-    and an operator channel is configured.
+    and at least one operator channel is configured. Uses the same routing as scan-complete
+    (all ``operator.channels`` entries, or legacy single path).
+
+    Optional ``db_manager``: when set, append rows to ``notification_send_log`` (manual trigger).
     """
     n = config.get("notifications") or {}
     if not isinstance(n, dict) or not bool(n.get("enabled", False)):
         return None, False, "notifications.enabled is false"
-    return send_to_first_configured_operator_channel(n, text, timeout_s=timeout_s)
+    results = send_all_operator_notifications(n, text, timeout_s=timeout_s)
+    if not results:
+        return None, False, "no operator webhook configured"
+    for channel, ok, err in results:
+        if db_manager is not None:
+            _maybe_record_notification_audit(
+                db_manager,
+                config,
+                session_id=None,
+                trigger="manual",
+                recipient="operator",
+                channel=channel,
+                success=ok,
+                err=err,
+            )
+    any_ok = any(r[1] for r in results)
+    if any_ok:
+        labels = "+".join(r[0] for r in results if r[1] and r[0]) or "operator"
+        return labels, True, None
+    first_err = next((r[2] for r in results if r[2]), "all channels failed")
+    return None, False, first_err

@@ -73,7 +73,8 @@ class MongoDBConnector:
             try:
                 self._client.close()
             except Exception:
-                pass
+                # Best-effort close: ignore client shutdown errors.
+                return
             self._client = None
 
     def run(self) -> None:
@@ -139,7 +140,8 @@ class MongoDBConnector:
                             res["pattern_detected"],
                         )
                     except Exception:
-                        pass
+                        # Finding log is optional telemetry and must not fail the connector flow.
+                        continue
         except Exception as e:
             self.db_manager.save_failure(target_name, "error", str(e))
         finally:
@@ -170,7 +172,8 @@ class MongoDBConnector:
                 raw_details=json.dumps(raw_details, ensure_ascii=False),
             )
         except Exception:
-            pass
+            # Inventory snapshot is best-effort; keep scan flow resilient.
+            return
 
 
 if _MONGO_AVAILABLE:
