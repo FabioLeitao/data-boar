@@ -5,8 +5,13 @@ from __future__ import annotations
 import json
 import urllib.error
 
+import utils.notify as notify_mod
+
 from utils.notify import (
     build_scan_complete_message,
+    notify_scan_complete_sync,
+    send_all_operator_notifications,
+    send_manual_operator_message,
     send_slack_webhook,
     send_to_first_configured_operator_channel,
     should_send_scan_complete_notification,
@@ -145,4 +150,180 @@ def test_send_slack_retries_once_on_502(monkeypatch):
     monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
     monkeypatch.setattr("utils.notify.time.sleep", lambda *_a, **_k: None)
     send_slack_webhook("https://hooks.example/hook", "hi")
+    assert calls["n"] == 2
+
+
+def test_send_all_operator_channels_two_slacks(monkeypatch):
+    calls = {"n": 0}
+
+    def fake_urlopen(req, timeout=None):
+        calls["n"] += 1
+
+        class R:
+            def read(self):
+                return b"ok"
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        return R()
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    n = {
+        "operator": {
+            "channels": [
+                {"slack_webhook_url": "https://hooks.slack.example/a"},
+                {"slack_webhook_url": "https://hooks.slack.example/b"},
+            ]
+        }
+    }
+    results = send_all_operator_notifications(n, "hello")
+    assert len(results) == 2
+    assert all(r[1] for r in results)
+    assert calls["n"] == 2
+
+
+def test_notify_scan_complete_dedupe_skips_second_post(monkeypatch):
+    notify_mod._SCAN_COMPLETE_OK_SESSIONS.clear()
+    calls = {"n": 0}
+
+    def fake_urlopen(req, timeout=None):
+        calls["n"] += 1
+
+        class R:
+            def read(self):
+                return b"ok"
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        return R()
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+
+    class FakeDB:
+        def get_session_scan_summary_for_notification(self, sid):
+            return {
+                "session_id": sid,
+                "status": "completed",
+                "high": 1,
+                "medium": 0,
+                "low": 0,
+                "total_findings": 1,
+                "dob_possible_minor": 0,
+                "scan_failures": 0,
+                "tenant_name": None,
+                "technician_name": None,
+            }
+
+    cfg = {
+        "notifications": {
+            "enabled": True,
+            "dedupe_scan_complete_per_session": True,
+            "operator": {"slack_webhook_url": "https://hooks.example/h"},
+        }
+    }
+    notify_scan_complete_sync(cfg, FakeDB(), "sess_dedupe_1")
+    notify_scan_complete_sync(cfg, FakeDB(), "sess_dedupe_1")
+    assert calls["n"] == 1
+
+
+def test_send_manual_operator_message_records_audit(monkeypatch):
+    """Manual Part-A sends append notification_send_log rows when db_manager is set."""
+    audit_rows: list[dict] = []
+
+    class FakeDB:
+        def record_notification_send_log(self, **kwargs):
+            audit_rows.append(kwargs)
+
+    def fake_urlopen(req, timeout=None):
+        class R:
+            def read(self):
+                return b"ok"
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        return R()
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    cfg = {
+        "notifications": {
+            "enabled": True,
+            "notify_audit_log": True,
+            "operator": {"slack_webhook_url": "https://hooks.example/manual"},
+        }
+    }
+    ch, ok, err = send_manual_operator_message(cfg, "hello op", db_manager=FakeDB())
+    assert ok is True
+    assert ch == "slack"
+    assert err is None
+    assert len(audit_rows) == 1
+    assert audit_rows[0]["trigger"] == "manual"
+    assert audit_rows[0]["recipient"] == "operator"
+    assert audit_rows[0]["channel"] == "slack"
+    assert audit_rows[0]["session_id"] is None
+    assert audit_rows[0]["success"] is True
+
+
+def test_notify_scan_complete_tenant_channel(monkeypatch):
+    notify_mod._SCAN_COMPLETE_OK_SESSIONS.clear()
+    calls = {"n": 0}
+
+    def fake_urlopen(req, timeout=None):
+        calls["n"] += 1
+
+        class R:
+            def read(self):
+                return b"ok"
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        return R()
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+
+    class FakeDB:
+        def get_session_scan_summary_for_notification(self, sid):
+            return {
+                "session_id": sid,
+                "status": "completed",
+                "high": 1,
+                "medium": 0,
+                "low": 0,
+                "total_findings": 1,
+                "dob_possible_minor": 0,
+                "scan_failures": 0,
+                "tenant_name": "ACME Corp",
+                "technician_name": None,
+            }
+
+    cfg = {
+        "notifications": {
+            "enabled": True,
+            "dedupe_scan_complete_per_session": False,
+            "operator": {"slack_webhook_url": "https://hooks.example/op"},
+            "tenant": {
+                "by_tenant": {
+                    "acme corp": {
+                        "slack_webhook_url": "https://hooks.example/tenant-acme"
+                    },
+                },
+            },
+        }
+    }
+    notify_scan_complete_sync(cfg, FakeDB(), "sess_tenant_1")
     assert calls["n"] == 2
