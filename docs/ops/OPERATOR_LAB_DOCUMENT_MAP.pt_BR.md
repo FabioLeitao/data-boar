@@ -25,6 +25,7 @@
 | **[LAB_OP_MINIMAL_CONTAINER_STACK.md](LAB_OP_MINIMAL_CONTAINER_STACK.md)** · [pt-BR](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md) | Lab-op **Podman + k3s** (combo mínimo); §6 Wazuh, §7 observabilidade |
 | **[LMDE7_T14_DEVELOPER_SETUP.md](LMDE7_T14_DEVELOPER_SETUP.md)** · [pt-BR](LMDE7_T14_DEVELOPER_SETUP.pt_BR.md) | **ThinkPad T14 + LMDE 7:** passos concretos `apt`/`uv`/segurança |
 | **[../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md)** · [pt-BR](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md) | Sequência opcional: Prometheus ou Influx, Grafana, Loki ou Graylog |
+| **[../plans/PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.md](../plans/PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.md)** · [pt-BR](../plans/PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.pt_BR.md) | **Sequenciamento:** L3/DHCP UniFi → acesso ao assistente → postura → logs (Loki) → Wazuh opcional |
 | **[CURSOR_UBUNTU_APPARMOR.md](CURSOR_UBUNTU_APPARMOR.md)** · [pt-BR](CURSOR_UBUNTU_APPARMOR.pt_BR.md) | Cursor no Ubuntu/Zorin com **AppArmor** (instalar, diagnosticar DENIED, overrides em `local/`) |
 | **[OS_COMPATIBILITY_TESTING_MATRIX.md](OS_COMPATIBILITY_TESTING_MATRIX.md)** | Matriz de SO / musl / arch |
 | **[PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)** | Política `docs/private/` |
