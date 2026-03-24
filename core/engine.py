@@ -213,12 +213,12 @@ class AuditEngine:
                                 from utils.logger import get_logger
 
                                 get_logger().exception(
-                                    "Parallel target worker failed: session=%s target=%s",
+                                    "Parallel target worker failed: session=%s",
                                     session_id,
-                                    tname,
                                 )
                             except Exception:
-                                pass
+                                # Best effort: even logger failures should still mark the session as errored.
+                                final_status = "completed_errors"
                             try:
                                 self.db_manager.save_failure(
                                     tname,
@@ -226,7 +226,8 @@ class AuditEngine:
                                     f"Uncaught worker error: {e!s}",
                                 )
                             except Exception:
-                                pass
+                                # Best effort: preserve session state even if failure row write fails.
+                                final_status = "completed_errors"
                             final_status = "completed_errors"
         finally:
             self._is_running = False

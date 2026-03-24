@@ -113,7 +113,8 @@ class PowerBIConnector:
             try:
                 self._client.close()
             except Exception:
-                pass
+                # Best-effort close: ignore client shutdown errors.
+                return
             self._client = None
         self._token = None
 
@@ -258,7 +259,8 @@ class PowerBIConnector:
                                             ml_confidence=res.get("ml_confidence", 0),
                                         )
                             except Exception:
-                                pass
+                                # Sampling fallback is best-effort for table metadata gaps.
+                                continue
                             continue
                         sample_rows = self._execute_dax(
                             ds_id,
@@ -335,7 +337,8 @@ class PowerBIConnector:
                 raw_details=json.dumps(details, ensure_ascii=False),
             )
         except Exception:
-            pass
+            # Inventory snapshot is best-effort; do not interrupt scanning.
+            return
 
 
 if _HTTPX_AVAILABLE:
