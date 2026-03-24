@@ -29,6 +29,8 @@ The AI **cannot** open your LAN by itself. **Default:** it runs **`ssh`** from *
 
 **Future — syslog + detection (when lab hardware is ready):** [OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.md](OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.md) ([pt-BR](OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.pt_BR.md)) — ties to [PLAN_LAB_OP_OBSERVABILITY_STACK.md](../../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md).
 
+**Operator — AI access, security rationale, blue-team cadence:** [OPERATOR_AI_LAB_ACCESS_AND_BLUE_TEAM_RUNBOOK.md](OPERATOR_AI_LAB_ACCESS_AND_BLUE_TEAM_RUNBOOK.md) ([pt-BR](OPERATOR_AI_LAB_ACCESS_AND_BLUE_TEAM_RUNBOOK.pt_BR.md)) — copy to `docs/private/homelab/` and add site-specific notes (no secrets in git).
+
 ### Windows: pCloud as `P:` (optional)
 
 If you sync the same tree to **Linux** (`~/pCloudDrive`) and **Windows** (**`P:`**), note that here (e.g. “reports copy also under `P:\Backups\…`”). The assistant can use **`P:\…`** from the **Cursor terminal on Windows** when pCloud is mounted—still **gitignore** any paths you write in this file.
