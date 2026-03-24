@@ -216,18 +216,18 @@ class AuditEngine:
                                     "Parallel target worker failed: session=%s",
                                     session_id,
                                 )
-                            except Exception:
-                                # Best effort: even logger failures should still mark the session as errored.
-                                final_status = "completed_errors"
+                            except Exception as log_err:
+                                # Best effort: logging failures must not interrupt worker cleanup.
+                                _ = str(log_err)
                             try:
                                 self.db_manager.save_failure(
                                     tname,
                                     "error",
                                     f"Uncaught worker error: {e!s}",
                                 )
-                            except Exception:
-                                # Best effort: preserve session state even if failure row write fails.
-                                final_status = "completed_errors"
+                            except Exception as save_err:
+                                # Best effort: persist failures when possible, but don't break session flow.
+                                _ = str(save_err)
                             final_status = "completed_errors"
         finally:
             self._is_running = False

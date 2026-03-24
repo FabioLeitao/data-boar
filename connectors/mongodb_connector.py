@@ -157,8 +157,9 @@ class MongoDBConnector:
             info = self._db.command("buildInfo")
             product_version = str(info.get("version", "") or "") or None
             raw_details["version_probe"] = str(info)[:500]
-        except Exception:
-            pass
+        except Exception as e:
+            # Probe is optional; preserve scan flow when buildInfo is unavailable.
+            raw_details["version_probe_error"] = str(e)[:200]
         transport = "tls=enabled" if self.config.get("tls") else "unknown"
         raw_details["driver"] = "mongodb"
         try:
