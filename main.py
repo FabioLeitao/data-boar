@@ -259,6 +259,17 @@ def main() -> None:
         port = api_cfg.get("port", args.port)
         workers = int(api_cfg.get("workers", 1))
         host = resolve_api_host(config, cli_host=args.host)
+        from core.host_resolution import should_warn_insecure_api_bind
+
+        if should_warn_insecure_api_bind(config, host):
+            print(
+                "WARNING: API bind is non-loopback (%s) but api.require_api_key is not "
+                "effectively enabled. Set api.require_api_key: true and a strong "
+                "api.api_key (or api_key_from_env), or keep host 127.0.0.1 / reverse proxy. "
+                "See SECURITY.md and docs/USAGE.md."
+                % (host,),
+                file=sys.stderr,
+            )
         uvicorn.run(app, host=host, port=port, workers=workers)
         return
 
@@ -363,6 +374,9 @@ def main() -> None:
             print(f"Report written: {report_path}")
         else:
             print("No findings to report.")
+        from utils.notify import notify_scan_complete_background
+
+        notify_scan_complete_background(engine.config, engine.db_manager, session_id)
     except FileNotFoundError as e:
         print(f"Error: {e}")
         print(
