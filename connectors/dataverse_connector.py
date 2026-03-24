@@ -144,8 +144,9 @@ class DataverseConnector:
         if self._client:
             try:
                 self._client.close()
-            except Exception:
-                pass
+            except Exception as close_err:
+                # Best-effort close; connector teardown must stay non-fatal.
+                _ = str(close_err)
             self._client = None
         self._token = None
 

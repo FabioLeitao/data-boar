@@ -8,8 +8,8 @@ import connectors.sql_connector  # noqa: F401
 
 try:
     import connectors.rest_connector  # noqa: F401
-except ImportError:
-    pass
+except ImportError as rest_import_error:
+    _ = str(rest_import_error)
 
 from core.connector_registry import connector_for_target, list_connector_types
 
