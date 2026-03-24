@@ -34,6 +34,7 @@
 | **`AGENTS.md`** · **`.cursor/rules/`** | Comportamento do agente |
 | **[../private.example/homelab/OPERATOR_RETEACH.md](../private.example/homelab/OPERATOR_RETEACH.md)** · [pt-BR](../private.example/homelab/OPERATOR_RETEACH.pt_BR.md) | **Modelo:** reensino / lacunas (**B1–B6**); **sem** hostnames reais — copiar para **`docs/private/homelab/`** |
 | **[../private.example/homelab/LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md](../private.example/homelab/LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md)** · [pt-BR](../private.example/homelab/LAB_NETWORK_L3_DHCP_AND_CYBERSEC.pt_BR.md) | **Modelo:** gateway/DNS por VLAN no DHCP, alinhamento CyberSecure, comandos de verificação — copiar para **`docs/private/homelab/`** e preencher inventário RFC1918 só localmente |
+| **[../private.example/homelab/LAB_OP_SHOPPING_LIST_COVER_NOTE.md](../private.example/homelab/LAB_OP_SHOPPING_LIST_COVER_NOTE.md)** | **Ponte:** lista de compras + preços indicativos + fotos **urgentes** (medidor/disjuntor/quadro) — só em **`docs/private/homelab/LAB_OP_SHOPPING_LIST_AND_POWER.md`** |
 
 ---
 
@@ -52,6 +53,7 @@
 | **`LAB_SECURITY_POSTURE.md`** | **Inventário de segurança LAB‑OP:** WAN, snapshots **sshd**/UFW/Fail2ban/nftables, **fila de melhorias** (só local, não vai ao GitHub) |
 | **`LAB_SOFTWARE_INVENTORY.md`** | **Matriz software/runtime LAB‑OP** (Python, Docker, caminhos Data Boar, lacunas **TBD**); atualizar com **`scripts/homelab-host-report.sh`** em cada Linux |
 | **`LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md`** (copiar de **`docs/private.example/homelab/`**) | Gateway padrão + DNS por VLAN, linha honeypot CyberSecure, comandos de verificação — **sem** tabela viva de subnet no git |
+| **`LAB_OP_SHOPPING_LIST_AND_POWER.md`** (criar em **`docs/private/homelab/`** — ver **[LAB_OP_SHOPPING_LIST_COVER_NOTE.md](../private.example/homelab/LAB_OP_SHOPPING_LIST_COVER_NOTE.md)**) | Lista de compras, preços BRL indicativos (data), UPS/energia; **§0 fotos urgentes** |
 
 **Raiz `docs/private/`:** também **`CONTEXT_ACADEMIC_AND_FAMILY.md`** (trabalho da esposa + planos académicos — preencher quando quiser).
 
