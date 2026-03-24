@@ -25,6 +25,7 @@
 | **[LAB_OP_MINIMAL_CONTAINER_STACK.md](LAB_OP_MINIMAL_CONTAINER_STACK.md)** · [pt-BR](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md) | Lab-op **Podman + k3s** minimal combo; §6 Wazuh, §7 Grafana/metrics/logs plan pointer |
 | **[LMDE7_T14_DEVELOPER_SETUP.md](LMDE7_T14_DEVELOPER_SETUP.md)** · [pt-BR](LMDE7_T14_DEVELOPER_SETUP.pt_BR.md) | ThinkPad **T14 + LMDE 7**: concrete `apt`/`uv`/security steps |
 | **[../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md)** · [pt-BR](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md) | Optional lab-op sequence: Prometheus or Influx, Grafana, Loki or Graylog |
+| **[../plans/PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.md](../plans/PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.md)** · [pt-BR](../plans/PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.pt_BR.md) | **Sequencing spine:** UniFi L3/DHCP → assistant access → posture → logs (Loki) → optional Wazuh |
 | **[CURSOR_UBUNTU_APPARMOR.md](CURSOR_UBUNTU_APPARMOR.md)** · [pt-BR](CURSOR_UBUNTU_APPARMOR.pt_BR.md) | Cursor on Ubuntu/Zorin with **AppArmor** (install, diagnose DENIED, `local/` overrides) |
 | **[OS_COMPATIBILITY_TESTING_MATRIX.md](OS_COMPATIBILITY_TESTING_MATRIX.md)** | OS / musl / arch matrix for lab testing |
 | **[PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)** · [pt-BR](../PRIVATE_OPERATOR_NOTES.pt_BR.md) | Policy: **`docs/private/`** layout, Git vs Cursor |
