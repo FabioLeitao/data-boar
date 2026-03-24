@@ -178,7 +178,8 @@ class RESTConnector:
             try:
                 self._client.close()
             except Exception:
-                pass
+                # Best-effort close: ignore client shutdown errors.
+                return
             self._client = None
 
     def run(self) -> None:
@@ -321,7 +322,8 @@ class RESTConnector:
                 raw_details=json.dumps(details, ensure_ascii=False),
             )
         except Exception:
-            pass
+            # Inventory snapshot is best-effort; scan should continue without it.
+            return
 
     def _infer_api_version_from_paths(self) -> str | None:
         paths = self.config.get("paths") or self.config.get("endpoints") or []

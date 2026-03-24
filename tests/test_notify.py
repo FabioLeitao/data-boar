@@ -5,9 +5,8 @@ from __future__ import annotations
 import json
 import urllib.error
 
-import utils.notify as notify_mod
-
 from utils.notify import (
+    _SCAN_COMPLETE_OK_SESSIONS,
     build_scan_complete_message,
     notify_scan_complete_sync,
     send_all_operator_notifications,
@@ -187,7 +186,7 @@ def test_send_all_operator_channels_two_slacks(monkeypatch):
 
 
 def test_notify_scan_complete_dedupe_skips_second_post(monkeypatch):
-    notify_mod._SCAN_COMPLETE_OK_SESSIONS.clear()
+    _SCAN_COMPLETE_OK_SESSIONS.clear()
     calls = {"n": 0}
 
     def fake_urlopen(req, timeout=None):
@@ -276,7 +275,7 @@ def test_send_manual_operator_message_records_audit(monkeypatch):
 
 
 def test_notify_scan_complete_tenant_channel(monkeypatch):
-    notify_mod._SCAN_COMPLETE_OK_SESSIONS.clear()
+    _SCAN_COMPLETE_OK_SESSIONS.clear()
     calls = {"n": 0}
 
     def fake_urlopen(req, timeout=None):
