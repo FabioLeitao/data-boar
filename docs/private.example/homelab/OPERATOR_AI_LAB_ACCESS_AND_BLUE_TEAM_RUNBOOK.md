@@ -2,7 +2,7 @@
 
 **Copy to `docs/private/homelab/`** and fill host-specific details. **Never commit** real IPs, keys, or tokens. This file is a **memory aid** for *why* decisions were made and *what* to enable next— not a substitute for change control.
 
-**Related:** [CREDENTIALS_AND_LAB_SECRETS.md](CREDENTIALS_AND_LAB_SECRETS.md) · [OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.md](OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.md) · [PLAN_LAB_OP_OBSERVABILITY_STACK.md](../../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md)
+**Related:** [CREDENTIALS_AND_LAB_SECRETS.md](CREDENTIALS_AND_LAB_SECRETS.md) · [LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md](LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md) · [OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.md](OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.md) · [PLAN_LAB_OP_OBSERVABILITY_STACK.md](../../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md)
 
 ---
 
@@ -26,7 +26,8 @@ Record **your** live values in the private copy only.
 | **API keys (UniFi Integrations)** | **Owner** often required to **create/revoke** keys; automation accounts may **use** keys without seeing Integrations UI. | Rotate after paste/leak; name keys by purpose + date. |
 | **IPS suppression (e.g. SSH scan)** | Reduce **false positives** or noise from known lab behaviour. | Document **signature ID + reason + date**; review yearly. |
 | **Content filter policy names** | Names like “Off” while filters are on confuse future you. | Rename to match reality (e.g. `Trusted-filtered`). |
-| **Honeypot / subnet typos** | Wrong prefix (e.g. `182.x` vs `192.x`) breaks coverage. | Verify honeypot IP sits **inside** the intended VLAN. |
+| **Honeypot / subnet typos** | Wrong prefix (e.g. `182.x` vs `192.x`) breaks coverage. | Verify honeypot IP sits **inside** the intended VLAN; at low UI zoom, **0** vs **8** in an octet is easy to misread—confirm in your private inventory. |
+| **Per-VLAN DHCP gateway + DNS** | Clients must get the **UDM `.1` (or chosen GW)** for **that** subnet, not another VLAN’s gateway. | UniFi **Networks → DHCP** + **WiFi → correct VLAN**; fill [LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md](LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md) private table; renew lease after changes. |
 | **Double NAT on WAN** | ISP CPE in front of UDM; acceptable but affects **port forward**, **VPN**, some games. | Document “double NAT accepted” or plan bridge/public IP. |
 | **IoT isolation + exceptions** | Default **deny** IoT → internal; **allow** only documented paths (e.g. management from trusted VLAN). | Re-run review after any VLAN or IoT device change. |
 

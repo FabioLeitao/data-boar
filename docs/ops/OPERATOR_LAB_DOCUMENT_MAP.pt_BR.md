@@ -22,6 +22,9 @@
 | Documento | Função |
 | --------- | ------ |
 | **[HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md)** · [pt-BR](HOMELAB_VALIDATION.pt_BR.md) | Playbook de validação, §9 multi-host, ordem **–1L** |
+| **[LAB_OP_MINIMAL_CONTAINER_STACK.md](LAB_OP_MINIMAL_CONTAINER_STACK.md)** · [pt-BR](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md) | Lab-op **Podman + k3s** (combo mínimo); §6 Wazuh, §7 observabilidade |
+| **[LMDE7_T14_DEVELOPER_SETUP.md](LMDE7_T14_DEVELOPER_SETUP.md)** · [pt-BR](LMDE7_T14_DEVELOPER_SETUP.pt_BR.md) | **ThinkPad T14 + LMDE 7:** passos concretos `apt`/`uv`/segurança |
+| **[../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md)** · [pt-BR](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md) | Sequência opcional: Prometheus ou Influx, Grafana, Loki ou Graylog |
 | **[CURSOR_UBUNTU_APPARMOR.md](CURSOR_UBUNTU_APPARMOR.md)** · [pt-BR](CURSOR_UBUNTU_APPARMOR.pt_BR.md) | Cursor no Ubuntu/Zorin com **AppArmor** (instalar, diagnosticar DENIED, overrides em `local/`) |
 | **[OS_COMPATIBILITY_TESTING_MATRIX.md](OS_COMPATIBILITY_TESTING_MATRIX.md)** | Matriz de SO / musl / arch |
 | **[PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)** | Política `docs/private/` |
@@ -29,6 +32,7 @@
 | **[../plans/TOKEN_AWARE_USAGE.md](../plans/TOKEN_AWARE_USAGE.md)** | Sessões token-aware |
 | **`AGENTS.md`** · **`.cursor/rules/`** | Comportamento do agente |
 | **[../private.example/homelab/OPERATOR_RETEACH.md](../private.example/homelab/OPERATOR_RETEACH.md)** · [pt-BR](../private.example/homelab/OPERATOR_RETEACH.pt_BR.md) | **Modelo:** reensino / lacunas (**B1–B6**); **sem** hostnames reais — copiar para **`docs/private/homelab/`** |
+| **[../private.example/homelab/LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md](../private.example/homelab/LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md)** · [pt-BR](../private.example/homelab/LAB_NETWORK_L3_DHCP_AND_CYBERSEC.pt_BR.md) | **Modelo:** gateway/DNS por VLAN no DHCP, alinhamento CyberSecure, comandos de verificação — copiar para **`docs/private/homelab/`** e preencher inventário RFC1918 só localmente |
 
 ---
 
@@ -46,6 +50,7 @@
 | **`iso-inventory.md`** | Inventário de ISOs |
 | **`LAB_SECURITY_POSTURE.md`** | **Inventário de segurança LAB‑OP:** WAN, snapshots **sshd**/UFW/Fail2ban/nftables, **fila de melhorias** (só local, não vai ao GitHub) |
 | **`LAB_SOFTWARE_INVENTORY.md`** | **Matriz software/runtime LAB‑OP** (Python, Docker, caminhos Data Boar, lacunas **TBD**); atualizar com **`scripts/homelab-host-report.sh`** em cada Linux |
+| **`LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md`** (copiar de **`docs/private.example/homelab/`**) | Gateway padrão + DNS por VLAN, linha honeypot CyberSecure, comandos de verificação — **sem** tabela viva de subnet no git |
 
 **Raiz `docs/private/`:** também **`CONTEXT_ACADEMIC_AND_FAMILY.md`** (trabalho da esposa + planos académicos — preencher quando quiser).
 

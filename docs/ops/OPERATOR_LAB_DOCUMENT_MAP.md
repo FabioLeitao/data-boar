@@ -22,6 +22,9 @@
 | Document | Role |
 | -------- | ---- |
 | **[HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md)** · [pt-BR](HOMELAB_VALIDATION.pt_BR.md) | Validation playbook, §9 multi-host, order **–1L** alignment |
+| **[LAB_OP_MINIMAL_CONTAINER_STACK.md](LAB_OP_MINIMAL_CONTAINER_STACK.md)** · [pt-BR](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md) | Lab-op **Podman + k3s** minimal combo; §6 Wazuh, §7 Grafana/metrics/logs plan pointer |
+| **[LMDE7_T14_DEVELOPER_SETUP.md](LMDE7_T14_DEVELOPER_SETUP.md)** · [pt-BR](LMDE7_T14_DEVELOPER_SETUP.pt_BR.md) | ThinkPad **T14 + LMDE 7**: concrete `apt`/`uv`/security steps |
+| **[../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md)** · [pt-BR](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md) | Optional lab-op sequence: Prometheus or Influx, Grafana, Loki or Graylog |
 | **[CURSOR_UBUNTU_APPARMOR.md](CURSOR_UBUNTU_APPARMOR.md)** · [pt-BR](CURSOR_UBUNTU_APPARMOR.pt_BR.md) | Cursor on Ubuntu/Zorin with **AppArmor** (install, diagnose DENIED, `local/` overrides) |
 | **[OS_COMPATIBILITY_TESTING_MATRIX.md](OS_COMPATIBILITY_TESTING_MATRIX.md)** | OS / musl / arch matrix for lab testing |
 | **[PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)** · [pt-BR](../PRIVATE_OPERATOR_NOTES.pt_BR.md) | Policy: **`docs/private/`** layout, Git vs Cursor |
@@ -30,6 +33,7 @@
 | **[DEPLOY.md](../deploy/DEPLOY.md)** · Docker **[README.md](../../scripts/docker/README.md)** | Deploy / image tags (generic) |
 | **`AGENTS.md`** (repo root) · **`.cursor/rules/*.mdc`** | Agent defaults (homelab + private **`read_file`**) |
 | **[../private.example/homelab/OPERATOR_RETEACH.md](../private.example/homelab/OPERATOR_RETEACH.md)** · [pt-BR](../private.example/homelab/OPERATOR_RETEACH.pt_BR.md) | **Template:** re-teach / gaps (**B1–B6**); **no** real hostnames — copy to **`docs/private/homelab/`** |
+| **[../private.example/homelab/LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md](../private.example/homelab/LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md)** · [pt-BR](../private.example/homelab/LAB_NETWORK_L3_DHCP_AND_CYBERSEC.pt_BR.md) | **Template:** per-VLAN DHCP gateway/DNS, CyberSecure alignment, verification commands — copy to **`docs/private/homelab/`** and fill RFC1918 inventory locally |
 
 ---
 
@@ -47,6 +51,10 @@
 | **`iso-inventory.md`** | ISO paths on lab Linux host |
 | **`LAB_SECURITY_POSTURE.md`** | LAB‑OP **security inventory**: WAN posture, **sshd**/UFW/Fail2ban/nftables snapshots, **improvement backlog** (operator-maintained; not on GitHub) |
 | **`LAB_SOFTWARE_INVENTORY.md`** | LAB‑OP **software/runtime matrix** (Python, Docker, Data Boar paths, **TBD** gaps); refresh with **`scripts/homelab-host-report.sh`** per Linux host |
+| **`reports/*.log`** | Timestamped **`homelab-host-report.sh`** captures (kernel/sys/block sample + packages); use **`scripts/collect-homelab-report-remote.ps1`** from Windows or `tee` on-host — see **`docs/private.example/homelab/reports/README.md`** |
+| **`lab-op-hosts.manifest.json`** | **Local only** (copy from **`docs/private.example/homelab/lab-op-hosts.manifest.example.json`**): SSH `Host` aliases + Linux **`repoPaths`** for **`scripts/lab-op-sync-and-collect.ps1`** |
+| **`CREDENTIALS_AND_LAB_SECRETS.md`** (copy from **`docs/private.example/homelab/`**) | Policy for SNMP/API secrets: env / vault / gitignored `.env` — **never** chat paste |
+| **`LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md`** (copy from **`docs/private.example/homelab/`**) | Per-VLAN default gateway + DNS notes, CyberSecure honeypot row, verification commands — **no** live subnet table in git |
 
 **Also private (repo root of `docs/private/`):** **`WHAT_TO_SHARE_WITH_AGENT.md`**, **`SOLAR_SYSTEM_NOTES.md`**, **`From Docker hub list of repositories.md`**, **`Learning_and_certs.md`**, **`CONTEXT_ACADEMIC_AND_FAMILY.md`** (spouse work + long-term academic links — **you** fill when ready), optional **`reports/*.xlsx`**, scratch **`.txt`** files — keep or migrate into **`homelab/`** over time.
 
