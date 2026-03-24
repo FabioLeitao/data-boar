@@ -31,6 +31,8 @@ The AI **cannot** open your LAN by itself. **Default:** it runs **`ssh`** from *
 
 **Operator — AI access, security rationale, blue-team cadence:** [OPERATOR_AI_LAB_ACCESS_AND_BLUE_TEAM_RUNBOOK.md](OPERATOR_AI_LAB_ACCESS_AND_BLUE_TEAM_RUNBOOK.md) ([pt-BR](OPERATOR_AI_LAB_ACCESS_AND_BLUE_TEAM_RUNBOOK.pt_BR.md)) — copy to `docs/private/homelab/` and add site-specific notes (no secrets in git).
 
+**L3 / DHCP / DNS / CyberSecure (UniFi):** [LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md](LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md) ([pt-BR](LAB_NETWORK_L3_DHCP_AND_CYBERSEC.pt_BR.md)) — per-VLAN gateway and DNS intent, honeypot alignment, verification commands; fill the private inventory table only under `docs/private/homelab/`.
+
 ### Windows: pCloud as `P:` (optional)
 
 If you sync the same tree to **Linux** (`~/pCloudDrive`) and **Windows** (**`P:`**), note that here (e.g. “reports copy also under `P:\Backups\…`”). The assistant can use **`P:\…`** from the **Cursor terminal on Windows** when pCloud is mounted—still **gitignore** any paths you write in this file.
