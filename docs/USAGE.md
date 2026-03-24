@@ -871,8 +871,13 @@ scan:
 
 After a scan finishes (CLI one-shot or `POST /scan` / `POST /start` background run), the app can **POST a short pt-BR brief** to **Slack**, **Microsoft Teams**, **Telegram**, or a **generic JSON webhook** (e.g. automation tools). Default is **off** (`notifications.enabled: false`).
 
-- **Config:** optional block `notifications` with `operator.slack_webhook_url`, `teams_webhook_url`, `telegram_bot_token` + `telegram_chat_id`, or `generic_webhook_url`. URLs may use `${ENV_VAR}` so secrets stay out of the repo. Outbound webhook POSTs retry a few times on HTTP 5xx or transient network errors.
-- **Manual / CI:** `python scripts/notify_webhook.py "message"` (same config file; requires `notifications.enabled: true` and a channel URL).
+- **Config (legacy single path):** `notifications.operator` with `slack_webhook_url`, `teams_webhook_url`, `telegram_bot_token` + `telegram_chat_id`, or `generic_webhook_url` — first configured type wins (Slack → Teams → Telegram → generic).
+- **Config (multiple operator channels):** `notifications.operator.channels` as a **list** of objects; each object is **one** channel (e.g. one Slack webhook and one Telegram bot). All configured channels receive the same message (scan-complete or manual script).
+- **Tenant copy (optional):** `notifications.tenant.by_tenant` maps a **lowercased** tenant name to a webhook block (or string URL for generic POST). `default_slack_webhook_url` / `default_generic_webhook_url` apply when `tenant_name` is set but there is no per-tenant entry. Requires a non-empty `tenant_name` on the session.
+- **Dedupe:** `notifications.dedupe_scan_complete_per_session` (default `true`) avoids a second POST for the same `session_id` after **at least one** outbound send succeeded (process-local; use `false` only if you need retries on every completion hook).
+- **Audit log (optional):** `notifications.notify_audit_log` (default `true`) appends one row per channel attempt to SQLite table **`notification_send_log`** (session id, trigger, recipient `operator`/`tenant`, channel, success, redacted error text, timestamp). No message body stored. Set to `false` to disable writes.
+- **Secrets:** URLs may use `${ENV_VAR}`. Outbound webhook POSTs retry a few times on HTTP 5xx or transient network errors.
+- **Manual / CI:** `python scripts/notify_webhook.py "message"` (same config file; requires `notifications.enabled: true` and a channel URL). By default the script opens ``sqlite_path`` and appends audit rows for each channel (same as scan-complete); use ``--no-audit`` when no local DB exists (e.g. some CI jobs).
 - **Details:** [PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md](plans/PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md).
 
 ---
