@@ -1,0 +1,11 @@
+{
+  "hosts": [
+    {
+      "sshHost": "latitude-lab",
+      "repoPaths": [
+        "/home/REPLACE_USER/projects/python3-lgpd-crawler"
+      ]
+    }
+  ],
+  "outDir": "docs/private/homelab/reports"
+}
