@@ -35,6 +35,8 @@ The AI **cannot** open your LAN by itself. **Default:** it runs **`ssh`** from *
 
 **Sequenced lab plan (firewall → access → Loki → Wazuh):** [PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.md](../../plans/PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.md) ([pt-BR](../../plans/PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.pt_BR.md)) in `docs/plans/` — sprint checklist ties to [PLAN_LAB_OP_OBSERVABILITY_STACK.md](../../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md).
 
+**Shopping list + power (private only):** [LAB_OP_SHOPPING_LIST_COVER_NOTE.md](LAB_OP_SHOPPING_LIST_COVER_NOTE.md) — full list with indicative prices stays under **`docs/private/homelab/LAB_OP_SHOPPING_LIST_AND_POWER.md`** (gitignored). **Urgent:** meter / breaker / panel photos for safe UPS and Enel planning.
+
 ### Windows: pCloud as `P:` (optional)
 
 If you sync the same tree to **Linux** (`~/pCloudDrive`) and **Windows** (**`P:`**), note that here (e.g. “reports copy also under `P:\Backups\…`”). The assistant can use **`P:\…`** from the **Cursor terminal on Windows** when pCloud is mounted—still **gitignore** any paths you write in this file.
