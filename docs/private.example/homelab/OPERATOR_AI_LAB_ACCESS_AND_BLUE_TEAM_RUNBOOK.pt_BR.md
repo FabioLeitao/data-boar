@@ -2,7 +2,7 @@
 
 **Copie para `docs/private/homelab/`** e preencha detalhes por host. **Nunca** faça commit de IPs reais, chaves ou tokens. Este arquivo serve para **não esquecer o porquê** das decisões e **o que** habilitar a seguir — não substitui controlo de mudanças formal.
 
-**Relacionado:** [CREDENTIALS_AND_LAB_SECRETS.pt_BR.md](CREDENTIALS_AND_LAB_SECRETS.pt_BR.md) · [OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.pt_BR.md](OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.pt_BR.md) · [PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md](../../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md)
+**Relacionado:** [CREDENTIALS_AND_LAB_SECRETS.pt_BR.md](CREDENTIALS_AND_LAB_SECRETS.pt_BR.md) · [LAB_NETWORK_L3_DHCP_AND_CYBERSEC.pt_BR.md](LAB_NETWORK_L3_DHCP_AND_CYBERSEC.pt_BR.md) · [OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.pt_BR.md](OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.pt_BR.md) · [PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md](../../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md)
 
 ---
 
@@ -26,7 +26,8 @@ Regista **valores reais** só na cópia em `docs/private/homelab/`.
 | **Chaves API (Integrations)** | **Owner** muitas vezes precisa de **criar/revogar** chaves; contas de automação podem **usar** chaves sem ver a UI Integrations. | Rodar após paste/vazamento; nomear chaves por função + data. |
 | **Supressão IPS (ex.: SSH scan)** | Reduzir **falsos positivos** ou ruído de comportamento conhecido do lab. | Documentar **ID da assinatura + motivo + data**; rever anualmente. |
 | **Nomes de políticas de filtro** | Nomes como “Off” com filtros ativos confundem o teu “eu futuro”. | Renomear para refletir a realidade (ex.: `Trusted-filtered`). |
-| **Typos em honeypot / subnet** | Prefixo errado (ex.: `182.x` vs `192.x`) quebra cobertura. | Confirmar que o IP do honeypot está **dentro** da VLAN pretendida. |
+| **Typos em honeypot / subnet** | Prefixo errado (ex.: `182.x` vs `192.x`) quebra cobertura. | Confirmar que o IP do honeypot está **dentro** da VLAN pretendida; com zoom baixo na UI, **0** e **8** num octeto confundem — validar na tabela privada. |
+| **DHCP gateway + DNS por VLAN** | Os clientes devem receber o **UDM `.1` (ou GW escolhido)** **dessa** subnet, não o gateway de outra VLAN. | UniFi **Redes → DHCP** + **Wi‑Fi → VLAN correta**; preencher tabela privada em [LAB_NETWORK_L3_DHCP_AND_CYBERSEC.pt_BR.md](LAB_NETWORK_L3_DHCP_AND_CYBERSEC.pt_BR.md); renovar lease após mudanças. |
 | **Double NAT no WAN** | CPE da operadora à frente do UDM; aceitável mas afeta **port forward**, **VPN**, alguns jogos. | Documentar “double NAT aceite” ou planear bridge/IP público. |
 | **Isolamento IoT + exceções** | **Negar** por defeito IoT → interno; **permitir** só caminhos documentados. | Rever após qualquer mudança de VLAN ou dispositivo IoT. |
 
