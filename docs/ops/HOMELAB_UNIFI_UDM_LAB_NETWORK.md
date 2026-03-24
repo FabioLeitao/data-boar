@@ -2,6 +2,8 @@
 
 **Purpose:** Use your **UniFi Dream Machine SE (UDM-SE)** for **isolated lab traffic** and **early SNMP visibility** while the **Proxmox / monitoring host** is not ready yet.
 
+**Credentials (no paste in chat):** Handoff pattern for SNMP/API secrets — **[CREDENTIALS_AND_LAB_SECRETS.md](../private.example/homelab/CREDENTIALS_AND_LAB_SECRETS.md)** ([pt-BR](../private.example/homelab/CREDENTIALS_AND_LAB_SECRETS.pt_BR.md)). Optional probe script: **`scripts/snmp-udm-lab-probe.ps1`** (reads **`$env:LAB_UDM_SNMP_*`**; on **Windows** uses **WSL** + `snmpwalk` installed **inside** the distro — not `apt` in PowerShell).
+
 **Important:** Neither this repository nor an AI assistant can **poll or configure** your UDM-SE over the internet unless **you** expose management (not recommended). All SNMP and UniFi UI steps run **on your LAN** from **your** workstation or a temporary Linux host.
 
 **Official SNMP reference:** [SNMP Monitoring in UniFi Network](https://help.ui.com/hc/en-us/articles/33502980942615-SNMP-Monitoring-in-UniFi-Network) (Ubiquiti Help Center).
@@ -19,7 +21,7 @@
 ## Example (illustrative — replace user, auth, IP):
 
 ```bash
-# Debian/Ubuntu: sudo apt install -y snmp snmp-mibs-downloader
+# Debian/Ubuntu: sudo apt install -y snmp   (optional: snmp-mibs-downloader — may need non-free on trixie; not required for numeric OIDs)
 # May need: export MIBS=ALL
 
 snmpwalk -v3 -l authPriv -u YOUR_V3_USER -a SHA -A 'AUTH_PASS' -x AES -X 'PRIV_PASS' UDM_SE_IP 1.3.6.1.2.1.2.2
@@ -38,6 +40,8 @@ The OID `1.3.6.1.2.1.2.2` is the standard **interfaces** table (traffic counters
 Use VLANs to **separate** roles without putting **real VLAN IDs, subnet names, or passwords** in this public repo—keep those in **`docs/private/homelab/`** (gitignored) or your runbook ([PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)).
 
 **Operator snapshot (private):** when synced, see **`docs/private/homelab/LAB_SECURITY_POSTURE.md`** **§1.1** (*DMSE Casa*, **UDM-SE**, **Oficial** / **IoT** / **Default** subnets, **SNMP v3**, **CyberSecure** — valores mudam com o tempo).
+
+**DHCP / L3 gateway / DNS / honeypot (template):** copy **[LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md](../private.example/homelab/LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md)** to **`docs/private/homelab/`**, fill the inventory table (RFC1918 stays local), and use the verification commands when tuning VLANs.
 
 ## Typical pattern (names are examples only):
 
