@@ -23,3 +23,12 @@ alwaysApply: true
 1. **Commit + describe + PR:** `.\scripts\commit-or-pr.ps1 -Action PR -Title "..." -Body "..." -RunTests` (or `.\scripts\create-pr.ps1 -Title "..." -BodyFilePath path` / one-off .ps1 for long body). This commits, runs tests again, fetch+rebase if behind, push, open PR.
 
 Avoid raw `pytest`/`ruff` invocations when a script covers the need; scripts keep behaviour consistent and reduce back-and-forth. For **commit, description, push, and PR**, prefer the commit-or-pr workflow (and helpers) over ad-hoc `git add`/`git commit`/`git push` so behaviour is consistent and tokens are saved. See `.cursor/skills/token-aware-automation/SKILL.md` for when to use which.
+
+## Proactive automation policy (regression + token savings)
+
+- If a bug/risk was fixed, ask: **can we encode this in a test or script gate?**
+- Prefer adding/updating:
+  - a **targeted pytest** (fast, deterministic),
+  - a **script wrapper** under `scripts/` for repeated operator flow,
+  - or a **pre-commit/CI guard** for high-value checks.
+- Goal: avoid reintroducing solved issues and reduce repeated ad-hoc command sequences over time.

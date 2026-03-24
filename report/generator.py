@@ -230,6 +230,7 @@ _SHEET_FS_FINDINGS = "Filesystem findings"
 _SHEET_SCAN_FAILURES = "Scan failures"
 _SHEET_REPORT_INFO = "Report info"
 _SHEET_HEATMAP_DATA = "Heatmap data"
+_SHEET_DATA_SOURCE_INVENTORY = "Data source inventory"
 # LOW findings persisted for ID-like column names (FN reduction); see core.suggested_review
 _SHEET_SUGGESTED_REVIEW = "Suggested review (LOW)"
 _REPORT_INFO_CNPJ_FORMAT_COMPAT = "CNPJ format compatibility"
@@ -958,6 +959,25 @@ def _write_excel_sheets(
     if fail_rows:
         pd.DataFrame(_enrich_failures(fail_rows)).to_excel(
             writer, sheet_name=_SHEET_SCAN_FAILURES, index=False
+        )
+    inv_rows = []
+    if hasattr(db_manager, "get_data_source_inventory"):
+        inv_rows = db_manager.get_data_source_inventory(session_id) or []
+    if inv_rows:
+        inv_sheet_rows = [
+            {
+                "Target": r.get("target_name", ""),
+                "Source type": r.get("source_type", ""),
+                "Product": r.get("product", "") or "",
+                "Product version": r.get("product_version", "") or "",
+                "Protocol/API version": r.get("protocol_or_api_version", "") or "",
+                "Transport security": r.get("transport_security", "") or "",
+                "Raw details": r.get("raw_details", "") or "",
+            }
+            for r in inv_rows
+        ]
+        pd.DataFrame(inv_sheet_rows).to_excel(
+            writer, sheet_name=_SHEET_DATA_SOURCE_INVENTORY, index=False
         )
     overrides = report_cfg.get("recommendation_overrides", [])
     recs = _recommendations_rows(
