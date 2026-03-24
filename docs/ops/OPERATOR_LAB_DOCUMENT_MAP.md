@@ -35,6 +35,7 @@
 | **`AGENTS.md`** (repo root) · **`.cursor/rules/*.mdc`** | Agent defaults (homelab + private **`read_file`**) |
 | **[../private.example/homelab/OPERATOR_RETEACH.md](../private.example/homelab/OPERATOR_RETEACH.md)** · [pt-BR](../private.example/homelab/OPERATOR_RETEACH.pt_BR.md) | **Template:** re-teach / gaps (**B1–B6**); **no** real hostnames — copy to **`docs/private/homelab/`** |
 | **[../private.example/homelab/LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md](../private.example/homelab/LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md)** · [pt-BR](../private.example/homelab/LAB_NETWORK_L3_DHCP_AND_CYBERSEC.pt_BR.md) | **Template:** per-VLAN DHCP gateway/DNS, CyberSecure alignment, verification commands — copy to **`docs/private/homelab/`** and fill RFC1918 inventory locally |
+| **[../private.example/homelab/LAB_OP_SHOPPING_LIST_COVER_NOTE.md](../private.example/homelab/LAB_OP_SHOPPING_LIST_COVER_NOTE.md)** | **Pointer:** full shopping list + indicative prices + **urgent** meter/breaker/panel photos — **`docs/private/homelab/LAB_OP_SHOPPING_LIST_AND_POWER.md`** only |
 
 ---
 
@@ -56,6 +57,7 @@
 | **`lab-op-hosts.manifest.json`** | **Local only** (copy from **`docs/private.example/homelab/lab-op-hosts.manifest.example.json`**): SSH `Host` aliases + Linux **`repoPaths`** for **`scripts/lab-op-sync-and-collect.ps1`** |
 | **`CREDENTIALS_AND_LAB_SECRETS.md`** (copy from **`docs/private.example/homelab/`**) | Policy for SNMP/API secrets: env / vault / gitignored `.env` — **never** chat paste |
 | **`LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md`** (copy from **`docs/private.example/homelab/`**) | Per-VLAN default gateway + DNS notes, CyberSecure honeypot row, verification commands — **no** live subnet table in git |
+| **`LAB_OP_SHOPPING_LIST_AND_POWER.md`** (create in **`docs/private/homelab/`** — see **[LAB_OP_SHOPPING_LIST_COVER_NOTE.md](../private.example/homelab/LAB_OP_SHOPPING_LIST_COVER_NOTE.md)**) | Hardware shopping priorities, indicative BRL prices (timestamped), UPS/power planning; **§0 urgent** photos |
 
 **Also private (repo root of `docs/private/`):** **`WHAT_TO_SHARE_WITH_AGENT.md`**, **`SOLAR_SYSTEM_NOTES.md`**, **`From Docker hub list of repositories.md`**, **`Learning_and_certs.md`**, **`CONTEXT_ACADEMIC_AND_FAMILY.md`** (spouse work + long-term academic links — **you** fill when ready), optional **`reports/*.xlsx`**, scratch **`.txt`** files — keep or migrate into **`homelab/`** over time.
 
