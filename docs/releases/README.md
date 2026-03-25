@@ -1,6 +1,6 @@
 # Release notes and how to publish a GitHub release
 
-Each release has a markdown file here (e.g. `1.3.1.md`, `1.5.4.md`) with the release notes.
+Each release has a markdown file here (e.g. `1.3.1.md`, `1.5.4.md`) with the release notes. A short rolling summary lives at the repo root in **[CHANGELOG.md](../../CHANGELOG.md)**.
 
 ## Get ready for a PR (version bump + release note)
 

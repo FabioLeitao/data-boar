@@ -30,7 +30,7 @@ Multilingual and legacy encodings are supported; **configurable timeouts** and *
 
 **Typical scenarios:** Preparing for an audit or regulator request; mapping data before a migration or DLP rollout; raising compliance awareness without a full war room.
 
-> **Current release:** 1.6.6. Release notes: [docs/releases/](docs/releases/) and the [GitHub Releases page](https://github.com/FabioLeitao/data-boar/releases).
+> **Current release:** 1.6.7. Summary: [CHANGELOG.md](CHANGELOG.md). Full notes: [docs/releases/](docs/releases/) and the [GitHub Releases page](https://github.com/FabioLeitao/data-boar/releases).
 > **Documentation note:** This README and `docs/USAGE.md` are the canonical English references. When features or options change, update **both** languages to keep them in sync.
 
 ---
@@ -49,7 +49,7 @@ Data Boar runs as a **one-shot CLI** audit or as a **REST API** (default port 80
 | Sensitivity detection (ML/DL terms)                               | [SENSITIVITY_DETECTION.md](docs/SENSITIVITY_DETECTION.md) · [SENSITIVITY_DETECTION.pt_BR.md](docs/SENSITIVITY_DETECTION.pt_BR.md)                                                                                                            |
 | Testing, security, contributing                                   | [docs/TESTING.md](docs/TESTING.md) · [SECURITY.md](SECURITY.md) · [CONTRIBUTING.md](CONTRIBUTING.md)                                                                                                                                         |
 
-**Quick start (from repo root):** `uv sync` → prepare `config.yaml` (see `deploy/config.example.yaml` and [USAGE](docs/USAGE.md)) → `uv run python main.py --config config.yaml` for one-shot, or `uv run python main.py --config config.yaml --web` for the API and dashboard (default bind `127.0.0.1`, e.g. [http://127.0.0.1:8088/](http://127.0.0.1:8088/); use `--host 0.0.0.0` only with network controls). Full flags: `uv run python main.py --help`. **Do not commit** root `config.yaml` (`.gitignore`); it may contain LAN paths and secrets—see [CONTRIBUTING.md](CONTRIBUTING.md#public-repo-hygiene-lan-credentials).
+**Quick start (from repo root):** `uv sync` → prepare `config.yaml` (see `deploy/config.example.yaml` and [USAGE](docs/USAGE.md)) → `uv run python main.py --config config.yaml` for one-shot, or `uv run python main.py --config config.yaml --web --allow-insecure-http` for plaintext API/dashboard (default bind `127.0.0.1`, e.g. [http://127.0.0.1:8088/](http://127.0.0.1:8088/); for TLS use `--https-cert-file` / `--https-key-file`; use `--host 0.0.0.0` only with network controls). Full flags: `uv run python main.py --help`. **Do not commit** root `config.yaml` (`.gitignore`); it may contain LAN paths and secrets—see [CONTRIBUTING.md](CONTRIBUTING.md#public-repo-hygiene-lan-credentials).
 
 **Full documentation index** (browse all topics and languages): [docs/README.md](docs/README.md) · [docs/README.pt_BR.md](docs/README.pt_BR.md).
 
