@@ -30,13 +30,13 @@ git add .
 git commit -m "chore: bootstrap private notes repo"
 ```
 
-**Remotes (pick one):**
+## Remotes (pick one):
 
-| Option | Use when |
-| ------ | -------- |
-| **No remote** | You only want history on this disk; backups are copies/USB/restic. |
+| Option                  | Use when                                                                                                                  |
+| ------                  | --------                                                                                                                  |
+| **No remote**           | You only want history on this disk; backups are copies/USB/restic.                                                        |
 | **`file://` bare repo** | Second folder on disk or NAS, e.g. `git remote add backup file:///path/to/private-notes.git` then `git push backup main`. |
-| **Self-hosted SSH** | Your own server—not GitHub—if you want off-PC history without publishing product-adjacent strategy. |
+| **Self-hosted SSH**     | Your own server—not GitHub—if you want off-PC history without publishing product-adjacent strategy.                       |
 
 **Do not** add a GitHub (or public) remote for this tree unless you **explicitly** want that content online.
 

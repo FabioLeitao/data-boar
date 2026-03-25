@@ -11,9 +11,9 @@ Create **`docs/private/operator_economics/`** on your machine for **operator-sid
 
 ## How it relates to `commercial/`
 
-| Tree | Use |
-| ---- | --- |
-| **`docs/private/commercial/`** | **Client-facing** economics: consulting pricing studies, proposals with numbers, partner margins, engagement-specific facts. |
+| Tree                                   | Use                                                                                                                                        |
+| ----                                   | ---                                                                                                                                        |
+| **`docs/private/commercial/`**         | **Client-facing** economics: consulting pricing studies, proposals with numbers, partner margins, engagement-specific facts.               |
 | **`docs/private/operator_economics/`** | **Your** runway and cost base: personal/lab operating costs, tools, upgrades — informs *your* pricing floor indirectly, not customer SOWs. |
 
 If a file mixes both (e.g. one workbook), pick **one primary home** or split into two linked files; avoid duplicating sensitive numbers.
@@ -22,10 +22,10 @@ If a file mixes both (e.g. one workbook), pick **one primary home** or split int
 
 Use plain Markdown under **`docs/private/operator_economics/`** (or split by language). These names are **examples**—adjust to taste:
 
-| File (example) | Content |
-| -------------- | ------- |
-| **`EFFORT_PHASES_DEMO_BETA_PRODUCTION.md`** | Rough **effort ranges** and assumptions per release stage; what would unlock **help** or funding; links to **`docs/plans/`** when a slice graduates to tracked work. |
-| **`FINANCING_AND_BUDGET_OPTIONS.md`** | Runway, grants, pricing comparisons, **purchase** options—still **private** if it reveals strategy. |
+| File (example)                                | Content                                                                                                                                                                                                                                                                      |
+| --------------                                | -------                                                                                                                                                                                                                                                                      |
+| **`EFFORT_PHASES_DEMO_BETA_PRODUCTION.md`**   | Rough **effort ranges** and assumptions per release stage; what would unlock **help** or funding; links to **`docs/plans/`** when a slice graduates to tracked work.                                                                                                         |
+| **`FINANCING_AND_BUDGET_OPTIONS.md`**         | Runway, grants, pricing comparisons, **purchase** options—still **private** if it reveals strategy.                                                                                                                                                                          |
 | **`OPERATOR_QA_JOURNAL.pt_BR.md`** (or `.md`) | Dated **questions / answers / follow-ups** from you + assistant—private “thinking log”; optional **meme / metaphor interpretations** you asked the assistant to preserve for re-study; index rows can point here from **`author_info/RECENT_OPERATOR_SYNC_INDEX.pt_BR.md`**. |
 
 **Version history:** Optional **nested Git** (or backups) for the whole **`docs/private/`** tree—see tracked **[PRIVATE_LOCAL_VERSIONING.md](../../ops/PRIVATE_LOCAL_VERSIONING.md)** ([pt-BR](../../ops/PRIVATE_LOCAL_VERSIONING.pt_BR.md)).
