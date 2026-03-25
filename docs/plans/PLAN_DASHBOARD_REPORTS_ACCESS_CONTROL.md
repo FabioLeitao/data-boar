@@ -20,19 +20,19 @@ Today, anyone who can reach the web UI can open **dashboard**, **reports list**,
 
 ## Type of work
 
-| Label        | Note                                                                 |
-| ------------ | -------------------------------------------------------------------- |
-| **Feature**  | Permission or role gate on `/reports`, `/report`, `/reports/{id}`, heatmaps as needed. |
-| **Security UX** | Reduces accidental exposure of compliance artefacts to the wrong audience. |
-| **Not a bug** | Current behaviour is documented as deployment-dependent; tightening is **opt-in**. |
+| Label           | Note                                                                                   |
+| ------------    | --------------------------------------------------------------------                   |
+| **Feature**     | Permission or role gate on `/reports`, `/report`, `/reports/{id}`, heatmaps as needed. |
+| **Security UX** | Reduces accidental exposure of compliance artefacts to the wrong audience.             |
+| **Not a bug**   | Current behaviour is documented as deployment-dependent; tightening is **opt-in**.     |
 
 ---
 
 ## Workarounds (today — document, don’t block)
 
 1. **Network / LB:** Restrict routes (`/reports`, `/report`, `/heatmap`) at reverse proxy; mTLS or VPN for admin paths.
-2. **Global API key:** `api.require_api_key: true` — browsers need to send `X-API-Key` / `Authorization: Bearer` (clunky for pure HTML unless extended).
-3. **Split listeners:** Internal bind for dashboard, no public ingress (Kubernetes `ClusterIP`, firewall).
+1. **Global API key:** `api.require_api_key: true` — browsers need to send `X-API-Key` / `Authorization: Bearer` (clunky for pure HTML unless extended).
+1. **Split listeners:** Internal bind for dashboard, no public ingress (Kubernetes `ClusterIP`, firewall).
 
 See [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md), [TECH_GUIDE.md](../TECH_GUIDE.md) for deployment guidance.
 
@@ -40,12 +40,12 @@ See [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md), [TECH_GUIDE.md](../T
 
 ## Target direction (phased — no IdP commitment in v1)
 
-| Phase | Scope | Outcome |
-| ----- | ----- | ------- |
-| **0** | Docs only | Explicit matrix: which routes are unauthenticated by default; proxy recipes; link #86. |
-| **1** | Config + middleware | Optional **route class** map: e.g. `public` / `authenticated` / `admin`; reuse or extend API key so **HTML** flows can pass key (header or **httpOnly cookie** set by operator-owned login page — out of scope for minimal slice). |
-| **2** | Roles in config | Named roles (e.g. `scanner`, `reports_reader`, `config_admin`) and **allowlists** per route family; multiple keys or JWT claims (design TBD). |
-| **3** | External IdP (optional) | OIDC / SSO groups mapped to roles — only if product moves to enterprise multi-user. |
+| Phase | Scope                   | Outcome                                                                                                                                                                                                                            |
+| ----- | -----                   | -------                                                                                                                                                                                                                            |
+| **0** | Docs only               | Explicit matrix: which routes are unauthenticated by default; proxy recipes; link #86.                                                                                                                                             |
+| **1** | Config + middleware     | Optional **route class** map: e.g. `public` / `authenticated` / `admin`; reuse or extend API key so **HTML** flows can pass key (header or **httpOnly cookie** set by operator-owned login page — out of scope for minimal slice). |
+| **2** | Roles in config         | Named roles (e.g. `scanner`, `reports_reader`, `config_admin`) and **allowlists** per route family; multiple keys or JWT claims (design TBD).                                                                                      |
+| **3** | External IdP (optional) | OIDC / SSO groups mapped to roles — only if product moves to enterprise multi-user.                                                                                                                                                |
 
 **Non-goals for early phases:** Full user database, password reset flows, or replacing the operator’s IdP.
 
@@ -61,11 +61,11 @@ See [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md), [TECH_GUIDE.md](../T
 
 **Shared risk:** Changing HTML routes **twice** (once unprefixed for RBAC, again for `/{locale}/…`) wastes review and tokens.
 
-| Step | Track | Action |
-| ---- | ----- | ------ |
-| **D-WEB** | Both | **Design-only:** URL map + **middleware order** (API key, locale resolution for HTML, route-class / RBAC). Cross-link between this file and the i18n plan. |
-| **Implementation** | i18n first (recommended) | **M-LOCALE-V1:** path-prefixed HTML + `en` / `pt-BR` JSON + negotiation; **no** new RBAC semantics required on first merge if defaults unchanged. |
-| **Implementation** | #86 | Phase **0** (docs) can ship anytime. Phase **1+** gates should target the **same prefixed paths** as i18n (e.g. `/{locale}/reports`), not legacy unprefixed HTML — unless a **security exception** forces early guards on old paths (then budget a **migration** slice). |
+| Step               | Track                    | Action                                                                                                                                                                                                                                                                   |
+| ----               | -----                    | ------                                                                                                                                                                                                                                                                   |
+| **D-WEB**          | Both                     | **Design-only:** URL map + **middleware order** (API key, locale resolution for HTML, route-class / RBAC). Cross-link between this file and the i18n plan.                                                                                                               |
+| **Implementation** | i18n first (recommended) | **M-LOCALE-V1:** path-prefixed HTML + `en` / `pt-BR` JSON + negotiation; **no** new RBAC semantics required on first merge if defaults unchanged.                                                                                                                        |
+| **Implementation** | #86                      | Phase **0** (docs) can ship anytime. Phase **1+** gates should target the **same prefixed paths** as i18n (e.g. `/{locale}/reports`), not legacy unprefixed HTML — unless a **security exception** forces early guards on old paths (then budget a **migration** slice). |
 
 Details and anti-footgun rules: **PLAN_DASHBOARD_I18N.md** § *Meshing with dashboard reports RBAC*.
 
@@ -81,13 +81,13 @@ Details and anti-footgun rules: **PLAN_DASHBOARD_I18N.md** § *Meshing with dash
 
 ## Relationship to other plans (entangled, not merged)
 
-| Plan / doc | Overlap | How to treat it |
-| ---------- | ------- | ---------------- |
-| [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) | Same routes and templates (`/`, `/reports`, …). | **Coordinate:** **D-WEB** design checkpoint first; then implement **locale prefix** before or with **Phase 1+** RBAC on **prefixed** paths — see **§ Sequencing with dashboard i18n** above. i18n does not replace RBAC. |
-| [LICENSING_SPEC.md](../LICENSING_SPEC.md) / commercial JWT | Product **license** claims (`dbtier`, …) vs **session** roles (`reports_reader`, …). | **Optional convergence** in a far enterprise phase: both might read JWT-shaped claims; keep **specs separate** until requirements are explicit—no need to fold this plan into licensing docs. |
-| [completed/PLAN_RATE_LIMIT_SCANS.md](completed/PLAN_RATE_LIMIT_SCANS.md) | GET `/reports`, `/heatmap` intentionally not rate-limited for reads. | **Compatible:** RBAC restricts *who*; rate limits restrict *how hard*. Changing either should mention the other in release notes. |
-| [PLAN_SELENIUM_QA_TEST_SUITE.md](PLAN_SELENIUM_QA_TEST_SUITE.md) | Future E2E on dashboard flows. | When RBAC lands, QA plan should add cases for **forbidden** vs **allowed** roles on `/reports`. |
-| [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md) | Deployment and `api.require_api_key`. | **Phase 0** of this plan extends those docs; no separate “security plan” file required. |
+| Plan / doc                                                               | Overlap                                                                              | How to treat it                                                                                                                                                                                                          |
+| ----------                                                               | -------                                                                              | ----------------                                                                                                                                                                                                         |
+| [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md)                         | Same routes and templates (`/`, `/reports`, …).                                      | **Coordinate:** **D-WEB** design checkpoint first; then implement **locale prefix** before or with **Phase 1+** RBAC on **prefixed** paths — see **§ Sequencing with dashboard i18n** above. i18n does not replace RBAC. |
+| [LICENSING_SPEC.md](../LICENSING_SPEC.md) / commercial JWT               | Product **license** claims (`dbtier`, …) vs **session** roles (`reports_reader`, …). | **Optional convergence** in a far enterprise phase: both might read JWT-shaped claims; keep **specs separate** until requirements are explicit—no need to fold this plan into licensing docs.                            |
+| [completed/PLAN_RATE_LIMIT_SCANS.md](completed/PLAN_RATE_LIMIT_SCANS.md) | GET `/reports`, `/heatmap` intentionally not rate-limited for reads.                 | **Compatible:** RBAC restricts *who*; rate limits restrict *how hard*. Changing either should mention the other in release notes.                                                                                        |
+| [PLAN_SELENIUM_QA_TEST_SUITE.md](PLAN_SELENIUM_QA_TEST_SUITE.md)         | Future E2E on dashboard flows.                                                       | When RBAC lands, QA plan should add cases for **forbidden** vs **allowed** roles on `/reports`.                                                                                                                          |
+| [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md)                   | Deployment and `api.require_api_key`.                                                | **Phase 0** of this plan extends those docs; no separate “security plan” file required.                                                                                                                                  |
 
 **Why keep a dedicated plan file:** Issue [#86](https://github.com/FabioLeitao/data-boar/issues/86) is a **trackable product ask** with its own phases and completion checklist. Folding it only into i18n or licensing would hide it from the **GitHub issues queue** table in [PLANS_TODO.md](PLANS_TODO.md).
 

@@ -25,8 +25,8 @@ When you ask the agent to **preview**, **commit locally**, or **create a PR** wi
 - If you asked for a specific branch (e.g. “on branch `feature/xyz`”), creates or checks out that branch before committing (when there are changes).
 - **Pushes** the current branch to `origin` via your existing SSH credentials (all local commits are included).
 - **Opens the PR in your default browser** with the title and description **pre-filled**:
-    - Uses **`gh pr create --title ... --body-file ... --base <default> --web`** so the GitHub “New pull request” form opens with title and body already set; you review and click “Create pull request.”
-    - If `gh` is not available: opens the GitHub **compare** page so you can create the PR there in your logged-in session.
+  - Uses **`gh pr create --title ... --body-file ... --base <default> --web`** so the GitHub “New pull request” form opens with title and body already set; you review and click “Create pull request.”
+  - If `gh` is not available: opens the GitHub **compare** page so you can create the PR there in your logged-in session.
 
 ## Selecting which files to include
 
@@ -41,12 +41,12 @@ You can limit the commit/PR to specific files with **`-IncludeFiles`** (comma-se
 
 **Why:** Uncommitted work that sits for days becomes **hard to review**, easy to **lose**, and painful to **rebase or merge** when you finally open a PR or ship. Regular **local commits** on a **feature branch** record intent and shrink conflict surfaces.
 
-| Situation | What to do |
-| --------- | ---------- |
-| **One important change** | Commit when it’s complete and gated (e.g. `check-all` or `lint-only` for docs-only). |
-| **Many small edits, same theme** | One commit for the whole “train of thought”, *or* a few commits split by sub-theme (`test:`, `docs:`, `feat:`)—each message should read clearly in `git log`. |
-| **Long session ending** | Prefer committing coherent work rather than a dirty tree; if you must stop mid-theme, use **one** clearly labeled commit (e.g. states what’s left) **on a branch**—agree with the operator; never pollute `main` casually. |
-| **Branch alive several days** | **`git fetch`** and merge or rebase **`origin/main`** into your branch often so you don’t stack a wall of conflicts at PR time. |
+| Situation                        | What to do                                                                                                                                                                                                                 |
+| ---------                        | ----------                                                                                                                                                                                                                 |
+| **One important change**         | Commit when it’s complete and gated (e.g. `check-all` or `lint-only` for docs-only).                                                                                                                                       |
+| **Many small edits, same theme** | One commit for the whole “train of thought”, *or* a few commits split by sub-theme (`test:`, `docs:`, `feat:`)—each message should read clearly in `git log`.                                                              |
+| **Long session ending**          | Prefer committing coherent work rather than a dirty tree; if you must stop mid-theme, use **one** clearly labeled commit (e.g. states what’s left) **on a branch**—agree with the operator; never pollute `main` casually. |
+| **Branch alive several days**    | **`git fetch`** and merge or rebase **`origin/main`** into your branch often so you don’t stack a wall of conflicts at PR time.                                                                                            |
 
 This complements **PR batching**: many **local** commits can still ship as **one PR**. Rules: **`.cursor/rules/execution-priority-and-pr-batching.mdc`**, **`.cursor/rules/git-pr-sync-before-advice.mdc`**.
 
@@ -99,6 +99,9 @@ $body = @"
 # Create PR and run the test suite before pushing (no push if tests fail)
 .\scripts\commit-or-pr.ps1 -Action PR -Title "Your title" -Body "Bullets..." -RunTests
 
+# Ensure gh default repository from origin (optional manual preflight)
+.\scripts\gh-ensure-default.ps1
+
 # Create PR with body from a file (avoids escaping multi-line body in the shell)
 .\scripts\create-pr.ps1 -Title "Your title" -BodyFilePath "path\to\body.txt"
 .\scripts\create-pr.ps1 -Title "Your title" -BodyFilePath $env:TEMP\pr-body.txt -RunTests
@@ -121,6 +124,7 @@ $body = @"
 
 - **Git** and (for PR) **SSH** or HTTPS push to GitHub.
 - **GitHub CLI (`gh`)** and `gh auth login` for the best experience: PR form opens pre-filled in your browser. If `gh` is missing, the script still opens the compare page so you can create the PR manually.
+- `commit-or-pr.ps1 -Action PR` now auto-runs a lightweight default-repo check for `gh` (derived from `origin`) to avoid `gh pr checks` / `gh pr create` failures caused by missing `gh` default repository.
 
 ## Notes
 
@@ -134,6 +138,7 @@ When you want to **check**, run **pre-commit**, **commit**, **describe**, and cr
 | Step   | Goal                                                                                                                               | Command                                                                                        |
 | ------ | ------                                                                                                                             | --------                                                                                       |
 | 0      | **Optional:** open Dependabot PRs + Docker Scout quickview (read-only; needs `gh`, optional Docker)                                | `.\scripts\maintenance-check.ps1`                                                              |
+| 0a     | **Optional:** PR hygiene reminder + quick open-PR checks (`gh` preflight + checks per open PR)                                      | `.\scripts\pr-hygiene-remind.ps1` or `.\scripts\pr-hygiene-remind.ps1 -RunQuickChecks`         |
 | 1      | **Check + pre-commit** (Ruff lint, format, markdown, full pytest in one run)                                                       | `.\scripts\check-all.ps1`                                                                      |
 | 2      | **Preview** (see what would be committed; no stage, no commit)                                                                     | `.\scripts\preview-commit.ps1`                                                                 |
 | 3      | **Propose** a short commit title and bullet-point PR body from the file list and context                                           | (you or the agent suggest title and body)                                                      |
@@ -145,6 +150,16 @@ For a **long PR body**, use:
 - A one-off `.ps1` that sets `$Title` and `$Body` (e.g. here-string) and calls `commit-or-pr.ps1 -Action PR -Title $Title -Body $Body -RunTests`.
 
 **Why this order:** One full gate before committing; one preview to confirm scope; one PR step that re-runs tests and syncs (fetch + rebase if behind) before push, so the PR is safe and synced. No ad-hoc `git add`/`git commit`/`git push` or raw `pytest`/`ruff` in between when these scripts cover the need.
+
+### Merge after CI is green (maintainer / agent)
+
+When **`gh pr checks <N>`** passes and the PR is **mergeable** (no conflicts), use **`.\scripts\pr-merge-when-green.ps1 -PrNumber <N>`** from the repo root (`gh` authenticated). Optional: **`-RunLocalCheckAll`** for a local **`check-all`** before merge. See **`.cursor/rules/agent-autonomous-merge-and-lab-ops.mdc`**.
+
+### GitHub auto-merge (optional)
+
+**Default recommendation:** keep **auto-merge disabled** for normal feature/workflow PRs. Prefer an **explicit** merge after green checks and a conscious decision (human or **`pr-merge-when-green.ps1`**), so you avoid surprise merges and keep control aligned with a low-ceremony but deliberate workflow.
+
+**When it can help:** mechanical, low-risk PRs (e.g. **Dependabot** after triage) where you still require **branch protection / checks** — enable **per PR** in the GitHub UI if you want the merge to happen automatically once CI passes.
 
 ## Conventional Commits: types and scopes (homelab / ops fronts)
 

@@ -10,7 +10,7 @@
 
 **Canonical copy** for decision-makers lives in the root **[README.md](../../README.md)** and **[README.pt_BR.md](../../README.pt_BR.md)** (*For decision-makers / Para gestores*). When you refresh decks, CV blurbs, or thesis “product” paragraphs, start there.
 
-**Differentiators to cite (hireability / commercial story):**
+## Differentiators to cite (hireability / commercial story):
 
 - **Filesystem judgment:** Configurable plain-text depth plus **calmer ML triage** on entertainment-shaped and common OSS-doc content—**review band** vs **priority** violations—so legal and DPO time goes to real risk.
 - **Roadmap — richer data soup:** Optional **image metadata and OCR**, **audio/video** tags, **subtitle** sidecars ([PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md](PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md), [USAGE.md](../../USAGE.md))—same **boar / soup** metaphor for media-heavy estates.
@@ -82,12 +82,12 @@ Add only what you are comfortable making reference to in docs; keep wording fact
 
 **Stakeholder line (short):** *Security and delivery evidence come first (paid cyber progress + shipped product + LGPD posture). AI ecosystem learning runs in parallel at a sustainable cadence; formal AI-vendor exams are a milestone when the bar is met—not the gate for credibility this quarter.*
 
-| Phase | Focus | Notes |
-| ----- | ----- | ----- |
-| **Primary (2026)** | **CWL cyber track** + **release-backed proof** | Finish what you **already paid**; fixed blocks (1–2×/week). Same calendar: ship Data Boar slices. |
-| **Alternating** | **Anthropic Academy** (or other AI courses) | **Not** the top priority vs CWL; slot when energy/calendar allow—portable patterns (MCP, agents) still help this repo’s **workflow**. |
-| **In parallel (thin)** | **Priority band A** (–1, –1b) | Dependabot, Docker Scout, `check-all`—**M-TRUST**. [PLANS_TODO.md](PLANS_TODO.md). |
-| **When eligible + prepared** | **CCA attempt** | Optional capstone; retake OK; notes in `docs/private/`. |
+| Phase                        | Focus                                          | Notes                                                                                                                                 |
+| -----                        | -----                                          | -----                                                                                                                                 |
+| **Primary (2026)**           | **CWL cyber track** + **release-backed proof** | Finish what you **already paid**; fixed blocks (1–2×/week). Same calendar: ship Data Boar slices.                                     |
+| **Alternating**              | **Anthropic Academy** (or other AI courses)    | **Not** the top priority vs CWL; slot when energy/calendar allow—portable patterns (MCP, agents) still help this repo’s **workflow**. |
+| **In parallel (thin)**       | **Priority band A** (–1, –1b)                  | Dependabot, Docker Scout, `check-all`—**M-TRUST**. [PLANS_TODO.md](PLANS_TODO.md).                                                    |
+| **When eligible + prepared** | **CCA attempt**                                | Optional capstone; retake OK; notes in `docs/private/`.                                                                               |
 
 **Tracked operator checklist:** [OPERATOR_MANUAL_ACTIONS.md](../ops/OPERATOR_MANUAL_ACTIONS.md) ([pt-BR](../ops/OPERATOR_MANUAL_ACTIONS.pt_BR.md)). **Sprint mirror:** [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) §3.1.
 

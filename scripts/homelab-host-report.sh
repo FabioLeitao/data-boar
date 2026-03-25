@@ -148,6 +148,49 @@ else
   echo "lynis: not installed or not found under /usr/sbin, /usr/bin, dpkg -L lynis, or standard PATH"
 fi
 
+echo "--- kernel / sysctl / block (read-only sample) ---"
+# Helps trace lab tuning (vm dirty ratios, schedulers, rotational flags) without dumping full sysctl -a.
+if command -v sysctl >/dev/null; then
+  sysctl vm.swappiness vm.dirty_ratio vm.dirty_background_ratio 2>/dev/null || true
+  sysctl vm.dirty_expire_centisecs vm.dirty_writeback_centisecs 2>/dev/null || true
+  sysctl kernel.randomize_va_space 2>/dev/null || true
+fi
+if [[ -r /proc/sys/vm/min_free_kbytes ]]; then
+  echo "vm.min_free_kbytes: $(cat /proc/sys/vm/min_free_kbytes 2>/dev/null)"
+fi
+
+if command -v lsblk >/dev/null; then
+  echo "--- lsblk (summary) ---"
+  lsblk -o NAME,SIZE,TYPE,ROTA,RM,TRAN,MOUNTPOINTS 2>/dev/null | head -40 || true
+fi
+
+echo "--- /sys/block/*/queue (scheduler, rotational, nr_requests sample) ---"
+for q in /sys/block/*/queue; do
+  [[ -d "$q" ]] || continue
+  dev="${q#/sys/block/}"
+  dev="${dev%/queue}"
+  [[ "$dev" == loop* ]] && continue
+  if [[ -f "$q/scheduler" ]]; then
+    echo "$dev scheduler: $(tr -d '\n' <"$q/scheduler" 2>/dev/null)"
+  fi
+  if [[ -f "$q/rotational" ]]; then
+    echo "$dev rotational: $(tr -d '\n' <"$q/rotational" 2>/dev/null)"
+  fi
+  if [[ -f "$q/nr_requests" ]]; then
+    echo "$dev nr_requests: $(tr -d '\n' <"$q/nr_requests" 2>/dev/null)"
+  fi
+done 2>/dev/null | head -80
+
+echo "--- cpufreq (if present) ---"
+if [[ -d /sys/devices/system/cpu/cpu0/cpufreq ]]; then
+  for f in scaling_governor energy_performance_preference; do
+    p="/sys/devices/system/cpu/cpu0/cpufreq/$f"
+    [[ -r "$p" ]] && echo "cpu0 $f: $(tr -d '\n' <"$p" 2>/dev/null)"
+  done
+else
+  echo "(no cpufreq sysfs — VM or older kernel?)"
+fi
+
 echo "--- Optional dev toolchains (not required for Data Boar) ---"
 command -v go >/dev/null && go version || echo "go: not in PATH"
 command -v rustc >/dev/null && rustc --version || echo "rustc: not in PATH"

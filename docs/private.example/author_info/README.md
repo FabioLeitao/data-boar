@@ -11,6 +11,8 @@ Use this tree for **you-shaped** facts (not LAN topology—that stays under **`d
 - **`education.md`** — degrees, institutions, thesis titles.
 - **`certifications.md`** — cert names, vendors, expiry, links to Bitwarden items for credential refs (not passwords in plain text).
 - **`narrative.md`** — blog export, timeline, or bullets for future `docs/NARRATIVE_AND_ARCHITECTURE_HISTORY.md` (source material only).
+- **`ACADEMIC_NETWORK_FAMILY_ETHICS.pt_BR.md`** *(optional, private only)* — estratégia **ética** para rede acadêmica / vínculos familiares próximos (CAPES, EaD, etc.); **nunca** em Git; ver modelo em `docs/private/author_info/` na sua máquina após criar.
+- **`RECENT_OPERATOR_SYNC_INDEX.pt_BR.md`** *(optional, private only)* — índice **datado** de alinhamentos do chat com o assistente; política rastreada: **`docs/ops/OPERATOR_SESSION_CAPTURE_GUIDE.md`**.
 
 ## Sharing with AI sessions
 
