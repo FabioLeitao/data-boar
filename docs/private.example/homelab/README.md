@@ -15,15 +15,29 @@ The AI **cannot** open your LAN by itself. **Default:** it runs **`ssh`** from *
      IdentityFile ~/.ssh/id_ed25519
    ```
 
-2. In **this** private README, record **only** the alias name and role (no secrets):
+1. In **this** private README, record **only** the alias name and role (no secrets):
 
-   | Role        | SSH `Host` alias (local to dev PC) | Notes                          |
-   | ----------- | ---------------------------------- | ------------------------------ |
-   | Lab server  | `latitude-lab`                     | Zorin; reports / Docker / ISOs |
+| Role        | SSH `Host` alias (local to dev PC) | Notes                          |
+| ----------- | ---------------------------------- | ------------------------------ |
+| Lab server  | `latitude-lab`                     | Zorin; reports / Docker / ISOs |
 
-3. Agents **`read_file`** this README and **`AGENT_LAB_ACCESS.md`** when homelab work applies (**`@` optional**). Then use **`ssh latitude-lab 'command'`** from the integrated terminal.
+1. Agents **`read_file`** this README and **`AGENT_LAB_ACCESS.md`** when homelab work applies (**`@` optional**). Then use **`ssh latitude-lab 'command'`** from the integrated terminal.
 
 **Do not** copy **private keys** or **passwords** into `docs/private/`. Use **key-based** login; keep passphrases in your OS keychain / agent.
+
+**SNMP / API tokens (UniFi, etc.):** See **[CREDENTIALS_AND_LAB_SECRETS.md](CREDENTIALS_AND_LAB_SECRETS.md)** ([pt-BR](CREDENTIALS_AND_LAB_SECRETS.pt_BR.md)) — session env vars, vault, gitignored `.env`; never paste into chat. **Extra SNMP targets (switch, Linux):** [SNMP_LAB_TARGETS.md](SNMP_LAB_TARGETS.md) ([pt-BR](SNMP_LAB_TARGETS.pt_BR.md)).
+
+**Future — syslog + detection (when lab hardware is ready):** [OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.md](OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.md) ([pt-BR](OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.pt_BR.md)) — ties to [PLAN_LAB_OP_OBSERVABILITY_STACK.md](../../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md).
+
+**Operator — AI access, security rationale, blue-team cadence:** [OPERATOR_AI_LAB_ACCESS_AND_BLUE_TEAM_RUNBOOK.md](OPERATOR_AI_LAB_ACCESS_AND_BLUE_TEAM_RUNBOOK.md) ([pt-BR](OPERATOR_AI_LAB_ACCESS_AND_BLUE_TEAM_RUNBOOK.pt_BR.md)) — copy to `docs/private/homelab/` and add site-specific notes (no secrets in git).
+
+**L3 / DHCP / DNS / CyberSecure (UniFi):** [LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md](LAB_NETWORK_L3_DHCP_AND_CYBERSEC.md) ([pt-BR](LAB_NETWORK_L3_DHCP_AND_CYBERSEC.pt_BR.md)) — per-VLAN gateway and DNS intent, honeypot alignment, verification commands; fill the private inventory table only under `docs/private/homelab/`.
+
+**Sequenced lab plan (firewall → access → Loki → Wazuh):** [PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.md](../../plans/PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.md) ([pt-BR](../../plans/PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.pt_BR.md)) in `docs/plans/` — sprint checklist ties to [PLAN_LAB_OP_OBSERVABILITY_STACK.md](../../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md).
+
+**Shopping list + power (private only):** [LAB_OP_SHOPPING_LIST_COVER_NOTE.md](LAB_OP_SHOPPING_LIST_COVER_NOTE.md) — full list with indicative prices stays under **`docs/private/homelab/LAB_OP_SHOPPING_LIST_AND_POWER.md`** (gitignored). **Urgent:** meter / breaker / panel photos for safe UPS and Enel planning.
+
+**CLI / session habit dumps (private only):** If you keep **`uptime`**, **`w`**, **`last`**, **`lastlog`**, or similar for planning or incident review, store under **`docs/private/homelab/reports/`** (or a dated `.txt`) — not in tracked docs, issues, or PRs (LAN IPs and login patterns). See **`docs/PRIVATE_OPERATOR_NOTES.md`** (EN) / **`.pt_BR.md`**.
 
 ### Windows: pCloud as `P:` (optional)
 
@@ -57,7 +71,7 @@ Tracked **placeholders** (copy structure into private `homelab/`, then fill with
 - **[OPERATOR_RETEACH.md](OPERATOR_RETEACH.md)** (English)
 - **[OPERATOR_RETEACH.pt_BR.md](OPERATOR_RETEACH.pt_BR.md)** (Brazilian Portuguese)
 
-Your private tree may keep **one** file (e.g. only pt-BR) or **both**; either way, follow **`.cursor/rules/docs-pt-br-locale.mdc`** for Portuguese prose. **`*.pt_BR.md`** under **`docs/private/`** is included in **`tests/test_docs_pt_br_locale.py`** when the folder exists (same idea as markdown lint). Store **`homelab-host-report`** output here as **`<HOST>_<YYYY_MM_DD>_homelab_host_report.log`** (include **WSL** under a distinct **HOST** name) for merge into **`LAB_SOFTWARE_INVENTORY.md`**. For **POST /scan** + poll **`/status`**, use **`scripts/poll_dashboard_scan.py`** (`--base` / `DATA_BOAR_BASE`), not a hardcoded host script.
+Your private tree may keep **one** file (e.g. only pt-BR) or **both**; either way, follow **`.cursor/rules/docs-pt-br-locale.mdc`** for Portuguese prose. **`*.pt_BR.md`** under **`docs/private/`** is included in **`tests/test_docs_pt_br_locale.py`** when the folder exists (same idea as markdown lint). Store **`homelab-host-report`** output under **`reports/`** as **`<HOST>_<YYYYMMDD_HHMM>_homelab_host_report.log`** (see **[reports/README.md](reports/README.md)**; include **WSL** under a distinct **HOST** name) for merge into **`LAB_SOFTWARE_INVENTORY.md`**. From Windows: **`scripts/collect-homelab-report-remote.ps1`**. For **POST /scan** + poll **`/status`**, use **`scripts/poll_dashboard_scan.py`** (`--base` / `DATA_BOAR_BASE`), not a hardcoded host script.
 
 ## Validation log
 

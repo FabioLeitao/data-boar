@@ -4,9 +4,9 @@
 
 When you maintain **`docs/private/homelab/`** (gitignored), prefer **two files per topic** where prose matters:
 
-| Pattern | Role |
-| ------- | ---- |
-| **`Name.md`** | **English** — good for international collaborators, Mermaid-heavy pages, or **summary** maps. |
+| Pattern             | Role                                                                                                       |
+| -------             | ----                                                                                                       |
+| **`Name.md`**       | **English** — good for international collaborators, Mermaid-heavy pages, or **summary** maps.              |
 | **`Name.pt_BR.md`** | **Brazilian Portuguese (pt-BR)** — not European Portuguese; see **`.cursor/rules/docs-pt-br-locale.mdc`**. |
 
 ## Exceptions / pragmatism

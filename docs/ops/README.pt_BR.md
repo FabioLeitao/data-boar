@@ -25,25 +25,29 @@ Definido em **`.cursor/rules/session-mode-keywords.mdc`**.
 
 ## Índice
 
-| Tópico                                            | English                                                                      | Português (pt-BR)                                                                        |
-| ------                                            | -------                                                                      | -----------------                                                                        |
-| SonarQube (home lab, Docker, CI / IDE / MCP)      | [SONARQUBE_HOME_LAB.md](SONARQUBE_HOME_LAB.md)                               | [SONARQUBE_HOME_LAB.pt_BR.md](SONARQUBE_HOME_LAB.pt_BR.md)                               |
-| Home lab — smoke de deploy e alvos de dados       | [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md)                               | [HOMELAB_VALIDATION.pt_BR.md](HOMELAB_VALIDATION.pt_BR.md)                               |
-| Convenções de commit e PR                         | [COMMIT_AND_PR.md](COMMIT_AND_PR.md)                                         | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md)                                         |
+| Tópico                                                | English                                                                      | Português (pt-BR)                                                                                      |
+| ------                                                | -------                                                                      | -----------------                                                                                      |
+| SonarQube (home lab, Docker, CI / IDE / MCP)          | [SONARQUBE_HOME_LAB.md](SONARQUBE_HOME_LAB.md)                               | [SONARQUBE_HOME_LAB.pt_BR.md](SONARQUBE_HOME_LAB.pt_BR.md)                                             |
+| Home lab — smoke de deploy e alvos de dados           | [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md)                               | [HOMELAB_VALIDATION.pt_BR.md](HOMELAB_VALIDATION.pt_BR.md)                                             |
+| Lab-op — stack mínimo de contêineres (Podman + k3s)   | [LAB_OP_MINIMAL_CONTAINER_STACK.md](LAB_OP_MINIMAL_CONTAINER_STACK.md)       | [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md)                     |
+| Ritmo, foco, tokens de sessão (Wabbix + caminho demo) | [OPERATOR_WORKFLOW_PACE_AND_FOCUS.md](OPERATOR_WORKFLOW_PACE_AND_FOCUS.md)   | [OPERATOR_WORKFLOW_PACE_AND_FOCUS.pt_BR.md](OPERATOR_WORKFLOW_PACE_AND_FOCUS.pt_BR.md)                 |
+| Convenções de commit e PR                             | [COMMIT_AND_PR.md](COMMIT_AND_PR.md)                                         | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md)                                                       |
 | Wabbix — caminhos baseline no repositório (revisores) | [WABBIX_IN_REPO_BASELINE.md](WABBIX_IN_REPO_BASELINE.md)                     | — (nota EN; pedidos WRB em [WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md](WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md)) |
-| Remotes, `origin`, fluxo de fork                  | [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md)                               | [REMOTES_AND_ORIGIN.pt_BR.md](REMOTES_AND_ORIGIN.pt_BR.md)                               |
-| Limpeza de branches + Docker (remote legado §7)   | [BRANCH_AND_DOCKER_CLEANUP.md](BRANCH_AND_DOCKER_CLEANUP.md)                 | [BRANCH_AND_DOCKER_CLEANUP.pt_BR.md](BRANCH_AND_DOCKER_CLEANUP.pt_BR.md)                 |
-| Canais de notificação ao operador                 | [OPERATOR_NOTIFICATION_CHANNELS.md](OPERATOR_NOTIFICATION_CHANNELS.md)       | [OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md](OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md)       |
-| Operador / TI (permissões mínimas)                | [OPERATOR_IT_REQUIREMENTS.md](OPERATOR_IT_REQUIREMENTS.md)                   | [OPERATOR_IT_REQUIREMENTS.pt_BR.md](OPERATOR_IT_REQUIREMENTS.pt_BR.md)                   |
-| Ajuste prático de identificação agregada (Fase C) | [AGGREGATED_IDENTIFICATION_TUNING.md](AGGREGATED_IDENTIFICATION_TUNING.md)   | [AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md](AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md)   |
-| Resolução de problemas — implantação Docker       | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.md) | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md) |
+| Remotes, `origin`, fluxo de fork                      | [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md)                               | [REMOTES_AND_ORIGIN.pt_BR.md](REMOTES_AND_ORIGIN.pt_BR.md)                                             |
+| Limpeza de branches + Docker (remote legado §7)       | [BRANCH_AND_DOCKER_CLEANUP.md](BRANCH_AND_DOCKER_CLEANUP.md)                 | [BRANCH_AND_DOCKER_CLEANUP.pt_BR.md](BRANCH_AND_DOCKER_CLEANUP.pt_BR.md)                               |
+| Canais de notificação ao operador                     | [OPERATOR_NOTIFICATION_CHANNELS.md](OPERATOR_NOTIFICATION_CHANNELS.md)       | [OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md](OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md)                     |
+| Chat → notas duráveis (política de captura de sessão) | [OPERATOR_SESSION_CAPTURE_GUIDE.md](OPERATOR_SESSION_CAPTURE_GUIDE.md)       | [OPERATOR_SESSION_CAPTURE_GUIDE.pt_BR.md](OPERATOR_SESSION_CAPTURE_GUIDE.pt_BR.md)                     |
+| Árvore private — Git/VCS local (nunca GitHub)         | [PRIVATE_LOCAL_VERSIONING.md](PRIVATE_LOCAL_VERSIONING.md)                   | [PRIVATE_LOCAL_VERSIONING.pt_BR.md](PRIVATE_LOCAL_VERSIONING.pt_BR.md)                                 |
+| Operador / TI (permissões mínimas)                    | [OPERATOR_IT_REQUIREMENTS.md](OPERATOR_IT_REQUIREMENTS.md)                   | [OPERATOR_IT_REQUIREMENTS.pt_BR.md](OPERATOR_IT_REQUIREMENTS.pt_BR.md)                                 |
+| Ajuste prático de identificação agregada (Fase C)     | [AGGREGATED_IDENTIFICATION_TUNING.md](AGGREGATED_IDENTIFICATION_TUNING.md)   | [AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md](AGGREGATED_IDENTIFICATION_TUNING.pt_BR.md)                 |
+| Resolução de problemas — implantação Docker           | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.md) | [TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md](TROUBLESHOOTING_DOCKER_DEPLOYMENT.pt_BR.md)               |
 
 **Relacionado (fora desta pasta):** [SECURITY.md](../SECURITY.md) / [SECURITY.pt_BR.md](../SECURITY.pt_BR.md) e [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md) / [CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md) — postura de segurança e endurecimento **Priority band A**, listados junto da política principal em [`docs/README.pt_BR.md`](../README.pt_BR.md).
 
 ### Scripts auxiliares opcionais (`scripts/`)
 
-| Script | Finalidade |
-| ------ | ---------- |
+| Script                                                           | Finalidade                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ------                                                           | ----------                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | [`poll_dashboard_scan.py`](../../scripts/poll_dashboard_scan.py) | Faz POST em `/scan`, consulta `/status` até ocioso e sugere download do relatório. **`DATA_BOAR_BASE`** ou **`--base`**; opcional **`DATA_BOAR_API_KEY`** / **`--api-key`** com `require_api_key`; **`--interval`** / **`--max-polls`** para ajustar espera. **`uv run python scripts/poll_dashboard_scan.py --help`**. Por **[AGENTS.md](../../AGENTS.md)**, não versionar hostname nem chave—só env ou **`docs/private/`**. |
 
 ---

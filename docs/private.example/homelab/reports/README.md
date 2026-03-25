@@ -1,0 +1,67 @@
+# Homelab host reports (local only — gitignored)
+
+**Purpose:** Store **stdout** from `scripts/homelab-host-report.sh` (run on each Linux host) for **traceability** when you tune kernel, I/O, or stack — alongside your other private notes.
+
+**Naming:** `<SSH-alias-or-hostname>_<YYYYMMDD_HHMM>_homelab_host_report.log` (see parent [README.md](../README.md)).
+
+## Populate from Windows (dev PC with repo + SSH):
+
+```powershell
+.\scripts\collect-homelab-report-remote.ps1 -SshHost latitude-lab
+```
+
+**Batch (multiple hosts + `git pull` on canonical clone paths):** save **`docs/private/homelab/lab-op-hosts.manifest.json`** (preferred) from **`../lab-op-hosts.manifest.example.json`**. If only **`lab-op-hosts.manifest.example.json`** exists under `homelab/`, **`scripts/lab-op-sync-and-collect.ps1`** uses it as fallback (with a warning). Then:
+
+```powershell
+.\scripts\lab-op-sync-and-collect.ps1
+```
+
+Repeat per host (`-SshHost` = entry in your `~/.ssh/config`) for single-host flow. Output defaults to **`docs/private/homelab/reports/`** next to this README when you copy the tree from `docs/private.example/`.
+
+## Populate on Linux (repo on host):
+
+```bash
+bash scripts/homelab-host-report.sh | tee "docs/private/homelab/reports/$(hostname -s)_$(date +%Y%m%d_%H%M)_homelab_host_report.log"
+```
+
+**Redact** LAN IPs, host FQDNs, or serials before sharing logs in chat or email.
+
+### SNMP (UniFi / gateway) — log agendado no Windows (Task Scheduler)
+
+Para gravar a saída do probe SNMP em **arquivo local** (pasta gitignored), sem colocar segredos na tarefa agendada:
+
+1. Crie **`docs/private/homelab/.env.snmp.local`** (nome exato, com o ponto no início), **ou** um ficheiro dedicado por equipamento (ex.: **`.env.snmp.udm-se.local`** para UDM SE — mesmo conteúdo que o exemplo). Copie do modelo rastreado: **`docs/private.example/homelab/env.snmp.local.example`** →
+
+   `Copy-Item docs\private.example\homelab\env.snmp.local.example docs\private\homelab\.env.snmp.local`
+   Depois edite com os valores reais (ver [CREDENTIALS_AND_LAB_SECRETS.md](../CREDENTIALS_AND_LAB_SECRETS.md)). Se usares ficheiro **não** default, nos testes e no Agendador passa **`-EnvFile "docs\private\homelab\.env.snmp.udm-se.local"`** (ajusta o nome).
+
+1. Teste manualmente na raiz do repo:
+
+   ```powershell
+   .\scripts\snmp-udm-lab-probe-to-log.ps1 -WslDistro "Debian" -MaxLines 400
+   # com .env dedicado (ex. UDM-SE):
+   # .\scripts\snmp-udm-lab-probe-to-log.ps1 -EnvFile docs\private\homelab\.env.snmp.udm-se.local -WslDistro "Debian" -MaxLines 400
+   ```
+
+   O log fica em **`snmp_udm_probe_YYYYMMDD.log`** nesta pasta. **`-MaxLines`** evita arquivos enormes (walk IF-MIB completo = muitas linhas); use **`-MaxLines 0`** só se quiser dump completo e tiver espaço em disco.
+
+1. **Agendador de Tarefas** (Task Scheduler): nova tarefa → **Disparadores** → novo disparador (ex.: **Diariamente** num horário inicial, ou **Ao iniciar sessão**) → **Avançadas** / opções do disparador:
+   - Marque **Repetir tarefa a cada:** **`30 minutos`** (ou **1 hora**, se preferir).
+   - **Por um período de:** **Indefinidamente** (ou o intervalo que a UI permitir na tua versão do Windows).
+   - Confirme que a tarefa está **habilitada**.
+1. **Ações** → **Iniciar um programa**:
+   - **Programa:** `powershell.exe`
+   - **Argumentos:** `-NoProfile -ExecutionPolicy Bypass -File "C:\Users\<username>\Documents\dev\python3-lgpd-crawler\scripts\snmp-udm-lab-probe-to-log.ps1" -WslDistro "Debian" -MaxLines 400`
+
+     (ajuste o caminho do repo; o nome da distro com `wsl -l -v`. Se o alvo for um **`.env` dedicado** (ex. UDM-SE), acrescenta **`-EnvFile "…\docs\private\homelab\.env.snmp.udm-se.local"`** antes ou depois dos outros switches.)
+
+   - **Começar em:** `C:\Users\<username>\Documents\dev\python3-lgpd-crawler` (raiz do clone).
+1. Execute como **seu usuário** (para ler `.env` e usar WSL); “Executar somente quando o usuário estiver conectado” costuma ser mais simples que serviço sem ambiente.
+
+**Disco:** a cada 30 minutos o log do **mesmo dia** cresce; com **`-MaxLines 400`** limitas cada execução. Apague ou arquive logs antigos em `reports/` quando necessário.
+
+**Privacidade:** esses logs podem incluir nomes de interfaces, contadores e **endereços MAC** — não faça commit; não compartilhe sem redigir.
+
+**CI / GitHub Actions:** ver [SNMP_LAB_TARGETS.pt_BR.md](../SNMP_LAB_TARGETS.pt_BR.md) § CI — *runners* na nuvem **não** alcançam o firewall na LAN; não planeamos workflow padrão no repositório para SNMP ao vivo.
+
+**Public doc index:** [HOMELAB_HOST_PACKAGE_INVENTORY.md](../../../ops/HOMELAB_HOST_PACKAGE_INVENTORY.md) §4.

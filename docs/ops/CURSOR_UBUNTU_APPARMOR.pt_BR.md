@@ -18,7 +18,7 @@
    systemctl is-active apparmor && sudo aa-status --enabled
    ```
 
-2. Ferramentas úteis:
+1. Ferramentas úteis:
 
    ```bash
    sudo apt update
@@ -30,14 +30,14 @@
 ## 2. Instalar o Cursor (`.deb` oficial Linux)
 
 1. Descarregar o **Linux** `.deb` em [cursor.com](https://cursor.com) (ou o canal licenciado que usar).
-2. Instalar:
+1. Instalar:
 
    ```bash
    sudo apt install -y ./cursor_*.deb
    # ou: sudo dpkg -i ./cursor_*.deb && sudo apt -f install
    ```
 
-3. Confirmar o lançador:
+1. Confirmar o lançador:
 
    ```bash
    command -v cursor
@@ -121,18 +121,18 @@ Pacotes estilo Ubuntu incluem frequentemente **`#include <local/...>`** no perfi
    grep -ril cursor /etc/apparmor.d/ 2>/dev/null
    ```
 
-2. Abrir o arquivo e confirmar um include do tipo:
+1. Abrir o arquivo e confirmar um include do tipo:
 
    `#include <local/usr.bin.cursor>`
 
-3. Criar o arquivo local (nome de exemplo—**precisa coincidir** com o include **no seu** sistema):
+1. Criar o arquivo local (nome de exemplo—**precisa coincidir** com o include **no seu** sistema):
 
    ```bash
    sudo install -m 644 /dev/null /etc/apparmor.d/local/usr.bin.cursor
    sudo editor /etc/apparmor.d/local/usr.bin.cursor
    ```
 
-4. Acrescentar permissões **mínimas**. Necessidades comuns de IDE (ajuste ao que **`dmesg`**/**`journalctl`** mostra como **DENIED**):
+1. Acrescentar permissões **mínimas**. Necessidades comuns de IDE (ajuste ao que **`dmesg`**/**`journalctl`** mostra como **DENIED**):
 
    - Leitura/escrita em **`@{HOME}/.config/Cursor/`** e **`@{HOME}/.cursor/`**
    - Leitura de **`@{HOME}/.ssh/`** se o Git usar chaves SSH (muitas vezes só leitura)
@@ -140,7 +140,7 @@ Pacotes estilo Ubuntu incluem frequentemente **`#include <local/...>`** no perfi
 
    **Não** copie perfis inteiros de terceiros; alargue só o que o kernel **negou**.
 
-5. Recarregar:
+1. Recarregar:
 
    ```bash
    sudo apparmor_parser -r /etc/apparmor.d/<perfil-principal>
@@ -175,6 +175,6 @@ Uso avançado: **`aa-genprof`** / **`aa-logprof`** (ver guia Ubuntu Server — *
 
 ## 8. Revisão
 
-| Data       | Nota |
-| ---------- | ---- |
+| Data       | Nota                                              |
+| ---------- | ----                                              |
 | 2026-03-22 | Runbook inicial (Ubuntu / Zorin, fluxo AppArmor). |

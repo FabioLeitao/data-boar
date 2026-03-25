@@ -10,14 +10,14 @@
 
 ## 1. How this relates to PMBOK / PRINCE2 (scaled down)
 
-| Idea (big PM) | Here (2-person, repo-centric) |
-| ------------- | ----------------------------- |
-| **Charter / business case** | `README.md`, `PLANS_TODO.md` plan status line, commercial/licensing docs. |
-| **Stages / phases** | **Hygiene → Lab proof → Tier-2 feature slices → Release** (repeat). Sidequests (housekeeping, homelab “rush”) are **change requests**: they swap into the current sprint or get a **buffer** sprint. |
-| **Work breakdown** | Plan files + `PLANS_TODO` tables; **one row or one slice per agent session** when token-saving. |
-| **Roles** | **Operator:** manual (Hub, hardware, study, legal, merges). **Agent:** code/docs/tests/checklists in-repo. |
-| **Monitoring** | Git history, PRs, `plans-stats.py`, release notes under `docs/releases/`, optional GitHub Issues/Projects. |
-| **Risk / quality** | Priority band **A1–A3** before big feature bursts; `scripts/check-all.ps1`; home lab per [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md). |
+| Idea (big PM)               | Here (2-person, repo-centric)                                                                                                                                                                        |
+| -------------               | -----------------------------                                                                                                                                                                        |
+| **Charter / business case** | `README.md`, `PLANS_TODO.md` plan status line, commercial/licensing docs.                                                                                                                            |
+| **Stages / phases**         | **Hygiene → Lab proof → Tier-2 feature slices → Release** (repeat). Sidequests (housekeeping, homelab “rush”) are **change requests**: they swap into the current sprint or get a **buffer** sprint. |
+| **Work breakdown**          | Plan files + `PLANS_TODO` tables; **one row or one slice per agent session** when token-saving.                                                                                                      |
+| **Roles**                   | **Operator:** manual (Hub, hardware, study, legal, merges). **Agent:** code/docs/tests/checklists in-repo.                                                                                           |
+| **Monitoring**              | Git history, PRs, `plans-stats.py`, release notes under `docs/releases/`, optional GitHub Issues/Projects.                                                                                           |
+| **Risk / quality**          | Priority band **A1–A3** before big feature bursts; `scripts/check-all.ps1`; home lab per [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md).                                                      |
 
 **PRINCE2-style tolerance:** For each sprint, define **time** (e.g. 1–2 weeks), **scope** (one primary theme + optional micro-fixes), and **quality** (tests + docs updated for shipped work). If scope explodes, **split** into the next sprint instead of inflating the current one.
 
@@ -55,23 +55,23 @@ gantt
 
 Copy this table into a GitHub **Project** board or a personal doc; move rows by **editing the Status** column each retro.
 
-| Status | Item | Owner | Source (plan order / doc) |
-| ------ | ---- | ----- | ------------------------- |
-| **Backlog** | Dependabot / alerts triage | M | `PLANS_TODO` –1, band A1 |
-| **Backlog** | Docker Scout + image rebuild | M | –1b, A2 |
-| **Backlog** | Hub tag hygiene | **Operator** | A3 |
-| **Backlog** | Home lab §1+§2 (+ connector) | **Operator** (agent: doc gaps) | –1L, [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md) |
-| **Backlog** | FN reduction priorities 5+ | A/M | [PLAN_ADDITIONAL_DETECTION…](PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md) |
-| **Backlog** | Strong crypto Phase 1 | A/M | `PLANS_TODO` order 4 |
-| **Backlog** | Data source inventory Phase 1 | A/M | order 5 |
-| **Backlog** | Notifications Phase 1 | A/M | order 6 |
-| **Backlog** | Dashboard web surface **D-WEB** (i18n + #86 URL/middleware design) | A/M | [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) § milestones; [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) § sequencing |
-| **Backlog** | Dashboard reports RBAC — **impl** (issue #86) | A/M | After **D-WEB**; target **prefixed** HTML paths; `[H2][U2]` |
-| **Backlog** | Dashboard locale **M-LOCALE-V1** (implementation) | A | After **D-WEB** + schedule; [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) |
-| **Selected** | *(one row only for token-aware week)* | — | Pick from “What to start next” or **Integration / WIP** in [PLANS_TODO.md](PLANS_TODO.md) |
-| **In progress** | *(current session scope — e.g. rich media Tier 3 until merged)* | — | TOKEN_AWARE: one primary slice; see **Integration / WIP** when landing rich media + **1.6.5** |
-| **Blocked** | *(waiting on operator: hardware, Hub, counsel)* | **Operator** | Note blocker in PR or private runbook |
-| **Done** | *(shipped + tests + doc tick)* | — | Update `PLANS_TODO` + plan file |
+| Status          | Item                                                               | Owner                          | Source (plan order / doc)                                                                                                                                        |
+| ------          | ----                                                               | -----                          | -------------------------                                                                                                                                        |
+| **Backlog**     | Dependabot / alerts triage                                         | M                              | `PLANS_TODO` –1, band A1                                                                                                                                         |
+| **Backlog**     | Docker Scout + image rebuild                                       | M                              | –1b, A2                                                                                                                                                          |
+| **Backlog**     | Hub tag hygiene                                                    | **Operator**                   | A3                                                                                                                                                               |
+| **Backlog**     | Home lab §1+§2 (+ connector)                                       | **Operator** (agent: doc gaps) | –1L, [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md)                                                                                                       |
+| **Backlog**     | FN reduction priorities 5+                                         | A/M                            | [PLAN_ADDITIONAL_DETECTION…](PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md)                                                                           |
+| **Backlog**     | Strong crypto Phase 1                                              | A/M                            | `PLANS_TODO` order 4                                                                                                                                             |
+| **Backlog**     | Data source inventory Phase 1                                      | A/M                            | order 5                                                                                                                                                          |
+| **Backlog**     | Notifications Phase 1                                              | A/M                            | order 6                                                                                                                                                          |
+| **Backlog**     | Dashboard web surface **D-WEB** (i18n + #86 URL/middleware design) | A/M                            | [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) § milestones; [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) § sequencing |
+| **Backlog**     | Dashboard reports RBAC — **impl** (issue #86)                      | A/M                            | After **D-WEB**; target **prefixed** HTML paths; `[H2][U2]`                                                                                                      |
+| **Backlog**     | Dashboard locale **M-LOCALE-V1** (implementation)                  | A                              | After **D-WEB** + schedule; [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md)                                                                                     |
+| **Selected**    | *(one row only for token-aware week)*                              | —                              | Pick from “What to start next” or **Integration / WIP** in [PLANS_TODO.md](PLANS_TODO.md)                                                                        |
+| **In progress** | *(current session scope — e.g. rich media Tier 3 until merged)*    | —                              | TOKEN_AWARE: one primary slice; see **Integration / WIP** when landing rich media + **1.6.5**                                                                    |
+| **Blocked**     | *(waiting on operator: hardware, Hub, counsel)*                    | **Operator**                   | Note blocker in PR or private runbook                                                                                                                            |
+| **Done**        | *(shipped + tests + doc tick)*                                     | —                              | Update `PLANS_TODO` + plan file                                                                                                                                  |
 
 **Kanban WIP limit:** **1** primary feature theme in **In progress** for agent sessions; **operator** tasks (study, lab hardware) can run **in parallel** on calendar time but should not add a second **agent-heavy** theme without explicit agreement.
 
@@ -90,16 +90,16 @@ Copy this table into a GitHub **Project** board or a personal doc; move rows by 
 
 Sprints are **themes** of 1–2 weeks wall-clock; inside each, you still execute **one slice per agent session** per [TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md). **Reorder** when Priority band **A** is red.
 
-| Sprint | Theme | Primary outcomes | Operator moments (your calendar) | Agent sessions (typical) |
-| ------ | ----- | ---------------- | ---------------------------------- | ------------------------ |
-| **S0 – Trust burst** | Hygiene | A1–A3 (min), –1, –1b green or documented | GitHub Security, Hub UI, approve/merge PRs | `pyproject`/lock/export, Dockerfile/Scout notes, small doc PRs |
-| **S0b – Operability (optional)** | SRE slice | One **readiness** item: runbook pointer, backup note, or KPI hook—see §7 and [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) §4.3–4.7 | You validate steps on a real deploy path | Short doc/script PR only; no new feature plan |
-| **S1 – Lab proof** | –1L | HOMELAB baseline + ≥1 connector path; private dated note | SSH, VMs, Docker on second host, record evidence in `docs/private/` | Fix playbook gaps, `docs/ops` only if you find contradictions |
-| **S2 – Detection depth** | FN / hints | One or two rows from FN plan (e.g. 5, 6, or 10–11)—**not all** | Config review on real data if needed | Implementation + tests + SENSITIVITY_DETECTION docs |
-| **S3 – Inventory / crypto** | Tier-2 vertical | **Either** Strong crypto Ph1 **or** Data source Ph1 (pick one sprint) | Validate report/CLI behaviour on a real scan | Schema, wiring, tests, EN+pt-BR operator docs |
-| **S4 – Signals out** | Notifications | Phase 1 webhook (or first channel) + docs | Provide test webhook URL; decide channel policy | Config shape, module, examples |
-| **S5 – Buffer / maintenance** | Sidequest control | Housekeeping PRs, operator-help sync, branch cleanup, LAB-OP private notes | Manual merges, cert study blocks (separate calendar) | Small doc/test PRs; no new large plan |
-| **S6+** | Repeat or defer | Next row in “What to start next” or deferred tier | As needed | Same one-slice discipline |
+| Sprint                           | Theme             | Primary outcomes                                                                                                                                           | Operator moments (your calendar)                                    | Agent sessions (typical)                                       |
+| ------                           | -----             | ----------------                                                                                                                                           | ----------------------------------                                  | ------------------------                                       |
+| **S0 – Trust burst**             | Hygiene           | A1–A3 (min), –1, –1b green or documented                                                                                                                   | GitHub Security, Hub UI, approve/merge PRs                          | `pyproject`/lock/export, Dockerfile/Scout notes, small doc PRs |
+| **S0b – Operability (optional)** | SRE slice         | One **readiness** item: runbook pointer, backup note, or KPI hook—see §7 and [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) §4.3–4.7 | You validate steps on a real deploy path                            | Short doc/script PR only; no new feature plan                  |
+| **S1 – Lab proof**               | –1L               | HOMELAB baseline + ≥1 connector path; private dated note                                                                                                   | SSH, VMs, Docker on second host, record evidence in `docs/private/` | Fix playbook gaps, `docs/ops` only if you find contradictions  |
+| **S2 – Detection depth**         | FN / hints        | One or two rows from FN plan (e.g. 5, 6, or 10–11)—**not all**                                                                                             | Config review on real data if needed                                | Implementation + tests + SENSITIVITY_DETECTION docs            |
+| **S3 – Inventory / crypto**      | Tier-2 vertical   | **Either** Strong crypto Ph1 **or** Data source Ph1 (pick one sprint)                                                                                      | Validate report/CLI behaviour on a real scan                        | Schema, wiring, tests, EN+pt-BR operator docs                  |
+| **S4 – Signals out**             | Notifications     | Phase 1 webhook (or first channel) + docs                                                                                                                  | Provide test webhook URL; decide channel policy                     | Config shape, module, examples                                 |
+| **S5 – Buffer / maintenance**    | Sidequest control | Housekeeping PRs, operator-help sync, branch cleanup, LAB-OP private notes                                                                                 | Manual merges, cert study blocks (separate calendar)                | Small doc/test PRs; no new large plan                          |
+| **S6+**                          | Repeat or defer   | Next row in “What to start next” or deferred tier                                                                                                          | As needed                                                           | Same one-slice discipline                                      |
 
 **Study / certifications:** Treat as a **parallel swimlane** (operator-only). Slot **fixed blocks** (e.g. 1–2×/week) **after** one agent slice that day, not mixed with deep coding—per `TOKEN_AWARE_USAGE.md` §3 and [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.2.
 
@@ -119,25 +119,25 @@ The table **S0–S6** does **not** yet include a dedicated row for **subscriptio
 
 #### Prioritized follow-up slices (licensing controls + tiered capability packs)
 
-| Priority | Slice | Expected output |
-| --- | --- | --- |
-| P1 | Define claim contract (`dbtier`, `dbfeatures`, optional `dbextras_profile`) | Draft schema + token examples in `LICENSING_SPEC`; no runtime gating yet. |
-| P2 | Runtime gating matrix | Deterministic allow/deny table: Standard vs Pro/Partner vs Enterprise for optional features (including future AI heuristics and cloaking checks). |
-| P3 | Kill switch controls | Emergency disable path (token claim and/or revocation overlay) documented for operator and support playbooks. |
-| P4 | Dependency profile policy (`uv` extras) | Installer/operator flow for allowed extras packs (`.[nosql]`, `.[datalake]`, etc.) per entitlement, with audit logging and no silent mutation during scans. |
-| P5 | Operator-facing transparency | Explicit docs + runtime info messages + report/audit fields so client/operator can see which entitlement controls are active. |
+| Priority | Slice                                                                       | Expected output                                                                                                                                             |
+| ---      | ---                                                                         | ---                                                                                                                                                         |
+| P1       | Define claim contract (`dbtier`, `dbfeatures`, optional `dbextras_profile`) | Draft schema + token examples in `LICENSING_SPEC`; no runtime gating yet.                                                                                   |
+| P2       | Runtime gating matrix                                                       | Deterministic allow/deny table: Standard vs Pro/Partner vs Enterprise for optional features (including future AI heuristics and cloaking checks).           |
+| P3       | Kill switch controls                                                        | Emergency disable path (token claim and/or revocation overlay) documented for operator and support playbooks.                                               |
+| P4       | Dependency profile policy (`uv` extras)                                     | Installer/operator flow for allowed extras packs (`.[nosql]`, `.[datalake]`, etc.) per entitlement, with audit logging and no silent mutation during scans. |
+| P5       | Operator-facing transparency                                                | Explicit docs + runtime info messages + report/audit fields so client/operator can see which entitlement controls are active.                               |
 
 ### 4.2 Dashboard web surface cluster (locale **+** issue #86)
 
 **Plans:** [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) and [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md). Same files (`api/routes.py`, templates, middleware); **separate acceptance criteria** (language vs authorization).
 
-| Order | Item | Owner | Notes |
-| ----- | ---- | ----- | ----- |
-| 1 | **D-WEB** | A/M | **Doc-only:** final URL map + **middleware stack order** (API unprefixed; HTML `/{locale}/…`; where API key, locale negotiation, RBAC run). **Before** any implementation PR that moves HTML routes. |
-| 2 | Higher-priority product slices | — | Per [PLANS_TODO.md](PLANS_TODO.md) **near-term** / **Integration / WIP** — i18n implementation stays **deferred** unless operator promotes. |
-| 3 | **M-LOCALE-V1** | A | First **code** slice: locale prefix + `en` / `pt-BR` JSON + cookie / `Accept-Language` / config fallback — see i18n plan checklist. |
-| 4 | **#86 Phase 0** | A/M | Docs / proxy matrix — can overlap calendar with step 3 prep. |
-| 5 | **#86 Phase 1+** | A | Middleware / route classes on **same prefixed paths** as i18n — avoids double refactor. |
+| Order | Item                           | Owner | Notes                                                                                                                                                                                                |
+| ----- | ----                           | ----- | -----                                                                                                                                                                                                |
+| 1     | **D-WEB**                      | A/M   | **Doc-only:** final URL map + **middleware stack order** (API unprefixed; HTML `/{locale}/…`; where API key, locale negotiation, RBAC run). **Before** any implementation PR that moves HTML routes. |
+| 2     | Higher-priority product slices | —     | Per [PLANS_TODO.md](PLANS_TODO.md) **near-term** / **Integration / WIP** — i18n implementation stays **deferred** unless operator promotes.                                                          |
+| 3     | **M-LOCALE-V1**                | A     | First **code** slice: locale prefix + `en` / `pt-BR` JSON + cookie / `Accept-Language` / config fallback — see i18n plan checklist.                                                                  |
+| 4     | **#86 Phase 0**                | A/M   | Docs / proxy matrix — can overlap calendar with step 3 prep.                                                                                                                                         |
+| 5     | **#86 Phase 1+**               | A     | Middleware / route classes on **same prefixed paths** as i18n — avoids double refactor.                                                                                                              |
 
 **Kanban:** Add **D-WEB** to **Backlog** or **Selected** when you schedule the design pass; keep **one** agent-heavy theme in **In progress** per [TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md).
 
@@ -145,33 +145,33 @@ The table **S0–S6** does **not** yet include a dedicated row for **subscriptio
 
 **Status:** Planning only — we are **not** building the site yet.
 
-| Topic | Note |
-| ----- | ---- |
-| **Pitch / presentation** | Private or stakeholder-facing **short** narrative (e.g. `docs/private/pitch/`); **low technical** depth; seeds **brand** only. |
-| **GitHub compliance-legal** | `COMPLIANCE_AND_LEGAL`, frameworks, licensing — **governance** depth, not a full HOWTO site. |
-| **Future website** | **Deep** layer: USAGE, TECH_GUIDE, TESTING, Docker/deploy, scenarios, samples, **release notes**, **roadmap with named fronts**, **Docker Hub** + **GitHub**; **synced** to repo versions. |
-| **i18n** | Same **locale negotiation pattern** as **dashBOARd** ([PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md), [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) §2.2). |
-| **Cadence** | New **EN+pt-BR pitch deck generation** → **reminder** to schedule a **website** content/roadmap pass so public depth does not lag. |
+| Topic                       | Note                                                                                                                                                                                        |
+| -----                       | ----                                                                                                                                                                                        |
+| **Pitch / presentation**    | Private or stakeholder-facing **short** narrative (e.g. `docs/private/pitch/`); **low technical** depth; seeds **brand** only.                                                              |
+| **GitHub compliance-legal** | `COMPLIANCE_AND_LEGAL`, frameworks, licensing — **governance** depth, not a full HOWTO site.                                                                                                |
+| **Future website**          | **Deep** layer: USAGE, TECH_GUIDE, TESTING, Docker/deploy, scenarios, samples, **release notes**, **roadmap with named fronts**, **Docker Hub** + **GitHub**; **synced** to repo versions.  |
+| **i18n**                    | Same **locale negotiation pattern** as **dashBOARd** ([PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md), [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) §2.2). |
+| **Cadence**                 | New **EN+pt-BR pitch deck generation** → **reminder** to schedule a **website** content/roadmap pass so public depth does not lag.                                                          |
 
 ---
 
 ## 5. Milestones (every few sprints)
 
-Use GitHub **Milestones** or release tags; below is the **semantic** layer aligned with existing shipped work (e.g. **1.6.4**).
+Use GitHub **Milestones** or release tags; below is the **semantic** layer aligned with existing shipped work (e.g. **1.6.5**).
 
-| Milestone | Meaning | “Done when” (evidence) |
-| --------- | ------- | ---------------------- |
-| **M-TRUST** | Public artifacts trustworthy | A1–A3 satisfied; Dependabot/Scout documented; image policy clear |
-| **M-OBS** | Operability baseline (SRE) | `/health` (and `/status` where relevant) documented for your deploy path; optional SLO sentence in ops doc; any **one** of: runbook one-liner, backup/restore note, KPI export hook—per [OBSERVABILITY_SRE.md](../OBSERVABILITY_SRE.md) + [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) §4.3–4.7 |
-| **M-LAB** | Second-environment confidence | [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md) §12 + dated private note |
-| **M-SCAN+** | Tier-2 slice shipped | One vertical released (crypto **or** data source **or** major FN slice) with tests + user-facing docs |
-| **M-RICH** | Data soup — rich media Tier 3 | **On `main`:** subtitles + optional metadata/OCR + magic-byte cloaking wired; `docs/releases/1.6.5.md` (or chosen patch); tests green — see [PLANS_TODO.md](PLANS_TODO.md) **Integration / WIP** while branch open |
-| **M-NOTIFY** | Out-of-band awareness | Notifications Ph1 usable with documented config |
-| **M-ACCESS** | Paid / shared-network readiness (licensing + identity) | Intended **commercial SKUs** and **enforced** path smoke-tested; tier claims + feature-pack policy (including kill switch path) documented; dashBOARd/API **not anonymously usable** on the reference deploy—via **documented proxy+OIDC pattern** and/or **in-app** auth; RBAC or equivalent role story documented for at least one pattern |
-| **D-WEB** | Dashboard web surface **design** (i18n ∩ #86) | URL map + middleware order **written** and cross-linked; **no** required product code (diagram + plan edits OK) |
-| **M-LOCALE-V1** | Dashboard HTML **locale v1** | As [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md): prefixed HTML, `en`+`pt-BR`, negotiation, switcher, tests, CI key parity |
-| **M-SITE-READY** | **First public website + technical doc hub** (GTM-ready slice) | **Live** static/marketing site with: (1) **non-technical** story pages (aligned with **stakeholder pitch**, not a dump of TECH_GUIDE); (2) **technical hub** — deep links or embedded paths to **version-aligned** USAGE, TECH_GUIDE, TESTING, deploy/Docker, scenarios, compliance-samples entry, **release notes**, **Docker Hub** + **GitHub**; (3) **roadmap** listing **specific active fronts** (connectors, dashboard, notifications, …); (4) **locale** UX **consistent** with dashBOARd i18n plan (prefix / cookie / `Accept-Language` / JSON catalogs). See [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) §2.1–2.3. |
-| **M-RELEASE x.y.z** | Versioned product cut | Existing VERSIONING checklist + `docs/releases/x.y.z.md` + Hub tags |
+| Milestone           | Meaning                                                        | “Done when” (evidence)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ---------           | -------                                                        | ----------------------                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **M-TRUST**         | Public artifacts trustworthy                                   | A1–A3 satisfied; Dependabot/Scout documented; image policy clear                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **M-OBS**           | Operability baseline (SRE)                                     | `/health` (and `/status` where relevant) documented for your deploy path; optional SLO sentence in ops doc; any **one** of: runbook one-liner, backup/restore note, KPI export hook—per [OBSERVABILITY_SRE.md](../OBSERVABILITY_SRE.md) + [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) §4.3–4.7                                                                                                                                                                                                                                                                                                                                      |
+| **M-LAB**           | Second-environment confidence                                  | [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md) §12 + dated private note                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **M-SCAN+**         | Tier-2 slice shipped                                           | One vertical released (crypto **or** data source **or** major FN slice) with tests + user-facing docs                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **M-RICH**          | Data soup — rich media Tier 3                                  | **On `main`:** subtitles + optional metadata/OCR + magic-byte cloaking wired; `docs/releases/1.6.5.md` (or chosen patch); tests green — see [PLANS_TODO.md](PLANS_TODO.md) **Integration / WIP** while branch open                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **M-NOTIFY**        | Out-of-band awareness                                          | Notifications Ph1 usable with documented config                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **M-ACCESS**        | Paid / shared-network readiness (licensing + identity)         | Intended **commercial SKUs** and **enforced** path smoke-tested; tier claims + feature-pack policy (including kill switch path) documented; dashBOARd/API **not anonymously usable** on the reference deploy—via **documented proxy+OIDC pattern** and/or **in-app** auth; RBAC or equivalent role story documented for at least one pattern                                                                                                                                                                                                                                                                                                                 |
+| **D-WEB**           | Dashboard web surface **design** (i18n ∩ #86)                  | URL map + middleware order **written** and cross-linked; **no** required product code (diagram + plan edits OK)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **M-LOCALE-V1**     | Dashboard HTML **locale v1**                                   | As [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md): prefixed HTML, `en`+`pt-BR`, negotiation, switcher, tests, CI key parity                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **M-SITE-READY**    | **First public website + technical doc hub** (GTM-ready slice) | **Live** static/marketing site with: (1) **non-technical** story pages (aligned with **stakeholder pitch**, not a dump of TECH_GUIDE); (2) **technical hub** — deep links or embedded paths to **version-aligned** USAGE, TECH_GUIDE, TESTING, deploy/Docker, scenarios, compliance-samples entry, **release notes**, **Docker Hub** + **GitHub**; (3) **roadmap** listing **specific active fronts** (connectors, dashboard, notifications, …); (4) **locale** UX **consistent** with dashBOARd i18n plan (prefix / cookie / `Accept-Language` / JSON catalogs). See [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) §2.1–2.3. |
+| **M-RELEASE x.y.z** | Versioned product cut                                          | Existing VERSIONING checklist + `docs/releases/x.y.z.md` + Hub tags                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 
 **Cadence suggestion:** **M-TRUST** before a big feature push; **M-OBS** can trail **M-TRUST** in the same or next sprint (small docs/automation); **M-LAB** before customer/demo storytelling; **M-RICH** when the rich-media PR merges; **M-ACCESS** before promising **permanent subscription** or **multi-user** production on a reachable host; **M-SITE-READY** when you intentionally ship a **public** doc/marketing surface (after **M-LOCALE-V1** is wise if you want matching locale UX); **M-RELEASE** whenever VERSIONING says ship.
 
@@ -179,12 +179,12 @@ Use GitHub **Milestones** or release tags; below is the **semantic** layer align
 
 ## 5.1 When to open a PR (quick gate)
 
-| Situation | Open PR? | Version |
-| --------- | -------- | ------- |
-| Feature + tests + operator docs ready; **`main` passes CI** | **Yes** — prefer one theme per PR | Bump in same or follow-up PR per [VERSIONING](../releases/) habit |
-| Only typo / markdown in `docs/` | Yes — small PR | Often **no** bump; optional **patch** if you tag Hub for traceability |
-| Local branch mixes **unrelated** themes (M-ACCESS docs + huge feature) | **Split** before PR | Easier review + cleaner release notes |
-| Dependency / security fix | Yes — urgent | **Patch** + lockfile export |
+| Situation                                                              | Open PR?                          | Version                                                               |
+| ---------                                                              | --------                          | -------                                                               |
+| Feature + tests + operator docs ready; **`main` passes CI**            | **Yes** — prefer one theme per PR | Bump in same or follow-up PR per [VERSIONING](../releases/) habit     |
+| Only typo / markdown in `docs/`                                        | Yes — small PR                    | Often **no** bump; optional **patch** if you tag Hub for traceability |
+| Local branch mixes **unrelated** themes (M-ACCESS docs + huge feature) | **Split** before PR               | Easier review + cleaner release notes                                 |
+| Dependency / security fix                                              | Yes — urgent                      | **Patch** + lockfile export                                           |
 
 **After merge:** run release checklist (see **1.6.5** table in [PLANS_TODO.md](PLANS_TODO.md)); **patch** for additive optional features (e.g. rich media); **minor** for marketed bundles or breaking changes.
 
@@ -193,10 +193,10 @@ Use GitHub **Milestones** or release tags; below is the **semantic** layer align
 ## 6. Inside a sprint: sequencing (token-aware)
 
 1. **Start of sprint (15 min):** Pick **one** primary row from [PLANS_TODO.md](PLANS_TODO.md) “What to start next” (or band A if critical). Write it in your Kanban **Selected** cell or GitHub Milestone description.
-2. **Each agent session:** One **slice** + tests + doc touch; run `.\scripts\check-all.ps1` or `uv run pytest` as per repo policy.
-3. **Operator async:** Lab steps, Hub, study—**no** expectation the agent “does lab” for you.
-4. **End of sprint (retro, 15 min):** Update `PLANS_TODO` / plan tables; run `python scripts/plans-stats.py --write`; note **sidequests** and **blockers** for the next sprint theme. Optionally capture **one lesson learned** (bullet) or a **blameless** “what broke / what we change” line—see §7.3.
-5. **Git hygiene:** Ensure **local commits** recorded progress during the sprint (meaningful units or themed batches)—not a giant uncommitted diff before the next PR or release; see [COMMIT_AND_PR.md](../ops/COMMIT_AND_PR.md) ([pt-BR](../ops/COMMIT_AND_PR.pt_BR.md)) and **`.cursor/rules/execution-priority-and-pr-batching.mdc`**.
+1. **Each agent session:** One **slice** + tests + doc touch; run `.\scripts\check-all.ps1` or `uv run pytest` as per repo policy.
+1. **Operator async:** Lab steps, Hub, study—**no** expectation the agent “does lab” for you.
+1. **End of sprint (retro, 15 min):** Update `PLANS_TODO` / plan tables; run `python scripts/plans-stats.py --write`; note **sidequests** and **blockers** for the next sprint theme. Optionally capture **one lesson learned** (bullet) or a **blameless** “what broke / what we change” line—see §7.3.
+1. **Git hygiene:** Ensure **local commits** recorded progress during the sprint (meaningful units or themed batches)—not a giant uncommitted diff before the next PR or release; see [COMMIT_AND_PR.md](../ops/COMMIT_AND_PR.md) ([pt-BR](../ops/COMMIT_AND_PR.pt_BR.md)) and **`.cursor/rules/execution-priority-and-pr-batching.mdc`**.
 
 ---
 
@@ -206,13 +206,13 @@ This section ties **plans + PM + workflow + runtime** to practices SRE and platf
 
 ### 7.1 Toil mitigation and automation
 
-| Toil (repetitive, manual) | Prefer |
-| ------------------------- | ------ |
-| “Did we run lint + tests?” | `scripts/check-all.ps1` (or `pre-commit` + `pytest`) before commit/PR. |
-| Dependency / alert drift | Priority band **A1**; lockfile + `requirements.txt` export in same PR as `pyproject` changes. |
-| Image hygiene | **A2/A3**, `scripts/docker-hub-publish.ps1` / docker README flows—avoid one-off tags. |
-| “What’s still open?” | `gh pr list --state open`; **AGENTS.md** dangling-PR guard at session edges. |
-| Plan table maintenance | `python scripts/plans-stats.py --write` when row statuses change. |
+| Toil (repetitive, manual)  | Prefer                                                                                        |
+| -------------------------  | ------                                                                                        |
+| “Did we run lint + tests?” | `scripts/check-all.ps1` (or `pre-commit` + `pytest`) before commit/PR.                        |
+| Dependency / alert drift   | Priority band **A1**; lockfile + `requirements.txt` export in same PR as `pyproject` changes. |
+| Image hygiene              | **A2/A3**, `scripts/docker-hub-publish.ps1` / docker README flows—avoid one-off tags.         |
+| “What’s still open?”       | `gh pr list --state open`; **AGENTS.md** dangling-PR guard at session edges.                  |
+| Plan table maintenance     | `python scripts/plans-stats.py --write` when row statuses change.                             |
 
 **Rule:** If you do something **twice** manually and it’s the same steps, **open a slice** to script or document it (token-aware: one slice).
 
@@ -232,11 +232,11 @@ Use for **production incidents** *and* for **process misses** (bad release, wron
 
 ### 7.4 DevSecOps, cybersecurity, compliance, governance
 
-| Area | In this repo |
-| ---- | ------------- |
-| **DevSecOps** | Shift-left: tests, Ruff, pip-audit/CodeQL, secrets policy—see [OBSERVABILITY_SRE.md](../OBSERVABILITY_SRE.md) §3, [SECURITY.md](../SECURITY.md). |
-| **Governance** | Single execution truth in **PLANS_TODO**; commercial/licensing boundaries in dedicated docs; no secrets in tracked files ([AGENTS.md](../../AGENTS.md)). |
-| **Compliance narrative** | Tool supports audit **evidence**; you still define retention and process—[PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) §4.4. |
+| Area                     | In this repo                                                                                                                                             |
+| ----                     | -------------                                                                                                                                            |
+| **DevSecOps**            | Shift-left: tests, Ruff, pip-audit/CodeQL, secrets policy—see [OBSERVABILITY_SRE.md](../OBSERVABILITY_SRE.md) §3, [SECURITY.md](../SECURITY.md).         |
+| **Governance**           | Single execution truth in **PLANS_TODO**; commercial/licensing boundaries in dedicated docs; no secrets in tracked files ([AGENTS.md](../../AGENTS.md)). |
+| **Compliance narrative** | Tool supports audit **evidence**; you still define retention and process—[PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) §4.4.      |
 
 ### 7.5 Dangling work and rework prevention
 

@@ -266,8 +266,7 @@ def main() -> None:
                 "WARNING: API bind is non-loopback (%s) but api.require_api_key is not "
                 "effectively enabled. Set api.require_api_key: true and a strong "
                 "api.api_key (or api_key_from_env), or keep host 127.0.0.1 / reverse proxy. "
-                "See SECURITY.md and docs/USAGE.md."
-                % (host,),
+                "See SECURITY.md and docs/USAGE.md." % (host,),
                 file=sys.stderr,
             )
         uvicorn.run(app, host=host, port=port, workers=workers)

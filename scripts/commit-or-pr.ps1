@@ -43,6 +43,66 @@ if ($IncludeFiles.Count -eq 1 -and $IncludeFiles[0] -match ',') {
     $IncludeFiles = $IncludeFiles[0] -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ }
 }
 
+function Set-GhDefaultRepo {
+    param(
+        [switch]$Quiet
+    )
+
+    if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
+        return $false
+    }
+
+    $currentDefault = & gh repo view --json nameWithOwner -q ".nameWithOwner" 2>$null
+    if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($currentDefault)) {
+        if (-not $Quiet) {
+            Write-Host "gh default repository already configured: $currentDefault"
+        }
+        return $true
+    }
+
+    $remoteUrl = git remote get-url origin 2>$null
+    if (-not $remoteUrl) {
+        if (-not $Quiet) {
+            Write-Host "Could not read 'origin' URL; skipping gh default repository setup." -ForegroundColor Yellow
+        }
+        return $false
+    }
+
+    if ($remoteUrl -notmatch 'github\.com[:/]([^/]+)/([^/]+?)(?:\.git)?$') {
+        if (-not $Quiet) {
+            Write-Host "Origin is not a GitHub remote; skipping gh default repository setup." -ForegroundColor Yellow
+        }
+        return $false
+    }
+
+    $owner = $Matches[1]
+    $repo = ($Matches[2] -replace '\.git$', '')
+    $repoSlug = "$owner/$repo"
+    if (-not $Quiet) {
+        Write-Host "Configuring gh default repository from origin: $repoSlug"
+    }
+    & gh repo set-default $repoSlug
+    if ($LASTEXITCODE -ne 0) {
+        if (-not $Quiet) {
+            Write-Host "Failed to configure gh default repository '$repoSlug'." -ForegroundColor Yellow
+        }
+        return $false
+    }
+
+    $verifiedDefault = & gh repo view --json nameWithOwner -q ".nameWithOwner" 2>$null
+    if ($LASTEXITCODE -eq 0 -and $verifiedDefault -eq $repoSlug) {
+        if (-not $Quiet) {
+            Write-Host "gh default repository set to: $verifiedDefault"
+        }
+        return $true
+    }
+
+    if (-not $Quiet) {
+        Write-Host "gh default repository was set, but verification failed. You can run: gh repo set-default $repoSlug" -ForegroundColor Yellow
+    }
+    return $false
+}
+
 # Changed + untracked files; only include paths not ignored by .gitignore
 $changed = @()
 $changed += git diff --name-only
@@ -67,6 +127,10 @@ function Get-ScopeFingerprint([string[]]$paths) {
     return [string]::Join("|", $sorted)
 }
 
+if ($Action -eq 'PR' -and (Get-Command gh -ErrorAction SilentlyContinue)) {
+    [void](Set-GhDefaultRepo -Quiet)
+}
+
 # Preview and Commit require something to commit
 if (-not $toAdd.Count -and $Action -in 'Preview','Commit') {
     Write-Host "No files to commit (or all changes are ignored by .gitignore)."
@@ -76,7 +140,7 @@ if (-not $toAdd.Count -and $Action -in 'Preview','Commit') {
 # PR with nothing to commit: push any existing local commits and open PR (central repo gets full history).
 if (-not $toAdd.Count -and $Action -eq 'PR') {
     $branchName = (git rev-parse --abbrev-ref HEAD)
-    # Parse ahead count explicitly: git prints "0" when in sync; do not use `-and $countOut` — in PowerShell the
+    # Parse ahead count explicitly: git prints "0" when in sync; do not use `-and $countOut` - in PowerShell the
     # integer 0 is falsy and string "0" is truthy; mixed behavior caused false "1 ahead" and wrong branches.
     $ahead = 0
     $countOut = git rev-list --count "origin/$branchName..HEAD" 2>$null
@@ -203,15 +267,15 @@ if ($Action -eq 'Preview') {
         Write-Host "NOTE: You did not pass -Title / -Body. There is no auto-generated commit message." -ForegroundColor Yellow
         Write-Host "      For -Action Commit or -Action PR you must supply -Title and usually -Body (see docs/ops/COMMIT_AND_PR.md)." -ForegroundColor Yellow
         Write-Host ""
-        Write-Host "Proposed commit title: (not set — pass -Title)"
-        Write-Host "Proposed body: (not set — pass -Body, e.g. bullet lines separated by ``n)"
+        Write-Host "Proposed commit title: (not set - pass -Title)"
+        Write-Host "Proposed body: (not set - pass -Body, e.g. bullet lines separated by ``n)"
     } else {
         Write-Host "Proposed commit title: $Title"
         Write-Host "Proposed body (will appear in PR description):"
         if (-not [string]::IsNullOrWhiteSpace($Body)) {
             $Body -split "`n" | ForEach-Object { Write-Host "  $_" }
         } else {
-            Write-Host "  (empty — optional)"
+            Write-Host "  (empty - optional)"
         }
     }
     Write-Host ""
