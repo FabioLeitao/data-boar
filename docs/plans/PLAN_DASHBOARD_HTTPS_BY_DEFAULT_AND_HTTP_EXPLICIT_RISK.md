@@ -41,6 +41,7 @@ Make dashboard traffic **encrypted by default** (TLS >= 1.2) even without an ups
 | 4. Audit trail and evidence | Record insecure transport mode in audit trail / exported audit JSON so risk acceptance is traceable. | ⬜ Pending |
 | 5. Tests (both scenarios) | Add tests for HTTPS mode and HTTP override mode, including warning text, status flags, and banner rendering. Keep CI stable and deterministic. | ⬜ Pending |
 | 6. Docs and legal/compliance wording | Update USAGE/TECH_GUIDE/SECURITY (+ pt-BR), COMPLIANCE_AND_LEGAL wording, and operator runbooks with concrete setup and risk statements. | ⬜ Pending |
+| 7. Transport integrity/tamper trust state | Detect unexpected changes in cert/crypto runtime capability and mark runtime as untrusted/tinted (logs, status, dashboard, DB/audit, report output restrictions, version marker). | ⬜ Pending |
 
 ## Concrete technical checklist
 
@@ -61,11 +62,103 @@ Make dashboard traffic **encrypted by default** (TLS >= 1.2) even without an ups
    - API/status tests for security-state fields.
    - dashboard rendering test for insecure banner.
 
+## Transport integrity and tamper evidence
+
+When secure mode is enabled, the app should detect if TLS/certificate capabilities appear altered by untrusted actors and propagate a **trust downgrade** signal.
+
+### Signals to monitor
+
+- Unexpected certificate/fingerprint change relative to expected baseline (when baseline is configured).
+- Unexpected protocol/cipher capability downgrade below configured secure baseline.
+- Runtime crypto library/capability mismatch against expected secure profile.
+
+### Required reaction on suspicious state
+
+1. Emit clear warnings to **stdout**, **stderr**, and structured logs.
+2. Expose security/trust state on `/status` and health output.
+3. Show a prominent dashboard warning banner.
+4. Persist trust/tamper event in internal DB/audit trail.
+5. Mark generated reports as **tinted/untrusted** and restrict output content (summary-only mode) per existing tamper-response direction.
+6. Mark runtime/build identity with a downgraded suffix/state (for example, force `-alpha`-style trust marker) aligned with [PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md](PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md).
+
+### Non-goal
+
+- This does not guarantee nation-state tamper-proofing by itself; it provides practical detection/evidence and operator-visible blast-radius reduction.
+
 ## Rollout strategy
 
 - **Step A (safe introduction):** add feature behind explicit flags and status signals.
 - **Step B (default tightening):** switch docs and startup defaults to HTTPS-first.
 - **Step C (legacy assist):** keep insecure flag available with strong warnings for controlled exceptions.
+
+## Certificate strategy by environment
+
+### Dev / local testing
+
+- Use a local trusted development CA flow (for example `mkcert`) to avoid browser noise while staying close to HTTPS behavior.
+- Keep local certs out of git; load by path/env only.
+- Allow `--allow-insecure-http` for quick local troubleshooting, but keep warnings loud.
+
+### QA / UAT
+
+- Prefer non-self-signed certificates issued by:
+  - internal corporate PKI/private CA, or
+  - ACME-issued certs (for publicly reachable or DNS-validated environments).
+- Validate hostname/SAN correctness and renewal process before production.
+- Test both direct HTTPS mode and reverse-proxy TLS termination mode.
+
+### Production
+
+- Prefer CA-issued certificates (no self-signed for normal production).
+- **Let's Encrypt is a valid option** when DNS/routing and automation fit your environment.
+- Also valid: enterprise/commercial CAs or internal PKI, depending on trust model and governance.
+- Minimum baseline:
+  - TLS >= 1.2 (prefer 1.3 where available),
+  - strong cipher configuration via app/proxy runtime,
+  - renewal automation and expiry monitoring.
+
+## CA/provider options (practical)
+
+1. **Let's Encrypt (ACME)**
+   - Good default for internet/DNS-validatable deployments.
+   - Use `certbot`, `acme.sh`, Traefik, Caddy, or LB-native ACME.
+1. **Cloud/LB-managed certificates**
+   - AWS ACM, GCP Certificate Manager, Azure Key Vault + App Gateway/Front Door, Cloudflare-managed certs.
+   - Excellent when TLS terminates at managed edge/load balancer.
+1. **Commercial/public CAs**
+   - DigiCert, Sectigo, GlobalSign, Entrust, etc., when policy/procurement requires.
+1. **Internal enterprise PKI**
+   - Good for private networks and zero-trust internal service patterns; requires proper trust distribution to clients.
+
+## Mandatory crypto baseline (non-negotiable)
+
+When HTTPS-first is implemented, **do not allow weak/legacy crypto** in secure mode.
+
+- **Protocols:**
+  - deny TLS 1.0 and TLS 1.1;
+  - require TLS >= 1.2 (prefer TLS 1.3 where possible).
+- **Cipher suites / key exchange:**
+  - deny known weak suites (`NULL`, `aNULL`, `eNULL`, `RC4`, `3DES`, `DES`, `MD5`, export-grade suites);
+  - deny weak key exchange paths (legacy RSA key exchange without forward secrecy, weak/obsolete DH params);
+  - prefer modern ECDHE suites with AEAD ciphers.
+- **Certificates:**
+  - deny expired, weak-signature, or weak-key certificates (for example SHA-1-signed leaf certs, RSA < 2048);
+  - enforce hostname/SAN validation;
+  - fail closed on certificate validation errors in secure mode.
+- **Deprecation / EOL posture:**
+  - no EOL crypto libraries/tools in the HTTPS path for supported releases;
+  - treat crypto stack EOL as maintenance priority (same critical-first posture as dependency/security alerts).
+
+## Acceptance criteria (transport security)
+
+Secure mode is only accepted when all checks pass:
+
+1. Runtime refuses insecure protocol versions and weak cipher configurations.
+2. Health/status exposes transport security mode and protocol summary.
+3. Tests validate rejection of weak/legacy protocol/suite combinations.
+4. Docs explicitly state denied legacy crypto and supported baseline.
+5. Insecure HTTP override does **not** downgrade secure mode defaults when HTTPS is enabled.
+6. Suspicious transport-integrity state triggers trust downgrade and warning surfaces consistently across logs/status/dashboard/audit/report.
 
 ## Risks and mitigations
 
@@ -75,6 +168,18 @@ Make dashboard traffic **encrypted by default** (TLS >= 1.2) even without an ups
   - Mitigation: docs state reverse proxy/network controls still recommended.
 - Risk: CI instability with TLS tests.
   - Mitigation: deterministic local cert fixtures and scoped tests.
+
+## What else is missing for "secure by design" (beyond HTTPS default)
+
+- **Auth by default path:** converging toward API auth secure defaults with migration-safe rollout.
+- **Session/cookie hardening (if applicable):** secure/httponly/samesite and anti-CSRF controls for dashboard flows.
+- **Trusted proxy handling:** correct `X-Forwarded-*` usage only from trusted upstreams.
+- **Rate limit and abuse controls:** align dashboard/API paths with existing scan rate-limiting strategy.
+- **Security headers:** HSTS (when safe), CSP continuity, frame/options and content-type protections.
+- **Secrets lifecycle:** no static secrets in tracked config; rotation and env/secret store usage.
+- **Observability for security posture:** explicit runtime/security mode in logs/status/audit export.
+- **Release gates:** tests for both secure and insecure modes, plus documentation gates to avoid drift.
+- **Runtime tamper trust model:** align HTTPS transport signals with build-integrity trust state (`-alpha`/adulterated semantics) to avoid "false confidence" outputs.
 
 ## Notes for roadmap/pitch/legal
 
