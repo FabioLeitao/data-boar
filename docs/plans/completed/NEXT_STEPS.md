@@ -38,7 +38,7 @@ Plan of next steps based on the [implementation plan](../../.cursor/plans/lgpd_a
 
 ### 2.1 Consolidate legacy code and tests — Done
 
-- **run.py** – Thin wrapper (config.loader + AuditEngine + api.routes.app, port 8088); docstring says prefer `main.py`.
+- **run.py** – *(removed from repo; historical)* was a thin wrapper; **`main.py`** is the only supported CLI entry point.
 - **api/app.py** – Re-exports app from `api.routes` (single FastAPI app).
 - **scanners/** – Deprecation README added; use `core.engine` + `connectors` + `report.generator`.
 - **database/** – Deprecation README added; use `core.database` and `connectors`.
@@ -129,7 +129,7 @@ Plan of next steps based on the [implementation plan](../../.cursor/plans/lgpd_a
 | README.md                                    | Install, config, DBs, files                           | Done; keep updated (2.7)       |
 | TOPOLOGY.md                                  | Full topology                                         | Done; keep updated (2.7)       |
 | config.yaml                                  | Unified shape                                         | Done                           |
-| run.py                                       | Thin wrapper                                          | Done (2.1)                     |
+| run.py                                       | Removed — use `main.py` only                          | N/A (retired)                  |
 | api/app.py                                   | Re-export routes                                      | Done (2.1)                     |
 | scanners/*                                   | Deprecated                                            | README (2.1)                   |
 | database/*                                   | Deprecated                                            | README (2.1)                   |
