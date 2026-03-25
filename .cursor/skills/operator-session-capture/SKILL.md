@@ -7,10 +7,10 @@ The operator wants **high-value** chat (decisions, policy, tooling, career/acade
 ## Steps
 
 1. Read **`docs/ops/OPERATOR_SESSION_CAPTURE_GUIDE.md`** (and **`.pt_BR.md`** if the operator uses pt-BR).
-2. For each takeaway, assign **tracked** vs **`docs/private/`** vs **plan file** per the guide’s table.
-3. Write the **smallest** change that future search recovers the intent (bullet list > long prose).
-4. If multiple **private** topics, add or update **`docs/private/author_info/RECENT_OPERATOR_SYNC_INDEX.pt_BR.md`** with **date + pointers** (relative paths).
-5. If the outcome is **product work**, propose **`PLANS_TODO.md`** / **`PLAN_*.md`** updates in a **separate** commit theme—do not mix with personal private notes.
+1. For each takeaway, assign **tracked** vs **`docs/private/`** vs **plan file** per the guide’s table.
+1. Write the **smallest** change that future search recovers the intent (bullet list > long prose).
+1. If multiple **private** topics, add or update **`docs/private/author_info/RECENT_OPERATOR_SYNC_INDEX.pt_BR.md`** with **date + pointers** (relative paths).
+1. If the outcome is **product work**, propose **`PLANS_TODO.md`** / **`PLAN_*.md`** updates in a **separate** commit theme—do not mix with personal private notes.
 
 ## Never
 
