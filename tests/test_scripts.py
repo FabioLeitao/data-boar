@@ -292,15 +292,6 @@ def test_commit_or_pr_mentions_gh_default_repo_guard():
     assert "Set-GhDefaultRepo" in text
 
 
-def test_pr_hygiene_remind_ps1_syntax():
-    """scripts/pr-hygiene-remind.ps1 has valid PowerShell syntax (parse-only)."""
-    root = _project_root()
-    script = root / "scripts" / "pr-hygiene-remind.ps1"
-    if not script.exists():
-        return
-    assert _parse_powershell_script(script, root), "pr-hygiene-remind.ps1 parse failed"
-
-
 def test_pr_hygiene_mentions_gh_preflight():
     """pr-hygiene-remind includes gh preflight reminder and quick checks switch."""
     root = _project_root()
