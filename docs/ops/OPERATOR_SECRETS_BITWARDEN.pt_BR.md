@@ -18,14 +18,14 @@
 
 **O compartilhamento no Bitwarden não é “dar acesso ao meu cofre pessoal”.** Usa-se uma **organização** (plano pago: **Teams**, **Enterprise**, ou **Famílias** para contexto familiar). Cada pessoa mantém **sua** conta Bitwarden; a org tem **coleções** compartilhadas.
 
-**Passos habituais:**
+## Passos habituais:
 
 1. **Quem paga / admin** — uma conta cria ou faz upgrade da org em [bitwarden.com/pricing](https://bitwarden.com/pricing/) (confirmar nomes e limites atuais).
-2. **Criar a organização** no cofre web (**console de administração**), ex.: `Homelab` ou `Lab-op`.
-3. **Convidar por e-mail** — o outro **aceita** com conta Bitwarden existente (ou cria conta).
-4. **Criar coleções** por tema: `UniFi`, `SNMP`, `GitHub`, `API solar`, `SSH`, `LAB-OP — notas` — evitar **dados secretos no nome** da coleção.
-5. **Mover ou duplicar** itens para essas coleções e definir **permissões** (só leitura vs editar).
-6. **2FA** obrigatório para quem **acessa** credenciais de produção; **códigos de recuperação** guardados fora do disco do projeto (impresso / cofre físico, conforme guia Bitwarden).
+1. **Criar a organização** no cofre web (**console de administração**), ex.: `Homelab` ou `Lab-op`.
+1. **Convidar por e-mail** — o outro **aceita** com conta Bitwarden existente (ou cria conta).
+1. **Criar coleções** por tema: `UniFi`, `SNMP`, `GitHub`, `API solar`, `SSH`, `LAB-OP — notas` — evitar **dados secretos no nome** da coleção.
+1. **Mover ou duplicar** itens para essas coleções e definir **permissões** (só leitura vs editar).
+1. **2FA** obrigatório para quem **acessa** credenciais de produção; **códigos de recuperação** guardados fora do disco do projeto (impresso / cofre físico, conforme guia Bitwarden).
 
 **Famílias vs Teams:** **Famílias** costuma chegar para **duas pessoas + compartilhamento no âmbito familiar**; **Teams** para **colaboradores nomeados** e mais **auditoria/admin** — comparar no site antes de escolher.
 

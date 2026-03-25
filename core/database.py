@@ -7,7 +7,17 @@ Session id comes from core.session (UUID + timestamp); set via set_current_sessi
 from datetime import datetime, timezone
 from typing import Any
 
-from sqlalchemy import Column, DateTime, Integer, String, Text, create_engine, func, text
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    Integer,
+    String,
+    Text,
+    create_engine,
+    func,
+    text,
+)
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.pool import NullPool
 
@@ -76,6 +86,23 @@ class FilesystemFinding(Base):
     pattern_detected = Column(String(100))
     norm_tag = Column(String(100))
     ml_confidence = Column(Integer)
+    created_at = Column(DateTime, default=_utc_now)
+
+
+class NotificationSendLog(Base):
+    """
+    Append-only log of outbound notification attempts (webhooks).
+    Does not store message body; error_summary is redacted/truncated for operator review only.
+    """
+
+    __tablename__ = "notification_send_log"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    session_id = Column(String(64), nullable=True, index=True)
+    trigger = Column(String(32), nullable=False)  # scan_complete, manual
+    recipient = Column(String(16), nullable=False)  # operator, tenant
+    channel = Column(String(32), nullable=True)
+    success = Column(Boolean, nullable=False, default=False)
+    error_summary = Column(Text, nullable=True)
     created_at = Column(DateTime, default=_utc_now)
 
 
@@ -192,6 +219,7 @@ class LocalDBManager:
         self._ensure_technician_column()
         self._ensure_config_scope_hash_column()
         self._ensure_data_source_inventory_table()
+        self._ensure_notification_send_log_table()
         self._session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
         self._current_session_id: str | None = None
 
@@ -250,6 +278,47 @@ class LocalDBManager:
     def _ensure_data_source_inventory_table(self) -> None:
         """Create data_source_inventory table if it does not exist."""
         DataSourceInventory.__table__.create(self.engine, checkfirst=True)
+
+    def _ensure_notification_send_log_table(self) -> None:
+        """Create notification_send_log table if it does not exist (additive migration)."""
+        NotificationSendLog.__table__.create(self.engine, checkfirst=True)
+
+    def record_notification_send_log(
+        self,
+        *,
+        session_id: str | None,
+        trigger: str,
+        recipient: str,
+        channel: str | None,
+        success: bool,
+        error_message: str | None = None,
+    ) -> None:
+        """
+        Persist one outbound notification attempt. Safe to call from notify path; failures are swallowed.
+        """
+        from core.validation import redact_secrets_for_log
+
+        err_stored: str | None = None
+        if error_message:
+            err_stored = redact_secrets_for_log(error_message)[:500]
+
+        session = self._session_factory()
+        try:
+            row = NotificationSendLog(
+                session_id=session_id or None,
+                trigger=trigger[:32],
+                recipient=recipient[:16],
+                channel=(channel[:32] if channel else None),
+                success=bool(success),
+                error_summary=err_stored,
+            )
+            session.add(row)
+            session.commit()
+        except Exception:
+            session.rollback()
+            # Do not break scan/notify flow if audit insert fails
+        finally:
+            session.close()
 
     def set_current_session_id(self, session_id: str) -> None:
         self._current_session_id = session_id
@@ -395,7 +464,9 @@ class LocalDBManager:
         finally:
             session.close()
 
-    def get_session_scan_summary_for_notification(self, session_id: str) -> dict[str, Any]:
+    def get_session_scan_summary_for_notification(
+        self, session_id: str
+    ) -> dict[str, Any]:
         """
         Aggregate counts for operator scan-complete notifications (brief text, not full export).
 
@@ -419,9 +490,7 @@ class LocalDBManager:
         session = self._session_factory()
         try:
             rec = (
-                session.query(ScanSession)
-                .filter(ScanSession.session_id == sid)
-                .first()
+                session.query(ScanSession).filter(ScanSession.session_id == sid).first()
             )
             if rec:
                 out["status"] = (rec.status or "unknown").strip()

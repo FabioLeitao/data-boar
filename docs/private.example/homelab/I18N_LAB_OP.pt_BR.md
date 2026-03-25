@@ -4,10 +4,10 @@
 
 Ao manter **`docs/private/homelab/`** (gitignored), prefira **dois arquivos por tema** quando houver texto narrativo:
 
-| Padrão | Papel |
-| ------ | ----- |
-| **`Nome.md`** | **Inglês** — útil para colaboradores internacionais, páginas com **Mermaid**, ou **resumos** índice. |
-| **`Nome.pt_BR.md`** | **Português brasileiro (pt-BR)** — não pt-PT; ver **`.cursor/rules/docs-pt-br-locale.mdc`**. |
+| Padrão              | Papel                                                                                                |
+| ------              | -----                                                                                                |
+| **`Nome.md`**       | **Inglês** — útil para colaboradores internacionais, páginas com **Mermaid**, ou **resumos** índice. |
+| **`Nome.pt_BR.md`** | **Português brasileiro (pt-BR)** — não pt-PT; ver **`.cursor/rules/docs-pt-br-locale.mdc`**.         |
 
 ## Exceções / pragmatismo
 

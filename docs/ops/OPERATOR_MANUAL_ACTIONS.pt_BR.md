@@ -22,13 +22,13 @@ O racional de sequência também está em [SPRINTS_AND_MILESTONES.pt_BR.md](../p
 
 ### O que ajuda o agente em **faixa A** e **homelab**
 
-| Tema | O que passar (sem segredo no chat—só status ou caminho em `docs/private/`) |
-| ---- | --------------------------------------------------------------------------- |
-| **A1** | Dependabot / Security: **quantos alertas abertos** ou “triagem esta semana sim/não”. |
-| **A2** | Docker Scout / imagem: **CVE que te preocupa** ou “rebuild feito / pendente”. |
-| **A3** | Hub / tags: **uma linha** (só operador). |
-| **–1L** | **Qual linha** da matriz §9 do [HOMELAB_VALIDATION](HOMELAB_VALIDATION.pt_BR.md); §1–§2 **feito / bloqueado**; saídas em `docs/private/` se quiser que o agente leia. |
-| **Bloqueios** | Ex.: “segundo host só depois de data X”—evita plano errado. |
+| Tema          | O que passar (sem segredo no chat—só status ou caminho em `docs/private/`)                                                                                            |
+| ----          | ---------------------------------------------------------------------------                                                                                           |
+| **A1**        | Dependabot / Security: **quantos alertas abertos** ou “triagem esta semana sim/não”.                                                                                  |
+| **A2**        | Docker Scout / imagem: **CVE que te preocupa** ou “rebuild feito / pendente”.                                                                                         |
+| **A3**        | Hub / tags: **uma linha** (só operador).                                                                                                                              |
+| **–1L**       | **Qual linha** da matriz §9 do [HOMELAB_VALIDATION](HOMELAB_VALIDATION.pt_BR.md); §1–§2 **feito / bloqueado**; saídas em `docs/private/` se quiser que o agente leia. |
+| **Bloqueios** | Ex.: “segundo host só depois de data X”—evita plano errado.                                                                                                           |
 
 ---
 
@@ -36,12 +36,12 @@ O racional de sequência também está em [SPRINTS_AND_MILESTONES.pt_BR.md](../p
 
 **Não** colar senhas ou chaves privadas no chat. Prefira:
 
-| Ação | Onde guardar | Por quê |
-| ---- | ------------ | ------- |
-| Inventário de homelab (hosts, papéis, IPs redigidos se preciso) | `docs/private/homelab/` conforme [PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md) | O agente pode `read_file` sem `@`. |
-| Fotos de equipamento, rack, etiquetas (opcional) | Mesma árvore privada; descrever num `.md` o que cada imagem mostra | Contexto visual para topologia. |
-| Saídas de CLI (`ssh`, `curl`, resumos de scan) | Colar numa nota datada em `docs/private/` ou log de sessão | Depuração reproduzível. |
-| Conclusão de curso / certificado | PDF ou screenshot em `docs/private/`; acrescentar linha no PORTFOLIO §3 quando quiser no narrative de CV | Alinha tese/pitch. |
+| Ação                                                            | Onde guardar                                                                                             | Por quê                            |
+| ----                                                            | ------------                                                                                             | -------                            |
+| Inventário de homelab (hosts, papéis, IPs redigidos se preciso) | `docs/private/homelab/` conforme [PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)               | O agente pode `read_file` sem `@`. |
+| Fotos de equipamento, rack, etiquetas (opcional)                | Mesma árvore privada; descrever num `.md` o que cada imagem mostra                                       | Contexto visual para topologia.    |
+| Saídas de CLI (`ssh`, `curl`, resumos de scan)                  | Colar numa nota datada em `docs/private/` ou log de sessão                                               | Depuração reproduzível.            |
+| Conclusão de curso / certificado                                | PDF ou screenshot em `docs/private/`; acrescentar linha no PORTFOLIO §3 quando quiser no narrative de CV | Alinha tese/pitch.                 |
 
 ---
 
@@ -55,6 +55,7 @@ O racional de sequência também está em [SPRINTS_AND_MILESTONES.pt_BR.md](../p
 
 ## Ver também
 
+- [OPERATOR_NEXT_DAY_CHECKLIST.pt_BR.md](OPERATOR_NEXT_DAY_CHECKLIST.pt_BR.md) ([EN](OPERATOR_NEXT_DAY_CHECKLIST.md)) — sugestão de **dia inteiro** (homelab + banda A + –1L + Wabbix opcional)
 - [SPRINTS_AND_MILESTONES.pt_BR.md](../plans/SPRINTS_AND_MILESTONES.pt_BR.md) §3.1 — faixa de estudo no quadro de sprints
 - [TOKEN_AWARE_USAGE.md](../plans/TOKEN_AWARE_USAGE.md) — disciplina estudo vs código no mesmo dia (doc EN; parcial pt-BR onde existir)
 - [OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md](OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md) — onde cada doc de lab mora
