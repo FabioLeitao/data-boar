@@ -47,6 +47,7 @@ Este é um guia vivo. Atualizamos de forma incremental conforme extraímos liç�
 1. Manter rollout seguro para migração (warn -> modo duplo -> enforce).
 1. Transformar lições em testes/guardrails, não só em prosa.
 1. Rastrear temas de alto risco no backlog com prioridade crítica quando afetam integridade/confidencialidade.
+1. Quando discussão externa destacar **rastreadores embutidos** em mídia rica (por exemplo URLs de telemetria em metadados de imagem/vídeo), registrar como **fatia de backlog** com deteção opt-in e relatório claro — ver [PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md](../plans/PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md) (Tier 3b).
 
 ## Guardrails candidatos para manter
 
@@ -86,6 +87,7 @@ Este é um guia vivo. Atualizamos de forma incremental conforme extraímos liç�
 
 ## Documentos relacionados
 
+- [PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md](../plans/PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md) (Tier 3b rastreadores embutidos / mídia rica)
 - [PLAN_DASHBOARD_HTTPS_BY_DEFAULT_AND_HTTP_EXPLICIT_RISK.md](../plans/PLAN_DASHBOARD_HTTPS_BY_DEFAULT_AND_HTTP_EXPLICIT_RISK.md)
 - [SECURE_BY_DEFAULT_BLOCKERS_AND_MIGRATION.pt_BR.md](SECURE_BY_DEFAULT_BLOCKERS_AND_MIGRATION.pt_BR.md)
 - [SECURITY.pt_BR.md](../SECURITY.pt_BR.md)
