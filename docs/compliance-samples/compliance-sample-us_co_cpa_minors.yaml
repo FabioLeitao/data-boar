@@ -1,0 +1,45 @@
+# Colorado Privacy Act (CPA) — minors / under-18 rules — sample profile (technical mapping)
+#
+# NOT LEGAL ADVICE. Colorado CPA and AG final rules (including provisions about
+# consumers under 18) govern specific conduct; this file only helps tag findings
+# for inventory and report wording. Does not detect "known minor" status.
+#
+# How to use:
+#   regex_overrides_file: path/to/compliance-sample-us_co_cpa_minors.yaml
+#   ml_patterns_file: path/to/compliance-sample-us_co_cpa_minors.yaml
+# Merge recommendation_overrides into report.recommendation_overrides.
+
+regex:
+  - name: "CO_CPA_REF"
+    pattern: "(?i)\\bColorado\\s+Privacy\\s+Act\\b"
+    norm_tag: "CO CPA minors (technical)"
+
+terms:
+  - text: "Colorado Privacy Act"
+    label: sensitive
+  - text: "CPA Colorado"
+    label: sensitive
+  - text: "known minor"
+    label: sensitive
+  - text: "consumer under 18"
+    label: sensitive
+  - text: "under eighteen colorado privacy"
+    label: sensitive
+  - text: "Colorado Attorney General privacy"
+    label: sensitive
+  - text: "universal opt-out minors"
+    label: sensitive
+  - text: "sale of personal data minor"
+    label: sensitive
+  - text: "processing personal data minor"
+    label: sensitive
+  - text: "sensitive data minor colorado"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "CO CPA minors (technical)"
+    base_legal: "Colorado CPA and AG rules — minors/consumers under 18 (technical mapping; not a legal determination)"
+    risk: "Fields or content may relate to processing affecting minors under Colorado law; requires legal review of facts and 'known minor' context."
+    recommendation: "Coordinate with DPO/counsel on CPA duties for consumers under 18, opt-out/sale constraints, and documentation. Use findings as metadata inventory support only."
+    priority: "ALTA"
+    relevant_for: "DPO, Colorado privacy counsel, incident response"

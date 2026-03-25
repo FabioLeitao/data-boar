@@ -41,12 +41,12 @@ You can limit the commit/PR to specific files with **`-IncludeFiles`** (comma-se
 
 **Why:** Uncommitted work that sits for days becomes **hard to review**, easy to **lose**, and painful to **rebase or merge** when you finally open a PR or ship. Regular **local commits** on a **feature branch** record intent and shrink conflict surfaces.
 
-| Situation | What to do |
-| --------- | ---------- |
-| **One important change** | Commit when it’s complete and gated (e.g. `check-all` or `lint-only` for docs-only). |
-| **Many small edits, same theme** | One commit for the whole “train of thought”, *or* a few commits split by sub-theme (`test:`, `docs:`, `feat:`)—each message should read clearly in `git log`. |
-| **Long session ending** | Prefer committing coherent work rather than a dirty tree; if you must stop mid-theme, use **one** clearly labeled commit (e.g. states what’s left) **on a branch**—agree with the operator; never pollute `main` casually. |
-| **Branch alive several days** | **`git fetch`** and merge or rebase **`origin/main`** into your branch often so you don’t stack a wall of conflicts at PR time. |
+| Situation                        | What to do                                                                                                                                                                                                                 |
+| ---------                        | ----------                                                                                                                                                                                                                 |
+| **One important change**         | Commit when it’s complete and gated (e.g. `check-all` or `lint-only` for docs-only).                                                                                                                                       |
+| **Many small edits, same theme** | One commit for the whole “train of thought”, *or* a few commits split by sub-theme (`test:`, `docs:`, `feat:`)—each message should read clearly in `git log`.                                                              |
+| **Long session ending**          | Prefer committing coherent work rather than a dirty tree; if you must stop mid-theme, use **one** clearly labeled commit (e.g. states what’s left) **on a branch**—agree with the operator; never pollute `main` casually. |
+| **Branch alive several days**    | **`git fetch`** and merge or rebase **`origin/main`** into your branch often so you don’t stack a wall of conflicts at PR time.                                                                                            |
 
 This complements **PR batching**: many **local** commits can still ship as **one PR**. Rules: **`.cursor/rules/execution-priority-and-pr-batching.mdc`**, **`.cursor/rules/git-pr-sync-before-advice.mdc`**.
 
@@ -145,6 +145,10 @@ For a **long PR body**, use:
 - A one-off `.ps1` that sets `$Title` and `$Body` (e.g. here-string) and calls `commit-or-pr.ps1 -Action PR -Title $Title -Body $Body -RunTests`.
 
 **Why this order:** One full gate before committing; one preview to confirm scope; one PR step that re-runs tests and syncs (fetch + rebase if behind) before push, so the PR is safe and synced. No ad-hoc `git add`/`git commit`/`git push` or raw `pytest`/`ruff` in between when these scripts cover the need.
+
+### Merge after CI is green (maintainer / agent)
+
+When **`gh pr checks <N>`** passes and the PR is **mergeable** (no conflicts), use **`.\scripts\pr-merge-when-green.ps1 -PrNumber <N>`** from the repo root (`gh` authenticated). Optional: **`-RunLocalCheckAll`** for a local **`check-all`** before merge. See **`.cursor/rules/agent-autonomous-merge-and-lab-ops.mdc`**.
 
 ## Conventional Commits: types and scopes (homelab / ops fronts)
 

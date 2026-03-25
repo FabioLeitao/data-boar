@@ -25,3 +25,8 @@ repos:
         entry: uv run pytest tests/test_docs_pt_br_locale.py -q -W error
         language: system
         pass_filenames: false
+      - id: confidential-commercial-guard
+        name: confidential commercial guard (git index)
+        entry: uv run pytest tests/test_confidential_commercial_guard.py -q -W error
+        language: system
+        pass_filenames: false

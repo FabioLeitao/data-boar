@@ -24,12 +24,12 @@ Você pode limitar o commit/PR a arquivos específicos com **`-IncludeFiles`** (
 
 **Por quê:** Trabalho **não commitado** por dias fica **difícil de revisar**, fácil de **perder** e **doloroso de rebase/merge** quando você abre o PR ou publica. **Commits locais** frequentes num **branch de feature** registram intenção e reduzem conflitos.
 
-| Situação | O que fazer |
-| -------- | ----------- |
-| **Uma mudança importante** | Commitar quando estiver completa e validada (ex.: `check-all` ou `lint-only` se for só doc). |
-| **Vários ajustes pequenos, mesmo tema** | Um commit para o “fio da meada” inteiro, *ou* poucos commits por subtema (`test:`, `docs:`, `feat:`)—cada mensagem deve ficar clara no `git log`. |
-| **Fim de sessão longa** | Preferir commitar trabalho coerente em vez de árvore suja; se precisar parar no meio, **um** commit bem rotulado (ex.: o que falta) **no branch**—combinar com o operador; não bagunçar o `main`. |
-| **Branch vivo por vários dias** | **`git fetch`** e merge ou rebase de **`origin/main`** com frequência para não acumular parede de conflito na hora do PR. |
+| Situação                                | O que fazer                                                                                                                                                                                       |
+| --------                                | -----------                                                                                                                                                                                       |
+| **Uma mudança importante**              | Commitar quando estiver completa e validada (ex.: `check-all` ou `lint-only` se for só doc).                                                                                                      |
+| **Vários ajustes pequenos, mesmo tema** | Um commit para o “fio da meada” inteiro, *ou* poucos commits por subtema (`test:`, `docs:`, `feat:`)—cada mensagem deve ficar clara no `git log`.                                                 |
+| **Fim de sessão longa**                 | Preferir commitar trabalho coerente em vez de árvore suja; se precisar parar no meio, **um** commit bem rotulado (ex.: o que falta) **no branch**—combinar com o operador; não bagunçar o `main`. |
+| **Branch vivo por vários dias**         | **`git fetch`** e merge ou rebase de **`origin/main`** com frequência para não acumular parede de conflito na hora do PR.                                                                         |
 
 Isso complementa o **PR em lote**: muitos commits **locais** podem virar **um PR** só. Regras: **`.cursor/rules/execution-priority-and-pr-batching.mdc`**, **`.cursor/rules/git-pr-sync-before-advice.mdc`**.
 

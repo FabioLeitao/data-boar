@@ -4,12 +4,13 @@ PowerShell automation for **local lab builds**, **Docker Hub pulls**, and **tag 
 
 All scripts assume the **repository root** is the parent of `scripts/` (run them as `.\scripts\<name>.ps1` from the repo root, or `cd` to root first).
 
-| Script                                                 | Purpose                                                                                                                                             |
-| ------                                                 | -------                                                                                                                                             |
-| [../docker-hub-pull.ps1](../docker-hub-pull.ps1)       | `docker pull` **fabioleitao/data_boar:latest**, **:\<semver from pyproject.toml\>**, and **previous patch** (e.g. 1.6.4 → 1.6.2) for cache and A/B. |
-| [../docker-lab-build.ps1](../docker-lab-build.ps1)     | `docker build -t data_boar:lab`; optionally re-tags old **lab** → **lab-prev** before rebuild; optional **-TagSmoke** for A/B.                      |
-| [../docker-prune-local.ps1](../docker-prune-local.ps1) | `docker rmi` extra tags on **fabioleitao/data_boar** and **data_boar** repos; keeps a small allowlist. Use **-WhatIf** first.                       |
-| [DataBoarDockerCommon.ps1](DataBoarDockerCommon.ps1)   | Shared helpers (dot-sourced only).                                                                                                                  |
+| Script                                                                 | Purpose                                                                                                                                             |
+| ------                                                                 | -------                                                                                                                                             |
+| [../docker-hub-pull.ps1](../docker-hub-pull.ps1)                       | `docker pull` **fabioleitao/data_boar:latest**, **:\<semver from pyproject.toml\>**, and **previous patch** (e.g. 1.6.5 → 1.6.2) for cache and A/B. |
+| [../docker-lab-build.ps1](../docker-lab-build.ps1)                     | `docker build -t data_boar:lab`; optionally re-tags old **lab** → **lab-prev** before rebuild; optional **-TagSmoke** for A/B.                      |
+| [../docker-prune-local.ps1](../docker-prune-local.ps1)                 | `docker rmi` extra tags on **fabioleitao/data_boar** and **data_boar** repos; keeps a small allowlist. Use **-WhatIf** first.                       |
+| [../docker-scout-critical-gate.ps1](../docker-scout-critical-gate.ps1) | Scout CRITICAL gate: fails only when a **fixed** CRITICAL exists; warns/pass on upstream **not fixed** CVEs.                                        |
+| [DataBoarDockerCommon.ps1](DataBoarDockerCommon.ps1)                   | Shared helpers (dot-sourced only).                                                                                                                  |
 
 ## Typical flows
 
@@ -17,6 +18,7 @@ All scripts assume the **repository root** is the parent of `scripts/` (run them
 
 1. `.\scripts\docker-lab-build.ps1` — refresh **data_boar:lab**; smoke with `docker run --rm` (see DOCKER_SETUP).
 1. When satisfied, build and push to Hub (manual or CI) with your release tags.
+1. `.\scripts\docker-scout-critical-gate.ps1 -Image fabioleitao/data_boar:latest` — detect CRITICALs with fix available vs "not fixed" upstream.
 1. `.\scripts\docker-hub-pull.ps1` — refresh local copies of **latest** + semver + previous patch.
 1. `.\scripts\docker-prune-local.ps1 -WhatIf` then `.\scripts\docker-prune-local.ps1` — drop stray **maint-***, **scout-***, etc.
 
@@ -30,6 +32,7 @@ All scripts assume the **repository root** is the parent of `scripts/` (run them
 - **docker-hub-pull:** `-SkipPrevious`, `-PreviousVersion "1.6.1"` if auto patch−1 is wrong.
 - **docker-lab-build:** `-NoCache`, `-SkipLabPrev`, `-TagSmoke`.
 - **docker-prune-local:** `-WhatIf`, `-KeepSmoke:$false`, `-KeepLabPrev:$false`.
+- **docker-scout-critical-gate:** `-Image <repo:tag>`, `-FailOnAnyCritical` (strict mode).
 
 ### Builder cache
 

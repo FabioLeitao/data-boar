@@ -2,7 +2,7 @@
 
 **English:** [COMPLIANCE_AND_LEGAL.md](COMPLIANCE_AND_LEGAL.md)
 
-**Público principal:** **Jurídico**, **liderança de conformidade** e **DPOs** avaliando aderência, risco e evidências—not **operação diária de TI**. Para **YAML, limites de API, codificações e timeouts**, veja [COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md](COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md); para **config completa e comandos**, [USAGE.pt_BR.md](USAGE.pt_BR.md).
+**Público principal:** **Jurídico**, **liderança de conformidade** e **DPOs** avaliando aderência, risco e evidências — **não** a **operação diária de TI** nem a parametrização técnica cotidiana. Para **YAML, limites de API, codificações e timeouts**, veja [COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md](COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md); para **config completa e comandos**, [USAGE.pt_BR.md](USAGE.pt_BR.md).
 
 Esta página descreve **o que o Data Boar revela**, **o que não faz**, **com quais enquadramentos regulatórios** pode alinhar, **quais artefatos** apoiam auditoria, e como **serviços profissionais** ajudam a mapear a **sopa de dados** antes do produto **ingerir e digerir**.
 
@@ -15,7 +15,7 @@ Esta página descreve **o que o Data Boar revela**, **o que não faz**, **com qu
 - **Possíveis dados relativos a menores:** Indicadores alinhados ao **LGPD art. 14** e **GDPR art. 8** (revisão humana pode ser necessária).
 - **Identificadores regionais e ambíguos:** Rótulos específicos de documentos e campos ambíguos sinalizados para **confirmação manual** quando a automação não pode afirmar certeza.
 - **Visibilidade multi-fonte:** Uma visão coerente da **sopa de dados** que a organização configurar—bancos, arquivos, APIs, sistemas de BI e colaboração e outros **conectores** descritos em alto nível em [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) e [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md)—sem afirmar completude de todo legado até que os alvos estejam no escopo.
-- **Disciplina de triagem em arquivos:** O motor pode **amostrar contexto suficiente** em arquivos textuais para aplicar critério—reduzindo fadiga de alertas onde o conteúdo parece **entretenimento ou boilerplate**, mantendo **correspondências fortes por padrão** em destaque para remediação. Há **roadmap** para metadados de **imagem, áudio e vídeo** (e OCR opcional) documentado para organizações cuja sopa inclui mídia rica; conectores de **RH/SST e sistemas de back-office** (SAP, ERP/CRM/folha) estão em [PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md](plans/PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md) e [PLAN_SAP_CONNECTOR.md](plans/PLAN_SAP_CONNECTOR.md).
+- **Disciplina de triagem em arquivos:** O motor pode **amostrar contexto suficiente** em arquivos textuais para aplicar critério—reduzindo fadiga de alertas onde o conteúdo parece **entretenimento ou boilerplate**, mantendo **correspondências fortes por padrão** em destaque para remediação. O roadmap inclui metadados de **imagem, áudio e vídeo** (com OCR opcional), além de conectores de **RH/SST e sistemas de back-office** para organizações cuja sopa inclui mídia rica e sistemas de linha de negócio.
 
 ---
 
@@ -28,7 +28,9 @@ Esta página descreve **o que o Data Boar revela**, **o que não faz**, **com qu
 ## Alinhamento regulatório: embutido e por configuração
 
 - **Já presentes em linguagem de detecção e relatórios:** **LGPD**, **GDPR**, **CCPA**, **HIPAA**, **GLBA** (referências de norma e texto de recomendação).
-- **Outras jurisdições e políticas internas:** Muitos frameworks adicionais (ex. UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS e perfis regionais) podem ser refletidos por **perfis de configuração**—ajustando conjuntos de padrões, rótulos e texto de relatório—**sem fork do produto**. O que “ajuste pequeno” significa na prática (arquivos, mesclagem) está documentado para times de implementação em [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md). Itens de **roadmap** podem ampliar cobertura; veja [PLANS_TODO.md](plans/PLANS_TODO.md).
+- **Outras jurisdições e políticas internas:** Muitos frameworks adicionais (ex. UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS e perfis regionais) podem ser refletidos por **perfis de configuração**—ajustando conjuntos de padrões, rótulos e texto de relatório—**sem fork do produto**. O que “ajuste pequeno” significa na prática (arquivos, mesclagem) está documentado para times de implementação em [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md). Itens de **roadmap** seguem ampliando cobertura ao longo do tempo.
+
+**EUA — privacidade de crianças e menores (apenas mapeamento técnico):** Amostras YAML opcionais apoiam trabalho de inventário **técnico** e **operacional** (ex.: revisão do DPO, preparação para auditoria ou delimitação de escopo com assessoria jurídica)—incluindo enquadramentos associados à **COPPA federal (regra FTC)**, à **Califórnia AB 2273** e às regras do **Colorado CPA** que afetam consumidores com menos de 18 anos. **Não** é aconselhamento jurídico, **não** é verificação de idade nem prova de consentimento parental e **não** determina se determinada lei se aplica. Nomes de arquivos e passos de mesclagem: [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) e [compliance-samples/](compliance-samples/).
 
 ---
 
@@ -37,7 +39,8 @@ Esta página descreve **o que o Data Boar revela**, **o que não faz**, **com qu
 - **Relatórios Excel** por **sessão** de varredura: achados por fonte, campo/caminho, tipo de padrão, sensibilidade e texto de recomendação orientado a framework (base legal, risco, ação sugerida, prioridade quando configurado).
 - **Heatmaps** e **visões de tendência** entre sessões para mostrar **evolução**, não só um instantâneo.
 - **Execuções repetíveis** (incluindo automação via API) para alinhar ao **modelo operacional**; detalhe técnico de agendamento e limites: [COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md](COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md).
-- **Identidade de build (roadmap):** os relatórios já registram a **versão da aplicação** na folha “Report info”; há plano para exibir de forma explícita **release vs desenvolvimento** e, opcionalmente, **sinais de integridade** para ambientes enterprise — ver [PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md](plans/PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md) (sem alteração do alcance jurídico até implementar).
+- **Sinais ao operador (opcional, webhooks):** Com `notifications` habilitado na configuração, a aplicação pode enviar um **resumo curto** ao concluir uma varredura (ex.: Slack, Teams, Telegram ou URL genérica), inclusive **vários canais** ou **cópia ao tenant** quando configurado — **padrão desligado**; é conveniência operacional e **não substitui** os relatórios Excel nem constitui prova jurídica por si só. Detalhes: [USAGE.pt_BR.md — Notificações ao operador](USAGE.pt_BR.md#notificações-ao-operador-opcional).
+- **Identidade de build (roadmap):** os relatórios já registram a **versão da aplicação** na folha “Report info”; há plano para exibir de forma explícita **release vs desenvolvimento** e, opcionalmente, **sinais de integridade** para ambientes enterprise (sem alteração do alcance jurídico até implementar).
 
 ---
 
@@ -51,13 +54,13 @@ Há **serviços contratados** (consultoria e ajustes finos) para apoiar: escopo 
 
 ## Próximos passos
 
-| Necessidade | Documento |
-| ----------- | --------- |
-| **Resumo jurídico / compliance (esta página)** | Você está aqui |
+| Necessidade                                               | Documento                                                                                                                    |
+| -----------                                               | ---------                                                                                                                    |
+| **Resumo jurídico / compliance (esta página)**            | Você está aqui                                                                                                               |
 | **TI: codificações, limites de API, timeouts, automação** | [COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md](COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md) ([EN](COMPLIANCE_TECHNICAL_REFERENCE.md)) |
-| **Lista de frameworks e perfis de exemplo** | [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) · [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) |
-| **Esquema de config, credenciais, CLI/API** | [USAGE.pt_BR.md](USAGE.pt_BR.md) · [USAGE.md](USAGE.md) |
-| **Política de segurança** | [SECURITY.pt_BR.md](SECURITY.pt_BR.md) · [SECURITY.md](SECURITY.md) |
-| **Instalação, conectores, deploy** | [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md) · [TECH_GUIDE.md](TECH_GUIDE.md) |
-| **Glossário** | [GLOSSARY.pt_BR.md](GLOSSARY.pt_BR.md) · [GLOSSARY.md](GLOSSARY.md) |
-| **Índice completo da documentação** | [README.pt_BR.md](README.pt_BR.md) · [README.md](README.md) |
+| **Lista de frameworks e perfis de exemplo**               | [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) · [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md)      |
+| **Esquema de config, credenciais, CLI/API**               | [USAGE.pt_BR.md](USAGE.pt_BR.md) · [USAGE.md](USAGE.md)                                                                      |
+| **Política de segurança**                                 | [SECURITY.pt_BR.md](SECURITY.pt_BR.md) · [SECURITY.md](SECURITY.md)                                                          |
+| **Instalação, conectores, deploy**                        | [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md) · [TECH_GUIDE.md](TECH_GUIDE.md)                                                  |
+| **Glossário**                                             | [GLOSSARY.pt_BR.md](GLOSSARY.pt_BR.md) · [GLOSSARY.md](GLOSSARY.md)                                                          |
+| **Índice completo da documentação**                       | [README.pt_BR.md](README.pt_BR.md) · [README.md](README.md)                                                                  |

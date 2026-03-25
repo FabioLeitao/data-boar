@@ -15,7 +15,7 @@ This page states **what Data Boar reveals**, **what it does not do**, **which re
 - **Possible minor-related data:** Indicators aligned with **LGPD Art. 14** and **GDPR Art. 8** (human review may still be required).
 - **Regional and ambiguous identifiers:** Region-specific document labels and ambiguous fields flagged for **manual confirmation** where automation cannot assert certainty.
 - **Multi-source visibility:** One coherent view across the **data soup** your organisation configures—databases, files, APIs, business-intelligence and collaboration systems, and other **connector** types described at a high level in [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) and [TECH_GUIDE.md](TECH_GUIDE.md)—without claiming completeness of every legacy system until targets are in scope.
-- **Filesystem triage discipline:** The engine can **sample enough context** from text-like files to apply judgment—reducing alert fatigue where content looks like **entertainment or boilerplate** while **strong pattern matches** remain prominent for remediation. A **roadmap** toward **image, audio, and video** metadata (and optional OCR), **subtitle** files, and—separately—**enterprise HR/SST/ERP-style** data sources is documented for organisations whose soup includes rich media and line-of-business systems ([PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md](plans/PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md), [PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md](plans/PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md)). **Steganography** and full content extraction from media remain **explicitly out of scope** until a future opt-in plan, to limit sensitive-data copying.
+- **Filesystem triage discipline:** The engine can **sample enough context** from text-like files to apply judgment—reducing alert fatigue where content looks like **entertainment or boilerplate** while **strong pattern matches** remain prominent for remediation. Our roadmap includes **image, audio, and video** metadata (with optional OCR), **subtitle** files, and—separately—**enterprise HR/SST/ERP-style** data sources for organisations whose soup includes rich media and line-of-business systems. **Steganography** and full content extraction from media remain **explicitly out of scope** until a future opt-in phase, to limit sensitive-data copying.
 
 ---
 
@@ -28,7 +28,9 @@ This page states **what Data Boar reveals**, **what it does not do**, **which re
 ## Regulatory alignment: built-in and configuration-led
 
 - **Built into reports and detection language today:** **LGPD**, **GDPR**, **CCPA**, **HIPAA**, **GLBA** (norm references and recommendation text).
-- **Additional jurisdictions and internal policies:** Many further frameworks (e.g. UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS, and regional profiles) can be reflected through **configuration profiles**—adjusting pattern sets, labels, and report wording—**without forking the product**. What “small change” means in practice (files, merge steps) is documented for implementation teams in [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md). **Roadmap** items may extend coverage; see [PLANS_TODO.md](plans/PLANS_TODO.md) for current sequencing.
+- **Additional jurisdictions and internal policies:** Many further frameworks (e.g. UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS, and regional profiles) can be reflected through **configuration profiles**—adjusting pattern sets, labels, and report wording—**without forking the product**. What “small change” means in practice (files, merge steps) is documented for implementation teams in [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md). **Roadmap** items continue to extend coverage over time.
+
+**U.S. — children’s and minors’ privacy (technical mapping only):** Optional YAML samples support **technical** and **operational** inventory work (e.g. DPO review, audit preparation, or scoping under counsel)—including framings sometimes associated with **federal COPPA (FTC Rule)**, **California AB 2273**, and **Colorado CPA** rules affecting consumers under 18. This is **not legal advice**, **not** age verification or parental-consent proof, and **not** a determination that any law applies. Use [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) and [compliance-samples/](compliance-samples/) for file names and merge steps.
 
 ---
 
@@ -37,7 +39,8 @@ This page states **what Data Boar reveals**, **what it does not do**, **which re
 - **Excel reports** per scan **session**: findings by source, field/path, pattern type, sensitivity, and framework-oriented recommendation text (legal basis, risk, suggested action, priority where configured).
 - **Heatmaps** and **trend views** across sessions to show **evolution**, not only a point-in-time snapshot.
 - **Repeatable runs** (including automation via API) so monitoring can match your **operating model**; technical detail of scheduling and limits: [COMPLIANCE_TECHNICAL_REFERENCE.md](COMPLIANCE_TECHNICAL_REFERENCE.md).
-- **Build identity (roadmap):** Reports already record **application version** in “Report info”; a planned enhancement exposes **release vs development** builds and optional **integrity** signals for enterprises—see [PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md](plans/PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md) (no change to legal scope until implemented).
+- **Optional operator signals (webhooks):** When `notifications` is enabled, the app can POST a short scan-completion summary (e.g. Slack, Teams, Telegram, or a generic URL), including **multiple operator channels** or an optional **tenant copy** when configured — **default off**; this is operational convenience and **does not replace** Excel outputs or constitute legal evidence by itself. See [USAGE.md — Operator notifications](USAGE.md#51-operator-notifications-optional).
+- **Build identity (roadmap):** Reports already record **application version** in “Report info”; a planned enhancement will expose **release vs development** builds and optional **integrity** signals for enterprises (no change to legal scope until implemented).
 
 ---
 
@@ -51,13 +54,13 @@ Organisations rarely have a single, tidy inventory of every **ingredient** in th
 
 ## Where to go next
 
-| Need | Document |
-| ---- | -------- |
-| **Legal / compliance summary (this page)** | You are here |
+| Need                                                | Document                                                                                                                  |
+| ----                                                | --------                                                                                                                  |
+| **Legal / compliance summary (this page)**          | You are here                                                                                                              |
 | **IT: encodings, API limits, timeouts, automation** | [COMPLIANCE_TECHNICAL_REFERENCE.md](COMPLIANCE_TECHNICAL_REFERENCE.md) ([pt-BR](COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md)) |
-| **Framework list and sample profiles** | [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) · [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) |
-| **Config schema, credentials, CLI/API** | [USAGE.md](USAGE.md) · [USAGE.pt_BR.md](USAGE.pt_BR.md) |
-| **Security policy** | [SECURITY.md](SECURITY.md) · [SECURITY.pt_BR.md](SECURITY.pt_BR.md) |
-| **Install, connectors, deploy** | [TECH_GUIDE.md](TECH_GUIDE.md) · [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md) |
-| **Glossary** | [GLOSSARY.md](GLOSSARY.md) · [GLOSSARY.pt_BR.md](GLOSSARY.pt_BR.md) |
-| **Full documentation index** | [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md) |
+| **Framework list and sample profiles**              | [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) · [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md)   |
+| **Config schema, credentials, CLI/API**             | [USAGE.md](USAGE.md) · [USAGE.pt_BR.md](USAGE.pt_BR.md)                                                                   |
+| **Security policy**                                 | [SECURITY.md](SECURITY.md) · [SECURITY.pt_BR.md](SECURITY.pt_BR.md)                                                       |
+| **Install, connectors, deploy**                     | [TECH_GUIDE.md](TECH_GUIDE.md) · [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md)                                               |
+| **Glossary**                                        | [GLOSSARY.md](GLOSSARY.md) · [GLOSSARY.pt_BR.md](GLOSSARY.pt_BR.md)                                                       |
+| **Full documentation index**                        | [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md)                                                               |

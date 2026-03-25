@@ -6,7 +6,7 @@
 
 **Não é aconselhamento jurídico.** Para dados **reais** de pessoas, exija **base legal**, **minimização** e contas técnicas **só leitura**; prefira dados **sintéticos** ou **amostras públicas** quando houver dúvida.
 
-**Relacionado:** [deploy/DEPLOY.pt_BR.md](../deploy/DEPLOY.pt_BR.md) · [SONARQUBE_HOME_LAB.md](SONARQUBE_HOME_LAB.md) · [OPERATOR_IT_REQUIREMENTS.pt_BR.md](OPERATOR_IT_REQUIREMENTS.pt_BR.md) · [TESTING.pt_BR.md](../TESTING.pt_BR.md) · [SECURITY.pt_BR.md](../SECURITY.pt_BR.md)
+**Relacionado:** [deploy/DEPLOY.pt_BR.md](../deploy/DEPLOY.pt_BR.md) · [SONARQUBE_HOME_LAB.md](SONARQUBE_HOME_LAB.md) · [OPERATOR_IT_REQUIREMENTS.pt_BR.md](OPERATOR_IT_REQUIREMENTS.pt_BR.md) · [TESTING.pt_BR.md](../TESTING.pt_BR.md) · [SECURITY.pt_BR.md](../SECURITY.pt_BR.md) · **Lab-op — stack mínimo (Podman + k3s):** [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md) ([EN](LAB_OP_MINIMAL_CONTAINER_STACK.md)) · **T14 + LMDE 7:** [LMDE7_T14_DEVELOPER_SETUP.pt_BR.md](LMDE7_T14_DEVELOPER_SETUP.pt_BR.md) · **Observabilidade opcional:** [PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md) · **SIEM (Wazuh):** mesmo doc LAB_OP §6
 
 ---
 
@@ -31,7 +31,7 @@
 | 1.4   | `data/config.yaml` a partir de [config.example.yaml](../deploy/config.example.yaml) | YAML válido                                                                                                                                          |
 | 1.5   | `docker run` com volume `/data` e `CONFIG_PATH`                                     | Dashboard em `:8088`, `/health` OK                                                                                                                   |
 | 1.6   | Scan com `targets: []`                                                              | Termina sem crash                                                                                                                                    |
-| 1.7   | *(Opcional)* Abrir o dashboard em **vários** browsers no desktop                    | Páginas principais carregam; **Console** DevTools sem erros graves em fluxos centrais                                                                    |
+| 1.7   | *(Opcional)* Abrir o dashboard em **vários** browsers no desktop                    | Páginas principais carregam; **Console** DevTools sem erros graves em fluxos centrais                                                                |
 
 **Modo Swarm:** Se o host já for **manager** Swarm, os passos acima mantêm-se. Use outra porta se `8088` estiver ocupada por outra stack; registe conflitos no runbook privado.
 
@@ -91,6 +91,8 @@ Homelab com **várias máquinas** (portátil Ubuntu/derivado com Docker, mini-PC
 
 **Quando preparar o hardware (§9.1 + [PLANS_TODO](../plans/PLANS_TODO.md) ordem –1L):** **Agora** — nada depende da torre futura nem do Mac avariado; continue musl + ARM. **Torre principal com Proxmox** — antes de uma sessão focada de validação nesse alvo: Proxmox instalado, **≥1 VM ou LXC** Debian/Ubuntu, rede e disco prontos; depois §1+§2 **no guest** (ver [§9.1 em inglês](HOMELAB_VALIDATION.md#91-when-to-have-hardware-ready-operator-sync-with-planstodo-order-1l)). **Mac mini antigo** — só preparar quando voltar a arrancar de forma fiável.
 
+**Simulação de cluster, Alpine / AlmaLinux e escala horizontal (§9.3 em EN):** quando a **torre + Proxmox** estiver no ar, dá para várias VMs (sabores **Alpine**, **AlmaLinux**, etc.) com **Docker/Podman** para simular **vários nós** e ensaios de **resiliência** e **réplicas** — ver [§9.3 em inglês](HOMELAB_VALIDATION.md#93-cluster-simulation-alpine--almalinux-and-when-horizontal-scale-matters) e a tabela **“quando priorizar”** no §5 de [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md).
+
 **Não** publique no GitHub nomes reais de máquinas, IPs da LAN ou caminhos em `$HOME`—use só **`docs/private/homelab/`** (ignorado pelo git) ou notas locais; política em [PRIVATE_OPERATOR_NOTES.pt_BR.md](../PRIVATE_OPERATOR_NOTES.pt_BR.md).
 
 ---
@@ -110,6 +112,7 @@ Nota datada em **`docs/private/homelab/`** (gitignored): **hostnames**, tag da i
 ## 12. Ver também
 
 - [OS_COMPATIBILITY_TESTING_MATRIX.pt_BR.md](OS_COMPATIBILITY_TESTING_MATRIX.pt_BR.md) — **quais distros** testar (RHEL/Fedora, Arch/Manjaro, Gentoo, musl) priorizadas por relevância em produção.
+- [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md) §5 — torre / **Alpine** / **AlmaLinux**, simulação multi-VM, **quando** priorizar **HA / escala horizontal** (vs baseline **–1L**).
 - [HOMELAB_HOST_PACKAGE_INVENTORY.pt_BR.md](HOMELAB_HOST_PACKAGE_INVENTORY.pt_BR.md) — inventário de pacotes nos hosts (o repo não “vê” as suas máquinas).
 - [HOMELAB_UNIFI_UDM_LAB_NETWORK.pt_BR.md](HOMELAB_UNIFI_UDM_LAB_NETWORK.pt_BR.md) — **UDM-SE**: VLANs/firewall e SNMP local antes do servidor de monitoração.
 - [HOMELAB_MOBILE_OPERATOR_TOOLS.pt_BR.md](HOMELAB_MOBILE_OPERATOR_TOOLS.pt_BR.md) — **iPhone / tablet Android** como ferramentas do operador (UniFi, GitHub, Bitwarden, SSH na LAN, smoke da UI, fotos para notas privadas).
