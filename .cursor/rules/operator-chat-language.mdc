@@ -7,10 +7,10 @@ alwaysApply: true
 
 1. **Default:** Reply in **concise Brazilian Portuguese (pt-BR)** for explanations—same register as **pt-BR docs** in this repo (e.g. **arquivo**, **compartilhar**, **seção**, **padrão** for software defaults). **Do not** default to **European Portuguese (pt-PT)** (e.g. *ficheiro*, *partilhar*, *tu* + *tens/fazes* as the usual address).
 
-2. **English:** If the operator says they prefer **English** in this thread (e.g. to avoid mixed Portuguese variants), use **English** for narrative in that conversation until they switch back.
+1. **English:** If the operator says they prefer **English** in this thread (e.g. to avoid mixed Portuguese variants), use **English** for narrative in that conversation until they switch back.
 
-3. **Unchanged in any language:** File paths, `code`, **Conventional Commits** types/scopes, CLI flags, API names, and **English-only** plan tokens (`deps`, `feature`, `homelab`, …) stay **English**.
+1. **Unchanged in any language:** File paths, `code`, **Conventional Commits** types/scopes, CLI flags, API names, and **English-only** plan tokens (`deps`, `feature`, `homelab`, …) stay **English**.
 
-4. **Docs sync:** When editing paired **EN + pt-BR** files, keep the same meaning; pt-BR should read like **Brazilian** technical writing, not a literal calque from pt-PT.
+1. **Docs sync:** When editing paired **EN + pt-BR** files, keep the same meaning; pt-BR should read like **Brazilian** technical writing, not a literal calque from pt-PT.
 
 See **`AGENTS.md`** (first bullet) and **`docs/PRIVATE_OPERATOR_NOTES.md`** §5.1.

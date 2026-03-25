@@ -6,18 +6,21 @@ Arquivos de configuração de exemplo para habilitar **frameworks de conformidad
 
 ## Arquivos de amostra (um por regulamento)
 
-| Arquivo                            | Finalidade                                                                                                                                                      |
-| ---------                          | ------------                                                                                                                                                    |
-| **compliance-sample-lgpd.yaml**    | LGPD (Brasil): termos bilíngues PT-BR + EN (ex.: documento oficial / official document, RG, CNH / Driver License); regex RG/CEP; para implantações brasileiras. |
-| **compliance-sample-uk_gdpr.yaml** | UK GDPR (Reino Unido pós-Brexit + semelhante à UE): norm_tag e recommendation overrides alinhados à ICO e disposições britânicas.                               |
-| **compliance-sample-eu_gdpr.yaml** | EU GDPR (EEE): Art. 4(1) Reg. UE 2016/679, EDPB, autoridades nacionais; termos opcionais EN + DE/FR.                                                            |
-| **compliance-sample-benelux.yaml** | Benelux (BE, NL, LU): base EU GDPR + IDs nacionais (BSN, NISS, ID Luxemburgo) e overrides para DPAs nacionais; termos EN + NL/FR.                               |
-| **compliance-sample-pipeda.yaml**  | PIPEDA (Canadá, setor privado federal): informação pessoal, consentimento e identificadores canadenses (ex.: SIN).                                              |
-| **compliance-sample-popia.yaml**   | POPIA (África do Sul): responsável pelo tratamento, informação pessoal e identificadores sul-africanos.                                                         |
-| **compliance-sample-appi.yaml**    | APPI (Japão): informação pessoal e dados pessoais retidos; termos e overrides alinhados à PPC.                                                                  |
-| **compliance-sample-pci_dss.yaml** | PCI-DSS (dados de cartão de pagamento): padrões de cartão/financeiro e recommendation overrides para comerciantes e avaliadores.                                |
+| Arquivo                                        | Finalidade                                                                                                                                                      |
+| ---------                                      | ------------                                                                                                                                                    |
+| **compliance-sample-lgpd.yaml**                | LGPD (Brasil): termos bilíngues PT-BR + EN (ex.: documento oficial / official document, RG, CNH / Driver License); regex RG/CEP; para implantações brasileiras. |
+| **compliance-sample-uk_gdpr.yaml**             | UK GDPR (Reino Unido pós-Brexit + semelhante à UE): norm_tag e recommendation overrides alinhados à ICO e disposições britânicas.                               |
+| **compliance-sample-eu_gdpr.yaml**             | EU GDPR (EEE): Art. 4(1) Reg. UE 2016/679, EDPB, autoridades nacionais; termos opcionais EN + DE/FR.                                                            |
+| **compliance-sample-benelux.yaml**             | Benelux (BE, NL, LU): base EU GDPR + IDs nacionais (BSN, NISS, ID Luxemburgo) e overrides para DPAs nacionais; termos EN + NL/FR.                               |
+| **compliance-sample-pipeda.yaml**              | PIPEDA (Canadá, setor privado federal): informação pessoal, consentimento e identificadores canadenses (ex.: SIN).                                              |
+| **compliance-sample-popia.yaml**               | POPIA (África do Sul): responsável pelo tratamento, informação pessoal e identificadores sul-africanos.                                                         |
+| **compliance-sample-appi.yaml**                | APPI (Japão): informação pessoal e dados pessoais retidos; termos e overrides alinhados à PPC.                                                                  |
+| **compliance-sample-pci_dss.yaml**             | PCI-DSS (dados de cartão de pagamento): padrões de cartão/financeiro e recommendation overrides para comerciantes e avaliadores.                                |
+| **compliance-sample-us_ftc_coppa.yaml**        | EUA FTC COPPA (privacidade online de crianças): termos e overrides de **mapeamento técnico**; sem verificação de idade nem aconselhamento jurídico.             |
+| **compliance-sample-us_ca_ab2273_caadca.yaml** | Califórnia AB 2273 (Age-Appropriate Design): **rotulagem** para escopo voluntário; aplicabilidade exige assessoria jurídica.                                    |
+| **compliance-sample-us_co_cpa_minors.yaml**    | Colorado CPA — contextos com menores de 18 anos: **norm tags técnicos**; não estabelece “menor conhecido” no sentido jurídico.                                  |
 
-**compliance-sample-lgpd.yaml** e **compliance-sample-uk_gdpr.yaml** estão disponíveis; EU GDPR, Benelux, PIPEDA, POPIA, APPI e PCI-DSS serão adicionados em fases posteriores. **Amostras regionais opcionais** (Filipinas DPA, Austrália Privacy Act, Singapura PDPA, UAE/Arábia Saudita PDPL, Argentina/Colômbia/Chile, Quênia/Nigéria/Marrocos, Índia DPDP, Turquia KVKK, Suíça FADP, Nova Zelândia, Israel, etc.) podem ser adicionadas conforme necessidade—mesmo formato; veja [PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md](../plans/PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md) “Optional regional samples (Phase 3+)”. Cada amostra é autocontida (regex overrides, termos ML, recommendation overrides) para que você possa habilitar um framework incluindo os blocos desse arquivo no seu config.
+**Lista completa** de amostras por região: [COMPLIANCE_FRAMEWORKS.pt_BR.md](../COMPLIANCE_FRAMEWORKS.pt_BR.md#amostras-de-conformidade) ([EN](../COMPLIANCE_FRAMEWORKS.md#compliance-samples)). Cada amostra é autocontida (regex overrides, termos ML, recommendation overrides); novas regiões seguem o mesmo formato — veja [PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md](../plans/PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md).
 
 ### Idioma e público-alvo
 
@@ -43,6 +46,7 @@ Ao escolher ou criar uma amostra, considere o(s) **idioma(s)** da região alvo p
 | **Índia (DPDP)**                 | Inglês.                                                                                                  |
 | **Turquia (KVKK)**               | Turco e inglês (ex.: kişisel veri / personal data).                                                      |
 | **Suíça (FADP)**                 | Inglês; opcional DE/FR/IT.                                                                               |
+| **EUA (COPPA, AB 2273, CO CPA)** | Inglês (implantações e programas de privacidade nos EUA).                                                |
 
 Documente no cabeçalho da amostra ou em [COMPLIANCE_FRAMEWORKS](../COMPLIANCE_FRAMEWORKS.pt_BR.md) quando uma amostra incluir termos em mais de um idioma. Veja também a regra **.cursor/rules/compliance-samples-language.mdc**.
 
