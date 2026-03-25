@@ -51,6 +51,7 @@ Deliver a short, realistic 2-week sprint that keeps **tests green**, avoids regr
 ## Daily execution template (very short)
 
 1. Start-of-day (5 min):
+   - If plan context feels scattered, use token **`pmo-view`** to open PMO files in Markdown Preview and pick the single daily slice before coding.
    - Confirm top priority slice and risk.
    - Confirm branch/PR state.
 1. Build block (60–120 min):
@@ -67,6 +68,7 @@ Deliver a short, realistic 2-week sprint that keeps **tests green**, avoids regr
 When the operator has limited attention/time, run this order:
 
 1. Fast triage:
+   - Optional quick scope lock: use **`pmo-view`** first, check `PLANS_TODO.md` + this two-week plan, then commit to one objective.
    - Check open PRs + check status.
    - Pick one single objective for today.
 1. Single safe slice:
@@ -77,6 +79,12 @@ When the operator has limited attention/time, run this order:
    - Leave explicit next step (one-liner) to resume tomorrow without re-discovery.
 1. If Slack is not yet verified:
    - Run **Actions → Slack operator ping** once; confirm message in your ops channel (secret `SLACK_WEBHOOK_URL`).
+
+## PMO shorthand alignment
+
+- **`pmo-view`**: use when you need a fast visual alignment pass (tables/roadmap) before choosing a week or today slice.
+- **`feature`**: default execution token for the chosen slice.
+- **`sidequest`**: only for bounded detours; always return to the selected two-week/today objective.
 
 ## Definition of done (two-week plan)
 
