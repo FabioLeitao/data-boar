@@ -64,6 +64,8 @@ scan:
         status_resp = client.get("/status")
         assert status_resp.status_code == 200
         assert status_resp.json().get("running") is False
+        runtime_trust = status_resp.json().get("runtime_trust") or {}
+        assert runtime_trust.get("trust_state") in {"trusted", "degraded", "untrusted"}
     finally:
         routes._config_path = original_config_path
         routes._config = original_config
