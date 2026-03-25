@@ -43,6 +43,66 @@ if ($IncludeFiles.Count -eq 1 -and $IncludeFiles[0] -match ',') {
     $IncludeFiles = $IncludeFiles[0] -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ }
 }
 
+function Set-GhDefaultRepo {
+    param(
+        [switch]$Quiet
+    )
+
+    if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
+        return $false
+    }
+
+    $currentDefault = & gh repo view --json nameWithOwner -q ".nameWithOwner" 2>$null
+    if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($currentDefault)) {
+        if (-not $Quiet) {
+            Write-Host "gh default repository already configured: $currentDefault"
+        }
+        return $true
+    }
+
+    $remoteUrl = git remote get-url origin 2>$null
+    if (-not $remoteUrl) {
+        if (-not $Quiet) {
+            Write-Host "Could not read 'origin' URL; skipping gh default repository setup." -ForegroundColor Yellow
+        }
+        return $false
+    }
+
+    if ($remoteUrl -notmatch 'github\.com[:/]([^/]+)/([^/]+?)(?:\.git)?$') {
+        if (-not $Quiet) {
+            Write-Host "Origin is not a GitHub remote; skipping gh default repository setup." -ForegroundColor Yellow
+        }
+        return $false
+    }
+
+    $owner = $Matches[1]
+    $repo = ($Matches[2] -replace '\.git$', '')
+    $repoSlug = "$owner/$repo"
+    if (-not $Quiet) {
+        Write-Host "Configuring gh default repository from origin: $repoSlug"
+    }
+    & gh repo set-default $repoSlug
+    if ($LASTEXITCODE -ne 0) {
+        if (-not $Quiet) {
+            Write-Host "Failed to configure gh default repository '$repoSlug'." -ForegroundColor Yellow
+        }
+        return $false
+    }
+
+    $verifiedDefault = & gh repo view --json nameWithOwner -q ".nameWithOwner" 2>$null
+    if ($LASTEXITCODE -eq 0 -and $verifiedDefault -eq $repoSlug) {
+        if (-not $Quiet) {
+            Write-Host "gh default repository set to: $verifiedDefault"
+        }
+        return $true
+    }
+
+    if (-not $Quiet) {
+        Write-Host "gh default repository was set, but verification failed. You can run: gh repo set-default $repoSlug" -ForegroundColor Yellow
+    }
+    return $false
+}
+
 # Changed + untracked files; only include paths not ignored by .gitignore
 $changed = @()
 $changed += git diff --name-only
@@ -65,6 +125,10 @@ function Get-ScopeFingerprint([string[]]$paths) {
     if (-not $paths) { return "" }
     $sorted = @($paths | Sort-Object -Unique)
     return [string]::Join("|", $sorted)
+}
+
+if ($Action -eq 'PR' -and (Get-Command gh -ErrorAction SilentlyContinue)) {
+    [void](Set-GhDefaultRepo -Quiet)
 }
 
 # Preview and Commit require something to commit
