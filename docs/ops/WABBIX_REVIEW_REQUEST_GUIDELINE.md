@@ -37,12 +37,12 @@ Ask Wabbix to **not conflate** these baselines. They answer **different question
 | **Last Wabbix report** (e.g. PDF 2026-03-18)                                      | What changed **since their last recommendations** — what we **treated**, **planned**, or **left pending** in dialogue with them.                              |
 | **Last public release** (GitHub `vX.Y.Z`, Docker Hub `:X.Y.Z` / `:latest` digest) | What changed **since we last delivered** to testers, partners, or the market — the last **identifiable** cut (often **not** the same date as the Wabbix PDF). |
 
-**Typical case:** last report ≈ mid-March 2026; latest shipped release in repo today is often **`v1.6.6`** (confirm from `README`, `docs/releases/1.6.6.md`, GitHub Releases, Docker Hub). **`main` may be ahead of the tag** — call that out explicitly.
+**Typical case:** last report ≈ mid-March 2026; latest shipped release in repo today is often **`v1.6.7`** (confirm from `README`, `docs/releases/1.6.7.md`, GitHub Releases, Docker Hub). **`main` may be ahead of the tag** — call that out explicitly.
 
 ## How they can discover the release baseline (artifacts in repo — no need to guess):
 
 - `README.md` / `docs/releases/X.Y.Z.md` — shipped version narrative.
-- GitHub **Releases** / tags (e.g. `v1.6.6`).
+- GitHub **Releases** / tags (e.g. `v1.6.7`).
 - Docker Hub tags + digest notes in `docs/deploy/` or release notes.
 
 ## What to ask them to produce:
@@ -105,9 +105,9 @@ This helps catch interval regressions, separates **market-facing delivery** from
 - Recurrent weak spots still unresolved.
 
 - **Since last tagged release (market/testers/partners):**
-- Name the tag (e.g. `v1.6.6`) and date from repo/GitHub/Docker artifacts.
+- Name the tag (e.g. `v1.6.7`) and date from repo/GitHub/Docker artifacts.
 - Summarize commits/themes **after** that tag until current branch tip (even if not re-released).
-- Note whether “current product” for a buyer is still **1.6.6** or already **ahead** on `main`.
+- Note whether “current product” for a buyer is still **1.6.7** or already **ahead** on `main`.
 
 - **Taxonomy of effort in the interval:**
 - Security hardening
@@ -231,7 +231,7 @@ G) Time-scope analysis (three lenses — do not merge):
    - Cumulative history (long horizon).
    - Since last Wabbix report (recommendations addressed vs pending vs planned).
    - Since last GitHub/Docker tagged release (last market-facing delivery → now, including unshipped `main` if applicable).
-   - State explicitly: latest tag (e.g. v1.6.6) vs current branch tip.
+   - State explicitly: latest tag (e.g. v1.6.7) vs current branch tip.
    - Highlight interval regressions, newly introduced risks, and trend direction.
    - Classify interval work by effort taxonomy (security/integrity/features/docs/ops/refactor).
 
