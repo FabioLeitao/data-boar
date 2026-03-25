@@ -1,0 +1,34 @@
+---
+description: When safe (CI green, mergeable, docs aligned), complete PR merge via scripts/ without asking permission; run LAB-OP SSH collection scripts from terminal; escalate on failures or regressions.
+alwaysApply: true
+---
+
+# Autonomous merge + LAB-OP (operator trust)
+
+## 1. GitHub PR merge (no permission ping when safe)
+
+When **all** hold:
+
+- `git fetch` + `gh pr view` show **OPEN**, **mergeable** (not CONFLICTING), and `gh pr checks` are **green** (or equivalent).
+- No **suspected regression** from the diff; **docs** relevant to the change are updated.
+- Operator has **not** asked for a **review pause** or **hold** on this PR.
+
+**Do:** run **`.\scripts\pr-merge-when-green.ps1 -PrNumber <N>`** from repo root (after `gh auth` works on the machine). Prefer **merge**; use **squash/rebase** only if repo convention or PR comment says so.
+
+**Do not** merge without checking **mergeable** + **checks**. **Do not** use `--admin` unless branch protection blocks merge and the operator explicitly authorizes.
+
+**Escalate (stop and ask)** when: checks fail/pending, conflicts, **mergeable UNKNOWN**, `gh` auth errors, or **any doubt** about regression / release impact.
+
+## 2. LAB-OP (SSH from the dev PC terminal — not “remote AI datacenter”)
+
+The assistant **does not** have a separate network to your LAN. It **does** have the same path as **`ssh`** in the **Cursor integrated terminal** on the **operator’s PC** (see **`homelab-ssh-via-terminal.mdc`**).
+
+When the task is **refresh inventory / homelab reports** and a manifest exists:
+
+**Do:** run **`.\scripts\lab-op-sync-and-collect.ps1`** (or **`.\scripts\collect-homelab-report-remote.ps1`** per host) after **`docs/private/homelab/lab-op-hosts.manifest.json`** is present (copy from **`lab-op-hosts.manifest.example.json`**). Then **`read_file`** the new log under **`docs/private/homelab/reports/`** and summarize deltas — **do not** paste raw LAN details into **tracked** files.
+
+**Escalate** when: SSH fails, `git pull` fails, manifest missing, or output suggests **host down** / **key** issues.
+
+## 3. Truth vs wish
+
+If **`gh`**, **`ssh`**, or **`fping`** fails in-session, **report the error** — do not imply the merge or collection “completed” without a **zero exit code**.

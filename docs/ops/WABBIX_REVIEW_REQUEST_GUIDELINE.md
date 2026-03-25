@@ -9,8 +9,8 @@ Use this template when asking Wabbix for a new report after meaningful project c
 ## Workflow when drafting a new WRB request (review + persist)
 
 1. **Show for review:** surface the full message in the chat/UI so you can proofread before sending to Wabbix.
-2. **Persist in-repo:** save the same text in `docs/ops/WABBIX_REVIEW_REQUEST_GUIDELINE.md` (the “Prompt mestre completo” ` ```text ` block) and mirror it in `docs/ops/WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md` when you use that package; **commit** so drafts are not lost to session history or clipboard issues.
-3. **Validate (pt-BR + lint):** run `uv run pytest tests/test_markdown_lint.py::test_markdown_lint_no_violations tests/test_docs_pt_br_locale.py -q`. Portuguese prose must follow **Brazilian Portuguese** (`.cursor/rules/docs-pt-br-locale.mdc`, `docs-policy.mdc`, `operator-chat-language-pt-br.mdc`); English for paths, APIs, and established technical terms is fine.
+1. **Persist in-repo:** save the same text in `docs/ops/WABBIX_REVIEW_REQUEST_GUIDELINE.md` (the “Prompt mestre completo” ` ```text ` block) and mirror it in `docs/ops/WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md` when you use that package; **commit** so drafts are not lost to session history or clipboard issues.
+1. **Validate (pt-BR + lint):** run `uv run pytest tests/test_markdown_lint.py::test_markdown_lint_no_violations tests/test_docs_pt_br_locale.py -q`. Portuguese prose must follow **Brazilian Portuguese** (`.cursor/rules/docs-pt-br-locale.mdc`, `docs-policy.mdc`, `operator-chat-language-pt-br.mdc`); English for paths, APIs, and established technical terms is fine.
 
 *(PT-BR: ao criar um pedido, mostrar o texto na tela para revisão **e** gravar no repositório + commit + validar lint e locale pt-BR.)*
 
@@ -31,27 +31,27 @@ Minimum reminder block:
 
 Ask Wabbix to **not conflate** these baselines. They answer **different questions** and produce **different viewpoints**:
 
-| Baseline | Question it answers |
-| -------- | ------------------- |
-| **Cumulative / historical** (“todo acumulado”) | Overall maturity and risk trajectory over the long run. |
-| **Last Wabbix report** (e.g. PDF 2026-03-18) | What changed **since their last recommendations** — what we **treated**, **planned**, or **left pending** in dialogue with them. |
+| Baseline                                                                          | Question it answers                                                                                                                                           |
+| --------                                                                          | -------------------                                                                                                                                           |
+| **Cumulative / historical** (“todo acumulado”)                                    | Overall maturity and risk trajectory over the long run.                                                                                                       |
+| **Last Wabbix report** (e.g. PDF 2026-03-18)                                      | What changed **since their last recommendations** — what we **treated**, **planned**, or **left pending** in dialogue with them.                              |
 | **Last public release** (GitHub `vX.Y.Z`, Docker Hub `:X.Y.Z` / `:latest` digest) | What changed **since we last delivered** to testers, partners, or the market — the last **identifiable** cut (often **not** the same date as the Wabbix PDF). |
 
-**Typical case:** last report ≈ mid-March 2026; latest shipped release in repo today is often **`v1.6.4`** (confirm from `README`, `docs/releases/1.6.4.md`, GitHub Releases, Docker Hub). **`main` may be ahead of the tag** — call that out explicitly.
+**Typical case:** last report ≈ mid-March 2026; latest shipped release in repo today is often **`v1.6.5`** (confirm from `README`, `docs/releases/1.6.5.md`, GitHub Releases, Docker Hub). **`main` may be ahead of the tag** — call that out explicitly.
 
-**How they can discover the release baseline (artifacts in repo — no need to guess):**
+## How they can discover the release baseline (artifacts in repo — no need to guess):
 
 - `README.md` / `docs/releases/X.Y.Z.md` — shipped version narrative.
-- GitHub **Releases** / tags (e.g. `v1.6.4`).
+- GitHub **Releases** / tags (e.g. `v1.6.5`).
 - Docker Hub tags + digest notes in `docs/deploy/` or release notes.
 
-**What to ask them to produce:**
+## What to ask them to produce:
 
 1. **At last Wabbix report:** infer **which release** the repo likely reflected (or state “unclear” and use tag history).
-2. **Latest tagged release today** (GitHub + Docker Hub as applicable) vs **current `main` / default branch** (unshipped commits, open PR themes).
-3. **Since last delivery to market/testers/partners** (delta from last tag → now): what landed in repo **after** that tag — distinct from “since last Wabbix PDF” alone.
-4. **Since last Wabbix recommendations:** what we **addressed**, **partially addressed**, or **planned** vs **net-new gaps** in this review.
-5. Keep **roadmap** and **optional annex** separate from these baselines so readers do not mix “shipped” vs “planned”.
+1. **Latest tagged release today** (GitHub + Docker Hub as applicable) vs **current `main` / default branch** (unshipped commits, open PR themes).
+1. **Since last delivery to market/testers/partners** (delta from last tag → now): what landed in repo **after** that tag — distinct from “since last Wabbix PDF” alone.
+1. **Since last Wabbix recommendations:** what we **addressed**, **partially addressed**, or **planned** vs **net-new gaps** in this review.
+1. Keep **roadmap** and **optional annex** separate from these baselines so readers do not mix “shipped” vs “planned”.
 
 ## When to request a new Wabbix report
 
@@ -87,46 +87,46 @@ Fallback cadence:
 Always ask Wabbix to analyze in **at least these lenses** (they complement each other):
 
 1. **Cumulative trajectory** — long-horizon maturity and risk (“visão acumulada”).
-2. **Delta since last Wabbix report** — what we did with their prior recommendations + new findings (“desde o último relatório deles”).
-3. **Delta since last public release** — what changed **after** the last GitHub/Docker deliverable to testers/partners/market, including **unshipped** work on `main` if ahead of tag (“para onde já fomos desde a última entrega”).
+1. **Delta since last Wabbix report** — what we did with their prior recommendations + new findings (“desde o último relatório deles”).
+1. **Delta since last public release** — what changed **after** the last GitHub/Docker deliverable to testers/partners/market, including **unshipped** work on `main` if ahead of tag (“para onde já fomos desde a última entrega”).
 
 This helps catch interval regressions, separates **market-facing delivery** from **review-cycle progress**, and avoids confusing **tagged release** with **current branch tip**.
 
 ### Ask for this explicit structure in their output
 
 - **Interval progress (since last report):**
-  - What was shipped in code/docs/plans.
-  - What improved vs what regressed.
-  - New risks introduced unintentionally.
+- What was shipped in code/docs/plans.
+- What improved vs what regressed.
+- New risks introduced unintentionally.
 
 - **Cumulative progress (historical):**
-  - Maturity trend across reports.
-  - Security/quality trend (improving, flat, degrading).
-  - Recurrent weak spots still unresolved.
+- Maturity trend across reports.
+- Security/quality trend (improving, flat, degrading).
+- Recurrent weak spots still unresolved.
 
 - **Since last tagged release (market/testers/partners):**
-  - Name the tag (e.g. `v1.6.4`) and date from repo/GitHub/Docker artifacts.
-  - Summarize commits/themes **after** that tag until current branch tip (even if not re-released).
-  - Note whether “current product” for a buyer is still **1.6.4** or already **ahead** on `main`.
+- Name the tag (e.g. `v1.6.5`) and date from repo/GitHub/Docker artifacts.
+- Summarize commits/themes **after** that tag until current branch tip (even if not re-released).
+- Note whether “current product” for a buyer is still **1.6.5** or already **ahead** on `main`.
 
 - **Taxonomy of effort in the interval:**
-  - Security hardening
-  - Integrity/evidence
-  - Feature delivery
-  - Documentation/governance
-  - Ops/observability
-  - Refactoring/quality debt
+- Security hardening
+- Integrity/evidence
+- Feature delivery
+- Documentation/governance
+- Ops/observability
+- Refactoring/quality debt
 
 - **Regression and drift checks:**
-  - Potential behavioral regressions.
-  - Code-doc-plan drift.
-  - Increased ambiguity in operator/legal narrative.
+- Potential behavioral regressions.
+- Code-doc-plan drift.
+- Increased ambiguity in operator/legal narrative.
 
 - **Prior recommendation verification:**
-  - Which recommendations from the previous report were fully addressed.
-  - Which were partially addressed or still pending.
-  - Whether fixes seem correct/effective (not just "implemented").
-  - A simple progress score per prior recommendation (e.g. 0-100% or Not started/Partial/Done/Validated).
+- Which recommendations from the previous report were fully addressed.
+- Which were partially addressed or still pending.
+- Whether fixes seem correct/effective (not just "implemented").
+- A simple progress score per prior recommendation (e.g. 0-100% or Not started/Partial/Done/Validated).
 
 ## Report format requested from Wabbix (3 views / chapters)
 
@@ -138,13 +138,13 @@ Ask Wabbix to return a **single PDF** (or a small bundle) with at least these 3 
    - Top recommendations prioritized by urgency and expected risk reduction.
    - Avoid deep technical detail; focus on decisions and governance.
 
-2. **Technical detailed view** (full analysis)
+1. **Technical detailed view** (full analysis)
    - Delta since last report + cumulative trajectory.
    - Code/docs/plans consistency, regressions, new risks, trend lines.
    - Linguistic category model analysis (abstraction vs concreteness by artifact/audience).
    - Clear evidence and rationale for each recommendation.
 
-3. **DevSecOps hardening view** (security-focused)
+1. **DevSecOps hardening view** (security-focused)
    - Vulnerabilities, hardening gaps, dependency/package update guidance.
    - Security posture trend and practical remediation sequence.
    - Prioritized action plan intended for sprint/task segmentation.
@@ -183,8 +183,8 @@ Ask Wabbix to explicitly evaluate abstraction vs concreteness:
 Ask them to flag where text is:
 
 1. Too abstract (not verifiable),
-2. Too concrete in the wrong artifact (implementation detail in executive/legal text),
-3. Ambiguous about current state vs roadmap.
+1. Too concrete in the wrong artifact (implementation detail in executive/legal text),
+1. Ambiguous about current state vs roadmap.
 
 ## Reusable request message (long form)
 
@@ -196,16 +196,19 @@ Please run a new review cycle with your usual overall progress/maturity/security
 Please separate your review by artifact type:
 
 1) CODE (already implemented)
+
 - Runtime trust signaling in CLI and audit export baseline.
 - Explicit unexpected-runtime warning surface.
 - Related tests for baseline behavior.
 
 2) DOCUMENTATION (roadmap/narrative)
+
 - Compliance/legal and operator-facing wording updated for trust/evidence roadmap.
 - Pitch/private narrative updated for enterprise audit value.
 - Usage and planning docs synchronized with recent trust/integrity direction.
 
 3) PLANS (not fully implemented yet)
+
 - Escalation policy for compromised state messaging (WARN / non-blocking ERROR).
 - Tinted/draft session/report behavior and optional limited-report mode.
 - Session trust seal/hash and pre-report integrity verification.
@@ -218,28 +221,35 @@ C) Operator/client signaling quality (clear severity and actionability).
 D) MVP sequencing for maximum legal/technical risk reduction.
 E) Wording risks: avoid overclaim; keep tamper-evident boundaries explicit.
 F) Linguistic category model:
+
    - Is each artifact at the right abstraction level for its audience?
    - Where are we too abstract, too concrete, or ambiguous?
    - Suggest rewrites that improve traceability (claim -> evidence) and audience clarity.
+
 G) Time-scope analysis (three lenses — do not merge):
+
    - Cumulative history (long horizon).
    - Since last Wabbix report (recommendations addressed vs pending vs planned).
    - Since last GitHub/Docker tagged release (last market-facing delivery → now, including unshipped `main` if applicable).
-   - State explicitly: latest tag (e.g. v1.6.4) vs current branch tip.
+   - State explicitly: latest tag (e.g. v1.6.5) vs current branch tip.
    - Highlight interval regressions, newly introduced risks, and trend direction.
    - Classify interval work by effort taxonomy (security/integrity/features/docs/ops/refactor).
+
 H) Prior recommendation verification:
+
    - Confirm whether previous recommendations were correctly addressed.
    - Mark each as Not started / Partial / Done / Validated and include a progress score.
    - Flag any "false sense of closure" where implementation exists but effect is weak.
 
 Please return findings grouped as:
+
 - Critical / Important / Improvement
 - Short term (next PR) / Mid term (2-4 PRs)
 - Code / Docs / Plans
 - Keep a 3-part report format: executive (<=2 pages), technical detailed, and DevSecOps hardening.
 
 I) Optional annex — "Wabbix roadmap tips" (separate from analysis of what we already shipped):
+
    - Forward-looking ideas for capability gaps, production-readiness, and market competitiveness.
    - Clearly labeled as optional/speculative; not confused with evidence-based findings from chapters 1–3.
    - Prioritized for triage (impact vs effort).
@@ -263,6 +273,7 @@ Esperamos que se encontrem bem. Viemos por este meio solicitar, com o máximo de
 O texto abaixo funciona como um briefing único: pode orientar a própria análise de vocês ou servir de base para quem estruture o relatório (incluindo assistentes de IA), sempre com o rigor e a educação que o assunto merece. Nada aqui pretende ser uma ordem; são pedidos e sugestões de foco, que vocês podem adaptar conforme a metodologia de vocês.
 
 Resumo (âncora rápida):
+
 - Novo relatório de revisão e recomendações sobre o Data Boar.
 - Briefing único; sugestões adaptáveis à metodologia de vocês (não instruções rígidas).
 
@@ -273,6 +284,7 @@ Contexto e fonte de verdade
 Sabemos que conversas e e-mails não preservam todo o contexto. Por isso, seria muito valioso para nós que a análise se apoie, sempre que possível, nos artefatos do repositório — código, documentação, planos, notas de release, tags no GitHub, configuração de imagem e CI — e não apenas na memória do último contato. Como referência não exaustiva, mencionamos README, docs/releases, docs/plans/PLANS_TODO.md, tags e releases no GitHub, Dockerfile e documentação de deploy, pyproject.toml, SECURITY.md e os fluxos de trabalho de integração contínua. Se algo no repositório estiver mais atualizado do que este e-mail, pedimos que prevaleça o que estiver no repo.
 
 Resumo (âncora rápida):
+
 - Priorizar evidência no repositório (código, docs, releases, CI) em relação a este e-mail.
 - Lista de caminhos acima é exemplificativa, não fechada.
 
@@ -287,6 +299,7 @@ Seria extremamente útil que, neste novo ciclo, vocês retomassem as recomendaç
 Se possível, pedimos também que indiquem logo na abertura do novo relatório qual foi o marco técnico de comparação que vocês adotaram (por exemplo PR principal e/ou commit-base), junto da data do último relatório, para facilitar a consciência de contexto e rastreabilidade da análise.
 
 Resumo (âncora rápida):
+
 - Último relatório Wabbix: 2026-03-18; tracking em WABBIX_ANALISE_2026-03-18.md.
 - Pedido: retomar recomendações daquele ciclo e distinguir atendido / parcial / aberto.
 - Na abertura do novo PDF: explicitar data de referência + PR/commit-base usado na comparação.
@@ -304,6 +317,7 @@ Segundo, o que mudou desde o último relatório de vocês: o que já tratamos, o
 Terceiro, o que mudou desde a última release pública que identificarem no GitHub (tag de versão) e na imagem Docker correspondente, até o estado atual do branch principal. Se ainda houver commits no branch principal após a última tag, esse trabalho ainda não foi “entregue” como nova versão nomeada a testadores, parceiros ou mercado; pedimos que isso fique explícito, para que ninguém confunda o que o mercado instala com o que o repositório já contém hoje.
 
 Resumo (âncora rápida):
+
 - Camada 1 — acumulado histórico (maturidade e tendência).
 - Camada 2 — desde o último relatório Wabbix (tratamento das recomendações deles).
 - Camada 3 — desde última tag GitHub/Docker até o tip do branch (inclui trabalho ainda não “retagueado”).
@@ -319,6 +333,7 @@ Na documentação, agradecemos qualquer observação sobre operação (USAGE, de
 Nos planos, em docs/plans e em PLANS_TODO.md, interessa-nos a coerência entre roadmap, dependências entre iniciativas e distinção clara entre o que já está entregue e o que ainda é intenção futura, para que o leitor não confunda planejamento com produto disponível.
 
 Resumo (âncora rápida):
+
 - Código: qualidade, testes, segurança, consistência CLI/API/relatório; temas de confiança e auditoria quando relevante.
 - Documentação: operação, compliance, i18n; sem overclaim.
 - Planos: roadmap vs entregue; dependências entre iniciativas.
@@ -330,6 +345,7 @@ Modelo linguístico e níveis de abstração
 Ficaríamos gratos se, no capítulo técnico, pudessem dedicar um espaço ao que chamamos de modelo linguistic category: ou seja, se o nível de abstração está adequado a cada tipo de documento e audiência. Em linhas gerais, os planos tendem a ser mais estruturais; a documentação operacional, mais concreta; o material de compliance e pitch, uma abstração controlada em valor e risco, sem prometer o que ainda não está implementado. Sempre que possível, apontar trechos abstratos demais para serem verificáveis, trechos concretos demais no lugar errado, ou ambiguidade entre estado atual e roadmap seria uma contribuição enorme.
 
 Resumo (âncora rápida):
+
 - Avaliar abstração por tipo de documento e audiência.
 - Sinalizar trechos demasiado abstratos, demasiado concretos no lugar errado, ou ambíguos (atual vs roadmap).
 
@@ -340,6 +356,7 @@ Pontos de atenção que nos preocupam além do habitual
 Além da maturidade geral, segurança e vulnerabilidades que vocês já costumam cobrir, pedimos atenção especial, se o tempo de vocês permitir, a: cadeia de confiança e evidência do runtime ao SQLite, exportação e relatório; clareza de severidade para operador e cliente; linguagem adequada entre tamper-evident e tamper-proof; encaixe futuro de observabilidade e alertas off-band; e drift entre código, documentação e planos, incluindo regressões que não apareçam como falhas de teste.
 
 Resumo (âncora rápida):
+
 - Além do “checklist” habitual: evidência ponta a ponta, severidade, wording jurídico defensável.
 - Observabilidade/alertas (futuro) e drift código/docs/planos.
 
@@ -350,6 +367,7 @@ Retorno sobre as recomendações do relatório anterior
 Para cada recomendação relevante do relatório de 18 de março de 2026 que vocês retomarem, seria muito útil receber um estado resumido (por exemplo não iniciado, parcial, concluído ou validado), uma nota de progresso em que façam sentido, e um comentário honesto se a correção parece efetiva ou apenas formal — incluindo o caso em que a sensação de “feito” não corresponde ao efeito real.
 
 Resumo (âncora rápida):
+
 - Por recomendação retomada: estado, nota de progresso, comentário “efetivo vs formal”.
 - Chamar atenção para falso “feito” quando o problema persistir.
 
@@ -368,6 +386,7 @@ O terceiro capítulo seria dedicado a DevSecOps e hardening: vulnerabilidades, d
 Sempre que possível, agradeceríamos que as recomendações viessem acompanhadas de uma indicação de severidade, esforço aproximado e janela de tempo sugerida, e, quando fizer sentido, uma classificação do tipo de esforço (por exemplo segurança, integridade e evidência, funcionalidades, documentação e governança, operações e observabilidade, ou refatoração e dívida técnica).
 
 Resumo (âncora rápida):
+
 - Cap. 1 — executivo (≤2 páginas): TI, jurídico, parceiros.
 - Cap. 2 — técnico: integra tudo o que pedimos acima.
 - Cap. 3 — DevSecOps: vulnerabilidades, deps, priorização para sprint/backlog.
@@ -381,6 +400,7 @@ Anexo opcional de ideias de roadmap
 Se a metodologia e o tempo de vocês permitirem, um anexo separado com ideias especulativas de lacunas de capacidade e caminhos para um produto production-ready e competitivo nos mercados que visamos seria bem-vindo. Pedimos que esse anexo fique claramente identificado como opcional e especulativo, separado dos achados que vocês fundamentam diretamente no código e na documentação atual.
 
 Resumo (âncora rápida):
+
 - Anexo separado, claramente opcional e especulativo.
 - Ideias de lacunas e production-ready; não misturar com achados evidenciados no repo.
 
@@ -410,4 +430,3 @@ Olá, Wabbix. Pedimos gentilmente um novo relatório Data Boar; o briefing compl
 ```text
 Can you run a new review with your normal maturity/security overview, but focus on trust/evidence hardening across code+docs+plans? Please assess chain-of-custody gaps, compromised-state signaling (INFO/WARN/ERROR), tinted/draft policy, session seals, and monitoring alerts. Also evaluate our linguistic category model (abstraction vs concreteness by audience) and suggest rewrites where text is too abstract, too concrete, or ambiguous.
 ```
-

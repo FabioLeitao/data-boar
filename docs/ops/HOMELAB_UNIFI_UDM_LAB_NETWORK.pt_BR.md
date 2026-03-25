@@ -14,5 +14,6 @@
 1. **Antes do servidor de monitoração:** num portátil Linux (ex. Zorin), `apt install snmp` e **`snmpwalk`** contra o IP do UDM; OID de interfaces `1.3.6.1.2.1.2.2` (ver doc EN para exemplo).
 1. **VLANs:** padrão **LAN confiável / lab / IoT**; regras **negar** IoT→lab; detalhes (IDs, subnets) só em **`docs/private/homelab/`** — [PRIVATE_OPERATOR_NOTES.pt_BR.md](../PRIVATE_OPERATOR_NOTES.pt_BR.md). *Snapshot do operador (privado): **`LAB_SECURITY_POSTURE.md`** **§1.1**.*
 1. **Data Boar:** só precisa de **IP/DNS e portas** no `config.yaml`; VLANs definem **o que o firewall deixa passar**.
+1. **DHCP / gateway / DNS / honeypot:** modelo em **[LAB_NETWORK_L3_DHCP_AND_CYBERSEC.pt_BR.md](../private.example/homelab/LAB_NETWORK_L3_DHCP_AND_CYBERSEC.pt_BR.md)** — copiar para **`docs/private/homelab/`**, preencher a tabela de inventário (RFC1918 só local) e usar os comandos de verificação ao ajustar VLANs.
 
 **Documento completo (EN):** [HOMELAB_UNIFI_UDM_LAB_NETWORK.md](HOMELAB_UNIFI_UDM_LAB_NETWORK.md)

@@ -18,13 +18,13 @@
 
 ## Findings mapped to repo reality
 
-| Wabbix theme | Current repo status (2026-03-23 check) | Action status |
-| --- | --- | --- |
-| Version drift (`v1.6.x` vs metadata/README `1.5.4`) | Addressed in release flow (**1.6.4+**); keep README/releases aligned per `VERSIONING.md`. | ✅ Closed in repo; communicate evidence back to Wabbix |
-| Product/package naming drift (`Data Boar` vs `python3-lgpd-crawler`) | Still true at package/distribution identity level. | 🔄 Tracked backlog |
-| API auth as optional default | Startup **warning** when bind is non-loopback and API key not effectively required (`main.py` + `core/host_resolution.py`); full secure-by-default remains a product decision. | 🔄 Improved; continue toward stricter defaults |
-| Parallel failure semantics (`except Exception: pass`) | Worker failures logged + `save_failure` + session `completed_errors` where applicable. | ✅ Baseline done |
-| Off-band notifications / observability | **Phase 1–2:** `notifications` config, `utils/notify.py`, scan-complete brief; **Phase 3.3:** webhook retries (5xx / transient network). | 🔄 Phase 3+ (tenant, multi-channel, audit log) optional |
+| Wabbix theme                                                         | Current repo status (2026-03-23 check)                                                                                                                                                                                                                                 | Action status                                         |
+| ---                                                                  | ---                                                                                                                                                                                                                                                                    | ---                                                   |
+| Version drift (`v1.6.x` vs metadata/README `1.5.4`)                  | Addressed in release flow (**1.6.4+**); keep README/releases aligned per `VERSIONING.md`.                                                                                                                                                                              | ✅ Closed in repo; communicate evidence back to Wabbix |
+| Product/package naming drift (`Data Boar` vs `python3-lgpd-crawler`) | Still true at package/distribution identity level.                                                                                                                                                                                                                     | 🔄 Tracked backlog                                     |
+| API auth as optional default                                         | Startup **warning** when bind is non-loopback and API key not effectively required (`main.py` + `core/host_resolution.py`); full secure-by-default remains a product decision.                                                                                         | 🔄 Improved; continue toward stricter defaults         |
+| Parallel failure semantics (`except Exception: pass`)                | Worker failures logged + `save_failure` + session `completed_errors` where applicable.                                                                                                                                                                                 | ✅ Baseline done                                       |
+| Off-band notifications / observability                               | **Phase 1–4.2:** `notifications` config, `utils/notify.py`, scan-complete brief, **`operator.channels`**, **`tenant.by_tenant`**, **dedupe**, **`notification_send_log`** (sem corpo); `notify_webhook.py` grava auditoria manual via `sqlite_path`; retries 5xx/rede. | 🔄 Phase 4.3+ backlog (digest, i18n fino)              |
 
 ---
 
@@ -34,9 +34,9 @@
    - **In-repo pointer for reviewers:** [WABBIX_IN_REPO_BASELINE.md](../ops/WABBIX_IN_REPO_BASELINE.md) lists canonical paths (`WABBIX_ANALISE_2026-03-18.md`, `WABBIX_ANALISE_2026-03-23_EVOLUTIVA.md`, feedback PDFs folder).
    - In the next email, mention `docs/plans/WABBIX_ANALISE_2026-03-18.md` explicitly and link or cite the baseline doc above if useful.
 
-1. **Notifications (off-band + scan-complete) — baseline done**
-   - Implemented: `notifications` config (`config/loader.py`), `utils/notify.py`, `scripts/notify_webhook.py`, scan-complete brief after CLI/API scans, `docs/USAGE.md` / `USAGE.pt_BR.md`.
-   - **Next optional:** Phase 3+ in `PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md` (tenant routing, multi-channel, retries, audit log of sends).
+1. **Notifications (off-band + scan-complete) — baseline + audit**
+   - Implemented: `notifications` config (`config/loader.py`), `utils/notify.py`, `scripts/notify_webhook.py` (com auditoria opcional em SQLite; `--no-audit` em CI sem DB), scan-complete brief after CLI/API scans, `docs/USAGE.md` / `USAGE.pt_BR.md`.
+   - **Next optional:** Phase 4.3+ em `PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md` (digest, i18n; caps finos por canal → backlog).
 
 1. **Keep hardening debt visible in one place**
    - Continue tracking "secure-by-default auth" and "honest failure semantics" as explicit follow-ups in `PLANS_TODO.md`.
@@ -48,5 +48,25 @@
 
 - If requested, ask for the shorter executive version as a companion artifact (not replacement), useful for stakeholder sync and prioritization checkpoints.
 - Keep requests anchored in the established WRB structure: three temporal layers, explicit baseline markers (date + PR/commit), and chaptered PDF output.
+
+## Maturity trail — what “done” looks like (no complaints, evidence-ready)
+
+| Theme                                                                         | Status                                                                                                                 | Owner |
+| -----                                                                         | ------                                                                                                                 | ----- |
+| Version coherence (`VERSIONING.md`, README, releases)                         | ✅ In-repo; **publish** GitHub tag + Hub = operator                                                                     | O     |
+| KPI + contract tests (baseline)                                               | ✅ `PLAN_READINESS_AND_OPERATIONS` §4.7 + pytest contract                                                               | —     |
+| Observability / notifications (Phases 1–4.2)                                  | ✅ Config + audit + webhooks + docs                                                                                     | —     |
+| API bind loopback default + docs + tests                                      | ✅ PLANS_TODO “Secure default host binding”                                                                             | —     |
+| Parallel failure semantics                                                    | ✅ Engine + session `completed_errors`                                                                                  | —     |
+| **Deploy examples** (K8s/Compose call out `api.require_api_key` when exposed) | ✅ `deploy/kubernetes/README.md` § Security + `configmap.yaml` comments; Compose/DEPLOY already documented              | —     |
+| **Product/package naming** (`Data Boar` vs PyPI name)                         | 🔄 Backlog / counsel + packaging decision                                                                               | O     |
+| **API key via env (`api_key_from_env`)** — operator clarity                   | ✅ Runbook **[API_KEY_FROM_ENV_OPERATOR_STEPS.md](../ops/API_KEY_FROM_ENV_OPERATOR_STEPS.md)** + **`SECURITY.md`** link | A     |
+| **API key “secure by default”** beyond warnings                               | 🔄 Product decision (breaking change if forced on)                                                                      | O     |
+| **Wabbix email** (baseline paths + `WABBIX_ANALISE_2026-03-18.md`)            | 🔄 Send when ready                                                                                                      | O     |
+| **Priority band A** (Dependabot, Scout, Hub tags)                             | 🔄 Ongoing                                                                                                              | O+A   |
+| Notifications Phase 4.3 (digest, i18n)                                        | ⬜ Backlog                                                                                                              | A     |
+| **W-DECOUPLE** (detector/report)                                              | 🔄 Incremental                                                                                                          | A     |
+
+**Agent (A):** small doc/code slices, tests, manifests comments, `scripts/` automation. **Operator (O):** GitHub release, Docker Hub, email to Wabbix, merge when branch protection requires human, product/legal calls.
 
 **Synced with:** `docs/plans/PLANS_TODO.md` (Wabbix section).

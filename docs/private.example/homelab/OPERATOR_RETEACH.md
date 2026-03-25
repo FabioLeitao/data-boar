@@ -62,14 +62,14 @@
 
 #### Filling B1–B6 — next steps (operator)
 
-| Block | You do | Mirror into |
-| ----- | ------ | ------------- |
-| **B1** | Confirm BIOS/MTM from vendor tools | This section + optional **`WHAT_TO_SHARE_WITH_AGENT.md`** |
-| **B2** | Nameplates / optional measurements | **B2** bullets |
-| **B3** | UniFi settings export (versions, SNMP role) | **B3** + **`LAB_SECURITY_POSTURE.md`** |
-| **B4** | Inverter faceplate + app name | **B4** |
-| **B5** | Install OS + Docker; run **`scripts/homelab-host-report.sh`** | Map + inventory + **`HARDWARE_CATALOG`** |
-| **B6** | Runtime versions per host | **`LAB_SOFTWARE_INVENTORY.md`**, **`LAB_SECURITY_POSTURE.md`** |
+| Block  | You do                                                        | Mirror into                                                    |
+| -----  | ------                                                        | -------------                                                  |
+| **B1** | Confirm BIOS/MTM from vendor tools                            | This section + optional **`WHAT_TO_SHARE_WITH_AGENT.md`**      |
+| **B2** | Nameplates / optional measurements                            | **B2** bullets                                                 |
+| **B3** | UniFi settings export (versions, SNMP role)                   | **B3** + **`LAB_SECURITY_POSTURE.md`**                         |
+| **B4** | Inverter faceplate + app name                                 | **B4**                                                         |
+| **B5** | Install OS + Docker; run **`scripts/homelab-host-report.sh`** | Map + inventory + **`HARDWARE_CATALOG`**                       |
+| **B6** | Runtime versions per host                                     | **`LAB_SOFTWARE_INVENTORY.md`**, **`LAB_SECURITY_POSTURE.md`** |
 
 ---
 
