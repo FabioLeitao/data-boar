@@ -156,7 +156,7 @@ def test_usage_internal_links_resolve():
                     found = True
                     break
             except OSError:
-                pass
+                continue
         if not found:
             broken.append(link)
     assert not broken, f"docs/USAGE.md broken relative link(s): {broken}"
