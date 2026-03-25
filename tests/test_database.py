@@ -366,6 +366,10 @@ def test_normalize_config_notifications_defaults():
     assert "notifications" in out
     assert out["notifications"]["enabled"] is False
     assert out["notifications"]["operator"]["slack_webhook_url"] is None
+    assert out["notifications"]["operator"]["channels"] == []
+    assert out["notifications"]["tenant"]["by_tenant"] == {}
+    assert out["notifications"]["dedupe_scan_complete_per_session"] is True
+    assert out["notifications"]["notify_audit_log"] is True
 
 
 def test_normalize_config_notifications_env(monkeypatch):
@@ -410,6 +414,33 @@ def test_get_session_scan_summary_for_notification(tmp_path):
     assert s["scan_failures"] == 1
     assert s["tenant_name"] == "ACME"
     assert s["status"] == "completed"
+
+
+def test_notification_send_log_table(tmp_path):
+    """notification_send_log is created and record_notification_send_log is append-only."""
+    from sqlalchemy import text
+
+    db = tmp_path / "audit_notify.db"
+    mgr = LocalDBManager(str(db))
+    mgr.record_notification_send_log(
+        session_id="sess_a",
+        trigger="scan_complete",
+        recipient="operator",
+        channel="slack",
+        success=True,
+        error_message=None,
+    )
+    mgr.record_notification_send_log(
+        session_id=None,
+        trigger="manual",
+        recipient="operator",
+        channel="slack",
+        success=False,
+        error_message="connection reset",
+    )
+    with mgr.engine.connect() as conn:
+        n = conn.execute(text("SELECT COUNT(*) FROM notification_send_log")).scalar()
+        assert n == 2
 
 
 def test_load_config_file(config_path=None):

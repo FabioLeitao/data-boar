@@ -38,14 +38,20 @@ Execuções **agendáveis** via **API interna** permitem monitoramento contínuo
 
 ---
 
+## Notificações opcionais (webhooks)
+
+Fora de banda, ao **fim da varredura**, a aplicação pode enviar um **resumo curto** (Slack, Teams, Telegram ou webhook genérico), com suporte a **vários canais** e **cópia ao tenant** quando configurado — **desligado por padrão**; trate URLs e tokens como **segredos**. Não substitui relatórios nem política de rede/TLS. Ver [USAGE.pt_BR.md — Notificações ao operador](USAGE.pt_BR.md#notificações-ao-operador-opcional) e [SECURITY.pt_BR.md](SECURITY.pt_BR.md).
+
+---
+
 ## Documentos relacionados
 
-| Tema | Documento |
-| ---- | --------- |
-| Resumo jurídico / compliance (tomadores de decisão) | [COMPLIANCE_AND_LEGAL.pt_BR.md](COMPLIANCE_AND_LEGAL.pt_BR.md) |
-| Frameworks, amostras, perfis YAML | [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) |
-| Esquema completo de config, credenciais, CLI | [USAGE.pt_BR.md](USAGE.pt_BR.md) |
-| Conectores, arquitetura, deploy | [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md) |
-| Padrões de detecção, ML/DL | [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md) |
+| Tema                                                | Documento                                                        |
+| ----                                                | ---------                                                        |
+| Resumo jurídico / compliance (tomadores de decisão) | [COMPLIANCE_AND_LEGAL.pt_BR.md](COMPLIANCE_AND_LEGAL.pt_BR.md)   |
+| Frameworks, amostras, perfis YAML                   | [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) |
+| Esquema completo de config, credenciais, CLI        | [USAGE.pt_BR.md](USAGE.pt_BR.md)                                 |
+| Conectores, arquitetura, deploy                     | [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md)                       |
+| Padrões de detecção, ML/DL                          | [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md) |
 
 Índice completo: [README.pt_BR.md](README.pt_BR.md) · [README.md](README.md).

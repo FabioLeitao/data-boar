@@ -38,6 +38,8 @@ sudo apt install -y python3.12 python3.12-venv python3.12-dev build-essential \
 - `python3.12[-dev]` e `build-essential` são necessários para compilar alguns drivers (ex.: clientes de banco).
 - `libpq-dev`, `unixodbc-dev` e cabeçalhos SSL/FFI ajudam ao usar PostgreSQL, SQL Server, Oracle ou outros drivers SQLAlchemy.
 
+**Laptop ThinkPad T14 com LMDE 7 (Debian 13):** checklist completo (atualização, `ufw`, firmware `fwupd`, pacotes acima + opcionais Podman/Docker) — **[LMDE7_T14_DEVELOPER_SETUP.pt_BR.md](ops/LMDE7_T14_DEVELOPER_SETUP.pt_BR.md)**.
+
 **Outras distribuições Linux:** Para **RHEL/Fedora/AlmaLinux** (`dnf`), **Arch/Manjaro** (`pacman`), **Gentoo** (`emerge`), **Void** (`xbps`), **Alpine** (`apk`) e outros gerenciadores, veja **[OS_COMPATIBILITY_TESTING_MATRIX.pt_BR.md](ops/OS_COMPATIBILITY_TESTING_MATRIX.pt_BR.md)** para nomes de pacotes específicos e notas de instalação. **illumos** (OpenIndiana, etc.) / legado **OpenSolaris** é só **exploratório** (Tier 4 na matriz EN).
 
 No Windows:
@@ -542,7 +544,7 @@ Você pode executar a API como **um único container** (`docker run`), com **Doc
 
 Imagens Docker estão disponíveis no **Docker Hub** para você executar a aplicação sem clonar o repositório:
 
-- **Docker Hub:** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` e `fabioleitao/data_boar:1.6.4`
+- **Docker Hub:** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` e `fabioleitao/data_boar:1.6.5`
 
 A imagem inclui detecção de sensibilidade por regex + ML + DL opcional; você pode definir termos de treinamento ML/DL na config (veja [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) e [deploy/config.example.yaml](../deploy/config.example.yaml)).
 

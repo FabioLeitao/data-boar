@@ -8,11 +8,11 @@
 
 ## Is it worth it?
 
-| Situation | Worth adding? |
-| --------- | ------------- |
-| During **tests** you want **interface-level** counters (core vs switch) | Yes — light periodic IF-MIB polls or scheduled logs. |
-| **Production** monitoring, retention, dashboards | Prefer **Prometheus snmp_exporter** / Zabbix / vendor UI — this repo only provides **manual / Task Scheduler probes**. |
-| Device is **SNMPv2c-only** | Current script is **v3 SHA/AES**; use **manual `snmpwalk`** (examples in pt-BR doc and below). |
+| Situation                                                               | Worth adding?                                                                                                          |
+| ---------                                                               | -------------                                                                                                          |
+| During **tests** you want **interface-level** counters (core vs switch) | Yes — light periodic IF-MIB polls or scheduled logs.                                                                   |
+| **Production** monitoring, retention, dashboards                        | Prefer **Prometheus snmp_exporter** / Zabbix / vendor UI — this repo only provides **manual / Task Scheduler probes**. |
+| Device is **SNMPv2c-only**                                              | Current script is **v3 SHA/AES**; use **manual `snmpwalk`** (examples in pt-BR doc and below).                         |
 
 ---
 
@@ -20,14 +20,14 @@
 
 **One file per target**, **same four keys** (`LAB_UDM_SNMP_*` — legacy name; valid for **any** SNMPv3 target):
 
-| Example file | Device |
-| ------------ | ------ |
-| `.env.snmp.local` | Gateway / UDM (Windows script default) |
+| Example file             | Device                                                                     |
+| ------------             | ------                                                                     |
+| `.env.snmp.local`        | Gateway / UDM (Windows script default)                                     |
 | `.env.snmp.udm-se.local` | **UDM SE** (or another gateway with a dedicated env file — same key names) |
-| `.env.snmp.switch.local` | Managed switch |
-| `.env.snmp.nas.local` | NAS (if it exposes SNMPv3 and useful OIDs) |
+| `.env.snmp.switch.local` | Managed switch                                                             |
+| `.env.snmp.nas.local`    | NAS (if it exposes SNMPv3 and useful OIDs)                                 |
 
-**PowerShell (Windows + WSL):**
+## PowerShell (Windows + WSL):
 
 ```powershell
 .\scripts\snmp-udm-lab-probe.ps1 -EnvFile docs\private\homelab\.env.snmp.switch.local -WslDistro Debian
@@ -93,11 +93,11 @@ snmpwalk -v2c -c "SYN_COMMUNITY_STR" 192.0.2.20 1.3.6.1.2.1.2.2
 
 **GitHub-hosted runners** have **no network path** to your LAN or your gateway management IP. **SNMP (UDP 161)** from a default workflow to your UDM **will not work** — we do **not** add a standard repo workflow that runs `snmp-udm-lab-probe` like on your dev PC.
 
-| Approach | Works? |
-| -------- | ------ |
-| **Task Scheduler on your Windows PC** (e.g. every **30 minutes**) | Yes — recommended for local log review. |
+| Approach                                                             | Works?                                                                             |
+| --------                                                             | ------                                                                             |
+| **Task Scheduler on your Windows PC** (e.g. every **30 minutes**)    | Yes — recommended for local log review.                                            |
 | **Self-hosted runner** on a host **on the same LAN** as the firewall | Possible with ops overhead and security trade-offs — only with an explicit policy. |
-| **Prometheus snmp_exporter** / NMS in the lab | Better for continuous metrics. |
+| **Prometheus snmp_exporter** / NMS in the lab                        | Better for continuous metrics.                                                     |
 
 We keep SNMP probes **operator-side** (gitignored logs + scheduler), not in default public CI.
 

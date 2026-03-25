@@ -28,7 +28,7 @@ Avoid raw `pytest`/`ruff` invocations when a script covers the need; scripts kee
 
 - If a bug/risk was fixed, ask: **can we encode this in a test or script gate?**
 - Prefer adding/updating:
-  - a **targeted pytest** (fast, deterministic),
-  - a **script wrapper** under `scripts/` for repeated operator flow,
-  - or a **pre-commit/CI guard** for high-value checks.
+- a **targeted pytest** (fast, deterministic),
+- a **script wrapper** under `scripts/` for repeated operator flow,
+- or a **pre-commit/CI guard** for high-value checks.
 - Goal: avoid reintroducing solved issues and reduce repeated ad-hoc command sequences over time.

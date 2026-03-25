@@ -13,12 +13,13 @@ Use this when you want **one published image** to match **one released app versi
 | Step         | Action                                                                                                                                                                                 |
 | ----         | ------                                                                                                                                                                                 |
 | 1. **Merge** | All **code** PRs on `main` (Dockerfile, fixes, etc.) — e.g. **#99** ✅                                                                                                                  |
-| 2. **Merge** | **Version bump PR** (build `1.6.4` → `1.6.5` per [VERSIONING.md](../VERSIONING.md)) so `pyproject.toml` on `main` is the version you are releasing                                     |
+| 2. **Merge** | **Version bump PR** (build `1.6.5` → `1.6.5` per [VERSIONING.md](../VERSIONING.md)) so `pyproject.toml` on `main` is the version you are releasing                                     |
 | 3. **Pull**  | `git checkout main && git pull origin main`                                                                                                                                            |
 | 4. **Build** | `.\scripts\docker-lab-build.ps1` (from repo root)                                                                                                                                      |
 | 5. **Smoke** | Short `docker run` (see [DOCKER_SETUP.md](../DOCKER_SETUP.md) §7 / [DEPLOY.md](../deploy/DEPLOY.md))                                                                                   |
 | 6. **Push**  | `.\scripts\docker-hub-publish.ps1 -SkipBuild` (after `docker login`) — tags **`:latest`** and **`:<semver from pyproject>`**, runs **`scout quickview`** + **`scout recommendations`** |
-| 7. **Prune** | `.\scripts\docker-prune-local.ps1 -WhatIf` then without `-WhatIf` on the homelab                                                                                                       |
+| 7. **Gate**  | `.\scripts\docker-scout-critical-gate.ps1 -Image fabioleitao/data_boar:latest` (fails only for **actionable** CRITICALs with a fixed version)                                          |
+| 8. **Prune** | `.\scripts\docker-prune-local.ps1 -WhatIf` then without `-WhatIf` on the homelab                                                                                                       |
 
 **Why version before build/push:** The image **`COPY . .`** includes `pyproject.toml`. Building **after** the bump PR means the running app **inside the container** reports the same version as the **Hub semver tag** you push.
 
@@ -52,6 +53,7 @@ Use this when you want **one published image** to match **one released app versi
 
 - **A1 (Dependabot / –1):** Keep **`pyproject.toml`**, **`uv.lock`**, **`requirements.txt`** aligned; run **`.\scripts\check-all.ps1`** before merge. Use **`.\scripts\maintenance-check.ps1`** for a quick Dependabot + Scout snapshot.
 - **A2 (Scout / –1b):** After each **publish**, use **`docker-hub-publish.ps1`** (includes **recommendations**) or Hub UI. **#99** addressed **base image**; remaining counts often need **A1** (packages) + time.
+- **Scout CRITICAL gate:** Use **`scripts/docker-scout-critical-gate.ps1`** to separate (a) actionable CRITICALs with a fixed version (**fail + treat now**) from (b) upstream **not fixed** CRITICALs (**document + monitor + rebuild cadence**).
 - **S4:** With **#98** and **#99** on **`main`**, the next **S4-shaped** slice is **`pr/deps-security-refresh`** (or equivalent **–1** PR).
 - **–1L (second environment):** Run **[HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md)** when the second machine is ready — **after** –1/–1b are acceptable; no need to block **merge/publish** on it.
 
