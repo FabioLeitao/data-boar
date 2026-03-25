@@ -40,17 +40,17 @@ if ($pr.state -ne "OPEN") {
     throw "PR #$PrNumber is not OPEN (state=$($pr.state))."
 }
 if ($pr.mergeable -eq "CONFLICTING") {
-    throw "PR has merge conflicts — resolve on GitHub or locally, then retry."
+    throw "PR has merge conflicts - resolve on GitHub or locally, then retry."
 }
 if ($pr.mergeable -eq "UNKNOWN") {
-    Write-Warning "mergeable=UNKNOWN — wait and re-run, or check GitHub UI."
+    Write-Warning "mergeable=UNKNOWN - wait and re-run, or check GitHub UI."
 }
 
 if (-not $SkipGhChecks) {
     Write-Host "Running: gh pr checks $PrNumber" -ForegroundColor Yellow
     gh pr checks $PrNumber 2>&1 | Write-Host
     if ($LASTEXITCODE -ne 0) {
-        throw "gh pr checks failed or pending — fix CI or wait for green."
+        throw "gh pr checks failed or pending - fix CI or wait for green."
     }
 }
 
@@ -58,7 +58,7 @@ if ($RunLocalCheckAll) {
     Write-Host "Running local .\scripts\check-all.ps1 ..." -ForegroundColor Yellow
     & "$repoRoot\scripts\check-all.ps1"
     if ($LASTEXITCODE -ne 0) {
-        throw "Local check-all failed — do not merge until fixed."
+        throw "Local check-all failed - do not merge until fixed."
     }
 }
 
