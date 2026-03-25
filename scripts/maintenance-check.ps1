@@ -42,7 +42,7 @@ if (Get-Command gh -ErrorAction SilentlyContinue) {
                             $num = $a.number
                             Write-Host "  - #$num  $sev  $pkg  $($a.security_advisory.summary)"
                         }
-                        Write-Host "  Triage doc (pyOpenSSL / Snowflake): docs/ops/DEPENDABOT_PYOPENSSL_SNOWFLAKE.md" -ForegroundColor DarkGray
+                        Write-Host "  Triage: docs/ops/DEPENDABOT_PYOPENSSL_SNOWFLAKE.md (pyOpenSSL/Snowflake); docs/ops/DEPENDABOT_PYGMENTS_CVE.md (pygments)" -ForegroundColor DarkGray
                     } else {
                         Write-Host "  (none open)" -ForegroundColor DarkGray
                     }
