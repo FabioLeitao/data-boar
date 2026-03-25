@@ -37,14 +37,14 @@
 
 **Bitwarden sharing is not “add a friend to my personal vault.”** You use an **Organization** (paid tier: **Teams**, **Enterprise**, or **Families** for household-style sharing). Everyone keeps their **own** Bitwarden login; the org owns **shared collections**.
 
-**Typical setup:**
+## Typical setup:
 
 1. **Decide the billing owner** (one account creates or upgrades the org on [bitwarden.com](https://bitwarden.com/pricing/) — verify current plan names and limits).
-2. **Create the organization** in the web vault (**Admin console**): name it e.g. `Homelab` or `Lab-op`.
-3. **Invite members** by email → they **accept** and join with their existing Bitwarden account (or create one).
-4. **Create collections** (logical folders the org shares), e.g. `UniFi`, `SNMP`, `GitHub`, `Solar API`, `SSH jump`, `LAB-OP — hardware receipts` — **no secrets in the collection name** if it’s sensitive.
-5. **Move or duplicate items** into those collections and set **member access** (read-only vs can edit) per collection.
-6. **2FA:** Require **2FA on the Bitwarden account** for anyone who can read production creds; store **recovery codes** safely (offline or per Bitwarden’s emergency guidance).
+1. **Create the organization** in the web vault (**Admin console**): name it e.g. `Homelab` or `Lab-op`.
+1. **Invite members** by email → they **accept** and join with their existing Bitwarden account (or create one).
+1. **Create collections** (logical folders the org shares), e.g. `UniFi`, `SNMP`, `GitHub`, `Solar API`, `SSH jump`, `LAB-OP — hardware receipts` — **no secrets in the collection name** if it’s sensitive.
+1. **Move or duplicate items** into those collections and set **member access** (read-only vs can edit) per collection.
+1. **2FA:** Require **2FA on the Bitwarden account** for anyone who can read production creds; store **recovery codes** safely (offline or per Bitwarden’s emergency guidance).
 
 **Families vs Teams:** **Families** is often enough for **two adults + shared household** secrets; **Teams** fits **named collaborators** and more **admin/audit** style features — compare pricing and features on Bitwarden’s site before you commit.
 

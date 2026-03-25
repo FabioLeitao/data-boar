@@ -6,6 +6,6 @@ This English page is a **pointer**: the canonical detailed write-up for the main
 
 **See also:** [CONTRIBUTING.md](../CONTRIBUTING.md), [docs/ops/COMMIT_AND_PR.md](ops/COMMIT_AND_PR.md), [AGENTS.md](../AGENTS.md).
 
-| Revision | Note |
-| -------- | ---- |
+| Revision   | Note                                         |
+| --------   | ----                                         |
 | 2026-03-01 | EN stub + link to pt-BR collaboration guide. |

@@ -10,11 +10,11 @@
 
 ## Suggested layout (create under `docs/private/notify/`)
 
-| Path (local only)        | Use |
-| ------------------------ | --- |
+| Path (local only)        | Use                                                                                                                   |
+| ------------------------ | ---                                                                                                                   |
 | `.env`                   | API keys, SMTP, Twilio SID/token, **never** commit. Add `.env` to `.gitignore` if you ever move this tree by mistake. |
-| `signald/` or `signal/`  | **signald** / **signal-cli** data directory as required by the image you choose (follow that image’s docs). |
-| `logs/` (optional)       | Local debug logs; gitignored with parent `docs/private/`. |
+| `signald/` or `signal/`  | **signald** / **signal-cli** data directory as required by the image you choose (follow that image’s docs).           |
+| `logs/` (optional)       | Local debug logs; gitignored with parent `docs/private/`.                                                             |
 
 **Collaborators:** Replicate the **same layout** under **their own** `docs/private/notify/` with **their** numbers, sessions, and keys. Nothing in this template grants access to anyone else’s setup.
 

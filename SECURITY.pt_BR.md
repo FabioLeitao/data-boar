@@ -95,6 +95,7 @@ A API não implementa autenticação por padrão; proteja o app no proxy reverso
 
 - No config, defina `api.require_api_key: true` e `api.api_key` (literal) ou `api.api_key_from_env: "VAR"` (lê a chave do ambiente). Quando habilitado, toda requisição exceto **GET /health** deve incluir o cabeçalho **X-API-Key** ou **Authorization: Bearer &lt;chave&gt;**; caso contrário a API retorna **401**. O endpoint **/health** nunca é protegido para que load balancers e orquestradores ainda recebam 200.
 - **Boa prática:** Use uma chave forte e aleatória e armazene-a em uma variável de ambiente (ex.: `api_key_from_env: "AUDIT_API_KEY"`). Não registre em log nem faça commit da chave no controle de versão. Isso é apenas um gate simples; para autenticação e autorização completas, use o proxy reverso ou um provedor de identidade.
+- **Passos concretos (EN, para evitar ambiguidade):** nome da variável no YAML vs segredo no SO, precedência, exemplos `curl` — **`docs/ops/API_KEY_FROM_ENV_OPERATOR_STEPS.md`**.
 
 ## Endurecimento de implantação e proxy reverso
 
