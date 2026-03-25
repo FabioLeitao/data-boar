@@ -134,6 +134,15 @@ def test_preview_commit_ps1_syntax():
     assert _parse_powershell_script(script, root), "preview-commit.ps1 parse failed"
 
 
+def test_pr_hygiene_remind_ps1_syntax():
+    """scripts/pr-hygiene-remind.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "pr-hygiene-remind.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), "pr-hygiene-remind.ps1 parse failed"
+
+
 def test_maintenance_check_ps1_syntax():
     """scripts/maintenance-check.ps1 has valid PowerShell syntax (parse-only)."""
     root = _project_root()
@@ -262,6 +271,47 @@ def test_create_pr_ps1_has_param_block():
     text = script.read_text(encoding="utf-8", errors="replace")
     assert "param(" in text
     assert "Title" in text and "BodyFilePath" in text
+
+
+def test_gh_ensure_default_ps1_syntax():
+    """scripts/gh-ensure-default.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "gh-ensure-default.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), "gh-ensure-default.ps1 parse failed"
+
+
+def test_commit_or_pr_mentions_gh_default_repo_guard():
+    """commit-or-pr includes gh default repository guard for PR flow."""
+    root = _project_root()
+    script = root / "scripts" / "commit-or-pr.ps1"
+    if not script.exists():
+        return
+    text = script.read_text(encoding="utf-8", errors="replace")
+    assert "Set-GhDefaultRepo" in text
+
+
+def test_pr_hygiene_remind_ps1_syntax():
+    """scripts/pr-hygiene-remind.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "pr-hygiene-remind.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), "pr-hygiene-remind.ps1 parse failed"
+
+
+def test_pr_hygiene_mentions_gh_preflight():
+    """pr-hygiene-remind includes gh preflight reminder and quick checks switch."""
+    root = _project_root()
+    script = root / "scripts" / "pr-hygiene-remind.ps1"
+    if not script.exists():
+        return
+    text = script.read_text(encoding="utf-8", errors="replace")
+    assert "gh-ensure-default.ps1" in text
+    assert "RunQuickChecks" in text
+    assert "SLACK_WEBHOOK_URL" in text
+    assert "OPERATOR_NOTIFICATION_CHANNELS" in text
 
 
 def test_docs_private_scripts_syntax_optional(include_private_lint: bool):
