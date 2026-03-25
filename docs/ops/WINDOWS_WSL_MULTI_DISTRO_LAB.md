@@ -63,11 +63,11 @@ If **`uv sync`** prints **Failed to hardlink files; falling back to full copy**,
 
 **Claude Code** on the **Windows host** installs **`claude.exe`** (see [Anthropic Claude Code setup](https://docs.anthropic.com/en/docs/claude-code/setup)). A **WSL2** distro uses its **own** Linux **`PATH`**: the name **`claude`** is **not** the same binary unless you install the **Linux** build **inside** that distro.
 
-| Shell                          | Typical command                              | Notes                                                    |                                                                       |
-| -----                          | -----------------                            | -----                                                    |                                                                       |
-| **PowerShell / CMD** (Windows) | **`claude`**, **`claude.exe`**               | Host install                                             |                                                                       |
-| **bash** (Debian WSL)          | **`claude`** → often *command not found*     | Expected if you never ran the **Linux** installer in WSL |                                                                       |
-| **bash** (WSL) — optional      | **`cmd.exe /c claude --version`**            | **Interop**; depends on Windows **`PATH`**               |                                                                       |
+| Shell                          | Typical command                                | Notes                                                    |                                                                       |
+| -----                          | -----------------                              | -----                                                    |                                                                       |
+| **PowerShell / CMD** (Windows) | **`claude`**, **`claude.exe`**                 | Host install                                             |                                                                       |
+| **bash** (Debian WSL)          | **`claude`** → often *command not found*       | Expected if you never ran the **Linux** installer in WSL |                                                                       |
+| **bash** (WSL) — optional      | **`cmd.exe /c claude --version`**              | **Interop**; depends on Windows **`PATH`**               |                                                                       |
 | **bash** (WSL) — optional      | **`curl -fsSL <https://claude.ai/install.sh> \ | bash`** then **`~/.local/bin`** on **`PATH`**            | Second **Claude Code** install (Linux), separate updates from **Win** |
 
 Private lab matrix: **`OPERATOR_SYSTEM_MAP.md`** §4.1 vs §4.1b, **`LAB_SECURITY_POSTURE.md`** §5.0.1 vs §5.1.5.
