@@ -9,14 +9,14 @@ alwaysApply: true
 
 Content in this category **must not** be committed, pushed to GitHub, or published online. Keep it **only** under **gitignored** paths (workspace-local), e.g. **`docs/private/commercial/`** (client-facing rates/proposals) or **`docs/private/operator_economics/`** (your OPEX, shopping lists, runway).
 
-**Includes (non-exhaustive):**
+## Includes (non-exhaustive):
 
 - **Pricing** studies, rate cards, scenario tables, partner margins, proposal numbers.
 - **Client-specific** facts: names, environments, findings, SOW drafts, engagement terms.
 - **Strategic / mercadológico** rascunhos that could help **competitors** if leaked.
 - Any **extension** or **spin-off** of internal studies (same sensitivity as the source).
 
-**Explicitly allowed in Git (tracked):**
+## Explicitly allowed in Git (tracked):
 
 - **Product** licensing *concepts* and technical specs without client numbers: e.g. **`docs/LICENSING_SPEC.md`**, **`docs/CODE_PROTECTION_OPERATOR_PLAYBOOK.md`** — no bespoke pricing bands for real engagements.
 - **Layout only:** **`docs/private.example/commercial/README.md`** (pointers, no real data).
