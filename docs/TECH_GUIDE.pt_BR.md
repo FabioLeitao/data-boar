@@ -544,7 +544,7 @@ Você pode executar a API como **um único container** (`docker run`), com **Doc
 
 Imagens Docker estão disponíveis no **Docker Hub** para você executar a aplicação sem clonar o repositório:
 
-- **Docker Hub:** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` e `fabioleitao/data_boar:1.6.5`
+- **Docker Hub:** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` e `fabioleitao/data_boar:1.6.6`
 
 A imagem inclui detecção de sensibilidade por regex + ML + DL opcional; você pode definir termos de treinamento ML/DL na config (veja [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) e [deploy/config.example.yaml](../deploy/config.example.yaml)).
 
