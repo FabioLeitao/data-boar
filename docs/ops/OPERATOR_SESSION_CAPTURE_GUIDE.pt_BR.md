@@ -10,24 +10,24 @@
 
 ## 1. O que vale capturar
 
-| Vale a pena | Costuma pular |
-| ----------- | ------------- |
-| Decisões (“Slack antes do Signal, depois os dois”) | Transcrição inteira do chat |
+| Vale a pena                                                                       | Costuma pular                                           |
+| -----------                                                                       | -------------                                           |
+| Decisões (“Slack antes do Signal, depois os dois”)                                | Transcrição inteira do chat                             |
 | **Política** nova (onde ficam dumps de CLI, `commercial` vs `operator_economics`) | Senhas, tokens, `last`/`w` cru em arquivo **rastreado** |
-| Ponteiros (“GitHub Mobile = canal A; Cursor mobile = ressalvas”) | Erro de digitação pontual, duplicata de linha do plano |
-| Enquadramento ético / carreira para reler | O que é só de **jurídico** ou RH |
-| “Combinamos pasta X para Y” | Texto longo que só repete `AGENTS.md` |
+| Ponteiros (“GitHub Mobile = canal A; Cursor mobile = ressalvas”)                  | Erro de digitação pontual, duplicata de linha do plano  |
+| Enquadramento ético / carreira para reler                                         | O que é só de **jurídico** ou RH                        |
+| “Combinamos pasta X para Y”                                                       | Texto longo que só repete `AGENTS.md`                   |
 
 ---
 
 ## 2. Onde gravar (sensibilidade)
 
-| Sensibilidade | Onde | Exemplos |
-| ------------- | ---- | -------- |
-| **Público / equipe** | `docs/` rastreado (EN + pt-BR quando for doc de operador) | Este guia, canais de notificação, tabela do `PRIVATE_OPERATOR_NOTES` |
-| **Produto + roadmap** | `docs/plans/`, `PLANS_TODO` | Novo `PLAN_*.md` quando a ideia virar entrega **escopada** |
-| **Pessoal, estratégia, família, números de OPEX** | Só **`docs/private/`** | Ética acadêmica, tabela de luz, rascunho de proposta por cliente |
-| **LAN, hábitos, IPs, dumps de sessão** | **`docs/private/homelab/`** (ex. `reports/`) | `uptime`, `last`, `lastlog` — ver [PRIVATE_OPERATOR_NOTES.md](PRIVATE_OPERATOR_NOTES.md) |
+| Sensibilidade                                     | Onde                                                      | Exemplos                                                                                 |
+| -------------                                     | ----                                                      | --------                                                                                 |
+| **Público / equipe**                              | `docs/` rastreado (EN + pt-BR quando for doc de operador) | Este guia, canais de notificação, tabela do `PRIVATE_OPERATOR_NOTES`                     |
+| **Produto + roadmap**                             | `docs/plans/`, `PLANS_TODO`                               | Novo `PLAN_*.md` quando a ideia virar entrega **escopada**                               |
+| **Pessoal, estratégia, família, números de OPEX** | Só **`docs/private/`**                                    | Ética acadêmica, tabela de luz, rascunho de proposta por cliente                         |
+| **LAN, hábitos, IPs, dumps de sessão**            | **`docs/private/homelab/`** (ex. `reports/`)              | `uptime`, `last`, `lastlog` — ver [PRIVATE_OPERATOR_NOTES.md](PRIVATE_OPERATOR_NOTES.md) |
 
 **Regra prática:** se perder a nota **prejudica carreira ou compliance** e **não** pode ir ao GitHub → **`docs/private/`** com arquivo ou seção **datada**.
 
@@ -49,9 +49,9 @@ Ponteiro rastreado: **`docs/private.example/author_info/README.md`**.
 Quando o operador pedir para **“salvar para depois”**, **“documentar o que combinamos”** ou **“capturar a sessão”**:
 
 1. **Classificar** cada item: política rastreada vs plano vs **só private**.
-2. **Atualizar** o menor conjunto de arquivos (preferir **uma** nota private + **opcional** um link rastreado).
-3. **Nunca** commitar IPs LAN, hostnames, nomes de familiares ligados a instituição, nem números comerciais — só **private** ou redigido.
-4. Se a ideia virar **fatia de produto**, sugerir linha no **`PLANS_TODO`** ou plano dedicado **à parte** (não misturar tudo num dump gigante).
+1. **Atualizar** o menor conjunto de arquivos (preferir **uma** nota private + **opcional** um link rastreado).
+1. **Nunca** commitar IPs LAN, hostnames, nomes de familiares ligados a instituição, nem números comerciais — só **private** ou redigido.
+1. Se a ideia virar **fatia de produto**, sugerir linha no **`PLANS_TODO`** ou plano dedicado **à parte** (não misturar tudo num dump gigante).
 
 Cursor: **`.cursor/rules/operator-session-capture.mdc`** e **`.cursor/skills/operator-session-capture/SKILL.md`**.
 

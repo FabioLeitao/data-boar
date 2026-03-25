@@ -29,13 +29,13 @@ git add .
 git commit -m "chore: bootstrap private notes repo"
 ```
 
-**Remotos (escolha um):**
+## Remotos (escolha um):
 
-| Opção | Quando usar |
-| ----- | ----------- |
-| **Sem remote** | Histórico só neste disco; backup = cópia/USB/restic. |
+| Opção                          | Quando usar                                                                                                           |
+| -----                          | -----------                                                                                                           |
+| **Sem remote**                 | Histórico só neste disco; backup = cópia/USB/restic.                                                                  |
 | **Repositório bare `file://`** | Outra pasta no disco ou NAS, ex.: `git remote add backup file:///caminho/private-notes.git` e `git push backup main`. |
-| **SSH próprio** | Servidor seu—não GitHub—se quiser histórico fora do PC sem publicar estratégia ligada ao produto. |
+| **SSH próprio**                | Servidor seu—não GitHub—se quiser histórico fora do PC sem publicar estratégia ligada ao produto.                     |
 
 **Não** configure remote no GitHub (ou público) para essa árvore a menos que você **queira de propósito** esse conteúdo na internet.
 
