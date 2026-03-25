@@ -8,11 +8,11 @@
 
 ## Evolution review tracking (PDFs + Markdown)
 
-| Artifact | Path |
-| -------- | ---- |
-| First evolution review (2026-03-18) — in-repo notes | `docs/plans/WABBIX_ANALISE_2026-03-18.md` |
-| Premium evolution review (2026-03-23) — in-repo notes | `docs/plans/WABBIX_ANALISE_2026-03-23_EVOLUTIVA.md` |
-| PDFs (local / operator workspace) | `docs/feedbacks, reviews, comments and criticism/*.pdf` |
+| Artifact                                              | Path                                                    |
+| --------                                              | ----                                                    |
+| First evolution review (2026-03-18) — in-repo notes   | `docs/plans/WABBIX_ANALISE_2026-03-18.md`               |
+| Premium evolution review (2026-03-23) — in-repo notes | `docs/plans/WABBIX_ANALISE_2026-03-23_EVOLUTIVA.md`     |
+| PDFs (local / operator workspace)                     | `docs/feedbacks, reviews, comments and criticism/*.pdf` |
 
 If a review snapshot was taken from a **different clone or branch**, ask the operator for **commit SHA** and **branch**; the files above are the **canonical** tracking locations on `main` when present.
 
@@ -28,3 +28,49 @@ If a review snapshot was taken from a **different clone or branch**, ask the ope
 ## Sync
 
 Central execution order: **`docs/plans/PLANS_TODO.md`** (Wabbix subsection).
+
+**Optional API key via environment:** Step-by-step English runbook (variable **name** in YAML vs **secret** in env, precedence, `curl` checks, synthetic example): **[API_KEY_FROM_ENV_OPERATOR_STEPS.md](API_KEY_FROM_ENV_OPERATOR_STEPS.md)**. Cited from root **`SECURITY.md`** § Optional API key.
+
+## Docker Scout evidence bundle (for review cycles)
+
+When a release includes container publish/hardening updates, include these paths/output references in the Wabbix request so findings are reproducible:
+
+- Gate script: `scripts/docker-scout-critical-gate.ps1`
+- Release order runbook: `docs/ops/DOCKER_IMAGE_RELEASE_ORDER.md`
+- Docker scripts index: `scripts/docker/README.md`
+- Command examples:
+- `docker scout cves fabioleitao/data_boar:<tag> --only-severity critical`
+- `.\scripts\docker-scout-critical-gate.ps1 -Image fabioleitao/data_boar:<tag>`
+
+**Interpretation rule:** if Scout reports CRITICAL CVEs with **`Fixed version: not fixed`**, track as **upstream-risk monitored** (documented exception + rebuild cadence), not as an immediate app regression. If a fixed version exists, treat as actionable and prioritize remediation.
+
+---
+
+## Email to Wabbix (operator copy-paste)
+
+Use after a release or when sharing **evidence of alignment** (version strings, baseline paths). Adjust the greeting and add your name.
+
+**Subject:** Data Boar — in-repo baseline paths & release alignment
+
+## Body (EN):
+
+> Hello,
+>
+> For our next exchange, please use these **canonical paths** in this repository (branch `main` unless we agree otherwise):
+>
+> - Evolution notes: `docs/plans/WABBIX_ANALISE_2026-03-18.md` and `docs/plans/WABBIX_ANALISE_2026-03-23_EVOLUTIVA.md`
+> - Consolidated plans: `docs/plans/PLANS_TODO.md`
+> - This baseline list: `docs/ops/WABBIX_IN_REPO_BASELINE.md`
+>
+> **Current shipped version** is stated in the root `README.md` / `README.pt_BR.md` (“Current release”) and matches `pyproject.toml` and `docs/releases/<version>.md` for that tag.
+>
+> Best regards,
+
+---
+
+## Email status
+
+| Item                 | Status                                     |
+| ----                 | ------                                     |
+| Paths list in repo   | ✅ `WABBIX_IN_REPO_BASELINE.md` (this file) |
+| Operator sends email | 🔄 Manual (paste from § above when ready)   |

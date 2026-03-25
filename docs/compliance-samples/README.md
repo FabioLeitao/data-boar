@@ -32,6 +32,9 @@ Sample configuration files to enable **additional compliance frameworks** with t
 | **compliance-sample-nigeria_ndpr.yaml**        | Nigeria NDPR 2019: NITDA; personal data, data controller; EN.                                                                                              |
 | **compliance-sample-morocco_09_08.yaml**       | Morocco Law 09-08: CNDP; données à caractère personnel; FR + EN terms; CIN regex.                                                                          |
 | **compliance-sample-switzerland_fadp.yaml**    | Switzerland revised FADP: FDPIC; personal data; EN + optional DE/FR/IT terms; AHV/UID regex.                                                               |
+| **compliance-sample-us_ftc_coppa.yaml**        | U.S. FTC COPPA (children's online privacy): **technical mapping** terms and overrides; not age verification or legal advice.                               |
+| **compliance-sample-us_ca_ab2273_caadca.yaml** | California AB 2273 (Age-Appropriate Design Code): **labelling** for voluntary scoping; applicability requires counsel.                                     |
+| **compliance-sample-us_co_cpa_minors.yaml**    | Colorado Privacy Act — minors / under-18 contexts: **technical** norm tags; does not establish “known minor” legally.                                      |
 
 All samples in the tables above are available. Each sample is self-contained (regex overrides, ML terms, recommendation overrides) so you can enable one framework by including that file's blocks in your config. See [PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md](../plans/PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md) for the full list and optional regional scope.
 
@@ -39,26 +42,27 @@ All samples in the tables above are available. Each sample is self-contained (re
 
 When choosing or authoring a sample, consider the **language(s)** of the target region so column names and labels in data are detected:
 
-| Regulation / region              | Recommended language(s) for terms and labels                                                                   |
-| -------------------              | ---------------------------------------------                                                                  |
-| **LGPD (Brazil)**                | Portuguese (BR) and English (e.g. "documento oficial" and "official document", "CNH" and "Driver License").    |
-| **PIPEDA (Canada)**              | English and French (e.g. "personal information" and "renseignements personnels") where scanning Canadian data. |
-| **UK GDPR**                      | English.                                                                                                       |
-| **EU GDPR (EEA)**                | English; optional German/French for multilingual EU data.                                                      |
-| **Benelux (BE, NL, LU)**         | English plus Dutch and/or French (e.g. BSN, NISS, national ID column names).                                   |
-| **POPIA (South Africa)**         | English; add local languages in terms if your data uses them.                                                  |
-| **APPI (Japan)**                 | Japanese and/or English as needed for column names.                                                            |
-| **PCI-DSS**                      | English.                                                                                                       |
-| **Philippines (DPA)**            | English.                                                                                                       |
-| **Australia / NZ**               | English.                                                                                                       |
-| **Singapore (PDPA)**             | English.                                                                                                       |
-| **UAE / Saudi (PDPL)**           | English; optional Arabic for column names.                                                                     |
-| **Argentina / Colombia / Chile** | Spanish and English (e.g. datos personales / personal data).                                                   |
-| **Kenya / Nigeria**              | English.                                                                                                       |
-| **Morocco**                      | French and/or Arabic as relevant.                                                                              |
-| **India (DPDP)**                 | English.                                                                                                       |
-| **Turkey (KVKK)**                | Turkish and English (e.g. kişisel veri / personal data).                                                       |
-| **Switzerland (FADP)**           | English; optional DE/FR/IT.                                                                                    |
+| Regulation / region               | Recommended language(s) for terms and labels                                                                   |
+| -------------------               | ---------------------------------------------                                                                  |
+| **LGPD (Brazil)**                 | Portuguese (BR) and English (e.g. "documento oficial" and "official document", "CNH" and "Driver License").    |
+| **PIPEDA (Canada)**               | English and French (e.g. "personal information" and "renseignements personnels") where scanning Canadian data. |
+| **UK GDPR**                       | English.                                                                                                       |
+| **EU GDPR (EEA)**                 | English; optional German/French for multilingual EU data.                                                      |
+| **Benelux (BE, NL, LU)**          | English plus Dutch and/or French (e.g. BSN, NISS, national ID column names).                                   |
+| **POPIA (South Africa)**          | English; add local languages in terms if your data uses them.                                                  |
+| **APPI (Japan)**                  | Japanese and/or English as needed for column names.                                                            |
+| **PCI-DSS**                       | English.                                                                                                       |
+| **Philippines (DPA)**             | English.                                                                                                       |
+| **Australia / NZ**                | English.                                                                                                       |
+| **Singapore (PDPA)**              | English.                                                                                                       |
+| **UAE / Saudi (PDPL)**            | English; optional Arabic for column names.                                                                     |
+| **Argentina / Colombia / Chile**  | Spanish and English (e.g. datos personales / personal data).                                                   |
+| **Kenya / Nigeria**               | English.                                                                                                       |
+| **Morocco**                       | French and/or Arabic as relevant.                                                                              |
+| **India (DPDP)**                  | English.                                                                                                       |
+| **Turkey (KVKK)**                 | Turkish and English (e.g. kişisel veri / personal data).                                                       |
+| **Switzerland (FADP)**            | English; optional DE/FR/IT.                                                                                    |
+| **U.S. (COPPA, AB 2273, CO CPA)** | English (column names and privacy programs in U.S. deployments).                                               |
 
 Document in the sample header or in [COMPLIANCE_FRAMEWORKS](../COMPLIANCE_FRAMEWORKS.md) when a sample includes multi-language terms. See also the rule **.cursor/rules/compliance-samples-language.mdc**.
 

@@ -15,13 +15,13 @@ The AI **cannot** open your LAN by itself. **Default:** it runs **`ssh`** from *
      IdentityFile ~/.ssh/id_ed25519
    ```
 
-2. In **this** private README, record **only** the alias name and role (no secrets):
+1. In **this** private README, record **only** the alias name and role (no secrets):
 
-   | Role        | SSH `Host` alias (local to dev PC) | Notes                          |
-   | ----------- | ---------------------------------- | ------------------------------ |
-   | Lab server  | `latitude-lab`                     | Zorin; reports / Docker / ISOs |
+| Role        | SSH `Host` alias (local to dev PC) | Notes                          |
+| ----------- | ---------------------------------- | ------------------------------ |
+| Lab server  | `latitude-lab`                     | Zorin; reports / Docker / ISOs |
 
-3. Agents **`read_file`** this README and **`AGENT_LAB_ACCESS.md`** when homelab work applies (**`@` optional**). Then use **`ssh latitude-lab 'command'`** from the integrated terminal.
+1. Agents **`read_file`** this README and **`AGENT_LAB_ACCESS.md`** when homelab work applies (**`@` optional**). Then use **`ssh latitude-lab 'command'`** from the integrated terminal.
 
 **Do not** copy **private keys** or **passwords** into `docs/private/`. Use **key-based** login; keep passphrases in your OS keychain / agent.
 
@@ -36,6 +36,8 @@ The AI **cannot** open your LAN by itself. **Default:** it runs **`ssh`** from *
 **Sequenced lab plan (firewall → access → Loki → Wazuh):** [PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.md](../../plans/PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.md) ([pt-BR](../../plans/PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.pt_BR.md)) in `docs/plans/` — sprint checklist ties to [PLAN_LAB_OP_OBSERVABILITY_STACK.md](../../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md).
 
 **Shopping list + power (private only):** [LAB_OP_SHOPPING_LIST_COVER_NOTE.md](LAB_OP_SHOPPING_LIST_COVER_NOTE.md) — full list with indicative prices stays under **`docs/private/homelab/LAB_OP_SHOPPING_LIST_AND_POWER.md`** (gitignored). **Urgent:** meter / breaker / panel photos for safe UPS and Enel planning.
+
+**CLI / session habit dumps (private only):** If you keep **`uptime`**, **`w`**, **`last`**, **`lastlog`**, or similar for planning or incident review, store under **`docs/private/homelab/reports/`** (or a dated `.txt`) — not in tracked docs, issues, or PRs (LAN IPs and login patterns). See **`docs/PRIVATE_OPERATOR_NOTES.md`** (EN) / **`.pt_BR.md`**.
 
 ### Windows: pCloud as `P:` (optional)
 

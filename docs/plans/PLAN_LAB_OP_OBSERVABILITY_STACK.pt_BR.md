@@ -4,13 +4,13 @@
 
 **Objetivo:** Ordenar instrumentação **opcional** do homelab — **Grafana**, bases de séries temporais, **centralização de logs** — sem bloquear desenvolvimento do Data Boar nem a validação **–1L**. **Sem** implementação neste repositório; o operador instala via Compose, Helm no k3s ou appliance na **lab-op** (T14, Latitude, VMs Proxmox).
 
-**Pré-requisitos (antes disto):**
+## Pré-requisitos (antes disto):
 
-| Passo | Documento |
-| ----- | --------- |
-| SO + baseline segura de dev no portátil | [LMDE7_T14_DEVELOPER_SETUP.pt_BR.md](../ops/LMDE7_T14_DEVELOPER_SETUP.pt_BR.md) ([EN resumo](../ops/LMDE7_T14_DEVELOPER_SETUP.md)) |
-| Stack mínima de contentores (Podman + k3s opcional) | [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](../ops/LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md) §1–§3 |
-| Probes SNMP / firewall (opcional) | [SNMP_LAB_TARGETS.pt_BR.md](../private.example/homelab/SNMP_LAB_TARGETS.pt_BR.md) |
+| Passo                                               | Documento                                                                                                                          |
+| -----                                               | ---------                                                                                                                          |
+| SO + baseline segura de dev no portátil             | [LMDE7_T14_DEVELOPER_SETUP.pt_BR.md](../ops/LMDE7_T14_DEVELOPER_SETUP.pt_BR.md) ([EN resumo](../ops/LMDE7_T14_DEVELOPER_SETUP.md)) |
+| Stack mínima de contentores (Podman + k3s opcional) | [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](../ops/LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md) §1–§3                                    |
+| Probes SNMP / firewall (opcional)                   | [SNMP_LAB_TARGETS.pt_BR.md](../private.example/homelab/SNMP_LAB_TARGETS.pt_BR.md)                                                  |
 
 **Realidade de hardware:** T14 com **≤16 GB RAM** não deve correr Prometheus + Loki + Graylog + OpenSearch + Wazuh + k3s **em simultâneo**. Escolhe **um** caminho de métricas e **um** de logs; stacks pesados no **torre/VM Proxmox** quando existir.
 
@@ -18,13 +18,13 @@
 
 ## 1. Sequência recomendada (leve → pesada)
 
-| Fase | Stack | Função | Notas |
-| ---- | ----- | ------ | ----- |
-| **A** | **Grafana** + **Prometheus** (+ `node_exporter` / `snmp_exporter`) | Métricas, dashboards, alertas (PromQL) | **Recomendação predefinida** para homelab. Alinha com a narrativa de monitorização em [SNMP_LAB_TARGETS.pt_BR.md](../private.example/homelab/SNMP_LAB_TARGETS.pt_BR.md). |
-| **B** | **Grafana** + **InfluxDB** (+ **Telegraf**) | Métricas se preferires InfluxQL/Flux | Alternativa válida ao TSDB do Prometheus; escolhe **um** pilar TSDB (Prometheus **ou** Influx), salvo divisão explícita (ex.: SNMP no Prometheus, métricas de app no Influx). |
-| **C** | **Promtail** + **Loki** + **Grafana** | Agregação de logs, pegada menor que ELK/Graylog | Família “LGTM”; bom para envio de **JSON/syslog** e Explore no Grafana. |
-| **D** | **Graylog** + **OpenSearch** | Busca full-text, streams, pipelines | **Graylog 5+** usa **OpenSearch** por defeito — ver documentação atual; **Elasticsearch** já não é o default universal. **Pesado:** reserva **≥8 GB** só para OpenSearch em labs pequenos; preferir **VM dedicada**. |
-| **E** | **Wazuh** | Postura de segurança, vulns, hardening | [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](../ops/LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md) §6 — complementa métricas/logs; não os substitui. |
+| Fase  | Stack                                                              | Função                                          | Notas                                                                                                                                                                                                                |
+| ----  | -----                                                              | ------                                          | -----                                                                                                                                                                                                                |
+| **A** | **Grafana** + **Prometheus** (+ `node_exporter` / `snmp_exporter`) | Métricas, dashboards, alertas (PromQL)          | **Recomendação predefinida** para homelab. Alinha com a narrativa de monitorização em [SNMP_LAB_TARGETS.pt_BR.md](../private.example/homelab/SNMP_LAB_TARGETS.pt_BR.md).                                             |
+| **B** | **Grafana** + **InfluxDB** (+ **Telegraf**)                        | Métricas se preferires InfluxQL/Flux            | Alternativa válida ao TSDB do Prometheus; escolhe **um** pilar TSDB (Prometheus **ou** Influx), salvo divisão explícita (ex.: SNMP no Prometheus, métricas de app no Influx).                                        |
+| **C** | **Promtail** + **Loki** + **Grafana**                              | Agregação de logs, pegada menor que ELK/Graylog | Família “LGTM”; bom para envio de **JSON/syslog** e Explore no Grafana.                                                                                                                                              |
+| **D** | **Graylog** + **OpenSearch**                                       | Busca full-text, streams, pipelines             | **Graylog 5+** usa **OpenSearch** por defeito — ver documentação atual; **Elasticsearch** já não é o default universal. **Pesado:** reserva **≥8 GB** só para OpenSearch em labs pequenos; preferir **VM dedicada**. |
+| **E** | **Wazuh**                                                          | Postura de segurança, vulns, hardening          | [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](../ops/LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md) §6 — complementa métricas/logs; não os substitui.                                                                          |
 
 **Evitar no mesmo T14 em simultâneo:** Graylog + OpenSearch + Prometheus completo + Loki + Wazuh + k3s. Escolhe **A ou B**, **C ou D**, **E** quando houver recursos.
 

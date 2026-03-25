@@ -6,6 +6,16 @@ These manifests run the **image default**: web API and frontend on port 8088. No
 
 - **Image:** Edit `deployment.yaml` and set `containers[0].image` to your image (e.g. `fabioleitao/data_boar:latest` or `ghcr.io/fabioleitao/data_boar:latest`).
 - **Config:** The provided ConfigMap supplies a minimal `config.yaml`. Replace or extend it for production (e.g. Secret or external config). Config is mounted at `/data/config.yaml`.
+
+## Security (Wabbix-aligned)
+
+The default ConfigMap is **minimal** (empty targets). When you expose the Service via **NodePort**, **LoadBalancer**, or **Ingress** so the API is reachable from untrusted networks:
+
+1. Set **`api.require_api_key: true`** in `config.yaml` (see `configmap.yaml` comments).
+1. Provide the key via **`api.api_key`** (not committed) or **`api.api_key_from_env`** pointing at a Kubernetes **Secret** (env var injected into the pod). Same pattern as [docs/deploy/DEPLOY.md](../../docs/deploy/DEPLOY.md) § hardening and [SECURITY.md](../../SECURITY.md).
+
+NetworkPolicy and `network-policy.example.yaml` are optional extra layers; they do not replace API key when the dashboard is reachable from a WAN.
+
 - **Persistence:** The deployment uses `emptyDir` for `/data`, so SQLite and reports do not survive pod restart. For production, use a PersistentVolumeClaim and replace the `data` volume in `deployment.yaml`.
 - **Resources:** The deployment sets memory request/limit and a small CPU request; CPU limit is unset so I/O-bound workload and report-generation bursts are not throttled. See [docs/deploy/DEPLOY.md](../../docs/deploy/DEPLOY.md) ([pt-BR](../../docs/deploy/DEPLOY.pt_BR.md)) (§ Resource and I/O tuning) for production guidance.
 

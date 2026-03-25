@@ -20,11 +20,11 @@ The operator wants to **complete the study path** (paid **CWL** cyber lane + **a
 Offer a **short** (2–5 lines) **optional pause / study nudge** in **pt-BR** if the operator’s chat is pt-BR, else concise English:
 
 1. **Natural completion:** Right after a **coherent slice is done**—tests/docs committed or task explicitly wrapped (“pronto”, “merged”, “ship it”, “done for today”).
-2. **Explicit stop:** Operator says they are **pausing**, **logging off**, **good night**, or **closing the session**.
-3. **“What next?” with no fire:** They ask what to do next and there is **no** critical blocker—include **one line** that study blocks are part of the same 2026 plan, plus pointer to §3.0/§3.2 (no lecture).
-4. **`study-check`:** When the operator uses the English token **`study-check`** (see **`.cursor/rules/session-mode-keywords.mdc`**), **always** give a compact recap: cadence + CWL sequence + links above.
+1. **Explicit stop:** Operator says they are **pausing**, **logging off**, **good night**, or **closing the session**.
+1. **“What next?” with no fire:** They ask what to do next and there is **no** critical blocker—include **one line** that study blocks are part of the same 2026 plan, plus pointer to §3.0/§3.2 (no lecture).
+1. **`study-check`:** When the operator uses the English token **`study-check`** (see **`.cursor/rules/session-mode-keywords.mdc`**), **always** give a compact recap: cadence + CWL sequence + links above.
 
-**Format example (pt-BR):**
+## Format example (pt-BR):
 
 *“Se for encerrar o bloco de código: lembrete do combinado — 2× CWL + 1× IA numa semana, na outra 2× CWL + 1× outro assunto; trilho CWL em PORTFOLIO §3.2 (BTF→C3SA). Próximo passo no repo quando voltar: …”*
 

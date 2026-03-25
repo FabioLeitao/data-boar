@@ -1,0 +1,52 @@
+# California AB 2273 (Age-Appropriate Design Code) — sample profile (technical mapping)
+#
+# NOT LEGAL ADVICE. AB 2273 has faced legal challenge and applicability may depend on
+# venue and facts. This sample provides norm tags and terms for teams voluntarily
+# mapping "age-appropriate design" and child-safety contexts in data stores.
+# Does not implement platform design requirements or age assurance.
+#
+# How to use:
+#   regex_overrides_file: path/to/compliance-sample-us_ca_ab2273_caadca.yaml
+#   ml_patterns_file: path/to/compliance-sample-us_ca_ab2273_caadca.yaml
+# Merge recommendation_overrides into report.recommendation_overrides.
+
+regex:
+  - name: "CA_AB2273_REF"
+    pattern: "(?i)\\bAB[\\s-]*2273\\b"
+    norm_tag: "CA AB 2273 (CAADCA)"
+
+terms:
+  - text: "Age-Appropriate Design Code"
+    label: sensitive
+  - text: "California Age-Appropriate Design Act"
+    label: sensitive
+  - text: "CAADCA"
+    label: sensitive
+  - text: "likely to be accessed by children"
+    label: sensitive
+  - text: "best interests of the child"
+    label: sensitive
+  - text: "default privacy settings"
+    label: sensitive
+  - text: "high privacy default"
+    label: sensitive
+  - text: "data protection impact assessment"
+    label: sensitive
+  - text: "DPIA minors"
+    label: sensitive
+  - text: "dark pattern"
+    label: sensitive
+  - text: "dark patterns"
+    label: sensitive
+  - text: "geolocation minor"
+    label: sensitive
+  - text: "profiling children"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "CA AB 2273 (CAADCA)"
+    base_legal: "California AB 2273 (Age-Appropriate Design Code) — informational labelling; legal status and scope require counsel"
+    risk: "Stored or processed data may be relevant to age-appropriate design reviews; automated detection does not establish regulatory coverage."
+    recommendation: "Engage DPO/counsel on AB 2273 scope, DPIA obligations, and minor-facing processing. Use output as technical discovery input only."
+    priority: "ALTA"
+    relevant_for: "DPO, California privacy counsel, product compliance"

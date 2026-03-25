@@ -17,6 +17,9 @@ data:
       output_dir: /data
     api:
       port: 8088
+      # Wabbix / production: when the Service exposes 8088 beyond a trusted network, set:
+      # require_api_key: true
+      # and supply the key via Secret + env (e.g. api_key_from_env) — see README.md § Security.
     sqlite_path: /data/audit_results.db
     scan:
       max_workers: 1
