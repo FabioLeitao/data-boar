@@ -98,6 +98,7 @@ When secure mode is enabled, the app should detect if TLS/certificate capabiliti
 - Use a local trusted development CA flow (for example `mkcert`) to avoid browser noise while staying close to HTTPS behavior.
 - Keep local certs out of git; load by path/env only.
 - Allow `--allow-insecure-http` for quick local troubleshooting, but keep warnings loud.
+- Never auto-install a custom root CA into client trusted root stores from the app runtime or installer.
 
 ### QA / UAT
 
@@ -116,6 +117,21 @@ When secure mode is enabled, the app should detect if TLS/certificate capabiliti
   - TLS >= 1.2 (prefer 1.3 where available),
   - strong cipher configuration via app/proxy runtime,
   - renewal automation and expiry monitoring.
+
+## Explicit anti-pattern (must not do)
+
+Do **not** "fix browser warnings" by misissuing/misdeploying a custom root certificate and pushing it into client machine trusted root stores as an app shortcut.
+
+- This creates broad trust blast radius and weakens endpoint trust boundaries.
+- It can make unsafe cert chains appear valid and hides real TLS problems from operators/users.
+- It conflicts with secure-by-design goals and auditable trust posture.
+
+## Safer recommendation path
+
+1. Use publicly trusted certs (or enterprise PKI with proper governance), not ad-hoc root trust injection.
+2. If private PKI is required, distribute trust via controlled endpoint management policy (IT/MDM/GPO), never app self-install behavior.
+3. Keep certificate lifecycle explicit: issuance authority, rotation, revocation, expiry monitoring, and incident response ownership.
+4. Preserve clear warnings/failures when trust is invalid; do not suppress trust errors to "look clean."
 
 ## CA/provider options (practical)
 
@@ -185,3 +201,4 @@ Secure mode is only accepted when all checks pass:
 
 - **Compliance/legal docs:** good candidate for a short statement about secure transport by default + explicit insecure override risk.
 - **Decision-maker pitch:** optional short mention only after baseline implementation lands (avoid promising before behavior is shipped).
+- **External security rationale source:** Security Now episode archive and referenced episode discussion on certificate trust misuse vs correct deployment patterns ([GRC Security Now archive](https://www.grc.com/securitynow.htm), [YouTube episode link](https://www.youtube.com/watch?v=JebKuiHu5mg&t=2850s)).
