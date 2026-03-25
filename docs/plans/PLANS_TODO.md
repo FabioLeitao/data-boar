@@ -23,15 +23,15 @@ Use these tags in headings to keep priorities explicit and machine-countable:
 
 Do not edit this block manually; refresh with `python scripts/plans-stats.py --write`.
 
-- **Status rows counted:** 120  (Done: 63 | Incomplete: 57)
-- **Incomplete breakdown:** Pending `⬜`=55, Tracked `🔄` / `Tracked (partially done)`=2, Under consideration=0, Backlog-marked rows=0
+- **Status rows counted:** 126  (Done: 63 | Incomplete: 63)
+- **Incomplete breakdown:** Pending `⬜`=61, Tracked `🔄` / `Tracked (partially done)`=2, Under consideration=0, Backlog-marked rows=0
 
 | Horizon | Total rows | Done | Incomplete |
 | ------- | ----------: | ----: | ----------: |
 | `H0` | 29 | 27 | 2 |
 | `H1` | 0 | 0 | 0 |
 | `H2` | 0 | 0 | 0 |
-| `H3` | 91 | 36 | 55 |
+| `H3` | 97 | 36 | 61 |
 | `H4` | 0 | 0 | 0 |
 | `H5` | 0 | 0 | 0 |
 | `UNSPECIFIED` | 0 | 0 | 0 |
@@ -171,6 +171,7 @@ After **A1–A3** (minimum), you can **resume token-aware pace** on Tier 2 featu
 | 4     | **Strong crypto & controls validation**                             | Phase 1: CLI flag, config, API/dashboard checkbox, engine wiring (no criteria yet); then Phase 2 adds criteria.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 5     | **Data source versions & hardening**                                | Phase 1: `data_source_inventory` schema + save + one connector (e.g. SQL) + report sheet; one clear slice.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | 6     | **Notifications (off-band + scan-complete)**                        | Phase 1: config shape + notifier module + one channel (e.g. webhook); docs and examples; medium scope.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| 6a    | **Dashboard HTTPS-by-default (+ explicit HTTP risk mode)**          | Add native TLS>=1.2-capable dashboard path + explicit insecure HTTP override with clear warnings in logs/status/banner/audit; keep reverse-proxy compatibility. See [PLAN_DASHBOARD_HTTPS_BY_DEFAULT_AND_HTTP_EXPLICIT_RISK.md](PLAN_DASHBOARD_HTTPS_BY_DEFAULT_AND_HTTP_EXPLICIT_RISK.md).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 **Deferred (larger or later):** Secrets Phase B, Version check & self-upgrade (incl. optional Phase 9: .deb/apt repo, signed packages, bytecode-only install, winget-like), Selenium QA, Synthetic data, SAP connector, Dashboard i18n. **Backlog:** Additional data soup (Tier 1 + stego; Tier 3 rich media → merge pending, see **Integration / WIP** above).
 
@@ -377,6 +378,19 @@ Counted rows below celebrate the **maintenance + publish** sprint; see **`docs/r
 | 2.1–2.4 | Scan-complete summary (totals, HIGH/MEDIUM/LOW, DOB minor, failures); trigger after report gen (CLI + web); “how to download” in message | ⬜ Pending |
 | 3.1–3.3 | Tenant notification; multi-channel; retry and rate limit                                                                                 | ⬜ Pending |
 | 4.1–4.4 | USAGE/SECURITY docs; optional audit log; recommendations; tests                                                                          | ⬜ Pending |
+
+---
+
+### Dashboard HTTPS-by-default (+ explicit HTTP risk mode) – [PLAN_DASHBOARD_HTTPS_BY_DEFAULT_AND_HTTP_EXPLICIT_RISK.md](PLAN_DASHBOARD_HTTPS_BY_DEFAULT_AND_HTTP_EXPLICIT_RISK.md)
+
+| Phase | To-do                                                                                                                              | Status    |
+| ----- | -----                                                                                                                              | ------    |
+| 1     | Transport args/config (`https` mode, cert/key, explicit insecure override flag)                                                    | ⬜ Pending |
+| 2     | Secure-default runtime behavior + unmistakable warnings on stdout/stderr/logs in insecure mode                                     | ⬜ Pending |
+| 3     | Dashboard warning banner + `/status`/health fields indicating insecure transport                                                    | ⬜ Pending |
+| 4     | Audit/export trail marks insecure dashboard traffic when override is enabled                                                        | ⬜ Pending |
+| 5     | Tests for HTTPS + HTTP override paths (flags, warnings, status fields, banner rendering)                                           | ⬜ Pending |
+| 6     | Docs sync (USAGE/TECH_GUIDE/SECURITY + pt-BR) and compliance/legal wording update after implementation baseline                    | ⬜ Pending |
 
 ---
 
