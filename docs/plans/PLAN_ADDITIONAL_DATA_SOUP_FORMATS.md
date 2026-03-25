@@ -119,6 +119,8 @@ In production, **images**, **audio**, and **video** files are common. We do **no
 
 **Program umbrella:** Treat **Tier 3b** as the **network/telemetry string** slice of a larger **“sniffing for hidden ingredients”** track—together with **Tier 4** (document tricks) and **stego** (payload hiding). One phased roadmap avoids promising a single “magic toggle” that does everything.
 
+**Live host / port hints (optional, allowlisted):** For **operator-declared** hosts and well-known ports—**bounded** TCP connect + short banner read, not a stealth scanner—see [PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md](PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md). Complements Tier 3b (strings **inside** files) by surfacing **possibly relevant listeners** the customer did not add as formal targets.
+
 ---
 
 ## Tier 4: Document-layer “hidden ingredients” and surveillance-adjacent signals (taxonomy / backlog)

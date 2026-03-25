@@ -1,6 +1,6 @@
 .\" data_boar.5 - file formats and configuration for Data Boar (package id: python3-lgpd-crawler)
 .\" View as: man 5 data_boar or man 5 lgpd_crawler (symlink for compatibility)
-.TH DATA_BOAR 5 "March 2026" "Data Boar 1.6.6" "File Formats"
+.TH DATA_BOAR 5 "March 2026" "Data Boar 1.6.7" "File Formats"
 .SH NAME
 data_boar config, lgpd_crawler config \- configuration and pattern file formats for Data Boar (LGPD audit application)
 .
@@ -306,6 +306,9 @@ Example main config (excerpt):
 \fBapi:\fR
   port: 8088
   # host: 127.0.0.1   # optional bind address; see man 1 data_boar for CLI and API_HOST
+  # https_cert_file: /path/server.crt   # optional: TLS for python main.py --web
+  # https_key_file: /path/server.key    # optional: must pair with https_cert_file
+  # allow_insecure_http: false           # explicit plaintext only when true (Docker image CMD often sets CLI flag instead)
 
 \fBsqlite_path:\fR audit_results.db
 \fBscan:\fR

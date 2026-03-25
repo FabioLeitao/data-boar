@@ -33,12 +33,22 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
 from core.about import get_about_info
+from core.dashboard_transport import get_dashboard_transport_snapshot
 from core.runtime_trust import get_runtime_trust_snapshot
 
 
 def _about_info() -> dict:
     """Application name, version, author and license (from core.about, matches LICENSE and README)."""
     return get_about_info()
+
+
+def _template_context(base: dict) -> dict:
+    """Merge dashboard transport snapshot into Jinja context (banner, /status parity)."""
+    snap = get_dashboard_transport_snapshot()
+    ctx = dict(base)
+    ctx["dashboard_transport"] = snap
+    ctx["show_insecure_banner"] = bool(snap.get("show_insecure_banner"))
+    return ctx
 
 
 # In-memory cache for list_sessions (TTL seconds). Bypassed when a scan is running.
@@ -617,6 +627,7 @@ async def health():
     """Liveness/readiness probe for Docker, Swarm and Kubernetes."""
     body: dict = {"status": "ok"}
     body["license"] = _license_public_dict()
+    body["dashboard_transport"] = get_dashboard_transport_snapshot()
     return body
 
 
@@ -626,7 +637,7 @@ async def help_page(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="help.html",
-        context={},
+        context=_template_context({}),
     )
 
 
@@ -636,7 +647,9 @@ async def about_page(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="about.html",
-        context={"about": _about_info(), "license": _license_public_dict()},
+        context=_template_context(
+            {"about": _about_info(), "license": _license_public_dict()}
+        ),
     )
 
 
@@ -687,14 +700,16 @@ async def dashboard(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="dashboard.html",
-        context={
-            "status": status,
-            "sessions": sessions,
-            "last_session": last_session,
-            "chart_data": chart_data,
-            "about": _about_info(),
-            "license": _license_public_dict(),
-        },
+        context=_template_context(
+            {
+                "status": status,
+                "sessions": sessions,
+                "last_session": last_session,
+                "chart_data": chart_data,
+                "about": _about_info(),
+                "license": _license_public_dict(),
+            }
+        ),
     )
 
 
@@ -706,12 +721,14 @@ async def config_page(request: Request):
     return templates.TemplateResponse(
         request=request,
         name=_TEMPLATE_CONFIG,
-        context={
-            "config_path": _get_config_path(),
-            "config_yaml": _get_config_yaml_for_display(),
-            "config_saved": saved,
-            "config_save_error": error,
-        },
+        context=_template_context(
+            {
+                "config_path": _get_config_path(),
+                "config_yaml": _get_config_yaml_for_display(),
+                "config_saved": saved,
+                "config_save_error": error,
+            }
+        ),
     )
 
 
@@ -724,12 +741,14 @@ async def config_save(request: Request):
         return templates.TemplateResponse(
             request=request,
             name=_TEMPLATE_CONFIG,
-            context={
-                "config_path": _get_config_path(),
-                "config_yaml": _get_config_yaml_for_display(),
-                "config_saved": False,
-                "config_save_error": "No YAML content provided.",
-            },
+            context=_template_context(
+                {
+                    "config_path": _get_config_path(),
+                    "config_yaml": _get_config_yaml_for_display(),
+                    "config_saved": False,
+                    "config_save_error": "No YAML content provided.",
+                }
+            ),
         )
     try:
         _merge_and_save_config_yaml(yaml_content)
@@ -738,12 +757,14 @@ async def config_save(request: Request):
         return templates.TemplateResponse(
             request=request,
             name=_TEMPLATE_CONFIG,
-            context={
-                "config_path": _get_config_path(),
-                "config_yaml": yaml_content,
-                "config_saved": False,
-                "config_save_error": str(e),
-            },
+            context=_template_context(
+                {
+                    "config_path": _get_config_path(),
+                    "config_yaml": yaml_content,
+                    "config_saved": False,
+                    "config_save_error": str(e),
+                }
+            ),
         )
 
 
@@ -760,7 +781,9 @@ async def reports_page(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="reports.html",
-        context={"sessions": sessions, "sort": sort, "about": _about_info()},
+        context=_template_context(
+            {"sessions": sessions, "sort": sort, "about": _about_info()}
+        ),
     )
 
 
@@ -845,6 +868,7 @@ async def get_status():
         "current_session_id": engine.db_manager.current_session_id,
         "findings_count": engine.get_current_findings_count(),
         "runtime_trust": runtime_trust,
+        "dashboard_transport": get_dashboard_transport_snapshot(),
     }
 
 

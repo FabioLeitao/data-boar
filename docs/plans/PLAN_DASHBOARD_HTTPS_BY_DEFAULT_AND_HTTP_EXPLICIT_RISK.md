@@ -1,6 +1,6 @@
 # Plan: Dashboard HTTPS-by-default with explicit HTTP risk mode
 
-**Status:** Not started
+**Status:** Core phases shipped (TLS + explicit HTTP + status/banner); audit-export / tamper phases still open
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md)
 
 ## Purpose
@@ -35,12 +35,12 @@ Make dashboard traffic **encrypted by default** (TLS >= 1.2) even without an ups
 
 | Phase | To-do | Status |
 | --- | --- | --- |
-| 1. Transport config and flags | Add explicit dashboard transport mode (`https`, `http`), cert/key parameters, and insecure override flag (`--allow-insecure-http` style). Keep backwards-compatible defaults during rollout with deprecation warning path. | ⬜ Pending |
-| 2. Runtime enforcement and warnings | Enforce secure default behavior; on insecure override, print unmistakable warning on stdout/stderr and structured log fields (`transport_security=insecure_http`). | ⬜ Pending |
-| 3. UX warning surfaces | Add high-visibility dashboard banner (top half area) for insecure mode and surface same state in API `/status` and health output. | ⬜ Pending |
+| 1. Transport config and flags | Add explicit dashboard transport mode (`https`, `http`), cert/key parameters, and insecure override flag (`--allow-insecure-http` style). Keep backwards-compatible defaults during rollout with deprecation warning path. | Done (`core/dashboard_transport.py`, `main.py`, Docker `CMD`) |
+| 2. Runtime enforcement and warnings | Enforce secure default behavior; on insecure override, print unmistakable warning on stdout/stderr and structured log fields (`transport_security=insecure_http`). | Done (stderr banner + `[INFO] dashboard_transport=…`; structured log field can follow) |
+| 3. UX warning surfaces | Add high-visibility dashboard banner (top half area) for insecure mode and surface same state in API `/status` and health output. | Done |
 | 4. Audit trail and evidence | Record insecure transport mode in audit trail / exported audit JSON so risk acceptance is traceable. | ⬜ Pending |
-| 5. Tests (both scenarios) | Add tests for HTTPS mode and HTTP override mode, including warning text, status flags, and banner rendering. Keep CI stable and deterministic. | ⬜ Pending |
-| 6. Docs and legal/compliance wording | Update USAGE/TECH_GUIDE/SECURITY (+ pt-BR), COMPLIANCE_AND_LEGAL wording, and operator runbooks with concrete setup and risk statements. | ⬜ Pending |
+| 5. Tests (both scenarios) | Add tests for HTTPS mode and HTTP override mode, including warning text, status flags, and banner rendering. Keep CI stable and deterministic. | Done (unit + CLI subprocess smoke) |
+| 6. Docs and legal/compliance wording | Update USAGE/TECH_GUIDE/SECURITY (+ pt-BR), COMPLIANCE_AND_LEGAL wording, and operator runbooks with concrete setup and risk statements. | USAGE + man + help done; broader legal/compliance pass optional |
 | 7. Transport integrity/tamper trust state | Detect unexpected changes in cert/crypto runtime capability and mark runtime as untrusted/tinted (logs, status, dashboard, DB/audit, report output restrictions, version marker). | ⬜ Pending |
 
 ## Concrete technical checklist
