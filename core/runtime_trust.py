@@ -17,6 +17,7 @@ _UNEXPECTED_LICENSE_STATES = {
     "EXPIRED",
     "CRACKED",
 }
+_TRUSTED_LICENSE_STATES = {"OPEN", "VALID"}
 
 
 def get_runtime_trust_snapshot(config: dict[str, Any]) -> dict[str, Any]:
@@ -28,6 +29,12 @@ def get_runtime_trust_snapshot(config: dict[str, Any]) -> dict[str, Any]:
     state = (ctx.state or "UNKNOWN").upper()
     is_unexpected = state in _UNEXPECTED_LICENSE_STATES
     level = "unexpected" if is_unexpected else "expected"
+    if state in _TRUSTED_LICENSE_STATES:
+        trust_state = "trusted"
+    elif is_unexpected:
+        trust_state = "untrusted"
+    else:
+        trust_state = "degraded"
     attention = (
         "THERE IS SOMETHING DIFFERENT AND UNEXPECTED IN THIS RUNTIME."
         if is_unexpected
@@ -35,6 +42,7 @@ def get_runtime_trust_snapshot(config: dict[str, Any]) -> dict[str, Any]:
     )
     return {
         "trust_level": level,
+        "trust_state": trust_state,
         "is_unexpected": is_unexpected,
         "attention": attention,
         "license_state": state,
