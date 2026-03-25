@@ -31,6 +31,7 @@ def test_build_audit_trail_payload_structure(tmp_path):
     assert payload["paths"]["config"].endswith("config.yaml")
     assert payload["paths"]["sqlite"] == db_path
     assert payload["runtime_trust"]["trust_level"] == "expected"
+    assert payload["runtime_trust"]["trust_state"] == "trusted"
     assert len(payload["data_wipe_log"]) == 1
     assert "first wipe for test" in payload["data_wipe_log"][0]["reason"]
     assert payload["scan_sessions_summary"]["count"] == 0
@@ -70,6 +71,7 @@ scan:
     data = json.loads(r.stdout)
     assert data["schema_version"] == AUDIT_TRAIL_SCHEMA_VERSION
     assert data["runtime_trust"]["license_state"] == "OPEN"
+    assert data["runtime_trust"]["trust_state"] == "trusted"
     assert data["scan_sessions_summary"]["count"] == 0
     assert "[INFO] runtime-trust:" in r.stderr
 

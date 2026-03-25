@@ -33,6 +33,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
 from core.about import get_about_info
+from core.runtime_trust import get_runtime_trust_snapshot
 
 
 def _about_info() -> dict:
@@ -838,10 +839,12 @@ async def start_scan(
 async def get_status():
     """Return running, current_session_id, findings_count."""
     engine = _get_engine()
+    runtime_trust = get_runtime_trust_snapshot(_get_config())
     return {
         "running": engine.is_running,
         "current_session_id": engine.db_manager.current_session_id,
         "findings_count": engine.get_current_findings_count(),
+        "runtime_trust": runtime_trust,
     }
 
 

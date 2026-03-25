@@ -25,7 +25,8 @@ def _emit_runtime_trust_info(
     info_line = (
         "[INFO] runtime-trust: "
         f"{snapshot['trust_level'].upper()} "
-        f"(license_state={snapshot['license_state']}, "
+        f"(state={snapshot.get('trust_state', 'degraded')}, "
+        f"license_state={snapshot['license_state']}, "
         f"mode={snapshot['license_mode']})"
     )
     if to_stdout:
