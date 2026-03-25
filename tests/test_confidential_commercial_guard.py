@@ -43,7 +43,9 @@ def _git_ls_files() -> list[str]:
         check=False,
     )
     if proc.returncode != 0 or not (REPO_ROOT / ".git").exists():
-        pytest.skip("Not a git checkout or git ls-files failed — cannot enforce index guard.")
+        pytest.skip(
+            "Not a git checkout or git ls-files failed — cannot enforce index guard."
+        )
     raw = proc.stdout.split(b"\0")
     out: list[str] = []
     for chunk in raw:
@@ -100,6 +102,10 @@ def test_git_index_excludes_private_trees_and_stray_commercial_docs():
 def test_gitignore_documents_private_trees():
     """Sanity: .gitignore must keep docs/private/ and .cursor/private/ ignored."""
     gi = (REPO_ROOT / ".gitignore").read_text(encoding="utf-8", errors="replace")
-    lines = {ln.strip() for ln in gi.splitlines() if ln.strip() and not ln.strip().startswith("#")}
+    lines = {
+        ln.strip()
+        for ln in gi.splitlines()
+        if ln.strip() and not ln.strip().startswith("#")
+    }
     assert "docs/private/" in lines, ".gitignore must list docs/private/"
     assert ".cursor/private/" in lines, ".gitignore must list .cursor/private/"
