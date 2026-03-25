@@ -10,10 +10,10 @@ Este guia resume **como trabalhar em conjunto** (ex.: **Fabio** como mantenedor 
 
 ## 1. Fork vs um só repositório — o que faz sentido
 
-| Abordagem | Vantagens | Desvantagens |
-| --------- | --------- | ------------- |
-| **Fork** (contribuidor com cópia sob o próprio usuário no GitHub) | Fluxo “open source” claro; bom enquanto o colaborador **aprende**; PRs do fork → repo canônico. | Exige **sincronizar** com o upstream com frequência (`fetch` + merge/rebase). |
-| **Colaborador no repo canônico** (convite GitHub com permissão de escrita) | Um `origin`, menos atrito; branches `feature/…` e PRs **no mesmo repo**. | Exige confiança e disciplina de branch (não commitar direto em `main` sem combinar). |
+| Abordagem                                                                  | Vantagens                                                                                       | Desvantagens                                                                         |
+| ---------                                                                  | ---------                                                                                       | -------------                                                                        |
+| **Fork** (contribuidor com cópia sob o próprio usuário no GitHub)          | Fluxo “open source” claro; bom enquanto o colaborador **aprende**; PRs do fork → repo canônico. | Exige **sincronizar** com o upstream com frequência (`fetch` + merge/rebase).        |
+| **Colaborador no repo canônico** (convite GitHub com permissão de escrita) | Um `origin`, menos atrito; branches `feature/…` e PRs **no mesmo repo**.                        | Exige confiança e disciplina de branch (não commitar direto em `main` sem combinar). |
 
 **Sugestão prática:** começar com **fork + PR**; quando o ritmo ficar alto, **adicionar o colaborador no repositório canônico** e manter a mesma regra: **branch por tarefa** + **PR** + revisão.
 
@@ -31,12 +31,12 @@ Este guia resume **como trabalhar em conjunto** (ex.: **Fabio** como mantenedor 
 
 ## 3. Separar “tarefas do mantenedor” vs “tarefas do colaborador”
 
-| Mecanismo | Uso |
-| --------- | --- |
-| **Issues / Projects no GitHub** | Assignee **Fabio** vs **Ivan**; labels `owner:maintainer`, `owner:contributor` (ou nomes que preferirem). |
-| **Nomes de branch** | Ex.: `ivan/descricao-curta`, `fabio/descricao-curta` ou só `feature/…` com assignee na PR. |
+| Mecanismo                        | Uso                                                                                                                                                                           |
+| ---------                        | ---                                                                                                                                                                           |
+| **Issues / Projects no GitHub**  | Assignee **Fabio** vs **Ivan**; labels `owner:maintainer`, `owner:contributor` (ou nomes que preferirem).                                                                     |
+| **Nomes de branch**              | Ex.: `ivan/descricao-curta`, `fabio/descricao-curta` ou só `feature/…` com assignee na PR.                                                                                    |
 | **`docs/private/`** (gitignored) | Notas **só do mantenedor** / LAB-OP **reais** — **não** entram no clone público do colaborador da mesma forma; evita misturar “chores” pessoais com o que o Ivan precisa ler. |
-| **Planos (`docs/plans/`)** | Podem continuar **só em inglês** por política do repo; quem implementa marca progresso em PR + `PLANS_TODO.md` quando fizer sentido. |
+| **Planos (`docs/plans/`)**       | Podem continuar **só em inglês** por política do repo; quem implementa marca progresso em PR + `PLANS_TODO.md` quando fizer sentido.                                          |
 
 ---
 
@@ -139,23 +139,23 @@ gh pr list --state open
 
 ## 6. Prompts sugeridos para o Cursor (copiar e adaptar)
 
-**No início de uma sessão (colaborador):**
+## No início de uma sessão (colaborador):
 
 > Estou no papel de **contribuidor** (Ivan). Branch atual: `ivan/…`. O mantenedor é o Fabio. Segue [AGENTS.md](AGENTS.md) e [CONTRIBUTING.pt_BR.md](../CONTRIBUTING.pt_BR.md). Não assumas acesso a `docs/private/`. Proponha alterações em commits pequenos e compatíveis com PR único para a feature X.
 
-**No início de uma sessão (mantenedor):**
+## No início de uma sessão (mantenedor):
 
 > Sou o **mantenedor**. Posso referir políticas em `docs/private/` apenas em notas locais — não sugerir colar segredos ou IPs reais em arquivos rastreados. Prioridade: alinhar com [docs/plans/PLANS_TODO.md](plans/PLANS_TODO.md) e [`.cursor/rules/execution-priority-and-pr-batching.mdc`](../.cursor/rules/execution-priority-and-pr-batching.mdc).
 
-**Para reduzir interferência entre pessoas:**
+## Para reduzir interferência entre pessoas:
 
 > Esta tarefa é **só para o colaborador Ivan** (documentação de onboarding). Não mistures com itens de homelab ou estudo do mantenedor.
 
-**Antes de merge/release:**
+## Antes de merge/release:
 
 > Rode a sugestão de verificação: `uv run pytest -v -W error` e, se aplicável, `scripts/check-all.ps1`. Confirma estado do Git com `git fetch` e `git status`.
 
-**Token-aware (sessão curta):**
+## Token-aware (sessão curta):
 
 > **short** — uma só fatia: [descrever]. Sem expandir para outros planos.
 
@@ -163,20 +163,20 @@ gh pr list --state open
 
 ## 7. Rules, skills e guidelines no repositório
 
-| Artefato | Função |
-| -------- | ------ |
-| **[`AGENTS.md`](../AGENTS.md)** | Contrato global do assistente: idioma, segredos, homelab, Git/PR, testes. **Ambos** devem ler uma vez; o Ivan segue o mesmo arquivo ao clonar. |
-| **[`.cursor/rules/`](../.cursor/rules/)** | Regras automáticas ou por contexto (ex.: `git-pr-sync-before-advice.mdc`, `execution-priority-and-pr-batching.mdc`). **Colaboração:** `collaboration-maintainer-contributor.mdc`. |
-| **[`.cursor/skills/`](../.cursor/skills/)** | Playbooks longos (Docker, token-aware, etc.). Use quando a tarefa combinar. |
-| **[`CONTRIBUTING.md`](../CONTRIBUTING.md)** / **[`CONTRIBUTING.pt_BR.md`](../CONTRIBUTING.pt_BR.md)** | Fluxo de contribuição e testes. |
-| **Este arquivo** | Papéis, comandos e prompts — **maturidade de equipe** sem substituir o CONTRIBUTING. |
+| Artefato                                                                                              | Função                                                                                                                                                                            |
+| --------                                                                                              | ------                                                                                                                                                                            |
+| **[`AGENTS.md`](../AGENTS.md)**                                                                       | Contrato global do assistente: idioma, segredos, homelab, Git/PR, testes. **Ambos** devem ler uma vez; o Ivan segue o mesmo arquivo ao clonar.                                    |
+| **[`.cursor/rules/`](../.cursor/rules/)**                                                             | Regras automáticas ou por contexto (ex.: `git-pr-sync-before-advice.mdc`, `execution-priority-and-pr-batching.mdc`). **Colaboração:** `collaboration-maintainer-contributor.mdc`. |
+| **[`.cursor/skills/`](../.cursor/skills/)**                                                           | Playbooks longos (Docker, token-aware, etc.). Use quando a tarefa combinar.                                                                                                       |
+| **[`CONTRIBUTING.md`](../CONTRIBUTING.md)** / **[`CONTRIBUTING.pt_BR.md`](../CONTRIBUTING.pt_BR.md)** | Fluxo de contribuição e testes.                                                                                                                                                   |
+| **Este arquivo**                                                                                      | Papéis, comandos e prompts — **maturidade de equipe** sem substituir o CONTRIBUTING.                                                                                              |
 
 ### 7.1 Ajustes opcionais quando a equipe crescer
 
 1. **Branch protection** em `main` (ex.: exigir PR, status de CI).
-2. **`CODEOWNERS`** (`.github/CODEOWNERS`) para pedir revisão automática do mantenedor em pastas críticas.
-3. **Issue templates** no GitHub (“bug”, “feature”, “doc”) com checklist de testes.
-4. Nova rule **`.mdc`** só se houver **regra repetida** que o CONTRIBUTING não cubra (mantê-las **curtas**).
+1. **`CODEOWNERS`** (`.github/CODEOWNERS`) para pedir revisão automática do mantenedor em pastas críticas.
+1. **Issue templates** no GitHub (“bug”, “feature”, “doc”) com checklist de testes.
+1. Nova rule **`.mdc`** só se houver **regra repetida** que o CONTRIBUTING não cubra (mantê-las **curtas**).
 
 ---
 
@@ -190,8 +190,8 @@ gh pr list --state open
 
 ## 9. Revisão do documento
 
-| Data | Nota |
-| ---- | ---- |
+| Data       | Nota                                                                         |
+| ----       | ----                                                                         |
 | 2026-03-01 | Versão inicial (Fabio + Ivan, fork ou repo único, comandos, prompts, rules). |
 
 Atualizem esta tabela quando mudarem URL canônica, política de branch ou nomes dos remotes.

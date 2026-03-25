@@ -134,37 +134,37 @@ Secrets: prefer env vars (e.g. `NOTIFY_SLACK_WEBHOOK`) or a secrets vault (see S
 
 ### Phase 1: Notifier module and config
 
-| #   | To-do                                                                                                                                                                        | Status |
-| --- | ---------------------------------------------------------------------                                                                                                        | ------ |
-| 1.1 | Add optional config section `notifications` (enabled, on_scan_complete, operator webhook/channel, tenant optional). Secrets from env or config; document no secrets in repo. | ✅ Done (`config/loader.py`) |
+| #   | To-do                                                                                                                                                                        | Status                                                  |
+| --- | ---------------------------------------------------------------------                                                                                                        | ------                                                  |
+| 1.1 | Add optional config section `notifications` (enabled, on_scan_complete, operator webhook/channel, tenant optional). Secrets from env or config; document no secrets in repo. | ✅ Done (`config/loader.py`)                             |
 | 1.2 | Implement small notifier (e.g. utils/notify.py or scripts/notify_webhook.py): generic HTTP POST, optional Slack/Teams/Telegram adapters; message body as JSON or form.       | ✅ Done (`utils/notify.py`, `scripts/notify_webhook.py`) |
-| 1.3 | Document how to get Slack/Teams/Telegram webhooks and how to trigger “task/milestone” notification from CI or manually (Part A).                                             | ✅ Done (`docs/USAGE.md` §5.1, `USAGE.pt_BR.md`) |
+| 1.3 | Document how to get Slack/Teams/Telegram webhooks and how to trigger “task/milestone” notification from CI or manually (Part A).                                             | ✅ Done (`docs/USAGE.md` §5.1, `USAGE.pt_BR.md`)         |
 
 ### Phase 2: Scan-complete summary and trigger
 
-| #   | To-do                                                                                                                                                                                                         | Status |
-| --- | ---------------------------------------------------------------------                                                                                                                                         | ------ |
-| 2.1 | Add helper to build **scan-complete summary** from session: total findings, by sensitivity_level (HIGH, MEDIUM, LOW), DOB possible minor count, scan failures count, tenant/technician.                       | ✅ Done (`LocalDBManager.get_session_scan_summary_for_notification`) |
-| 2.2 | After report generation (CLI one-shot in main.py, and web background scan completion in api/routes.py), if notifications.enabled and on_scan_complete, call notifier with summary and “how to download” text. | ✅ Done (background thread; CLI after report; API after `run_targets` / `scan_database`) |
-| 2.3 | Include in message: session_id, brief counts, link or instructions for report download (Reports page, GET /report, GET /reports/{session_id}).                                                                | ✅ Done (`build_scan_complete_message`) |
+| #   | To-do                                                                                                                                                                                                         | Status                                                                                                                                  |
+| --- | ---------------------------------------------------------------------                                                                                                                                         | ------                                                                                                                                  |
+| 2.1 | Add helper to build **scan-complete summary** from session: total findings, by sensitivity_level (HIGH, MEDIUM, LOW), DOB possible minor count, scan failures count, tenant/technician.                       | ✅ Done (`LocalDBManager.get_session_scan_summary_for_notification`)                                                                     |
+| 2.2 | After report generation (CLI one-shot in main.py, and web background scan completion in api/routes.py), if notifications.enabled and on_scan_complete, call notifier with summary and “how to download” text. | ✅ Done (background thread; CLI after report; API after `run_targets` / `scan_database`)                                                 |
+| 2.3 | Include in message: session_id, brief counts, link or instructions for report download (Reports page, GET /report, GET /reports/{session_id}).                                                                | ✅ Done (`build_scan_complete_message`)                                                                                                  |
 | 2.4 | Optional: notify_only_if_high_or_critical and failure notification (notify on scan failure).                                                                                                                  | ✅ Partial (`notify_only_if_high_or_critical`, `notify_on_failure` for `completed_errors`; worker failure semantics in `core/engine.py`) |
 
 ### Phase 3: Tenant and multi-channel
 
-| #   | To-do                                                                                                                     | Status |
-| --- | ---------------------------------------------------------------------                                                     | ------ |
-| 3.1 | If tenant_name is set and notifications.tenant is configured, send a copy to tenant channel/webhook (or default_webhook). | ⬜      |
-| 3.2 | Support multiple operator channels (e.g. Slack + Telegram) from config list.                                              | ⬜      |
-| 3.3 | Retry on 5xx/timeout; rate limit per session per channel.                                                                 | 🔄 Partial (retries on 5xx + URLError in `utils/notify.py`; rate limit per session → backlog) |
+| #   | To-do                                                                                                                     | Status                                                                                                                                                                     |
+| --- | ---------------------------------------------------------------------                                                     | ------                                                                                                                                                                     |
+| 3.1 | If tenant_name is set and notifications.tenant is configured, send a copy to tenant channel/webhook (or default_webhook). | ✅ Done (`tenant.by_tenant`, `default_*` in `config/loader.py`; `notify_scan_complete_sync` in `utils/notify.py`)                                                           |
+| 3.2 | Support multiple operator channels (e.g. Slack + Telegram) from config list.                                              | ✅ Done (`operator.channels` list)                                                                                                                                          |
+| 3.3 | Retry on 5xx/timeout; rate limit per session per channel.                                                                 | 🔄 Partial (retries in `utils/notify.py`; **dedupe** per `session_id` after successful send via `dedupe_scan_complete_per_session`; fine-grained per-channel cap → backlog) |
 
 ### Phase 4: Docs, audit, and improvements
 
-| #   | To-do                                                                                                                    | Status |
-| --- | ---------------------------------------------------------------------                                                    | ------ |
-| 4.1 | USAGE and SECURITY: document notifications config, secrets handling, and “how to download report” text used in messages. | ⬜      |
-| 4.2 | Optional: audit log of notifications sent (session_id, channel, timestamp).                                              | ⬜      |
-| 4.3 | Recommendations (digest, i18n, link to report, failure notify) as config options or future work in plan.                 | ⬜      |
-| 4.4 | Tests: unit test for summary builder; optional integration test with mock webhook.                                       | ⬜      |
+| #   | To-do                                                                                                                    | Status                                                                                                              |
+| --- | ---------------------------------------------------------------------                                                    | ------                                                                                                              |
+| 4.1 | USAGE and SECURITY: document notifications config, secrets handling, and “how to download report” text used in messages. | ✅ Done (USAGE §5.1; root **SECURITY.md** + **docs/SECURITY.md** / **.pt_BR.md** technician notes)                   |
+| 4.2 | Optional: audit log of notifications sent (session_id, channel, timestamp).                                              | ✅ Done (`notification_send_log` table + `record_notification_send_log`; `notify_audit_log` config; no message body) |
+| 4.3 | Recommendations (digest, i18n, link to report, failure notify) as config options or future work in plan.                 | ⬜ (``public_base_url`` / report hints already in scan-complete message; digest/i18n → backlog)                      |
+| 4.4 | Tests: unit test for summary builder; optional integration test with mock webhook.                                       | ✅ Partial (summary + webhook mocks in ``tests/test_notify.py``; manual script audit covered)                        |
 
 ---
 

@@ -4,7 +4,7 @@
 
 **Naming:** `<SSH-alias-or-hostname>_<YYYYMMDD_HHMM>_homelab_host_report.log` (see parent [README.md](../README.md)).
 
-**Populate from Windows (dev PC with repo + SSH):**
+## Populate from Windows (dev PC with repo + SSH):
 
 ```powershell
 .\scripts\collect-homelab-report-remote.ps1 -SshHost latitude-lab
@@ -18,7 +18,7 @@
 
 Repeat per host (`-SshHost` = entry in your `~/.ssh/config`) for single-host flow. Output defaults to **`docs/private/homelab/reports/`** next to this README when you copy the tree from `docs/private.example/`.
 
-**Populate on Linux (repo on host):**
+## Populate on Linux (repo on host):
 
 ```bash
 bash scripts/homelab-host-report.sh | tee "docs/private/homelab/reports/$(hostname -s)_$(date +%Y%m%d_%H%M)_homelab_host_report.log"
@@ -31,9 +31,11 @@ bash scripts/homelab-host-report.sh | tee "docs/private/homelab/reports/$(hostna
 Para gravar a saída do probe SNMP em **arquivo local** (pasta gitignored), sem colocar segredos na tarefa agendada:
 
 1. Crie **`docs/private/homelab/.env.snmp.local`** (nome exato, com o ponto no início), **ou** um ficheiro dedicado por equipamento (ex.: **`.env.snmp.udm-se.local`** para UDM SE — mesmo conteúdo que o exemplo). Copie do modelo rastreado: **`docs/private.example/homelab/env.snmp.local.example`** →
+
    `Copy-Item docs\private.example\homelab\env.snmp.local.example docs\private\homelab\.env.snmp.local`
    Depois edite com os valores reais (ver [CREDENTIALS_AND_LAB_SECRETS.md](../CREDENTIALS_AND_LAB_SECRETS.md)). Se usares ficheiro **não** default, nos testes e no Agendador passa **`-EnvFile "docs\private\homelab\.env.snmp.udm-se.local"`** (ajusta o nome).
-2. Teste manualmente na raiz do repo:
+
+1. Teste manualmente na raiz do repo:
 
    ```powershell
    .\scripts\snmp-udm-lab-probe-to-log.ps1 -WslDistro "Debian" -MaxLines 400
@@ -42,16 +44,19 @@ Para gravar a saída do probe SNMP em **arquivo local** (pasta gitignored), sem 
    ```
 
    O log fica em **`snmp_udm_probe_YYYYMMDD.log`** nesta pasta. **`-MaxLines`** evita arquivos enormes (walk IF-MIB completo = muitas linhas); use **`-MaxLines 0`** só se quiser dump completo e tiver espaço em disco.
-3. **Agendador de Tarefas** (Task Scheduler): nova tarefa → **Disparadores** → novo disparador (ex.: **Diariamente** num horário inicial, ou **Ao iniciar sessão**) → **Avançadas** / opções do disparador:
+
+1. **Agendador de Tarefas** (Task Scheduler): nova tarefa → **Disparadores** → novo disparador (ex.: **Diariamente** num horário inicial, ou **Ao iniciar sessão**) → **Avançadas** / opções do disparador:
    - Marque **Repetir tarefa a cada:** **`30 minutos`** (ou **1 hora**, se preferir).
    - **Por um período de:** **Indefinidamente** (ou o intervalo que a UI permitir na tua versão do Windows).
    - Confirme que a tarefa está **habilitada**.
-4. **Ações** → **Iniciar um programa**:
+1. **Ações** → **Iniciar um programa**:
    - **Programa:** `powershell.exe`
    - **Argumentos:** `-NoProfile -ExecutionPolicy Bypass -File "C:\Users\<username>\Documents\dev\python3-lgpd-crawler\scripts\snmp-udm-lab-probe-to-log.ps1" -WslDistro "Debian" -MaxLines 400`
+
      (ajuste o caminho do repo; o nome da distro com `wsl -l -v`. Se o alvo for um **`.env` dedicado** (ex. UDM-SE), acrescenta **`-EnvFile "…\docs\private\homelab\.env.snmp.udm-se.local"`** antes ou depois dos outros switches.)
+
    - **Começar em:** `C:\Users\<username>\Documents\dev\python3-lgpd-crawler` (raiz do clone).
-5. Execute como **seu usuário** (para ler `.env` e usar WSL); “Executar somente quando o usuário estiver conectado” costuma ser mais simples que serviço sem ambiente.
+1. Execute como **seu usuário** (para ler `.env` e usar WSL); “Executar somente quando o usuário estiver conectado” costuma ser mais simples que serviço sem ambiente.
 
 **Disco:** a cada 30 minutos o log do **mesmo dia** cresce; com **`-MaxLines 400`** limitas cada execução. Apague ou arquive logs antigos em `reports/` quando necessário.
 

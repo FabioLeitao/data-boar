@@ -18,14 +18,14 @@
 
 **Goal:** A **dedicated site** (not only GitHub README) for **discovery**, **pitch**, and **credibility** — similar in *role* to how serious projects present themselves (e.g. **FreeBSD**, **Ubuntu**, **Snort**, **pfSense**): clear value prop, downloads/releases, docs entry points, and community or commercial CTA. **Form** (static vs CMS, exact layout) is TBD; **content pillars** should include:
 
-| Pillar | Notes |
-| ------ | ----- |
-| **Pitch** | Decision-maker narrative; optional **longer** “deep pitch” page. |
-| **Use cases** | Sectors, scan/report stories, compliance framing (without overclaiming). |
-| **How-tos** | Short guided paths that link into **canonical** `docs/` (USAGE, DEPLOY) so we do not fork truth. |
-| **Documentation hub** | Links or embedded paths to **version-synced** docs (same major/minor as releases). |
-| **Releases** | Prominent links to **GitHub Releases**, **Docker Hub** tags, and `docs/releases/`. |
-| **Branding** | Mascot, dashBOARd sub-brand, visual consistency with [COPYRIGHT_AND_TRADEMARK.md](../COPYRIGHT_AND_TRADEMARK.md) guidance. |
+| Pillar                | Notes                                                                                                                      |
+| ------                | -----                                                                                                                      |
+| **Pitch**             | Decision-maker narrative; optional **longer** “deep pitch” page.                                                           |
+| **Use cases**         | Sectors, scan/report stories, compliance framing (without overclaiming).                                                   |
+| **How-tos**           | Short guided paths that link into **canonical** `docs/` (USAGE, DEPLOY) so we do not fork truth.                           |
+| **Documentation hub** | Links or embedded paths to **version-synced** docs (same major/minor as releases).                                         |
+| **Releases**          | Prominent links to **GitHub Releases**, **Docker Hub** tags, and `docs/releases/`.                                         |
+| **Branding**          | Mascot, dashBOARd sub-brand, visual consistency with [COPYRIGHT_AND_TRADEMARK.md](../COPYRIGHT_AND_TRADEMARK.md) guidance. |
 
 **Hosting:** See [HOSTING_AND_WEBSITE_OPTIONS.md](../HOSTING_AND_WEBSITE_OPTIONS.md) (static site options). Keep **no secrets** on the public site.
 
@@ -35,11 +35,11 @@
 
 **We are not building the public website now** — this subsection is a **planning memory** so GTM work does not collapse everything into one surface.
 
-| Surface | Role | **Depth** — what belongs here |
-| ------- | ---- | ------------------------------ |
-| **Stakeholder pitch** (e.g. private `docs/private/pitch/`, `.pptx` pairs, short live talk) | Convince and qualify; **Data Boar** story, mascot / **data soup** metaphor, outcomes, trust framing | **Shallow technical:** almost no HOWTO, no config dumps, no operator runbooks. **Not** a substitute for compliance review. |
-| **GitHub — README + “compliance & legal” tree** (`docs/COMPLIANCE_AND_LEGAL.md`, frameworks, licensing, SECURITY) | Canonical **legal/compliance narrative**, exportable PDFs mindset, open-core boundary | **Legal and governance depth** — still **not** the full HOWTO layer; deep **usage** stays in `USAGE` / `TECH_GUIDE` etc. |
-| **Future public website** | Discovery, downloads, **documentation hub**, credibility, CTA | **Major difference vs pitch:** hosts (or **deep-links in a version-aware way**) the **full technical layer**: **USAGE**, **TECH_GUIDE**, **TESTING**, **DOCKER_SETUP** / deploy, **compliance-samples** walkthroughs, **scenario** pages, **release notes** (`docs/releases/`), a **richer roadmap** naming **specific active fronts** (what you are actually building — connectors, dashboard, notifications, …), prominent **Docker Hub** and **GitHub repo** links, changelog / security pointers. **Keep in sync** with the repo as capabilities evolve (CI link checks, same major/minor as tagged releases). |
+| Surface                                                                                                           | Role                                                                                                | **Depth** — what belongs here                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| -------                                                                                                           | ----                                                                                                | ------------------------------                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **Stakeholder pitch** (e.g. private `docs/private/pitch/`, `.pptx` pairs, short live talk)                        | Convince and qualify; **Data Boar** story, mascot / **data soup** metaphor, outcomes, trust framing | **Shallow technical:** almost no HOWTO, no config dumps, no operator runbooks. **Not** a substitute for compliance review.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **GitHub — README + “compliance & legal” tree** (`docs/COMPLIANCE_AND_LEGAL.md`, frameworks, licensing, SECURITY) | Canonical **legal/compliance narrative**, exportable PDFs mindset, open-core boundary               | **Legal and governance depth** — still **not** the full HOWTO layer; deep **usage** stays in `USAGE` / `TECH_GUIDE` etc.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **Future public website**                                                                                         | Discovery, downloads, **documentation hub**, credibility, CTA                                       | **Major difference vs pitch:** hosts (or **deep-links in a version-aware way**) the **full technical layer**: **USAGE**, **TECH_GUIDE**, **TESTING**, **DOCKER_SETUP** / deploy, **compliance-samples** walkthroughs, **scenario** pages, **release notes** (`docs/releases/`), a **richer roadmap** naming **specific active fronts** (what you are actually building — connectors, dashboard, notifications, …), prominent **Docker Hub** and **GitHub repo** links, changelog / security pointers. **Keep in sync** with the repo as capabilities evolve (CI link checks, same major/minor as tagged releases). |
 
 **Rule of thumb:** If a buyer **needs to install, tune, or audit** behaviour, that content **lives on the future site (or linked canonical docs)** — not in the pitch deck or the compliance-legal **summary** tone of the presentation.
 
@@ -59,9 +59,9 @@ When the site ships, **reuse the same i18n design choices** planned for the dash
 ## 3. Dependencies and sequencing (high level)
 
 1. **Stable product story** — version cadence, support posture, and what we promise publicly.
-2. **Legal / trademark** — counsel pass on public claims and name use where needed.
-3. **Content owner** — who approves site copy and translations.
-4. **Automation** — optional CI to publish from a `website/` repo or branch; link checker for docs URLs.
+1. **Legal / trademark** — counsel pass on public claims and name use where needed.
+1. **Content owner** — who approves site copy and translations.
+1. **Automation** — optional CI to publish from a `website/` repo or branch; link checker for docs URLs.
 
 ---
 

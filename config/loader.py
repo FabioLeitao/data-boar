@@ -43,6 +43,17 @@ def _notification_env_value(val: Any) -> str | None:
     return t
 
 
+def _normalize_operator_channel_block(d: dict[str, Any]) -> dict[str, Any]:
+    """One webhook target: Slack, Teams, Telegram pair, or generic URL."""
+    return {
+        "generic_webhook_url": _notification_env_value(d.get("generic_webhook_url")),
+        "slack_webhook_url": _notification_env_value(d.get("slack_webhook_url")),
+        "teams_webhook_url": _notification_env_value(d.get("teams_webhook_url")),
+        "telegram_bot_token": _notification_env_value(d.get("telegram_bot_token")),
+        "telegram_chat_id": _notification_env_value(d.get("telegram_chat_id")),
+    }
+
+
 def load_config(path: str | Path) -> dict[str, Any]:
     """
     Load configuration from a YAML or JSON file.
@@ -588,6 +599,39 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
     op_raw = n_raw.get("operator")
     if not isinstance(op_raw, dict):
         op_raw = {}
+    channels_list: list[dict[str, Any]] = []
+    raw_ch = op_raw.get("channels")
+    if isinstance(raw_ch, list):
+        for item in raw_ch:
+            if isinstance(item, dict):
+                channels_list.append(_normalize_operator_channel_block(item))
+
+    t_raw = n_raw.get("tenant")
+    if not isinstance(t_raw, dict):
+        t_raw = {}
+    by_tenant: dict[str, dict[str, Any]] = {}
+    raw_map = t_raw.get("by_tenant") or t_raw.get("tenants")
+    if isinstance(raw_map, dict):
+        for k, v in raw_map.items():
+            if not isinstance(k, str):
+                continue
+            key = k.strip().lower()
+            if not key:
+                continue
+            if isinstance(v, str):
+                u = _notification_env_value(v)
+                if u:
+                    by_tenant[key] = {"generic_webhook_url": u}
+            elif isinstance(v, dict):
+                by_tenant[key] = _normalize_operator_channel_block(v)
+
+    default_tenant_generic = _notification_env_value(
+        t_raw.get("default_generic_webhook_url") or t_raw.get("default_webhook_url")
+    )
+    default_tenant_slack = _notification_env_value(
+        t_raw.get("default_slack_webhook_url")
+    )
+
     out["notifications"] = {
         "enabled": bool(n_raw.get("enabled", False)),
         "on_scan_complete": bool(n_raw.get("on_scan_complete", True)),
@@ -596,7 +640,12 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         ),
         "notify_on_failure": bool(n_raw.get("notify_on_failure", True)),
         "public_base_url": _notification_env_value(n_raw.get("public_base_url")),
+        "dedupe_scan_complete_per_session": bool(
+            n_raw.get("dedupe_scan_complete_per_session", True)
+        ),
+        "notify_audit_log": bool(n_raw.get("notify_audit_log", True)),
         "operator": {
+            "channels": channels_list,
             "generic_webhook_url": _notification_env_value(
                 op_raw.get("generic_webhook_url")
             ),
@@ -609,9 +658,12 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
             "telegram_bot_token": _notification_env_value(
                 op_raw.get("telegram_bot_token")
             ),
-            "telegram_chat_id": _notification_env_value(
-                op_raw.get("telegram_chat_id")
-            ),
+            "telegram_chat_id": _notification_env_value(op_raw.get("telegram_chat_id")),
+        },
+        "tenant": {
+            "default_generic_webhook_url": default_tenant_generic,
+            "default_slack_webhook_url": default_tenant_slack,
+            "by_tenant": by_tenant,
         },
     }
 

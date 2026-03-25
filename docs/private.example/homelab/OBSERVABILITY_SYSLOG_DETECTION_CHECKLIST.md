@@ -8,11 +8,11 @@
 
 ## Recommended path (light → heavy)
 
-| Stage | What | Why |
-| ----- | ---- | --- |
-| **1 — Syslog / logs** | **Promtail + Loki + Grafana** (“LGTM”, plan phase **C**) | Lower footprint than Graylog+OpenSearch; fits homelab; pairs with SNMP/metrics later. |
-| **2 — Detection / posture** | **Wazuh** (manager + agents on Linux hosts) when a **VM or tower** has **≥8 GB** for the stack (plan phase **E**) | Host IDS, FIM, vuln signals; **not** a substitute for centralized logs — use **with** Loki or a clear split. |
-| **Defer / avoid on one laptop** | Running **Loki + Graylog + Wazuh + full Prometheus** all on a **≤16 GB T14** | Documented overload risk in the observability plan — **one** metrics pillar + **one** logs pillar + Wazuh when hardware allows. |
+| Stage                           | What                                                                                                              | Why                                                                                                                             |
+| -----                           | ----                                                                                                              | ---                                                                                                                             |
+| **1 — Syslog / logs**           | **Promtail + Loki + Grafana** (“LGTM”, plan phase **C**)                                                          | Lower footprint than Graylog+OpenSearch; fits homelab; pairs with SNMP/metrics later.                                           |
+| **2 — Detection / posture**     | **Wazuh** (manager + agents on Linux hosts) when a **VM or tower** has **≥8 GB** for the stack (plan phase **E**) | Host IDS, FIM, vuln signals; **not** a substitute for centralized logs — use **with** Loki or a clear split.                    |
+| **Defer / avoid on one laptop** | Running **Loki + Graylog + Wazuh + full Prometheus** all on a **≤16 GB T14**                                      | Documented overload risk in the observability plan — **one** metrics pillar + **one** logs pillar + Wazuh when hardware allows. |
 
 **Alternatives:** Graylog + OpenSearch (heavier, full-text power). **Security Onion** / full SIEM: overkill until you have dedicated hardware and time.
 

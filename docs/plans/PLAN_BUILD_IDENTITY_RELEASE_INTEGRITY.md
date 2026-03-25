@@ -15,11 +15,11 @@
 ## Goals
 
 1. **Single runtime story:** Every CLI run and web/dashboard view exposes a concise **build identity**: release number, optional **pre-release** tag (`alpha` / `beta` / `rc`), and whether the tree is **dirty** or **ahead of tag** (development).
-2. **Logging:** At least one **INFO** (or equivalent) line on startup (CLI and uvicorn) with `version`, `build_kind`, and optional `vcs_revision` / `dirty`.
-3. **Dashboard / API:** Same fields in dashboard footer (already has `about`) and optionally **`GET /about`** JSON for automation.
-4. **Optional integrity:** A **manifest** of hashes for “behaviour-critical” modules, compared to **release-time** values (from CI artifact or embedded at image build). Clear **threat model** documented.
-5. **SQLite anchor (Phase E):** On first run after deploy, **validate** manifest → **persist** release id + hashes/signatures in SQLite; **survive** `--reset-data` / wipe of scan data so audit still knows the **original** chancelada baseline; **re-verify** on startup; if mismatch → treat as **adulterated** / **not CI-validated** and downgrade **trust level** (force **`-alpha`**-style labelling in reports, logs, `/status`, health).
-6. **Release train:** Scripted or workflow-driven **bump → all greens → tag → GitHub Release → Docker Hub** with tests guarding critical steps; documentation for operators.
+1. **Logging:** At least one **INFO** (or equivalent) line on startup (CLI and uvicorn) with `version`, `build_kind`, and optional `vcs_revision` / `dirty`.
+1. **Dashboard / API:** Same fields in dashboard footer (already has `about`) and optionally **`GET /about`** JSON for automation.
+1. **Optional integrity:** A **manifest** of hashes for “behaviour-critical” modules, compared to **release-time** values (from CI artifact or embedded at image build). Clear **threat model** documented.
+1. **SQLite anchor (Phase E):** On first run after deploy, **validate** manifest → **persist** release id + hashes/signatures in SQLite; **survive** `--reset-data` / wipe of scan data so audit still knows the **original** chancelada baseline; **re-verify** on startup; if mismatch → treat as **adulterated** / **not CI-validated** and downgrade **trust level** (force **`-alpha`**-style labelling in reports, logs, `/status`, health).
+1. **Release train:** Scripted or workflow-driven **bump → all greens → tag → GitHub Release → Docker Hub** with tests guarding critical steps; documentation for operators.
 
 ---
 
@@ -41,13 +41,13 @@
 
 ## Phase A — Runtime build identity (high value, low risk)
 
-| # | To-do | Notes |
-| - | ----- | ----- |
-| A.1 | Add **`get_build_identity()`** (or extend `get_about_info()`) returning at least: `version` (PEP 440), `release` (same as version if no local dev), `build_kind` (`release` \| `dev` \| `unknown`), `vcs_describe` (optional), `dirty` (bool). | Prefer **stdlib**: subprocess `git describe --dirty --always` when `.git` exists; else env **`DATA_BOAR_GIT_REF`** / **`SOURCE_DATE_EPOCH`** for container builds. |
-| A.2 | **Display rules:** If **exact tag** matches `pyproject` version and **not dirty** → show `release=1.6.4` (or `version=1.6.4`). If **dirty** or **commits after tag** → append `*` or suffix `+dev` / `1.6.5a0` style per [PEP 440](https://packaging.python.org/en/latest/specifications/version-specifiers/). | Document convention in [VERSIONING.md](../VERSIONING.md) (EN + pt-BR). |
-| A.3 | **CLI:** One **INFO** line at start of `main()` (and after config load if useful): e.g. `INFO data_boar build version=1.6.4 release … dirty=False`. Use **logging** module if not already wired; else `print(..., file=sys.stderr)` with a single stable prefix. | Tests: snapshot or regex on capsys. |
-| A.4 | **Web:** Ensure dashboard template shows **`build`** string next to existing `about.version` (footer). Optional: same in `/about` JSON. | Template + `tests/test_routes_responses.py` or similar. |
-| A.5 | **Docker:** Pass **`LABEL org.opencontainers.image.version`** and **`revision`** at build time (existing Dockerfile/CI); read in app via env **`DATA_BOAR_IMAGE_DIGEST`** optional. | Align with [deploy/DEPLOY.md](../deploy/DEPLOY.md). |
+| #   | To-do                                                                                                                                                                                                                                                                                                          | Notes                                                                  |                                                        |                                                                                                                                                                    |
+| -   | -----                                                                                                                                                                                                                                                                                                          | -----                                                                  |                                                        |                                                                                                                                                                    |
+| A.1 | Add **`get_build_identity()`** (or extend `get_about_info()`) returning at least: `version` (PEP 440), `release` (same as version if no local dev), `build_kind` (`release` \                                                                                                                                  | `dev` \                                                                | `unknown`), `vcs_describe` (optional), `dirty` (bool). | Prefer **stdlib**: subprocess `git describe --dirty --always` when `.git` exists; else env **`DATA_BOAR_GIT_REF`** / **`SOURCE_DATE_EPOCH`** for container builds. |
+| A.2 | **Display rules:** If **exact tag** matches `pyproject` version and **not dirty** → show `release=1.6.5` (or `version=1.6.5`). If **dirty** or **commits after tag** → append `*` or suffix `+dev` / `1.6.6a0` style per [PEP 440](https://packaging.python.org/en/latest/specifications/version-specifiers/). | Document convention in [VERSIONING.md](../VERSIONING.md) (EN + pt-BR). |                                                        |                                                                                                                                                                    |
+| A.3 | **CLI:** One **INFO** line at start of `main()` (and after config load if useful): e.g. `INFO data_boar build version=1.6.5 release … dirty=False`. Use **logging** module if not already wired; else `print(..., file=sys.stderr)` with a single stable prefix.                                               | Tests: snapshot or regex on capsys.                                    |                                                        |                                                                                                                                                                    |
+| A.4 | **Web:** Ensure dashboard template shows **`build`** string next to existing `about.version` (footer). Optional: same in `/about` JSON.                                                                                                                                                                        | Template + `tests/test_routes_responses.py` or similar.                |                                                        |                                                                                                                                                                    |
+| A.5 | **Docker:** Pass **`LABEL org.opencontainers.image.version`** and **`revision`** at build time (existing Dockerfile/CI); read in app via env **`DATA_BOAR_IMAGE_DIGEST`** optional.                                                                                                                            | Align with [deploy/DEPLOY.md](../deploy/DEPLOY.md).                    |                                                        |                                                                                                                                                                    |
 
 **Deliverable:** Operators always see **what build** is running; no hash file yet.
 
@@ -55,21 +55,21 @@
 
 ## Phase B — Pre-release labels (alpha / beta / RC)
 
-| # | To-do | Notes |
-| - | ----- | ----- |
+| #   | To-do                                                                                                                                                                                                                                | Notes                                                                                  |
+| -   | -----                                                                                                                                                                                                                                | -----                                                                                  |
 | B.1 | **Convention:** `alpha` = working tree not matching release tag or explicit env **`DATA_BOAR_PRERELEASE=alpha`**. `beta` = optional CI flag after **smoke** job passes on candidate commit. `rc` = release candidate before tagging. | Map to PEP 440: `1.6.5a1`, `1.6.5b1`, `1.6.5rc1`—avoid ad-hoc strings that don’t sort. |
-| B.2 | **Automation:** CI workflow sets **`DATA_BOAR_PRERELEASE`** or builds **wheel/sdist** with correct version via **`uv`/`hatch`** bump—single source of truth remains **`pyproject.toml`**. | Link to [docs/ops/COMMIT_AND_PR.md](../ops/COMMIT_AND_PR.md) and release checklist. |
+| B.2 | **Automation:** CI workflow sets **`DATA_BOAR_PRERELEASE`** or builds **wheel/sdist** with correct version via **`uv`/`hatch`** bump—single source of truth remains **`pyproject.toml`**.                                            | Link to [docs/ops/COMMIT_AND_PR.md](../ops/COMMIT_AND_PR.md) and release checklist.    |
 
 ---
 
 ## Phase C — Integrity manifest (optional, threat model explicit)
 
-| # | To-do | Notes |
-| - | ----- | ----- |
+| #   | To-do                                                                                                                                                                                                                                            | Notes                                                                                                         |
+| -   | -----                                                                                                                                                                                                                                            | -----                                                                                                         |
 | C.1 | **Manifest file** (e.g. `build/manifest.sha256` or JSON list): paths relative to repo root + **SHA-256** of **allowlisted** `*.py` (core, api, engine, detector, main). **Exclude** tests, docs, `docs/`, `.github/`, config samples by default. | Generated by **`scripts/generate-code-manifest.py`** run in **CI on tag** and attached to **Release assets**. |
-| C.2 | **Runtime check (optional flag):** `--verify-manifest` or config `build.verify_manifest_path` compares on-disk hashes to manifest. **Mismatch** → WARN or FAIL per policy. | Tests with temp tree. |
-| C.3 | **Limitation doc:** If attacker can modify **both** `core/detector.py` and `manifest.json`, verification is **void** unless manifest is **signed** and verified with a **public key** shipped in the binary/image (next phase). | Security doc section. |
-| C.4 | **Signed manifest (stretch):** CI signs manifest with **GitHub OIDC** / Sigstore; app verifies optional. | Align with container signing in [PLAN_SELF_UPGRADE §9](PLAN_SELF_UPGRADE_AND_VERSION_CHECK.md). |
+| C.2 | **Runtime check (optional flag):** `--verify-manifest` or config `build.verify_manifest_path` compares on-disk hashes to manifest. **Mismatch** → WARN or FAIL per policy.                                                                       | Tests with temp tree.                                                                                         |
+| C.3 | **Limitation doc:** If attacker can modify **both** `core/detector.py` and `manifest.json`, verification is **void** unless manifest is **signed** and verified with a **public key** shipped in the binary/image (next phase).                  | Security doc section.                                                                                         |
+| C.4 | **Signed manifest (stretch):** CI signs manifest with **GitHub OIDC** / Sigstore; app verifies optional.                                                                                                                                         | Align with container signing in [PLAN_SELF_UPGRADE §9](PLAN_SELF_UPGRADE_AND_VERSION_CHECK.md).               |
 
 ---
 
@@ -84,46 +84,46 @@
 
 ### E.1 First-run “preparatory” flow
 
-| # | To-do | Notes |
-| - | ----- | ----- |
-| E.1 | **Detect** whether integrity anchor was already computed: e.g. row in new table **`build_integrity_anchor`** (or `integrity_metadata`) with `anchor_version=1`. | If table missing → migration creates it. |
+| #   | To-do                                                                                                                                                                                                                                                                                                                                                                                               | Notes                                                                                           |
+| -   | -----                                                                                                                                                                                                                                                                                                                                                                                               | -----                                                                                           |
+| E.1 | **Detect** whether integrity anchor was already computed: e.g. row in new table **`build_integrity_anchor`** (or `integrity_metadata`) with `anchor_version=1`.                                                                                                                                                                                                                                     | If table missing → migration creates it.                                                        |
 | E.2 | If **not** yet done: load manifest path from **env** / **config** / **default next to image** (e.g. `DATA_BOAR_MANIFEST_PATH`); compute **SHA-256** (and verify **signature** if present) for allowlisted paths; store: **`release_label`**, **`manifest_content_hash`**, **per-file hashes** (or Merkle root to save space), **`validated_at`**, **`signature_ok`** bool, **`validator_version`**. | Idempotent: second run skips full re-hash unless **`--reverify-integrity`** or mismatch policy. |
-| E.3 | **Import into SQLite** as the **system anchor** — separate from **scan sessions**. Use a **small, fixed schema** (few columns + optional JSON blob for detail). | Document in [SECURITY.md](../SECURITY.md) / TECH_GUIDE. |
+| E.3 | **Import into SQLite** as the **system anchor** — separate from **scan sessions**. Use a **small, fixed schema** (few columns + optional JSON blob for detail).                                                                                                                                                                                                                                     | Document in [SECURITY.md](../SECURITY.md) / TECH_GUIDE.                                         |
 
 ### E.2 Interaction with `--reset-data` / wipe
 
-| # | To-do | Notes |
-| - | ----- | ----- |
+| #   | To-do                                                                                                                                                                                                                                                                                        | Notes                                                                             |
+| -   | -----                                                                                                                                                                                                                                                                                        | -----                                                                             |
 | E.4 | **Wipe semantics:** `--reset-data` (and any `wipe_all_data` path) **clears** session/finding/report artifacts as today but **does not delete** `build_integrity_anchor` (or a dedicated **`audit_trail`** slice) unless a **separate** dangerous flag **`--reset-integrity-anchor`** exists. | Prevents losing “original release + first validation” after operator wipes scans. |
-| E.5 | **Optional:** second table **`integrity_events`** append-only (validation, re-verify, tamper detected) for **forensics** without bloating main session log. | |
+| E.5 | **Optional:** second table **`integrity_events`** append-only (validation, re-verify, tamper detected) for **forensics** without bloating main session log.                                                                                                                                  |                                                                                   |
 
 ### E.3 Startup sanity check (lightweight)
 
-| # | To-do | Notes |
-| - | ----- | ----- |
-| E.6 | On each **process start** (CLI + web): quick check — recompute hashes **or** Merkle root for the same allowlist; compare to **stored** values. | If **DB missing** row → treat as **unknown** / run E.1. |
-| E.7 | **Mismatch** → set runtime flag **`trust_level=adulterated`** (or `integrity_state=tampered`); **do not** silently stay on “release”. | Propagate to `get_build_identity()` / `get_about_info()`. |
+| #   | To-do                                                                                                                                          | Notes                                                     |
+| -   | -----                                                                                                                                          | -----                                                     |
+| E.6 | On each **process start** (CLI + web): quick check — recompute hashes **or** Merkle root for the same allowlist; compare to **stored** values. | If **DB missing** row → treat as **unknown** / run E.1.   |
+| E.7 | **Mismatch** → set runtime flag **`trust_level=adulterated`** (or `integrity_state=tampered`); **do not** silently stay on “release”.          | Propagate to `get_build_identity()` / `get_about_info()`. |
 
 ### E.4 Trust level → user-visible strings (reports, logs, API)
 
-| # | To-do | Notes |
-| - | ----- | ----- |
+| #   | To-do                                                                                                                                                                                                                                                                                                                                                                                                  | Notes                                                                                 |
+| -   | -----                                                                                                                                                                                                                                                                                                                                                                                                  | -----                                                                                 |
 | E.8 | **Mapping (configurable):** `release_and_manifest_match` + CI profile → **`build_kind=release`** (or **`beta`** if only smoke/HMLG). `mismatch` / `unsigned` / `never_validated` → **force `-alpha`** (or explicit string **“development / not CI-validated”**) in **Report info** sheet, **dashboard** footer, **`GET /about`**, **`GET /status`**, **health** endpoint if any, and **startup logs**. | Align with Phase B: **`-beta`** only when policy says “smoke OK but not full QA/UAT”. |
-| E.9 | **Excel / PDF:** Minimum one extra field: **`Build trust`** or **`Integrity state`** so auditors see **adulterated** vs **validated**. | |
+| E.9 | **Excel / PDF:** Minimum one extra field: **`Build trust`** or **`Integrity state`** so auditors see **adulterated** vs **validated**.                                                                                                                                                                                                                                                                 |                                                                                       |
 
 ### E.5 Threat model (honest)
 
-| # | To-do | Notes |
-| - | ----- | ----- |
-| E.10 | Document: attacker with **write access to SQLite file** can **delete or edit** the anchor table — then the app may **re-run** first validation or show **unknown**. **Mitigation:** file permissions, read-only mount for DB in high-assurance deploys, optional **HMAC of anchor row** with key in env (does not stop root, reduces casual edit). | |
+| #    | To-do                                                                                                                                                                                                                                                                                                                                              | Notes |
+| -    | -----                                                                                                                                                                                                                                                                                                                                              | ----- |
+| E.10 | Document: attacker with **write access to SQLite file** can **delete or edit** the anchor table — then the app may **re-run** first validation or show **unknown**. **Mitigation:** file permissions, read-only mount for DB in high-assurance deploys, optional **HMAC of anchor row** with key in env (does not stop root, reduces casual edit). |       |
 
 ### E.6 CLI export of audit trail (baseline **implemented**)
 
-| # | To-do | Notes |
-| - | ----- | ----- |
-| E.11 | **`--export-audit-trail [PATH]`** on **`main.py`**: writes JSON (default **stdout** if omitted or **`-`**). Current payload: `schema_version`, `exported_at`, **`application`** (from `get_about_info()`), **`paths`**, **`runtime_trust`** (license/integrity trust snapshot), **`data_wipe_log`** (full table), **`scan_sessions_summary`**, placeholders **`integrity_anchor`** / **`integrity_events`** for Phase E persistence. | Does **not** open a scan or call wipe. Incompatible with **`--web`** / **`--reset-data`**. |
-| E.12 | **Future:** extend export with **integrity_events** rows, **per-run version checks**, and optional **redacted execution log** pointers when those tables exist. | Same JSON schema version bump or nested `extensions`. |
-| E.13 | Runtime trust **operator surfacing**: emit explicit `INFO` lines to **stdout + stderr** so unexpected states are impossible to miss (`THERE IS SOMETHING DIFFERENT AND UNEXPECTED IN THIS RUNTIME`). | Implemented baseline in CLI; keep message aligned with report/API wording when Phase E trust fields land there. |
+| #    | To-do                                                                                                                                                                                                                                                                                                                                                                                                                                | Notes                                                                                                           |
+| -    | -----                                                                                                                                                                                                                                                                                                                                                                                                                                | -----                                                                                                           |
+| E.11 | **`--export-audit-trail [PATH]`** on **`main.py`**: writes JSON (default **stdout** if omitted or **`-`**). Current payload: `schema_version`, `exported_at`, **`application`** (from `get_about_info()`), **`paths`**, **`runtime_trust`** (license/integrity trust snapshot), **`data_wipe_log`** (full table), **`scan_sessions_summary`**, placeholders **`integrity_anchor`** / **`integrity_events`** for Phase E persistence. | Does **not** open a scan or call wipe. Incompatible with **`--web`** / **`--reset-data`**.                      |
+| E.12 | **Future:** extend export with **integrity_events** rows, **per-run version checks**, and optional **redacted execution log** pointers when those tables exist.                                                                                                                                                                                                                                                                      | Same JSON schema version bump or nested `extensions`.                                                           |
+| E.13 | Runtime trust **operator surfacing**: emit explicit `INFO` lines to **stdout + stderr** so unexpected states are impossible to miss (`THERE IS SOMETHING DIFFERENT AND UNEXPECTED IN THIS RUNTIME`).                                                                                                                                                                                                                                 | Implemented baseline in CLI; keep message aligned with report/API wording when Phase E trust fields land there. |
 
 ### E.7 Governance: wipes vs audit trail (defence narrative)
 
@@ -139,12 +139,12 @@
 
 ## Phase D — Release automation (“one button”)
 
-| # | To-do | Notes |
-| - | ----- | ----- |
+| #   | To-do                                                                                                                                                                                                                                                                   | Notes                                                                                                                                        |
+| -   | -----                                                                                                                                                                                                                                                                   | -----                                                                                                                                        |
 | D.1 | **`scripts/release/`** (or extend existing): orchestrate **version bump** (patch/minor per arg), **`uv run pytest`**, **`ruff`**, build **sdist/wheel**, **Docker buildx**, **`gh release create`**, **Docker Hub push**—each step **skippable** via flags for dry-run. | Reuse [docs/ops/COMMIT_AND_PR.md](../ops/COMMIT_AND_PR.md) conventions; never embed secrets—use **`gh`**, **`docker login`** via CI secrets. |
-| D.2 | **GitHub Actions:** `workflow_dispatch` inputs: `bump`, `dry_run`. Calls composite steps or script. | Idempotent; protect workflow with **environment** approval if needed. |
-| D.3 | **Tests:** Unit tests for **version bump** helper; integration test with **mock** `gh`/`docker` (or `dry_run` only). | |
-| D.4 | **Documentation:** New **`docs/ops/RELEASE_TRAIN.md`** (EN + pt-BR) with **operator checklist** and **rollback** notes. | |
+| D.2 | **GitHub Actions:** `workflow_dispatch` inputs: `bump`, `dry_run`. Calls composite steps or script.                                                                                                                                                                     | Idempotent; protect workflow with **environment** approval if needed.                                                                        |
+| D.3 | **Tests:** Unit tests for **version bump** helper; integration test with **mock** `gh`/`docker` (or `dry_run` only).                                                                                                                                                    |                                                                                                                                              |
+| D.4 | **Documentation:** New **`docs/ops/RELEASE_TRAIN.md`** (EN + pt-BR) with **operator checklist** and **rollback** notes.                                                                                                                                                 |                                                                                                                                              |
 
 ---
 
@@ -169,11 +169,11 @@
 ## Order of execution (recommended)
 
 1. **Phase A** (runtime identity + logging + dashboard) — unblock operators immediately.
-2. **Phase B** if you need **alpha/beta/rc** semantics in customer-facing builds.
-3. **Phase C.1** (manifest format + generator) — prerequisite for meaningful **Phase E**.
-4. **Phase E** (SQLite anchor + wipe semantics + startup re-verify + trust strings) — **high value** for compliance narrative; pairs with C.
-5. **Phase D** when manual release steps become painful (often parallel to late A/E).
-6. **Phase C.2–C.4** (optional flags, signed manifest) when threat model requires it.
+1. **Phase B** if you need **alpha/beta/rc** semantics in customer-facing builds.
+1. **Phase C.1** (manifest format + generator) — prerequisite for meaningful **Phase E**.
+1. **Phase E** (SQLite anchor + wipe semantics + startup re-verify + trust strings) — **high value** for compliance narrative; pairs with C.
+1. **Phase D** when manual release steps become painful (often parallel to late A/E).
+1. **Phase C.2–C.4** (optional flags, signed manifest) when threat model requires it.
 
 ---
 

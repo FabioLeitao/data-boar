@@ -22,13 +22,13 @@ Sequencing rationale also appears in [SPRINTS_AND_MILESTONES.md](../plans/SPRINT
 
 ### What helps the agent on **Band A** and **homelab**
 
-| Topic | What to pass (no secrets in chat—paths or “done/not”) |
-| ----- | ------------------------------------------------------ |
-| **Band A1** | Dependabot / GitHub Security: **open alerts count**, or “triage this week yes/no”. |
-| **Band A2** | Docker Scout / image: **any CVE you care about** or “rebuild done / pending”. |
-| **Band A3** | Hub tags / publish: **operator-only** status in one line. |
+| Topic           | What to pass (no secrets in chat—paths or “done/not”)                                                                                                                                   |
+| -----           | ------------------------------------------------------                                                                                                                                  |
+| **Band A1**     | Dependabot / GitHub Security: **open alerts count**, or “triage this week yes/no”.                                                                                                      |
+| **Band A2**     | Docker Scout / image: **any CVE you care about** or “rebuild done / pending”.                                                                                                           |
+| **Band A3**     | Hub tags / publish: **operator-only** status in one line.                                                                                                                               |
 | **Homelab –1L** | Which **matrix row** you’re on ([HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md) §9); **done / blocked** on §1–§2; paste outputs into `docs/private/` if you want the agent to cite them. |
-| **Blockers** | e.g. “no second host until date X”—stops wrong assumptions in plans. |
+| **Blockers**    | e.g. “no second host until date X”—stops wrong assumptions in plans.                                                                                                                    |
 
 ---
 
@@ -36,12 +36,12 @@ Sequencing rationale also appears in [SPRINTS_AND_MILESTONES.md](../plans/SPRINT
 
 Do **not** paste passwords or private keys into chat. Prefer:
 
-| Action | Where to put it | Why |
-| ------ | ----------------- | --- |
-| Homelab inventory (hosts, roles, IPs redacted if needed) | `docs/private/homelab/` per [PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md) | Agent can `read_file` without `@`. |
-| Photos of gear, rack, labels (optional) | Same private tree; describe in a `.md` note what each image shows | Visual context for topology discussions. |
-| CLI outputs (`ssh`, `curl`, scan summaries) | Paste into a dated note under `docs/private/` or session log | Reproducible debugging. |
-| Course / cert completion | PDF or screenshot in `docs/private/`; add a row to PORTFOLIO §3 when you want it on the CV narrative | Keeps thesis/pitch aligned. |
+| Action                                                   | Where to put it                                                                                      | Why                                      |
+| ------                                                   | -----------------                                                                                    | ---                                      |
+| Homelab inventory (hosts, roles, IPs redacted if needed) | `docs/private/homelab/` per [PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)                | Agent can `read_file` without `@`.       |
+| Photos of gear, rack, labels (optional)                  | Same private tree; describe in a `.md` note what each image shows                                    | Visual context for topology discussions. |
+| CLI outputs (`ssh`, `curl`, scan summaries)              | Paste into a dated note under `docs/private/` or session log                                         | Reproducible debugging.                  |
+| Course / cert completion                                 | PDF or screenshot in `docs/private/`; add a row to PORTFOLIO §3 when you want it on the CV narrative | Keeps thesis/pitch aligned.              |
 
 ---
 
@@ -55,6 +55,7 @@ Do **not** paste passwords or private keys into chat. Prefer:
 
 ## See also
 
+- [OPERATOR_NEXT_DAY_CHECKLIST.md](OPERATOR_NEXT_DAY_CHECKLIST.md) · [pt-BR](OPERATOR_NEXT_DAY_CHECKLIST.pt_BR.md) — suggested **full-day** order (homelab + Band A + –1L + optional Wabbix)
 - [SPRINTS_AND_MILESTONES.md](../plans/SPRINTS_AND_MILESTONES.md) §3.1 — study lane in the sprint picture
 - [TOKEN_AWARE_USAGE.md](../plans/TOKEN_AWARE_USAGE.md) — study vs coding same-day discipline
 - [OPERATOR_LAB_DOCUMENT_MAP.md](OPERATOR_LAB_DOCUMENT_MAP.md) — which lab doc lives where
