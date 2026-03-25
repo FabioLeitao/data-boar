@@ -18,7 +18,7 @@
    systemctl is-active apparmor && sudo aa-status --enabled
    ```
 
-2. Optional helpers:
+1. Optional helpers:
 
    ```bash
    sudo apt update
@@ -30,14 +30,14 @@
 ## 2. Install Cursor (official Linux `.deb`)
 
 1. Download the **Linux** `.deb` from [cursor.com](https://cursor.com) (or your licensed channel).
-2. Install:
+1. Install:
 
    ```bash
    sudo apt install -y ./cursor_*.deb
    # or: sudo dpkg -i ./cursor_*.deb && sudo apt -f install
    ```
 
-3. Confirm the launcher:
+1. Confirm the launcher:
 
    ```bash
    command -v cursor
@@ -121,18 +121,18 @@ Ubuntu-style packages often support **`#include <local/...>`** in the main profi
    grep -ril cursor /etc/apparmor.d/ 2>/dev/null
    ```
 
-2. Open it and confirm an include like:
+1. Open it and confirm an include like:
 
    `#include <local/usr.bin.cursor>`
 
-3. Create the local file (example name—**must match** the include in **your** system):
+1. Create the local file (example name—**must match** the include in **your** system):
 
    ```bash
    sudo install -m 644 /dev/null /etc/apparmor.d/local/usr.bin.cursor
    sudo editor /etc/apparmor.d/local/usr.bin.cursor
    ```
 
-4. Add **minimal** permissions. Common needs for an IDE (adjust to denials you actually see):
+1. Add **minimal** permissions. Common needs for an IDE (adjust to denials you actually see):
 
    - Read/write config and cache under **`@{HOME}/.config/Cursor/`** and **`@{HOME}/.cursor/`**
    - Read **`@{HOME}/.ssh/`** if Git uses SSH keys (often read-only)
@@ -140,7 +140,7 @@ Ubuntu-style packages often support **`#include <local/...>`** in the main profi
 
    **Do not** paste untrusted full profiles from the web; extend only what **`dmesg`**/**`journalctl`** shows as **DENIED**.
 
-5. Reload:
+1. Reload:
 
    ```bash
    sudo apparmor_parser -r /etc/apparmor.d/<main-profile>
@@ -175,6 +175,6 @@ Reserved for advanced use: use **`aa-genprof`** / **`aa-logprof`** (see Ubuntu S
 
 ## 8. Revision
 
-| Date       | Note |
-| ---------- | ---- |
+| Date       | Note                                                 |
+| ---------- | ----                                                 |
 | 2026-03-22 | Initial runbook (Ubuntu / Zorin, AppArmor workflow). |

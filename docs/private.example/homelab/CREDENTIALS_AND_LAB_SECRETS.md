@@ -9,19 +9,19 @@
 ## Rules (non-negotiable)
 
 1. **Never** paste passwords, community strings, API tokens, or private keys **into the chat**.
-2. **Never** commit secrets to **`main`** — not in `.mdc` rules, not in `AGENTS.md`, not in skills, not in public `docs/`.
-3. **OK** to store **operator-only** copies under **`docs/private/`** (gitignored) if you accept **disk** risk (backup, encryption, pCloud sync policy). Prefer **short-lived** or **vault** flows when possible.
+1. **Never** commit secrets to **`main`** — not in `.mdc` rules, not in `AGENTS.md`, not in skills, not in public `docs/`.
+1. **OK** to store **operator-only** copies under **`docs/private/`** (gitignored) if you accept **disk** risk (backup, encryption, pCloud sync policy). Prefer **short-lived** or **vault** flows when possible.
 
 ---
 
 ## Recommended order (strongest first)
 
-| Method | When to use |
-| ------ | ----------- |
-| **Bitwarden CLI (`bw`)** | Already referenced in `homelab-host-report.sh`; good for “fetch secret at script run time” without a static file. |
-| **OS credential store** (Windows Credential Manager, macOS KeyColleague-Nn) | For interactive or scheduled jobs on one machine. |
-| **Session-only environment variables** | You set **`$env:VAR`** in the **integrated terminal** **before** asking the agent to run a script; the **same** shell session runs the command. **Do not** rely on “the AI clears the variable” as your only control — **close the terminal** or **end the session** when done. |
-| **Gitignored file** e.g. **`docs/private/homelab/.env.snmp.local`** | One file per machine; copy from **`.env.example`** pattern in this folder; **never** commit. |
+| Method                                                               | When to use                                                                                                                                                                                                                                                                     |
+| ------                                                               | -----------                                                                                                                                                                                                                                                                     |
+| **Bitwarden CLI (`bw`)**                                             | Already referenced in `homelab-host-report.sh`; good for “fetch secret at script run time” without a static file.                                                                                                                                                               |
+| **OS credential store** (Windows Credential Manager, macOS KeyColleague-Nn) | For interactive or scheduled jobs on one machine.                                                                                                                                                                                                                               |
+| **Session-only environment variables**                               | You set **`$env:VAR`** in the **integrated terminal** **before** asking the agent to run a script; the **same** shell session runs the command. **Do not** rely on “the AI clears the variable” as your only control — **close the terminal** or **end the session** when done. |
+| **Gitignored file** e.g. **`docs/private/homelab/.env.snmp.local`**  | One file per machine; copy from **`.env.example`** pattern in this folder; **never** commit.                                                                                                                                                                                    |
 
 ---
 
@@ -69,8 +69,8 @@ Create under **`docs/private/homelab/`** (not copied to GitHub):
 `snmpwalk` is **not** a native Windows tool. **`apt-get` runs inside Linux**, not in PowerShell. Do this:
 
 1. **Install WSL** (once): in an **elevated** PowerShell: `wsl --install` (installs Ubuntu by default on many setups). RColleague-Sot if Windows asks. See [Microsoft: Install WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
-2. **Open your Linux distro** (Start menu → Ubuntu, or run `wsl` in a terminal).
-3. **Inside the same distro you pass to `-WslDistro`** (e.g. open **Debian** if you use `-WslDistro "Debian"`), install Net-SNMP **once**:
+1. **Open your Linux distro** (Start menu → Ubuntu, or run `wsl` in a terminal).
+1. **Inside the same distro you pass to `-WslDistro`** (e.g. open **Debian** if you use `-WslDistro "Debian"`), install Net-SNMP **once**:
 
    ```bash
    sudo apt update
@@ -81,7 +81,8 @@ Create under **`docs/private/homelab/`** (not copied to GitHub):
    You should see a path such as **`/usr/bin/snmpwalk`**. If empty, the install did not apply to that distro (common mistake: installing only in Ubuntu while the script uses Debian).
 
    **Debian 13 (trixie) / LMDE 7:** do **not** require **`snmp-mibs-downloader`** — it may show “no installation candidate” unless **`non-free`** is enabled; it is **optional** (MIB file names). This repository’s probe uses **numeric OIDs** only; **`snmp`** alone is enough.
-4. **Back in PowerShell** (repo root, same machine), set `LAB_LAB-ROUTER-01_SNMP_*` and run:
+
+1. **Back in PowerShell** (repo root, same machine), set `LAB_LAB-ROUTER-01_SNMP_*` and run:
 
    ```powershell
    .\scripts\snmp-LAB-ROUTER-01-lab-probe.ps1
@@ -98,14 +99,14 @@ If `wsl -l -v` shows several distros and the wrong one is default, either **`wsl
 
 **Variable names** (must match what the script expects):
 
-| Variable | Meaning |
-| -------- | ------- |
-| `LAB_LAB-ROUTER-01_SNMP_HOST` | Target IP (e.g. gateway / switch management IP on LAN) |
-| `LAB_LAB-ROUTER-01_SNMP_V3_USER` | SNMPv3 username |
-| `LAB_LAB-ROUTER-01_SNMP_AUTH_PASS` | SNMPv3 **authentication** password |
-| `LAB_LAB-ROUTER-01_SNMP_PRIV_PASS` | SNMPv3 **privacy** password |
+| Variable                 | Meaning                                                |
+| --------                 | -------                                                |
+| `LAB_LAB-ROUTER-01_SNMP_HOST`      | Target IP (e.g. gateway / switch management IP on LAN) |
+| `LAB_LAB-ROUTER-01_SNMP_V3_USER`   | SNMPv3 username                                        |
+| `LAB_LAB-ROUTER-01_SNMP_AUTH_PASS` | SNMPv3 **authentication** password                     |
+| `LAB_LAB-ROUTER-01_SNMP_PRIV_PASS` | SNMPv3 **privacy** password                            |
 
-**A) Session-only (PowerShell, same window as the script):**
+## A) Session-only (PowerShell, same window as the script):
 
 ```powershell
 $env:LAB_LAB-ROUTER-01_SNMP_HOST = "192.0.2.10"

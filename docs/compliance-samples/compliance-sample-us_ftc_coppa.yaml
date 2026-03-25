@@ -1,0 +1,56 @@
+# U.S. FTC COPPA — sample compliance profile (technical mapping only)
+#
+# NOT LEGAL ADVICE. This file helps technical/DPO teams label findings and report
+# text when scoping children's-privacy contexts under federal COPPA framing.
+# Data Boar does NOT verify age, parental consent, or COPPA compliance.
+# Consult qualified counsel for legal obligations.
+#
+# Children's Online Privacy Protection Act; FTC COPPA Rule (16 CFR Part 312).
+#
+# How to use:
+#   regex_overrides_file: path/to/compliance-sample-us_ftc_coppa.yaml
+#   ml_patterns_file: path/to/compliance-sample-us_ftc_coppa.yaml
+# Merge recommendation_overrides into report.recommendation_overrides.
+
+regex:
+  - name: "COPPA_ACRONYM"
+    pattern: "(?i)\\bCOPPA\\b"
+    norm_tag: "US FTC COPPA"
+
+terms:
+  - text: "children's online privacy"
+    label: sensitive
+  - text: "children online privacy protection"
+    label: sensitive
+  - text: "parental consent"
+    label: sensitive
+  - text: "verifiable parental consent"
+    label: sensitive
+  - text: "directed to children"
+    label: sensitive
+  - text: "child directed"
+    label: sensitive
+  - text: "under 13"
+    label: sensitive
+  - text: "under thirteen"
+    label: sensitive
+  - text: "minor account"
+    label: sensitive
+  - text: "kids account"
+    label: sensitive
+  - text: "FTC COPPA"
+    label: sensitive
+  - text: "personal information from children"
+    label: sensitive
+  - text: "online contact information"
+    label: sensitive
+  - text: "persistent identifier"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "US FTC COPPA"
+    base_legal: "U.S. COPPA / FTC Rule (16 CFR Part 312) — technical mapping only; not a compliance determination"
+    risk: "Data may relate to children's online privacy contexts; requires legal/DPO review. Tool does not verify age or consent."
+    recommendation: "Scope with counsel/DPO: COPPA applicability, parental consent, data minimization, and retention for child-related processing. Use findings as technical inventory input only."
+    priority: "ALTA"
+    relevant_for: "DPO, privacy counsel, FTC-facing compliance review"

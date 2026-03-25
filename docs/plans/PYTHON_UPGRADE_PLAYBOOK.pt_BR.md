@@ -14,7 +14,7 @@
 | ------           | ------------------                                                | ----                                                                       |
 | Faixa declarada  | `pyproject.toml` → `requires-python`                              | `>=3.12`                                                                   |
 | Árvore fixada    | `uv.lock` + `uv sync`                                             | Resolvida para 3.12/3.13 (matriz de testes no CI em `main`)                |
-| Imagem publicada | `Dockerfile` **`FROM`** + **`COPY .../python3.XY/site-packages`** | Precisa bater com **um** minor Python de ponta a ponta                      |
+| Imagem publicada | `Dockerfile` **`FROM`** + **`COPY .../python3.XY/site-packages`** | Precisa bater com **um** minor Python de ponta a ponta                     |
 | Sinal do CI      | `.github/workflows/ci.yml`                                        | Job **Test** deve cobrir todo **minor suportado** em SECURITY/CONTRIBUTING |
 
 **Armadilha:** Declarar **3.13** sem CI no 3.13 esconde regressões até o Docker ou o local falhar.

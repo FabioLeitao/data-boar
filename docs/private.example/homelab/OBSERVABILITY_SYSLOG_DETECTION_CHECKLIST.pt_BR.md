@@ -8,11 +8,11 @@
 
 ## Caminho recomendado (leve → pesado)
 
-| Etapa | O quê | Porquê |
-| ----- | ----- | ------ |
-| **1 — Syslog / logs** | **Promtail + Loki + Grafana** (fase **C** do plano) | Menor pegada que Graylog+OpenSearch; combina com métricas/SNMP depois. |
-| **2 — Deteção / postura** | **Wazuh** (manager + agentes em Linux) quando houver **VM ou torre** com **≥8 GB** para a stack (fase **E**) | IDS em host, FIM, sinais de vuln; **não** substitui logs centralizados — usar **junto com** Loki ou com divisão clara. |
-| **Evitar no mesmo LAB-NODE-01** | Correr **Loki + Graylog + Wazuh + Prometheus completo** num **LAB-NODE-01 ≤16 GB** | Risco de sobrecarga já documentado no plano — **um** pilar de métricas + **um** de logs + Wazuh quando o hardware deixar. |
+| Etapa                     | O quê                                                                                                        | Porquê                                                                                                                    |
+| -----                     | -----                                                                                                        | ------                                                                                                                    |
+| **1 — Syslog / logs**     | **Promtail + Loki + Grafana** (fase **C** do plano)                                                          | Menor pegada que Graylog+OpenSearch; combina com métricas/SNMP depois.                                                    |
+| **2 — Deteção / postura** | **Wazuh** (manager + agentes em Linux) quando houver **VM ou torre** com **≥8 GB** para a stack (fase **E**) | IDS em host, FIM, sinais de vuln; **não** substitui logs centralizados — usar **junto com** Loki ou com divisão clara.    |
+| **Evitar no mesmo LAB-NODE-01**   | Correr **Loki + Graylog + Wazuh + Prometheus completo** num **LAB-NODE-01 ≤16 GB**                                   | Risco de sobrecarga já documentado no plano — **um** pilar de métricas + **um** de logs + Wazuh quando o hardware deixar. |
 
 **Alternativas:** Graylog + OpenSearch (mais pesado, boa pesquisa texto). **Security Onion** / SIEM completo: só com hardware e tempo dedicados.
 

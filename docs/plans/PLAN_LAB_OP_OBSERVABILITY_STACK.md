@@ -4,13 +4,13 @@
 
 **Purpose:** Sequence **optional** homelab instrumentation—**Grafana**, time-series DBs, **centralized logs**—without blocking Data Boar development or **–1L** validation. **No** implementation in this repo; operator deploys via Compose, k3s Helm, or vendor appliances on **lab-op** hosts (ThinkPad LAB-NODE-01, LAB-NODE-02, Proxmox guests).
 
-**Prerequisites (must be green first):**
+## Prerequisites (must be green first):
 
-| Step | Doc |
-| ---- | --- |
-| OS + secure dev baseline on the laptop | [LMDE7_LAB-NODE-01_DEVELOPER_SETUP.pt_BR.md](../ops/LMDE7_LAB-NODE-01_DEVELOPER_SETUP.pt_BR.md) ([EN summary](../ops/LMDE7_LAB-NODE-01_DEVELOPER_SETUP.md)) |
+| Step                                             | Doc                                                                                                                                           |
+| ----                                             | ---                                                                                                                                           |
+| OS + secure dev baseline on the laptop           | [LMDE7_LAB-NODE-01_DEVELOPER_SETUP.pt_BR.md](../ops/LMDE7_LAB-NODE-01_DEVELOPER_SETUP.pt_BR.md) ([EN summary](../ops/LMDE7_LAB-NODE-01_DEVELOPER_SETUP.md))           |
 | Minimal container anchor (Podman + optional k3s) | [LAB_OP_MINIMAL_CONTAINER_STACK.md](../ops/LAB_OP_MINIMAL_CONTAINER_STACK.md) §1–§3 ([pt-BR](../ops/LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md)) |
-| SNMP / firewall probes (optional) | [SNMP_LAB_TARGETS.md](../private.example/homelab/SNMP_LAB_TARGETS.md) |
+| SNMP / firewall probes (optional)                | [SNMP_LAB_TARGETS.md](../private.example/homelab/SNMP_LAB_TARGETS.md)                                                                         |
 
 **Hardware reality:** A **LAB-NODE-01** with **≤16 GB RAM** should **not** run Prometheus + Loki + Graylog + OpenSearch + Wazuh + k3s **all at once**. Prefer **one** metrics path and **one** logs path; offload heavy stacks to a **tower/Proxmox VM** when available.
 
@@ -18,13 +18,13 @@
 
 ## 1. Recommended sequence (light → heavy)
 
-| Phase | Stack | Role | Notes |
-| ----- | ----- | ---- | ----- |
-| **A** | **Grafana** + **Prometheus** (+ `node_exporter` / `snmp_exporter` on targets) | Metrics, dashboards, alerts (PromQL) | **Default** recommendation for homelab. Aligns with [SNMP_LAB_TARGETS.md](../private.example/homelab/SNMP_LAB_TARGETS.md) “production monitoring” narrative. |
-| **B** | **Grafana** + **InfluxDB** (+ **Telegraf** collectors) | Metrics if you prefer InfluxQL/Flux | Valid alternative to Prometheus TSDB; slightly different ops model. Pick **one** TSDB pillar (Prometheus **or** Influx), not both, unless you have a clear split (e.g. SNMP in Prometheus, app metrics in Influx). |
-| **C** | **Promtail** + **Loki** + **Grafana** | Log aggregation, lower footprint than ELK/Graylog | “LGTM” family; good for **JSON/syslog** shipping and Grafana Explore. |
-| **D** | **Graylog** + **OpenSearch** | Full-text log search, streams, pipelines | **Graylog 5+** uses **OpenSearch** (not Elasticsearch) as default backend—check current Graylog docs. **Heavy:** plan **≥8 GB** for OpenSearch alone on small labs; prefer a **dedicated VM**. |
-| **E** | **Wazuh** | Security posture, vulns, hardening | [LAB_OP_MINIMAL_CONTAINER_STACK.md](../ops/LAB_OP_MINIMAL_CONTAINER_STACK.md) §6 — complements metrics/logs; does not replace them. |
+| Phase | Stack                                                                         | Role                                              | Notes                                                                                                                                                                                                              |
+| ----- | -----                                                                         | ----                                              | -----                                                                                                                                                                                                              |
+| **A** | **Grafana** + **Prometheus** (+ `node_exporter` / `snmp_exporter` on targets) | Metrics, dashboards, alerts (PromQL)              | **Default** recommendation for homelab. Aligns with [SNMP_LAB_TARGETS.md](../private.example/homelab/SNMP_LAB_TARGETS.md) “production monitoring” narrative.                                                       |
+| **B** | **Grafana** + **InfluxDB** (+ **Telegraf** collectors)                        | Metrics if you prefer InfluxQL/Flux               | Valid alternative to Prometheus TSDB; slightly different ops model. Pick **one** TSDB pillar (Prometheus **or** Influx), not both, unless you have a clear split (e.g. SNMP in Prometheus, app metrics in Influx). |
+| **C** | **Promtail** + **Loki** + **Grafana**                                         | Log aggregation, lower footprint than ELK/Graylog | “LGTM” family; good for **JSON/syslog** shipping and Grafana Explore.                                                                                                                                              |
+| **D** | **Graylog** + **OpenSearch**                                                  | Full-text log search, streams, pipelines          | **Graylog 5+** uses **OpenSearch** (not Elasticsearch) as default backend—check current Graylog docs. **Heavy:** plan **≥8 GB** for OpenSearch alone on small labs; prefer a **dedicated VM**.                     |
+| **E** | **Wazuh**                                                                     | Security posture, vulns, hardening                | [LAB_OP_MINIMAL_CONTAINER_STACK.md](../ops/LAB_OP_MINIMAL_CONTAINER_STACK.md) §6 — complements metrics/logs; does not replace them.                                                                                |
 
 **Not recommended on the same LAB-NODE-01 simultaneously:** Graylog + OpenSearch + full Prometheus + Loki + Wazuh + k3s. Choose **A or B**, **C or D**, **E** when resources exist.
 

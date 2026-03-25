@@ -9,19 +9,19 @@
 ## Regras
 
 1. **Nunca** colar senhas, community strings, tokens ou chaves privadas **no diálogo**.
-2. **Nunca** commitar segredos em **`main`** — nem em `.mdc`, `AGENTS.md`, skills nem `docs/` públicos.
-3. **OK** guardar cópias só do operador em **`docs/private/`** (gitignored), ciente do risco em disco (backup, encriptação, pCloud).
+1. **Nunca** commitar segredos em **`main`** — nem em `.mdc`, `AGENTS.md`, skills nem `docs/` públicos.
+1. **OK** guardar cópias só do operador em **`docs/private/`** (gitignored), ciente do risco em disco (backup, encriptação, pCloud).
 
 ---
 
 ## Ordem recomendada
 
-| Método | Quando |
-| ------ | ------ |
-| **Bitwarden CLI (`bw`)** | Já referido no `homelab-host-report.sh`; bom para obter segredo na hora do script. |
-| **Cofre do SO** (Windows Credential Manager, etc.) | Jobs interativos ou agendados numa máquina. |
-| **Variáveis de ambiente só na sessão** | Definir **`$env:VAR`** no **terminal integrado** **antes** de pedir ao agente para correr um script; o mesmo terminal executa o comando. **Não** contar só com “a IA limpa a variável” — **fechar o terminal** ou terminar a sessão quando não precisares. |
-| **Arquivo gitignored** **`docs/private/homelab/.env.snmp.local`** (nome exato) | Copie de **`docs/private.example/homelab/env.snmp.local.example`**; um arquivo por máquina; nunca commit. |
+| Método                                                                         | Quando                                                                                                                                                                                                                                                     |
+| ------                                                                         | ------                                                                                                                                                                                                                                                     |
+| **Bitwarden CLI (`bw`)**                                                       | Já referido no `homelab-host-report.sh`; bom para obter segredo na hora do script.                                                                                                                                                                         |
+| **Cofre do SO** (Windows Credential Manager, etc.)                             | Jobs interativos ou agendados numa máquina.                                                                                                                                                                                                                |
+| **Variáveis de ambiente só na sessão**                                         | Definir **`$env:VAR`** no **terminal integrado** **antes** de pedir ao agente para correr um script; o mesmo terminal executa o comando. **Não** contar só com “a IA limpa a variável” — **fechar o terminal** ou terminar a sessão quando não precisares. |
+| **Arquivo gitignored** **`docs/private/homelab/.env.snmp.local`** (nome exato) | Copie de **`docs/private.example/homelab/env.snmp.local.example`**; um arquivo por máquina; nunca commit.                                                                                                                                                  |
 
 ---
 

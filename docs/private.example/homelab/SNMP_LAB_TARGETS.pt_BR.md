@@ -8,11 +8,11 @@
 
 ## Vale a pena?
 
-| Situação | Vale? |
-| -------- | ----- |
-| Durante **testes** de carga/scan e queres ver **tráfego por interface** no core vs no switch | Sim — poll **periódico** leve (IF-MIB) ou logs agendados. |
-| **Produção** com alertas, retenção longa, gráficos | Melhor **Prometheus + snmp_exporter** / Zabbix / UniFi UI — este repo só dá **probes manuais/agendados**. |
-| Equipamento só com **SNMPv2c** (community) | O script atual é **v3 SHA/AES**; para v2c use **`snmpwalk` manual** (comandos abaixo). |
+| Situação                                                                                     | Vale?                                                                                                     |
+| --------                                                                                     | -----                                                                                                     |
+| Durante **testes** de carga/scan e queres ver **tráfego por interface** no core vs no switch | Sim — poll **periódico** leve (IF-MIB) ou logs agendados.                                                 |
+| **Produção** com alertas, retenção longa, gráficos                                           | Melhor **Prometheus + snmp_exporter** / Zabbix / UniFi UI — este repo só dá **probes manuais/agendados**. |
+| Equipamento só com **SNMPv2c** (community)                                                   | O script atual é **v3 SHA/AES**; para v2c use **`snmpwalk` manual** (comandos abaixo).                    |
 
 ---
 
@@ -20,14 +20,14 @@
 
 Use **um arquivo por alvo**, **mesmas quatro chaves** (`LAB_LAB-ROUTER-01_SNMP_*` — nome histórico; serve para **qualquer** alvo v3):
 
-| Arquivo (exemplo) | Equipamento |
-| ----------------- | ----------- |
-| `.env.snmp.local` | Gateway / LAB-ROUTER-01 (padrão dos scripts Windows) |
+| Arquivo (exemplo)        | Equipamento                                                                         |
+| -----------------        | -----------                                                                         |
+| `.env.snmp.local`        | Gateway / LAB-ROUTER-01 (padrão dos scripts Windows)                                          |
 | `.env.snmp.LAB-ROUTER-01-se.local` | **LAB-ROUTER-01 SE** (ou outro gateway com arquivo `.env` dedicado — mesmo formato de chaves) |
-| `.env.snmp.switch.local` | Switch gerenciado |
-| `.env.snmp.nas.local` | NAS (se expuser SNMPv3 e OID compatível) |
+| `.env.snmp.switch.local` | Switch gerenciado                                                                   |
+| `.env.snmp.nas.local`    | NAS (se expuser SNMPv3 e OID compatível)                                            |
 
-**PowerShell (Windows + WSL):**
+## PowerShell (Windows + WSL):
 
 ```powershell
 .\scripts\snmp-LAB-ROUTER-01-lab-probe.ps1 -EnvFile docs\private\homelab\.env.snmp.switch.local -WslDistro Debian
@@ -91,13 +91,13 @@ snmpwalk -v2c -c "SYN_COMMUNITY_STR" 192.0.2.20 1.3.6.1.2.1.2.2
 
 ## Equipamentos comuns (referência rápida)
 
-| Tipo | SNMP típico | Notas |
-| ---- | ----------- | ----- |
-| **UniFi Dream Machine / gateway** | v3 recomendado | Já coberto por `snmp-LAB-ROUTER-01-lab-probe.ps1`. |
-| **Switch gerenciável** (UniFi, etc.) | v2c ou v3 conforme firmware | Mesmo OID IF-MIB para contadores de interface. |
-| **pfSense / OPNsense** | v2c/v3 configurável | OIDs diferentes para algumas métricas; IF-MIB costuma existir. |
-| **NAS (Synology, etc.)** | muitas vezes v2c ou MIB própria | Ver documentação do fabricante. |
-| **UPS (APC Network)** | v1/v2c comum | OIDs específicos; fora do escopo do script atual. |
+| Tipo                                 | SNMP típico                     | Notas                                                          |
+| ----                                 | -----------                     | -----                                                          |
+| **UniFi Dream Machine / gateway**    | v3 recomendado                  | Já coberto por `snmp-LAB-ROUTER-01-lab-probe.ps1`.                       |
+| **Switch gerenciável** (UniFi, etc.) | v2c ou v3 conforme firmware     | Mesmo OID IF-MIB para contadores de interface.                 |
+| **pfSense / OPNsense**               | v2c/v3 configurável             | OIDs diferentes para algumas métricas; IF-MIB costuma existir. |
+| **NAS (Synology, etc.)**             | muitas vezes v2c ou MIB própria | Ver documentação do fabricante.                                |
+| **UPS (APC Network)**                | v1/v2c comum                    | OIDs específicos; fora do escopo do script atual.              |
 
 ---
 
@@ -105,12 +105,12 @@ snmpwalk -v2c -c "SYN_COMMUNITY_STR" 192.0.2.20 1.3.6.1.2.1.2.2
 
 **Runners hospedados na nuvem** (os padrão do GitHub) **não têm rota IP** para a tua LAN nem para o IP de gestão do LAB-ROUTER-01/firewall. **SNMP (UDP 161)** daí para o equipamento **não funciona** — não faz sentido adicionar ao `.github/workflows/` um job que chame `snmp-LAB-ROUTER-01-lab-probe` como fazemos no PC.
 
-| Abordagem | Viável? |
-| --------- | ------- |
-| **Task Scheduler no teu Windows** (como combinaste, ex. a cada **30 min**) | Sim — recomendado para “olhar o log” localmente. |
-| **Self-hosted runner** numa máquina **dentro** da mesma rede que o firewall | Tecnicamente possível, mas aumenta superfície (runner exposto à internet de outra forma), credenciais no GitHub, e manutenção — só se houver política explícita. |
-| **Prometheus + snmp_exporter** / NMS no lab | Melhor para métricas contínuas e dashboards. |
-| **Upload de artefato** a partir do teu PC (script manual que faz `gh run upload` ou cópia para bucket privado) | Possível como extensão operacional, **fora** do fluxo de CI público do repo. |
+| Abordagem                                                                                                      | Viável?                                                                                                                                                          |
+| ---------                                                                                                      | -------                                                                                                                                                          |
+| **Task Scheduler no teu Windows** (como combinaste, ex. a cada **30 min**)                                     | Sim — recomendado para “olhar o log” localmente.                                                                                                                 |
+| **Self-hosted runner** numa máquina **dentro** da mesma rede que o firewall                                    | Tecnicamente possível, mas aumenta superfície (runner exposto à internet de outra forma), credenciais no GitHub, e manutenção — só se houver política explícita. |
+| **Prometheus + snmp_exporter** / NMS no lab                                                                    | Melhor para métricas contínuas e dashboards.                                                                                                                     |
+| **Upload de artefato** a partir do teu PC (script manual que faz `gh run upload` ou cópia para bucket privado) | Possível como extensão operacional, **fora** do fluxo de CI público do repo.                                                                                     |
 
 **Conclusão:** não incluímos no CI padrão deste repositório a execução automática do probe SNMP contra o teu lab. A visão “situação geral” fica no **log gitignored** + Agendador; quando precisares de evidência numa PR, usa **trechos redigidos** ou métricas agregadas sem MAC/IP.
 

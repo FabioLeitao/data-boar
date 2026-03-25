@@ -62,14 +62,14 @@
 
 #### Zerando **B1–B6** — próximos passos (operador)
 
-| Bloco | O que fazer (operador) | Onde espelhar (docs privados) |
-| ----- | ---------------------- | ------------------------------ |
-| **B1** | Confirmar BIOS/MTM nas ferramentas do fabricante | Esta seção **B1** + opcional **`WHAT_TO_SHARE_WITH_AGENT.md`** |
-| **B2** | Placas / medidas opcionais | Bullets **B2** |
-| **B3** | UniFi (versões, papel do SNMP) | **B3** + **`LAB_SECURITY_POSTURE.md`** |
-| **B4** | Placa do inversor + nome do app | **B4** |
-| **B5** | SO + Docker; **`scripts/homelab-host-report.sh`** | Mapa + inventário + **`HARDWARE_CATALOG`** |
-| **B6** | Versões de runtime por host | **`LAB_SOFTWARE_INVENTORY.md`**, **`LAB_SECURITY_POSTURE.md`** |
+| Bloco  | O que fazer (operador)                            | Onde espelhar (docs privados)                                  |
+| -----  | ----------------------                            | ------------------------------                                 |
+| **B1** | Confirmar BIOS/MTM nas ferramentas do fabricante  | Esta seção **B1** + opcional **`WHAT_TO_SHARE_WITH_AGENT.md`** |
+| **B2** | Placas / medidas opcionais                        | Bullets **B2**                                                 |
+| **B3** | UniFi (versões, papel do SNMP)                    | **B3** + **`LAB_SECURITY_POSTURE.md`**                         |
+| **B4** | Placa do inversor + nome do app                   | **B4**                                                         |
+| **B5** | SO + Docker; **`scripts/homelab-host-report.sh`** | Mapa + inventário + **`HARDWARE_CATALOG`**                     |
+| **B6** | Versões de runtime por host                       | **`LAB_SOFTWARE_INVENTORY.md`**, **`LAB_SECURITY_POSTURE.md`** |
 
 ---
 

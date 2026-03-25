@@ -20,13 +20,13 @@
 Repetir para **cada** rede/VLAN (ex.: Default, IoT, Oficial, convidados):
 
 1. **Definições → Redes** → selecionar a rede.
-2. Confirmar **ID da VLAN** alinhado a switches e SSIDs.
-3. Confirmar **gateway / router** da rede = **IP do LAB-ROUTER-01 nessa subnet** (em geral **`.1`**).
-4. Em **DHCP**:
+1. Confirmar **ID da VLAN** alinhado a switches e SSIDs.
+1. Confirmar **gateway / router** da rede = **IP do LAB-ROUTER-01 nessa subnet** (em geral **`.1`**).
+1. Em **DHCP**:
    - Intervalo **dentro** da subnet.
    - **Router / gateway padrão** no DHCP = igual ao passo 3.
    - **Servidores DNS** = o que queres **nessa** VLAN (muitas vezes o LAB-ROUTER-01 `.1`; ajusta se usares outro resolvedor).
-5. **Definições → Wi‑Fi** → cada SSID → **rede / VLAN** aponta para a rede **pretendida** (ex.: SSID IoT → rede IoT apenas).
+1. **Definições → Wi‑Fi** → cada SSID → **rede / VLAN** aponta para a rede **pretendida** (ex.: SSID IoT → rede IoT apenas).
 
 **Depois de mudar:** renovar DHCP num cliente de teste (desligar/ligar Wi‑Fi ou `ipconfig /release` + `/renew` no Windows).
 
@@ -36,11 +36,11 @@ Repetir para **cada** rede/VLAN (ex.: Default, IoT, Oficial, convidados):
 
 Funcionalidades **no controlador** ou **por rede**; rótulos de menu mudam um pouco com versões do UniFi OS.
 
-| Área | O que anotar nas notas privadas | Por que importa |
-| ---- | -------------------------------- | --------------- |
-| **DNS encriptado** | **Predefined** e quais fornecedores (ex.: Quad9, variantes Cloudflare) | Clientes podem contornar política local se DNS não estiver alinhado ao DHCP. |
-| **Prevenção de intrusão (IPS)** | Ligado/desligado; **redes** no âmbito; data de atualização de assinaturas | Superfície de deteção; supressões com **ID + motivo** noutro documento. |
-| **Honeypot** | Tabela **Rede | Subnet | Endereço do honeypot** | O IP do honeypot **precisa estar** **dentro** da subnet listada; muitos desenhos usam **`.2`** com gateway **`.1`**. |
+| Área                            | O que anotar nas notas privadas                                           | Por que importa                                                              |                        |                                                                                                                      |
+| ----                            | --------------------------------                                          | ---------------                                                              |                        |                                                                                                                      |
+| **DNS encriptado**              | **Predefined** e quais fornecedores (ex.: Quad9, variantes Cloudflare)    | Clientes podem contornar política local se DNS não estiver alinhado ao DHCP. |                        |                                                                                                                      |
+| **Prevenção de intrusão (IPS)** | Ligado/desligado; **redes** no âmbito; data de atualização de assinaturas | Superfície de deteção; supressões com **ID + motivo** noutro documento.      |                        |                                                                                                                      |
+| **Honeypot**                    | Tabela **Rede                                                             | Subnet                                                                       | Endereço do honeypot** | O IP do honeypot **precisa estar** **dentro** da subnet listada; muitos desenhos usam **`.2`** com gateway **`.1`**. |
 
 **Dica de UI:** com zoom baixo no browser, **0** e **8** no **terceiro octeto** (ex.: `…40…` vs `…48…`) confundem — **aumenta o zoom** ou copia os valores para a tabela privada.
 
@@ -48,17 +48,17 @@ Funcionalidades **no controlador** ou **por rede**; rótulos de menu mudam um po
 
 ## 4. Falhas comuns (quando as “combinações” parecem erradas)
 
-| Sintoma | Causa provável |
-| ------- | --------------- |
-| Faixa de IP certa, gateway errado | IP estático ou lease antigo; SSID mapeado para rede errada. |
-| DNS inesperado | DNS manual no cliente; DNS encriptado + DHCP diferente — **definir** comportamento de referência. |
-| Honeypot “não faz nada” | IP fora da subnet; typo `192` vs `182`; linha errada no CyberSecure. |
+| Sintoma                           | Causa provável                                                                                    |
+| -------                           | ---------------                                                                                   |
+| Faixa de IP certa, gateway errado | IP estático ou lease antigo; SSID mapeado para rede errada.                                       |
+| DNS inesperado                    | DNS manual no cliente; DNS encriptado + DHCP diferente — **definir** comportamento de referência. |
+| Honeypot “não faz nada”           | IP fora da subnet; typo `192` vs `182`; linha errada no CyberSecure.                              |
 
 ---
 
 ## 5. Comandos de verificação (sem segredos)
 
-**Windows (PowerShell):**
+## Windows (PowerShell):
 
 ```powershell
 Get-NetIPConfiguration | Where-Object { $_.IPv4DefaultGateway -ne $null } | Format-List InterfaceAlias,IPv4Address,IPv4DefaultGateway,DnsServer
@@ -71,7 +71,7 @@ Test-NetConnection -ComputerName <gateway-ip> -Port 443
 Get-DnsClientCache
 ```
 
-**Linux:**
+## Linux:
 
 ```bash
 ip -4 route show default
@@ -91,10 +91,10 @@ Resolve-DnsName unifi.local
 
 ## 6. Tabela de inventário privada (copiar para `docs/private/homelab/` e preencher)
 
-| Nome da rede (UniFi) | VLAN ID | Subnet (CIDR) | Gateway LAB-ROUTER-01 | DNS DHCP (pretendido) | Honeypot (se houver) | SSID(s) |
-| -------------------- | ------- | ------------- | ----------- | ---------------------- | -------------------- | ------- |
-| *ex.: Default* | *…* | *10.0.x.0/24* | *.1* | *.1 ou …* | *.2* | *…* |
-| *ex.: IoT* | *…* | *10.0.x.0/24* | *.1* | *…* | *.2* | *…* |
+| Nome da rede (UniFi) | VLAN ID | Subnet (CIDR)    | Gateway LAB-ROUTER-01 | DNS DHCP (pretendido)  | Honeypot (se houver) | SSID(s) |
+| -------------------- | ------- | -------------    | ----------- | ---------------------- | -------------------- | ------- |
+| *ex.: Default*       | *…*     | *10.0.x.0/24* | *.1*        | *.1 ou …*              | *.2*                 | *…*     |
+| *ex.: IoT*           | *…*     | *10.0.x.0/24* | *.1*        | *…*                    | *.2*                 | *…*     |
 
 Substitui `x` só na cópia **privada**.
 
@@ -102,7 +102,7 @@ Substitui `x` só na cópia **privada**.
 
 ## 7. Assistente (Cursor) — capacidades ligadas a este tema
 
-**Hoje (no teu PC, mesma LAN):**
+## Hoje (no teu PC, mesma LAN):
 
 - Ler **este runbook** e o inventário privado quando existir em `docs/private/homelab/`.
 - Correr scripts **UniFi Network Integration** com `.env`: `scripts/LAB-ROUTER-01-api-smoke-from-env.ps1`, `scripts/LAB-ROUTER-01-api-inventory-from-env.ps1` (opcional `-SaveJson` para `reports/` privado).
@@ -110,7 +110,7 @@ Substitui `x` só na cópia **privada**.
 
 **Não automático:** o assistente **não** entra no `unifi.ui.com` por ti — **tu** aplicas mudanças na UI; ele ajuda a transformar o resultado em **checklists** e **comandos**.
 
-**Depois de mais preparação (futuro):**
+## Depois de mais preparação (futuro):
 
 - **Syslog** do LAB-ROUTER-01 para **Loki** / logs centralizados → correlacionar eventos de gateway com hosts ([PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md](../../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md)).
 - **Wazuh** (opcional) depois do pipeline de logs estável.

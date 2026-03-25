@@ -25,7 +25,7 @@ These are **recommended** system packages for **Debian/Ubuntu / Zorin / Proxmox 
 
 **Docker (lab §1.3–1.5):** `docker-ce` (or distro package), `containerd`; Swarm/Kubernetes are **your** choice—Data Boar only needs `docker build` / `docker run` (or equivalent in VM).
 
-**Not in repo as hard deps:** Ansible, OpenTofu, Terraform, Prometheus, SonarQube, Lynis—these are **operator tools** you install when you run those workflows.
+**Not in repo as hard deps:** Ansible, OpenTofu, Terraform, Prometheus, Grafana, InfluxDB, Loki, Graylog/OpenSearch (optional observability — see [PLAN_LAB_OP_OBSERVABILITY_STACK.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md)), **Wazuh** (optional SIEM — [LAB_OP_MINIMAL_CONTAINER_STACK.md](LAB_OP_MINIMAL_CONTAINER_STACK.md) §6), SonarQube, Lynis—these are **operator tools** you install when you run those workflows.
 
 ---
 
@@ -178,6 +178,8 @@ bash scripts/homelab-host-report.sh
 
 The script prints **`bw` (Bitwarden CLI)** when it is on **`PATH`** (path + `bw --version`). It does **not** run `bw status` (that can include your **email** in JSON—run manually if needed, redact before sharing).
 
+It also captures a **read-only sample** of **sysctl** (`vm.*` dirty ratios / swappiness), **`lsblk`**, **block I/O queue** (`scheduler`, `rotational`, `nr_requests`), and **cpufreq** governor when present — useful after you tune **`/sys`** or kernel parameters for tests.
+
 Save stdout to a file, **redact**, then share if you want a structured review.
 
 ### 4.1 Lynis line looks wrong (`db/languages/.../data-boar` or `lynis: not in PATH`)
@@ -187,6 +189,29 @@ Save stdout to a file, **redact**, then share if you want a structured review.
 **What the script does:** resolve **`/usr/sbin/lynis`** (or **`dpkg-query -L lynis`**) first, **`cd /tmp`**, then run **`lynis show version`** with a minimal **`env -i`** **`PATH`**.
 
 **Manual check:** `( cd /tmp && /usr/sbin/lynis show version )` — if that works, the script should match after you **`git pull`** the updated **`scripts/homelab-host-report.sh`**.
+
+### 4.2 Remote capture from Windows (SSH)
+
+The AI environment **cannot** open your LAN. From the **Cursor terminal** on your dev PC (OpenSSH + `Host` entries in `~/.ssh/config`):
+
+```powershell
+.\scripts\collect-homelab-report-remote.ps1 -SshHost your-lab-alias
+```
+
+This runs `homelab-host-report.sh` on the remote host and writes **`docs/private/homelab/reports/<alias>_<timestamp>_homelab_host_report.log`** (create the `reports` folder under your gitignored `docs/private/homelab/` if needed; see **`docs/private.example/homelab/reports/README.md`**).
+
+**Batch (multi-host + `git pull`):** **`scripts/lab-op-sync-and-collect.ps1`** — see **`docs/private.example/homelab/reports/README.md`** and **[LAB_OP_SYNC_RUNBOOK.md](../private.example/homelab/LAB_OP_SYNC_RUNBOOK.md)**.
+
+### 4.3 When `git pull` fails (local changes on the clone)
+
+**Not the usual cause:** local **SQLite** DBs and typical **logs** are listed in **`.gitignore`** (e.g. `db.sqlite3`, `audit_results.db`) — Git **ignores** them, so they **do not** block `git pull`. If pull still fails, run **`git status`** on the host: Git will list **tracked** files with local edits (often **`scripts/homelab-host-report.sh`** after a session or a partial merge).
+
+If **`lab-op-sync-and-collect.ps1`** logs show `Your local changes … would be overwritten by merge`, either:
+
+1. **On that host:** `cd` to the repo, **`git stash`** (or **`git checkout -- scripts/homelab-host-report.sh`** if you only want upstream), then re-run the collect script; or **commit** intentional local edits and merge/rebase consciously.
+1. **Report only (no pull):** `.\scripts\lab-op-sync-and-collect.ps1 -SkipGitPull` — still captures inventory; does not advance `main`.
+
+Validate **`lab-op-hosts.manifest.json`** is valid JSON (commas between `hosts[]` objects). See **[LAB_OP_SYNC_RUNBOOK.md](../private.example/homelab/LAB_OP_SYNC_RUNBOOK.md)** (copy to `docs/private/homelab/` for dated notes).
 
 ---
 
