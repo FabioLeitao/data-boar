@@ -66,6 +66,8 @@ scan:
         assert status_resp.json().get("running") is False
         runtime_trust = status_resp.json().get("runtime_trust") or {}
         assert runtime_trust.get("trust_state") in {"trusted", "degraded", "untrusted"}
+        dt = status_resp.json().get("dashboard_transport") or {}
+        assert dt.get("mode") == "not_configured"
     finally:
         routes._config_path = original_config_path
         routes._config = original_config

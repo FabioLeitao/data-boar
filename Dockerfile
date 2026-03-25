@@ -74,4 +74,5 @@ USER appuser
 EXPOSE 8088
 
 # Default: web API and frontend. CLI one-shot: override with --entrypoint python and args.
-CMD ["python", "main.py", "--config", "/data/config.yaml", "--web", "--port", "8088"]
+# Plaintext HTTP with explicit opt-in (mount TLS cert/key and drop this flag for HTTPS).
+CMD ["python", "main.py", "--config", "/data/config.yaml", "--web", "--port", "8088", "--allow-insecure-http"]
