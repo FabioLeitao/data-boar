@@ -35,10 +35,13 @@ uv run python main.py --config config.yaml --tenant "Acme Corp" --technician "Al
 # Same optional toggles as the dashboard checkboxes (this run only):
 uv run python main.py --config config.yaml --scan-compressed --content-type-check</code></pre>
   <p><strong>Start the API / dashBOARd</strong> (no scan until you use the browser or HTTP):</p>
-  <pre><code>uv run python main.py --config config.yaml --web
+  <p class="muted">You must either terminate TLS at the process (<code>--https-cert-file</code> + <code>--https-key-file</code>, or the same under <code>api:</code> in config) or explicitly accept plaintext with <code>--allow-insecure-http</code> (or <code>api.allow_insecure_http: true</code>). The official Docker image passes <code>--allow-insecure-http</code> by default; mount certs and remove it for HTTPS.</p>
+  <pre><code>uv run python main.py --config config.yaml --web --https-cert-file server.crt --https-key-file server.key
+# Lab / loopback only — explicit plaintext:
+uv run python main.py --config config.yaml --web --allow-insecure-http
 # Default bind is loopback (127.0.0.1). Listen on all interfaces only with network controls:
-uv run python main.py --config config.yaml --web --host 0.0.0.0 --port 8088</code></pre>
-  <p class="muted">Bind order when using <code>--web</code>: <code>--host</code> overrides <code>api.host</code> in config and <code>API_HOST</code>; if none are set, the default is <code>127.0.0.1</code> (Docker image often sets <code>API_HOST=0.0.0.0</code>). Port: <code>api.port</code> in config vs <code>--port</code> — see <code>docs/USAGE.md</code>.</p>
+uv run python main.py --config config.yaml --web --allow-insecure-http --host 0.0.0.0 --port 8088</code></pre>
+  <p class="muted">Bind order when using <code>--web</code>: <code>--host</code> overrides <code>api.host</code> in config and <code>API_HOST</code>; if none are set, the default is <code>127.0.0.1</code> (Docker image often sets <code>API_HOST=0.0.0.0</code>). Port: <code>api.port</code> in config vs <code>--port</code>. Transport: <code>GET /status</code> and <code>GET /health</code> include <code>dashboard_transport</code> — see <code>docs/USAGE.md</code>.</p>
   <p><strong>Dangerous maintenance</strong> (lab/demo only): <code>--reset-data</code> wipes SQLite sessions/findings and deletes generated reports under <code>report.output_dir</code>. See <code>SECURITY.md</code> before using in production.</p>
   <p><strong>Audit trail export</strong> (CLI only): <code>--export-audit-trail</code> or <code>--export-audit-trail path.json</code> writes a JSON snapshot (wipe log, session summary; future: integrity rows). Does not modify the database. Omit the path or use <code>-</code> for stdout.</p>
 </section>

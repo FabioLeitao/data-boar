@@ -3,7 +3,7 @@
 **Data Boar** é o nome da aplicação (baseado na tecnologia lgpd_crawler; id de pacote/distribuição: `python3-lgpd-crawler`). Este documento complementa o `docs/USAGE.md` em inglês e descreve, em português, como:
 
 - Executar a aplicação via **CLI** e **API web**;
-- Entender os parâmetros (`--config`, `--web`, `--port`, `--host`, `--tenant`, `--technician`, `--scan-compressed`, `--content-type-check`);
+- Entender os parâmetros (`--config`, `--web`, `--port`, `--host`, `--https-cert-file`, `--https-key-file`, `--allow-insecure-http`, `--tenant`, `--technician`, `--scan-compressed`, `--content-type-check`);
 - Navegar pelo **dashboard web**;
 - Iniciar varreduras e baixar relatórios/heatmaps usando **curl**.
 
@@ -25,6 +25,9 @@ O ponto de entrada é `main.py`.
 | `--web`                | *(flag)*             | Inicia o servidor FastAPI em vez de executar uma varredura única.                                                                                                                                                                                          |
 | `--port`               | `8088`               | Porta da API quando `--web` é usado. Pode ser sobrescrita por `api.port` no config, salvo se você passar `--port` explicitamente. Ignorado em modo varredura única.                                                                                        |
 | `--host`               | *(resolvido)*        | Endereço de bind quando `--web` (ex.: `127.0.0.1`, `0.0.0.0`). **Prevalece** sobre `api.host` e `API_HOST`. Se omitido: `api.host` → `API_HOST` → padrão seguro **`127.0.0.1`**. Ver §2.                                                                   |
+| `--https-cert-file`    | *(vazio)*            | Caminho PEM do certificado para TLS com `--web`; exige `--https-key-file` (ou `api.https_cert_file` / `api.https_key_file`). TLS **≥ 1.2**. Sem os dois arquivos, a inicialização **falha** salvo `--allow-insecure-http`.                               |
+| `--https-key-file`     | *(vazio)*            | Caminho PEM da chave privada para TLS com `--web`; pareado com `--https-cert-file` ou as chaves `api.*` correspondentes.                                                                                                                                |
+| `--allow-insecure-http`| *(flag)*             | **Aceite explícito de risco:** servir o dashboard em **HTTP em texto plano** (risco de interceptação/alteração). Em produção, prefira TLS ou proxy reverso. Equivale a `api.allow_insecure_http: true`. A imagem **Docker** padrão passa essa flag para rodar sem certificados montados. |
 | `--reset-data`         | *(flag)*             | Operação de manutenção perigosa: apaga todas as sessões/achados/falhas do SQLite, remove relatórios/heatmaps em `report.output_dir` e registra o wipe na tabela `data_wipe_log`. Não inicia varredura.                                                     |
 | `--export-audit-trail` | *(caminho opcional)* | Exporta trilha de auditoria em JSON a partir do SQLite (`data_wipe_log`, resumo de sessões; futuro: integridade). Sem caminho ou com `-` → **stdout**; caso contrário grava no arquivo. **Não** altera o banco. Incompatível com `--web` e `--reset-data`. |
 | `--tenant`             | *(vazio)*            | Nome do cliente/tenant na execução CLI; gravado na sessão e exibido em dashboard/relatórios.                                                                                                                                                               |
@@ -55,13 +58,16 @@ python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Col
 
 #### Servidor API (`--web`)
 
+**Transporte:** é preciso usar **HTTPS** (certificado + chave PEM na CLI ou em `api` no config) ou **aceitar explicitamente** texto plano com **`--allow-insecure-http`** (ou `api.allow_insecure_http: true`). Caso contrário, `main.py --web` termina com código **2**. **`GET /status`** e **`GET /health`** incluem `dashboard_transport`; em HTTP texto plano há **faixa de aviso** nas páginas do dashboard.
+
 ```bash
-python main.py --config config.yaml --web --port 8088
+python main.py --config config.yaml --web --https-cert-file server.crt --https-key-file server.key --port 8088
+python main.py --config config.yaml --web --allow-insecure-http --port 8088
 # Escutar em todas as interfaces (sobrescreve config / API_HOST; use só com controles de rede):
-python main.py --config config.yaml --web --host 0.0.0.0 --port 8088
+python main.py --config config.yaml --web --allow-insecure-http --host 0.0.0.0 --port 8088
 ```
 
-- Inicia o FastAPI em **`<bind>:<port>`**. O bind padrão é **`127.0.0.1`**, salvo `api.host`, `API_HOST` ou **`--host`** (a CLI ganha). A imagem Docker oficial define `API_HOST=0.0.0.0` para a porta publicada funcionar de fora do container.
+- Inicia o FastAPI em **`<bind>:<port>`**. O bind padrão é **`127.0.0.1`**, salvo `api.host`, `API_HOST` ou **`--host`** (a CLI ganha). A imagem Docker oficial define `API_HOST=0.0.0.0` e inclui **`--allow-insecure-http`** no `CMD` para subir sem certificados montados; para HTTPS, monte cert/chave e ajuste o `CMD`.
 - Nenhuma varredura é executada automaticamente; você controla tudo via HTTP (dashboard ou curl).
 - Configuração para a API:
 - Se `--config` não for usado, a API lê de `CONFIG_PATH` ou `config.yaml` no diretório atual.

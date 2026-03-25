@@ -6,7 +6,7 @@
 #
 # Usage:
 #   .\scripts\docker-scout-critical-gate.ps1
-#   .\scripts\docker-scout-critical-gate.ps1 -Image "fabioleitao/data_boar:1.6.6"
+#   .\scripts\docker-scout-critical-gate.ps1 -Image "fabioleitao/data_boar:1.6.7"
 #   .\scripts\docker-scout-critical-gate.ps1 -FailOnAnyCritical
 
 param(

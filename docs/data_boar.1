@@ -1,6 +1,6 @@
 .\" data_boar.1 - man page for Data Boar (application; package id: python3-lgpd-crawler)
 .\" View as: man data_boar or man lgpd_crawler (symlink for compatibility)
-.TH DATA_BOAR 1 "March 2026" "Data Boar 1.6.6" "User Commands"
+.TH DATA_BOAR 1 "March 2026" "Data Boar 1.6.7" "User Commands"
 .SH NAME
 data_boar, lgpd_crawler \- audit databases and filesystems for personal and sensitive data (Data Boar)
 .
@@ -144,6 +144,35 @@ then a safe default of
 .B 127.0.0.1
 (loopback) for desktop/CLI use.
 Ignored in one\-shot audit mode.
+.
+.TP
+.BI "\-\-https\-cert\-file " PATH
+PEM certificate file for HTTPS when
+.B \-\-web
+is set. Must be used together with
+.BR \-\-https\-key\-file
+(or
+.B api.https_cert_file
+and
+.B api.https_key_file
+in the configuration). TLS baseline is 1.2 or newer. Without both certificate and key, startup fails unless
+.B \-\-allow\-insecure\-http
+(or
+.B api.allow_insecure_http
+in config) is set.
+.
+.TP
+.BI "\-\-https\-key\-file " PATH
+PEM private key file for HTTPS when
+.B \-\-web
+is set. Paired with
+.BR \-\-https\-cert\-file .
+.
+.TP
+.B \-\-allow\-insecure\-http
+Explicit risk acceptance: serve the dashboard over plaintext HTTP (no TLS between clients and this process). Use only on trusted loopback or lab networks. For production, prefer TLS via cert/key flags or terminate TLS at a reverse proxy. Can be set via
+.B api.allow_insecure_http
+in the configuration instead of this flag. The default Docker image command passes this flag so the container runs without mounted certificates.
 .
 .TP
 .B \-\-scan\-compressed
@@ -355,10 +384,22 @@ Wipe all sessions, findings and generated reports (dangerous):
 .RE
 .
 .SS Web API
+Without TLS certificate and key paths, you must pass
+.B \-\-allow\-insecure\-http
+(or set
+.B api.allow_insecure_http
+in the configuration) for plaintext HTTP.
+.
 .TP
-Start the API on port 8088:
+Start the API on port 8088 (plaintext, explicit opt\-in):
 .RS
-.B python main.py \-\-config config.yaml \-\-web \-\-port 8088
+.B python main.py \-\-config config.yaml \-\-web \-\-allow\-insecure\-http \-\-port 8088
+.RE
+.
+.TP
+HTTPS (PEM cert + key; TLS >= 1.2):
+.RS
+.B python main.py \-\-config config.yaml \-\-web \-\-https\-cert\-file server.crt \-\-https\-key\-file server.key
 .RE
 .
 .TP
@@ -366,14 +407,14 @@ Use CONFIG_PATH and start the server:
 .RS
 .nf
 export CONFIG_PATH=/etc/lgpd\-audit/config.yaml
-python main.py \-\-web \-\-port 8088
+python main.py \-\-web \-\-allow\-insecure\-http \-\-port 8088
 .fi
 .RE
 .
 .TP
 Listen on all interfaces (e.g.\& LAN or container without Docker env); use only with network controls:
 .RS
-.B python main.py \-\-config config.yaml \-\-web \-\-host 0.0.0.0 \-\-port 8088
+.B python main.py \-\-config config.yaml \-\-web \-\-allow\-insecure\-http \-\-host 0.0.0.0 \-\-port 8088
 .RE
 .
 .SS curl \- API examples

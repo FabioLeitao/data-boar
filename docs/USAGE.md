@@ -8,7 +8,7 @@
 
 ## 1. Command-line interface (CLI)
 
-The main entry point is `main.py`. Prefer it over `run.py`.
+The main entry point is `main.py`.
 
 ### Arguments
 
@@ -18,6 +18,9 @@ The main entry point is `main.py`. Prefer it over `run.py`.
 | `--web`                | *(flag)*          | Start the REST API server instead of running a one-shot audit.                                                                                                                                                                                           |
 | `--port`               | `8088`            | Port for the API when `--web` is set. Can be overridden by `api.port` in config unless you pass `--port` explicitly. Ignored in one-shot mode.                                                                                                           |
 | `--host`               | *(resolved)*      | Bind address when `--web` is set (e.g. `127.0.0.1`, `0.0.0.0`). **Overrides** `api.host` and `API_HOST`. If omitted: `api.host` → `API_HOST` → default **`127.0.0.1`**. Ignored in one-shot mode. See §2.                                                |
+| `--https-cert-file`    | *(none)*          | PEM certificate path for TLS when `--web` is set; requires `--https-key-file` (or `api.https_cert_file` / `api.https_key_file`). TLS **≥ 1.2**. Without both files, startup **fails** unless you pass `--allow-insecure-http`.                           |
+| `--https-key-file`     | *(none)*          | PEM private key path for TLS when `--web` is set; paired with `--https-cert-file` or config keys above.                                                                                                                                                 |
+| `--allow-insecure-http`| *(flag)*          | **Explicit risk acceptance:** serve the dashboard over **plaintext HTTP** (sniffing/tampering risk). Prefer TLS or a reverse proxy in production. Same effect as `api.allow_insecure_http: true`. The default **Docker** `CMD` passes this so the image runs without mounted certs. |
 | `--reset-data`         | *(flag)*          | Dangerous maintenance operation: wipe all scan sessions, findings and failures from SQLite, delete generated reports/heatmaps under `report.output_dir`, and record the wipe in `data_wipe_log`. Does not start a scan.                                  |
 | `--export-audit-trail` | *(optional path)* | Export a JSON audit trail from SQLite (`data_wipe_log`, session summary; future: integrity rows). Omit path or use `-` for **stdout**; otherwise write to the given file. Does **not** modify the DB. Cannot be combined with `--web` or `--reset-data`. |
 | `--tenant`             | *(none)*          | Optional customer/tenant name for the scan in CLI mode. Stored on the session and surfaced on dashboard and reports.                                                                                                                                     |
@@ -45,13 +48,20 @@ python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Col
 
 ## REST API server (`--web`)
 
+**Transport:** you must either use **HTTPS** (PEM cert + key on the CLI or under `api` in config) or **explicitly** accept plaintext with **`--allow-insecure-http`** (or `api.allow_insecure_http: true`). Otherwise `main.py --web` exits with code **2** and an error on stderr. **`GET /status`** and **`GET /health`** include a `dashboard_transport` object (`mode`, `tls_active`, `summary`, etc.); plaintext mode shows a **banner** on dashboard pages.
+
 ```bash
-python main.py --config config.yaml --web --port 8088
+# TLS (example paths; keep keys out of git)
+python main.py --config config.yaml --web --https-cert-file server.crt --https-key-file server.key --port 8088
+
+# Plaintext — lab / loopback only (explicit opt-in)
+python main.py --config config.yaml --web --allow-insecure-http --port 8088
+
 # Listen on all interfaces (overrides config / API_HOST; use only with network controls):
-python main.py --config config.yaml --web --host 0.0.0.0 --port 8088
+python main.py --config config.yaml --web --allow-insecure-http --host 0.0.0.0 --port 8088
 ```
 
-- Loads config and starts the FastAPI server on **`<bind>:<port>`**. Default bind is **`127.0.0.1`** unless you set `api.host`, `API_HOST`, or **`--host`** (CLI wins). The official Docker image sets `API_HOST=0.0.0.0` so the published port works from outside the container.
+- Loads config and starts the FastAPI server on **`<bind>:<port>`**. Default bind is **`127.0.0.1`** unless you set `api.host`, `API_HOST`, or **`--host`** (CLI wins). The official Docker image sets `API_HOST=0.0.0.0` and passes **`--allow-insecure-http`** in `CMD` so the container starts without mounted certificates; mount cert/key and override `CMD` for HTTPS.
 - **Outcome:** Server runs until interrupted. No scan runs automatically; you trigger scans and download reports via the API (see below).
 - **Note:** The API process loads its own config at startup from the **`CONFIG_PATH`** environment variable, or `config.yaml` in the current working directory. To use a different file when running the server, set `CONFIG_PATH`:
 
