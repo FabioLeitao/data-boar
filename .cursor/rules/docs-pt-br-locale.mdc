@@ -12,30 +12,30 @@ alwaysApply: false
 
 ## Prefer (pt-BR) vs avoid (typical pt-PT)
 
-| Prefer | Avoid |
-|--------|--------|
-| arquivo | ficheiro |
-| compartilhar / compartilhamento | partilhar / partilha |
-| seção | secção |
-| ações (if needed) | acções |
-| usuário | utilizador |
-| atualizar | actualizar |
-| artefato(s) | artefacto(s) |
-| assinatura (SaaS / licença) | subscrição |
-| acessa / acessam | acede / acedem |
-| console (DevTools, UI) | consola |
-| equipe | equipa |
-| precisa / tem que / deve (obligation) | tem de |
-| continua usando / continua precisando | continua a usar / continua a precisar |
-| falhando (not “X a falhar”) | … a falhar |
-| gerenciador de senhas | gestor de senhas (optional; BR often uses gerenciador) |
+| Prefer                                | Avoid                                                  |
+| --------                              | --------                                               |
+| arquivo                               | ficheiro                                               |
+| compartilhar / compartilhamento       | partilhar / partilha                                   |
+| seção                                 | secção                                                 |
+| ações (if needed)                     | acções                                                 |
+| usuário                               | utilizador                                             |
+| atualizar                             | actualizar                                             |
+| artefato(s)                           | artefacto(s)                                           |
+| assinatura (SaaS / licença)           | subscrição                                             |
+| acessa / acessam                      | acede / acedem                                         |
+| console (DevTools, UI)                | consola                                                |
+| equipe                                | equipa                                                 |
+| precisa / tem que / deve (obligation) | tem de                                                 |
+| continua usando / continua precisando | continua a usar / continua a precisar                  |
+| falhando (not “X a falhar”)           | … a falhar                                             |
+| gerenciador de senhas                 | gestor de senhas (optional; BR often uses gerenciador) |
 
 Keep **English** for commands, product names, and jargon where the repo already does (e.g. `docker prune`, **Bitwarden**, **Teams**).
 
 ## Automation
 
 - After substantive **pt-BR** edits (not only `*.pt_BR.md` — any Portuguese-heavy ops copy), run:
-  - **`uv run pytest tests/test_markdown_lint.py::test_markdown_lint_no_violations tests/test_docs_pt_br_locale.py -q`**
+- **`uv run pytest tests/test_markdown_lint.py::test_markdown_lint_no_violations tests/test_docs_pt_br_locale.py -q`**
 - Run **`uv run pytest tests/test_docs_pt_br_locale.py -v`** after large doc edits. The scan includes all **`*.pt_BR.md`** under the repo; extend **`tests/test_docs_pt_br_locale.py`** (`_extra_locale_scan_paths`) if a mixed-language file should be guarded the same way.
 - Extend **`_extra_locale_scan_paths`** if **`docs/private/pitch/slides.yaml`** or website copy becomes tracked and includes pt-BR strings.
 - **Skills / rules to keep aligned:** **`.cursor/rules/docs-policy.mdc`**, **`.cursor/skills/documentation-en-pt-br/SKILL.md`**, **`.cursor/rules/operator-chat-language-pt-br.mdc`** (dialogue + same lexical bar as docs). **Termos técnicos, jargão e nomes próprios em inglês** são aceitáveis quando o repositório já usa assim — código-switch EN/pt-BR não é problema.

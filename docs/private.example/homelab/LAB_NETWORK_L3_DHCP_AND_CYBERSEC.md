@@ -20,13 +20,13 @@
 Repeat for **each** VLAN/network (e.g. Default, IoT, office/work, guest):
 
 1. **Settings → Networks** → select the network.
-2. Confirm **VLAN ID** matches what you expect on switches and SSIDs.
-3. Confirm **gateway / router** for that network is the **UDM IP on that subnet** (typically **`.1`**).
-4. Under **DHCP**:
+1. Confirm **VLAN ID** matches what you expect on switches and SSIDs.
+1. Confirm **gateway / router** for that network is the **UDM IP on that subnet** (typically **`.1`**).
+1. Under **DHCP**:
    - Range stays **inside** the subnet.
    - **Router / default gateway** in DHCP = same as step 3.
    - **DNS servers** = what you want for **this** VLAN (often the UDM `.1` if it resolves for clients; adjust if you use another resolver).
-5. **Settings → WiFi** → each SSID → **network / VLAN** points to the **intended** network (e.g. IoT SSID → IoT network only).
+1. **Settings → WiFi** → each SSID → **network / VLAN** points to the **intended** network (e.g. IoT SSID → IoT network only).
 
 **After changes:** renew DHCP on a test client (disconnect/reconnect Wi‑Fi or `ipconfig /release` + `/renew` on Windows).
 
@@ -36,11 +36,11 @@ Repeat for **each** VLAN/network (e.g. Default, IoT, office/work, guest):
 
 These are **controller-wide or per-network** features; exact menu labels move slightly with UniFi OS versions.
 
-| Area | What to record in private notes | Why it matters |
-| ---- | -------------------------------- | -------------- |
-| **Encrypted DNS** | Whether you use **Predefined** providers and which list (e.g. Quad9, Cloudflare variants) | Clients may bypass local policy if DNS is inconsistent—align with DHCP DNS. |
-| **Intrusion Prevention (IPS)** | On/off; **which networks** are in scope; signature update date | Detection surface; note suppressions with **signature ID + reason** elsewhere. |
-| **Honeypot** | Table **Network | Subnet | Honeypot address** | Honeypot IP must sit **inside** the listed subnet; many designs use **`.2`** while gateway is **`.1`**. |
+| Area                           | What to record in private notes                                                           | Why it matters                                                                 |                    |                                                                                                         |
+| ----                           | --------------------------------                                                          | --------------                                                                 |                    |                                                                                                         |
+| **Encrypted DNS**              | Whether you use **Predefined** providers and which list (e.g. Quad9, Cloudflare variants) | Clients may bypass local policy if DNS is inconsistent—align with DHCP DNS.    |                    |                                                                                                         |
+| **Intrusion Prevention (IPS)** | On/off; **which networks** are in scope; signature update date                            | Detection surface; note suppressions with **signature ID + reason** elsewhere. |                    |                                                                                                         |
+| **Honeypot**                   | Table **Network                                                                           | Subnet                                                                         | Honeypot address** | Honeypot IP must sit **inside** the listed subnet; many designs use **`.2`** while gateway is **`.1`**. |
 
 **UI tip:** At low browser zoom, **0** and **8** in the **third octet** (e.g. `…40…` vs `…48…`) are easy to misread—**zoom in** or copy values into your private inventory table.
 
@@ -48,17 +48,17 @@ These are **controller-wide or per-network** features; exact menu labels move sl
 
 ## 4. Common failure modes (when “combinations” look wrong)
 
-| Symptom | Likely cause |
-| ------- | -------------- |
-| Right IP range, wrong gateway | Static IP or old DHCP lease; SSID mapped to wrong network. |
+| Symptom                          | Likely cause                                                                             |
+| -------                          | --------------                                                                           |
+| Right IP range, wrong gateway    | Static IP or old DHCP lease; SSID mapped to wrong network.                               |
 | DNS leaks or unexpected resolver | Client manual DNS; encrypted DNS + different DHCP DNS—**decide** authoritative behavior. |
-| Honeypot “does nothing” | Honeypot IP not in subnet; typo `192` vs `182`; wrong network row in CyberSecure. |
+| Honeypot “does nothing”          | Honeypot IP not in subnet; typo `192` vs `182`; wrong network row in CyberSecure.        |
 
 ---
 
 ## 5. Verification commands (no secrets)
 
-**Windows (PowerShell):**
+## Windows (PowerShell):
 
 ```powershell
 Get-NetIPConfiguration | Where-Object { $_.IPv4DefaultGateway -ne $null } | Format-List InterfaceAlias,IPv4Address,IPv4DefaultGateway,DnsServer
@@ -71,7 +71,7 @@ Test-NetConnection -ComputerName <gateway-ip> -Port 443
 Get-DnsClientCache
 ```
 
-**Linux:**
+## Linux:
 
 ```bash
 ip -4 route show default
@@ -91,10 +91,10 @@ Resolve-DnsName unifi.local
 
 ## 6. Private inventory table (copy to `docs/private/homelab/` and fill)
 
-| Network name (UniFi) | VLAN ID | Subnet (CIDR) | UDM gateway | DHCP DNS (intended) | Honeypot (if any) | SSID(s) |
-| --------------------- | ------- | ------------- | ----------- | ------------------- | ----------------- | ------- |
-| *example: Default* | *…* | *192.168.x.0/24* | *.1* | *.1 or …* | *.2* | *…* |
-| *example: IoT* | *…* | *192.168.x.0/24* | *.1* | *…* | *.2* | *…* |
+| Network name (UniFi)  | VLAN ID | Subnet (CIDR)    | UDM gateway | DHCP DNS (intended) | Honeypot (if any) | SSID(s) |
+| --------------------- | ------- | -------------    | ----------- | ------------------- | ----------------- | ------- |
+| *example: Default*    | *…*     | *192.168.x.0/24* | *.1*        | *.1 or …*           | *.2*              | *…*     |
+| *example: IoT*        | *…*     | *192.168.x.0/24* | *.1*        | *…*                 | *.2*              | *…*     |
 
 Replace `x` with **your** octets only in the **private** copy.
 
@@ -102,7 +102,7 @@ Replace `x` with **your** octets only in the **private** copy.
 
 ## 7. Assistant (Cursor) — capabilities tied to this topic
 
-**Today (on your PC, same LAN):**
+## Today (on your PC, same LAN):
 
 - Read **this runbook** and private inventory when present under `docs/private/homelab/`.
 - Run **UniFi Network Integration** scripts if `.env` is set: `scripts/udm-api-smoke-from-env.ps1`, `scripts/udm-api-inventory-from-env.ps1` (optional `-SaveJson` to private `reports/`).
@@ -110,7 +110,7 @@ Replace `x` with **your** octets only in the **private** copy.
 
 **Not automatic:** the assistant does **not** log into `unifi.ui.com` for you—**you** apply UI changes; it can help turn outcomes into **checklists** and **commands**.
 
-**After more setup (future):**
+## After more setup (future):
 
 - **Syslog** from UDM to **Loki** / central logs → correlate gateway events with host logs ([PLAN_LAB_OP_OBSERVABILITY_STACK.md](../../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md)).
 - **Wazuh** (optional) after log pipeline is stable.

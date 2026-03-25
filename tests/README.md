@@ -35,7 +35,7 @@ For **local** experiments (scanner, subtitles, OCR, “entertainment-style” te
 | `test_data_scanner.py`              | Connector registry (filesystem, DB, API)                                |
 | `test_database.py`                  | Config normalization, DB manager, sessions, wipe                        |
 | `test_docs_markdown.py`             | README/USAGE/SECURITY exist, structure, links                           |
-| `test_docs_pt_br_locale.py`         | `*.pt_BR.md` avoid European Portuguese markers (pt-BR audience)       |
+| `test_docs_pt_br_locale.py`         | `*.pt_BR.md` avoid European Portuguese markers (pt-BR audience)         |
 | `test_learned_patterns.py`          | Learned patterns collect/write                                          |
 | `test_logic.py`                     | Audit logic, lyrics/tablature downgrade                                 |
 | `test_minor_detection.py`           | Minor detection heuristics and report                                   |
