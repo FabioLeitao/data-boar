@@ -42,11 +42,32 @@ _MAN_RESET = r"\-\-reset\-data"
 _MAN_EXPORT_AUDIT = r"\-\-export\-audit\-trail"
 _MAN_TENANT = r"\-\-tenant"
 _MAN_TECH = r"\-\-technician"
+_MAN_HTTPS_CERT = r"\-\-https\-cert\-file"
+_MAN_HTTPS_KEY = r"\-\-https\-key\-file"
+_MAN_ALLOW_INSECURE_HTTP = r"\-\-allow\-insecure\-http"
 
 OPERATOR_HELP_MARKERS: tuple[OperatorHelpMarker, ...] = (
     OperatorHelpMarker("config", "--config", "config.yaml", _MAN_CONFIG),
     OperatorHelpMarker("web", "--web", "--web", _MAN_WEB),
     OperatorHelpMarker("host", "--host", "--host", _MAN_HOST),
+    OperatorHelpMarker(
+        "https_cert_file",
+        "--https-cert-file",
+        "--https-cert-file",
+        _MAN_HTTPS_CERT,
+    ),
+    OperatorHelpMarker(
+        "https_key_file",
+        "--https-key-file",
+        "--https-key-file",
+        _MAN_HTTPS_KEY,
+    ),
+    OperatorHelpMarker(
+        "allow_insecure_http",
+        "--allow-insecure-http",
+        "--allow-insecure-http",
+        _MAN_ALLOW_INSECURE_HTTP,
+    ),
     OperatorHelpMarker("port", "--port", "--port", _MAN_PORT),
     OperatorHelpMarker(
         "scan_compressed",

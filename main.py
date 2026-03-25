@@ -5,6 +5,7 @@ CLI entry point: load config (YAML/JSON), run audit and report (optionally tagge
 
 import argparse
 import json
+import ssl
 import sys
 from pathlib import Path
 from typing import Any
@@ -76,14 +77,15 @@ def main() -> None:
             "  python main.py --config config.yaml --reset-data\n"
             "\n"
             "Web/API examples:\n"
-            "  # Start REST API using port from config.api.port or 8088 by default\n"
-            "  python main.py --config config.yaml --web\n"
+            "  # HTTPS: PEM cert + key (TLS >= 1.2)\n"
+            "  python main.py --config config.yaml --web --https-cert-file server.crt --https-key-file server.key\n"
             "\n"
-            "  # Start REST API explicitly on port 9090 (overrides config.api.port)\n"
-            "  python main.py --config config.yaml --web --port 9090\n"
+            "  # Plaintext HTTP (explicit risk acceptance; required when not using TLS)\n"
+            "  python main.py --config config.yaml --web --allow-insecure-http\n"
             "\n"
-            "  # Bind API on all interfaces (overrides config api.host and API_HOST; use with care)\n"
-            "  python main.py --config config.yaml --web --host 0.0.0.0\n"
+            "  # Explicit port or bind (same flags as before, still need TLS or --allow-insecure-http)\n"
+            "  python main.py --config config.yaml --web --allow-insecure-http --port 9090\n"
+            "  python main.py --config config.yaml --web --allow-insecure-http --host 0.0.0.0\n"
             "\n"
             "Once a one-shot scan finishes, an Excel report and heatmap PNG are written under\n"
             "the configured report.output_dir (default: current directory). When the API is\n"
@@ -128,6 +130,35 @@ def main() -> None:
             "Takes precedence over api.host in config and over the API_HOST environment variable. "
             "If omitted, resolution follows config api.host, then API_HOST, then safe default 127.0.0.1. "
             "Ignored in one-shot CLI mode."
+        ),
+    )
+    parser.add_argument(
+        "--https-cert-file",
+        default=None,
+        metavar="PATH",
+        help=(
+            "PEM certificate file for HTTPS when --web is set. "
+            "Requires --https-key-file (or api.https_cert_file / api.https_key_file in config). "
+            "TLS >= 1.2. Without cert+key, you must pass --allow-insecure-http for plaintext."
+        ),
+    )
+    parser.add_argument(
+        "--https-key-file",
+        default=None,
+        metavar="PATH",
+        help=(
+            "PEM private key for HTTPS when --web is set. "
+            "Requires --https-cert-file (or matching api.* keys in config)."
+        ),
+    )
+    parser.add_argument(
+        "--allow-insecure-http",
+        action="store_true",
+        help=(
+            "EXPLICIT RISK ACCEPTANCE: serve the dashboard over plaintext HTTP. "
+            "Use only on trusted loopback or lab networks. "
+            "For production use TLS (cert+key) or terminate TLS on a reverse proxy. "
+            "Can be set via api.allow_insecure_http in config instead of this flag."
         ),
     )
     parser.add_argument(
@@ -254,13 +285,61 @@ def main() -> None:
         _emit_runtime_trust_info(runtime_trust, to_stdout=True, to_stderr=True)
         import uvicorn
         from api.routes import app
-        from core.host_resolution import resolve_api_host
+        from core.dashboard_transport import (
+            configure_dashboard_transport,
+            resolve_web_listen_options,
+        )
+        from core.host_resolution import resolve_api_host, should_warn_insecure_api_bind
 
         api_cfg = config.get("api", {})
         port = api_cfg.get("port", args.port)
         workers = int(api_cfg.get("workers", 1))
         host = resolve_api_host(config, cli_host=args.host)
-        from core.host_resolution import should_warn_insecure_api_bind
+        try:
+            mode, cert_path, key_path, insecure_explicit = resolve_web_listen_options(
+                allow_insecure_http_cli=args.allow_insecure_http,
+                https_cert_file_cli=args.https_cert_file,
+                https_key_file_cli=args.https_key_file,
+                api_cfg=api_cfg,
+            )
+        except ValueError as e:
+            print(f"Dashboard transport error: {e}", file=sys.stderr, flush=True)
+            sys.exit(2)
+
+        cert_str = str(cert_path) if cert_path else None
+        key_str = str(key_path) if key_path else None
+        configure_dashboard_transport(
+            mode=mode,
+            insecure_explicit_opt_in=insecure_explicit,
+            cert_path=cert_str,
+            key_path=key_str,
+        )
+
+        if mode == "https":
+            info = (
+                "[INFO] Dashboard transport: HTTPS (TLS >= 1.2) — "
+                f"bound on {host}:{port}"
+            )
+            print(info)
+            print(info, file=sys.stderr, flush=True)
+            ssl_ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            ssl_ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+            ssl_ctx.load_cert_chain(certfile=cert_str, keyfile=key_str)
+        else:
+            banner = (
+                "======================================================================\n"
+                "WARNING: DASHBOARD PLAINTEXT HTTP — EXPLICIT OPT-IN\n"
+                "Traffic is NOT encrypted between browsers and this process.\n"
+                "Anyone on the network path may read or modify requests.\n"
+                "Use --https-cert-file/--https-key-file for TLS, or terminate TLS\n"
+                "on a reverse proxy. Do not use plaintext on untrusted networks.\n"
+                "======================================================================"
+            )
+            print(banner, file=sys.stderr, flush=True)
+            print(
+                "[INFO] dashboard_transport=insecure_http", file=sys.stderr, flush=True
+            )
+            ssl_ctx = None
 
         if should_warn_insecure_api_bind(config, host):
             print(
@@ -269,8 +348,17 @@ def main() -> None:
                 "api.api_key (or api_key_from_env), or keep host 127.0.0.1 / reverse proxy. "
                 "See SECURITY.md and docs/USAGE.md." % (host,),
                 file=sys.stderr,
+                flush=True,
             )
-        uvicorn.run(app, host=host, port=port, workers=workers)
+
+        uvicorn_kwargs: dict[str, Any] = {
+            "host": host,
+            "port": port,
+            "workers": workers,
+        }
+        if ssl_ctx is not None:
+            uvicorn_kwargs["ssl"] = ssl_ctx
+        uvicorn.run(app, **uvicorn_kwargs)
         return
 
     engine = AuditEngine(config)

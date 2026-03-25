@@ -9,6 +9,12 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+  {% if show_insecure_banner %}
+  <div class="insecure-transport-banner" role="status">
+    <strong>Plaintext HTTP</strong> — this dashboard is not using TLS. Traffic can be read or modified on the network path.
+    Use <code>--https-cert-file</code> / <code>--https-key-file</code> or terminate TLS on a reverse proxy. See <code>GET /status</code> (<code>dashboard_transport</code>).
+  </div>
+  {% endif %}
   <nav class="nav">
     <a href="/">Dashboard (dashBOARd)</a>
     <a href="/reports">Reports</a>
