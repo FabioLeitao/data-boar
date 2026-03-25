@@ -16,7 +16,6 @@ permissions:
 jobs:
   ping:
     runs-on: ubuntu-latest
-    if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
     steps:
       - name: Post to Slack incoming webhook
         env:
@@ -29,7 +28,10 @@ jobs:
           import urllib.error
           import urllib.request
 
-          url = os.environ["SLACK_WEBHOOK_URL"]
+          url = os.environ.get("SLACK_WEBHOOK_URL", "").strip()
+          if not url:
+              print("SLACK_WEBHOOK_URL is unset; skipping manual ping.")
+              raise SystemExit(0)
           text = os.environ.get("NOTIFY_TEXT", "ping")
           data = json.dumps({"text": text}).encode("utf-8")
           req = urllib.request.Request(
