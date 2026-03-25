@@ -74,6 +74,9 @@ Na raiz do repositório (PowerShell):
 # Criar PR e rodar a suíte de testes antes do push (não faz push se os testes falharem)
 .\scripts\commit-or-pr.ps1 -Action PR -Title "Título" -Body "Tópicos..." -RunTests
 
+# Garantir default repo do gh a partir do origin (preflight manual opcional)
+.\scripts\gh-ensure-default.ps1
+
 # Criar PR com corpo lido de arquivo (evita escapar corpo multi-linha no shell)
 .\scripts\create-pr.ps1 -Title "Título" -BodyFilePath "caminho\para\body.txt"
 .\scripts\create-pr.ps1 -Title "Título" -BodyFilePath $env:TEMP\pr-body.txt -RunTests
@@ -96,6 +99,7 @@ Na raiz do repositório (PowerShell):
 
 - **Git** e (para PR) **SSH** ou HTTPS com push para o GitHub.
 - **GitHub CLI (`gh`)** e `gh auth login` para a melhor experiência: o formulário de PR abre pré-preenchido no navegador. Se `gh` não estiver disponível, o script ainda abre a página de compare para você criar o PR manualmente.
+- `commit-or-pr.ps1 -Action PR` agora executa automaticamente uma checagem leve de repositório padrão do `gh` (derivada de `origin`) para evitar falhas de `gh pr checks` / `gh pr create` por falta de default repo.
 
 ## Notas
 
@@ -114,12 +118,24 @@ Quando você quiser **verificar**, rodar **pre-commit**, **fazer commit**, **des
 | 3       | **Propor** um título curto e corpo do PR em tópicos a partir da lista de arquivos e do contexto                                                       | (você ou o agente sugere título e corpo)                                                       |
 | 4       | **Commit + descrever + PR seguro e sincronizado** (commit com título/corpo, rodar testes de novo, fetch+rebase se atrás, push, abrir PR no navegador) | `.\scripts\commit-or-pr.ps1 -Action PR -Title "Seu título" -Body "Tópico1`nTópico2" -RunTests` |
 
+Opcional entre os passos `0` e `1`: `.\scripts\pr-hygiene-remind.ps1` ou `.\scripts\pr-hygiene-remind.ps1 -RunQuickChecks` (preflight de `gh` + checks rápidos de PRs abertos).
+
 Para um **corpo de PR longo**, use:
 
 - `.\scripts\create-pr.ps1 -Title "Seu título" -BodyFilePath caminho\para\body.txt` (opcionalmente `-RunTests`; o padrão é ligado), ou
 - Um .ps1 pontual que define `$Title` e `$Body` (ex.: here-string) e chama `commit-or-pr.ps1 -Action PR -Title $Title -Body $Body -RunTests`.
 
 **Por que essa ordem:** Um gate completo antes de commitar; um preview para confirmar o escopo; um passo de PR que reexecuta os testes e sincroniza (fetch + rebase se atrás) antes do push, deixando o PR seguro e sincronizado. Nada de `git add`/`git commit`/`git push` ou `pytest`/`ruff` soltos no meio quando esses scripts atendem.
+
+### Merge depois do CI verde (mantenedor / agente)
+
+Quando **`gh pr checks <N>`** passar e o PR estiver **mergeable** (sem conflitos), use **`.\scripts\pr-merge-when-green.ps1 -PrNumber <N>`** na raiz do repositório (`gh` autenticado). Opcional: **`-RunLocalCheckAll`** para um **`check-all`** local antes do merge. Ver **`.cursor/rules/agent-autonomous-merge-and-lab-ops.mdc`**.
+
+### Auto-merge do GitHub (opcional)
+
+**Recomendação padrão:** manter **auto-merge desligado** em PRs normais de feature/workflow. Preferir merge **explícito** com checks verdes e decisão consciente (humano ou **`pr-merge-when-green.ps1`**), evitando merges surpresa e mantendo controle alinhado a um fluxo deliberado e sem cerimônia inútil.
+
+**Quando pode ajudar:** PRs mecânicos de baixo risco (ex. **Dependabot** após triagem), com **branch protection / checks** — ativar **por PR** na UI do GitHub se você quiser merge automático quando o CI passar.
 
 ## Conventional Commits: tipos e escopos (frentes homelab / ops)
 
