@@ -23,7 +23,8 @@ try:
     _SentenceTransformer = SentenceTransformer
     _DL_AVAILABLE = True
 except ImportError:
-    pass
+    _SentenceTransformer = None
+    _DL_AVAILABLE = False
 
 # sklearn used for training a small head on top of embeddings (already a project dep)
 try:
@@ -96,8 +97,9 @@ class DLClassifier:
             self._model.fit(X, labels)
             self._sensitive_prototype = self._build_sensitive_prototype(X, labels)
             self._ready = True
-        except Exception:
-            pass
+        except Exception as model_err:
+            # Keep DL backend optional: model init failures disable readiness.
+            _ = str(model_err)
 
     @staticmethod
     def _build_sensitive_prototype(
