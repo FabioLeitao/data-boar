@@ -25,9 +25,9 @@
 
 You can **hate the app** and still use **Slack** first—it is the **lowest-friction** path from **GitHub Actions** (incoming webhook, one secret). Then add **Signal** as a **second vendor** and **stronger privacy** layer so you are not dependent on a single chat provider or on GitHub alone.
 
-| Phase | Channels | Goal |
-| ----- | -------- | ---- |
-| **1** | **A + B** | GitHub push/email + **Slack** `#data-boar-ops` (or your channel): **manual ping** workflow, **CI failure** workflow (when `SLACK_WEBHOOK_URL` is set), optional same webhook in app config for scan-complete (USAGE). |
+| Phase | Channels      | Goal                                                                                                                                                                                                                   |
+| ----- | --------      | ----                                                                                                                                                                                                                   |
+| **1** | **A + B**     | GitHub push/email + **Slack** `#data-boar-ops` (or your channel): **manual ping** workflow, **CI failure** workflow (when `SLACK_WEBHOOK_URL` is set), optional same webhook in app config for scan-complete (USAGE).  |
 | **2** | **A + B + D** | Keep Slack; add **Signal** via **home-lab HTTP bridge** (§3) + secret e.g. `SIGNAL_NOTIFY_URL` (or generic `NOTIFY_SECONDARY_URL`). Same workflow posts **the same short text** to both endpoints where secrets exist. |
 
 **Why both Slack and Signal:** Independent failure modes (Slack outage vs your Signal bridge vs GitHub app). **Telegram (C)** remains optional if you want a third chat vendor; it is not required for this pattern.
@@ -97,28 +97,28 @@ Implement **one generic “notify” step** in CI (bash/PowerShell) that posts t
 1. **Create New App** → **From scratch** → name it (e.g. **`Data Boar notifications`**) → choose your **workspace** → **Create App**.
 1. In the app settings sidebar, open **Incoming Webhooks** → turn **Activate Incoming Webhooks** **On**.
 1. Click **Add New Webhook to Workspace** → pick the channel (e.g. **`#data-boar-ops`**) → **Allow**.
-1. Copy the **Webhook URL** — it must look like `https://hooks.slack.com/services/...` (three path segments). **Do not** share it in issues, PRs, or public chat.
+1. Copy the **Webhook URL** — it must look like `<https://hooks.slack.com/services/..>.` (three path segments). **Do not** share it in issues, PRs, or public chat.
 
 If your workspace blocks custom apps, ask a workspace admin to approve app install or create the webhook using a policy-compliant process.
 
 #### B) Where to save it (canonical + optional backup)
 
-| Store | What you do | Why |
-| ----- | ----------- | --- |
-| **GitHub Actions (required for CI workflows)** | Repo **Settings → Secrets and variables → Actions → New repository secret** → name **`SLACK_WEBHOOK_URL`** (exact spelling) → paste URL → **Add secret**. | Actions reads this secret; nothing hits the repo files. |
-| **Password manager (optional)** | e.g. Bitwarden **secure note**: title `GitHub SLACK_WEBHOOK_URL — <repo name>`; paste the same URL. | Recovery if you rotate the webhook or recreate the secret. See [OPERATOR_SECRETS_BITWARDEN.md](OPERATOR_SECRETS_BITWARDEN.md) ([pt-BR](OPERATOR_SECRETS_BITWARDEN.pt_BR.md)). |
-| **`config.yaml` / env (optional, product path)** | Only if you want **scan-complete** Slack from a running Data Boar instance — same URL in **`notifications`** (see [USAGE.md](../USAGE.md)). Use env or a **gitignored** local config; **never** commit the URL. | Separate from GitHub Actions; same webhook is allowed. |
+| Store                                            | What you do                                                                                                                                                                                                     | Why                                                                                                                                                                           |
+| -----                                            | -----------                                                                                                                                                                                                     | ---                                                                                                                                                                           |
+| **GitHub Actions (required for CI workflows)**   | Repo **Settings → Secrets and variables → Actions → New repository secret** → name **`SLACK_WEBHOOK_URL`** (exact spelling) → paste URL → **Add secret**.                                                       | Actions reads this secret; nothing hits the repo files.                                                                                                                       |
+| **Password manager (optional)**                  | e.g. Bitwarden **secure note**: title `GitHub SLACK_WEBHOOK_URL — <repo name>`; paste the same URL.                                                                                                             | Recovery if you rotate the webhook or recreate the secret. See [OPERATOR_SECRETS_BITWARDEN.md](OPERATOR_SECRETS_BITWARDEN.md) ([pt-BR](OPERATOR_SECRETS_BITWARDEN.pt_BR.md)). |
+| **`config.yaml` / env (optional, product path)** | Only if you want **scan-complete** Slack from a running Data Boar instance — same URL in **`notifications`** (see [USAGE.md](../USAGE.md)). Use env or a **gitignored** local config; **never** commit the URL. | Separate from GitHub Actions; same webhook is allowed.                                                                                                                        |
 
 **Do not** save the webhook in: committed Markdown, `docs/private/` **if** that tree syncs somewhere risky without encryption, screenshots in tickets, or this chat as the only copy.
 
 #### C) After you’re done — where to look (sanity checks)
 
-| Check | Where | What “good” looks like |
-| ----- | ----- | ---------------------- |
-| Secret exists | GitHub → **Settings → Secrets and variables → Actions** | **`SLACK_WEBHOOK_URL`** listed (value is **hidden**; that’s normal). |
-| Manual ping works | **Actions** → **Slack operator ping (manual)** → **Run workflow** → open the run | Job **succeeded** (not **skipped**). **Skipped** usually means secret missing/misnamed or workflows not on the branch GitHub runs. |
-| Message arrived | Slack → your ops channel | New message with the text you sent (or the default ping line). |
-| CI failure path (later) | After a real **`CI`** failure (or a test branch) | **Actions** shows **Slack CI failure notify** run; Slack shows **“Data Boar — CI falhou”** with a link to the failed run. |
+| Check                   | Where                                                                            | What “good” looks like                                                                                                             |
+| -----                   | -----                                                                            | ----------------------                                                                                                             |
+| Secret exists           | GitHub → **Settings → Secrets and variables → Actions**                          | **`SLACK_WEBHOOK_URL`** listed (value is **hidden**; that’s normal).                                                               |
+| Manual ping works       | **Actions** → **Slack operator ping (manual)** → **Run workflow** → open the run | Job **succeeded** (not **skipped**). **Skipped** usually means secret missing/misnamed or workflows not on the branch GitHub runs. |
+| Message arrived         | Slack → your ops channel                                                         | New message with the text you sent (or the default ping line).                                                                     |
+| CI failure path (later) | After a real **`CI`** failure (or a test branch)                                 | **Actions** shows **Slack CI failure notify** run; Slack shows **“Data Boar — CI falhou”** with a link to the failed run.          |
 
 If **manual** job is **skipped**, confirm the secret name is exactly **`SLACK_WEBHOOK_URL`** and that `.github/workflows/slack-operator-ping.yml` is on the default branch (or the branch you run Actions from).
 
