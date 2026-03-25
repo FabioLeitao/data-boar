@@ -1,0 +1,34 @@
+---
+description: Audience segmentation for docs navigation and link boundaries (external vs internal vs private-secrets)
+alwaysApply: true
+---
+
+# Audience segmentation guardrail (docs and training materials)
+
+Use these audience buckets when editing docs, README sections, and training/disclosure material:
+
+1. **External audience**
+
+   Stakeholders, decision-makers, and enterprise teams (IT, cybersecurity, compliance, DPO, legal) evaluating or operating Data Boar.
+
+1. **Internal project audience**
+
+   Operator, assistant, maintainers, collaborators, and reviewers working on project internals.
+
+1. **Secrets-access audience**
+
+   Strictly operator + assistant; includes private operational notes and secret-bearing workflows.
+
+## Link and visibility rules
+
+- Keep current protections for `docs/private/` and existing restricted paths unchanged.
+- External-facing sections (e.g., README pitch, compliance/legal overview) should prefer links to public product docs (USAGE, TECH_GUIDE, COMPLIANCE_*, TESTING, SECURITY, GLOSSARY).
+- Avoid adding links from external-facing sections to internal-operational planning/control material (for example: `docs/plans/`, ops runbooks, CI/pipeline control docs, internal review-tracking files).
+- Internal docs may link to `docs/ops/`, `docs/plans/`, `docs/releases/`, `docs/private.example/`, and review-feedback folders when useful.
+- Secrets-only details remain in gitignored private docs and must never be exposed in tracked public pages.
+
+## Language and source-of-truth constraints
+
+- Product/user docs are authored from code truth in English first, then synced to pt-BR.
+- Respect lint/locale rules; avoid pt-PT forms in pt-BR docs.
+- Keep edits minimal and natural when removing boundary-crossing links.
