@@ -2,13 +2,18 @@
 
 **Português (Brasil):** [VERSIONING.pt_BR.md](VERSIONING.pt_BR.md)
 
-This project uses a **major.minor.build** version scheme:
+This project uses a **major.minor.build** version scheme, with optional **pre-release suffixes** while work is still being prepared:
 
 - **major** – first number (e.g. breaking changes or major release)
 - **minor** – second number (e.g. new features, backward-compatible)
 - **build** – third number (e.g. fixes, docs, no behaviour change)
+- **suffix** (optional) – pre-release stage marker in lowercase: `-beta` or `-rc`
 
-Example: `1.3.2` means major 1, minor 3, build 2.
+Examples:
+
+- `1.3.2` means major 1, minor 3, build 2 (final publishable number).
+- `1.3.3-beta` means pre-release work in progress for the next build.
+- `1.3.3-rc` means release candidate (feature/code/docs/tests wired, final publish checks pending).
 
 ---
 
@@ -19,6 +24,33 @@ Example: `1.3.2` means major 1, minor 3, build 2.
 | **Major** | Increment first number; set minor and build to **0**    | `1.3.2` → **2.0.0** |
 | **Minor** | Keep major; increment second number; set build to **0** | `1.3.2` → **1.4.0** |
 | **Build** | Keep major and minor; increment build only              | `1.3.2` → **1.3.3** |
+
+---
+
+## Pre-release flow (`-beta` / `-rc`) before final publish
+
+Use lowercase suffixes consistently:
+
+| Stage | Recommended use | Example |
+| --- | --- | --- |
+| **`-beta`** | Relevant code/behavior changes started and tracked, but not yet considered release-candidate ready. | `1.6.8-beta` |
+| **`-rc`** | Candidate ready for final validation/publish choreography (tests green, docs synced, release notes ready, merge/release pending). | `1.6.8-rc` |
+| **final (no suffix)** | Public release number (Git tag + GitHub Release + Docker Hub publish). | `1.6.8` |
+
+### Practical policy
+
+- If a slice changes meaningful behavior (API, detection logic, report output, runtime operation, security posture), prefer moving the working version to `X.Y.Z-beta`.
+- When the release package is materially ready (code + tests + docs/release notes in shape), promote to `X.Y.Z-rc`.
+- Only remove suffix and publish `X.Y.Z` when doing the real release sequence (merge + tag + GitHub Release + Docker publish).
+- For bigger scope (or when explicitly requested), publish as a **minor bump**: `X.(Y+1).0` (no suffix at final publish).
+
+---
+
+## Working vs published version (avoid confusion)
+
+- **Working version:** what `pyproject.toml` currently states on your branch (may be `-beta`/`-rc` or unsent work).
+- **Published version:** latest Git tag + GitHub Release + Docker Hub tag available to external users.
+- Do not assume they are equal; always call both explicitly in release notes and review requests.
 
 ---
 
@@ -79,9 +111,11 @@ After updating `pyproject.toml` (and optionally `core/about.py`), reinstall the 
 ## Quick reference
 
 - **Format:** `major.minor.build`
+- **Pre-release suffixes:** lowercase `-beta`, `-rc` (working states only)
 - **Bump major:** `X.Y.Z` → `(X+1).0.0`
 - **Bump minor:** `X.Y.Z` → `X.(Y+1).0`
 - **Bump build:** `X.Y.Z` → `X.Y.(Z+1)`
+- **Promote flow:** `X.Y.Z-beta` → `X.Y.Z-rc` → `X.Y.Z` (final publish)
 - **Checklist:** pyproject.toml → core/about.py → docs/data_boar.1, data_boar.5 → docs/deploy/DEPLOY.md → README (EN/PT-BR), USAGE (EN/PT-BR), PLANS_TODO → search repo for old version string.
 
 **Português (Brasil):** [VERSIONING.pt_BR.md](VERSIONING.pt_BR.md)
