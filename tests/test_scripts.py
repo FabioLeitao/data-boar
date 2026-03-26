@@ -293,6 +293,31 @@ def test_version_readiness_smoke_ps1_syntax():
     )
 
 
+def test_candidate_dossier_scaffold_ps1_syntax():
+    """scripts/candidate-dossier-scaffold.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "candidate-dossier-scaffold.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), (
+        "candidate-dossier-scaffold.ps1 parse failed"
+    )
+
+
+def test_candidate_dossier_scaffold_ps1_has_core_params():
+    """candidate dossier scaffold exposes key parameters for private workflow."""
+    root = _project_root()
+    script = root / "scripts" / "candidate-dossier-scaffold.ps1"
+    if not script.exists():
+        return
+    text = script.read_text(encoding="utf-8", errors="replace")
+    assert "CandidatePdfPath" in text
+    assert "OutputDir" in text
+    assert "LowPriorityCaution" in text
+    assert "AdvisorRemote" in text
+    assert "Overwrite" in text
+
+
 def test_commit_or_pr_mentions_gh_default_repo_guard():
     """commit-or-pr includes gh default repository guard for PR flow."""
     root = _project_root()
