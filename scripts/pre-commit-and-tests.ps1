@@ -1,5 +1,5 @@
 #!/usr/bin/env pwsh
-# Run pre-commit (Ruff lint/format + markdown + pt-BR locale guards) and full pytest via uv.
+# Run pre-commit (Ruff + plans-stats --check + markdown + pt-BR + commercial guard) and full pytest via uv.
 # Usage (from repo root):
 #   .\scripts\pre-commit-and-tests.ps1
 #   .\scripts\pre-commit-and-tests.ps1 -SkipPreCommit   # only pytest
