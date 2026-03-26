@@ -124,6 +124,7 @@ $body = @"
 
 - **Git** and (for PR) **SSH** or HTTPS push to GitHub.
 - **GitHub CLI (`gh`)** and `gh auth login` for the best experience: PR form opens pre-filled in your browser. If `gh` is missing, the script still opens the compare page so you can create the PR manually.
+- **`uv` preferred for test parity:** `commit-or-pr.ps1 -RunTests` runs `uv run pytest -v -W error` when `uv` is available (same dependency/interpreter strategy as CI and `check-all`); it falls back to `python -m pytest` only when `uv` is unavailable.
 - `commit-or-pr.ps1 -Action PR` now auto-runs a lightweight default-repo check for `gh` (derived from `origin`) to avoid `gh pr checks` / `gh pr create` failures caused by missing `gh` default repository.
 
 ## Notes
