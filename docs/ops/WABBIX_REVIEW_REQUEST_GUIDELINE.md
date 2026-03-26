@@ -73,6 +73,12 @@ Fallback cadence:
 
 - Every 2 sprints, or every 4-6 weeks.
 
+Version-signal heuristic (to avoid timing confusion):
+
+- If working version is **`X.Y.Z-beta`**, treat as “promising but still early”; request now only if you need external feedback before feature stabilization.
+- If working version reaches **`X.Y.Z-rc`**, treat as a **clear checkpoint** where requesting Wabbix review is usually worth considering before final publish.
+- Keep report text explicit about **working version** vs **latest published tag/image** so reviewers do not conflate branch tip with market release.
+
 ## What to ask Wabbix to focus on (beyond usual checks)
 
 - Evidence chain-of-custody quality (runtime -> SQLite -> export -> report).
@@ -231,7 +237,7 @@ G) Time-scope analysis (three lenses — do not merge):
    - Cumulative history (long horizon).
    - Since last Wabbix report (recommendations addressed vs pending vs planned).
    - Since last GitHub/Docker tagged release (last market-facing delivery → now, including unshipped `main` if applicable).
-   - State explicitly: latest tag (e.g. v1.6.7) vs current branch tip.
+   - State explicitly: latest **published Git tag** (verify in the repo; `main` may already show version **1.6.7-rc** in `pyproject.toml` while the **tag** is still **v1.6.6** until publish) vs current branch tip.
    - Highlight interval regressions, newly introduced risks, and trend direction.
    - Classify interval work by effort taxonomy (security/integrity/features/docs/ops/refactor).
 

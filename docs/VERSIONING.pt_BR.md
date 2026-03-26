@@ -2,13 +2,18 @@
 
 **English:** [VERSIONING.md](VERSIONING.md)
 
-Este projeto usa o esquema **major.minor.build** (maior.menor.build):
+Este projeto usa o esquema **major.minor.build** (maior.menor.build), com **sufixos de pré-release** opcionais enquanto o trabalho ainda está em preparação:
 
 - **major** – primeiro número (ex.: mudanças incompatíveis ou release maior)
 - **minor** – segundo número (ex.: novas funcionalidades, compatível)
 - **build** – terceiro número (ex.: correções, documentação, sem mudança de comportamento)
+- **sufixo** (opcional) – marcador de estágio em minúsculo: `-beta` ou `-rc`
 
-Exemplo: `1.3.2` significa major 1, minor 3, build 2.
+Exemplos:
+
+- `1.3.2` significa major 1, minor 3, build 2 (número final publicável).
+- `1.3.3-beta` significa trabalho de pré-release em andamento para o próximo build.
+- `1.3.3-rc` significa release candidate (feature/código/docs/testes conectados; faltam os passos finais de publish).
 
 ---
 
@@ -19,6 +24,33 @@ Exemplo: `1.3.2` significa major 1, minor 3, build 2.
 | **Major**    | Aumentar o primeiro número; zerar minor e build      | `1.3.2` → **2.0.0** |
 | **Minor**    | Manter major; aumentar o segundo número; zerar build | `1.3.2` → **1.4.0** |
 | **Build**    | Manter major e minor; apenas aumentar o build        | `1.3.2` → **1.3.3** |
+
+---
+
+## Fluxo de pré-release (`-beta` / `-rc`) antes do publish final
+
+Use sufixos em minúsculo de forma consistente:
+
+| Estágio | Uso recomendado | Exemplo |
+| --- | --- | --- |
+| **`-beta`** | Mudanças relevantes de código/comportamento já começaram e estão rastreadas, mas ainda não são candidatas finais de release. | `1.6.8-beta` |
+| **`-rc`** | Candidato pronto para validação final/coreografia de publish (testes verdes, docs sincronizados, release notes prontas, faltando merge/release). | `1.6.8-rc` |
+| **final (sem sufixo)** | Número de release público (tag Git + GitHub Release + publish no Docker Hub). | `1.6.8` |
+
+### Política prática
+
+- Se uma fatia altera comportamento de forma relevante (API, lógica de detecção, saída de relatório, operação em runtime, postura de segurança), prefira mover a versão de trabalho para `X.Y.Z-beta`.
+- Quando o pacote estiver materialmente pronto (código + testes + docs/release notes em forma), promova para `X.Y.Z-rc`.
+- Remova o sufixo e publique `X.Y.Z` apenas no ciclo de release real (merge + tag + GitHub Release + publish Docker).
+- Para escopo maior (ou quando solicitado explicitamente), publique com **minor bump**: `X.(Y+1).0` (sem sufixo no publish final).
+
+---
+
+## Versão de trabalho vs versão publicada (evitar confusão)
+
+- **Versão de trabalho:** valor atual no `pyproject.toml` no branch (pode estar em `-beta`/`-rc` ou ainda sem release).
+- **Versão publicada:** última tag Git + GitHub Release + tag do Docker Hub disponível para uso externo.
+- Não assuma que são iguais; informe as duas explicitamente em release notes e pedidos de revisão.
 
 ---
 
@@ -79,9 +111,11 @@ Depois de atualizar o `pyproject.toml` (e opcionalmente `core/about.py`), reinst
 ## Resumo rápido
 
 - **Formato:** `major.minor.build`
+- **Sufixos de pré-release:** `-beta`, `-rc` em minúsculo (apenas estados de trabalho)
 - **Bump major:** `X.Y.Z` → `(X+1).0.0`
 - **Bump minor:** `X.Y.Z` → `X.(Y+1).0`
 - **Bump build:** `X.Y.Z` → `X.Y.(Z+1)`
+- **Fluxo de promoção:** `X.Y.Z-beta` → `X.Y.Z-rc` → `X.Y.Z` (publish final)
 - **Checklist:** pyproject.toml → core/about.py → docs/data_boar.1, data_boar.5 → docs/deploy/DEPLOY.md → README (EN/PT-BR), USAGE (EN/PT-BR), PLANS_TODO → buscar no repositório pela string da versão antiga.
 
 **English:** [VERSIONING.md](VERSIONING.md)

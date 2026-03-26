@@ -51,9 +51,13 @@ After `fix_markdown_sonar.py`, restore **semantic numbering** (1. 2. 3.) in step
 
 After changing Python or markdown:
 
+**Windows:** Prefer **`.\scripts\check-all.ps1`** (full gate) or **`.\scripts\lint-only.ps1`** (runs **`pre-commit run --all-files`**) per **check-all-gate** — matches the **CI lint** job.
+
+**Once per clone:** **`uv run pre-commit install`** so **`git commit`** runs the same hooks locally.
+
 ```bash
-# Lint (CI runs this; extend-exclude in pyproject.toml skips legacy dirs)
-uv run ruff check .
+# Same bundle as CI lint job (.pre-commit-config.yaml): Ruff, plans-stats --check, markdown, pt-BR, commercial guard
+uv run pre-commit run --all-files
 
 # SonarQube-style + security (Python)
 uv run pytest tests/test_sonarqube_python.py tests/test_security.py -v -W error
@@ -64,6 +68,12 @@ uv run pytest tests/test_report_path_safety.py -v -W error
 # Markdown (if .md changed)
 uv run python scripts/fix_markdown_sonar.py
 uv run pytest tests/test_markdown_lint.py -v -W error
+
+# Bandit (medium+; optional but recommended after security-sensitive Python edits — same gate as CI)
+uv run bandit -c pyproject.toml -r api core config connectors database file_scan report main.py -ll -q
+
+# Mypy (dev-only, soft defaults in pyproject.toml; optional signal after large refactors — not a CI gate yet)
+uv run mypy api core
 ```
 
 Before opening a PR, run the full suite:
@@ -72,7 +82,7 @@ Before opening a PR, run the full suite:
 uv run pytest -v -W error
 ```
 
-Fix any failure; do not commit with failing quality tests. CodeQL runs in CI (`.github/workflows/codeql.yml`); address findings in the Security tab.
+Fix any failure; do not commit with failing quality tests. **CI** (`.github/workflows/ci.yml`): **`lint`** = **`pre-commit run --all-files`**; **`test`** = full pytest; **Bandit** + **pip-audit** = separate jobs. **CodeQL**: `.github/workflows/codeql.yml`. **Semgrep**: `.github/workflows/semgrep.yml`. Address CodeQL findings in the Security tab.
 
 ### 5. When adding new SonarQube or CodeQL rules
 
@@ -81,6 +91,7 @@ Keep adding tests so we avoid regressions without breaking the app:
 1. **Add a test** that enforces the new rule (in the appropriate test module).
 1. **Update the rule** (`.cursor/rules/quality-sonarqube-codeql.mdc`) and this skill with the rule id and guidance.
 1. **Update docs/TESTING.md** so the new rule is listed in the quality section.
+1. If **`ci.yml`** **lint** job or **`.pre-commit-config.yaml`** changes materially, update **`tests/test_github_workflows.py`** (`test_ci_lint_job_runs_pre_commit_all_files`) so workflow guards stay accurate.
 
 The full suite runs with `-W error` (pyproject.toml addopts and CI); all tests must stay green and warning-free during development so behaviour stays correct.
 
@@ -88,4 +99,4 @@ The full suite runs with `-W error` (pyproject.toml addopts and CI); all tests m
 
 - **Rule:** `.cursor/rules/quality-sonarqube-codeql.mdc` – same scope (Python + markdown); apply that rule when editing those files.
 - **Tests:** `tests/test_sonarqube_python.py`, `tests/test_security.py`, `tests/test_report_path_safety.py` (after `api/routes` path changes), `tests/test_markdown_lint.py`; see **docs/TESTING.md** for the full list.
-- **CI:** GitHub Actions run pytest and pip-audit; CodeQL runs on push/PR. Keeping tests green and fixing CodeQL findings is required for merge.
+- **CI:** **`ci.yml`** runs **pre-commit** (lint job), **pytest** (test job), **Bandit**, **pip-audit**; **Semgrep** and **CodeQL** are separate workflows. Keeping required checks green and fixing scanner findings is required for merge.

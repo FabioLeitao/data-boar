@@ -2,6 +2,8 @@
 
 **Purpose:** Remove ambiguity about `api.api_key_from_env`. This matches **`config/loader.py`** (normalized config): the YAML value is the **name** of an environment variable; the **secret** is supplied only at runtime (shell, systemd, Docker, Kubernetes Secret, etc.).
 
+**Full technician walkthrough (API key + HTTPS, Let’s Encrypt, lab certs, Docker):** [SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md](SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md) ([pt-BR](SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.pt_BR.md)).
+
 **Risk note:** A synthetic key below is **only** for learning. For any real deployment, generate a **new** strong random secret; never reuse examples from documentation.
 
 ---
@@ -103,6 +105,16 @@ Expect **200** (or another success), not 401.
 
 ---
 
+## 5b. Staging before production (recommended order)
+
+1. **Inventory** callers of the API (scripts, cron, CI, probes, internal dashboards). If the list is empty, you still run the checks so the **first** production user is not discovering 401/503 surprises cold.
+1. **Staging:** set `api.require_api_key: true`, `api.api_key_from_env: "AUDIT_API_KEY"` (or your name), export the variable, and use **HTTPS** (`--https-cert-file` / `--https-key-file` or TLS at the reverse proxy) where applicable. Confirm **`GET /health`** without a key (200) vs **`GET /status`** without a key (**401**).
+1. **Clients:** add **`X-API-Key`** or **`Authorization: Bearer`** to every non-health request; pin **TLS trust** (enterprise CA, `mkcert` chain in lab only, etc.).
+1. **Production:** roll out with a **short** compatibility window only if needed (e.g. plaintext **`--allow-insecure-http`** or HTTP behind TLS-terminating proxy). **Phase it out** using **`GET /status` / `GET /health`** (`dashboard_transport`) and **`python main.py --export-audit-trail`** (same field in JSON) so insecure posture stays traceable.
+1. Full narrative: **[SECURE_BY_DEFAULT_BLOCKERS_AND_MIGRATION.md](SECURE_BY_DEFAULT_BLOCKERS_AND_MIGRATION.md)**.
+
+---
+
 ## 6. Docker / Compose (pattern)
 
 Set the **same** variable name the config references; value from host env or Compose `secrets`:
@@ -129,11 +141,12 @@ Use a **Secret** and inject as env:
 
 ## 8. Troubleshooting
 
-| Symptom                                | Check                                                                                                                                    |
-| -------                                | -----                                                                                                                                    |
-| **401** on all routes except `/health` | Variable **name** in YAML matches exactly; variable is set **before** the process starts; no typo in `export` / systemd / container env. |
-| Key seems ignored                      | Non-empty **`api.api_key`** in YAML overrides env — remove literal or empty it.                                                          |
-| Works in shell, fails as service       | Service unit does not inherit your login env — set **`Environment`** or **`EnvironmentFile`**.                                           |
+| Symptom                                                        | Check                                                                                                                                                                                   |
+| -------                                                        | -----                                                                                                                                                                                   |
+| **401** on all routes except `/health`                         | Variable **name** in YAML matches exactly; variable is set **before** the process starts; no typo in `export` / systemd / container env.                                                |
+| **503** on routes (not `/health`) with `require_api_key: true` | No key resolved: env var missing, wrong name, or empty value; or `api.api_key` left blank without `api_key_from_env`. **`main.py --web`** should **exit 2** before listen in this case. |
+| Key seems ignored                                              | Non-empty **`api.api_key`** in YAML overrides env — remove literal or empty it.                                                                                                         |
+| Works in shell, fails as service                               | Service unit does not inherit your login env — set **`Environment`** or **`EnvironmentFile`**.                                                                                          |
 
 ---
 
