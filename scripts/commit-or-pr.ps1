@@ -29,6 +29,8 @@ param(
 
     [switch]$RunTests = $false,
 
+    [switch]$RunVersionSmoke = $false,
+
     # Safety guard: require Preview before Commit/PR unless explicitly bypassed.
     [switch]$SkipPreviewGuard = $false
 )
@@ -37,6 +39,33 @@ $ErrorActionPreference = "Stop"
 $repoRoot = (Get-Item $PSScriptRoot).Parent.FullName
 Set-Location $repoRoot
 $previewStampPath = Join-Path $repoRoot ".git\commit-or-pr.preview.json"
+
+function Invoke-RepoTestSuite {
+    param(
+        [string]$Context = "tests"
+    )
+
+    Write-Host "Running tests before push ($Context)..."
+    $uvCmd = Get-Command uv -ErrorAction SilentlyContinue
+    if ($uvCmd) {
+        & uv run pytest -v -W error
+    } else {
+        Write-Host "uv not found; falling back to system python pytest." -ForegroundColor Yellow
+        & python -m pytest -v -W error
+    }
+    return $LASTEXITCODE
+}
+
+function Invoke-VersionReadinessSmoke {
+    $smokeScript = Join-Path $repoRoot "scripts\version-readiness-smoke.ps1"
+    if (-not (Test-Path -LiteralPath $smokeScript)) {
+        Write-Host "Version readiness smoke script not found; skipping." -ForegroundColor Yellow
+        return 0
+    }
+    Write-Host "Running version readiness smoke..."
+    & $smokeScript
+    return $LASTEXITCODE
+}
 
 # Allow -IncludeFiles "path1,path2" as single string
 if ($IncludeFiles.Count -eq 1 -and $IncludeFiles[0] -match ',') {
@@ -155,9 +184,12 @@ if (-not $toAdd.Count -and $Action -eq 'PR') {
     }
     if ($ahead -gt 0) {
         if ($RunTests) {
-            Write-Host "Running tests before push (-RunTests)..."
-            & python -m pytest tests/ -v --tb=short -q 2>&1
-            if ($LASTEXITCODE -ne 0) { Write-Host "Tests failed. Fix failures before pushing. No push performed." -ForegroundColor Red; exit 1 }
+            $testExit = Invoke-RepoTestSuite -Context "-RunTests"
+            if ($testExit -ne 0) { Write-Host "Tests failed. Fix failures before pushing. No push performed." -ForegroundColor Red; exit 1 }
+        }
+        if ($RunVersionSmoke) {
+            $smokeExit = Invoke-VersionReadinessSmoke
+            if ($smokeExit -ne 0) { Write-Host "Version readiness smoke failed. No push performed." -ForegroundColor Red; exit 1 }
         }
         Write-Host "No new changes to commit; pushing $ahead existing local commit(s) and opening PR..."
         git fetch origin 2>$null
@@ -352,9 +384,12 @@ Write-Host "Committed: $Title"
 if ($Action -eq 'PR') {
     $branchName = (git rev-parse --abbrev-ref HEAD)
     if ($RunTests) {
-        Write-Host "Running tests before push (-RunTests)..."
-        & python -m pytest tests/ -v --tb=short -q 2>&1
-        if ($LASTEXITCODE -ne 0) { Write-Host "Tests failed. Fix failures before pushing. No push performed." -ForegroundColor Red; exit 1 }
+        $testExit = Invoke-RepoTestSuite -Context "-RunTests"
+        if ($testExit -ne 0) { Write-Host "Tests failed. Fix failures before pushing. No push performed." -ForegroundColor Red; exit 1 }
+    }
+    if ($RunVersionSmoke) {
+        $smokeExit = Invoke-VersionReadinessSmoke
+        if ($smokeExit -ne 0) { Write-Host "Version readiness smoke failed. No push performed." -ForegroundColor Red; exit 1 }
     }
     git fetch origin 2>$null
     $behind = git rev-list --count "HEAD..origin/$branchName" 2>$null

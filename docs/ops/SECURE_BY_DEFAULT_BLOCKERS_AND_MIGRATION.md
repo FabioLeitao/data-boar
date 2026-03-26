@@ -15,12 +15,12 @@ The blocked path is usually **not technical impossibility**. It is mainly a **co
 
 ## Main blocker map
 
-| Theme | Why it can break app/deploy | Typical regression |
-| --- | --- | --- |
-| **API key enforced by default** | Existing operators/tools may call protected routes without `X-API-Key` | 401s in scripts, dashboards, scheduled jobs |
+| Theme                            | Why it can break app/deploy                                                                           | Typical regression                                    |
+| ---                              | ---                                                                                                   | ---                                                   |
+| **API key enforced by default**  | Existing operators/tools may call protected routes without `X-API-Key`                                | 401s in scripts, dashboards, scheduled jobs           |
 | **`api_key_from_env` migration** | Misconfigured env var name/value, or YAML precedence confusion (`api_key` literal overrides env path) | App starts but auth behavior differs from expectation |
-| **HTTP -> HTTPS default** | Cert/key setup missing or invalid in environments that previously used plain HTTP | startup failure or inaccessible dashboard |
-| **Health/status assumptions** | Some callers assume all routes are open like `/health` | monitoring noise and false negatives |
+| **HTTP -> HTTPS default**        | Cert/key setup missing or invalid in environments that previously used plain HTTP                     | startup failure or inaccessible dashboard             |
+| **Health/status assumptions**    | Some callers assume all routes are open like `/health`                                                | monitoring noise and false negatives                  |
 
 ## Why this appears in plans as "product decision"
 
@@ -57,8 +57,13 @@ This is why the repo has incremental hardening first:
 1. Roll to production with explicit fallback flag available (short window).
 1. Monitor logs/status/audit for insecure mode usage and phase it out.
 
+## Operator context (early deployments)
+
+For **this product**, the maintainer-controlled install base is currently **effectively empty**: there are **no known external production API/dashboard clients** yet. That **reduces rollout risk** when turning on `require_api_key`, HTTPS-first listeners, and richer audit signals — but it does **not** remove the need for **documented migration paths**, **regression tests** (secure + compatibility modes), and **operator-safe secrets** (`api_key_from_env`, no literal keys in tracked YAML). The first real customer environment should not be the first time those paths are exercised.
+
 ## Related docs and plans
 
+- [SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md](SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md) ([pt-BR](SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.pt_BR.md)) — concrete API key + TLS setup for technicians
 - [API_KEY_FROM_ENV_OPERATOR_STEPS.md](API_KEY_FROM_ENV_OPERATOR_STEPS.md)
 - [SECURITY.md](../SECURITY.md)
 - [PLAN_DASHBOARD_HTTPS_BY_DEFAULT_AND_HTTP_EXPLICIT_RISK.md](../plans/PLAN_DASHBOARD_HTTPS_BY_DEFAULT_AND_HTTP_EXPLICIT_RISK.md)

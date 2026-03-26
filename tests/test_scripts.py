@@ -282,6 +282,17 @@ def test_gh_ensure_default_ps1_syntax():
     assert _parse_powershell_script(script, root), "gh-ensure-default.ps1 parse failed"
 
 
+def test_version_readiness_smoke_ps1_syntax():
+    """scripts/version-readiness-smoke.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "version-readiness-smoke.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), (
+        "version-readiness-smoke.ps1 parse failed"
+    )
+
+
 def test_commit_or_pr_mentions_gh_default_repo_guard():
     """commit-or-pr includes gh default repository guard for PR flow."""
     root = _project_root()
@@ -290,6 +301,18 @@ def test_commit_or_pr_mentions_gh_default_repo_guard():
         return
     text = script.read_text(encoding="utf-8", errors="replace")
     assert "Set-GhDefaultRepo" in text
+    assert "RunVersionSmoke" in text
+
+
+def test_check_all_supports_optional_version_smoke():
+    """check-all script exposes optional version readiness smoke switch."""
+    root = _project_root()
+    script = root / "scripts" / "check-all.ps1"
+    if not script.exists():
+        return
+    text = script.read_text(encoding="utf-8", errors="replace")
+    assert "IncludeVersionSmoke" in text
+    assert "version-readiness-smoke.ps1" in text
 
 
 def test_pr_hygiene_mentions_gh_preflight():
