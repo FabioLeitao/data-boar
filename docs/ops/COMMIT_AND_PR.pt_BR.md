@@ -99,6 +99,7 @@ Na raiz do repositório (PowerShell):
 
 - **Git** e (para PR) **SSH** ou HTTPS com push para o GitHub.
 - **GitHub CLI (`gh`)** e `gh auth login` para a melhor experiência: o formulário de PR abre pré-preenchido no navegador. Se `gh` não estiver disponível, o script ainda abre a página de compare para você criar o PR manualmente.
+- **`uv` preferencial para paridade de testes:** `commit-or-pr.ps1 -RunTests` executa `uv run pytest -v -W error` quando `uv` estiver disponível (mesma estratégia de dependências/interpretador da CI e do `check-all`); só usa `python -m pytest` quando `uv` não estiver disponível.
 - `commit-or-pr.ps1 -Action PR` agora executa automaticamente uma checagem leve de repositório padrão do `gh` (derivada de `origin`) para evitar falhas de `gh pr checks` / `gh pr create` por falta de default repo.
 
 ## Notas
