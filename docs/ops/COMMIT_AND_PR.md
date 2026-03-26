@@ -25,8 +25,8 @@ When you ask the agent to **preview**, **commit locally**, or **create a PR** wi
 - If you asked for a specific branch (e.g. “on branch `feature/xyz`”), creates or checks out that branch before committing (when there are changes).
 - **Pushes** the current branch to `origin` via your existing SSH credentials (all local commits are included).
 - **Opens the PR in your default browser** with the title and description **pre-filled**:
-  - Uses **`gh pr create --title ... --body-file ... --base <default> --web`** so the GitHub “New pull request” form opens with title and body already set; you review and click “Create pull request.”
-  - If `gh` is not available: opens the GitHub **compare** page so you can create the PR there in your logged-in session.
+- Uses **`gh pr create --title ... --body-file ... --base <default> --web`** so the GitHub “New pull request” form opens with title and body already set; you review and click “Create pull request.”
+- If `gh` is not available: opens the GitHub **compare** page so you can create the PR there in your logged-in session.
 
 ## Selecting which files to include
 
@@ -98,6 +98,8 @@ $body = @"
 
 # Create PR and run the test suite before pushing (no push if tests fail)
 .\scripts\commit-or-pr.ps1 -Action PR -Title "Your title" -Body "Bullets..." -RunTests
+# Create PR and include version readiness smoke gate (optional, recommended for all-greens/pre-publish)
+.\scripts\commit-or-pr.ps1 -Action PR -Title "Your title" -Body "Bullets..." -RunTests -RunVersionSmoke
 
 # Ensure gh default repository from origin (optional manual preflight)
 .\scripts\gh-ensure-default.ps1
@@ -124,6 +126,7 @@ $body = @"
 
 - **Git** and (for PR) **SSH** or HTTPS push to GitHub.
 - **GitHub CLI (`gh`)** and `gh auth login` for the best experience: PR form opens pre-filled in your browser. If `gh` is missing, the script still opens the compare page so you can create the PR manually.
+- **`uv` preferred for test parity:** `commit-or-pr.ps1 -RunTests` runs `uv run pytest -v -W error` when `uv` is available (same dependency/interpreter strategy as CI and `check-all`); it falls back to `python -m pytest` only when `uv` is unavailable.
 - `commit-or-pr.ps1 -Action PR` now auto-runs a lightweight default-repo check for `gh` (derived from `origin`) to avoid `gh pr checks` / `gh pr create` failures caused by missing `gh` default repository.
 
 ## Notes
@@ -138,8 +141,9 @@ When you want to **check**, run **pre-commit**, **commit**, **describe**, and cr
 | Step   | Goal                                                                                                                               | Command                                                                                        |
 | ------ | ------                                                                                                                             | --------                                                                                       |
 | 0      | **Optional:** open Dependabot PRs + Docker Scout quickview (read-only; needs `gh`, optional Docker)                                | `.\scripts\maintenance-check.ps1`                                                              |
-| 0a     | **Optional:** PR hygiene reminder + quick open-PR checks (`gh` preflight + checks per open PR)                                      | `.\scripts\pr-hygiene-remind.ps1` or `.\scripts\pr-hygiene-remind.ps1 -RunQuickChecks`         |
+| 0a     | **Optional:** PR hygiene reminder + quick open-PR checks (`gh` preflight + checks per open PR)                                     | `.\scripts\pr-hygiene-remind.ps1` or `.\scripts\pr-hygiene-remind.ps1 -RunQuickChecks`         |
 | 1      | **Check + pre-commit** (Ruff lint, format, markdown, full pytest in one run)                                                       | `.\scripts\check-all.ps1`                                                                      |
+| 1b     | **Optional version readiness smoke** (all-greens / pre-publish moments)                                                            | `.\scripts\check-all.ps1 -IncludeVersionSmoke`                                                 |
 | 2      | **Preview** (see what would be committed; no stage, no commit)                                                                     | `.\scripts\preview-commit.ps1`                                                                 |
 | 3      | **Propose** a short commit title and bullet-point PR body from the file list and context                                           | (you or the agent suggest title and body)                                                      |
 | 4      | **Commit + describe + safe synced PR** (commit with title/body, run tests again, fetch+rebase if behind, push, open PR in browser) | `.\scripts\commit-or-pr.ps1 -Action PR -Title "Your title" -Body "Bullet1`nBullet2" -RunTests` |

@@ -8,24 +8,24 @@
 ### 1) `PLANS_TODO.md` sequence adjustments
 
 - Promoted **HTTPS-by-default** earlier in "What to start next":
-  - moved from `6a` to `4`.
+- moved from `6a` to `4`.
 - Added explicit **trust-state accelerator** row:
-  - `4a` linked to [PLAN_GRC_INSPIRED_ENTERPRISE_TRUST_ACCELERATORS.md](PLAN_GRC_INSPIRED_ENTERPRISE_TRUST_ACCELERATORS.md).
+- `4a` linked to [PLAN_GRC_INSPIRED_ENTERPRISE_TRUST_ACCELERATORS.md](PLAN_GRC_INSPIRED_ENTERPRISE_TRUST_ACCELERATORS.md).
 - Shifted later rows accordingly:
-  - **Strong crypto** -> `5`
-  - **Data source versions** -> `6`
-  - **Notifications** -> `7`
+- **Strong crypto** -> `5`
+- **Data source versions** -> `6`
+- **Notifications** -> `7`
 - Updated "Resume next session" execution line to follow:
-  - `4 -> 4a -> 5 -> 6 -> 7`.
+- `4 -> 4a -> 5 -> 6 -> 7`.
 
 ### 2) `SPRINTS_AND_MILESTONES.md` trust granularity
 
 - Expanded the meaning of `M-TRUST` to include the runtime evidence start (`M-TRUST-01`).
 - Added a dedicated subsection with trust sub-milestones:
-  - `M-TRUST-01` contract,
-  - `M-TRUST-02` confidence-gated outputs,
-  - `M-TRUST-03` crypto self-check,
-  - `M-TRUST-04` external review packet cycle.
+- `M-TRUST-01` contract,
+- `M-TRUST-02` confidence-gated outputs,
+- `M-TRUST-03` crypto self-check,
+- `M-TRUST-04` external review packet cycle.
 
 ## Why these adjustments
 

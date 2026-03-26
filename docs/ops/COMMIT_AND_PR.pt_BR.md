@@ -73,6 +73,8 @@ Na raiz do repositório (PowerShell):
 
 # Criar PR e rodar a suíte de testes antes do push (não faz push se os testes falharem)
 .\scripts\commit-or-pr.ps1 -Action PR -Title "Título" -Body "Tópicos..." -RunTests
+# Criar PR com gate opcional de version readiness (recomendado para all-greens/pré-publish)
+.\scripts\commit-or-pr.ps1 -Action PR -Title "Título" -Body "Tópicos..." -RunTests -RunVersionSmoke
 
 # Garantir default repo do gh a partir do origin (preflight manual opcional)
 .\scripts\gh-ensure-default.ps1
@@ -99,6 +101,7 @@ Na raiz do repositório (PowerShell):
 
 - **Git** e (para PR) **SSH** ou HTTPS com push para o GitHub.
 - **GitHub CLI (`gh`)** e `gh auth login` para a melhor experiência: o formulário de PR abre pré-preenchido no navegador. Se `gh` não estiver disponível, o script ainda abre a página de compare para você criar o PR manualmente.
+- **`uv` preferencial para paridade de testes:** `commit-or-pr.ps1 -RunTests` executa `uv run pytest -v -W error` quando `uv` estiver disponível (mesma estratégia de dependências/interpretador da CI e do `check-all`); só usa `python -m pytest` quando `uv` não estiver disponível.
 - `commit-or-pr.ps1 -Action PR` agora executa automaticamente uma checagem leve de repositório padrão do `gh` (derivada de `origin`) para evitar falhas de `gh pr checks` / `gh pr create` por falta de default repo.
 
 ## Notas
@@ -114,6 +117,7 @@ Quando você quiser **verificar**, rodar **pre-commit**, **fazer commit**, **des
 | ------- | ----------                                                                                                                                            | ---------                                                                                      |
 | 0       | **Opcional:** PRs Dependabot + Docker Scout quickview (somente leitura; exige `gh`, Docker opcional)                                                  | `.\scripts\maintenance-check.ps1`                                                              |
 | 1       | **Check + pre-commit** (Ruff lint, format, markdown, pytest completo em uma execução)                                                                 | `.\scripts\check-all.ps1`                                                                      |
+| 1b      | **Smoke opcional de version readiness** (momentos de all-greens / pré-publish)                                                                       | `.\scripts\check-all.ps1 -IncludeVersionSmoke`                                                 |
 | 2       | **Preview** (ver o que seria commitado; sem stage, sem commit)                                                                                        | `.\scripts\preview-commit.ps1`                                                                 |
 | 3       | **Propor** um título curto e corpo do PR em tópicos a partir da lista de arquivos e do contexto                                                       | (você ou o agente sugere título e corpo)                                                       |
 | 4       | **Commit + descrever + PR seguro e sincronizado** (commit com título/corpo, rodar testes de novo, fetch+rebase se atrás, push, abrir PR no navegador) | `.\scripts\commit-or-pr.ps1 -Action PR -Title "Seu título" -Body "Tópico1`nTópico2" -RunTests` |

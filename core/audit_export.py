@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from core.about import get_about_info
+from core.dashboard_transport import get_dashboard_transport_snapshot
 from core.runtime_trust import get_runtime_trust_snapshot
 
 # Bump when JSON shape changes in a breaking way.
@@ -47,6 +48,7 @@ def build_audit_trail_payload(
     """
     about = get_about_info()
     runtime_trust = get_runtime_trust_snapshot(config)
+    dashboard_transport = get_dashboard_transport_snapshot()
     wipe_rows = db_manager.list_data_wipe_log_entries()
     session_summary = db_manager.get_scan_sessions_summary()
 
@@ -64,6 +66,7 @@ def build_audit_trail_payload(
             "sqlite": sqlite_path,
         },
         "runtime_trust": runtime_trust,
+        "dashboard_transport": dashboard_transport,
         "data_wipe_log": wipe_rows,
         "scan_sessions_summary": session_summary,
         # Populated when PLAN_BUILD_IDENTITY Phase E ships (integrity anchor,

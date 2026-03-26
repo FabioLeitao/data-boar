@@ -27,21 +27,21 @@ We still need a stronger "trust evidence loop" in runtime behavior:
 ### A1 — Trust-state contract (small, high leverage)
 
 - Define one canonical runtime contract:
-  - `trusted`, `degraded`, `untrusted` (or equivalent naming).
+- `trusted`, `degraded`, `untrusted` (or equivalent naming).
 - Wire contract to:
-  - logs/stdout/stderr,
-  - API status payload,
-  - report metadata,
-  - DB/audit row.
+- logs/stdout/stderr,
+- API status payload,
+- report metadata,
+- DB/audit row.
 
 **Why now:** creates single-source-of-truth semantics for all later security work.
 
 ### A2 — Output confidence policy
 
 - Add deterministic policy for degraded trust:
-  - normal output in `trusted`,
-  - reduced output and warning header in `degraded`,
-  - strict minimal output in `untrusted`.
+- normal output in `trusted`,
+- reduced output and warning header in `degraded`,
+- strict minimal output in `untrusted`.
 
 **Why now:** aligns with enterprise expectation that risky states do not emit normal-looking evidence.
 
@@ -55,10 +55,10 @@ We still need a stronger "trust evidence loop" in runtime behavior:
 ### A4 — Evidence packet for review cycles
 
 - Create one compact "review packet" template per milestone:
-  - what changed,
-  - why risk is reduced,
-  - test proof,
-  - known limits and next step.
+- what changed,
+- why risk is reduced,
+- test proof,
+- known limits and next step.
 
 **Why now:** improves external review quality (Wabbix or enterprise stakeholders) and sales confidence.
 

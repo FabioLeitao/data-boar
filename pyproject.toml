@@ -1,6 +1,6 @@
 [project]
 name = "python3-lgpd-crawler"
-version = "1.6.7"
+version = "1.6.7-rc"
 description = "App de sondagem, apreciação e mapeamento dos dados pessoais e/ou sensíveis para busca de violações de compliance de acordo com as recomendações do LGPD (adaptável mediante dicionário de regras)"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -108,9 +108,30 @@ extend-exclude = ["db", "scanners", "utils", "logging_custom"]
 # Connectors must register before we import connector_for_target; optional deps in try/except
 "core/engine.py" = ["E402"]
 
+# Bandit (security linter): dev dependency + optional CI gate. See docs/plans/PLAN_BANDIT_SECURITY_LINTER.md.
+[tool.bandit]
+exclude_dirs = ["tests", "db", "scanners", "utils", "logging_custom", ".venv"]
+# String-built SQL with identifiers from DB discovery (validated/quoted), not end-user SQL — same rationale as Semgrep exclude for sqlalchemy.text.
+skips = ["B608"]
+
+# Gradual typing: dev-only until clean enough for CI. See docs/QUALITY_WORKFLOW_RECOMMENDATIONS.md §5.
+[tool.mypy]
+python_version = "3.12"
+explicit_package_bases = true
+# Start soft; tighten later (disallow_untyped_defs, warn_return_any, smaller ignore_missing_imports).
+disallow_untyped_defs = false
+check_untyped_defs = false
+warn_return_any = false
+ignore_missing_imports = true
+warn_unused_ignores = false
+show_error_codes = true
+
 [dependency-groups]
 dev = [
     "pre-commit>=4.0.0",
     "ruff>=0.15.4",
     "rapidfuzz>=3.9.0",
+    "bandit>=1.9.4",
+    "mypy>=1.14.0",
+    "types-pyyaml>=6.0.12.20250915",
 ]
