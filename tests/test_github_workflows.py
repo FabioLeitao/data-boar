@@ -39,6 +39,38 @@ def test_slack_ci_failure_notify_workflow_present_and_valid() -> None:
     assert "notify" in (data.get("jobs") or {})
 
 
+def test_slack_release_published_notify_workflow_present_and_valid() -> None:
+    data = _load_workflow("slack-release-published-notify.yml")
+    assert data.get("name")
+    on = data.get("on") or {}
+    assert "release" in on
+    rel = on["release"]
+    assert isinstance(rel, dict)
+    assert rel.get("types") == ["published"]
+    assert "notify" in (data.get("jobs") or {})
+
+
+def test_slack_pr_merged_notify_workflow_present_and_valid() -> None:
+    data = _load_workflow("slack-pr-merged-notify.yml")
+    assert data.get("name")
+    on = data.get("on") or {}
+    assert "pull_request" in on
+    pr = on["pull_request"]
+    assert isinstance(pr, dict)
+    assert pr.get("types") == ["closed"]
+    assert pr.get("branches") == ["main", "master"]
+    assert "notify" in (data.get("jobs") or {})
+
+
+def test_slack_ops_digest_workflow_present_and_valid() -> None:
+    data = _load_workflow("slack-ops-digest.yml")
+    assert data.get("name")
+    on = data.get("on") or {}
+    assert "workflow_dispatch" in on
+    assert "schedule" in on
+    assert "notify" in (data.get("jobs") or {})
+
+
 def test_semgrep_workflow_present_and_valid() -> None:
     data = _load_workflow("semgrep.yml")
     assert data.get("name") == "Semgrep"
