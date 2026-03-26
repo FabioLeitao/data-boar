@@ -4,6 +4,27 @@ import os
 from typing import Any
 
 
+def effective_api_key_configured(api_cfg: dict[str, Any] | None) -> bool:
+    """
+    True when an API key is available after the same rules as ``config.loader``:
+
+    - non-empty ``api.api_key`` in the **normalized** config, or
+    - ``api.api_key_from_env`` names a variable that is set to a non-empty value.
+
+    Used for bind warnings and for refusing to start ``--web`` when ``require_api_key``
+    is true but no key can be resolved.
+    """
+    if not isinstance(api_cfg, dict):
+        return False
+    key = (api_cfg.get("api_key") or "").strip()
+    if key:
+        return True
+    env_name = (api_cfg.get("api_key_from_env") or "").strip()
+    if not env_name:
+        return False
+    return bool((os.environ.get(env_name) or "").strip())
+
+
 def resolve_api_host(config: dict[str, Any], cli_host: str | None = None) -> str:
     """
     Resolve the host/interface for the API server.
@@ -60,7 +81,6 @@ def should_warn_insecure_api_bind(config: dict[str, Any], host: str) -> bool:
     if not isinstance(api_cfg, dict):
         api_cfg = {}
     if bool(api_cfg.get("require_api_key")):
-        key = (api_cfg.get("api_key") or "").strip()
-        if key:
+        if effective_api_key_configured(api_cfg):
             return False
     return True

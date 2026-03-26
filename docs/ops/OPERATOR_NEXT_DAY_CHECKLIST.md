@@ -6,6 +6,8 @@
 
 **Broader context:** [OPERATOR_MANUAL_ACTIONS.md](OPERATOR_MANUAL_ACTIONS.md) · [PLANS_TODO.md](../plans/PLANS_TODO.md) “Resume next session”.
 
+**Dated one-day focus (example):** [OPERATOR_TODAY_MODE_2026-03-26.md](OPERATOR_TODAY_MODE_2026-03-26.md) ([pt-BR](OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md)) — merge, tag **v1.6.7**, WRB paste block. **WRB delta text:** [WRB_DELTA_SNAPSHOT_2026-03-26.md](WRB_DELTA_SNAPSHOT_2026-03-26.md).
+
 ---
 
 ## Morning (~2–3h) — security + unblocks

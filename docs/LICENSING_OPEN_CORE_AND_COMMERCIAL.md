@@ -71,3 +71,4 @@ With **no enforcement** (default), the application runs in **open** mode: no lic
 - [LICENSING_SPEC.md](LICENSING_SPEC.md) — token format, states, machine binding, revocation.
 - [RELEASE_INTEGRITY.md](RELEASE_INTEGRITY.md) — optional signed release manifest.
 - [HOSTING_AND_WEBSITE_OPTIONS.md](HOSTING_AND_WEBSITE_OPTIONS.md) — private repos and public site options.
+- [ACADEMIC_USE_AND_THESIS.md](ACADEMIC_USE_AND_THESIS.md) ([pt-BR](ACADEMIC_USE_AND_THESIS.pt_BR.md)) — thesis / dissertation use of public docs and code (not legal advice).

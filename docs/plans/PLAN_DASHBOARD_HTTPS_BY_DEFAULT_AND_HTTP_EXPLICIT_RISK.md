@@ -16,12 +16,12 @@ Make dashboard traffic **encrypted by default** (TLS >= 1.2) even without an ups
 
 ## Scope and boundaries
 
-| In scope | Out of scope |
-| --- | --- |
-| Native HTTPS listener option for dashboard app (TLS >= 1.2 baseline) | Replacing upstream WAF/reverse-proxy hardening responsibilities |
-| Redirect or force behavior toward HTTPS by default | Full PKI lifecycle automation beyond practical local cert handling |
-| Explicit HTTP opt-in flag with risk warnings and audit trail | Claiming transport-security compliance by itself |
-| UI banner + logs + status/health + audit signals for insecure mode | Eliminating ability to run HTTP in all environments |
+| In scope                                                             | Out of scope                                                       |
+| ---                                                                  | ---                                                                |
+| Native HTTPS listener option for dashboard app (TLS >= 1.2 baseline) | Replacing upstream WAF/reverse-proxy hardening responsibilities    |
+| Redirect or force behavior toward HTTPS by default                   | Full PKI lifecycle automation beyond practical local cert handling |
+| Explicit HTTP opt-in flag with risk warnings and audit trail         | Claiming transport-security compliance by itself                   |
+| UI banner + logs + status/health + audit signals for insecure mode   | Eliminating ability to run HTTP in all environments                |
 
 ## Target behavior (operator experience)
 
@@ -33,15 +33,31 @@ Make dashboard traffic **encrypted by default** (TLS >= 1.2) even without an ups
 
 ## Proposed implementation phases
 
-| Phase | To-do | Status |
-| --- | --- | --- |
-| 1. Transport config and flags | Add explicit dashboard transport mode (`https`, `http`), cert/key parameters, and insecure override flag (`--allow-insecure-http` style). Keep backwards-compatible defaults during rollout with deprecation warning path. | Done (`core/dashboard_transport.py`, `main.py`, Docker `CMD`) |
-| 2. Runtime enforcement and warnings | Enforce secure default behavior; on insecure override, print unmistakable warning on stdout/stderr and structured log fields (`transport_security=insecure_http`). | Done (stderr banner + `[INFO] dashboard_transport=…`; structured log field can follow) |
-| 3. UX warning surfaces | Add high-visibility dashboard banner (top half area) for insecure mode and surface same state in API `/status` and health output. | Done |
-| 4. Audit trail and evidence | Record insecure transport mode in audit trail / exported audit JSON so risk acceptance is traceable. | ⬜ Pending |
-| 5. Tests (both scenarios) | Add tests for HTTPS mode and HTTP override mode, including warning text, status flags, and banner rendering. Keep CI stable and deterministic. | Done (unit + CLI subprocess smoke) |
-| 6. Docs and legal/compliance wording | Update USAGE/TECH_GUIDE/SECURITY (+ pt-BR), COMPLIANCE_AND_LEGAL wording, and operator runbooks with concrete setup and risk statements. | USAGE + man + help done; broader legal/compliance pass optional |
-| 7. Transport integrity/tamper trust state | Detect unexpected changes in cert/crypto runtime capability and mark runtime as untrusted/tinted (logs, status, dashboard, DB/audit, report output restrictions, version marker). | ⬜ Pending |
+| Phase                                     | To-do                                                                                                                                                                                                                      | Status                                                                                 |
+| ---                                       | ---                                                                                                                                                                                                                        | ---                                                                                    |
+| 1. Transport config and flags             | Add explicit dashboard transport mode (`https`, `http`), cert/key parameters, and insecure override flag (`--allow-insecure-http` style). Keep backwards-compatible defaults during rollout with deprecation warning path. | Done (`core/dashboard_transport.py`, `main.py`, Docker `CMD`)                          |
+| 2. Runtime enforcement and warnings       | Enforce secure default behavior; on insecure override, print unmistakable warning on stdout/stderr and structured log fields (`transport_security=insecure_http`).                                                         | Done (stderr banner + `[INFO] dashboard_transport=…`; structured log field can follow) |
+| 3. UX warning surfaces                    | Add high-visibility dashboard banner (top half area) for insecure mode and surface same state in API `/status` and health output.                                                                                          | Done                                                                                   |
+| 4. Audit trail and evidence               | Record insecure transport mode in audit trail / exported audit JSON so risk acceptance is traceable.                                                                                                                       | ✅ Done (export-audit-trail includes `dashboard_transport`)                             |
+| 5. Tests (both scenarios)                 | Add tests for HTTPS mode and HTTP override mode, including warning text, status flags, and banner rendering. Keep CI stable and deterministic.                                                                             | Done (unit + CLI subprocess smoke)                                                     |
+| 6. Docs and legal/compliance wording      | Update USAGE/TECH_GUIDE/SECURITY (+ pt-BR), COMPLIANCE_AND_LEGAL wording, and operator runbooks with concrete setup and risk statements.                                                                                   | USAGE + man + help done; broader legal/compliance pass optional                        |
+| 7. Transport integrity/tamper trust state | Detect unexpected changes in cert/crypto runtime capability and mark runtime as untrusted/tinted (logs, status, dashboard, DB/audit, report output restrictions, version marker).                                          | ⬜ Pending                                                                              |
+
+### Phase 4 — Audit trail (implemented)
+
+**Goal:** `python main.py --export-audit-trail` (and any future DB-persisted audit row) should include **dashboard transport posture** so risk acceptance is **traceable** in exported JSON.
+
+## Suggested shape (extend `core/audit_export.py`):
+
+- At export time, call `get_dashboard_transport_snapshot()` from `core.dashboard_transport` (same dict as `/status`).
+- Add top-level key **`dashboard_transport`** to the payload (or nest under **`runtime_context`** next to `runtime_trust` if you prefer one bucket).
+- Fields to persist: at minimum `mode`, `tls_active`, `insecure_http_explicit_opt_in`, `summary` (already in snapshot); omit file paths to certs in export if policy prefers **boolean only** (`cert_configured: true`).
+- If **`AUDIT_TRAIL_SCHEMA_VERSION`** bumps, document in release notes and [PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md](PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md) if integrity signing references the export.
+- **Tests:** extend `tests/test_audit_export.py` (or add) to set env vars before `build_audit_trail_payload` and assert `dashboard_transport["mode"]` matches.
+
+**Note:** Snapshot reflects **process env** at export time. For one-shot CLI export without starting `main.py --web`, expect `mode: not_configured` unless you later set env in a documented operator workflow.
+
+---
 
 ## Concrete technical checklist
 
@@ -75,11 +91,11 @@ When secure mode is enabled, the app should detect if TLS/certificate capabiliti
 ### Required reaction on suspicious state
 
 1. Emit clear warnings to **stdout**, **stderr**, and structured logs.
-2. Expose security/trust state on `/status` and health output.
-3. Show a prominent dashboard warning banner.
-4. Persist trust/tamper event in internal DB/audit trail.
-5. Mark generated reports as **tinted/untrusted** and restrict output content (summary-only mode) per existing tamper-response direction.
-6. Mark runtime/build identity with a downgraded suffix/state (for example, force `-alpha`-style trust marker) aligned with [PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md](PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md).
+1. Expose security/trust state on `/status` and health output.
+1. Show a prominent dashboard warning banner.
+1. Persist trust/tamper event in internal DB/audit trail.
+1. Mark generated reports as **tinted/untrusted** and restrict output content (summary-only mode) per existing tamper-response direction.
+1. Mark runtime/build identity with a downgraded suffix/state (for example, force `-alpha`-style trust marker) aligned with [PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md](PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md).
 
 ### Non-goal
 
@@ -103,8 +119,8 @@ When secure mode is enabled, the app should detect if TLS/certificate capabiliti
 ### QA / UAT
 
 - Prefer non-self-signed certificates issued by:
-  - internal corporate PKI/private CA, or
-  - ACME-issued certs (for publicly reachable or DNS-validated environments).
+- internal corporate PKI/private CA, or
+- ACME-issued certs (for publicly reachable or DNS-validated environments).
 - Validate hostname/SAN correctness and renewal process before production.
 - Test both direct HTTPS mode and reverse-proxy TLS termination mode.
 
@@ -114,9 +130,9 @@ When secure mode is enabled, the app should detect if TLS/certificate capabiliti
 - **Let's Encrypt is a valid option** when DNS/routing and automation fit your environment.
 - Also valid: enterprise/commercial CAs or internal PKI, depending on trust model and governance.
 - Minimum baseline:
-  - TLS >= 1.2 (prefer 1.3 where available),
-  - strong cipher configuration via app/proxy runtime,
-  - renewal automation and expiry monitoring.
+- TLS >= 1.2 (prefer 1.3 where available),
+- strong cipher configuration via app/proxy runtime,
+- renewal automation and expiry monitoring.
 
 ## Explicit anti-pattern (must not do)
 
@@ -129,9 +145,9 @@ Do **not** "fix browser warnings" by misissuing/misdeploying a custom root certi
 ## Safer recommendation path
 
 1. Use publicly trusted certs (or enterprise PKI with proper governance), not ad-hoc root trust injection.
-2. If private PKI is required, distribute trust via controlled endpoint management policy (IT/MDM/GPO), never app self-install behavior.
-3. Keep certificate lifecycle explicit: issuance authority, rotation, revocation, expiry monitoring, and incident response ownership.
-4. Preserve clear warnings/failures when trust is invalid; do not suppress trust errors to "look clean."
+1. If private PKI is required, distribute trust via controlled endpoint management policy (IT/MDM/GPO), never app self-install behavior.
+1. Keep certificate lifecycle explicit: issuance authority, rotation, revocation, expiry monitoring, and incident response ownership.
+1. Preserve clear warnings/failures when trust is invalid; do not suppress trust errors to "look clean."
 
 ## CA/provider options (practical)
 
@@ -151,39 +167,39 @@ Do **not** "fix browser warnings" by misissuing/misdeploying a custom root certi
 When HTTPS-first is implemented, **do not allow weak/legacy crypto** in secure mode.
 
 - **Protocols:**
-  - deny TLS 1.0 and TLS 1.1;
-  - require TLS >= 1.2 (prefer TLS 1.3 where possible).
+- deny TLS 1.0 and TLS 1.1;
+- require TLS >= 1.2 (prefer TLS 1.3 where possible).
 - **Cipher suites / key exchange:**
-  - deny known weak suites (`NULL`, `aNULL`, `eNULL`, `RC4`, `3DES`, `DES`, `MD5`, export-grade suites);
-  - deny weak key exchange paths (legacy RSA key exchange without forward secrecy, weak/obsolete DH params);
-  - prefer modern ECDHE suites with AEAD ciphers.
+- deny known weak suites (`NULL`, `aNULL`, `eNULL`, `RC4`, `3DES`, `DES`, `MD5`, export-grade suites);
+- deny weak key exchange paths (legacy RSA key exchange without forward secrecy, weak/obsolete DH params);
+- prefer modern ECDHE suites with AEAD ciphers.
 - **Certificates:**
-  - deny expired, weak-signature, or weak-key certificates (for example SHA-1-signed leaf certs, RSA < 2048);
-  - enforce hostname/SAN validation;
-  - fail closed on certificate validation errors in secure mode.
+- deny expired, weak-signature, or weak-key certificates (for example SHA-1-signed leaf certs, RSA < 2048);
+- enforce hostname/SAN validation;
+- fail closed on certificate validation errors in secure mode.
 - **Deprecation / EOL posture:**
-  - no EOL crypto libraries/tools in the HTTPS path for supported releases;
-  - treat crypto stack EOL as maintenance priority (same critical-first posture as dependency/security alerts).
+- no EOL crypto libraries/tools in the HTTPS path for supported releases;
+- treat crypto stack EOL as maintenance priority (same critical-first posture as dependency/security alerts).
 
 ## Acceptance criteria (transport security)
 
 Secure mode is only accepted when all checks pass:
 
 1. Runtime refuses insecure protocol versions and weak cipher configurations.
-2. Health/status exposes transport security mode and protocol summary.
-3. Tests validate rejection of weak/legacy protocol/suite combinations.
-4. Docs explicitly state denied legacy crypto and supported baseline.
-5. Insecure HTTP override does **not** downgrade secure mode defaults when HTTPS is enabled.
-6. Suspicious transport-integrity state triggers trust downgrade and warning surfaces consistently across logs/status/dashboard/audit/report.
+1. Health/status exposes transport security mode and protocol summary.
+1. Tests validate rejection of weak/legacy protocol/suite combinations.
+1. Docs explicitly state denied legacy crypto and supported baseline.
+1. Insecure HTTP override does **not** downgrade secure mode defaults when HTTPS is enabled.
+1. Suspicious transport-integrity state triggers trust downgrade and warning surfaces consistently across logs/status/dashboard/audit/report.
 
 ## Risks and mitigations
 
 - Risk: cert/key setup friction for local labs.
-  - Mitigation: provide minimal local certificate quickstart and clear fallback with warning.
+- Mitigation: provide minimal local certificate quickstart and clear fallback with warning.
 - Risk: false sense of security if users rely only on app TLS.
-  - Mitigation: docs state reverse proxy/network controls still recommended.
+- Mitigation: docs state reverse proxy/network controls still recommended.
 - Risk: CI instability with TLS tests.
-  - Mitigation: deterministic local cert fixtures and scoped tests.
+- Mitigation: deterministic local cert fixtures and scoped tests.
 
 ## What else is missing for "secure by design" (beyond HTTPS default)
 

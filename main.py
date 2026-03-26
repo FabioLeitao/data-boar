@@ -289,9 +289,24 @@ def main() -> None:
             configure_dashboard_transport,
             resolve_web_listen_options,
         )
-        from core.host_resolution import resolve_api_host, should_warn_insecure_api_bind
+        from core.host_resolution import (
+            effective_api_key_configured,
+            resolve_api_host,
+            should_warn_insecure_api_bind,
+        )
 
         api_cfg = config.get("api", {})
+        if bool(api_cfg.get("require_api_key")) and not effective_api_key_configured(
+            api_cfg
+        ):
+            print(
+                "ERROR: api.require_api_key is true but no API key is available. "
+                "Set api.api_key (avoid committing secrets) or api.api_key_from_env "
+                "with the named environment variable set before the process starts. "
+                "See docs/ops/API_KEY_FROM_ENV_OPERATOR_STEPS.md.",
+                file=sys.stderr,
+            )
+            sys.exit(2)
         port = api_cfg.get("port", args.port)
         workers = int(api_cfg.get("workers", 1))
         host = resolve_api_host(config, cli_host=args.host)

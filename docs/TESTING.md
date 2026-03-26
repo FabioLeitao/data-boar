@@ -106,7 +106,7 @@ Run the check as part of the full suite: `uv run pytest tests/test_markdown_lint
 
 GitHub Actions (`.github/workflows/ci.yml`) runs:
 
-- **Lint** – `uv run ruff check .` and format check on **Python 3.12** (single job; config in pyproject.toml; legacy dirs excluded). Run the same commands locally before PR so the lint job passes. Optional: `uv run pre-commit install` to run Ruff on commit.
+- **Lint (pre-commit)** – On **Python 3.12**: **`uv run pre-commit run --all-files`** (same as **`.pre-commit-config.yaml`**: Ruff check + format, **plans-stats** `--check`, markdown lint, pt-BR locale, confidential-commercial guard). Locally: **`uv run pre-commit install`** so **`git commit`** runs the bundle. **`tests/test_github_workflows.py`** asserts **`ci.yml`** still runs **`pre-commit run --all-files`** (regression guard).
 
 1. **Test** – `uv run pytest -v -W error` on Ubuntu for **Python 3.12 and 3.13** (matrix, `fail-fast: false`).
 1. **Dependency audit** – `uv run pip-audit` after `uv sync` (Python 3.12).

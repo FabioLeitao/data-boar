@@ -27,6 +27,14 @@ Obrigado por considerar contribuir. Este documento cobre a configuração local,
 
    Ou com pip em um virtualenv: `pip install -e .`
 
+1. **Instale os hooks do pre-commit (recomendado, uma vez por clone)**
+
+   ```bash
+   uv run pre-commit install
+   ```
+
+   Os mesmos checks do job **Lint (pre-commit)** da CI rodam em todo **`git commit`** (Ruff, frescor do **plans-stats**, markdown, locale pt-BR, guarda commercial). Antes do PR: **`uv run pre-commit run --all-files`** se tiveres usado **`--no-verify`**.
+
 1. **Execute os testes**
 
    ```bash
@@ -72,8 +80,8 @@ O Cursor registra isso em **`.cursor/rules/git-pr-sync-before-advice.mdc`**. Vej
 
 ## Código e documentação
 
-- **Estilo:** O repositório usa [EditorConfig](.editorconfig) (indentação, charset, fins de linha). Execute `uv run ruff check .` e `uv run ruff format --check .` (ou corrija com `uv run ruff format .`) antes do PR para que o job de lint do CI passe. **Recomendado:** instale os hooks do [pre-commit](https://pre-commit.com/) para que o Ruff (check + format) rode em todo commit: `uv sync` e depois `uv run pre-commit install`; veja `.pre-commit-config.yaml`.
-- **Documentação:** Mantenha [README.md](README.md) e [docs/USAGE.md](docs/USAGE.md) em sincronia com o comportamento; atualize [README.pt_BR.md](README.pt_BR.md) e [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md) para o português. Toda **nova** documentação voltada ao usuário deve existir em **inglês (canônico)** e **português brasileiro**; **arquivos de plano** podem ser apenas em inglês. Ao alterar docs para refletir atualizações da aplicação, **sincronize o outro idioma** (EN primeiro, depois pt-BR). Use seletor de idioma no topo de cada doc e links cruzados que ofereçam os dois idiomas (veja [docs/README.md](docs/README.md) — Política de documentação). **Após editar qualquer .md:** execute `uv run python scripts/fix_markdown_sonar.py` e `uv run pytest tests/test_markdown_lint.py -v -W error` para que as regras SonarQube/markdownlint (ex.: MD060 estilo de tabela) passem.
+- **Estilo:** O repositório usa [EditorConfig](.editorconfig) (indentação, charset, fins de linha). O job **Lint** da CI executa **`uv run pre-commit run --all-files`** (Ruff + format + plans-stats + markdown + pt-BR + guarda commercial). Localmente: **`uv run pre-commit install`** e faça commits normais, ou rode **`uv run pre-commit run --all-files`** antes do PR. Se **ruff-format** falhar: **`uv run ruff format .`** e volte a fazer stage. Veja **`.pre-commit-config.yaml`**.
+- **Documentação:** Mantenha [README.md](README.md) e [docs/USAGE.md](docs/USAGE.md) em sincronia com o comportamento; atualize [README.pt_BR.md](README.pt_BR.md) e [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md) para o português. Toda **nova** documentação voltada ao usuário deve existir em **inglês (canônico)** e **português brasileiro**; **arquivos de plano** e **ADRs numerados** em [docs/adr/](docs/adr/) podem ser apenas em inglês (veja [docs/adr/README.pt_BR.md](docs/adr/README.pt_BR.md)). Ao alterar docs para refletir atualizações da aplicação, **sincronize o outro idioma** (EN primeiro, depois pt-BR). Use seletor de idioma no topo de cada doc e links cruzados que ofereçam os dois idiomas (veja [docs/README.pt_BR.md](docs/README.pt_BR.md) — Política de documentação). **Após editar qualquer .md:** execute `uv run python scripts/fix_markdown_sonar.py` e `uv run pytest tests/test_markdown_lint.py -v -W error` para que as regras SonarQube/markdownlint (ex.: MD060 estilo de tabela) passem. O script de correção aplica MD029 (estilo de lista ordenada 1/1/1); se o doc usar **numeração semântica de passos** (1. 2. 3.), restaure à mão após rodar o script — fundamento: [ADR 0001](docs/adr/0001-markdown-fix-script-md029-and-semantic-step-lists.md) (EN).
 - **Segredos:** Nunca faça commit de credenciais ou PII real. Use `.env` ou `config.local.yaml` (ambos estão no `.gitignore`) e redija em issues/PRs.
 
 ## CI e higiene de dependências

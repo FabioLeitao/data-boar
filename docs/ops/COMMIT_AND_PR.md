@@ -25,8 +25,8 @@ When you ask the agent to **preview**, **commit locally**, or **create a PR** wi
 - If you asked for a specific branch (e.g. “on branch `feature/xyz`”), creates or checks out that branch before committing (when there are changes).
 - **Pushes** the current branch to `origin` via your existing SSH credentials (all local commits are included).
 - **Opens the PR in your default browser** with the title and description **pre-filled**:
-  - Uses **`gh pr create --title ... --body-file ... --base <default> --web`** so the GitHub “New pull request” form opens with title and body already set; you review and click “Create pull request.”
-  - If `gh` is not available: opens the GitHub **compare** page so you can create the PR there in your logged-in session.
+- Uses **`gh pr create --title ... --body-file ... --base <default> --web`** so the GitHub “New pull request” form opens with title and body already set; you review and click “Create pull request.”
+- If `gh` is not available: opens the GitHub **compare** page so you can create the PR there in your logged-in session.
 
 ## Selecting which files to include
 
@@ -138,7 +138,7 @@ When you want to **check**, run **pre-commit**, **commit**, **describe**, and cr
 | Step   | Goal                                                                                                                               | Command                                                                                        |
 | ------ | ------                                                                                                                             | --------                                                                                       |
 | 0      | **Optional:** open Dependabot PRs + Docker Scout quickview (read-only; needs `gh`, optional Docker)                                | `.\scripts\maintenance-check.ps1`                                                              |
-| 0a     | **Optional:** PR hygiene reminder + quick open-PR checks (`gh` preflight + checks per open PR)                                      | `.\scripts\pr-hygiene-remind.ps1` or `.\scripts\pr-hygiene-remind.ps1 -RunQuickChecks`         |
+| 0a     | **Optional:** PR hygiene reminder + quick open-PR checks (`gh` preflight + checks per open PR)                                     | `.\scripts\pr-hygiene-remind.ps1` or `.\scripts\pr-hygiene-remind.ps1 -RunQuickChecks`         |
 | 1      | **Check + pre-commit** (Ruff lint, format, markdown, full pytest in one run)                                                       | `.\scripts\check-all.ps1`                                                                      |
 | 2      | **Preview** (see what would be committed; no stage, no commit)                                                                     | `.\scripts\preview-commit.ps1`                                                                 |
 | 3      | **Propose** a short commit title and bullet-point PR body from the file list and context                                           | (you or the agent suggest title and body)                                                      |
