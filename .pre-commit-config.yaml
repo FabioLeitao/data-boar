@@ -1,6 +1,7 @@
 # Pre-commit hooks: run before each commit to catch issues early.
-# Install: uv sync && uv run pre-commit install
-# Run manually: uv run pre-commit run --all-files
+# Install (once per clone): uv sync && uv run pre-commit install
+# Run manually / CI parity: uv run pre-commit run --all-files
+# Hooks mirror .github/workflows/ci.yml lint job (Ruff, markdown, pt-BR, commercial guard, plans-stats).
 # See https://pre-commit.com and docs/QUALITY_WORKFLOW_RECOMMENDATIONS.md
 
 repos:
@@ -15,6 +16,11 @@ repos:
         # Enforce format on commit; fix with: uv run ruff format .
   - repo: local
     hooks:
+      - id: plans-stats-check
+        name: plans status dashboard is fresh
+        entry: python scripts/plans-stats.py --check
+        language: system
+        pass_filenames: false
       - id: markdown-lint-guard
         name: markdown lint guard (pytest)
         entry: uv run pytest tests/test_markdown_lint.py::test_markdown_lint_no_violations -q -W error

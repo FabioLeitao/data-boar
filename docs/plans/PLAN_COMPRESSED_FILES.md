@@ -234,7 +234,7 @@ When implementing **scan inside compressed files**, ensure we do **not** run int
 - **Tier 3 archives:** LHA, ARJ, ZOO, PAK, ARC, ACE — via patool + external tools or dedicated libs; document and gate behind same option.
 - **Nested archives:** Zip-inside-zip (and tar inside zip, etc.) with a depth limit and size limit to avoid bombs.
 - **Other data sources not yet aimed for:**
-- **Cloud blob storage:** S3, Azure Blob, Google Cloud Storage (list objects, stream or download, then run same file/archive logic).
+- **Cloud blob storage:** **Planned** as a dedicated connector plan — [PLAN_OBJECT_STORAGE_CLOUD_CONNECTORS.md](PLAN_OBJECT_STORAGE_CLOUD_CONNECTORS.md) (S3-class first, then Azure Blob, GCS). Reuses the same file/archive logic after list + fetch.
 - **Google Drive / OneDrive API:** List and download files (and optionally open archives).
 - **Email stores:** IMAP, Exchange (already have .eml/.msg; could add “mailbox” as a target type).
 - **Container images:** Scan layers or extracted rootfs for config files and DBs (advanced).

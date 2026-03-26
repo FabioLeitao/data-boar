@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -11,7 +12,10 @@ from core.audit_export import AUDIT_TRAIL_SCHEMA_VERSION, build_audit_trail_payl
 from core.database import LocalDBManager
 
 
-def test_build_audit_trail_payload_structure(tmp_path):
+def test_build_audit_trail_payload_structure(tmp_path, monkeypatch):
+    # Make the assertion deterministic regardless of other tests / environment.
+    monkeypatch.delenv("DATA_BOAR_DASHBOARD_TRANSPORT", raising=False)
+    monkeypatch.delenv("DATA_BOAR_DASHBOARD_INSECURE_OPT_IN", raising=False)
     db_path = str(tmp_path / "a.db")
     mgr = LocalDBManager(db_path)
     try:
@@ -32,6 +36,7 @@ def test_build_audit_trail_payload_structure(tmp_path):
     assert payload["paths"]["sqlite"] == db_path
     assert payload["runtime_trust"]["trust_level"] == "expected"
     assert payload["runtime_trust"]["trust_state"] == "trusted"
+    assert payload["dashboard_transport"]["mode"] == "not_configured"
     assert len(payload["data_wipe_log"]) == 1
     assert "first wipe for test" in payload["data_wipe_log"][0]["reason"]
     assert payload["scan_sessions_summary"]["count"] == 0
@@ -53,6 +58,9 @@ scan:
         encoding="utf-8",
     )
     repo = Path(__file__).resolve().parents[1]
+    env = dict(os.environ)
+    env.pop("DATA_BOAR_DASHBOARD_TRANSPORT", None)
+    env.pop("DATA_BOAR_DASHBOARD_INSECURE_OPT_IN", None)
     r = subprocess.run(
         [
             sys.executable,
@@ -66,6 +74,7 @@ scan:
         text=True,
         cwd=str(repo),
         check=False,
+        env=env,
     )
     assert r.returncode == 0, r.stderr
     data = json.loads(r.stdout)
@@ -73,6 +82,7 @@ scan:
     assert data["runtime_trust"]["license_state"] == "OPEN"
     assert data["runtime_trust"]["trust_state"] == "trusted"
     assert data["scan_sessions_summary"]["count"] == 0
+    assert data["dashboard_transport"]["mode"] == "not_configured"
     assert "[INFO] runtime-trust:" in r.stderr
 
 

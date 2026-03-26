@@ -1,0 +1,29 @@
+# Semgrep OSS scan — complements CodeQL (different rules/heuristics).
+# See docs/plans/PLAN_SEMGREP_CI.md for rationale and excluded rules.
+name: Semgrep
+
+permissions:
+  contents: read
+
+'on':
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  semgrep:
+    name: Semgrep (OSS, Python)
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v6
+
+      # p/python: community Python rules. One rule is excluded — see PLAN_SEMGREP_CI.md
+      # (sqlalchemy.text FP where identifiers are validated; CodeQL + tests cover injection).
+      - name: Run Semgrep
+        run: >-
+          semgrep scan --config p/python --metrics=off
+          --exclude-rule python.sqlalchemy.security.audit.avoid-sqlalchemy-text.avoid-sqlalchemy-text
+          --error .
