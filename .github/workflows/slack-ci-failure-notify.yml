@@ -1,6 +1,6 @@
-# Posts a short message to Slack when the main CI workflow fails.
+# Posts a short message to Slack when CI or Semgrep fails (workflow_run).
 # Requires repository secret SLACK_WEBHOOK_URL (same as Slack operator ping).
-# Skips if secret unset. Runs after CI completes (workflow_run) — no checkout needed.
+# Skips if secret unset. No checkout needed.
 name: Slack CI failure notify
 
 permissions:
@@ -8,7 +8,7 @@ permissions:
 
 'on':
   workflow_run:
-    workflows: [CI]
+    workflows: [CI, Semgrep]
     types: [completed]
 
 jobs:
@@ -37,7 +37,7 @@ jobs:
 
           url = os.environ["SLACK_WEBHOOK_URL"]
           lines = [
-              "Data Boar — CI falhou",
+              f"Data Boar — {os.environ['RUN_NAME']} falhou",
               f"Repositório: {os.environ['REPO']}",
               f"Evento: {os.environ['EVENT']}",
               f"Branch (head): {os.environ['HEAD_BRANCH']}",

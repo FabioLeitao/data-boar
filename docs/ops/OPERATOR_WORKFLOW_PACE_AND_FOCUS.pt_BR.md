@@ -9,9 +9,9 @@
 ## 1. Retomar depois de uma pausa (o que verificar primeiro)
 
 1. **Estado do Git:** `git fetch` + `git status` — branch alinhado com `main` se estiver no meio de merge.
-2. **PRs abertos:** `gh pr list --state open` — fechar ou integrar PRs antes de abrir fatia grande nova.
-3. **CI:** Verde no PR relevante (UI do GitHub ou `gh pr checks`).
-4. **Secrets** (ex.: Slack): **Settings → Secrets and variables → Actions** — `SLACK_WEBHOOK_URL` definido; depois **Actions → Slack operator ping (manual)** para confirmar entrega.
+1. **PRs abertos:** `gh pr list --state open` — fechar ou integrar PRs antes de abrir fatia grande nova.
+1. **CI:** Verde no PR relevante (UI do GitHub ou `gh pr checks`).
+1. **Secrets** (ex.: Slack): **Settings → Secrets and variables → Actions** — `SLACK_WEBHOOK_URL` definido; depois **Actions → Slack operator ping (manual)** para confirmar entrega.
 
 O assistente **não** “lembra” do chat de ontem nem da RAM da sua máquina sem você colar saída ou rodar comandos nesta sessão.
 
@@ -35,7 +35,7 @@ O assistente **não** “lembra” do chat de ontem nem da RAM da sua máquina s
 
 A tabela em **`.cursor/rules/session-mode-keywords.mdc`** é **pequena e só em inglês** de propósito. Multiplicar tokens (`wabbix-slice`, `demo-prep`, …) costuma **aumentar carga mental** (“qual token hoje?”).
 
-**Prefira:**
+## Prefira:
 
 - **`backlog`** + **item nomeado** na mensagem (“próxima linha Wabbix: API key segura por padrão”).
 - **`feature`** + referência a **`PLANS_TODO.md`**.
@@ -71,10 +71,10 @@ A tabela em **`.cursor/rules/session-mode-keywords.mdc`** é **pequena e só em 
 ## 7. Próximos passos concretos (checklist do operador)
 
 1. **Higiene de PR:** listar PRs abertos; mergear ou fechar os obsoletos **depois** de CI verde / `check-all` na branch certa.
-2. **Slack:** com `SLACK_WEBHOOK_URL` definido, rodar **Actions → Slack operator ping (manual)** uma vez; confirmar no canal.
-3. **Loop Wabbix:** responder com **evidências** (caminhos em `WABBIX_IN_REPO_BASELINE.md`); escolher **uma** linha seguinte na tabela evolutiva como fatia **`feature`** ou **`backlog`** bem definida.
-4. **Demo:** reler `PLANS_TODO.md` e `SPRINTS_AND_MILESTONES.md`; uma passagem **homelab** com `HOMELAB_VALIDATION.md` antes de chamar o build de “pronto para demo”.
-5. **Próxima sessão:** começar com **`pmo-view`** ou colar a seção relevante de **`PLANS_TODO.md`** para alinhar prioridade.
+1. **Slack:** com `SLACK_WEBHOOK_URL` definido, rodar **Actions → Slack operator ping (manual)** uma vez; confirmar no canal.
+1. **Loop Wabbix:** responder com **evidências** (caminhos em `WABBIX_IN_REPO_BASELINE.md`); escolher **uma** linha seguinte na tabela evolutiva como fatia **`feature`** ou **`backlog`** bem definida.
+1. **Demo:** reler `PLANS_TODO.md` e `SPRINTS_AND_MILESTONES.md`; uma passagem **homelab** com `HOMELAB_VALIDATION.md` antes de chamar o build de “pronto para demo”.
+1. **Próxima sessão:** começar com **`pmo-view`** ou colar a seção relevante de **`PLANS_TODO.md`** para alinhar prioridade.
 
 ---
 
