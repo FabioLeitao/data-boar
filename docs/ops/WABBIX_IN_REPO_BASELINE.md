@@ -25,6 +25,16 @@ If a review snapshot was taken from a **different clone or branch**, ask the ope
 
 ---
 
+## Plans — cloud storage and CI (reviewer expectations)
+
+| Topic                                                                                   | Path                                                                              |
+| -----                                                                                   | ----                                                                              |
+| **Object storage connectors (S3-class, Azure Blob, GCS)** — plan only until implemented | `docs/plans/PLAN_OBJECT_STORAGE_CLOUD_CONNECTORS.md`                              |
+| **Semgrep in GitHub Actions** (complements CodeQL)                                      | `docs/plans/PLAN_SEMGREP_CI.md` · `.github/workflows/semgrep.yml`                 |
+| **Bandit** (Python linter; `ci.yml` job **medium+**)                                    | `docs/plans/PLAN_BANDIT_SECURITY_LINTER.md` · `[tool.bandit]` in `pyproject.toml` |
+
+---
+
 ## Sync
 
 Central execution order: **`docs/plans/PLANS_TODO.md`** (Wabbix subsection).

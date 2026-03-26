@@ -57,6 +57,8 @@ Additional client libraries may be required depending on which connectors you us
 - **pyOpenSSL Dependabot alerts (#9 / #10) and Snowflake:** We cannot upgrade to **pyOpenSSL ≥ 26** until **`snowflake-connector-python`** allows it in its published metadata (optional **`bigdata`** extra). See **[docs/ops/DEPENDABOT_PYOPENSSL_SNOWFLAKE.md](docs/ops/DEPENDABOT_PYOPENSSL_SNOWFLAKE.md)** for triage, upstream link, and optional dismiss guidance.
 - **Pygments Dependabot / pip-audit (CVE-2026-4539):** No fixed release on PyPI yet beyond **2.19.2**. See **[docs/ops/DEPENDABOT_PYGMENTS_CVE.md](docs/ops/DEPENDABOT_PYGMENTS_CVE.md)** for triage and optional dismiss guidance; bump **`pygments`** when upstream publishes a patch.
 - **Code scanning baseline:** CodeQL workflow uses **`security-and-quality`** for Python and should stay enabled on push/PR/schedule. Keep this broad suite plus project-specific hardening tests/rules; if a new query is noisy, triage and document before considering suppression.
+- **Semgrep (OSS):** The **Semgrep** GitHub Actions workflow runs ruleset **`p/python`** on push/PR (complements CodeQL). Exclusions and rationale: **`docs/plans/PLAN_SEMGREP_CI.md`**.
+- **Bandit:** **Bandit (medium+)** runs as part of the **CI** workflow on push/PR (`[tool.bandit]` in **`pyproject.toml`**). Details and **low**-severity triage: **`docs/plans/PLAN_BANDIT_SECURITY_LINTER.md`**.
 
 This approach is part of the project’s security baseline. For the full list of hardening measures and status, see **`docs/plans/completed/PLAN_SECURITY_HARDENING.md`**.
 
@@ -94,9 +96,10 @@ When the app is behind a reverse proxy (e.g. nginx, Caddy, load balancer), ensur
 
 The API does not implement authentication by default; secure the app at the reverse proxy or network level when exposed. For enterprises that want a simple shared-secret gate without changing the “secure at proxy” model, the application supports an **optional API key**:
 
-- In config, set `api.require_api_key: true` and either `api.api_key` (literal) or `api.api_key_from_env: "VAR"` (read key from environment). When enabled, every request except **GET /health** must include either the **X-API-Key** header or **Authorization: Bearer &lt;key&gt;**; otherwise the API returns **401**. The **/health** endpoint is never protected so load balancers and orchestrators can still get 200.
+- In config, set `api.require_api_key: true` and either `api.api_key` (literal — avoid committing secrets) or `api.api_key_from_env: "VAR"` (read key from environment at startup). When enabled, **GET /health** stays **unauthenticated** on purpose: it returns liveness JSON (`status`, public `license` summary, `dashboard_transport`) for probes. **Every other route** must include **X-API-Key** or **Authorization: Bearer &lt;key&gt;** when a key is successfully resolved from config/env. **401** = missing or wrong key. **503** = `require_api_key` is true but no key could be resolved (misconfiguration). **`main.py --web` exits with code 2** before listening if the key is required but missing, so you do not accidentally run an open API.
 - **Good practice:** Use a strong, random key and store it in an environment variable (e.g. `api_key_from_env: "AUDIT_API_KEY"`). Do not log the key or commit it to version control. This is a simple gate only; for full authentication and authorization, continue to use the reverse proxy or an identity provider.
-- **Concrete operator steps** (shell, systemd, Docker/K8s patterns, `curl` checks, synthetic example key): **`docs/ops/API_KEY_FROM_ENV_OPERATOR_STEPS.md`**.
+- **Concrete operator steps** (shell, systemd, Docker/K8s patterns, `curl` checks, synthetic example key): [API_KEY_FROM_ENV_OPERATOR_STEPS.md](docs/ops/API_KEY_FROM_ENV_OPERATOR_STEPS.md). For ordering (inventory clients, staging first, monitor `dashboard_transport` and audit export), see [SECURE_BY_DEFAULT_BLOCKERS_AND_MIGRATION.md](docs/ops/SECURE_BY_DEFAULT_BLOCKERS_AND_MIGRATION.md).
+- **End-to-end technician guide (API key + TLS paths, Let’s Encrypt, lab self-signed, Docker):** [SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md](docs/ops/SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md) ([pt-BR](docs/ops/SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.pt_BR.md)).
 
 ## Deployment hardening and reverse proxy
 

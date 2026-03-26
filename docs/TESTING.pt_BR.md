@@ -84,7 +84,7 @@ Execute: `uv run pytest tests/test_markdown_lint.py -v -W error`.
 
 O GitHub Actions (`.github/workflows/ci.yml`) executa:
 
-- **Lint (Ruff)** — em **Python 3.12** (job único).
+- **Lint (pre-commit)** — em **Python 3.12**: **`uv run pre-commit run --all-files`** (igual ao **`.pre-commit-config.yaml`**: Ruff check + format, **plans-stats** `--check`, markdown, locale pt-BR, guarda commercial). Localmente: **`uv run pre-commit install`** para rodar no **`git commit`**. O **`tests/test_github_workflows.py`** garante que **`ci.yml`** ainda executa **`pre-commit run --all-files`** (anti-regressão).
 - **Testes** — `uv run pytest -v -W error` no Ubuntu para **Python 3.12 e 3.13** (matriz, `fail-fast: false`).
 - **Auditoria de dependências** — `uv run pip-audit` após `uv sync` (Python 3.12).
 - **SonarQube/SonarCloud** — quando `SONAR_TOKEN` está definido; usa Python 3.12 após os testes passarem.

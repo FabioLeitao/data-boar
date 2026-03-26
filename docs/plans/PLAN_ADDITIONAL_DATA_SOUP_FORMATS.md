@@ -100,7 +100,7 @@ In production, **images**, **audio**, and **video** files are common. We do **no
 
 **Context:** External security commentary (e.g. Security Now) highlights that **rich media** (images, video, some document exports) can embed or reference **third-party tracking endpoints** used by large platforms (e.g. Meta/Facebook, TikTok). That is relevant to Data Boar because operators may need to know whether **files in scope** contain references that could support **cross-site or cross-app tracking** or **telemetry**, which may intersect with **privacy and sensitive-data governance** (especially when combined with other findings).
 
-**Product intent (planned, not implemented until sliced):**
+## Product intent (planned, not implemented until sliced):
 
 1. **Detection (heuristic):** When scanning supported rich-media paths, optionally look for **known tracker URL patterns or hostnames** (e.g. `facebook.com/tr`, `connect.facebook.net`, TikTok-related endpoints) in:
    - extracted **metadata** strings,
@@ -129,63 +129,63 @@ This section raises **“ingesting and digesting the data soup”** and **“sni
 
 ### A. Visibility and human-perception tricks (office documents, PDFs, exports)
 
-| Pattern | What it is | Why it matters | Product direction (when sliced) |
-| ------- | ---------- | -------------- | ------------------------------- |
-| **Microscopic or minimally sized text** | Font sizes near readability threshold, text in margins | Can hide IDs, watermarks, legal text, or instructions | Heuristics on extracted layout/text stats + optional “suspicious density” flags in report |
-| **Low-contrast / same-color text** | White-on-white, near-identical foreground/background | Deliberate concealment or bad export hygiene | Where extractors expose spans/colors (PDF/advanced DOCX), flag **anomaly** buckets; otherwise document as limitation |
-| **Off-page or clipped content** | Text boxes outside printable area, negative coordinates | Common in sloppy templates; sometimes abuse | Layout-aware parsers where available; “out-of-bounds text” warning class |
-| **Hidden rows/columns/sheets** | Excel/ODS hidden sheets or very narrow columns | May hold PII or cross-walk tables | Already partially visible via structure reads; extend with explicit **hidden sheet/column** reporting where supported |
-| **Collapsed outline / grouped rows** | Content folded in UI but present in file | Operators may miss in manual review | Surface **structural** hints in metadata/findings when connector exposes them |
-| **Comments, revision history, embedded notes** | Author comments, track-changes residue | Often rich in PII and informal language | Continue to prioritize extractors that include comments/tracked changes in sample or dedicated pass |
+| Pattern                                        | What it is                                              | Why it matters                                        | Product direction (when sliced)                                                                                       |
+| -------                                        | ----------                                              | --------------                                        | -------------------------------                                                                                       |
+| **Microscopic or minimally sized text**        | Font sizes near readability threshold, text in margins  | Can hide IDs, watermarks, legal text, or instructions | Heuristics on extracted layout/text stats + optional “suspicious density” flags in report                             |
+| **Low-contrast / same-color text**             | White-on-white, near-identical foreground/background    | Deliberate concealment or bad export hygiene          | Where extractors expose spans/colors (PDF/advanced DOCX), flag **anomaly** buckets; otherwise document as limitation  |
+| **Off-page or clipped content**                | Text boxes outside printable area, negative coordinates | Common in sloppy templates; sometimes abuse           | Layout-aware parsers where available; “out-of-bounds text” warning class                                              |
+| **Hidden rows/columns/sheets**                 | Excel/ODS hidden sheets or very narrow columns          | May hold PII or cross-walk tables                     | Already partially visible via structure reads; extend with explicit **hidden sheet/column** reporting where supported |
+| **Collapsed outline / grouped rows**           | Content folded in UI but present in file                | Operators may miss in manual review                   | Surface **structural** hints in metadata/findings when connector exposes them                                         |
+| **Comments, revision history, embedded notes** | Author comments, track-changes residue                  | Often rich in PII and informal language               | Continue to prioritize extractors that include comments/tracked changes in sample or dedicated pass                   |
 
 ### B. Character- and encoding-level cloaking
 
-| Pattern | What it is | Why it matters | Product direction |
-| ------- | ---------- | -------------- | ----------------- |
-| **Zero-width / bidirectional override characters** | ZWJ, ZWNJ, RLO, etc. | Can break naive search, smuggle fingerprints, or obfuscate identifiers | Optional normalisation pass + report “non-printing density” / suspicious Unicode runs |
-| **Homoglyphs / confusable glyphs** | Cyrillic “а” vs Latin “a” | Evasion against keyword lists | Optional homoglyph normalisation for **selected** detection passes (config-gated) |
-| **Whitespace padding / fragmented tokens** | `C P F` split across tags | Weakens regex unless normalised | Already partially handled where text is flattened; extend per connector |
+| Pattern                                            | What it is                | Why it matters                                                         | Product direction                                                                     |
+| -------                                            | ----------                | --------------                                                         | -----------------                                                                     |
+| **Zero-width / bidirectional override characters** | ZWJ, ZWNJ, RLO, etc.      | Can break naive search, smuggle fingerprints, or obfuscate identifiers | Optional normalisation pass + report “non-printing density” / suspicious Unicode runs |
+| **Homoglyphs / confusable glyphs**                 | Cyrillic “а” vs Latin “a” | Evasion against keyword lists                                          | Optional homoglyph normalisation for **selected** detection passes (config-gated)     |
+| **Whitespace padding / fragmented tokens**         | `C P F` split across tags | Weakens regex unless normalised                                        | Already partially handled where text is flattened; extend per connector               |
 
 ### C. Steganography and covert channels (cross-reference)
 
-| Area | Note |
-| ---- | ---- |
-| **Images, audio, video payloads** | Covered in **Tier 3** and [PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md](PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md). Remains **opt-in** and compute-heavy. |
-| **Polyglot files** | Single file valid as two types; may bypass extension or magic-byte assumptions | Align with **content-type** and archive plans; optional “polyglot suspicion” only with strong signals to avoid noise |
+| Area                              | Note                                                                                                                                                        |                                                                                                                      |
+| ----                              | ----                                                                                                                                                        |                                                                                                                      |
+| **Images, audio, video payloads** | Covered in **Tier 3** and [PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md](PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md). Remains **opt-in** and compute-heavy. |                                                                                                                      |
+| **Polyglot files**                | Single file valid as two types; may bypass extension or magic-byte assumptions                                                                              | Align with **content-type** and archive plans; optional “polyglot suspicion” only with strong signals to avoid noise |
 
 ### D. Network- and tracking-adjacent strings inside documents
 
-| Pattern | What it is | Why it matters | Product direction |
-| ------- | ---------- | -------------- | ----------------- |
-| **Web bugs / tracker URLs** | Single-pixel, analytics endpoints in HTML, SVG, email HTML | Cross-context tracking, leakage of open/read behaviour | Overlap with **Tier 3b**; extend host/path allow deny lists per operator policy |
-| **Marketing-automation and ESP endpoints** | Marketo, HubSpot, Mailchimp, SendGrid, Braze-style image/beacon URLs in exports | Correlates opens/clicks to individuals when combined with mailing lists | Same heuristic bucket as Tier 3b; optional **category** tag in report (not a legal verdict) |
-| **Ad / social SDKs and widgets** | `googletagmanager`, `doubleclick`, LinkedIn Insight, Twitter/X widgets, Reddit pixels (evolving hosts) | Cross-site profiles; compliance “unknown unknowns” in leaked exports | Expandable host list + **versioned** pattern pack; heavy dependence on updates—document maintenance cost |
-| **Link shorteners and redirect chains** | `bit.ly`, `t.co`, branded short domains | Obscures final destination; may hide tracker landings | Optional **resolve** step only when operator enables and timeout budget allows; else flag **opaque URL** only |
-| **UTM and campaign parameters only** | `utm_source`, `utm_campaign`, `fbclid`, `gclid` | Not always PII; signals **intentional campaign plumbing** | Low-noise reporting: **campaign plumbing detected** exposure class |
-| **Fingerprint / analytics JS snippets in saved HTML** | Inline scripts referencing known FingerprintJS-like or cohort hints | Surveillance-adjacent in customer-owned archives | String heuristic only unless product explicitly adds JS parsing (later) |
-| **Deep links / deferred attribution** | Universal links, app-specific URL schemes | May join file content to ad/attribution networks | Heuristic URL inventory + optional framework tags (not legal conclusions) |
-| **License / asset URLs in creative** | Stock, font, template CDNs | Operational metadata; sometimes sensitive in insider contexts | Low-cost string extraction already; categorise in report as **provenance** where useful |
+| Pattern                                               | What it is                                                                                             | Why it matters                                                          | Product direction                                                                                             |
+| -------                                               | ----------                                                                                             | --------------                                                          | -----------------                                                                                             |
+| **Web bugs / tracker URLs**                           | Single-pixel, analytics endpoints in HTML, SVG, email HTML                                             | Cross-context tracking, leakage of open/read behaviour                  | Overlap with **Tier 3b**; extend host/path allow deny lists per operator policy                               |
+| **Marketing-automation and ESP endpoints**            | Marketo, HubSpot, Mailchimp, SendGrid, Braze-style image/beacon URLs in exports                        | Correlates opens/clicks to individuals when combined with mailing lists | Same heuristic bucket as Tier 3b; optional **category** tag in report (not a legal verdict)                   |
+| **Ad / social SDKs and widgets**                      | `googletagmanager`, `doubleclick`, LinkedIn Insight, Twitter/X widgets, Reddit pixels (evolving hosts) | Cross-site profiles; compliance “unknown unknowns” in leaked exports    | Expandable host list + **versioned** pattern pack; heavy dependence on updates—document maintenance cost      |
+| **Link shorteners and redirect chains**               | `bit.ly`, `t.co`, branded short domains                                                                | Obscures final destination; may hide tracker landings                   | Optional **resolve** step only when operator enables and timeout budget allows; else flag **opaque URL** only |
+| **UTM and campaign parameters only**                  | `utm_source`, `utm_campaign`, `fbclid`, `gclid`                                                        | Not always PII; signals **intentional campaign plumbing**               | Low-noise reporting: **campaign plumbing detected** exposure class                                            |
+| **Fingerprint / analytics JS snippets in saved HTML** | Inline scripts referencing known FingerprintJS-like or cohort hints                                    | Surveillance-adjacent in customer-owned archives                        | String heuristic only unless product explicitly adds JS parsing (later)                                       |
+| **Deep links / deferred attribution**                 | Universal links, app-specific URL schemes                                                              | May join file content to ad/attribution networks                        | Heuristic URL inventory + optional framework tags (not legal conclusions)                                     |
+| **License / asset URLs in creative**                  | Stock, font, template CDNs                                                                             | Operational metadata; sometimes sensitive in insider contexts           | Low-cost string extraction already; categorise in report as **provenance** where useful                       |
 
 ### E. Embedded objects and compound documents
 
-| Pattern | What it is | Why it matters | Product direction |
-| ------- | ---------- | -------------- | ----------------- |
-| **OLE packages, attached files inside Office** | Nested payloads | Bypass perimeter that only lists “top-level” files | Archive/compound-document plan: recurse with bounds |
-| **PDF attachments / portfolios** | Files embedded in PDF | Same as above | Parser support + size/time limits |
+| Pattern                                        | What it is            | Why it matters                                     | Product direction                                   |
+| -------                                        | ----------            | --------------                                     | -----------------                                   |
+| **OLE packages, attached files inside Office** | Nested payloads       | Bypass perimeter that only lists “top-level” files | Archive/compound-document plan: recurse with bounds |
+| **PDF attachments / portfolios**               | Files embedded in PDF | Same as above                                      | Parser support + size/time limits                   |
 
 ### F. Machine-readable “ingredients” in visual form
 
-| Pattern | What it is | Why it matters | Product direction |
-| ------- | ---------- | -------------- | ----------------- |
+| Pattern                             | What it is         | Why it matters                                           | Product direction                                                                                                         |
+| -------                             | ----------         | --------------                                           | -----------------                                                                                                         |
 | **Barcodes, QR codes in documents** | Encoded PI or URLs | OCR/vision stack may decode; sensitive if payload is PII | Optional decode path aligned with existing **scan_image_ocr** posture; report as **encoded payload** with redaction rules |
 
 ### G. Steganography and entropy-style “maybe hidden” (cross-reference, not duplicate spec)
 
-| Pattern | What it is | Why it matters | Product direction |
-| ------- | ---------- | -------------- | ----------------- |
-| **LSB / transform-domain hiding** | Classic image/audio/video stego | Illicit exfil or watermarking; rare in routine compliance but high impact when present | **Opt-in** `--scan-stego` (or equivalent); bounded tools; see Tier 3 stego rows |
-| **Unused / reserved chunks** | PNG ancillary chunks, APP markers in JPEG | Sometimes misused for payload | Parser-specific; only with explicit stego phase |
-| **High-entropy segments in “beneath” containers** | Appended data after EOF, polyglot tricks | May indicate tooling abuse | Align with **polyglot** and **content-type** plans; avoid noisy global entropy on every file |
+| Pattern                                           | What it is                                | Why it matters                                                                         | Product direction                                                                            |
+| -------                                           | ----------                                | --------------                                                                         | -----------------                                                                            |
+| **LSB / transform-domain hiding**                 | Classic image/audio/video stego           | Illicit exfil or watermarking; rare in routine compliance but high impact when present | **Opt-in** `--scan-stego` (or equivalent); bounded tools; see Tier 3 stego rows              |
+| **Unused / reserved chunks**                      | PNG ancillary chunks, APP markers in JPEG | Sometimes misused for payload                                                          | Parser-specific; only with explicit stego phase                                              |
+| **High-entropy segments in “beneath” containers** | Appended data after EOF, polyglot tricks  | May indicate tooling abuse                                                             | Align with **polyglot** and **content-type** plans; avoid noisy global entropy on every file |
 
 Tier **G** stays **light in this doc**: implementation detail belongs in [PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md](PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md) stego subsection and in `file_scan.scan_for_stego` when that ships.
 
@@ -220,19 +220,19 @@ Suggested order:
 
 ## To-dos (backlog; not sequential until we pick a phase)
 
-| #   | To-do                                                                                                                                                                      | Status                                                                                                                                                            |
-| --- | --------------------------------------------------------------------------------------------------------------------------------                                           | ------                                                                                                                                                            |
-| 1   | **Tier 1 – EPUB:** Add .epub to SUPPORTED_EXTENSIONS; extract text from OCF (ZIP) content documents; run scanner.                                                          | ⬜                                                                                                                                                                 |
-| 2   | **Tier 1 – Parquet / Avro:** Add .parquet, .avro; read schema + sample rows; run scanner on column names and sample values.                                                | ⬜                                                                                                                                                                 |
-| 3   | **Tier 1 – ORC / Feather:** Add .orc, .feather; read via pyarrow; run scanner on column names and sample values.                                                           | ⬜                                                                                                                                                                 |
-| 4   | **Tier 1 – DBF:** Add .dbf; extract column names + sample rows; run scanner.                                                                                               | ⬜                                                                                                                                                                 |
-| 5   | **Tier 3 – Metadata only:** Optional extractors for image EXIF/XMP, audio ID3, video metadata/subtitles (no stego).                                                        | ✅ Done (`file_scan.scan_rich_media_metadata`, `scan_image_ocr`, sidecar `.srt`/`.vtt`/`.ass`/`.ssa`; mutagen/ffprobe/Tesseract optional; see USAGE / TECH_GUIDE). |
-| 6   | **Stego phase (future):** Document image/audio/video as stego containers; design opt-in `scan_for_stego`; CLI `--scan-stego` and web/dashboard option; implement or defer. | ⬜                                                                                                                                                                 |
+| #   | To-do                                                                                                                                                                                                | Status                                                                                                                                                            |
+| --- | --------------------------------------------------------------------------------------------------------------------------------                                                                     | ------                                                                                                                                                            |
+| 1   | **Tier 1 – EPUB:** Add .epub to SUPPORTED_EXTENSIONS; extract text from OCF (ZIP) content documents; run scanner.                                                                                    | ⬜                                                                                                                                                                 |
+| 2   | **Tier 1 – Parquet / Avro:** Add .parquet, .avro; read schema + sample rows; run scanner on column names and sample values.                                                                          | ⬜                                                                                                                                                                 |
+| 3   | **Tier 1 – ORC / Feather:** Add .orc, .feather; read via pyarrow; run scanner on column names and sample values.                                                                                     | ⬜                                                                                                                                                                 |
+| 4   | **Tier 1 – DBF:** Add .dbf; extract column names + sample rows; run scanner.                                                                                                                         | ⬜                                                                                                                                                                 |
+| 5   | **Tier 3 – Metadata only:** Optional extractors for image EXIF/XMP, audio ID3, video metadata/subtitles (no stego).                                                                                  | ✅ Done (`file_scan.scan_rich_media_metadata`, `scan_image_ocr`, sidecar `.srt`/`.vtt`/`.ass`/`.ssa`; mutagen/ffprobe/Tesseract optional; see USAGE / TECH_GUIDE). |
+| 6   | **Stego phase (future):** Document image/audio/video as stego containers; design opt-in `scan_for_stego`; CLI `--scan-stego` and web/dashboard option; implement or defer.                           | ⬜                                                                                                                                                                 |
 | 7   | **Tier 3b – Embedded trackers (Meta/TikTok-style):** Opt-in CLI + config + optional dashboard; heuristic detection in rich media; warnings to stdout/stderr/log + report section; see Tier 3b above. | ⬜                                                                                                                                                                 |
-| 8   | **Docs:** When adding formats, update USAGE, TECH_GUIDE, SUPPORTED_EXTENSIONS list; note behaviour inside compressed and when cloaked.                                     | ✅ Updated for rich media slice; revisit when Tier 1 formats land.                                                                                                 |
-| 9   | **Tier 4 – Unicode / cloaking pass:** Config-gated normalisation or reporting for zero-width, bidi, homoglyph risk; integrate with detector sample budget.                 | ⬜                                                                                                                                                                 |
-| 10  | **Tier 4 – Document “hidden structure” signals:** Hidden sheets/columns, out-of-bounds text, low-contrast/micro text where extractors support it; report exposure class. | ⬜                                                                                                                                                                 |
-| 11  | **Tier 4 – Embedded objects / PDF attachments:** Bounded recursion consistent with compressed-file limits; exposure class `embedded_object`.                             | ⬜                                                                                                                                                                 |
+| 8   | **Docs:** When adding formats, update USAGE, TECH_GUIDE, SUPPORTED_EXTENSIONS list; note behaviour inside compressed and when cloaked.                                                               | ✅ Updated for rich media slice; revisit when Tier 1 formats land.                                                                                                 |
+| 9   | **Tier 4 – Unicode / cloaking pass:** Config-gated normalisation or reporting for zero-width, bidi, homoglyph risk; integrate with detector sample budget.                                           | ⬜                                                                                                                                                                 |
+| 10  | **Tier 4 – Document “hidden structure” signals:** Hidden sheets/columns, out-of-bounds text, low-contrast/micro text where extractors support it; report exposure class.                             | ⬜                                                                                                                                                                 |
+| 11  | **Tier 4 – Embedded objects / PDF attachments:** Bounded recursion consistent with compressed-file limits; exposure class `embedded_object`.                                                         | ⬜                                                                                                                                                                 |
 
 **Sync:** When a step is done, update this table and [PLANS_TODO.md](PLANS_TODO.md). This plan remains a **backlog/catalogue** until we prioritise a specific phase.
 
