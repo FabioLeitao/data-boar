@@ -237,7 +237,7 @@ G) Time-scope analysis (three lenses — do not merge):
    - Cumulative history (long horizon).
    - Since last Corporate-Entity-C report (recommendations addressed vs pending vs planned).
    - Since last GitHub/Docker tagged release (last market-facing delivery → now, including unshipped `main` if applicable).
-   - State explicitly: latest **published Git tag** (verify in the repo; `main` may already show version **1.6.7-rc** in `pyproject.toml` while the **tag** is still **v1.6.6** until publish) vs current branch tip.
+   - State explicitly: latest **published Git tag** (verify in the repo; `main` may already show a **pre-release** suffix or a **next patch/minor** while the published tag still reflects the last delivery) vs current branch tip.
    - Highlight interval regressions, newly introduced risks, and trend direction.
    - Classify interval work by effort taxonomy (security/integrity/features/docs/ops/refactor).
 

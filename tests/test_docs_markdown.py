@@ -90,6 +90,35 @@ def test_readme_en_and_ptbr_keep_mascot_image_reference():
     assert (root / mascot_rel).is_file(), f"Mascot image missing at {mascot_rel}"
 
 
+def _readme_pitch_block(text: str, start_heading: str, next_heading: str) -> str:
+    start = text.find(start_heading)
+    if start == -1:
+        return ""
+    end = text.find(next_heading, start)
+    if end == -1:
+        end = len(text)
+    return text[start:end]
+
+
+def test_readme_pitch_avoids_direct_plans_links():
+    """Landing-page pitch blocks should not deep-link docs/plans files."""
+    root = _project_root()
+    en = _read_md(root / "README.md")
+    pt = _read_md(root / "README.pt_BR.md")
+    en_pitch = _readme_pitch_block(
+        en, "## For decision-makers and compliance leads", "## Technical overview"
+    )
+    pt_pitch = _readme_pitch_block(
+        pt, "## Para gestores e líderes de conformidade", "## Visão técnica"
+    )
+    assert "docs/plans/" not in en_pitch, (
+        "README.md pitch should avoid direct docs/plans links"
+    )
+    assert "docs/plans/" not in pt_pitch, (
+        "README.pt_BR.md pitch should avoid direct docs/plans links"
+    )
+
+
 # --- docs/USAGE.md structure ---
 
 
