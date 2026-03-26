@@ -9,9 +9,9 @@
 ## 1. Resuming from a pause (what to check first)
 
 1. **Git state:** `git fetch` + `git status` — branch aligned with `main` if you are mid-merge.
-2. **Open PRs:** `gh pr list --state open` — finish or close superseded PRs before starting a large new slice.
-3. **CI:** Green on the PR you care about (`gh pr checks <n>` or the GitHub UI).
-4. **Secrets** (e.g. Slack): Repository **Settings → Secrets and variables → Actions** — `SLACK_WEBHOOK_URL` set; then run the manual workflow **Slack operator ping** under **Actions** to confirm delivery.
+1. **Open PRs:** `gh pr list --state open` — finish or close superseded PRs before starting a large new slice.
+1. **CI:** Green on the PR you care about (`gh pr checks <n>` or the GitHub UI).
+1. **Secrets** (e.g. Slack): Repository **Settings → Secrets and variables → Actions** — `SLACK_WEBHOOK_URL` set; then run the manual workflow **Slack operator ping** under **Actions** to confirm delivery.
 
 The assistant does **not** reliably know yesterday’s chat or your machine’s RAM unless you paste or run commands in this session.
 
@@ -35,7 +35,7 @@ The assistant does **not** reliably know yesterday’s chat or your machine’s 
 
 The table in **`.cursor/rules/session-mode-keywords.mdc`** is intentionally **small and English-only**. Adding many new tokens (`wabbix-slice`, `demo-prep`, …) often **increases cognitive load** and confusion (“which token today?”).
 
-**Prefer:**
+## Prefer:
 
 - **`backlog`** + a **named item** in the message (“next Wabbix row: secure-by-default API key”).
 - **`feature`** + **`PLANS_TODO.md`** row reference.
@@ -71,10 +71,10 @@ A **freeze or OOM** in Cursor is usually **local memory pressure** (large chat, 
 ## 7. Concrete next steps (operator checklist)
 
 1. **PR hygiene:** List open PRs; merge or close superseded ones **after** `check-all` / CI green on the branch you care about.
-2. **Slack:** With `SLACK_WEBHOOK_URL` set, run **Actions → Slack operator ping (manual)** once; confirm the message in `#data-boar-ops` (or your channel).
-3. **Wabbix loop:** Reply to Wabbix with **evidence** (paths in `WABBIX_IN_REPO_BASELINE.md`); pick **one** next row from the evolution table (e.g. product naming or secure-default API decision) as a **scoped** `feature` or `backlog` slice.
-4. **Demo readiness:** Re-read `PLANS_TODO.md` “Selected / In progress” and `SPRINTS_AND_MILESTONES.md`; one **homelab** run through `HOMELAB_VALIDATION.md` before calling a build “demo-ready”.
-5. **Next session:** Start with **`pmo-view`** or paste **`PLANS_TODO.md`** section so the assistant anchors on the **same** priority.
+1. **Slack:** With `SLACK_WEBHOOK_URL` set, run **Actions → Slack operator ping (manual)** once; confirm the message in `#data-boar-ops` (or your channel).
+1. **Wabbix loop:** Reply to Wabbix with **evidence** (paths in `WABBIX_IN_REPO_BASELINE.md`); pick **one** next row from the evolution table (e.g. product naming or secure-default API decision) as a **scoped** `feature` or `backlog` slice.
+1. **Demo readiness:** Re-read `PLANS_TODO.md` “Selected / In progress” and `SPRINTS_AND_MILESTONES.md`; one **homelab** run through `HOMELAB_VALIDATION.md` before calling a build “demo-ready”.
+1. **Next session:** Start with **`pmo-view`** or paste **`PLANS_TODO.md`** section so the assistant anchors on the **same** priority.
 
 ---
 

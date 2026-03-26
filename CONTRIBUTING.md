@@ -27,6 +27,14 @@ Thank you for considering contributing. This document covers local setup, workfl
 
    Or with pip inside a virtualenv: `pip install -e .`
 
+1. **Install pre-commit hooks (recommended, once per clone)**
+
+   ```bash
+   uv run pre-commit install
+   ```
+
+   This runs the same checks as the **CI** **Lint (pre-commit)** job on every `git commit` (Ruff, **plans-stats** freshness, markdown lint, pt-BR locale, commercial guard). Run **`uv run pre-commit run --all-files`** before a PR if you skip hooks.
+
 1. **Run tests**
 
    ```bash
@@ -74,8 +82,8 @@ Cursor encodes this in **`.cursor/rules/git-pr-sync-before-advice.mdc`**. See al
 
 ## Code and docs
 
-- **Style:** The repo uses [EditorConfig](.editorconfig) (indent, charset, line endings). Run `uv run ruff check .` and `uv run ruff format --check .` (or fix with `uv run ruff format .`) before PR so the CI lint job passes. **Recommended:** install [pre-commit](https://pre-commit.com/) hooks so Ruff (check + format) runs on every commit: `uv sync` then `uv run pre-commit install`; see `.pre-commit-config.yaml`.
-- **Docs:** Keep [README.md](README.md) and [docs/USAGE.md](docs/USAGE.md) in sync with behaviour; update [README.pt_BR.md](README.pt_BR.md) and [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md) for Portuguese. All **new** user-facing documentation must exist in **English (canonical)** and **Brazilian Portuguese**; **plan files** may be English-only. When you change docs to reflect application updates, **sync the other language** (EN first, then pt-BR). Use a language switcher at the top of each doc and cross-links that offer both languages (see [docs/README.md](docs/README.md) — Documentation policy). **After editing any .md file:** run `uv run python scripts/fix_markdown_sonar.py` and `uv run pytest tests/test_markdown_lint.py -v -W error` so SonarQube/markdownlint rules (e.g. MD060 table style) pass. The fix script applies MD029 (ordered list style 1/1/1); if a doc uses **semantic step numbers** (1. 2. 3.), restore them by hand after running the script so the list still reads correctly.
+- **Style:** The repo uses [EditorConfig](.editorconfig) (indent, charset, line endings). The **CI** **Lint** job runs **`uv run pre-commit run --all-files`** (Ruff + format + plans-stats + markdown + pt-BR + commercial guard). Locally: **`uv run pre-commit install`** then commit as usual, or run **`uv run pre-commit run --all-files`** before PR. If **ruff-format** fails, run **`uv run ruff format .`** and re-stage. See **`.pre-commit-config.yaml`**.
+- **Docs:** Keep [README.md](README.md) and [docs/USAGE.md](docs/USAGE.md) in sync with behaviour; update [README.pt_BR.md](README.pt_BR.md) and [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md) for Portuguese. All **new** user-facing documentation must exist in **English (canonical)** and **Brazilian Portuguese**; **plan files** and **numbered ADRs** under [docs/adr/](docs/adr/) may be English-only (see [docs/adr/README.md](docs/adr/README.md)). When you change docs to reflect application updates, **sync the other language** (EN first, then pt-BR). Use a language switcher at the top of each doc and cross-links that offer both languages (see [docs/README.md](docs/README.md) — Documentation policy). **After editing any .md file:** run `uv run python scripts/fix_markdown_sonar.py` and `uv run pytest tests/test_markdown_lint.py -v -W error` so SonarQube/markdownlint rules (e.g. MD060 table style) pass. The fix script applies MD029 (ordered list style 1/1/1); if a doc uses **semantic step numbers** (1. 2. 3.), restore them by hand after running the script so the list still reads correctly — rationale: [ADR 0001](docs/adr/0001-markdown-fix-script-md029-and-semantic-step-lists.md).
 - **Secrets:** Never commit credentials or real PII. Use `.env` or `config.local.yaml` (both are in `.gitignore`) and redact in issues/PRs.
 
 ## CI and dependency hygiene

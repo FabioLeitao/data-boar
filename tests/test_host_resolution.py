@@ -58,3 +58,17 @@ def test_should_warn_insecure_api_bind() -> None:
     assert should_warn_insecure_api_bind(cfg_key, "0.0.0.0") is False
     cfg_require_no_key = {"api": {"require_api_key": True, "api_key": ""}}
     assert should_warn_insecure_api_bind(cfg_require_no_key, "0.0.0.0") is True
+
+
+def test_should_warn_insecure_api_bind_false_when_key_from_env(
+    monkeypatch,
+) -> None:
+    monkeypatch.setenv("AUDIT_API_KEY", "x")
+    cfg = {
+        "api": {
+            "require_api_key": True,
+            "api_key": "",
+            "api_key_from_env": "AUDIT_API_KEY",
+        }
+    }
+    assert should_warn_insecure_api_bind(cfg, "0.0.0.0") is False
