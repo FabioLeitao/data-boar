@@ -1,0 +1,32 @@
+# WRB — instantâneo de delta para o próximo e-mail (2026-03-26)
+
+**English:** [WRB_DELTA_SNAPSHOT_2026-03-26.md](WRB_DELTA_SNAPSHOT_2026-03-26.md)
+
+Cola o **parágrafo** da seção seguinte no e-mail à Wabbix **depois** do prompt mestre em [WABBIX_REVIEW_REQUEST_GUIDELINE.md](WABBIX_REVIEW_REQUEST_GUIDELINE.md) (ou integra na seção 2 de [WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md](WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md) antes de enviar). Atualiza o **hash de commit** se enviares após um merge novo.
+
+---
+
+## Verdade das versões (evitar confusão)
+
+- O **`pyproject.toml`** / docs em **`main`** atualmente apontam para **1.6.7-rc** (vê `docs/releases/1.6.7.md`).
+- A **última tag Git** em muitos clones continua **`v1.6.6`** até o mantenedor criar **`git tag v1.6.7`** e publicar **GitHub Release** / **Docker Hub** conforme [DOCKER_IMAGE_RELEASE_ORDER.md](DOCKER_IMAGE_RELEASE_ORDER.md).
+- Pede à Wabbix para tratar **“desde a última entrega etiquetada”** como **desde a tag `v1.6.6`** até existir **`v1.6.7`**, salvo confirmarem tag mais recente no GitHub.
+
+---
+
+## Bloco para colar (PT-BR)
+
+```text
+Contexto complementar (2026-03-26):
+
+Desde o nosso último ciclo WRB e desde a tag v1.6.6, o main acumulou (ou vai integrar no próximo merge) trabalho que inclui: job de lint na CI alinhado com `pre-commit run --all-files` (Ruff, plans-stats --check, markdown, locale pt-BR, guarda commercial); novo hook local `plans-stats-check`; workflow Semgrep para SAST Python; série ADR 0000–0003 (baseline de origem, MD029, docs do operador, roadmap SBOM); docs/ops/WORKFLOW_DEFERRED_FOLLOWUPS; guia académico para tese (ACADEMIC_USE_AND_THESIS + pt-BR); atualizações de regra/skill de qualidade; ping Slack ao operador verificado.
+
+Manter as três lentes temporais separadas. Para “desde a última release etiquetada”, usar v1.6.6 como baseline até aparecer a tag v1.6.7 no GitHub, mesmo que o pyproject em main já diga 1.6.7-rc.
+```
+
+---
+
+## Relacionado
+
+- [WABBIX_IN_REPO_BASELINE.md](WABBIX_IN_REPO_BASELINE.md)
+- [PLANS_TODO.md](../plans/PLANS_TODO.md)

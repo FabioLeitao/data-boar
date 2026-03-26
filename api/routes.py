@@ -34,6 +34,7 @@ from pydantic import BaseModel
 
 from core.about import get_about_info
 from core.dashboard_transport import get_dashboard_transport_snapshot
+from core.host_resolution import effective_api_key_configured
 from core.runtime_trust import get_runtime_trust_snapshot
 
 
@@ -577,15 +578,30 @@ async def cache_control_middleware(request: Request, call_next):
 @app.middleware("http")
 async def optional_api_key_middleware(request: Request, call_next):
     """
-    When api.require_api_key is true and api.api_key is set, require X-API-Key or Authorization: Bearer.
-    /health is always allowed (no key) so load balancers get 200. Returns 401 if key missing or wrong.
+    When ``api.require_api_key`` is true and a key is available (literal or resolved from
+    ``api_key_from_env`` at config load), require **X-API-Key** or **Authorization: Bearer**
+    for every path except **GET /health** (liveness: must stay unauthenticated).
+
+    Responses: **401** if the key is missing or wrong; **503** if the operator enabled
+    ``require_api_key`` but no key could be resolved (misconfiguration).
     """
     if request.url.path == "/health":
         return await call_next(request)
     cfg = _get_config()
     api_cfg = cfg.get("api") or {}
-    if not api_cfg.get("require_api_key") or not api_cfg.get("api_key"):
+    if not api_cfg.get("require_api_key"):
         return await call_next(request)
+    if not effective_api_key_configured(api_cfg):
+        return JSONResponse(
+            status_code=503,
+            content={
+                "detail": (
+                    "api.require_api_key is true but no API key is configured. "
+                    "Set api.api_key or api.api_key_from_env (with the env var at process start). "
+                    "See docs/ops/API_KEY_FROM_ENV_OPERATOR_STEPS.md."
+                )
+            },
+        )
     expected = api_cfg.get("api_key") or ""
     provided = (request.headers.get("x-api-key") or "").strip()
     if not provided and request.headers.get("authorization"):
@@ -624,7 +640,12 @@ app.mount("/static", StaticFiles(directory=str(_api_dir / "static")), name="stat
 
 @app.get("/health")
 async def health():
-    """Liveness/readiness probe for Docker, Swarm and Kubernetes."""
+    """
+    Liveness/readiness probe for Docker, Swarm and Kubernetes.
+
+    Semantics: **always unauthenticated** (no API key). Returns minimal JSON for
+    orchestrators; see SECURITY.md / USAGE.md for difference vs protected routes.
+    """
     body: dict = {"status": "ok"}
     body["license"] = _license_public_dict()
     body["dashboard_transport"] = get_dashboard_transport_snapshot()

@@ -103,8 +103,8 @@ When the operator has limited attention/time, run this order:
 ## Risks and mitigations
 
 - Risk: overload from too many active tracks.
-  - Mitigation: one active slice at a time; finish -> gate -> move.
+- Mitigation: one active slice at a time; finish -> gate -> move.
 - Risk: green tests but weak coverage on changed behavior.
-  - Mitigation: mandatory targeted regression test for each fix.
+- Mitigation: mandatory targeted regression test for each fix.
 - Risk: productivity loss by context switches.
-  - Mitigation: use "Today mode" and explicit close note each day.
+- Mitigation: use "Today mode" and explicit close note each day.

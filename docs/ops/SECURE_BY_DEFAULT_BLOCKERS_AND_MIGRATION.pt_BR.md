@@ -15,12 +15,12 @@ O bloqueio quase nunca é impossibilidade técnica. É, principalmente, **risco 
 
 ## Mapa principal de bloqueios
 
-| Tema | Como pode quebrar app/deploy | Regressão típica |
-| --- | --- | --- |
-| **API key obrigatória por padrão** | Ferramentas/rotinas existentes podem chamar rotas protegidas sem `X-API-Key` | 401 em scripts, jobs agendados, integrações |
+| Tema                                 | Como pode quebrar app/deploy                                                                                | Regressão típica                                            |
+| ---                                  | ---                                                                                                         | ---                                                         |
+| **API key obrigatória por padrão**   | Ferramentas/rotinas existentes podem chamar rotas protegidas sem `X-API-Key`                                | 401 em scripts, jobs agendados, integrações                 |
 | **Migração para `api_key_from_env`** | Nome/valor da variável mal configurado, ou confusão de precedência (`api_key` literal no YAML sobrepõe env) | app sobe, mas comportamento de auth não bate com o esperado |
-| **HTTP -> HTTPS por padrão** | Cert/key ausente ou inválido em ambientes antes em HTTP puro | falha de startup ou dashboard inacessível |
-| **Suposição de health/status** | Alguns consumidores assumem que tudo funciona como `/health` | ruído de monitoramento e falso negativo |
+| **HTTP -> HTTPS por padrão**         | Cert/key ausente ou inválido em ambientes antes em HTTP puro                                                | falha de startup ou dashboard inacessível                   |
+| **Suposição de health/status**       | Alguns consumidores assumem que tudo funciona como `/health`                                                | ruído de monitoramento e falso negativo                     |
 
 ## Por que isso aparece como "decisão de produto" nos planos
 
@@ -57,8 +57,13 @@ Por isso o repositório vem em hardening incremental:
 1. Levar para produção com fallback explícito por janela curta.
 1. Monitorar logs/status/audit de uso inseguro e reduzir até desligar.
 
+## Contexto do operador (implantações iniciais)
+
+Para **este produto**, a base instalada sob controle do mantenedor é hoje **efetivamente vazia**: **não há clientes externos conhecidos em produção** chamando API/dashboard. Isso **reduz o risco de rollout** ao ligar `require_api_key`, listeners HTTPS-first e sinais de audit mais ricos — mas **não dispensa** **caminhos de migração documentados**, **testes de regressão** (modo seguro + compatibilidade) e **segredos seguros** (`api_key_from_env`, sem chave literal em YAML rastreado). O primeiro ambiente de cliente real não deve ser o primeiro teste desses caminhos.
+
 ## Documentos relacionados
 
+- [SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.pt_BR.md](SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.pt_BR.md) ([EN](SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md)) — configuração concreta de chave de API + TLS para técnicos
 - [API_KEY_FROM_ENV_OPERATOR_STEPS.md](API_KEY_FROM_ENV_OPERATOR_STEPS.md)
 - [SECURITY.pt_BR.md](../SECURITY.pt_BR.md)
 - [PLAN_DASHBOARD_HTTPS_BY_DEFAULT_AND_HTTP_EXPLICIT_RISK.md](../plans/PLAN_DASHBOARD_HTTPS_BY_DEFAULT_AND_HTTP_EXPLICIT_RISK.md)
