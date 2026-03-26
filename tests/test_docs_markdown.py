@@ -78,6 +78,18 @@ def test_readme_mentions_config_and_lgpd():
     assert "lgpd" in text.lower() or "compliance" in text.lower()
 
 
+def test_readme_en_and_ptbr_keep_mascot_image_reference():
+    """Main README files keep the mascot image link for branding consistency."""
+    root = _project_root()
+    mascot_rel = "api/static/mascot/data_boar_mascote_color.svg"
+    en = _read_md(root / "README.md")
+    pt = _read_md(root / "README.pt_BR.md")
+    expected = f"![Data Boar mascot]({mascot_rel})"
+    assert expected in en, "README.md should include mascot image markdown"
+    assert expected in pt, "README.pt_BR.md should include mascot image markdown"
+    assert (root / mascot_rel).is_file(), f"Mascot image missing at {mascot_rel}"
+
+
 # --- docs/USAGE.md structure ---
 
 
