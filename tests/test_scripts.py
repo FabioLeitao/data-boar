@@ -301,6 +301,18 @@ def test_commit_or_pr_mentions_gh_default_repo_guard():
         return
     text = script.read_text(encoding="utf-8", errors="replace")
     assert "Set-GhDefaultRepo" in text
+    assert "RunVersionSmoke" in text
+
+
+def test_check_all_supports_optional_version_smoke():
+    """check-all script exposes optional version readiness smoke switch."""
+    root = _project_root()
+    script = root / "scripts" / "check-all.ps1"
+    if not script.exists():
+        return
+    text = script.read_text(encoding="utf-8", errors="replace")
+    assert "IncludeVersionSmoke" in text
+    assert "version-readiness-smoke.ps1" in text
 
 
 def test_pr_hygiene_mentions_gh_preflight():
