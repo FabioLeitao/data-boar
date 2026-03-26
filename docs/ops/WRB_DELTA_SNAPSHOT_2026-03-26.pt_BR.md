@@ -8,7 +8,7 @@ Cola o **parágrafo** da seção seguinte no e-mail à Corporate-Entity-C **depo
 
 ## Verdade das versões (evitar confusão)
 
-- O **`pyproject.toml`** / docs em **`main`** já apontam para **1.6.7** (vê `docs/releases/1.6.7.md`).
+- O **`pyproject.toml`** / docs em **`main`** atualmente apontam para **1.6.7-rc** (vê `docs/releases/1.6.7.md`).
 - A **última tag Git** em muitos clones continua **`v1.6.6`** até o mantenedor criar **`git tag v1.6.7`** e publicar **GitHub Release** / **Docker Hub** conforme [DOCKER_IMAGE_RELEASE_ORDER.md](DOCKER_IMAGE_RELEASE_ORDER.md).
 - Pede à Corporate-Entity-C para tratar **“desde a última entrega etiquetada”** como **desde a tag `v1.6.6`** até existir **`v1.6.7`**, salvo confirmarem tag mais recente no GitHub.
 
@@ -21,7 +21,7 @@ Contexto complementar (2026-03-26):
 
 Desde o nosso último ciclo WRB e desde a tag v1.6.6, o main acumulou (ou vai integrar no próximo merge) trabalho que inclui: job de lint na CI alinhado com `pre-commit run --all-files` (Ruff, plans-stats --check, markdown, locale pt-BR, guarda commercial); novo hook local `plans-stats-check`; workflow Semgrep para SAST Python; série ADR 0000–0003 (baseline de origem, MD029, docs do operador, roadmap SBOM); docs/ops/WORKFLOW_DEFERRED_FOLLOWUPS; guia académico para tese (ACADEMIC_USE_AND_THESIS + pt-BR); atualizações de regra/skill de qualidade; ping Slack ao operador verificado.
 
-Manter as três lentes temporais separadas. Para “desde a última release etiquetada”, usar v1.6.6 como baseline até aparecer a tag v1.6.7 no GitHub, mesmo que o pyproject em main já diga 1.6.7.
+Manter as três lentes temporais separadas. Para “desde a última release etiquetada”, usar v1.6.6 como baseline até aparecer a tag v1.6.7 no GitHub, mesmo que o pyproject em main já diga 1.6.7-rc.
 ```
 
 ---
