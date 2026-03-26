@@ -82,7 +82,7 @@ Implement **one generic “notify” step** in CI (bash/PowerShell) that posts t
 1. Create an [**Incoming Webhook**](https://api.slack.com/messaging/webhooks) for your workspace (Slack app → choose channel → copy the webhook URL).
 1. On GitHub: **Settings → Secrets and variables → Actions → New repository secret** — name **`SLACK_WEBHOOK_URL`**, value = the webhook URL.
 1. **Smoke test:** **Actions → Slack operator ping (manual) → Run workflow** (optional custom message). If the secret is unset, the job is **skipped** (no failure).
-1. **CI failure ping (phase 1):** workflow **`Slack CI failure notify`** (`.github/workflows/slack-ci-failure-notify.yml`) runs when workflow **`CI`** finishes with **`failure`** (covers **`ci.yml`** triggers: push/PR to `main` or `master`). Uses the **same** `SLACK_WEBHOOK_URL`. If the secret is unset, the notify job is **skipped**. *Fork PRs:* failures may still produce a ping when GitHub runs **`CI`** for that PR in this repo—reduce noise later (branch filters) if needed.
+1. **CI / Semgrep failure ping (phase 1):** workflow **`Slack CI failure notify`** (`.github/workflows/slack-ci-failure-notify.yml`) runs when **`CI`** or **`Semgrep`** finishes with **`failure`** (push/PR to `main` or `master`). Uses the **same** `SLACK_WEBHOOK_URL`. If the secret is unset, the notify job is **skipped**. The Slack line uses the failing workflow’s display name (e.g. **Test (Python 3.13)** or **Semgrep (OSS, Python)**). *Fork PRs:* failures may still produce a ping—reduce noise later (branch filters) if needed.
 1. **Product / scan-complete:** reuse the same webhook URL in Data Boar **`config.yaml`** or env (see [USAGE.md](../USAGE.md) — operator notifications); separate from Actions workflows above.
 1. **Backlog (optional):** scheduled digest via [scripts/notify_webhook.py](../../scripts/notify_webhook.py) or KPI export once you want EOD/sprint summaries (see §7).
 
@@ -113,12 +113,12 @@ If your workspace blocks custom apps, ask a workspace admin to approve app insta
 
 #### C) After you’re done — where to look (sanity checks)
 
-| Check                   | Where                                                                            | What “good” looks like                                                                                                             |
-| -----                   | -----                                                                            | ----------------------                                                                                                             |
-| Secret exists           | GitHub → **Settings → Secrets and variables → Actions**                          | **`SLACK_WEBHOOK_URL`** listed (value is **hidden**; that’s normal).                                                               |
-| Manual ping works       | **Actions** → **Slack operator ping (manual)** → **Run workflow** → open the run | Job **succeeded** (not **skipped**). **Skipped** usually means secret missing/misnamed or workflows not on the branch GitHub runs. |
-| Message arrived         | Slack → your ops channel                                                         | New message with the text you sent (or the default ping line).                                                                     |
-| CI failure path (later) | After a real **`CI`** failure (or a test branch)                                 | **Actions** shows **Slack CI failure notify** run; Slack shows **“Data Boar — CI falhou”** with a link to the failed run.          |
+| Check                     | Where                                                                            | What “good” looks like                                                                                                                       |
+| -----                     | -----                                                                            | ----------------------                                                                                                                       |
+| Secret exists             | GitHub → **Settings → Secrets and variables → Actions**                          | **`SLACK_WEBHOOK_URL`** listed (value is **hidden**; that’s normal).                                                                         |
+| Manual ping works         | **Actions** → **Slack operator ping (manual)** → **Run workflow** → open the run | Job **succeeded** (not **skipped**). **Skipped** usually means secret missing/misnamed or workflows not on the branch GitHub runs.           |
+| Message arrived           | Slack → your ops channel                                                         | New message with the text you sent (or the default ping line).                                                                               |
+| CI / Semgrep failure path | After a real **`CI`** or **`Semgrep`** failure (or a test branch)                | **Actions** shows **Slack CI failure notify** run; Slack shows **“Data Boar — &lt;workflow name&gt; falhou”** with a link to the failed run. |
 
 If **manual** job is **skipped**, confirm the secret name is exactly **`SLACK_WEBHOOK_URL`** and that `.github/workflows/slack-operator-ping.yml` is on the default branch (or the branch you run Actions from).
 
