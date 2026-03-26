@@ -98,6 +98,8 @@ $body = @"
 
 # Create PR and run the test suite before pushing (no push if tests fail)
 .\scripts\commit-or-pr.ps1 -Action PR -Title "Your title" -Body "Bullets..." -RunTests
+# Create PR and include version readiness smoke gate (optional, recommended for all-greens/pre-publish)
+.\scripts\commit-or-pr.ps1 -Action PR -Title "Your title" -Body "Bullets..." -RunTests -RunVersionSmoke
 
 # Ensure gh default repository from origin (optional manual preflight)
 .\scripts\gh-ensure-default.ps1
@@ -141,6 +143,7 @@ When you want to **check**, run **pre-commit**, **commit**, **describe**, and cr
 | 0      | **Optional:** open Dependabot PRs + Docker Scout quickview (read-only; needs `gh`, optional Docker)                                | `.\scripts\maintenance-check.ps1`                                                              |
 | 0a     | **Optional:** PR hygiene reminder + quick open-PR checks (`gh` preflight + checks per open PR)                                     | `.\scripts\pr-hygiene-remind.ps1` or `.\scripts\pr-hygiene-remind.ps1 -RunQuickChecks`         |
 | 1      | **Check + pre-commit** (Ruff lint, format, markdown, full pytest in one run)                                                       | `.\scripts\check-all.ps1`                                                                      |
+| 1b     | **Optional version readiness smoke** (all-greens / pre-publish moments)                                                            | `.\scripts\check-all.ps1 -IncludeVersionSmoke`                                                 |
 | 2      | **Preview** (see what would be committed; no stage, no commit)                                                                     | `.\scripts\preview-commit.ps1`                                                                 |
 | 3      | **Propose** a short commit title and bullet-point PR body from the file list and context                                           | (you or the agent suggest title and body)                                                      |
 | 4      | **Commit + describe + safe synced PR** (commit with title/body, run tests again, fetch+rebase if behind, push, open PR in browser) | `.\scripts\commit-or-pr.ps1 -Action PR -Title "Your title" -Body "Bullet1`nBullet2" -RunTests` |
