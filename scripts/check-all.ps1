@@ -6,7 +6,8 @@
 #   .\scripts\check-all.ps1 -SkipPreCommit   # only pytest (e.g. when iterating quickly)
 
 param(
-    [switch]$SkipPreCommit = $false
+    [switch]$SkipPreCommit = $false,
+    [switch]$IncludeVersionSmoke = $false
 )
 
 $ErrorActionPreference = "Stop"
@@ -31,6 +32,17 @@ if ($SkipPreCommit) {
 
 & "$repoRoot\scripts\pre-commit-and-tests.ps1" @argsList
 $exitCode = $LASTEXITCODE
+
+if ($exitCode -eq 0 -and $IncludeVersionSmoke) {
+    $smokeScript = "$repoRoot\scripts\version-readiness-smoke.ps1"
+    if (Test-Path -LiteralPath $smokeScript) {
+        Write-Host "Running version readiness smoke..." -ForegroundColor Yellow
+        & $smokeScript
+        $exitCode = $LASTEXITCODE
+    } else {
+        Write-Host "Version readiness smoke script not found; skipping." -ForegroundColor Yellow
+    }
+}
 
 if ($exitCode -eq 0) {
     Write-Host "check-all: OK (pre-commit and pytest passed)." -ForegroundColor Green
