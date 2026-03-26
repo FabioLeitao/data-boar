@@ -6,11 +6,11 @@
 
 **Residual risk (operator judgment):** Data Boar uses **Pygments** for **syntax highlighting** in CLI/UX paths, not for untrusted remote lexer selection in typical deployments. Treat as **monitor and upgrade when PyPI publishes a fix**.
 
-**When a fix ships:**
+## When a fix ships:
 
 1. Raise **`pygments`** floor in **`pyproject.toml`** to the patched release.
-2. Run **`uv lock`**, **`uv export --no-emit-package pyproject.toml -o requirements.txt`**, **`.\scripts\check-all.ps1`**.
-3. Merge; re-run **`pip-audit -r requirements.txt`**.
+1. Run **`uv lock`**, **`uv export --no-emit-package pyproject.toml -o requirements.txt`**, **`.\scripts\check-all.ps1`**.
+1. Merge; re-run **`pip-audit -r requirements.txt`**.
 
 **Optional GitHub UI:** Maintainers may **dismiss** the alert with **`patch_unavailable`** and a comment linking this doc — **recheck** after each **pygments** release on PyPI.
 
