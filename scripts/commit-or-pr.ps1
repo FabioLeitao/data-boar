@@ -29,6 +29,8 @@ param(
 
     [switch]$RunTests = $false,
 
+    [switch]$RunVersionSmoke = $false,
+
     # Safety guard: require Preview before Commit/PR unless explicitly bypassed.
     [switch]$SkipPreviewGuard = $false
 )
@@ -51,6 +53,17 @@ function Invoke-RepoTestSuite {
         Write-Host "uv not found; falling back to system python pytest." -ForegroundColor Yellow
         & python -m pytest -v -W error
     }
+    return $LASTEXITCODE
+}
+
+function Invoke-VersionReadinessSmoke {
+    $smokeScript = Join-Path $repoRoot "scripts\version-readiness-smoke.ps1"
+    if (-not (Test-Path -LiteralPath $smokeScript)) {
+        Write-Host "Version readiness smoke script not found; skipping." -ForegroundColor Yellow
+        return 0
+    }
+    Write-Host "Running version readiness smoke..."
+    & $smokeScript
     return $LASTEXITCODE
 }
 
@@ -173,6 +186,10 @@ if (-not $toAdd.Count -and $Action -eq 'PR') {
         if ($RunTests) {
             $testExit = Invoke-RepoTestSuite -Context "-RunTests"
             if ($testExit -ne 0) { Write-Host "Tests failed. Fix failures before pushing. No push performed." -ForegroundColor Red; exit 1 }
+        }
+        if ($RunVersionSmoke) {
+            $smokeExit = Invoke-VersionReadinessSmoke
+            if ($smokeExit -ne 0) { Write-Host "Version readiness smoke failed. No push performed." -ForegroundColor Red; exit 1 }
         }
         Write-Host "No new changes to commit; pushing $ahead existing local commit(s) and opening PR..."
         git fetch origin 2>$null
@@ -369,6 +386,10 @@ if ($Action -eq 'PR') {
     if ($RunTests) {
         $testExit = Invoke-RepoTestSuite -Context "-RunTests"
         if ($testExit -ne 0) { Write-Host "Tests failed. Fix failures before pushing. No push performed." -ForegroundColor Red; exit 1 }
+    }
+    if ($RunVersionSmoke) {
+        $smokeExit = Invoke-VersionReadinessSmoke
+        if ($smokeExit -ne 0) { Write-Host "Version readiness smoke failed. No push performed." -ForegroundColor Red; exit 1 }
     }
     git fetch origin 2>$null
     $behind = git rev-list --count "HEAD..origin/$branchName" 2>$null
