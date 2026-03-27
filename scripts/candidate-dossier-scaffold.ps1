@@ -4,6 +4,7 @@ param(
     [string]$OutputDir = "docs/private/commercial/candidates",
     [switch]$LowPriorityCaution,
     [switch]$AdvisorRemote,
+    [string]$OperatorRelationship = "",
     [switch]$Overwrite
 )
 
@@ -32,6 +33,43 @@ function Write-FileIfAllowed {
     Set-Content -LiteralPath $Path -Value $Content -Encoding UTF8
 }
 
+function Get-OperatorRelationshipTag {
+    param(
+        [Parameter(Mandatory = $true)][string]$CandidateName,
+        [string]$ExplicitOperatorRelationship
+    )
+    if (-not [string]::IsNullOrWhiteSpace($ExplicitOperatorRelationship)) {
+        return $ExplicitOperatorRelationship.Trim().ToUpperInvariant()
+    }
+
+    $name = $CandidateName.ToLowerInvariant()
+    if ($name.Contains("my wife")) {
+        return "FAMILY_SPOUSE"
+    }
+    if ($name.Contains("my sister") -and $name.Contains("husband")) {
+        return "FAMILY_BROTHER_IN_LAW"
+    }
+    if ($name.Contains("my husband")) {
+        return "FAMILY_HUSBAND"
+    }
+    return "NOT_DOCUMENTED"
+}
+
+function Get-OperatorRelationshipEvidence {
+    param(
+        [Parameter(Mandatory = $true)][string]$CandidateName,
+        [Parameter(Mandatory = $true)][string]$RelationshipTag,
+        [string]$ExplicitOperatorRelationship
+    )
+    if (-not [string]::IsNullOrWhiteSpace($ExplicitOperatorRelationship)) {
+        return "Manual override via -OperatorRelationship."
+    }
+    if ($RelationshipTag -eq "NOT_DOCUMENTED") {
+        return "No explicit relationship marker in source file name."
+    }
+    return "Inferred from source file name marker."
+}
+
 $resolvedPdfPath = [System.IO.Path]::GetFullPath($CandidatePdfPath)
 if (-not (Test-Path -LiteralPath $resolvedPdfPath)) {
     throw "Candidate PDF not found: $resolvedPdfPath"
@@ -51,6 +89,8 @@ $ptPath = Join-Path $resolvedOutputDir "$slug.pt_BR.md"
 $date = Get-Date -Format "yyyy-MM-dd"
 $priorityMode = if ($LowPriorityCaution) { "LOW_PRIORITY_CAUTION" } else { "STANDARD" }
 $collaborationMode = if ($AdvisorRemote) { "REMOTE_ADVISOR" } else { "STANDARD_ENGAGEMENT" }
+$operatorRelationshipTag = Get-OperatorRelationshipTag -CandidateName $candidateName -ExplicitOperatorRelationship $OperatorRelationship
+$operatorRelationshipEvidence = Get-OperatorRelationshipEvidence -CandidateName $candidateName -RelationshipTag $operatorRelationshipTag -ExplicitOperatorRelationship $OperatorRelationship
 $enCautionBlock = if ($LowPriorityCaution) {
 @"
 
@@ -123,6 +163,22 @@ $ptAdvisorBlock = if ($AdvisorRemote) {
 - Modo de colaboração: **STANDARD_ENGAGEMENT**.
 "@
 }
+$enRelationshipBlock = @"
+
+## 0.2) Operator relationship and history control
+
+- Operator relationship tag: **$operatorRelationshipTag**
+- Relationship evidence source: $operatorRelationshipEvidence
+- Rule: if relationship is not explicitly documented, keep as `NOT_DOCUMENTED` and avoid assumptions.
+"@
+$ptRelationshipBlock = @"
+
+## 0.2) Controle de vinculo e historico com o operador
+
+- Tag de vinculo com o operador: **$operatorRelationshipTag**
+- Fonte da evidencia de vinculo: $operatorRelationshipEvidence
+- Regra: se o vinculo nao estiver explicitamente documentado, manter como `NOT_DOCUMENTED` e evitar suposicoes.
+"@
 
 $enTemplate = @"
 # Candidate dossier — $candidateName
@@ -132,6 +188,7 @@ $enTemplate = @"
 > Collaboration mode: **$collaborationMode**
 $enCautionBlock
 $enAdvisorBlock
+$enRelationshipBlock
 
 ## 1) Source and confidence
 
@@ -193,6 +250,7 @@ $ptTemplate = @"
 > Modo de colaboração: **$collaborationMode**
 $ptCautionBlock
 $ptAdvisorBlock
+$ptRelationshipBlock
 
 ## 1) Fonte e confiança
 
