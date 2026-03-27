@@ -72,6 +72,26 @@ Quando aparecem **mais** cópias recuperadas depois (“undelete”, Explorador,
 
 **Trava ao perfeccionismo:** se `git status` está limpo face a `origin/main`, a primeira passagem já mostrou **~99%+** cobertura, e o blob novo **não** reclama substituir conteúdo rastreado, **declara vitória** e segue em frente.
 
+### Concat + mapa de nomes (muitos arquivos soltos)
+
+Quando o balde é um monte de `.md` / `.yaml` / `.htm` / `.html` vindos do browser ou restore, usa **`scripts/build_final_round_bucket_concat.py`**: gera um único blob com marcadores `--- FILE: … ---`, opcionalmente mostra **alinhamento por nome de arquivo** com a árvore rastreada (sem `docs/private/`), e pode disparar o **sweep** de janelas num comando.
+
+```bash
+# Pistas de nome: homónimo exato, stem normalizado (ex.: "Arquivo (1).htm"), ou sem par rastreado
+uv run python scripts/build_final_round_bucket_concat.py --map-names
+
+# Gravar concat por omissão em .../final_round_bucket/_concat_for_sliding_window.md
+uv run python scripts/build_final_round_bucket_concat.py
+
+# Gerar + tabela compacta de sweep (12–30, como na seção multi-passagem)
+uv run python scripts/build_final_round_bucket_concat.py --sweep --quiet-gaps
+
+# Com normalização de whitespace à direita em corpus + entrada
+uv run python scripts/build_final_round_bucket_concat.py --sweep --quiet-gaps --rstrip-lines
+```
+
+Opções: **`--bucket`**, **`--output`**, **`--repo-root`**, **`--sweep-windows`**, **`--dry-run`**. HTML é convertido para linhas aproximadas (tags removidas) — não é fiel byte a byte ao Markdown.
+
 ---
 
 ## Como ler os resultados
@@ -93,5 +113,5 @@ Quando aparecem **mais** cópias recuperadas depois (“undelete”, Explorador,
 ## Ligações relacionadas
 
 - **[GEMINI_PUBLIC_BUNDLE_REVIEW.pt_BR.md](GEMINI_PUBLIC_BUNDLE_REVIEW.pt_BR.md)** — geração segura do pacote, prompts, lista de ferramentas.
-- **`scripts/audit_concatenated_markdown.py`**, **`scripts/audit_concat_sliding_window.py`**, **`scripts/export_public_gemini_bundle.py`** — flags e comportamento.
+- **`scripts/audit_concatenated_markdown.py`**, **`scripts/audit_concat_sliding_window.py`**, **`scripts/export_public_gemini_bundle.py`**, **`scripts/build_final_round_bucket_concat.py`** — flags e comportamento.
 - **[COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md)** — hábito normal depois da árvore limpa.
