@@ -13,7 +13,8 @@
 
 .PARAMETER Mode
     Morning: surface prior today-mode files + private carryover note.
-    Eod: git fetch, status, open PRs list, tomorrow today-mode path hint.
+    Eod: git fetch, short log of origin/main since local midnight (progress), status,
+    open PRs list, tomorrow today-mode path hint.
 
 .EXAMPLE
     .\scripts\operator-day-ritual.ps1 -Mode Morning
@@ -71,6 +72,19 @@ Write-Host "=== eod-sync (Eod) ===" -ForegroundColor Cyan
 Write-Host "git fetch origin..."
 git fetch origin 2>&1 | ForEach-Object { Write-Host $_ }
 Write-Host ""
+
+$sinceLabel = [DateTime]::Today.ToString("yyyy-MM-dd")
+Write-Host "Today's progress (origin/main since local midnight $sinceLabel, max 15):" -ForegroundColor Yellow
+$progressLines = @(git -C $repoRoot log origin/main --oneline --since=midnight -15 2>$null)
+if ($progressLines.Count -eq 0 -or ($progressLines.Count -eq 1 -and [string]::IsNullOrWhiteSpace($progressLines[0]))) {
+    Write-Host "  (no new commits on origin/main since midnight — or detached/fresh clone)" -ForegroundColor DarkGray
+} else {
+    foreach ($ln in $progressLines) {
+        Write-Host "  $ln"
+    }
+}
+Write-Host ""
+
 Write-Host "Working tree:" -ForegroundColor Yellow
 git status -sb
 Write-Host ""
