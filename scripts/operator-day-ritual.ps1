@@ -1,0 +1,94 @@
+#!/usr/bin/env pwsh
+<#
+.SYNOPSIS
+    Morning or end-of-day operator ritual helpers (carryover + sync close).
+
+.DESCRIPTION
+    English session tokens (see .cursor/rules/session-mode-keywords.mdc):
+    - carryover-sweep  →  -Mode Morning
+    - eod-sync         →  -Mode Eod
+
+    Does not post to Slack or GitHub; runs local git/gh read-only steps and prints
+    paths. Secrets stay in Actions / env per OPERATOR_NOTIFICATION_CHANNELS.
+
+.PARAMETER Mode
+    Morning: surface prior today-mode files + private carryover note.
+    Eod: git fetch, status, open PRs list, tomorrow today-mode path hint.
+
+.EXAMPLE
+    .\scripts\operator-day-ritual.ps1 -Mode Morning
+
+.EXAMPLE
+    .\scripts\operator-day-ritual.ps1 -Mode Eod
+#>
+param(
+    [Parameter(Mandatory = $true)]
+    [ValidateSet("Morning", "Eod")]
+    [string]$Mode
+)
+
+$ErrorActionPreference = "Stop"
+$repoRoot = (Get-Item $PSScriptRoot).Parent.FullName
+Set-Location $repoRoot
+
+function Invoke-GhOptional {
+    param([string[]]$GhArgs)
+    try {
+        & gh @GhArgs 2>$null
+        return $LASTEXITCODE -eq 0
+    } catch {
+        return $false
+    }
+}
+
+if ($Mode -eq "Morning") {
+    Write-Host "=== carryover-sweep (Morning) ===" -ForegroundColor Cyan
+    $today = [DateTime]::Today.ToString("yyyy-MM-dd")
+    $yesterday = [DateTime]::Today.AddDays(-1).ToString("yyyy-MM-dd")
+    Write-Host "Calendar yesterday: $yesterday  |  today: $today"
+    Write-Host ""
+    Write-Host "Private rhythm note (gitignored):" -ForegroundColor Yellow
+    $carry = Join-Path $repoRoot "docs/private/TODAY_MODE_CARRYOVER_AND_FOUNDER_RHYTHM.md"
+    if (Test-Path -LiteralPath $carry) {
+        Write-Host "  $carry"
+    } else {
+        Write-Host "  (create from template in session docs if missing) $carry"
+    }
+    Write-Host ""
+    Write-Host "Recent OPERATOR_TODAY_MODE_*.md (open today's first, then yesterday's):" -ForegroundColor Yellow
+    Get-ChildItem -Path (Join-Path $repoRoot "docs/ops") -Filter "OPERATOR_TODAY_MODE_*.md" -File |
+        Where-Object { $_.Name -notlike "*.pt_BR.md" } |
+        Sort-Object Name -Descending |
+        Select-Object -First 6 |
+        ForEach-Object { Write-Host "  $($_.FullName)" }
+    Write-Host ""
+    Write-Host "Optional: uv run pytest tests/test_operator_help_sync.py -v" -ForegroundColor Gray
+    exit 0
+}
+
+# Eod
+Write-Host "=== eod-sync (Eod) ===" -ForegroundColor Cyan
+Write-Host "git fetch origin..."
+git fetch origin 2>&1 | ForEach-Object { Write-Host $_ }
+Write-Host ""
+Write-Host "Working tree:" -ForegroundColor Yellow
+git status -sb
+Write-Host ""
+
+if (Invoke-GhOptional @("pr", "list", "--state", "open", "--limit", "15")) {
+    Write-Host "Open PRs (gh):" -ForegroundColor Yellow
+    gh pr list --state open --limit 15
+} else {
+    Write-Host "gh not available or failed; skip PR list." -ForegroundColor DarkYellow
+}
+
+$tomorrow = [DateTime]::Today.AddDays(1).ToString("yyyy-MM-dd")
+$modeEn = Join-Path $repoRoot "docs/ops/OPERATOR_TODAY_MODE_$tomorrow.md"
+$modePt = Join-Path $repoRoot "docs/ops/OPERATOR_TODAY_MODE_$tomorrow.pt_BR.md"
+Write-Host ""
+Write-Host "Tomorrow today-mode paths (create if missing):" -ForegroundColor Yellow
+Write-Host "  $modeEn"
+Write-Host "  $modePt"
+Write-Host ""
+Write-Host "Next: merge open PRs when green (.\scripts\pr-merge-when-green.ps1), git checkout main && git pull, rest." -ForegroundColor Gray
+exit 0
