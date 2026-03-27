@@ -428,3 +428,14 @@ def test_recovery_doc_bundle_sanity_ps1_syntax():
     assert _parse_powershell_script(script, root), (
         "recovery-doc-bundle-sanity.ps1 parse failed"
     )
+
+
+def test_operator_day_ritual_ps1_syntax():
+    """scripts/operator-day-ritual.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "operator-day-ritual.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), (
+        "operator-day-ritual.ps1 parse failed"
+    )
