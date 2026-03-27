@@ -2,6 +2,8 @@
 
 **English:** [GEMINI_PUBLIC_BUNDLE_REVIEW.md](GEMINI_PUBLIC_BUNDLE_REVIEW.md)
 
+**Depois de um incidente com `cat`:** passos de recuperação e o script meta Windows **`scripts/recovery-doc-bundle-sanity.ps1`** — **[DOC_BUNDLE_RECOVERY_PLAYBOOK.pt_BR.md](DOC_BUNDLE_RECOVERY_PLAYBOOK.pt_BR.md)** ([EN](DOC_BUNDLE_RECOVERY_PLAYBOOK.md)).
+
 Este runbook evita erros do tipo **`cat *.md` manual**: o pacote vem só de **`git ls-files`**, **exclui** **`docs/private/`** e envolve cada arquivo assim:
 
 ```text
@@ -54,5 +56,16 @@ Formato de saída:
 
 ## Automação relacionada
 
-- Pacotes antigos sem marcadores: `scripts/audit_concatenated_markdown.py`.
+- Pacotes antigos sem marcadores: `scripts/audit_concatenated_markdown.py` (divisão por H1 ou `--cat-order` por bytes).
+- **Heurística de “peças do puzzle” (janela deslizante):** `scripts/audit_concat_sliding_window.py` indexa **todas** as janelas de *N* linhas nos `*.md` / `*.yaml` / `*.yml` rastreados e marca quais linhas do teu **blob concatenado** coincidem com **alguma** janela do repositório. Trechos **sem cobertura** podem ser cola entre arquivos, edição manual ou texto que **já não existe** no disco — **não** provam perda (linhas genéricas e limites de janela geram ruído). Exemplo:
+
+  ```bash
+  uv run python scripts/audit_concat_sliding_window.py \
+    -i docs/private/mess_concatenated_gemini_sanity_check/sobre-data-boar.md \
+    --window 25 --strip-bundle-markers --show-sample-matches 15
+  ```
+
+  Opcional: `--rstrip-lines` se houver diferença só de espaços no fim da linha; `--include-private-corpus` só se quiseres incluir `docs/private/**` no corpus. `--fail-if-uncovered-pct-above 0` sai com código ≠ 0 se restar **alguma** linha sem cobertura (gate rígido; em blobs reais costuma ser barulhento demais).
+  **Várias janelas:** `--sweep-windows 12,15,18,22,25,30` imprime uma tabela comparativa (repetir com `--rstrip-lines` para comparar barreiras de whitespace). Ver **[DOC_BUNDLE_RECOVERY_PLAYBOOK.pt_BR.md](DOC_BUNDLE_RECOVERY_PLAYBOOK.pt_BR.md)** § Várias passagens.
+
 - Política de notificação: [OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md](OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md).
