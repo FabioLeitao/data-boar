@@ -5,7 +5,7 @@
 
 .DESCRIPTION
     1) Pytest compile checks for: audit_concatenated_markdown.py, audit_concat_sliding_window.py,
-       export_public_gemini_bundle.py.
+       export_public_gemini_bundle.py, build_final_round_bucket_concat.py.
     2) Optionally runs sliding-window + H1 audits on a saved concatenated blob.
 
     Full operator narrative: docs/ops/DOC_BUNDLE_RECOVERY_PLAYBOOK.md
@@ -54,7 +54,8 @@ if (-not $SkipPytest) {
     $tests = @(
         "tests/test_scripts.py::test_audit_concatenated_markdown_py_compiles",
         "tests/test_scripts.py::test_audit_concat_sliding_window_py_compiles",
-        "tests/test_scripts.py::test_export_public_gemini_bundle_py_compiles"
+        "tests/test_scripts.py::test_export_public_gemini_bundle_py_compiles",
+        "tests/test_scripts.py::test_build_final_round_bucket_concat_py_compiles"
     )
     if ($DryRun) {
         Write-Host "uv run pytest $($tests -join ' ') -q" -ForegroundColor Gray
