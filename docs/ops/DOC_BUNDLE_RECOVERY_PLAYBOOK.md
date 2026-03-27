@@ -64,6 +64,16 @@ uv run python scripts/audit_concat_sliding_window.py -i docs/private/.../blob.md
 
 ---
 
+## Final round bucket (“boss level”) — extra restored traces
+
+When you discover **more** recovered copies later (“undelete” / Explorer / backup), **do not** scatter them randomly: put them under **`docs/private/mess_concatenated_gemini_sanity_check/final_round_bucket/`** (same private tree as the first sanity pass — gitignored). A local **`README.md`** there explains the same commands.
+
+**Workflow:** copy blob(s) in → run **`--sweep-windows`** (and optional **`recovery-doc-bundle-sanity.ps1`**) on **each** new file → compare gap tables to your first-pass blob if helpful. **Git + `main`** remain the authority; this folder is **only** for confidence / archaeology.
+
+**Perfectionism stop rule:** if `git status` is clean against `origin/main`, first-pass heuristics already showed **~99%+** coverage, and the new blob does not claim to replace tracked content, **declare victory** and move on.
+
+---
+
 ## How to interpret results
 
 - **Sliding-window “% covered”** near **100%** on a blob that should mirror **current `main`**: strong signal your tree is aligned; small gaps are often **boundary lines**, **text drift** since the snapshot, or **glue** between files — triage the printed gap previews, not the percentage alone.
