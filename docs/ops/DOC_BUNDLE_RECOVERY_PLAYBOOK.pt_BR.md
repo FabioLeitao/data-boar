@@ -64,6 +64,16 @@ uv run python scripts/audit_concat_sliding_window.py -i docs/private/.../blob.md
 
 ---
 
+## Balde “final round” (“boss level”) — vestígios restaurados a mais
+
+Quando aparecem **mais** cópias recuperadas depois (“undelete”, Explorador, backup), **não** as espalhes: coloca-as em **`docs/private/mess_concatenated_gemini_sanity_check/final_round_bucket/`** (gitignored, mesmo ramo que a primeira pasta sanity). Há um **`README.md`** local nessa pasta com os mesmos comandos.
+
+**Fluxo:** copiar o(s) blob(s) para lá → correr **`--sweep-windows`** (e opcionalmente **`recovery-doc-bundle-sanity.ps1`**) **por arquivo** novo → comparar tabelas de gaps com o blob da primeira passagem se ajudar. **Git + `main`** mandam; esta pasta é só **confiança / arqueologia**.
+
+**Trava ao perfeccionismo:** se `git status` está limpo face a `origin/main`, a primeira passagem já mostrou **~99%+** cobertura, e o blob novo **não** reclama substituir conteúdo rastreado, **declara vitória** e segue em frente.
+
+---
+
 ## Como ler os resultados
 
 - **“% coberto”** da janela deslizante perto de **100%** num blob que deveria espelhar o **`main` atual**: bom sinal de alinhamento; lacunas pequenas costumam ser **limites entre arquivos**, **deriva** desde o snapshot ou **cola** — rever os trechos impressos, não só a percentagem.
