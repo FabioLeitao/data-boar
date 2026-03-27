@@ -408,3 +408,23 @@ def test_export_public_gemini_bundle_py_compiles():
     if not script.exists():
         return
     py_compile.compile(str(script), doraise=True)
+
+
+def test_audit_concat_sliding_window_py_compiles():
+    """scripts/audit_concat_sliding_window.py compiles (sliding-window bundle vs corpus heuristic)."""
+    root = _project_root()
+    script = root / "scripts" / "audit_concat_sliding_window.py"
+    if not script.exists():
+        return
+    py_compile.compile(str(script), doraise=True)
+
+
+def test_recovery_doc_bundle_sanity_ps1_syntax():
+    """scripts/recovery-doc-bundle-sanity.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "recovery-doc-bundle-sanity.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), (
+        "recovery-doc-bundle-sanity.ps1 parse failed"
+    )
