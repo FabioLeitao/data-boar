@@ -5,6 +5,7 @@ SonarQube-style checks: scripts use quoted variables, explicit exit codes, and n
 obvious injection; these tests ensure they parse and (where possible) run a no-op path.
 """
 
+import py_compile
 import subprocess
 import sys
 from pathlib import Path
@@ -315,6 +316,7 @@ def test_candidate_dossier_scaffold_ps1_has_core_params():
     assert "OutputDir" in text
     assert "LowPriorityCaution" in text
     assert "AdvisorRemote" in text
+    assert "OperatorRelationship" in text
     assert "Overwrite" in text
 
 
@@ -388,3 +390,21 @@ def test_docs_private_scripts_syntax_optional(include_private_lint: bool):
             f"bash -n failed for {script.relative_to(root)}: "
             f"{proc.stderr or proc.stdout}"
         )
+
+
+def test_audit_concatenated_markdown_py_compiles():
+    """scripts/audit_concatenated_markdown.py compiles (optional Gemini bundle sanity helper)."""
+    root = _project_root()
+    script = root / "scripts" / "audit_concatenated_markdown.py"
+    if not script.exists():
+        return
+    py_compile.compile(str(script), doraise=True)
+
+
+def test_export_public_gemini_bundle_py_compiles():
+    """scripts/export_public_gemini_bundle.py compiles (safe tracked-files bundle for external LLM)."""
+    root = _project_root()
+    script = root / "scripts" / "export_public_gemini_bundle.py"
+    if not script.exists():
+        return
+    py_compile.compile(str(script), doraise=True)
