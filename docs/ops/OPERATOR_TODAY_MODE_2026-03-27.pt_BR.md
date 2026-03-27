@@ -1,0 +1,61 @@
+# “Today mode” do operador — 2026-03-27 (dia inteiro)
+
+**English:** [OPERATOR_TODAY_MODE_2026-03-27.md](OPERATOR_TODAY_MODE_2026-03-27.md)
+
+**Objetivo:** Um **dia completo** em **superfícies de operador + alinhamento docs/código** — não só os primeiros 10 minutos. Pressupõe que na **noite de 2026-03-26** entraste o **PR do pacote de recuperação de docs** (playbook, auditoria de janela deslizante, script meta, ligações GEMINI/recuperação).
+
+---
+
+## Noite anterior (2026-03-26) — fechar a árvore
+
+Antes de encerrar, se ainda estiver aberto:
+
+1. **`git status`** — só caminhos **rastreados**; **`docs/private/`** continua por fora do Git.
+1. **`.\scripts\check-all.ps1`** (ou `lint-only` se já tiveres corrido testes completos).
+1. **Um PR coerente** (recomendo um só tema): recuperação de bundle de docs + tooling de workflow — p.ex. dois commits **`docs(workflow):`** / **`test(workflow):`** se preferires; **não** mistures código de produto não relacionado.
+1. **Depois do merge:** tag/release só se já estava no plano de [OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md](OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md); não baralhes com esta fatia sem querer.
+
+---
+
+## Hoje (2026-03-27) — blocos recomendados
+
+### Bloco A — Portão help-sync (≈ 45–90 min)
+
+- Corre **`uv run pytest tests/test_operator_help_sync.py -v`** na raiz do repo.
+- Relê **`docs/OPERATOR_HELP_AUDIT.md`** — trata **Follow-ups** como **backlog do dia**, não rodapé.
+- Se verde: anota data da corrida numa linha privada em **`docs/private/GEMINI_WORKFLOW_ROI_AND_HELP_SYNC_PREP.md`** ou no teu diário; se vermelho: corrige **código ou manifesto primeiro**, depois superfícies (USAGE, man, `/help`).
+
+### Bloco B — OpenAPI vs corpos reais (≈ 90–120 min)
+
+- **Meta:** fechar ou encolher o item do audit: texto OpenAPI / Swagger vs **`POST /scan`** (e relacionados) como está em **`api/routes`**.
+- **Entrega:** pequenas edições rastreadas em doc ou descrição OpenAPI **ou** um issue único com lacunas intencionais (com ponteiros para o código).
+
+### Bloco C — README e exposição (`--host`) (≈ 30–45 min)
+
+- **Meta:** README + **`.pt_BR.md`**: quando falares de LAN / sem Docker, aparece **`--host`** (e ligação ao USAGE) sem obrigar o leitor a adivinhar o default de loopback.
+- **Cruzado:** bullets em SECURITY/DEPLOY ainda batem com **`core/host_resolution.py`**.
+
+### Bloco D — Espreitar `/help` web (≈ 30 min)
+
+- Leitura rápida de **`api/templates/help.html`** vs **`main.py`** (argparse) para flags **recentes** (transporte, API key, opções de scan). Não é duplicar tudo — é **evitar contradições**.
+
+### Bloco E — Dry-run ferramentas de recuperação (≈ 15–30 min, opcional)
+
+- **`.\scripts\recovery-doc-bundle-sanity.ps1`** (sem bundle) — confirma o conjunto de testes de compilação dos scripts.
+- Se guardares concat privado: uma corrida **`--sweep-windows`** para tranquilidade ([DOC_BUNDLE_RECOVERY_PLAYBOOK.pt_BR.md](DOC_BUNDLE_RECOVERY_PLAYBOOK.pt_BR.md)).
+
+### Bloco F — Planos / banda A fino (≈ 30–45 min, opcional)
+
+- Espreita **`docs/plans/PLANS_TODO.md`** banda **–1 / –1b**; **não** abrir espiral de feature nova — **uma** checkbox ou promoção a issue se for óbvio.
+
+---
+
+## Critério de paragem
+
+O dia está “fechado” quando: **pytest help-sync verde**, **follow-up OpenAPI avançado** (doc fundida ou issue fechada em âmbito), **callout `--host` no README** feito ou **adiado** com ponteiro em **PLANS_TODO** / issue.
+
+---
+
+## Atalho no chat
+
+**`today-mode 2026-03-27`** ou abre este arquivo.
