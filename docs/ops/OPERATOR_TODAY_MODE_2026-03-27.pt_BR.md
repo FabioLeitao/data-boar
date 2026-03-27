@@ -4,7 +4,7 @@
 
 **Objetivo:** Um **dia completo** em **superfícies de operador + alinhamento docs/código** — não só os primeiros 10 minutos. O **PR de recuperação de docs** já foi **fundido** em `main`; começa por **carryover + Slack**, depois os blocos técnicos.
 
-**Abre este arquivo primeiro** ao sentar-te (**`today-mode 2026-03-27`**).
+**Abre este arquivo primeiro** ao sentar-te (**`today-mode 2026-03-27`**). Atalhos em inglês para limites do dia: **`carryover-sweep`** (manhã) e **`eod-sync`** (fim do dia) — ver **`scripts/operator-day-ritual.ps1`** e **`.cursor/rules/session-mode-keywords.mdc`**.
 
 ---
 
