@@ -419,6 +419,15 @@ def test_audit_concat_sliding_window_py_compiles():
     py_compile.compile(str(script), doraise=True)
 
 
+def test_build_final_round_bucket_concat_py_compiles():
+    """scripts/build_final_round_bucket_concat.py compiles (final-round bucket concat + map-names)."""
+    root = _project_root()
+    script = root / "scripts" / "build_final_round_bucket_concat.py"
+    if not script.exists():
+        return
+    py_compile.compile(str(script), doraise=True)
+
+
 def test_recovery_doc_bundle_sanity_ps1_syntax():
     """scripts/recovery-doc-bundle-sanity.ps1 has valid PowerShell syntax (parse-only)."""
     root = _project_root()
