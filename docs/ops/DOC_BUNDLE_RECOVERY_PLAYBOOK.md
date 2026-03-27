@@ -72,6 +72,26 @@ When you discover **more** recovered copies later (“undelete” / Explorer / b
 
 **Perfectionism stop rule:** if `git status` is clean against `origin/main`, first-pass heuristics already showed **~99%+** coverage, and the new blob does not claim to replace tracked content, **declare victory** and move on.
 
+### One-shot concat + name map (many loose files)
+
+When the bucket is a pile of **separate** `.md` / `.yaml` / `.htm` / `.html` saves (browser export, undelete), use **`scripts/build_final_round_bucket_concat.py`** to build a single blob with `--- FILE: … ---` markers, optionally print **basename alignment** against the tracked tree (excluding `docs/private/`), and optionally run the **multi-pass sliding-window** sweep in one go.
+
+```bash
+# Basename clues: exact name, stem-normalized (e.g. "File (1).htm"), or no tracked peer
+uv run python scripts/build_final_round_bucket_concat.py --map-names
+
+# Write default concat (under the bucket): .../final_round_bucket/_concat_for_sliding_window.md
+uv run python scripts/build_final_round_bucket_concat.py
+
+# Build + compact sweep table (same defaults as manual --sweep-windows 12,15,18,22,25,30)
+uv run python scripts/build_final_round_bucket_concat.py --sweep --quiet-gaps
+
+# Also try trailing-whitespace normalization on corpus + input
+uv run python scripts/build_final_round_bucket_concat.py --sweep --quiet-gaps --rstrip-lines
+```
+
+Flags: **`--bucket`**, **`--output`**, **`--repo-root`**, **`--sweep-windows`**, **`--dry-run`**. HTML inputs are tag-stripped to approximate text lines for the matcher (not byte-faithful to Markdown sources).
+
 ---
 
 ## How to interpret results
@@ -93,5 +113,5 @@ When you discover **more** recovered copies later (“undelete” / Explorer / b
 ## Related links
 
 - **[GEMINI_PUBLIC_BUNDLE_REVIEW.md](GEMINI_PUBLIC_BUNDLE_REVIEW.md)** — safe bundle build, prompts, tool list.
-- **`scripts/audit_concatenated_markdown.py`**, **`scripts/audit_concat_sliding_window.py`**, **`scripts/export_public_gemini_bundle.py`** — source of truth for flags and behaviour.
+- **`scripts/audit_concatenated_markdown.py`**, **`scripts/audit_concat_sliding_window.py`**, **`scripts/export_public_gemini_bundle.py`**, **`scripts/build_final_round_bucket_concat.py`** — source of truth for flags and behaviour.
 - **[COMMIT_AND_PR.md](COMMIT_AND_PR.md)** — normal hygiene after the tree is clean.
