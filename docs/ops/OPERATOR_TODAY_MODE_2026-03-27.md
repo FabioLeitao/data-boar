@@ -4,7 +4,7 @@
 
 **Purpose:** A **whole day** on **operator surfaces + doc/code alignment** — not just the first 10 minutes. **2026-03-26 evening** landed the **doc-bundle recovery** PR (merged); start below with **carryover + Slack**, then the technical blocks.
 
-**Open this file first** when you sit down (**`today-mode 2026-03-27`**).
+**Open this file first** when you sit down (**`today-mode 2026-03-27`**). Chat shorthand for day boundaries: **`carryover-sweep`** (morning) and **`eod-sync`** (evening) — see **`scripts/operator-day-ritual.ps1`** and **`.cursor/rules/session-mode-keywords.mdc`**.
 
 ---
 
