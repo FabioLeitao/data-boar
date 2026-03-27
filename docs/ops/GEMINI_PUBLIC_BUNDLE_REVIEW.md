@@ -2,6 +2,8 @@
 
 **Portuguese (pt-BR):** [GEMINI_PUBLIC_BUNDLE_REVIEW.pt_BR.md](GEMINI_PUBLIC_BUNDLE_REVIEW.pt_BR.md)
 
+**After a `cat` incident:** step-by-step recovery and the Windows meta script **`scripts/recovery-doc-bundle-sanity.ps1`** — **[DOC_BUNDLE_RECOVERY_PLAYBOOK.md](DOC_BUNDLE_RECOVERY_PLAYBOOK.md)** ([pt-BR](DOC_BUNDLE_RECOVERY_PLAYBOOK.pt_BR.md)).
+
 This runbook avoids **manual `cat *.md`** mistakes: the bundle is built from **`git ls-files` only**, excludes **`docs/private/`**, and wraps every file as:
 
 ```text
@@ -28,14 +30,14 @@ On Linux/macOS you can use:
 
 Flags:
 
-| Flag | Meaning |
-| ---- | ------- |
-| `--compliance-yaml` | Also include `docs/compliance-samples/*.yaml` |
-| `--cursor` | Include `.cursor/**/*.md` (large; usually off) |
-| `--plans` | Include `docs/plans/**/*.md` (large; usually off) |
-| `--no-workflows` | Skip `.github/workflows/*` and `dependabot.yml` |
-| `--verify` | After writing, re-read each section and diff against disk |
-| `--dry-run` | Show how many paths would be included |
+| Flag                | Meaning                                                   |
+| ----                | -------                                                   |
+| `--compliance-yaml` | Also include `docs/compliance-samples/*.yaml`             |
+| `--cursor`          | Include `.cursor/**/*.md` (large; usually off)            |
+| `--plans`           | Include `docs/plans/**/*.md` (large; usually off)         |
+| `--no-workflows`    | Skip `.github/workflows/*` and `dependabot.yml`           |
+| `--verify`          | After writing, re-read each section and diff against disk |
+| `--dry-run`         | Show how many paths would be included                     |
 
 **Output path:** keep bundles under **`docs/private/...`** (gitignored) so nothing accidental lands in Git.
 
@@ -68,4 +70,15 @@ Tighten or shorten the prompt when the bundle is near the model’s context limi
 ## Related automation
 
 - **Headerless legacy bundles:** `scripts/audit_concatenated_markdown.py` (H1 heuristic or `--cat-order` byte split).
+- **Sliding-window “puzzle piece” heuristic:** `scripts/audit_concat_sliding_window.py` builds an index of every *N*-line window over tracked `*.md` / `*.yaml` / `*.yml`, then marks which lines in your concatenated blob are covered by at least one matching window. **Uncovered** runs may be glue between files, manual edits, or text that no longer exists on disk — **not proof** of loss (generic lines and boundary effects happen). Example:
+
+  ```bash
+  uv run python scripts/audit_concat_sliding_window.py \
+    -i docs/private/mess_concatenated_gemini_sanity_check/sobre-data-boar.md \
+    --window 25 --strip-bundle-markers --show-sample-matches 15
+  ```
+
+  Optional: `--rstrip-lines` if editors varied trailing spaces; `--include-private-corpus` only if you intentionally want `docs/private/**` in the corpus. `--fail-if-uncovered-pct-above 0` exits non-zero when any line stays uncovered (strict CI-style gate; often too noisy for real blobs).
+  **Multi-pass:** `--sweep-windows 12,15,18,22,25,30` prints one comparison table (run again with `--rstrip-lines` to compare whitespace barriers). See **[DOC_BUNDLE_RECOVERY_PLAYBOOK.md](DOC_BUNDLE_RECOVERY_PLAYBOOK.md)** § Multi-pass.
+
 - **Operator notification policy:** [OPERATOR_NOTIFICATION_CHANNELS.md](OPERATOR_NOTIFICATION_CHANNELS.md).
