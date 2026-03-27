@@ -2,22 +2,28 @@
 
 **Português (Brasil):** [OPERATOR_TODAY_MODE_2026-03-27.pt_BR.md](OPERATOR_TODAY_MODE_2026-03-27.pt_BR.md)
 
-**Purpose:** A **whole day** on **operator surfaces + doc/code alignment** — not just the first 10 minutes. Assumes **2026-03-26 evening** landed the **doc-bundle recovery** PR (playbook, sliding-window audit, meta script, GEMINI/recovery links).
+**Purpose:** A **whole day** on **operator surfaces + doc/code alignment** — not just the first 10 minutes. **2026-03-26 evening** landed the **doc-bundle recovery** PR (merged); start below with **carryover + Slack**, then the technical blocks.
+
+**Open this file first** when you sit down (**`today-mode 2026-03-27`**).
 
 ---
 
-## Evening before (2026-03-26) — close the tree
+## Block 0 — First (≈ 20–40 min): carryover + Slack must actually ping you
 
-Do this **before** you log off if still open:
+### 0a — Sweep prior “today mode” dangling (no immortal backlog)
 
-1. **`git status`** — only **tracked** paths in scope; **`docs/private/`** stays untracked.
-1. **`.\scripts\check-all.ps1`** (or `lint-only` if you already ran full tests).
-1. **One coherent PR** (recommended single theme): doc-bundle recovery + workflow tooling — e.g. commits split **`docs(workflow):`** vs **`test(workFlow):`** if you prefer two commits; avoid mixing unrelated product code.
-1. **After merge:** optional tag/release only if that was already the plan from [OPERATOR_TODAY_MODE_2026-03-26.md](OPERATOR_TODAY_MODE_2026-03-26.md); do not conflate with this slice unless intentional.
+- Open **[OPERATOR_TODAY_MODE_2026-03-26.md](OPERATOR_TODAY_MODE_2026-03-26.md)** — anything still unchecked (e.g. **tag `v1.6.7` + GitHub Release + Docker**, **Wabbix WRB**, optional **branch protection**) either **do today**, **move to one PLANS row / issue**, or **defer explicitly** with a date — don’t leave it **dangling forever**.
+- Optional weekly habit: skim **all** `docs/ops/OPERATOR_TODAY_MODE_*.md` still relevant; operator note **`docs/private/TODAY_MODE_CARRYOVER_AND_FOUNDER_RHYTHM.md`** explains daily vs founder checkpoint.
+
+### 0b — Slack notifications (hard requirement before trusting “you were pinged”)
+
+- **Problem to solve:** private channel + desktop open is **not enough** if **Windows** and **iPhone** never show a notification — you won’t see agent/CI signals on channel B.
+- **Do:** read **[OPERATOR_NOTIFICATION_CHANNELS.md](OPERATOR_NOTIFICATION_CHANNELS.md)** (+ **[pt-BR](OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md)**) and **prove** delivery: send a **test** to the channel, confirm **notification settings** (app + OS: Focus/DND, Slack mobile alerts), and trigger or verify the **“Slack operator ping (manual)”** / **CI failure** workflow path if configured. Goal: **one** confirmed ding on **phone** and **desktop** you actually notice.
+- **Secrets** stay in GitHub Actions / env — never paste webhooks in chat or tracked docs.
 
 ---
 
-## Today (2026-03-27) — recommended blocks
+## Today (2026-03-27) — technical blocks (after Block 0)
 
 ### Block A — Help sync gate (≈ 45–90 min)
 
@@ -52,7 +58,7 @@ Do this **before** you log off if still open:
 
 ## Stop condition
 
-Day is “done” when: **pytest help-sync green**, **OpenAPI follow-up advanced** (merged doc or filed scoped issue), **README `--host` callout** satisfied or explicitly deferred with a **PLANS_TODO** / issue pointer.
+Day is “done” when: **Block 0** has either **Slack proof-of-ping** or a **tracked/next-step** note (issue/PLANS) for why not yet; **prior today-mode carryovers** are not invisible; and **pytest help-sync green**, **OpenAPI follow-up advanced** (merged doc or filed scoped issue), **README `--host` callout** satisfied or explicitly deferred with a **PLANS_TODO** / issue pointer.
 
 ---
 
