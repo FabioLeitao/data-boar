@@ -70,7 +70,7 @@ Copie esta tabela para um board **GitHub Projects** ou doc pessoal; mova linhas 
 | **Backlog**      | RBAC relatórios no dashboard — **implementação** (issue #86)                      | A/M                                   | Depois do **D-WEB**; mirar caminhos HTML **prefixados**; `[H2][U2]`                                                                                                                                                                                          |
 | **Backlog**      | Locale dashboard **M-LOCALE-V1** (implementação)                                  | A                                     | Depois do **D-WEB** + agenda; [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md)                                                                                                                                                                               |
 | **Backlog**      | **Site público + hub de docs** (**M-SITE-READY**) — profundidade **≠** pitch/PPTX | M                                     | [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) §2.1–2.3; guias técnicos/releases/roadmap com **frentes nomeadas** no **site**; deck para stakeholder permanece **raso** tecnicamente; i18n alinhado a **D-WEB** / **M-LOCALE** |
-| **Selecionado**  | *(uma linha só por semana consciente de tokens)*                                  | —                                     | Escolher em “What to start next” ou **Integration / WIP** no [PLANS_TODO.md](PLANS_TODO.md)                                                                                                                                                                  |
+| **Selecionado**  | **S0 – Rajada de confiança** (–1, –1b, A1–A3); depois retomar Tier-2 / integração | M + **Operador** (Hub)                | [§4.0 checklist S0](#40-s0-e-s0b--checklist-de-execução-quando-for-a-hora); **S0b** opcional na mesma semana—ver segunda tabela do §4.0                                                                                         |
 | **Em progresso** | *(escopo atual — ex.: rich media Tier 3 até merge)*                               | —                                     | TOKEN_AWARE: uma fatia primária; ver **Integration / WIP** ao fechar rich media + **1.6.5**                                                                                                                                                                  |
 | **Bloqueado**    | *(aguardando operador: hardware, Hub, assessoria)*                                | **Operador**                          | Anotar bloqueio no PR ou runbook privado                                                                                                                                                                                                                     |
 | **Feito**        | *(entregue + testes + doc marcada)*                                               | —                                     | Atualizar `PLANS_TODO` + arquivo do plano                                                                                                                                                                                                                    |
@@ -102,6 +102,34 @@ Sprints são **temas** de 1–2 semanas no relógio; dentro de cada um, ainda va
 | **S4 – Sinais para fora**             | Notificações          | Fase 1 webhook (ou primeiro canal) + docs                                                                                                                                 | Fornecer URL de webhook de teste; política de canal              | Formato de config, módulo, exemplos                                  |
 | **S5 – Buffer / manutenção**          | Controle de sidequest | PRs de housekeeping, sync operator-help, limpeza de branch, notas LAB-OP privadas                                                                                         | Merges manuais, blocos de estudo para cert (calendário separado) | PRs pequenos doc/teste; sem plano grande novo                        |
 | **S6+**                               | Repetir ou adiar      | Próxima linha em “What to start next” ou tier adiado                                                                                                                      | Conforme necessário                                              | Mesma disciplina de uma fatia                                        |
+
+### 4.0 S0 e S0b — checklist de execução (quando for a hora)
+
+**Intenção:** Rodar **S0 – Rajada de confiança** quando tiver **1–3 sessões focadas** (sem misturar com fatia grande de feature). Opcionalmente acrescentar **S0b – Operacionalidade** na **mesma semana civil** se houver energia—é **um PR pequeno de doc ou script**, não um segundo tema de feature.
+
+#### S0 – Rajada de confiança (equivale ao mínimo de **M-TRUST**)
+
+Executar **nessa ordem**, salvo quando só documentar exceções (mesmo assim atualizar *Integration / WIP* em [PLANS_TODO.md](PLANS_TODO.md) ao fechar).
+
+| Passo | ID | Ação | Pronto quando |
+| ----- | -- | ---- | -------------- |
+| 1 | **–1 / A1** | [Dependabot](https://github.com/FabioLeitao/data-boar/security/dependabot) + PRs abertos: subir deps com segurança; **`uv lock`**, **`uv export --no-emit-package pyproject.toml -o requirements.txt`**, **`.\scripts\check-all.ps1`**, merge com CI verde. | Alertas triados; lockfile + `requirements.txt` alinhados; ver [SECURITY.pt_BR.md](../SECURITY.pt_BR.md) SLAs. |
+| 2 | **–1b / A2** | **`docker scout quickview`** / **`docker scout recommendations`** em **`fabioleitao/data_boar:latest`** (imagem alinhada ao `main`); rebuild se base ou deps corrigirem CVEs. | Scan aceitável **ou** exceção de imagem base documentada—ver *Integration / WIP* no PLANS_TODO. |
+| 3 | **A3** | Higiene de tags no **Docker Hub** (operador): remover ou documentar tags obsoletas; alinhar a [DEPLOY.pt_BR.md](../deploy/DEPLOY.pt_BR.md) §8. | Só tags suportadas; parceiros sem pin em tags mortas. |
+
+**Opcional no mesmo sprint:** **`uvx pip-audit -r requirements.txt`** para rever [pygments](../ops/DEPENDABOT_PYGMENTS_CVE.md) / [pyOpenSSL + Snowflake](../ops/DEPENDABOT_PYOPENSSL_SNOWFLAKE.md).
+
+**Marco:** **M-TRUST** (ver [§5 Marcos](#5-marcos-a-cada-alguns-sprints)) — registrar progresso na linha *plan status* do PLANS_TODO quando A1–A3 estiverem verdes ou documentados.
+
+#### S0b – Operacionalidade (opcional; caminha para **M-OBS**)
+
+Escolher **só um** item—token-aware; operador valida num deploy real.
+
+| Escolha uma | Onde implementar | Pronto quando |
+| ----------- | ---------------- | ------------- |
+| **One-liner de runbook** | Estender [OBSERVABILITY_SRE.md](../OBSERVABILITY_SRE.pt_BR.md) ou [DEPLOY.pt_BR.md](../deploy/DEPLOY.pt_BR.md): se o app cair → checar **`GET /health`**, logs, `CONFIG_PATH`, disco/caminho SQLite, reinício; se o scan travar → … | Uma subsecção curta; link no PLANS_TODO se útil. |
+| **Nota backup / restore** | [USAGE.pt_BR.md](../USAGE.pt_BR.md) e/ou [DEPLOY.pt_BR.md](../deploy/DEPLOY.pt_BR.md): o que guardar (config, SQLite, dir de relatórios); como restaurar. | EN + pt-BR conforme política de docs. |
+| **Gancho de KPI** | Rodar **`python scripts/kpi-export.py --limit-prs 10`**; colar ou arquivo em `docs/releases/` (ex. `kpi_snapshot.md`) ou linha na próxima release note. | Baseline do [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) §4.7 refletida no texto. |
 
 **Estudo / certificações:** Trate como **swimlane paralela** (só operador). Blocos **fixos** (ex. 1–2×/semana) **depois** de uma fatia com agente naquele dia, sem misturar com código profundo—conforme `TOKEN_AWARE_USAGE.md` §3 e [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.2.
 

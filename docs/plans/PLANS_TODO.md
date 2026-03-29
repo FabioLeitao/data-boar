@@ -47,8 +47,9 @@ When revising **license terms** for IP, commerciality, and profitability, explic
 
 **Brand and experience IP (same pass):** Include **mascot**, **Data Boar / dashBOARd** naming, **data soup** metaphor and connector narrative, **UI/report appearance**, documented **operation** (CLI/API/Docker story), and **companion artifacts** (Docker image branding, website, related repos) in trademark and commercial-license review — see [LICENSING_OPEN_CORE_AND_COMMERCIAL.md § Brand, narrative, and experience IP](../LICENSING_OPEN_CORE_AND_COMMERCIAL.md#brand-narrative-and-experience-ip-inventory-for-counsel-and-commercial-policy) and [COPYRIGHT_AND_TRADEMARK.md](../COPYRIGHT_AND_TRADEMARK.md#6-brand-narrative-and-product-experience-inventory).
 
-### Integration / WIP — last refreshed **2026-03-25**
+### Integration / WIP — last refreshed **2026-03-27**
 
+- **Sprint focus (when ready):** **S0 – Trust burst** (Dependabot/lockfile **–1**, Docker Scout **–1b**, Hub tag hygiene **A3**) with checklist in [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) **§4.0**; optional **S0b – Operability** same week (one runbook, backup note, or KPI snapshot).
 - **Branches:** Work ships via **PRs to `main`**; avoid tracking a long-lived “integration” branch name here (it goes stale).
 - **Cloud object storage (data soup):** **Not implemented yet** — phased plan [PLAN_OBJECT_STORAGE_CLOUD_CONNECTORS.md](PLAN_OBJECT_STORAGE_CLOUD_CONNECTORS.md) (S3 first, then Azure Blob, GCS); reuses file/compressed pipeline after list + fetch.
 - **Semgrep:** ✅ **Plan complete** — OSS scan on push/PR; [PLAN_SEMGREP_CI.md](PLAN_SEMGREP_CI.md). **Slack:** [slack-ci-failure-notify.yml](../../.github/workflows/slack-ci-failure-notify.yml) runs after **`CI`** or **`Semgrep`** completes with **failure** when **`SLACK_WEBHOOK_URL`** is set. Optional smoke: temporary failing branch — see plan § *Optional operator smoke*.

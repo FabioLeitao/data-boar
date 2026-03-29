@@ -69,7 +69,7 @@ Copy this table into a GitHub **Project** board or a personal doc; move rows by 
 | **Backlog**     | Dashboard web surface **D-WEB** (i18n + #86 URL/middleware design) | A/M                            | [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) § milestones; [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) § sequencing |
 | **Backlog**     | Dashboard reports RBAC — **impl** (issue #86)                      | A/M                            | After **D-WEB**; target **prefixed** HTML paths; `[H2][U2]`                                                                                                      |
 | **Backlog**     | Dashboard locale **M-LOCALE-V1** (implementation)                  | A                              | After **D-WEB** + schedule; [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md)                                                                                     |
-| **Selected**    | *(one row only for token-aware week)*                              | —                              | Pick from “What to start next” or **Integration / WIP** in [PLANS_TODO.md](PLANS_TODO.md)                                                                        |
+| **Selected**    | **S0 – Trust burst** (–1, –1b, A1–A3); then resume Tier-2 / integration work | M + **Operator** (Hub)         | [§4.0 S0 checklist](#40-s0-and-s0b--execution-checklist-when-ready); optional **S0b** same week—see §4.0 second table |
 | **In progress** | *(current session scope — e.g. rich media Tier 3 until merged)*    | —                              | TOKEN_AWARE: one primary slice; see **Integration / WIP** when landing rich media + **1.6.5**                                                                    |
 | **Blocked**     | *(waiting on operator: hardware, Hub, counsel)*                    | **Operator**                   | Note blocker in PR or private runbook                                                                                                                            |
 | **Done**        | *(shipped + tests + doc tick)*                                     | —                              | Update `PLANS_TODO` + plan file                                                                                                                                  |
@@ -101,6 +101,34 @@ Sprints are **themes** of 1–2 weeks wall-clock; inside each, you still execute
 | **S4 – Signals out**             | Notifications     | Phase 1 webhook (or first channel) + docs                                                                                                                  | Provide test webhook URL; decide channel policy                     | Config shape, module, examples                                 |
 | **S5 – Buffer / maintenance**    | Sidequest control | Housekeeping PRs, operator-help sync, branch cleanup, LAB-OP private notes                                                                                 | Manual merges, cert study blocks (separate calendar)                | Small doc/test PRs; no new large plan                          |
 | **S6+**                          | Repeat or defer   | Next row in “What to start next” or deferred tier                                                                                                          | As needed                                                           | Same one-slice discipline                                      |
+
+### 4.0 S0 and S0b — execution checklist (when ready)
+
+**Intent:** Run **S0 – Trust burst** when you have **1–3 focused sessions** (not mixed with a large feature slice). Optionally add **S0b – Operability** in the **same calendar week** if energy allows—it is **one small doc or script PR**, not a second feature theme.
+
+#### S0 – Trust burst (maps to **M-TRUST** minimum)
+
+Execute in **order** unless you are only documenting exceptions (still update [PLANS_TODO.md](PLANS_TODO.md) *Integration / WIP* when done).
+
+| Step | ID | Action | Done when |
+| ---- | -- | ------ | ---------- |
+| 1 | **–1 / A1** | [Dependabot](https://github.com/FabioLeitao/data-boar/security/dependabot) + open PRs: bump deps safely; **`uv lock`**, **`uv export --no-emit-package pyproject.toml -o requirements.txt`**, **`.\scripts\check-all.ps1`**, merge when CI green. | Alerts triaged; lockfile + `requirements.txt` aligned; see [SECURITY.md](../SECURITY.md) SLAs. |
+| 2 | **–1b / A2** | **`docker scout quickview`** / **`docker scout recommendations`** on **`fabioleitao/data_boar:latest`** (after image matches `main`); rebuild if base or deps fix CVEs. | Acceptable scan **or** documented base-image exception (e.g. Debian packages with no fix yet)—see *Integration / WIP* in PLANS_TODO. |
+| 3 | **A3** | **Docker Hub** tag hygiene (operator): remove or document obsolete tags; align with [DEPLOY.md](../deploy/DEPLOY.md) §8. | Supported tags only; partners not pinning dead tags. |
+
+**Optional same sprint:** **`uvx pip-audit -r requirements.txt`** re-check for [pygments](../ops/DEPENDABOT_PYGMENTS_CVE.md) / [pyOpenSSL + Snowflake](../ops/DEPENDABOT_PYOPENSSL_SNOWFLAKE.md) fix availability.
+
+**Milestone:** **M-TRUST** (see [§5 Milestones](#5-milestones-every-few-sprints)) — mark progress in PLANS_TODO *plan status* line when A1–A3 are honestly green or documented.
+
+#### S0b – Operability (optional; maps toward **M-OBS**)
+
+Pick **exactly one** item—token-aware; operator validates on a real deploy path.
+
+| Pick one | Where to implement | Done when |
+| -------- | ------------------ | ---------- |
+| **Runbook one-liner** | Extend [OBSERVABILITY_SRE.md](../OBSERVABILITY_SRE.md) or [DEPLOY.md](../deploy/DEPLOY.md): if the app is down → check **`GET /health`**, logs, `CONFIG_PATH`, disk/SQLite path, restart; if scan hangs → … | One short subsection; link from PLANS_TODO if useful. |
+| **Backup / restore note** | [USAGE.md](../USAGE.md) and/or [DEPLOY.md](../deploy/DEPLOY.md): what to back up (config, SQLite, report dir); how to restore. | EN + pt-BR per docs policy. |
+| **KPI hook** | Run **`python scripts/kpi-export.py --limit-prs 10`**; paste or file under `docs/releases/` (e.g. `kpi_snapshot.md`) or add a line to the next [release note](../releases/). | [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) §4.7 baseline updated in prose. |
 
 **Study / certifications:** Treat as a **parallel swimlane** (operator-only). Slot **fixed blocks** (e.g. 1–2×/week) **after** one agent slice that day, not mixed with deep coding—per `TOKEN_AWARE_USAGE.md` §3 and [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3.2.
 
