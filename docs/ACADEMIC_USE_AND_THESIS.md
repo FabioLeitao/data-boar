@@ -62,6 +62,7 @@ This document helps **students, advisors, and examiners** use the **public** Dat
 
 ## 7. Related documents
 
+- **Portfolio, PUCRS supplements, PUC-Rio Digital extensions, study cadence:** Use the **Internal and reference** entry in [docs/README.md](README.md) to open `docs/plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md` (no direct `plans/` link from this page per repo policy). There, see **section 3.3** (**PUCRS extension supplements**), the **PUC-Rio Digital extension courses** subsection (benefit-aligned recommendations; confirm against your **private** contract in `docs/private/academic/`), and **section 3.0** (weekly study cadence).
 - [CONTRIBUTING.md](../CONTRIBUTING.md) — contributor hygiene (no secrets in public repo).
 - [SECURITY.md](../SECURITY.md) — supported versions and reporting vulnerabilities.
 - [TESTING.md](TESTING.md) — what automated checks exist (useful for “validation” chapters).

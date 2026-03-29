@@ -4,6 +4,10 @@
 
 **Depois de um incidente com `cat`:** passos de recuperação e o script meta Windows **`scripts/recovery-doc-bundle-sanity.ps1`** — **[DOC_BUNDLE_RECOVERY_PLAYBOOK.pt_BR.md](DOC_BUNDLE_RECOVERY_PLAYBOOK.pt_BR.md)** ([EN](DOC_BUNDLE_RECOVERY_PLAYBOOK.md)).
 
+## Autoridade (Gemini vs Git + testes)
+
+Revisão por LLM externa (ex.: Gemini sobre a saída do **`export_public_gemini_bundle.py`**) é **triagem em lote opcional** — não um relatório de auditoria isolado nem substituto de **histórico `git`**, **CI** ou **pytest**. Trate como outros **insumos externos** (ex.: digests estilo Wabbix / WRB): úteis para **priorizar**, sempre abaixo de checagens reproduzíveis. No repositório: **`--verify`** na exportação do pacote, helpers **`audit_concat_*`** quando usar, **`recovery-doc-bundle-sanity.ps1`** e o **playbook de recuperação** quando o pacote correr mal.
+
 Este runbook evita erros do tipo **`cat *.md` manual**: o pacote vem só de **`git ls-files`**, **exclui** **`docs/private/`** e envolve cada arquivo assim:
 
 ```text

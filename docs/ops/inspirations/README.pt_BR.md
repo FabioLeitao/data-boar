@@ -13,6 +13,10 @@ Objetivo: fontes que informam **hardening** e escolhas de roadmap com viés comp
 - [Security Now / GRC](SECURITY_NOW.md)
 - [Projetos e guias OWASP](OWASP.md)
 - [CISA KEV + advisories](CISA_KEV_AND_ADVISORIES.md)
+- [Cadeia de suprimentos e sinais de confiança — pt-BR (follow-ups)](SUPPLY_CHAIN_AND_TRUST_SIGNALS.pt_BR.md) ([nota completa em EN](SUPPLY_CHAIN_AND_TRUST_SIGNALS.md))
+- [Wazuh + NIST CSF / CIS — alinhamento lab-op](WAZUH_NIST_CIS_LABOP_ALIGNMENT.pt_BR.md) ([EN](WAZUH_NIST_CIS_LABOP_ALIGNMENT.md))
+- [Observabilidade lab-op — links oficiais (nota mental)](LAB_OP_OBSERVABILITY_LEARNING_LINKS.pt_BR.md) ([EN](LAB_OP_OBSERVABILITY_LEARNING_LINKS.md))
+- [Operação de banco enterprise + slots de evidência GRC](ENTERPRISE_DB_OPS_AND_GRC_EVIDENCE.pt_BR.md) ([EN](ENTERPRISE_DB_OPS_AND_GRC_EVIDENCE.md))
 - [Qualys Threat Research (blog / TRU)](QUALYS_THREAT_RESEARCH.pt_BR.md)
 
 ## Craft de engenharia (pessoas, produtos, narrativa)
