@@ -37,7 +37,7 @@ Sample configuration files to enable **additional compliance frameworks** with t
 | **compliance-sample-us_ca_ab2273_caadca.yaml** | California AB 2273 (Age-Appropriate Design Code): **labelling** for voluntary scoping; applicability requires counsel.                                     |
 | **compliance-sample-us_co_cpa_minors.yaml**    | Colorado Privacy Act — minors / under-18 contexts: **technical** norm tags; does not establish “known minor” legally.                                      |
 
-All samples in the tables above are available. Each sample is self-contained (regex overrides, ML terms, recommendation overrides) so you can enable one framework by including that file's blocks in your config. See [PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md](../plans/completed/PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md) for the full list and optional regional scope.
+All samples in the tables above are available. Each sample is self-contained (regex overrides, ML terms, recommendation overrides) so you can enable one framework by including that file's blocks in your config. For the **full regional table**, filenames, and how to merge samples into `config.yaml`, see [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md#compliance-samples) ([pt-BR](../COMPLIANCE_FRAMEWORKS.pt_BR.md#amostras-de-conformidade)).
 
 ### Sample maintenance
 

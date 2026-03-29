@@ -8,13 +8,13 @@
 
 ## Progresso já feito (2026-03-25 — resumo antes de dormir)
 
-| Área | Resultado |
-| ---- | --------- |
+| Área                | Resultado                                                                                                                                                                    |
+| ----                | ---------                                                                                                                                                                    |
 | **CI / pre-commit** | Job de lint executa **`uv run pre-commit run --all-files`**; **`.pre-commit-config.yaml`** com **`plans-stats-check`**; **CONTRIBUTING** recomenda **`pre-commit install`**. |
-| **Docs / ADR** | **0000–0003** em `docs/adr/`; **WORKFLOW_DEFERRED_FOLLOWUPS** (EN + pt-BR); **ACADEMIC_USE_AND_THESIS** (EN + pt-BR) no índice `docs/README`. |
-| **Qualidade** | Regra/skill **quality-sonarqube** alinhadas; **check-all-gate** menciona âmbito do pre-commit. |
-| **Wabbix** | Guideline ajustado para **tag vs pyproject**; **WRB_DELTA_SNAPSHOT_2026-03-26** pronto para colar. |
-| **Versão** | **Sem 1.6.8.** String no repo **1.6.7**; **tag** ainda **v1.6.6** até publicares — próximo passo é **tag + release**, não outro bump. |
+| **Docs / ADR**      | **0000–0003** em `docs/adr/`; **WORKFLOW_DEFERRED_FOLLOWUPS** (EN + pt-BR); **ACADEMIC_USE_AND_THESIS** (EN + pt-BR) no índice `docs/README`.                                |
+| **Qualidade**       | Regra/skill **quality-sonarqube** alinhadas; **check-all-gate** menciona âmbito do pre-commit.                                                                               |
+| **Wabbix**          | Guideline ajustado para **tag vs pyproject**; **WRB_DELTA_SNAPSHOT_2026-03-26** pronto para colar.                                                                           |
+| **Versão**          | **Sem 1.6.8.** String no repo **1.6.7**; **tag** ainda **v1.6.6** até publicares — próximo passo é **tag + release**, não outro bump.                                        |
 
 ---
 

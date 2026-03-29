@@ -372,7 +372,7 @@ To run a single audit from the CLI in the cluster, use a **Job** that overrides 
 **Why this matters:** Public tags remain **pullable** until you delete them on Docker Hub. Cleaning up **obsolete** tags reduces casual reuse of old builds (CVEs, wrong defaults) and aligns docs with what you actually support.
 
 1. **Inventory:** In [Docker Hub](https://hub.docker.com/r/fabioleitao/data_boar/tags) list all tags; note which CI, partners, or docs pin each tag (e.g. `latest`, `1.6.5`).
-1. **Decide support policy:** Typically keep **`latest`** plus **current semver** (and optionally one previous semver for rollback). Document the supported set here and in [PLANS_TODO.md](../plans/PLANS_TODO.md) Priority band A if needed.
+1. **Decide support policy:** Typically keep **`latest`** plus **current semver** (and optionally one previous semver for rollback). Document the supported set here; maintainers may also mirror the matrix under **Internal and reference** in [README.md](../README.md) or [SECURITY.md](../SECURITY.md) when useful.
 1. **Delete on Hub:** Hub → repository → **Tags** → delete tags you no longer support. **Warning:** Anyone who already pulled a tag still has that image locally; deletion only stops *new* pulls from Hub.
 1. **Update automation:** Adjust CI/CD and `docker-compose` / Kubernetes manifests so nothing references removed tags.
 1. **Commercial / IP note:** Tag hygiene is **not** a substitute for licensing or private issuer repos; it complements them. See [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md).

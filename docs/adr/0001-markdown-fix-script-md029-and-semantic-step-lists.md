@@ -14,8 +14,8 @@ Some documents use **semantic** ordered lists where readers expect **1. 2. 3.** 
 ## Decision
 
 1. **Keep** MD029 normalization in **`fix_markdown_sonar.py`** as the default behaviour for bulk fixes and CI alignment.
-2. **Document** that after running the fix script, authors must **manually restore 1. 2. 3.** where the list is a true sequence of steps (not an unordered set of bullets in disguise).
-3. **Do not** (for now) add heuristic “detect step lists” logic in the script; the maintenance cost and false positives outweigh the benefit while the contributor base is small. Revisit if doc churn becomes painful (see alternatives below).
+1. **Document** that after running the fix script, authors must **manually restore 1. 2. 3.** where the list is a true sequence of steps (not an unordered set of bullets in disguise).
+1. **Do not** (for now) add heuristic “detect step lists” logic in the script; the maintenance cost and false positives outweigh the benefit while the contributor base is small. Revisit if doc churn becomes painful (see alternatives below).
 
 ## Consequences
 
