@@ -12,7 +12,7 @@ Você pode **definir as palavras de treino para ML e DL** no arquivo de config p
 
 **Detecção de dados de menores:** A aplicação pode sinalizar possíveis dados de menores (colunas de DOB/idade) e aplicar tratamento diferenciado nos relatórios (LGPD Art. 14, GDPR Art. 8). O limite de idade (padrão 18) é configurável no arquivo de config externo. Consulte [MINOR_DETECTION.pt_BR.md](MINOR_DETECTION.pt_BR.md) para configuração e ajuste fino.
 
-**Risco de identificação agregada / cruzada:** Quando várias categorias de quasi-identificadores (ex.: gênero, cargo, saúde, endereço, telefone) aparecem na **mesma tabela ou arquivo**, o gerador de relatório sinaliza isso como **caso especial** para DPO e compliance (LGPD Art. 5, GDPR Recital 26 – identificabilidade pela combinação de dados). O relatório Excel inclui a aba **"Cross-ref data – ident. risk"** listando cada caso (alvo, tabela/arquivo, colunas envolvidas, categorias, explicação) e uma recomendação de alta prioridade. Isso é opcional e configurável via `detection.aggregated_identification_enabled`, `aggregated_min_categories` e `quasi_identifier_mapping`. Consulte [PLAN_AGGREGATED_IDENTIFICATION.md](plans/completed/PLAN_AGGREGATED_IDENTIFICATION.md) para o desenho e detalhes de config.
+**Risco de identificação agregada / cruzada:** Quando várias categorias de quasi-identificadores (ex.: gênero, cargo, saúde, endereço, telefone) aparecem na **mesma tabela ou arquivo**, o gerador de relatório sinaliza isso como **caso especial** para DPO e compliance (LGPD Art. 5, GDPR Recital 26 – identificabilidade pela combinação de dados). O relatório Excel inclui a aba **"Cross-ref data – ident. risk"** listando cada caso (alvo, tabela/arquivo, colunas envolvidas, categorias, explicação) e uma recomendação de alta prioridade. Isso é opcional e configurável via `detection.aggregated_identification_enabled`, `aggregated_min_categories` e `quasi_identifier_mapping`. Notas históricas de desenho: **`PLAN_AGGREGATED_IDENTIFICATION`** arquivado em `docs/plans/completed/` (mantenedores).
 
 ### Contexto embutido: letras, tablaturas, Markdown de projeto, `.txt` de letra, legendas, texto tipo OCR
 
@@ -64,7 +64,7 @@ O projeto tem um **plano** para detecção opcional de **tipo baseada em conteú
 - **Ainda sem ligação com conectores:** os conectores de sistema de arquivos e compartilhamentos ainda decidem o que escanear com base em **extensões** e regras atuais; o helper não é chamado nos fluxos de produção.
 - **Fase futura (opt-in):** uma fase posterior adicionará um **toggle opt-in** (config/CLI/dashboard) para que os conectores possam consultar esse helper antes de decidir como extrair e escanear conteúdo, melhorando a resistência a arquivos renomeados/cloaked ao custo de uma pequena leitura extra por arquivo.
 
-Para detalhes de desenho e etapas de rollout, consulte [PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md](plans/PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md).
+Para detalhes de desenho e etapas de rollout, veja [USAGE.pt_BR.md](USAGE.pt_BR.md) (`file_scan`, **`use_content_type`**) e [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md); plano histórico: **`PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION`** em `docs/plans/`.
 
 ## Chaves de config
 
@@ -96,7 +96,7 @@ Para detalhes de desenho e etapas de rollout, consulte [PLAN_CONTENT_TYPE_AND_CL
 1. Reduza `sensitivity_detection.medium_confidence_threshold` (ex.: **35**) para que scores limítrofes ML/DL virem **MEDIUM** em vez de **LOW**.
 1. Ative `detection.persist_low_id_like_for_review: true` em alvos de banco para persistir colunas identificadoras que continuem **LOW** e listá-las em **Suggested review (LOW)**.
 
-Detalhes: [PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md](plans/PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md).
+Detalhes: opções do detector neste guia e em [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md); backlog estendido: **`PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION`** em `docs/plans/` (mantenedores).
 
 #### Por que “Suggested review” precisa de `persist_low_id_like_for_review: true` (ou fixtures)
 
@@ -396,7 +396,7 @@ dl_patterns_file: config/sensitivity_terms.yaml
 
 A aplicação já inclui um **subconjunto** dessas categorias nos termos ML de fábrica (DEFAULT_ML_TERMS em `core/detector.py`), de modo que a detecção imediata inclui, por exemplo, religião, filiação política, gênero, biométrico, genético, raça, sindicato, PEP e vida sexual. Para detectar **mais dados pessoais sensíveis** (LGPD Art. 5 II, 11; GDPR Art. 9)—como CID/ICD (códigos de diagnóstico), gênero, religião, filiação política, PEP, raça/cor da pele, filiação sindical, dados genéticos/biométricos, vida sexual, saúde/deficiência—adicione ou estenda termos de treino via `ml_patterns_file` / `dl_patterns_file` ou `sensitivity_detection.ml_terms` / `sensitivity_detection.dl_terms`.
 
-- **Plano e tabela de categorias:** [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md)
+- **Tabela de categorias (plano histórico):** **`PLAN_SENSITIVE_CATEGORIES_ML_DL`** em `docs/plans/completed/` (mantenedores)
 - **Arquivo de exemplo pronto para uso:** [sensitivity_terms_sensitive_categories.example.yaml](sensitivity_terms_sensitive_categories.example.yaml)
 
 Copie esse arquivo (ou mescle suas entradas) em `ml_patterns_file` / `dl_patterns_file`, ou em `sensitivity_detection.ml_terms` / `sensitivity_detection.dl_terms`. Você pode usar `report.recommendation_overrides` para que achados nessas categorias tenham a Base legal, Risco e Prioridade corretos no relatório. Exemplo completo (saúde, religião, política, PEP, raça, sindicato, genético, biométrico, vida sexual) em [USAGE.pt_BR.md](USAGE.pt_BR.md) (Notas sobre configuração); [USAGE.md](USAGE.md) (English).
