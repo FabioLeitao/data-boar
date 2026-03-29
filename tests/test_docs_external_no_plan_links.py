@@ -6,6 +6,7 @@ detail. Allowed entry points stay in docs/README (Internal and reference),
 docs/ops/, CONTRIBUTING, and plan files themselves.
 
 See: .cursor/rules/audience-segmentation-docs.mdc
+Architecture record: docs/adr/0004-external-docs-no-markdown-links-to-plans.md
 """
 
 from __future__ import annotations
@@ -16,6 +17,19 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+
+# Workflow / maintainer-contract Markdown may link into plans (e.g. PLANS_HUB); still
+# excluded from *buyer / integrator / product-guide* tier. See ADR 0004.
+_ROOT_MD_SKIP_PLAN_LINK_GUARD: frozenset[str] = frozenset(
+    ("CONTRIBUTING.md", "CONTRIBUTING.pt_BR.md", "AGENTS.md")
+)
+
+
+def _docs_path_skips_plan_link_guard(rel_posix: str) -> bool:
+    return rel_posix.startswith("docs/COLLABORATION_TEAM") or rel_posix.startswith(
+        "docs/TALENT_POOL_LEARNING_PATHS"
+    )
+
 
 # Markdown inline links: [text](target) — strip optional title after space
 MD_LINK_RE = re.compile(r"\[([^\]]*)\]\(([^)]+)\)")
@@ -53,16 +67,18 @@ def _iter_strict_markdown_files() -> list[Path]:
                 continue
             if len(parts) >= 2 and parts[:2] == ("docs", "private"):
                 continue
+            rel_posix = rel.as_posix()
+            if _docs_path_skips_plan_link_guard(rel_posix):
+                continue
             out.append(path)
     for name in (
         "README.md",
         "README.pt_BR.md",
         "SECURITY.md",
         "SECURITY.pt_BR.md",
-        "CONTRIBUTING.md",
-        "CONTRIBUTING.pt_BR.md",
-        "AGENTS.md",
     ):
+        if name in _ROOT_MD_SKIP_PLAN_LINK_GUARD:
+            continue
         p = REPO_ROOT / name
         if p.is_file():
             out.append(p)
@@ -85,6 +101,15 @@ def test_external_tier_markdown_has_no_plan_links(md_path: Path) -> None:
             f"{md_path.relative_to(REPO_ROOT)} links into plans/ or .cursor/plans - "
             f"replace with product docs or plain text. Targets: {violations!r}"
         )
+
+
+def test_workflow_docs_excluded_from_external_tier_scan() -> None:
+    paths = {p.resolve() for p in _iter_strict_markdown_files()}
+    assert REPO_ROOT / "CONTRIBUTING.md" not in paths
+    assert REPO_ROOT / "AGENTS.md" not in paths
+    assert REPO_ROOT / "docs" / "COLLABORATION_TEAM.pt_BR.md" not in paths
+    assert REPO_ROOT / "docs" / "TALENT_POOL_LEARNING_PATHS.md" not in paths
+    assert REPO_ROOT / "docs" / "TALENT_POOL_LEARNING_PATHS.pt_BR.md" not in paths
 
 
 def test_forbidden_url_detector() -> None:
