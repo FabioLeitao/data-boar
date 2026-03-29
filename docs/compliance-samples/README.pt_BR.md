@@ -21,7 +21,7 @@ Arquivos de configuração de exemplo para habilitar **frameworks de conformidad
 | **compliance-sample-us_co_cpa_minors.yaml**    | Colorado CPA — contextos com menores de 18 anos: **norm tags técnicos**; não estabelece “menor conhecido” no sentido jurídico.                                  |
 | **compliance-sample-russia_152_fz.yaml**       | Rússia Lei federal 152-FZ: Roskomnadzor; operador de dados pessoais; termos EN + RU; regex SNILS e INN heurístico (risco de falso positivo — ver cabeçalho do arquivo); **revisar com frequência**. |
 
-**Lista completa** de amostras por região: [COMPLIANCE_FRAMEWORKS.pt_BR.md](../COMPLIANCE_FRAMEWORKS.pt_BR.md#amostras-de-conformidade) ([EN](../COMPLIANCE_FRAMEWORKS.md#compliance-samples)). Cada amostra é autocontida (regex overrides, termos ML, recommendation overrides); novas regiões seguem o mesmo formato — veja [PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md](../plans/completed/PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md).
+**Lista completa** de amostras por região, nomes de arquivo e como mesclar no `config.yaml`: [COMPLIANCE_FRAMEWORKS.pt_BR.md](../COMPLIANCE_FRAMEWORKS.pt_BR.md#amostras-de-conformidade) ([EN](../COMPLIANCE_FRAMEWORKS.md#compliance-samples)). Cada amostra é autocontida (regex overrides, termos ML, recommendation overrides); novas regiões seguem o mesmo formato.
 
 ### Manutenção das amostras
 

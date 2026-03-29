@@ -1,7 +1,7 @@
 # Pre-commit hooks: run before each commit to catch issues early.
 # Install (once per clone): uv sync && uv run pre-commit install
 # Run manually / CI parity: uv run pre-commit run --all-files
-# Hooks mirror .github/workflows/ci.yml lint job (Ruff, markdown, pt-BR, commercial guard, plans-stats).
+# Hooks mirror .github/workflows/ci.yml lint job (Ruff, markdown, pt-BR, commercial guard, external-docs plan links, plans-stats).
 # See https://pre-commit.com and docs/QUALITY_WORKFLOW_RECOMMENDATIONS.md
 
 repos:
@@ -34,5 +34,10 @@ repos:
       - id: confidential-commercial-guard
         name: confidential commercial guard (git index)
         entry: uv run pytest tests/test_confidential_commercial_guard.py -q -W error
+        language: system
+        pass_filenames: false
+      - id: docs-external-no-plan-links
+        name: external-tier docs must not link into docs/plans
+        entry: uv run pytest tests/test_docs_external_no_plan_links.py -q -W error
         language: system
         pass_filenames: false
