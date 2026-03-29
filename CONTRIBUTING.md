@@ -56,6 +56,10 @@ Thank you for considering contributing. This document covers local setup, workfl
 - **Security:** Do not post exploit details publicly. Use the [Security issue](.github/ISSUE_TEMPLATE/security.md) template (high-level only) or the process in [SECURITY.md](SECURITY.md).
 - **Pull requests:** Use the [PR template](.github/PULL_REQUEST_TEMPLATE.md). Prefer **`.\scripts\check-all.ps1`** before push (full gate: plans dashboard, pre-commit, pytest with warnings as errors)—see [docs/ops/README.md](docs/ops/README.md) § *Before you open a PR*. At minimum: tests pass (`uv run pytest -v -W error`; see [docs/TESTING.md](docs/TESTING.md)), lint passes (`uv run ruff check .` / pre-commit), and docs/README are updated when behaviour or setup changes. **Private layout template (tracked):** copy from **`docs/private.example/`** into gitignored **`docs/private/`** per [docs/PRIVATE_OPERATOR_NOTES.md](docs/PRIVATE_OPERATOR_NOTES.md).
 
+### Cursor session keywords vs application CLI
+
+Maintainers may type **English session tokens** in Cursor chat (`deps`, `feature`, `docs`, …) to scope the assistant’s work. Those tokens are **not** flags for **`main.py`**. The Data Boar CLI is documented in **[docs/USAGE.md](docs/USAGE.md)**. Canonical token table: **`.cursor/rules/session-mode-keywords.mdc`**; summary: **[AGENTS.md](AGENTS.md)**.
+
 ### Public repo hygiene (LAN, credentials)
 
 - **Root `config.yaml`:** Listed in `.gitignore`—it often holds **filesystem paths**, DB hosts, and passwords. **Do not** `git add -f config.yaml`. Copy from `deploy/config.example.yaml` and keep secrets local. If the file was ever committed by mistake, run `git rm --cached config.yaml` so it stops tracking; **Git history** may still contain old blobs—use `git filter-repo` / BFG and **rotate** any exposed credentials if the repo was public.
