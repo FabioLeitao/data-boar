@@ -134,4 +134,6 @@ dev = [
     "bandit>=1.9.4",
     "mypy>=1.14.0",
     "types-pyyaml>=6.0.12.20250915",
+    # CycloneDX SBOM from uv-exported requirements (ADR 0003); same CLI as CI `sbom.yml`.
+    "cyclonedx-bom>=7.0.0",
 ]
