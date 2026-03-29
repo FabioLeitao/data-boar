@@ -20,13 +20,14 @@ Do **not** put plan files in `docs/` root or in `docs/completed/` (that folder w
 1. Mark all to-dos **Done** in the plan file and in **`docs/plans/PLANS_TODO.md`**.
 1. **Move** the plan file from `docs/plans/PLAN_*.md` to `docs/plans/completed/PLAN_*.md` (e.g. `git mv docs/plans/PLAN_XYZ.md docs/plans/completed/`).
 1. **Update** `docs/plans/PLANS_TODO.md`: remove the plan from the open list and ensure the "Completed plans" section links to `completed/PLAN_XYZ.md`.
-1. **Update** any references elsewhere (e.g. `docs/USAGE.md`, `docs/SENSITIVITY_DETECTION.md`, `core/detector.py`, other plan files) from `docs/plans/PLAN_*.md` to `docs/plans/completed/PLAN_*.md` where they point to the completed plan.
+1. **Update** any references elsewhere (**prefer product docs:** USAGE, SENSITIVITY_DETECTION, MINOR_DETECTION, releases, TECH_GUIDE) so operators are not left with broken paths. **Do not** add new markdown links from **external-tier** docs into `docs/plans/`; use **[docs/README.md](../../docs/README.md)** *Internal and reference* or plain-text plan names. See **`.cursor/rules/audience-segmentation-docs.mdc`** and **`tests/test_docs_external_no_plan_links.py`**.
 1. In the **moved** file, set **Status** to "Complete" and note that it is archived in `docs/plans/completed/`. Keep the "Synced with" link to `../PLANS_TODO.md` so readers can jump back to the central to-do list.
 1. **Update the pitch** in **README.md** and **README.pt_BR.md**: remove the completed item from the **Roadmap** sentence and, if useful, reflect the new capability in "What we surface" or "Why it holds up" so the pitch describes what the application now does and why to consider the product. See `.cursor/rules/pitch-roadmap-sync.mdc`.
 
 ## Cross-references
 
-- From **docs/** (e.g. README, USAGE): link to `plans/PLANS_TODO.md` and `plans/completed/PLAN_*.md` as needed.
+- From **external-tier docs** (USAGE, COMPLIANCE_*, GLOSSARY, SENSITIVITY_*, deploy guides, releases, root README pitch, etc.): **do not** use markdown links into `docs/plans/` or `.cursor/plans/`. Point readers to **product behaviour** docs or to **[docs/README.md](../../docs/README.md)** *Internal and reference* / plain-text `` `docs/plans/` `` paths. **Exception:** **`docs/README.md`** and **`docs/README.pt_BR.md`** intentionally list plan files in that section.
+- From **docs/ops/** runbooks: linking to `../plans/...` remains appropriate for operator/maintainer workflow.
 - From **docs/plans/** (open plans): use relative links `[PLANS_TODO.md](PLANS_TODO.md)` and `[PLAN_*.md](PLAN_*.md)`.
 - From **docs/plans/completed/**: use `[../PLANS_TODO.md](../PLANS_TODO.md)` to point back to the central list.
 

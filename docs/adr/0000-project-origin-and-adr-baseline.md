@@ -13,8 +13,8 @@ For years before **Architecture Decision Records** existed in this tree, design 
 ## Decision
 
 1. Reserve **ADR 0000** as a **short historical anchor**: what the app is for, where the canonical pitch and tech docs live, and that substantive decisions before **March 2026** were not recorded as ADRs.
-2. Keep **ADR 0001+** for **explicit** decisions made after ADRs were adopted in-repo (tooling, security doc policy, SBOM roadmap, etc.).
-3. Do **not** renumber existing ADRs when adding 0000; new readers see **0000** first in the index, then chronological **0001**, **0002**, …
+1. Keep **ADR 0001+** for **explicit** decisions made after ADRs were adopted in-repo (tooling, security doc policy, SBOM roadmap, etc.).
+1. Do **not** renumber existing ADRs when adding 0000; new readers see **0000** first in the index, then chronological **0001**, **0002**, …
 
 ## Consequences
 
