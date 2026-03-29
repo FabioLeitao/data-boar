@@ -6,7 +6,7 @@
 
 ## Context
 
-A **Software Bill of Materials (SBOM)** improves **compliance** narratives and **incident response** (mapping CVEs to what shipped). The project already runs **`pip-audit`** in CI for known vulnerabilities; a **formal** SBOM adds a portable inventory for enterprises and for releases.
+A **Software Bill of Materials (SBOM)** is primarily for **software supply-chain** visibility and **incident response** (e.g. mapping advisories and CVEs to what shipped in a given release or image). It can also satisfy **procurement** questionnaires; it is **not** organizational risk management under **ISO 31000**—see [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md#iso-31000-framing). The project already runs **`pip-audit`** in CI for known vulnerabilities; a **formal** SBOM adds a portable inventory alongside that signal.
 
 Two common outputs matter for this codebase:
 
@@ -21,11 +21,19 @@ Two common outputs matter for this codebase:
 
 ## Consequences
 
-- **Positive:** Clear story for procurement and security questionnaires; faster answers to “what shipped in 1.x.y?”.
+- **Positive:** Faster **supply-chain** and **IR** answers (“what shipped in 1.x.y?” / “what is in this image tag?”); clearer responses on **dependency** inventory for security reviews.
 - **Negative:** CI/release script maintenance; must regenerate when lockfile or base image changes.
+
+## Implementation (2026-03)
+
+- **Workflow:** [`.github/workflows/sbom.yml`](../../.github/workflows/sbom.yml) — **CycloneDX 1.6 JSON** from `uv export` + `cyclonedx-py` (`sbom-python.cdx.json`); **Syft** `v1.28.0` image against `docker:data_boar:sbom` built from [`Dockerfile`](../../Dockerfile) (`sbom-docker-image.cdx.json`). Triggers: tags `v*`, `release: published`, path-filtered PRs to `main`, `workflow_dispatch`. Artifacts upload on every run; **GitHub Release** attachment when a release already exists for the tag.
+- **Local:** [`scripts/generate-sbom.ps1`](../../scripts/generate-sbom.ps1) (requires Docker for the Syft step).
+- **Docs:** [SECURITY.md](../../SECURITY.md), [RELEASE_INTEGRITY.md](../RELEASE_INTEGRITY.md) — where to download and what each file contains.
+- **Dev dependency:** `cyclonedx-bom` in [`pyproject.toml`](../../pyproject.toml) `[dependency-groups].dev` (same tooling as CI).
 
 ## References
 
+- [docs/COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md) — ISO 31000 framing vs SBOM role
 - [docs/QUALITY_WORKFLOW_RECOMMENDATIONS.md](../QUALITY_WORKFLOW_RECOMMENDATIONS.md) — SBOM section
 - [SECURITY.md](../../SECURITY.md) — dependency and reporting context
 - [docs/RELEASE_INTEGRITY.md](../RELEASE_INTEGRITY.md) — release integrity posture
