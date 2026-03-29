@@ -6,7 +6,7 @@ Optional **local notify** (Signal/SMS/SMTP credentials for operator digests): co
 
 ```bash
 # From repo root (Linux/macOS/Git Bash)
-mkdir -p docs/private/homelab docs/private/author_info docs/private/notify docs/private/commercial docs/private/operator_economics
+mkdir -p docs/private/homelab docs/private/author_info docs/private/notify docs/private/commercial docs/private/operator_economics docs/private/academic
 cp docs/private.example/homelab/README.md docs/private/homelab/
 cp docs/private.example/commercial/README.md docs/private/commercial/
 cp docs/private.example/operator_economics/README.md docs/private/operator_economics/
@@ -14,17 +14,19 @@ cp docs/private.example/operator_economics/README.md docs/private/operator_econo
 # cp docs/private.example/homelab/OPERATOR_RETEACH.md docs/private/homelab/
 # cp docs/private.example/homelab/OPERATOR_RETEACH.pt_BR.md docs/private/homelab/
 cp docs/private.example/author_info/README.md docs/private/author_info/
+cp docs/private.example/academic/README.md docs/private/academic/
 cp docs/private.example/notify/README.md docs/private/notify/
 ```
 
 ```powershell
 # Windows (PowerShell, repo root)
-New-Item -ItemType Directory -Force -Path docs/private/homelab, docs/private/author_info, docs/private/notify, docs/private/commercial, docs/private/operator_economics | Out-Null
+New-Item -ItemType Directory -Force -Path docs/private/homelab, docs/private/author_info, docs/private/notify, docs/private/commercial, docs/private/operator_economics, docs/private/academic | Out-Null
 Copy-Item docs/private.example/homelab/README.md docs/private/homelab/
 Copy-Item docs/private.example/commercial/README.md docs/private/commercial/
 Copy-Item docs/private.example/operator_economics/README.md docs/private/operator_economics/
 # Optional: Copy-Item docs/private.example/homelab/OPERATOR_RETEACH*.md docs/private/homelab/
 Copy-Item docs/private.example/author_info/README.md docs/private/author_info/
+Copy-Item docs/private.example/academic/README.md docs/private/academic/
 Copy-Item docs/private.example/notify/README.md docs/private/notify/
 ```
 
