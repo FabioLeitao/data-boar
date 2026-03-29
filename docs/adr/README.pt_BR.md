@@ -16,20 +16,23 @@ Notas curtas e duradouras que registram **por que** o projeto escolheu um caminh
 
 ## Índice
 
-| ADR  | Título                                                                                                           | Status |
-| ---- | ---------------------------------------------------------------------------------------------------------------- | ------ |
-| 0000 | [Project origin and ADR baseline](0000-project-origin-and-adr-baseline.md)                                       | Aceito |
-| 0001 | [Markdown fix script, MD029, and semantic step lists](0001-markdown-fix-script-md029-and-semantic-step-lists.md) | Aceito |
-| 0002 | [Operator-facing security and technical docs](0002-operator-facing-security-and-technical-docs.md)               | Aceito |
-| 0003 | [SBOM roadmap — CycloneDX then Syft](0003-sbom-roadmap-cyclonedx-then-syft.md)                                   | Aceito |
+| ADR  | Título                                                                                                                        | Status |
+| ---- | ----------------------------------------------------------------------------------------------------------------              | ------ |
+| 0000 | [Project origin and ADR baseline](0000-project-origin-and-adr-baseline.md)                                                    | Aceito |
+| 0001 | [Markdown fix script, MD029, and semantic step lists](0001-markdown-fix-script-md029-and-semantic-step-lists.md)              | Aceito |
+| 0002 | [Operator-facing security and technical docs](0002-operator-facing-security-and-technical-docs.md)                            | Aceito |
+| 0003 | [SBOM roadmap — CycloneDX then Syft](0003-sbom-roadmap-cyclonedx-then-syft.md)                                                | Aceito |
+| 0004 | [Information architecture — external-tier docs must not link into `plans/`](0004-external-docs-no-markdown-links-to-plans.md) | Aceito |
+| 0005 | [CI and GitHub Actions supply chain — pinned SHAs and pinned uv CLI](0005-ci-github-actions-supply-chain-pins.md)              | Aceito |
 
 ## Docs relacionados
 
 - [CONTRIBUTING.pt_BR.md](../../CONTRIBUTING.pt_BR.md) — fluxo do contribuidor; menciona MD029 e o script de correção.
 - [SECURITY.pt_BR.md](../../SECURITY.pt_BR.md) · [TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md) — entradas para operadores ([ADR 0002](0002-operator-facing-security-and-technical-docs.md), EN).
 - [QUALITY_WORKFLOW_RECOMMENDATIONS.md](../QUALITY_WORKFLOW_RECOMMENDATIONS.md) — §6 (MD029), §7 (ADRs), SBOM. *(EN.)*
-- [WORKFLOW_DEFERRED_FOLLOWUPS.pt_BR.md](../ops/WORKFLOW_DEFERRED_FOLLOWUPS.pt_BR.md) — follow-ups de workflow.
+- [WORKFLOW_DEFERRED_FOLLOWUPS.pt_BR.md](../ops/WORKFLOW_DEFERRED_FOLLOWUPS.pt_BR.md) — follow-ups de workflow ([ADR 0005](0005-ci-github-actions-supply-chain-pins.md) sobre pin de Actions/uv).
 - [.cursor/rules/markdown-lint.mdc](../../.cursor/rules/markdown-lint.mdc) — quando rodar `fix_markdown_sonar.py` e renumeração pós-script.
+- [.cursor/rules/audience-segmentation-docs.mdc](../../.cursor/rules/audience-segmentation-docs.mdc) — links externos vs internos; [ADR 0004](0004-external-docs-no-markdown-links-to-plans.md) (texto canônico em inglês).
 
 ## Índice geral da documentação
 
