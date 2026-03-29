@@ -2,7 +2,7 @@
 
 **English:** [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](CODE_PROTECTION_OPERATOR_PLAYBOOK.md)
 
-**Objetivo:** Frases **prontas** para orientar um assistente de IA (ou operador humano) em **segurança, exposição de IP e guardrails de rentabilidade** sem gastar contexto com features não relacionadas. Complementa [PLANS_TODO.md](plans/PLANS_TODO.md) (**Priority band A**) e [TOKEN_AWARE_USAGE.md](plans/TOKEN_AWARE_USAGE.md) §6.
+**Objetivo:** Frases **prontas** para orientar um assistente de IA (ou operador humano) em **segurança, exposição de IP e guardrails de rentabilidade** sem gastar contexto com features não relacionadas. Complementa os ponteiros de mantenedor em **Interno e referência** em [README.md](README.md) (**Priority band A**, **TOKEN_AWARE_USAGE** — caminhos em `docs/plans/` na árvore do repositório).
 
 **Regra:** Um **passo** (A1–A7) por sessão, salvo passos triviais. Depois de **A1–A3**, você pode voltar ao ritmo **token-aware** de features, salvo se A4–A7 bloquearem receita ou conformidade.
 
@@ -58,14 +58,13 @@
 
 Quando A1–A3 estiverem prontos:
 
-> **Resume token-aware pace.** Apenas a próxima linha de [PLANS_TODO.md](plans/PLANS_TODO.md) em “What to start next” — ordem **[N]**; não carregar outros planos.
+> **Resume token-aware pace.** Apenas a próxima linha de **PLANS_TODO** em “What to start next” (veja **Interno e referência** em [README.md](README.md)) — ordem **[N]**; não carregar outros planos.
 
 ---
 
 ## Documentos relacionados
 
-- [PLANS_TODO.md](plans/PLANS_TODO.md)
-- [TOKEN_AWARE_USAGE.md](plans/TOKEN_AWARE_USAGE.md)
+- [README.md](README.md) — **Interno e referência** lista **PLANS_TODO** e **TOKEN_AWARE_USAGE** (`docs/plans/` no checkout)
 - [LICENSING_SPEC.md](LICENSING_SPEC.md)
 - [HOSTING_AND_WEBSITE_OPTIONS.md](HOSTING_AND_WEBSITE_OPTIONS.md)
 - [RELEASE_INTEGRITY.md](RELEASE_INTEGRITY.md)

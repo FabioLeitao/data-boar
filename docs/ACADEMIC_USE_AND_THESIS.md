@@ -20,9 +20,9 @@ This document helps **students, advisors, and examiners** use the **public** Dat
 - **Open-core license (public tree):** [LICENSE](../LICENSE) — **BSD 3-Clause** (permissive; retain copyright notice and license text on redistribution — see the license file for exact conditions).
 - **Optional commercial enforcement** (runtime tokens) is specified in [LICENSING_SPEC.md](LICENSING_SPEC.md); **default** development and academic replication typically use **`open`** mode (no paid token required). See also [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md) for the intended product boundary.
 - **How to cite the software** in a thesis (adapt to your institution’s style):
-  - **Repository:** canonical Git URL (e.g. GitHub `FabioLeitao/data-boar` or successor), **commit hash** or **release tag**, and **date accessed**.
-  - **Version:** match [VERSIONING.md](VERSIONING.md) / `pyproject.toml` when you freeze a reproduction baseline.
-  - **License:** name **BSD 3-Clause** and point to the root **`LICENSE`** file (some programmes ask for a license appendix).
+- **Repository:** canonical Git URL (e.g. GitHub `FabioLeitao/data-boar` or successor), **commit hash** or **release tag**, and **date accessed**.
+- **Version:** match [VERSIONING.md](VERSIONING.md) / `pyproject.toml` when you freeze a reproduction baseline.
+- **License:** name **BSD 3-Clause** and point to the root **`LICENSE`** file (some programmes ask for a license appendix).
 
 ---
 
@@ -46,10 +46,10 @@ This document helps **students, advisors, and examiners** use the **public** Dat
 ## 5. Reproducibility checklist (recommended for examiners)
 
 1. State **Git commit** or **tag**, **Python** version (e.g. 3.12/3.13), and how dependencies were installed (**`uv sync`** / lockfile).
-2. Provide a **sanitised** `config` excerpt based on [deploy/config.example.yaml](../deploy/config.example.yaml) — **no secrets**.
-3. If you used Docker, cite **image tag** and **`Dockerfile`** / compose reference from [DOCKER_SETUP.md](DOCKER_SETUP.md).
-4. Note **`licensing.mode: open`** (or equivalent) if readers must replicate without a commercial token.
-5. List **tests** or **scripts** you ran (`pytest` targets, CLI flags) so others can verify claims **without** your private data.
+1. Provide a **sanitised** `config` excerpt based on [deploy/config.example.yaml](../deploy/config.example.yaml) — **no secrets**.
+1. If you used Docker, cite **image tag** and **`Dockerfile`** / compose reference from [DOCKER_SETUP.md](DOCKER_SETUP.md).
+1. Note **`licensing.mode: open`** (or equivalent) if readers must replicate without a commercial token.
+1. List **tests** or **scripts** you ran (`pytest` targets, CLI flags) so others can verify claims **without** your private data.
 
 ---
 

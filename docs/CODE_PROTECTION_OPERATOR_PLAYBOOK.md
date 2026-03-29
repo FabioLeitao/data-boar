@@ -2,7 +2,7 @@
 
 **Português (Brasil):** [CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md](CODE_PROTECTION_OPERATOR_PLAYBOOK.pt_BR.md)
 
-**Purpose:** Give you **concrete phrases** to steer an AI assistant (or a human operator) through **safety, IP exposure, and profitability guardrails** without burning context on unrelated features. This complements [PLANS_TODO.md](plans/PLANS_TODO.md) **Priority band A** and [TOKEN_AWARE_USAGE.md](plans/TOKEN_AWARE_USAGE.md) §6.
+**Purpose:** Give you **concrete phrases** to steer an AI assistant (or a human operator) through **safety, IP exposure, and profitability guardrails** without burning context on unrelated features. This complements the maintainer pointers under **Internal and reference** in [README.md](README.md) (**Priority band A**, **TOKEN_AWARE_USAGE** — paths live in `docs/plans/` in the repo tree).
 
 **Rule:** One **step** (A1–A7) per session unless a step is trivially short. After **A1–A3**, you may resume **token-aware** feature work unless A4–A7 block revenue or compliance.
 
@@ -60,14 +60,13 @@ Use these **verbatim** or tweak the bracketed parts.
 
 When A1–A3 are done (and nothing is on fire), say:
 
-> **Resume token-aware pace.** Next row only from [PLANS_TODO.md](plans/PLANS_TODO.md) “What to start next” — pick order **[N]** and do not load other plans.
+> **Resume token-aware pace.** Next row only from **PLANS_TODO** “What to start next” (see **Internal and reference** in [README.md](README.md)) — pick order **[N]** and do not load other plans.
 
 ---
 
 ## Related docs
 
-- [PLANS_TODO.md](plans/PLANS_TODO.md) — Priority band A table + execution order
-- [TOKEN_AWARE_USAGE.md](plans/TOKEN_AWARE_USAGE.md) — one-session discipline
+- [README.md](README.md) — **Internal and reference** lists **PLANS_TODO** and **TOKEN_AWARE_USAGE** (`docs/plans/` in the checkout)
 - [LICENSING_SPEC.md](LICENSING_SPEC.md) — runtime token behaviour
 - [HOSTING_AND_WEBSITE_OPTIONS.md](HOSTING_AND_WEBSITE_OPTIONS.md) — public vs private hosting costs
 - [RELEASE_INTEGRITY.md](RELEASE_INTEGRITY.md) — signed release manifest (optional)

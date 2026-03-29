@@ -2,7 +2,7 @@
 
 **Português (Brasil):** [README.pt_BR.md](README.pt_BR.md)
 
-Sample configuration files to enable **additional compliance frameworks** with the same scan-and-report flow. Copy the relevant blocks into your main config, or set `regex_overrides_file` / `ml_patterns_file` and merge the sample’s `report.recommendation_overrides`. For how to use and how each framework maps to config, see [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md) ([pt-BR](../COMPLIANCE_FRAMEWORKS.pt_BR.md)).
+Sample configuration files to enable **additional compliance frameworks** with the same scan-and-report flow. Copy the relevant blocks into your main config, or set `regex_overrides_file` / `ml_patterns_file` and merge the sample’s `report.recommendation_overrides`. The set includes **Russia (Federal Law 152-FZ)** alongside LGPD, GDPR family, PIPEDA, APPI, and others—see the table below and [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md#list-of-samples-and-links) ([pt-BR](../COMPLIANCE_FRAMEWORKS.pt_BR.md#lista-de-amostras-e-links)). For how to use and how each framework maps to config, see [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md) ([pt-BR](../COMPLIANCE_FRAMEWORKS.pt_BR.md)).
 
 ## Sample files (one per regulation)
 
@@ -25,6 +25,7 @@ Sample configuration files to enable **additional compliance frameworks** with t
 | **compliance-sample-india_dpdp.yaml**          | India DPDP Act 2023: DPBI; personal data, data fiduciary; Aadhaar/PAN regex; EN.                                                                           |
 | **compliance-sample-turkey_kvkk.yaml**         | Turkey KVKK (Law 6698): KVKK Board; kişisel veri; EN + TR terms; TC Kimlik regex.                                                                          |
 | **compliance-sample-new_zealand_privacy.yaml** | New Zealand Privacy Act 2020: OPC; personal information, IPPs; EN.                                                                                         |
+| **compliance-sample-russia_152_fz.yaml**       | Russia Federal Law 152-FZ: Roskomnadzor; personal data operator; EN + RU terms; SNILS regex and heuristic INN (high FP risk—see file header); **revalidate often**. |
 | **compliance-sample-saudi_pdpl.yaml**          | Saudi PDPL (Royal Decree M/19): SDAIA; personal/sensitive data; EN.                                                                                        |
 | **compliance-sample-israel_ppl.yaml**          | Israel Privacy Protection Law: PPA; personal information, database registrar; EN.                                                                          |
 | **compliance-sample-colombia_1581.yaml**       | Colombia Ley 1581/2012: SIC; datos personales; ES + EN terms; CC/NIT regex.                                                                                |
@@ -36,7 +37,13 @@ Sample configuration files to enable **additional compliance frameworks** with t
 | **compliance-sample-us_ca_ab2273_caadca.yaml** | California AB 2273 (Age-Appropriate Design Code): **labelling** for voluntary scoping; applicability requires counsel.                                     |
 | **compliance-sample-us_co_cpa_minors.yaml**    | Colorado Privacy Act — minors / under-18 contexts: **technical** norm tags; does not establish “known minor” legally.                                      |
 
-All samples in the tables above are available. Each sample is self-contained (regex overrides, ML terms, recommendation overrides) so you can enable one framework by including that file's blocks in your config. See [PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md](../plans/PLAN_ADDITIONAL_COMPLIANCE_SAMPLES.md) for the full list and optional regional scope.
+All samples in the tables above are available. Each sample is self-contained (regex overrides, ML terms, recommendation overrides) so you can enable one framework by including that file's blocks in your config. For the **full regional table**, filenames, and how to merge samples into `config.yaml`, see [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md#compliance-samples) ([pt-BR](../COMPLIANCE_FRAMEWORKS.pt_BR.md#amostras-de-conformidade)).
+
+### Sample maintenance
+
+**All** compliance samples are **technical starting points**, not a substitute for legal review. Even when a statute is stable, **regulator guidance**, **court and DPA interpretations**, **sector rules** (e.g. PCI-DSS revisions), **identifier formats** in real data, and **rewording or consolidation of official legal text** drift—so regexes, ML terms, and `recommendation_overrides` deserve **periodic review** for any framework you rely on (e.g. **before a minor release** or on a **quarterly** cadence for high-risk profiles).
+
+**Especially fast-moving** among the regulations we already sample: **U.S. state** privacy laws and minors-related bills (e.g. California, Colorado); **EU / UK** (ongoing legislative and guidance churn, including EDPB and ICO materials); **India DPDP** (new Act, rules and authority practice still settling); **Middle East PDPLs** (UAE, Saudi); and **Russia 152-FZ** (frequent statutory and secondary changes—see the header comment in `compliance-sample-russia_152_fz.yaml` as an example of documenting that risk in-file). **Revalidate with counsel** when your facts or the legal baseline change.
 
 ### Language and target audience
 
@@ -61,6 +68,7 @@ When choosing or authoring a sample, consider the **language(s)** of the target 
 | **Morocco**                       | French and/or Arabic as relevant.                                                                              |
 | **India (DPDP)**                  | English.                                                                                                       |
 | **Turkey (KVKK)**                 | Turkish and English (e.g. kişisel veri / personal data).                                                       |
+| **Russia (152-FZ)**             | Russian and English (e.g. персональные данные / personal data); revalidate terms when regulations are amended. |
 | **Switzerland (FADP)**            | English; optional DE/FR/IT.                                                                                    |
 | **U.S. (COPPA, AB 2273, CO CPA)** | English (column names and privacy programs in U.S. deployments).                                               |
 
@@ -68,4 +76,4 @@ Document in the sample header or in [COMPLIANCE_FRAMEWORKS](../COMPLIANCE_FRAMEW
 
 **For authors:** Use **double-quoted** YAML for regex `pattern` values with **escaped backslashes** (e.g. `pattern: "\\b[A-Z]{2}\\s?\\d{6}\\s?[A-D]\\b"`). This avoids "Invalid escape sequence" linter errors and loads correctly; the value passed to the regex engine is `\b`, `\s`, `\d` as intended. Do not use single-quoted or unescaped `\d`/`\s` in double quotes. Tests in `tests/test_compliance_samples.py` validate structure and that the detector loads each sample.
 
-**Encoding:** Save sample files in **UTF-8** so multilingual terms (e.g. Japanese, Arabic, French) are handled correctly. The main config file is read with auto-detection (UTF-8, UTF-8-sig, cp1252, latin_1). Pattern files use the config key **`pattern_files_encoding`** (default `utf-8`); set it to `cp1252` or `latin_1` only if your environment uses legacy encodings. See [USAGE.md](../USAGE.md#file-encoding-config-and-pattern-files) (EN).
+**Encoding:** Save sample files in **UTF-8** so multilingual terms (e.g. Japanese, Arabic, French, **Russian Cyrillic**) are handled correctly. The main config file is read with auto-detection (UTF-8, UTF-8-sig, cp1252, latin_1). Pattern files use the config key **`pattern_files_encoding`** (default `utf-8`); set it to `cp1252` or `latin_1` only if your environment uses legacy encodings. Scanned **data** is handled as **Unicode** in the pipeline (Latin, Cyrillic, CJK, Arabic script, etc.); **sniffing and heuristics** can be tuned per deployment—see [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md#multi-language-multi-encoding-and-multi-regional-operation) (EN) / [pt-BR](../COMPLIANCE_FRAMEWORKS.pt_BR.md#operação-multilíngue-multi-encoding-e-multirregional). **Dashboard UI and full doc translations** in many locales are **roadmapped**, not all shipped yet—high-level direction is in the **Roadmap — internationalization** paragraph in the repository **[README.md](../../README.md)**. Step-by-step encoding keys: [USAGE.md](../USAGE.md#file-encoding-config-and-pattern-files) (EN) / [USAGE.pt_BR.md](../USAGE.pt_BR.md#file-encoding-config-and-pattern-files) (pt-BR).
