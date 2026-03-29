@@ -16,6 +16,7 @@ This folder centralizes **application documentation**. Repository root keeps the
 - In EN files: `**Português (Brasil):** [Filename.pt_BR.md](Filename.pt_BR.md)`
 - In pt-BR files: `**English:** [Filename.md](Filename.md)`
 - **Discoverability:** When a doc mentions a topic that has its own dedicated doc (e.g. deploy, Docker, Kubernetes, testing, topology, commit/PR, compliance), it should **link to that doc**; if that doc exists in both languages, provide **both links** (e.g. `[DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md))`) so the user can switch language easily. The main index is this [README](README.md).
+- **Planning vs product docs:** Do **not** add Markdown links from buyer/legal/compliance/product guides into `docs/plans/` or `.cursor/plans/`. Use this index **Internal and reference** (below) as the deliberate entry point to PMO files; **operator runbooks** under `docs/ops/` may still link to plans. CI guard: `tests/test_docs_external_no_plan_links.py`. Rule: **`.cursor/rules/audience-segmentation-docs.mdc`**.
 
 ## Root (do not move)
 

@@ -16,6 +16,7 @@ Esta pasta centraliza a **documentação da aplicação**. A raiz do repositóri
 - Nos arquivos EN: `**Português (Brasil):** [Nome.pt_BR.md](Nome.pt_BR.md)`
 - Nos arquivos pt-BR: `**English:** [Nome.md](Nome.md)`
 - **Descoberta:** Quando um doc mencionar um tópico que tem doc próprio (ex.: deploy, Docker, Kubernetes, testes, topologia, commit/PR, conformidade), deve **linkar para esse doc**; se esse doc existir nos dois idiomas, forneça **os dois links** (ex.: `[DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md))`) para o usuário alternar com facilidade. O índice principal é este [README](README.md).
+- **Planos vs docs de produto:** **Não** adicione links Markdown de guias voltados a comprador/jurídico/compliance/produto para `docs/plans/` nem `.cursor/plans/`. Use **Interno e referência** (abaixo) como ponto de entrada deliberado aos arquivos de PMO; **runbooks** em `docs/ops/` podem continuar linkando planos. Guarda na CI: `tests/test_docs_external_no_plan_links.py`. Regra: **`.cursor/rules/audience-segmentation-docs.mdc`**.
 
 ## Raiz (não mover)
 

@@ -20,7 +20,7 @@ Other **`CI`** jobs: **test** (pytest matrix 3.12/3.13), **bandit**, **dependenc
 
 1. **Lint bundle (Ruff + docs guards + plans-stats):** Run **`uv run pre-commit run --all-files`** (or rely on **`git commit`** after **`uv run pre-commit install`**). Fix format with **`uv run ruff format .`** when **ruff-format** fails. Same checks run in **`ci.yml`** **`lint`**; see **pre-commit-ruff** and **`.pre-commit-config.yaml`**.
 
-2. **Run SonarQube-style and security tests:**
+1. **Run SonarQube-style and security tests:**
 
    ```bash
    uv run pytest tests/test_sonarqube_python.py tests/test_security.py -v -W error
@@ -28,16 +28,16 @@ Other **`CI`** jobs: **test** (pytest matrix 3.12/3.13), **bandit**, **dependenc
 
    Fix any failure before committing.
 
-3. **Optional — Bandit (matches CI):** After **security-sensitive** Python changes (SQL connectors, subprocess, auth), run **`uv run bandit -c pyproject.toml -r api core config connectors database file_scan report main.py -ll -q`**. Config: **`[tool.bandit]`** in **`pyproject.toml`**. Full triage: **`docs/plans/PLAN_BANDIT_SECURITY_LINTER.md`**.
+1. **Optional — Bandit (matches CI):** After **security-sensitive** Python changes (SQL connectors, subprocess, auth), run **`uv run bandit -c pyproject.toml -r api core config connectors database file_scan report main.py -ll -q`**. Config: **`[tool.bandit]`** in **`pyproject.toml`**. Full triage: **`docs/plans/PLAN_BANDIT_SECURITY_LINTER.md`**.
 
-4. **Avoid these SonarQube patterns** (guarded by tests or CI):
+1. **Avoid these SonarQube patterns** (guarded by tests or CI):
    - **S3981:** Do not use `len(...) >= 0` (length is never negative). Use `== 0` or `> 0` instead, or drop the assertion if both are acceptable.
    - **S3776:** Keep cognitive complexity ≤ 15 per function in **all** Python files (including tests, e.g. `tests/test_sonarqube_python.py`, `tests/test_compliance_samples.py`). Extract helper functions to reduce branches/loops; parametrized tests and small validators keep complexity low.
    - **S4423:** Any `ssl.create_default_context()` must set `minimum_version = ssl.TLSVersion.TLSv1_2` (or stronger).
    - **S5706:** Do not use bare `except:` in api/routes, core/engine, or config/loader.
    - **S1192:** Use constants for repeated string literals (session_id pattern, template names, response codes); see test_sonarqube_python and api/routes.
 
-5. **Avoid CodeQL-relevant patterns** (CI runs CodeQL on push/PR):
+1. **Avoid CodeQL-relevant patterns** (CI runs CodeQL on push/PR):
    - Do not log secrets (API keys, passwords, connection strings). See SECURITY.md and docs/SECURITY.md.
    - Do not build SQL or shell commands by concatenating user input; use parameterized queries and safe APIs.
    - Prefer strong crypto (e.g. TLS 1.2+); avoid weak or deprecated algorithms for sensitive data.

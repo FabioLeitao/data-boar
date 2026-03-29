@@ -9,7 +9,7 @@ Este arquivo fica reservado como **único lugar curado** para:
 - **Narrativa do produto** — por que o Data Boar existe, público e posicionamento ao longo do tempo (complemento ao [README](../README.pt_BR.md) na raiz).
 - **Histórico de arquitetura** — decisões estruturais importantes e evolução (stack lgpd_crawler → Data Boar, separação API/dashboard, licenciamento, conectores), texto para humanos—**não** substitui o [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md), que continua sendo a fonte de verdade **técnica** do comportamento *atual*.
 
-Mudanças ao nível de release ficam em [releases/](releases/) e [plans/completed/](plans/completed/).
+Mudanças ao nível de release ficam em [releases/](releases/) e planos arquivados em ``docs/plans/completed/`` (na árvore do repositório).
 
 ## Status
 
@@ -25,4 +25,4 @@ Opcional: rascunhos **brutos** ou exportações longas em `docs/private/` (**ign
 
 - [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md) — instalação, execução, conectores, deploy (referência técnica canônica).
 - [TOPOLOGY.pt_BR.md](TOPOLOGY.pt_BR.md) — topologia de deploy (quando aplicável).
-- [plans/PLANS_TODO.md](plans/PLANS_TODO.md) — item de backlog **“Narrative & architecture history”** em H3/U3 (texto em inglês).
+- [README.pt_BR.md](README.pt_BR.md) — **Interno e referência** → **PLANS_TODO** (linha **“Narrative & architecture history”**, H3/U3; texto do plano em inglês).

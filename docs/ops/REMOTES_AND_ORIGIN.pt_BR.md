@@ -75,4 +75,6 @@ git log python3-lgpd-crawler-legacy-and-history-only/main..origin/main --oneline
 
 Se o primeiro comando listar commits, eles existem apenas no repositório antigo. Você pode deixá-los só como histórico legado ou trazer alterações específicas para o data-boar (ex.: cherry-pick ou merge) se precisar.
 
+**Ver também:** [espelho só leitura do GitHub no GitLab](GITLAB_GITHUB_MIRROR.pt_BR.md) — o GitLab **não** é um segundo `origin` para PR; espelha o repositório canônico no GitHub.
+
 **Índice da documentação:** [README.md](../README.md) · [README.pt_BR.md](../README.pt_BR.md).

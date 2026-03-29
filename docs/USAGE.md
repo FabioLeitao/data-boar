@@ -777,7 +777,7 @@ report:
       recommendation: "Review PIPEDA consent and limitation purposes."
       priority: "MÉDIA"
       relevant_for: "DPO, Privacy Officer"
-    # Sensitive categories (LGPD Art. 5 II, 11; GDPR Art. 9) – see docs/plans/completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md
+    # Sensitive categories (LGPD Art. 5 II, 11; GDPR Art. 9) – see SENSITIVITY_DETECTION.md
     - norm_tag_pattern: "health"
 
       base_legal: "LGPD Art. 5 II, 11 – dado de saúde; GDPR Art. 9"
@@ -858,7 +858,7 @@ api:
   # api_key: "your-secret-key"              # or use api_key_from_env to read from environment
   # api_key_from_env: "AUDIT_API_KEY"
 
-# Optional: possible minor data detection (LGPD Art. 14, GDPR Art. 8). See docs/plans/completed/PLAN_MINOR_DATA_DETECTION.md and docs/MINOR_DETECTION.md.
+# Optional: possible minor data detection (LGPD Art. 14, GDPR Art. 8). See MINOR_DETECTION.md.
 # detection:
 #   minor_age_threshold: 18        # age below this flags DOB/age columns as possible minor (default 18)
 #   minor_full_scan: false         # when true (databases only), re-sample columns that look like DOB/age for minors using minor_full_scan_limit
@@ -894,7 +894,7 @@ After a scan finishes (CLI one-shot or `POST /scan` / `POST /start` background r
 - **Audit log (optional):** `notifications.notify_audit_log` (default `true`) appends one row per channel attempt to SQLite table **`notification_send_log`** (session id, trigger, recipient `operator`/`tenant`, channel, success, redacted error text, timestamp). No message body stored. Set to `false` to disable writes.
 - **Secrets:** URLs may use `${ENV_VAR}`. Outbound webhook POSTs retry a few times on HTTP 5xx or transient network errors.
 - **Manual / CI:** `python scripts/notify_webhook.py "message"` (same config file; requires `notifications.enabled: true` and a channel URL). By default the script opens ``sqlite_path`` and appends audit rows for each channel (same as scan-complete); use ``--no-audit`` when no local DB exists (e.g. some CI jobs).
-- **Details:** [PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md](plans/PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md).
+- **Details:** [TECH_GUIDE.md](TECH_GUIDE.md) (notifications and webhooks) and [ops/OPERATOR_NOTIFICATION_CHANNELS.md](ops/OPERATOR_NOTIFICATION_CHANNELS.md).
 
 ---
 
@@ -910,4 +910,4 @@ After a scan finishes (CLI one-shot or `POST /scan` / `POST /start` background r
 - **Download report by session:** `GET /reports/{session_id}`
 - **Interactive API docs:** `http://<host>:<port>/docs`
 
-**Related documentation:** Full documentation index (all topics, both languages): [README](README.md) · [README.pt_BR.md](README.pt_BR.md). Technical guide: [TECH_GUIDE.md](TECH_GUIDE.md) · [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md). [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) (ML/DL training terms; [pt-BR](SENSITIVITY_DETECTION.pt_BR.md)). For `recommendation_overrides` covering sensitive categories (health, religion, political, PEP, race, union, genetic, biometric, sex life), see the example above (Global options) and [PLAN_SENSITIVE_CATEGORIES_ML_DL.md](plans/completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md). To add a new data-source connector (database, API, share), see [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md) ([pt-BR](ADDING_CONNECTORS.pt_BR.md)). Deploy: [deploy/DEPLOY.md](deploy/DEPLOY.md) · [deploy/DEPLOY.pt_BR.md](deploy/DEPLOY.pt_BR.md). Further: [TESTING](TESTING.md) ([pt-BR](TESTING.pt_BR.md)), [TOPOLOGY](TOPOLOGY.md) ([pt-BR](TOPOLOGY.pt_BR.md)), [COMMIT_AND_PR](ops/COMMIT_AND_PR.md) ([pt-BR](ops/COMMIT_AND_PR.pt_BR.md)), [compliance-frameworks](COMPLIANCE_FRAMEWORKS.md) ([pt-BR](COMPLIANCE_FRAMEWORKS.pt_BR.md)).
+**Related documentation:** Full documentation index (all topics, both languages): [README](README.md) · [README.pt_BR.md](README.pt_BR.md). Technical guide: [TECH_GUIDE.md](TECH_GUIDE.md) · [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md). [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) (ML/DL training terms; [pt-BR](SENSITIVITY_DETECTION.pt_BR.md)). For `recommendation_overrides` covering sensitive categories (health, religion, political, PEP, race, union, genetic, biometric, sex life), see the example above (Global options) and [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md). To add a new data-source connector (database, API, share), see [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md) ([pt-BR](ADDING_CONNECTORS.pt_BR.md)). Deploy: [deploy/DEPLOY.md](deploy/DEPLOY.md) · [deploy/DEPLOY.pt_BR.md](deploy/DEPLOY.pt_BR.md). Further: [TESTING](TESTING.md) ([pt-BR](TESTING.pt_BR.md)), [TOPOLOGY](TOPOLOGY.md) ([pt-BR](TOPOLOGY.pt_BR.md)), [COMMIT_AND_PR](ops/COMMIT_AND_PR.md) ([pt-BR](ops/COMMIT_AND_PR.pt_BR.md)), [compliance-frameworks](COMPLIANCE_FRAMEWORKS.md) ([pt-BR](COMPLIANCE_FRAMEWORKS.pt_BR.md)).

@@ -114,7 +114,7 @@ Verificação **rápida** dos testes de JWT / licenciamento (sem rede), na raiz 
 .\scripts\license-smoke.ps1
 ```
 
-Executa apenas `tests/test_licensing.py` e `tests/test_licensing_fingerprint.py`. Opcional: mesmo comando no CI (ver [PLANS_TODO.md](plans/PLANS_TODO.md), **Priority band A**, passo **A6**).
+Executa apenas `tests/test_licensing.py` e `tests/test_licensing_fingerprint.py`. Opcional: mesmo comando no CI (mantenedores: contexto da **Priority band A** em **Interno e referência** em [README.md](README.md) e em [SECURITY.md](../SECURITY.md)).
 
 ## Ver também
 
