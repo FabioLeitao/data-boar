@@ -6,36 +6,36 @@ Sample configuration files to enable **additional compliance frameworks** with t
 
 ## Sample files (one per regulation)
 
-| File                                           | Purpose                                                                                                                                                    |
-| ------                                         | ---------                                                                                                                                                  |
-| **compliance-sample-lgpd.yaml**                | LGPD (Brazil): bilingual PT-BR + EN terms (e.g. documento oficial / official document, RG, CNH / Driver License); RG/CEP regex; for Brazilian deployments. |
-| **compliance-sample-uk_gdpr.yaml**             | UK GDPR (UK post-Brexit + EU-like): norm_tag and recommendation overrides aligned with ICO and UK provisions.                                              |
-| **compliance-sample-eu_gdpr.yaml**             | EU GDPR (EEA): EU 2016/679 Art. 4(1), EDPB, member-state DPAs; optional EN + DE/FR terms.                                                                  |
-| **compliance-sample-benelux.yaml**             | Benelux (BE, NL, LU): EU GDPR base + national IDs (BSN, NISS, Luxembourg ID) and national DPA overrides; EN + NL/FR terms.                                 |
-| **compliance-sample-pipeda.yaml**              | PIPEDA (Canada, federal private sector): personal information, consent, and Canadian identifiers (e.g. SIN).                                               |
-| **compliance-sample-popia.yaml**               | POPIA (South Africa): responsible party, personal information, and SA identifiers.                                                                         |
-| **compliance-sample-appi.yaml**                | APPI (Japan): personal information and retained personal data; terms and overrides for PPC alignment.                                                      |
-| **compliance-sample-pci_dss.yaml**             | PCI-DSS (payment card data): card/financial patterns and recommendation overrides for merchants and assessors.                                             |
-| **compliance-sample-philippines_dpa.yaml**     | Philippines DPA (RA 10173): NPC; personal information, sensitive personal information; EN.                                                                 |
-| **compliance-sample-australia_privacy.yaml**   | Australia Privacy Act 1988: OAIC, APPs; personal information; TFN/Medicare regex; EN.                                                                      |
-| **compliance-sample-singapore_pdpa.yaml**      | Singapore PDPA 2012: PDPC; personal data, DNC; NRIC regex; EN.                                                                                             |
-| **compliance-sample-uae_pdpl.yaml**            | UAE PDPL (Decree-Law 45/2021): UAE Data Office; personal/sensitive data; EN + optional AR terms.                                                           |
-| **compliance-sample-argentina_pdpa.yaml**      | Argentina Ley 25.326: DNPDP; datos personales; ES + EN terms; CUIT/CUIL/DNI regex.                                                                         |
-| **compliance-sample-kenya_dpa.yaml**           | Kenya Data Protection Act 2019: ODPC; personal data, data controller; EN.                                                                                  |
-| **compliance-sample-india_dpdp.yaml**          | India DPDP Act 2023: DPBI; personal data, data fiduciary; Aadhaar/PAN regex; EN.                                                                           |
-| **compliance-sample-turkey_kvkk.yaml**         | Turkey KVKK (Law 6698): KVKK Board; kişisel veri; EN + TR terms; TC Kimlik regex.                                                                          |
-| **compliance-sample-new_zealand_privacy.yaml** | New Zealand Privacy Act 2020: OPC; personal information, IPPs; EN.                                                                                         |
+| File                                           | Purpose                                                                                                                                                             |
+| ------                                         | ---------                                                                                                                                                           |
+| **compliance-sample-lgpd.yaml**                | LGPD (Brazil): bilingual PT-BR + EN terms (e.g. documento oficial / official document, RG, CNH / Driver License); RG/CEP regex; for Brazilian deployments.          |
+| **compliance-sample-uk_gdpr.yaml**             | UK GDPR (UK post-Brexit + EU-like): norm_tag and recommendation overrides aligned with ICO and UK provisions.                                                       |
+| **compliance-sample-eu_gdpr.yaml**             | EU GDPR (EEA): EU 2016/679 Art. 4(1), EDPB, member-state DPAs; optional EN + DE/FR terms.                                                                           |
+| **compliance-sample-benelux.yaml**             | Benelux (BE, NL, LU): EU GDPR base + national IDs (BSN, NISS, Luxembourg ID) and national DPA overrides; EN + NL/FR terms.                                          |
+| **compliance-sample-pipeda.yaml**              | PIPEDA (Canada, federal private sector): personal information, consent, and Canadian identifiers (e.g. SIN).                                                        |
+| **compliance-sample-popia.yaml**               | POPIA (South Africa): responsible party, personal information, and SA identifiers.                                                                                  |
+| **compliance-sample-appi.yaml**                | APPI (Japan): personal information and retained personal data; terms and overrides for PPC alignment.                                                               |
+| **compliance-sample-pci_dss.yaml**             | PCI-DSS (payment card data): card/financial patterns and recommendation overrides for merchants and assessors.                                                      |
+| **compliance-sample-philippines_dpa.yaml**     | Philippines DPA (RA 10173): NPC; personal information, sensitive personal information; EN.                                                                          |
+| **compliance-sample-australia_privacy.yaml**   | Australia Privacy Act 1988: OAIC, APPs; personal information; TFN/Medicare regex; EN.                                                                               |
+| **compliance-sample-singapore_pdpa.yaml**      | Singapore PDPA 2012: PDPC; personal data, DNC; NRIC regex; EN.                                                                                                      |
+| **compliance-sample-uae_pdpl.yaml**            | UAE PDPL (Decree-Law 45/2021): UAE Data Office; personal/sensitive data; EN + optional AR terms.                                                                    |
+| **compliance-sample-argentina_pdpa.yaml**      | Argentina Ley 25.326: DNPDP; datos personales; ES + EN terms; CUIT/CUIL/DNI regex.                                                                                  |
+| **compliance-sample-kenya_dpa.yaml**           | Kenya Data Protection Act 2019: ODPC; personal data, data controller; EN.                                                                                           |
+| **compliance-sample-india_dpdp.yaml**          | India DPDP Act 2023: DPBI; personal data, data fiduciary; Aadhaar/PAN regex; EN.                                                                                    |
+| **compliance-sample-turkey_kvkk.yaml**         | Turkey KVKK (Law 6698): KVKK Board; kişisel veri; EN + TR terms; TC Kimlik regex.                                                                                   |
+| **compliance-sample-new_zealand_privacy.yaml** | New Zealand Privacy Act 2020: OPC; personal information, IPPs; EN.                                                                                                  |
 | **compliance-sample-russia_152_fz.yaml**       | Russia Federal Law 152-FZ: Roskomnadzor; personal data operator; EN + RU terms; SNILS regex and heuristic INN (high FP risk—see file header); **revalidate often**. |
-| **compliance-sample-saudi_pdpl.yaml**          | Saudi PDPL (Royal Decree M/19): SDAIA; personal/sensitive data; EN.                                                                                        |
-| **compliance-sample-israel_ppl.yaml**          | Israel Privacy Protection Law: PPA; personal information, database registrar; EN.                                                                          |
-| **compliance-sample-colombia_1581.yaml**       | Colombia Ley 1581/2012: SIC; datos personales; ES + EN terms; CC/NIT regex.                                                                                |
-| **compliance-sample-chile_privacy.yaml**       | Chile Law 19.628: datos personales; ES + EN terms; RUT regex.                                                                                              |
-| **compliance-sample-nigeria_ndpr.yaml**        | Nigeria NDPR 2019: NITDA; personal data, data controller; EN.                                                                                              |
-| **compliance-sample-morocco_09_08.yaml**       | Morocco Law 09-08: CNDP; données à caractère personnel; FR + EN terms; CIN regex.                                                                          |
-| **compliance-sample-switzerland_fadp.yaml**    | Switzerland revised FADP: FDPIC; personal data; EN + optional DE/FR/IT terms; AHV/UID regex.                                                               |
-| **compliance-sample-us_ftc_coppa.yaml**        | U.S. FTC COPPA (children's online privacy): **technical mapping** terms and overrides; not age verification or legal advice.                               |
-| **compliance-sample-us_ca_ab2273_caadca.yaml** | California AB 2273 (Age-Appropriate Design Code): **labelling** for voluntary scoping; applicability requires counsel.                                     |
-| **compliance-sample-us_co_cpa_minors.yaml**    | Colorado Privacy Act — minors / under-18 contexts: **technical** norm tags; does not establish “known minor” legally.                                      |
+| **compliance-sample-saudi_pdpl.yaml**          | Saudi PDPL (Royal Decree M/19): SDAIA; personal/sensitive data; EN.                                                                                                 |
+| **compliance-sample-israel_ppl.yaml**          | Israel Privacy Protection Law: PPA; personal information, database registrar; EN.                                                                                   |
+| **compliance-sample-colombia_1581.yaml**       | Colombia Ley 1581/2012: SIC; datos personales; ES + EN terms; CC/NIT regex.                                                                                         |
+| **compliance-sample-chile_privacy.yaml**       | Chile Law 19.628: datos personales; ES + EN terms; RUT regex.                                                                                                       |
+| **compliance-sample-nigeria_ndpr.yaml**        | Nigeria NDPR 2019: NITDA; personal data, data controller; EN.                                                                                                       |
+| **compliance-sample-morocco_09_08.yaml**       | Morocco Law 09-08: CNDP; données à caractère personnel; FR + EN terms; CIN regex.                                                                                   |
+| **compliance-sample-switzerland_fadp.yaml**    | Switzerland revised FADP: FDPIC; personal data; EN + optional DE/FR/IT terms; AHV/UID regex.                                                                        |
+| **compliance-sample-us_ftc_coppa.yaml**        | U.S. FTC COPPA (children's online privacy): **technical mapping** terms and overrides; not age verification or legal advice.                                        |
+| **compliance-sample-us_ca_ab2273_caadca.yaml** | California AB 2273 (Age-Appropriate Design Code): **labelling** for voluntary scoping; applicability requires counsel.                                              |
+| **compliance-sample-us_co_cpa_minors.yaml**    | Colorado Privacy Act — minors / under-18 contexts: **technical** norm tags; does not establish “known minor” legally.                                               |
 
 All samples in the tables above are available. Each sample is self-contained (regex overrides, ML terms, recommendation overrides) so you can enable one framework by including that file's blocks in your config. For the **full regional table**, filenames, and how to merge samples into `config.yaml`, see [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md#compliance-samples) ([pt-BR](../COMPLIANCE_FRAMEWORKS.pt_BR.md#amostras-de-conformidade)).
 
@@ -68,7 +68,7 @@ When choosing or authoring a sample, consider the **language(s)** of the target 
 | **Morocco**                       | French and/or Arabic as relevant.                                                                              |
 | **India (DPDP)**                  | English.                                                                                                       |
 | **Turkey (KVKK)**                 | Turkish and English (e.g. kişisel veri / personal data).                                                       |
-| **Russia (152-FZ)**             | Russian and English (e.g. персональные данные / personal data); revalidate terms when regulations are amended. |
+| **Russia (152-FZ)**               | Russian and English (e.g. персональные данные / personal data); revalidate terms when regulations are amended. |
 | **Switzerland (FADP)**            | English; optional DE/FR/IT.                                                                                    |
 | **U.S. (COPPA, AB 2273, CO CPA)** | English (column names and privacy programs in U.S. deployments).                                               |
 

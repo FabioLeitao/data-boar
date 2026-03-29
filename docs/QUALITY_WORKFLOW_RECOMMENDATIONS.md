@@ -109,7 +109,7 @@ This document suggests **additional layers** (tools, habits, and workflow) to ke
 
 ## What we have (ADRs):
 
-- **Index:** [docs/adr/README.md](adr/README.md) ([pt-BR](adr/README.pt_BR.md)) — numbering convention, English-only ADR bodies (like plan files), baseline **[ADR 0000](adr/0000-project-origin-and-adr-baseline.md)** (origin + pre-ADR history), then **[ADR 0001](adr/0001-markdown-fix-script-md029-and-semantic-step-lists.md)** (MD029 + `fix_markdown_sonar.py`), etc.
+- **Index:** [docs/adr/README.md](adr/README.md) ([pt-BR](adr/README.pt_BR.md)) — numbering convention, English-only ADR bodies (like plan files), baseline **[ADR 0000](adr/0000-project-origin-and-adr-baseline.md)** (origin + pre-ADR history), then **[ADR 0001](adr/0001-markdown-fix-script-md029-and-semantic-step-lists.md)** (MD029 + `fix_markdown_sonar.py`), **[ADR 0004](adr/0004-external-docs-no-markdown-links-to-plans.md)** (information architecture: external-tier docs do not Markdown-link into `plans/`), **[ADR 0005](adr/0005-ci-github-actions-supply-chain-pins.md)** (CI: SHA-pinned Actions + pinned **uv** CLI; explicit non-guarantees), etc.
 - **Still optional / incremental:** Keep a short **architecture** overview in TECH_GUIDE or a future `docs/architecture.md` for components and data flow; add new **`docs/adr/000N-....md`** files for security- or process-heavy choices. Link from SECURITY.md or CONTRIBUTING when a decision affects contributors directly.
 
 **Prevents:** Refactoring that accidentally weakens security or duplicates past mistakes.
@@ -118,13 +118,15 @@ This document suggests **additional layers** (tools, habits, and workflow) to ke
 
 ### 8. SBOM and supply chain (optional)
 
-**Why:** pip-audit already addresses known vulnerabilities; a formal **Software Bill of Materials** helps with compliance and incident response.
+**Why:** pip-audit already addresses known vulnerabilities; a formal **Software Bill of Materials** supports **software supply-chain** transparency and **incident response** (mapping what shipped). It is **not** a substitute for **organizational** risk management (**ISO 31000** framing: [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md#iso-31000-framing)).
+
+**CI / GitHub Actions (enforced in-repo):** Third-party Actions are pinned to **full commit SHAs**; **`astral-sh/setup-uv`** uses a **fixed uv semver** (not `latest`); **`tests/test_github_workflows.py`** guards **`ci.yml`**. **Decision + scope limits** (including what pinning **does not** guarantee): **[ADR 0005](adr/0005-ci-github-actions-supply-chain-pins.md)**. Operational backlog context: [WORKFLOW_DEFERRED_FOLLOWUPS.md](ops/WORKFLOW_DEFERRED_FOLLOWUPS.md).
 
 ## What to do (SBOM):
 
-- Generate an SBOM (e.g. with `cyclonedx-py` or `syft`) as a CI artifact or on release; store or publish it. Document in SECURITY.md or release process.
+- **Implemented:** GitHub Actions workflow [**SBOM**](../.github/workflows/sbom.yml) — **CycloneDX JSON** from `uv export` + `cyclonedx-py` (`sbom-python.cdx.json`), **Syft** on the built image (`sbom-docker-image.cdx.json`). See [SECURITY.md](../SECURITY.md), [RELEASE_INTEGRITY.md](RELEASE_INTEGRITY.md), [ADR 0003](adr/0003-sbom-roadmap-cyclonedx-then-syft.md). Local: [`scripts/generate-sbom.ps1`](../scripts/generate-sbom.ps1).
 
-**Prevents:** Blind spots in dependency inventory and slower response to supply-chain issues.
+**Prevents:** Blind spots in dependency and image inventory and slower response to supply-chain or IR questions.
 
 ---
 
@@ -158,18 +160,19 @@ This document suggests **additional layers** (tools, habits, and workflow) to ke
 
 ## Summary table
 
-| Layer                   | Purpose                                   | Effort | Prevents                                                     |
-| ------------------      | -------------------------------           | ------ | ---------------------------------                            |
-| Lint (pre-commit) in CI | Same hooks as `.pre-commit-config.yaml`   | Low    | Drift vs local hooks, failed lint job                        |
-| Pre-commit (local)      | Catch on `git commit`                     | Low    | Failed CI, rework                                            |
-| Bandit                  | Python security patterns (CI **medium+**) | Low    | Anti-patterns tests may miss; **low** triage in plan Phase 3 |
-| Semgrep                 | Custom + community SAST                   | Medium | Extra vulnerability/bug patterns                             |
-| mypy                    | Type safety                               | Medium | Refactor bugs, wrong types                                   |
-| MD029 / fix script      | Avoid doc rework                          | Low    | Repeated manual numbering fixes                              |
-| ADRs / architecture     | Record "why"                              | Low    | Wrong refactors, repeated mistakes                           |
-| SBOM                    | Supply chain visibility                   | Low    | Missing deps in incident response                            |
-| Branch protection       | Block bad merges                          | Low    | Merging broken or insecure code                              |
-| Extend rules/skills     | Guide agent on new checks                 | Low    | New violations as you add tools                              |
+| Layer                   | Purpose                                    | Effort | Prevents                                                     |
+| ------------------      | -------------------------------            | ------ | ---------------------------------                            |
+| Lint (pre-commit) in CI | Same hooks as `.pre-commit-config.yaml`    | Low    | Drift vs local hooks, failed lint job                        |
+| Pre-commit (local)      | Catch on `git commit`                      | Low    | Failed CI, rework                                            |
+| Bandit                  | Python security patterns (CI **medium+**)  | Low    | Anti-patterns tests may miss; **low** triage in plan Phase 3 |
+| Semgrep                 | Custom + community SAST                    | Medium | Extra vulnerability/bug patterns                             |
+| mypy                    | Type safety                                | Medium | Refactor bugs, wrong types                                   |
+| MD029 / fix script      | Avoid doc rework                           | Low    | Repeated manual numbering fixes                              |
+| ADRs / architecture     | Record "why"                               | Low    | Wrong refactors, repeated mistakes                           |
+| SBOM                    | Supply chain + incident-response inventory | Low    | Missing deps/image components when responding to issues      |
+| CI Action / uv pins     | Reduce tag-moving & installer drift in CI  | Low    | Silent compromised action or floating uv without review        |
+| Branch protection       | Block bad merges                           | Low    | Merging broken or insecure code                              |
+| Extend rules/skills     | Guide agent on new checks                  | Low    | New violations as you add tools                              |
 
 ---
 
@@ -180,5 +183,6 @@ This document suggests **additional layers** (tools, habits, and workflow) to ke
 1. **Branch protection** – Enable when required check names are stable (include **Semgrep** if merge-blocking). See [WORKFLOW_DEFERRED_FOLLOWUPS.md](ops/WORKFLOW_DEFERRED_FOLLOWUPS.md).
 1. **Types** – mypy is gradual dev-only until triage (§5).
 1. **SBOM** – CycloneDX then Syft; [ADR 0003](adr/0003-sbom-roadmap-cyclonedx-then-syft.md).
+1. **CI supply chain** – Pinned Actions + uv; [ADR 0005](adr/0005-ci-github-actions-supply-chain-pins.md).
 
 Adopt what fits your team and timeline; strong baseline: **pre-commit parity in CI**, **branch protection**, **MD029/fix-script**, **Bandit** + **Semgrep**. **mypy** stays optional until clean.
