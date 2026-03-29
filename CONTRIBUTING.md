@@ -33,7 +33,7 @@ Thank you for considering contributing. This document covers local setup, workfl
    uv run pre-commit install
    ```
 
-   This runs the same checks as the **CI** **Lint (pre-commit)** job on every `git commit` (Ruff, **plans-stats** freshness, markdown lint, pt-BR locale, commercial guard). Run **`uv run pre-commit run --all-files`** before a PR if you skip hooks.
+   This runs the same checks as the **CI** **Lint (pre-commit)** job on every `git commit` (Ruff, **plans-stats** and **plans-hub** freshness, markdown lint, pt-BR locale, commercial guard). Run **`uv run pre-commit run --all-files`** before a PR if you skip hooks.
 
 1. **Run tests**
 
@@ -54,6 +54,7 @@ Thank you for considering contributing. This document covers local setup, workfl
 
 - **Bugs and features:** Open an issue using the [Bug report](.github/ISSUE_TEMPLATE/bug_report.md) or [Feature request](.github/ISSUE_TEMPLATE/feature_request.md) templates.
 - **Security:** Do not post exploit details publicly. Use the [Security issue](.github/ISSUE_TEMPLATE/security.md) template (high-level only) or the process in [SECURITY.md](SECURITY.md).
+- **Planning orientation:** [docs/plans/PLANS_HUB.md](docs/plans/PLANS_HUB.md) lists every `PLAN_*.md` (open + completed) with short summaries—use it to see scope and intent before diving into [docs/plans/PLANS_TODO.md](docs/plans/PLANS_TODO.md). If you add or archive a plan file, run `python scripts/plans_hub_sync.py --write` and commit the updated hub (pre-commit enforces `--check`).
 - **Pull requests:** Use the [PR template](.github/PULL_REQUEST_TEMPLATE.md). Prefer **`.\scripts\check-all.ps1`** before push (full gate: plans dashboard, pre-commit, pytest with warnings as errors)—see [docs/ops/README.md](docs/ops/README.md) § *Before you open a PR*. At minimum: tests pass (`uv run pytest -v -W error`; see [docs/TESTING.md](docs/TESTING.md)), lint passes (`uv run ruff check .` / pre-commit), and docs/README are updated when behaviour or setup changes. **Private layout template (tracked):** copy from **`docs/private.example/`** into gitignored **`docs/private/`** per [docs/PRIVATE_OPERATOR_NOTES.md](docs/PRIVATE_OPERATOR_NOTES.md).
 
 ### Cursor session keywords vs application CLI
@@ -86,7 +87,7 @@ Cursor encodes this in **`.cursor/rules/git-pr-sync-before-advice.mdc`**. See al
 
 ## Code and docs
 
-- **Style:** The repo uses [EditorConfig](.editorconfig) (indent, charset, line endings). The **CI** **Lint** job runs **`uv run pre-commit run --all-files`** (Ruff + format + plans-stats + markdown + pt-BR + commercial guard). Locally: **`uv run pre-commit install`** then commit as usual, or run **`uv run pre-commit run --all-files`** before PR. If **ruff-format** fails, run **`uv run ruff format .`** and re-stage. See **`.pre-commit-config.yaml`**.
+- **Style:** The repo uses [EditorConfig](.editorconfig) (indent, charset, line endings). The **CI** **Lint** job runs **`uv run pre-commit run --all-files`** (Ruff + format + plans-stats + plans-hub + markdown + pt-BR + commercial guard). Locally: **`uv run pre-commit install`** then commit as usual, or run **`uv run pre-commit run --all-files`** before PR. If **ruff-format** fails, run **`uv run ruff format .`** and re-stage. See **`.pre-commit-config.yaml`**.
 - **Docs:** Keep [README.md](README.md) and [docs/USAGE.md](docs/USAGE.md) in sync with behaviour; update [README.pt_BR.md](README.pt_BR.md) and [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md) for Portuguese. All **new** user-facing documentation must exist in **English (canonical)** and **Brazilian Portuguese**; **plan files** and **numbered ADRs** under [docs/adr/](docs/adr/) may be English-only (see [docs/adr/README.md](docs/adr/README.md)). When you change docs to reflect application updates, **sync the other language** (EN first, then pt-BR). Use a language switcher at the top of each doc and cross-links that offer both languages (see [docs/README.md](docs/README.md) — Documentation policy). **After editing any .md file:** run `uv run python scripts/fix_markdown_sonar.py` and `uv run pytest tests/test_markdown_lint.py -v -W error` so SonarQube/markdownlint rules (e.g. MD060 table style) pass. The fix script applies MD029 (ordered list style 1/1/1); if a doc uses **semantic step numbers** (1. 2. 3.), restore them by hand after running the script so the list still reads correctly — rationale: [ADR 0001](docs/adr/0001-markdown-fix-script-md029-and-semantic-step-lists.md).
 - **Secrets:** Never commit credentials or real PII. Use `.env` or `config.local.yaml` (both are in `.gitignore`) and redact in issues/PRs.
 
@@ -95,6 +96,13 @@ Cursor encodes this in **`.cursor/rules/git-pr-sync-before-advice.mdc`**. See al
 - **CI:** GitHub Actions run tests and **dependency audit** (`uv run pip-audit`) on every push/PR to `main` (or `master`). PRs must resolve any audit failures (fix or upgrade vulnerable dependencies) before merge. When SonarQube/SonarCloud is enabled (see [docs/TESTING.md](docs/TESTING.md)), address reported issues so the quality gate stays green.
 - **Dependencies:** The source of truth for libraries is **`pyproject.toml`** (uv toolchain). The **`uv.lock`** file pins the exact resolved dependency tree so installs are reproducible and users are protected from “it worked yesterday” breakage when a dependency updates. Declare all runtime and dev dependencies in **`pyproject.toml`** (prefer **minimum versions `>=`**; pin `==` only when needed). When you add or change deps, run `uv lock`, then `uv export --no-emit-package pyproject.toml -o requirements.txt`, and commit **pyproject.toml**, **uv.lock**, and **requirements.txt**. Do not edit `uv.lock` or `requirements.txt` by hand for version changes. CI runs `uv sync` (which uses `uv.lock`) and then `pip-audit`, so the locked environment is what is tested and audited.
 - **Dependabot / automation:** Dependabot opens weekly PRs for pip and GitHub Actions. When applying a dependency update (e.g. from a Dependabot PR), update **`pyproject.toml`** first (bump the minimum version), then run `uv lock` and `uv export --no-emit-package pyproject.toml -o requirements.txt`, and commit all three files. Merge dependency PRs only after CI (tests and audit) pass. Dependabot helps signal when to refresh dependencies; acting on those PRs (or before a stable release) keeps the lockfile updated, compatible, and safe. For **security** Dependabot PRs, we use the optional SLA in [SECURITY.md](SECURITY.md) (Security response).
+
+### Editing GitHub Actions workflows (supply chain)
+
+If you change **`.github/workflows/*.yml`** (new jobs, new third-party `uses:`, or `setup-uv`):
+
+1. Follow **[ADR 0005](docs/adr/0005-ci-github-actions-supply-chain-pins.md)** — pin third-party actions to a **full 40-character commit SHA** (keep the human tag in a YAML **comment** on the same line); pin the **uv** CLI with an explicit **`version:`** semver in **`ci.yml`** — **not** `"latest"`.
+1. Run **`uv run pytest tests/test_github_workflows.py -v`** so **`test_ci_yml_pins_actions_and_uv_cli`** (and related checks) still pass before you push.
 
 ## Release history and changelog
 

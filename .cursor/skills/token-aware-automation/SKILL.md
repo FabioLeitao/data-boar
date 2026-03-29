@@ -87,6 +87,7 @@ Workflow that saves tokens (shorter form):
 
 - **After code change:** `.\scripts\check-all.ps1 -SkipPreCommit` (or full `check-all.ps1` before commit).
 - **After docs/template/style change:** `.\scripts\lint-only.ps1`; run full check-all before pushing.
+- **After adding, renaming, or archiving a `PLAN_*.md`:** `python scripts/plans_hub_sync.py --write` and commit **`docs/plans/PLANS_HUB.md`**; if **`PLANS_TODO.md`** dashboard rows changed, also `python scripts/plans-stats.py --write`. Pre-commit includes **`plans-hub-check`**.
 - **Iterating on one area:** `.\scripts\quick-test.ps1 -Keyword "content_type"` (or `-Path tests/test_file_scan_use_content_type_flag.py`); run full check-all when the slice is done.
 - **User asks to commit / push / create PR:** use `preview-commit.ps1` then `commit-or-pr.ps1` (or `create-pr.ps1` for PR with body file); do not use ad-hoc `git add`/`git commit`/`git push` when the script covers the need.
 

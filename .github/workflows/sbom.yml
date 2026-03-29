@@ -1,0 +1,117 @@
+# SBOM: CycloneDX JSON from lockfile-aligned export (Phase A), then Syft on built image (Phase B).
+# ADR 0003 — workflow artifacts; attach to GitHub Release when a release exists for the tag.
+#
+# Syft runs in the official `anchore/syft` image (version tag pinned below; bump with care).
+# Third-party Actions use full commit SHAs (see ADR 0005).
+name: SBOM
+
+permissions:
+  contents: read
+
+'on':
+  push:
+    tags: ["v*"]
+  release:
+    types: [published]
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "uv.lock"
+      - "pyproject.toml"
+      - "requirements.txt"
+      - "Dockerfile"
+      - ".github/workflows/sbom.yml"
+      - "scripts/generate-sbom.ps1"
+  workflow_dispatch:
+
+concurrency:
+  group: sbom-${{ github.workflow }}-${{ github.event.release.tag_name || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    name: Generate SBOMs (CycloneDX + Syft)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # Fork PRs: token cannot upload artifacts / release assets; same-repo PRs still validate SBOM generation.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9 # v7
+        with:
+          version: "0.11.2"
+
+      # mariadb / mysqlclient PyPI packages may build from source when no wheel matches;
+      # provide Connector/C and libmysqlclient headers (same class of fix as local Docker/dev docs).
+      - name: Install OS packages for DB connector builds
+        run: sudo apt-get update && sudo apt-get install -y libmariadb-dev pkg-config build-essential
+
+      - name: Install dependencies
+        run: uv sync --group dev
+
+      - name: Export requirements from lockfile
+        run: uv export --no-emit-package pyproject.toml -o requirements-sbom.txt
+
+      - name: Generate CycloneDX JSON (Python / lockfile-aligned)
+        run: >-
+          uv run cyclonedx-py requirements requirements-sbom.txt
+          --pyproject pyproject.toml
+          --sv 1.6
+          --of JSON
+          --output-reproducible
+          -o sbom-python.cdx.json
+
+      - name: Build image for SBOM (same Dockerfile as publish)
+        run: docker build -t data_boar:sbom -f Dockerfile .
+
+      - name: Generate image SBOM (Syft → CycloneDX JSON)
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "$PWD:/out" \
+            anchore/syft:v1.28.0 \
+            scan docker:data_boar:sbom \
+            -o cyclonedx-json=/out/sbom-docker-image.cdx.json
+
+      - name: Upload workflow artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: sbom-cyclonedx-${{ github.sha }}
+          path: |
+            sbom-python.cdx.json
+            sbom-docker-image.cdx.json
+          if-no-files-found: error
+
+      - name: Attach SBOMs to GitHub Release (when applicable)
+        if: >-
+          ${{
+            (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
+            github.event_name == 'release'
+          }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "release" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+          else
+            TAG="${GITHUB_REF#refs/tags/}"
+          fi
+          if ! gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            echo "No GitHub Release for $TAG yet — artifacts remain on the workflow run only."
+            exit 0
+          fi
+          gh release upload "$TAG" sbom-python.cdx.json sbom-docker-image.cdx.json \
+            --clobber --repo "${{ github.repository }}"

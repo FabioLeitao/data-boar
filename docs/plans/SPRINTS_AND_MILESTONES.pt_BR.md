@@ -1,10 +1,10 @@
 # Sprints, marcos e rastreabilidade leve de PM
 
-**Finalidade:** Mapear a execução do [PLANS_TODO.md](PLANS_TODO.md) para **janelas de foco** no tamanho de sprint, **marcos** comemoráveis e visões opcionais **Gantt / Kanban**—mantendo-se **[consciente de tokens](TOKEN_AWARE_USAGE.md)** e reconhecendo que **recursos = você + agente** (não um PMO).
+**Finalidade:** Mapear a execução do [PLANS_TODO.md](PLANS_TODO.md) para **janelas de foco** no tamanho de sprint, **marcos** comemoráveis e visões opcionais **Gantt / Kanban**—mantendo-se **[consciente de tokens](TOKEN_AWARE_USAGE.md)** e reconhecendo que **recursos = você + agente** (não um PMO). Para **inventário completo** dos arquivos de plano e uma linha de intenção cada, veja **[PLANS_HUB.md](PLANS_HUB.md)** · [intro pt-BR](PLANS_HUB.pt_BR.md).
 
 **English:** [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) — ao alterar temas, marcos ou o bloco SRE, alinhe **EN + pt-BR**.
 
-**Política:** O [PLANS_TODO.md](PLANS_TODO.md) permanece **apenas em inglês** para histórico dos planos. Este **guia de sprint/SRE** é **bilíngue de propósito** (como docs voltados ao operador) para leitura em pt-BR quando o cansaço cognitivo for alto. O guia **não** substitui o `PLANS_TODO`; **agrega** a mesma ordem em **temas** com tempo delimitado. Após cada sprint (ou no meio), atualize o [painel de status](PLANS_TODO.md) com `python scripts/plans-stats.py --write` quando linhas de tabela mudarem.
+**Política:** O [PLANS_TODO.md](PLANS_TODO.md) permanece **apenas em inglês** para histórico dos planos. Este **guia de sprint/SRE** é **bilíngue de propósito** (como docs voltados ao operador) para leitura em pt-BR quando o cansaço cognitivo for alto. O guia **não** substitui o `PLANS_TODO`; **agrega** a mesma ordem em **temas** com tempo delimitado. Após cada sprint (ou no meio), atualize o [painel de status](PLANS_TODO.md) com `python scripts/plans-stats.py --write` quando linhas de tabela mudarem; se criou ou arquivou um `PLAN_*.md`, rode também `python scripts/plans_hub_sync.py --write` para o [hub de planos](PLANS_HUB.md).
 
 ---
 
@@ -176,6 +176,8 @@ Use **Milestones** do GitHub ou tags de release; abaixo, camada **semântica** a
 | **M-RELEASE x.y.z** | Corte versionado do produto                                           | Checklist VERSIONING existente + `docs/releases/x.y.z.md` + tags no Hub                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 **Cadência sugerida:** **M-TRUST** antes de rajada grande de feature; **M-OBS** pode vir no mesmo sprint ou no seguinte a **M-TRUST** (docs/automação pequena); **M-LAB** antes de narrativa para cliente/demo; **M-RICH** quando o PR de rich media entrar em `main`; **M-ACCESS** antes de prometer **assinatura permanente** ou **multiusuário** em host alcançável; **M-SITE-READY** quando **publicarem de propósito** a superfície marketing/docs (faz sentido depois de **M-LOCALE-V1** se quiserem UX de idioma coerente); **M-RELEASE** quando VERSIONING mandar publicar.
+
+**Cadeia de suprimentos (PyPI + GitHub Actions):** lockfile versionado, **`pip-audit`** na CI, **Dependabot** (pip + actions), Actions **fixadas em SHA** nos workflows principais — bullet *Integration / WIP* em **PLANS_TODO**; detalhes em [WORKFLOW_DEFERRED_FOLLOWUPS.pt_BR.md](../ops/WORKFLOW_DEFERRED_FOLLOWUPS.pt_BR.md); artefatos **SBOM:** [ADR 0003](../adr/0003-sbom-roadmap-cyclonedx-then-syft.md).
 
 ---
 
