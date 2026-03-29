@@ -59,7 +59,8 @@ For all other new docs (guides, reference, deploy, testing, observability, etc.)
 ## Plan files (location and completion)
 
 - **Open plans** live in `docs/plans/` (`PLANS_TODO.md` and `PLAN_*.md`). **Completed plans** live in `docs/plans/completed/`.
-- When you **complete** a plan: mark to-dos done in the plan and in `PLANS_TODO.md`, then **move** the plan file to `docs/plans/completed/`, update `PLANS_TODO.md` and **retarget or remove** links in **product-facing** docs (prefer USAGE / TECH_GUIDE / releases; avoid new `docs/plans/` hyperlinks from external-tier files per **audience-segmentation-docs**). **Update the pitch** (README and README.pt_BR): remove the item from the Roadmap sentence and reflect the new capability so the pitch stays in sync (see pitch–roadmap rule below).
+- **Plans hub:** After you **add** or **move/archive** a `PLAN_*.md`, run **`python scripts/plans_hub_sync.py --write`** and commit **`docs/plans/PLANS_HUB.md`**. Optional in-plan hints: `<!-- plans-hub-summary: ... -->` and `<!-- plans-hub-related: ... -->`. **pt-BR** intro: **`PLANS_HUB.pt_BR.md`**. Tests: **`tests/test_plans_hub_sync.py`**.
+- When you **complete** a plan: mark to-dos done in the plan and in `PLANS_TODO.md`, then **move** the plan file to `docs/plans/completed/`, update `PLANS_TODO.md`, run **`plans_hub_sync.py --write`**, and **retarget or remove** links in **product-facing** docs (prefer USAGE / TECH_GUIDE / releases; avoid new `docs/plans/` hyperlinks from external-tier files per **audience-segmentation-docs**). **Update the pitch** (README and README.pt_BR): remove the item from the Roadmap sentence and reflect the new capability so the pitch stays in sync (see pitch–roadmap rule below).
 - **Rule:** `.cursor/rules/docs-plans.mdc` – full workflow for plan location and completion.
 
 ## Pitch and roadmap (keep in sync with plans)
