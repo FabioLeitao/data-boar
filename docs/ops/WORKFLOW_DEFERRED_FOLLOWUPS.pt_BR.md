@@ -16,16 +16,16 @@ Backlog **curto** de itens **úteis** falados em sessões de mantenedor mas **n�
 
 ## Ainda a aprofundar (por prioridade)
 
-| Tópico | Nota |
-| ------ | ---- |
-| **Branch protection** | Ativar no GitHub quando os **checks obrigatórios** estiverem estáveis: **CI** (Test, Lint/pre-commit, Audit, Bandit) mais **Semgrep** (e política **CodeQL** se for bloqueante no merge). Ver [QUALITY_WORKFLOW_RECOMMENDATIONS.md](../QUALITY_WORKFLOW_RECOMMENDATIONS.md) §9. |
-| **SBOM** | **CycloneDX JSON** a partir do lockfile primeiro, depois **Syft** na imagem Docker — [ADR 0003](../adr/0003-sbom-roadmap-cyclonedx-then-syft.md) (EN). |
-| **Auto-merge Dependabot** | Só com checks rígidos e política clara; evitar merge de deps sem olhar PRs de segurança. |
-| **GitHub Environments** | Para secrets de deploy / aprovações se houver releases em estágios. |
-| **Retenção de artefatos / attestations** | Proveniência estilo SLSA se clientes enterprise pedirem; opcional. |
-| **Auditoria agendada** | Workflow semanal opcional **`pip-audit`** como lembrete (não substitui CI em push). |
-| **CODEOWNERS** | Para **`api/`**, **`core/`**, **`SECURITY.md`** se contribuidores externos crescerem. |
-| **mypy** | Tipagem gradual; não é gate de merge até triagem — [QUALITY_WORKFLOW_RECOMMENDATIONS.md](../QUALITY_WORKFLOW_RECOMMENDATIONS.md) §5. |
+| Tópico                                   | Nota                                                                                                                                                                                                                                                                            |
+| ------                                   | ----                                                                                                                                                                                                                                                                            |
+| **Branch protection**                    | Ativar no GitHub quando os **checks obrigatórios** estiverem estáveis: **CI** (Test, Lint/pre-commit, Audit, Bandit) mais **Semgrep** (e política **CodeQL** se for bloqueante no merge). Ver [QUALITY_WORKFLOW_RECOMMENDATIONS.md](../QUALITY_WORKFLOW_RECOMMENDATIONS.md) §9. |
+| **SBOM**                                 | **CycloneDX JSON** a partir do lockfile primeiro, depois **Syft** na imagem Docker — [ADR 0003](../adr/0003-sbom-roadmap-cyclonedx-then-syft.md) (EN).                                                                                                                          |
+| **Auto-merge Dependabot**                | Só com checks rígidos e política clara; evitar merge de deps sem olhar PRs de segurança.                                                                                                                                                                                        |
+| **GitHub Environments**                  | Para secrets de deploy / aprovações se houver releases em estágios.                                                                                                                                                                                                             |
+| **Retenção de artefatos / attestations** | Proveniência estilo SLSA se clientes enterprise pedirem; opcional.                                                                                                                                                                                                              |
+| **Auditoria agendada**                   | Workflow semanal opcional **`pip-audit`** como lembrete (não substitui CI em push).                                                                                                                                                                                             |
+| **CODEOWNERS**                           | Para **`api/`**, **`core/`**, **`SECURITY.md`** se contribuidores externos crescerem.                                                                                                                                                                                           |
+| **mypy**                                 | Tipagem gradual; não é gate de merge até triagem — [QUALITY_WORKFLOW_RECOMMENDATIONS.md](../QUALITY_WORKFLOW_RECOMMENDATIONS.md) §5.                                                                                                                                            |
 
 ---
 
