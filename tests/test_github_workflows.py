@@ -1,10 +1,14 @@
 """Ensure operator Slack workflow files exist and parse as valid YAML.
 
 Integration (real Slack POST) is not run in pytest; see docs/ops/OPERATOR_NOTIFICATION_CHANNELS.md §4.1.
+
+Supply chain: ci.yml must not use floating `version: \"latest\"` for astral-sh/setup-uv; Actions use commit SHAs.
+sbom.yml pins third-party Actions to full commit SHAs (ADR 0005).
 """
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import yaml
@@ -35,7 +39,7 @@ def test_slack_ci_failure_notify_workflow_present_and_valid() -> None:
     assert "workflow_run" in on
     wr = on["workflow_run"]
     assert isinstance(wr, dict)
-    assert wr.get("workflows") == ["CI", "Semgrep"]
+    assert wr.get("workflows") == ["CI", "Semgrep", "SBOM"]
     assert "notify" in (data.get("jobs") or {})
 
 
@@ -95,6 +99,51 @@ def _ci_step_run_texts(job: dict) -> list[str]:
         if isinstance(run, str):
             out.append(run)
     return out
+
+
+def test_sbom_workflow_present_and_valid() -> None:
+    data = _load_workflow("sbom.yml")
+    assert data.get("name") == "SBOM"
+    on = data.get("on") or {}
+    assert "push" in on
+    assert "workflow_dispatch" in on
+    jobs = data.get("jobs") or {}
+    assert "generate" in jobs
+
+
+def test_sbom_yml_pins_actions_to_shas() -> None:
+    """Third-party Actions in sbom.yml use full commit SHAs (same bar as ci.yml)."""
+    text = (WORKFLOWS / "sbom.yml").read_text(encoding="utf-8")
+    sha_40 = re.compile(r"@[0-9a-f]{40}")
+    for line in text.splitlines():
+        code = line.split("#", 1)[0]
+        if "uses:" not in code or "docker://" in code:
+            continue
+        if not any(p in code for p in ("actions/", "github/", "astral-sh/")):
+            continue
+        assert sha_40.search(code), (
+            f"expected full commit SHA in uses line: {line.strip()!r}"
+        )
+
+
+def test_ci_yml_pins_actions_and_uv_cli() -> None:
+    """Regression: avoid astral-sh/setup-uv `version: latest`; Actions should use 40-char SHAs."""
+    text = (WORKFLOWS / "ci.yml").read_text(encoding="utf-8")
+    assert 'version: "latest"' not in text
+    assert "astral-sh/setup-uv@" in text
+    assert 'version: "' in text
+    sha_40 = re.compile(r"@[0-9a-f]{40}")
+    for line in text.splitlines():
+        code = line.split("#", 1)[0]
+        if "uses:" not in code or "docker://" in code:
+            continue
+        if not any(
+            p in code for p in ("actions/", "github/", "astral-sh/", "SonarSource/")
+        ):
+            continue
+        assert sha_40.search(code), (
+            f"expected full commit SHA in uses line: {line.strip()!r}"
+        )
 
 
 def test_ci_lint_job_runs_pre_commit_all_files() -> None:

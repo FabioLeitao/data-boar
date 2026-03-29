@@ -39,6 +39,19 @@ sudo apt install -y \
 
 Additional client libraries may be required depending on which connectors you use (e.g. Oracle, SQL Server, Snowflake); see the main `README.md` for connector-specific notes.
 
+## Software Bill of Materials (SBOM)
+
+Formal **CycloneDX JSON** SBOMs support **supply-chain** visibility and **incident response** (see [docs/adr/0003](docs/adr/0003-sbom-roadmap-cyclonedx-then-syft.md)). They complement **`pip-audit`**; they are **not** organizational risk management under ISO 31000 (see [COMPLIANCE_FRAMEWORKS.md](docs/COMPLIANCE_FRAMEWORKS.md)).
+
+| Artifact | Contents | How it is produced |
+| -------- | -------- | ------------------ |
+| **`sbom-python.cdx.json`** | Python dependencies aligned with **`uv.lock`** (via `uv export` + **`cyclonedx-py`**) | Workflow **`SBOM`**, local **`scripts/generate-sbom.ps1`** |
+| **`sbom-docker-image.cdx.json`** | Packages in the **built** OCI image (OS + Python layers) | **`syft`** in **`anchore/syft:v1.28.0`** against image `data_boar:sbom` built from the **`Dockerfile`** at the same commit |
+
+**Where to download:** GitHub Actions workflow [**SBOM**](.github/workflows/sbom.yml) uploads both files as **workflow artifacts** (runs on version tags `v*`, on **`release: published`**, on **`workflow_dispatch`**, and on path-filtered PRs to `main`). When a **GitHub Release** already exists for the tag, the same files are **attached to that release**.
+
+**Docker Hub:** When you follow [docs/ops/DOCKER_IMAGE_RELEASE_ORDER.md](docs/ops/DOCKER_IMAGE_RELEASE_ORDER.md), the published image **`fabioleitao/data_boar:<semver>`** should match the same source tree as the tag used for the SBOM workflow; the **image** SBOM is from a **local build** in CI (equivalent layers to a clean `docker build` at that commit), not from a separate registry pull.
+
 ## Keeping dependencies up to date
 
 - Dependencies in **`pyproject.toml`** use **minimum versions (`>=`)** so security patches are allowed; pin exact versions (`==`) only where necessary. The **lockfile (`uv.lock`)** is committed so that everyone (and CI) installs the same tree; it is refreshed when dependencies change or before a stable release so the app stays updated, compatible, and safe. **Dependabot** (see `.github/dependabot.yml`) opens weekly PRs for pip and GitHub Actions and helps signal when to act: when you apply an update (or before a release), update **`pyproject.toml`** first, then run `uv lock` and `uv export --no-emit-package pyproject.toml -o requirements.txt`, and commit **pyproject.toml**, **uv.lock**, and **requirements.txt**. Do not merge a change that only edits `requirements.txt` or `uv.lock` without updating the other. Merge dependency PRs only after CI (tests and audit) pass.
@@ -59,6 +72,7 @@ Additional client libraries may be required depending on which connectors you us
 - **Code scanning baseline:** CodeQL workflow uses **`security-and-quality`** for Python and should stay enabled on push/PR/schedule. Keep this broad suite plus project-specific hardening tests/rules; if a new query is noisy, triage and document before considering suppression.
 - **Semgrep (OSS):** The **Semgrep** GitHub Actions workflow runs ruleset **`p/python`** on push/PR (complements CodeQL). Exclusions and rationale: **`docs/plans/PLAN_SEMGREP_CI.md`**.
 - **Bandit:** **Bandit (medium+)** runs as part of the **CI** workflow on push/PR (`[tool.bandit]` in **`pyproject.toml`**). Details and **low**-severity triage: **`docs/plans/PLAN_BANDIT_SECURITY_LINTER.md`**.
+- **CI workflow supply chain:** Workflows under **`.github/workflows/`** pin third-party GitHub Actions to **full commit SHAs** (version tag in YAML comments for humans). The **`astral-sh/setup-uv`** step pins a **specific uv CLI semver**—not **`latest`**—so installs do not float silently between runs. **Dependabot** may propose SHA bumps; review upstream release notes before merge. This **reduces** tag-moving and unexpected action updates but is **not** a guarantee against zero-day compromise of a pinned commit, supply-chain attacks that pass review, or risks outside CI (for example local developer tooling). See **`docs/adr/0005-ci-github-actions-supply-chain-pins.md`**.
 
 This approach is part of the project’s security baseline. For the full list of hardening measures and status, see **`docs/plans/completed/PLAN_SECURITY_HARDENING.md`**.
 
