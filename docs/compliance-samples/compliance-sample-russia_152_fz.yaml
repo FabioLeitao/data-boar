@@ -1,0 +1,80 @@
+# Russia 152-FZ – sample compliance profile (Federal Law No. 152-FZ “On Personal Data”)
+#
+# NOT LEGAL ADVICE. This file is a technical starting point for operators and engineers.
+#
+# Regulatory drift: Russian personal-data law and related secondary rules are amended and
+# reinterpreted frequently. Revalidate these regexes and ML terms with qualified counsel and
+# against your data facts; refresh the sample when your program or the legal baseline changes.
+#
+# Target audience: Russia-related deployments. Roskomnadzor (supervisory authority); operator
+# (personal-data controller) concepts under 152-FZ. Terms: Russian + English as requested.
+#
+# Regex notes:
+#   - SNILS (insurance number): formatted XXX-XXX-XXX XX is relatively distinctive in context.
+#   - INN (10-digit, legal entities): pattern uses first digit 7–9 as a common heuristic for
+#     domestic legal-entity INNs; expect false positives on arbitrary 10-digit numbers—tune or
+#     disable if noisy.
+#
+# How to use:
+#   1. Set in your main config:
+#        regex_overrides_file: path/to/compliance-sample-russia_152_fz.yaml
+#        ml_patterns_file: path/to/compliance-sample-russia_152_fz.yaml
+#   2. Merge the recommendation_overrides list below into your config under report.recommendation_overrides.
+
+regex:
+  - name: "SNILS_RU"
+    pattern: "\\b\\d{3}-\\d{3}-\\d{3}\\s\\d{2}\\b"
+    norm_tag: "Russia 152-FZ"
+  - name: "INN_RU_LEGAL_ENTITY_HEURISTIC"
+    pattern: "\\b[789]\\d{9}\\b"
+    norm_tag: "Russia 152-FZ"
+
+terms:
+  - text: "персональные данные"
+    label: sensitive
+  - text: "personal data"
+    label: sensitive
+  - text: "оператор персональных данных"
+    label: sensitive
+  - text: "personal data operator"
+    label: sensitive
+  - text: "обработка персональных данных"
+    label: sensitive
+  - text: "processing of personal data"
+    label: sensitive
+  - text: "субъект персональных данных"
+    label: sensitive
+  - text: "data subject"
+    label: sensitive
+  - text: "росскомнадзор"
+    label: sensitive
+  - text: "roskomnadzor"
+    label: sensitive
+  - text: "152-фз"
+    label: sensitive
+  - text: "152-fz"
+    label: sensitive
+  - text: "федеральный закон о персональных данных"
+    label: sensitive
+  - text: "federal law on personal data"
+    label: sensitive
+  - text: "согласие субъекта"
+    label: sensitive
+  - text: "consent of the data subject"
+    label: sensitive
+  - text: "трансграничная передача"
+    label: sensitive
+  - text: "cross-border transfer"
+    label: sensitive
+  - text: "локализация персональных данных"
+    label: sensitive
+  - text: "personal data localization"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "Russia 152-FZ"
+    base_legal: "Federal Law No. 152-FZ (On Personal Data); Roskomnadzor supervision"
+    risk: "Personal data processing; operator obligations; SNILS/INN-style identifiers; cross-border and localization rules where applicable."
+    recommendation: "Map processing to 152-FZ roles and grounds; maintain records and notices as required; revalidate patterns and terms when law or guidance changes; involve qualified counsel for jurisdictional questions."
+    priority: "ALTA"
+    relevant_for: "DPO, Personal data operator, Roskomnadzor"
