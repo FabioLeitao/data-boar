@@ -33,7 +33,7 @@ Obrigado por considerar contribuir. Este documento cobre a configuração local,
    uv run pre-commit install
    ```
 
-   Os mesmos checks do job **Lint (pre-commit)** da CI rodam em todo **`git commit`** (Ruff, frescor do **plans-stats**, markdown, locale pt-BR, guarda commercial). Antes do PR: **`uv run pre-commit run --all-files`** se tiveres usado **`--no-verify`**.
+   Os mesmos checks do job **Lint (pre-commit)** da CI rodam em todo **`git commit`** (Ruff, frescor do **plans-stats** e do **plans-hub**, markdown, locale pt-BR, guarda commercial). Antes do PR: **`uv run pre-commit run --all-files`** se você tiver usado **`--no-verify`**.
 
 1. **Execute os testes**
 
@@ -54,6 +54,7 @@ Obrigado por considerar contribuir. Este documento cobre a configuração local,
 
 - **Bugs e funcionalidades:** Abra uma issue usando os modelos [Bug report](.github/ISSUE_TEMPLATE/bug_report.md) ou [Feature request](.github/ISSUE_TEMPLATE/feature_request.md).
 - **Segurança:** Não publique detalhes de exploração em público. Use o modelo [Security issue](.github/ISSUE_TEMPLATE/security.md) (apenas em alto nível) ou o processo em [SECURITY.md](SECURITY.md) ([pt-BR](SECURITY.pt_BR.md)).
+- **Orientação aos planos:** [docs/plans/PLANS_HUB.md](docs/plans/PLANS_HUB.md) lista cada `PLAN_*.md` (abertos + concluídos) com resumos curtos—use para ver escopo e intenção antes de mergulhar no [docs/plans/PLANS_TODO.md](docs/plans/PLANS_TODO.md). Se você adicionar ou arquivar um plano, rode `python scripts/plans_hub_sync.py --write` e faça commit do hub atualizado (o pre-commit exige `--check`).
 - **Pull requests:** Use o [modelo de PR](.github/PULL_REQUEST_TEMPLATE.md). Antes do push, prefira **`.\scripts\check-all.ps1`** (gate completo: dashboard dos planos, pre-commit, pytest com avisos como erros)—veja [docs/ops/README.pt_BR.md](docs/ops/README.pt_BR.md) § *Antes de abrir um PR*. No mínimo: testes (`uv run pytest -v -W error`; [docs/TESTING.pt_BR.md](docs/TESTING.pt_BR.md)), lint (pre-commit / Ruff) e docs/README quando o comportamento mudar. **Modelo de layout privado (versionado):** copie de **`docs/private.example/`** para **`docs/private/`** (ignorado pelo git), conforme [docs/PRIVATE_OPERATOR_NOTES.pt_BR.md](docs/PRIVATE_OPERATOR_NOTES.pt_BR.md).
 
 ### Palavras-chave de sessão no Cursor vs CLI da aplicação
@@ -84,7 +85,7 @@ O Cursor registra isso em **`.cursor/rules/git-pr-sync-before-advice.mdc`**. Vej
 
 ## Código e documentação
 
-- **Estilo:** O repositório usa [EditorConfig](.editorconfig) (indentação, charset, fins de linha). O job **Lint** da CI executa **`uv run pre-commit run --all-files`** (Ruff + format + plans-stats + markdown + pt-BR + guarda commercial). Localmente: **`uv run pre-commit install`** e faça commits normais, ou rode **`uv run pre-commit run --all-files`** antes do PR. Se **ruff-format** falhar: **`uv run ruff format .`** e volte a fazer stage. Veja **`.pre-commit-config.yaml`**.
+- **Estilo:** O repositório usa [EditorConfig](.editorconfig) (indentação, charset, fins de linha). O job **Lint** da CI executa **`uv run pre-commit run --all-files`** (Ruff + format + plans-stats + plans-hub + markdown + pt-BR + guarda commercial). Localmente: **`uv run pre-commit install`** e faça commits normais, ou rode **`uv run pre-commit run --all-files`** antes do PR. Se **ruff-format** falhar: **`uv run ruff format .`** e volte a fazer stage. Veja **`.pre-commit-config.yaml`**.
 - **Documentação:** Mantenha [README.md](README.md) e [docs/USAGE.md](docs/USAGE.md) em sincronia com o comportamento; atualize [README.pt_BR.md](README.pt_BR.md) e [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md) para o português. Toda **nova** documentação voltada ao usuário deve existir em **inglês (canônico)** e **português brasileiro**; **arquivos de plano** e **ADRs numerados** em [docs/adr/](docs/adr/) podem ser apenas em inglês (veja [docs/adr/README.pt_BR.md](docs/adr/README.pt_BR.md)). Ao alterar docs para refletir atualizações da aplicação, **sincronize o outro idioma** (EN primeiro, depois pt-BR). Use seletor de idioma no topo de cada doc e links cruzados que ofereçam os dois idiomas (veja [docs/README.pt_BR.md](docs/README.pt_BR.md) — Política de documentação). **Após editar qualquer .md:** execute `uv run python scripts/fix_markdown_sonar.py` e `uv run pytest tests/test_markdown_lint.py -v -W error` para que as regras SonarQube/markdownlint (ex.: MD060 estilo de tabela) passem. O script de correção aplica MD029 (estilo de lista ordenada 1/1/1); se o doc usar **numeração semântica de passos** (1. 2. 3.), restaure à mão após rodar o script — fundamento: [ADR 0001](docs/adr/0001-markdown-fix-script-md029-and-semantic-step-lists.md) (EN).
 - **Segredos:** Nunca faça commit de credenciais ou PII real. Use `.env` ou `config.local.yaml` (ambos estão no `.gitignore`) e redija em issues/PRs.
 
@@ -93,6 +94,13 @@ O Cursor registra isso em **`.cursor/rules/git-pr-sync-before-advice.mdc`**. Vej
 - **CI:** O GitHub Actions executa testes e **auditoria de dependências** (`uv run pip-audit`) em todo push/PR para `main` (ou `master`). Os PRs devem resolver qualquer falha de auditoria (corrigir ou atualizar dependências vulneráveis) antes do merge. Quando o SonarQube/SonarCloud estiver habilitado (veja [docs/TESTING.md](docs/TESTING.md) ([pt-BR](docs/TESTING.pt_BR.md))), trate os problemas reportados para que o quality gate permaneça verde.
 - **Dependências:** A fonte de verdade das bibliotecas é o **`pyproject.toml`** (toolchain uv). O arquivo **`uv.lock`** fixa a árvore exata de dependências resolvidas para que as instalações sejam reproduzíveis e os usuários fiquem protegidos de quebras acidentais quando uma dependência atualiza (“funcionou ontem”). Declare todas as dependências em **`pyproject.toml`** (prefira **versões mínimas `>=`**; use pin `==` só quando necessário). Ao adicionar ou alterar deps, execute `uv lock`, depois `uv export --no-emit-package pyproject.toml -o requirements.txt`, e faça commit de **pyproject.toml**, **uv.lock** e **requirements.txt**. Não edite `uv.lock` nem `requirements.txt` à mão para mudanças de versão. O CI executa `uv sync` (que usa o `uv.lock`) e em seguida `pip-audit`, ou seja, o ambiente bloqueado é o que é testado e auditado.
 - **Dependabot / automação:** O Dependabot abre PRs semanais para pip e GitHub Actions. Ao aplicar uma atualização de dependência (ex.: de um PR do Dependabot), atualize primeiro o **`pyproject.toml`** (suba a versão mínima), execute `uv lock` e `uv export --no-emit-package pyproject.toml -o requirements.txt`, e faça commit dos três arquivos. Faça merge dos PRs de dependência somente após o CI (testes e auditoria) passar. O Dependabot ajuda a sinalizar quando atualizar; agir nesses PRs (ou antes de uma release estável) mantém o lockfile atualizado, compatível e seguro. Para PRs **de segurança** do Dependabot, usamos o SLA opcional em [SECURITY.md](SECURITY.md) ([pt-BR](SECURITY.pt_BR.md)) (Resposta de segurança).
+
+### Editar workflows do GitHub Actions (cadeia de suprimentos)
+
+Se alterar **`.github/workflows/*.yml`** (jobs novos, `uses:` de terceiros ou `setup-uv`):
+
+1. Siga o **[ADR 0005](docs/adr/0005-ci-github-actions-supply-chain-pins.md)** — fixe actions de terceiros em **SHA de commit completo (40 caracteres)** (mantenha a tag legível em **comentário** YAML na mesma linha); fixe o CLI **uv** com **`version:`** semver explícito em **`ci.yml`** — **não** `"latest"`.
+1. Rode **`uv run pytest tests/test_github_workflows.py -v`** para o **`test_ci_yml_pins_actions_and_uv_cli`** (e checagens relacionadas) continuar verde antes do push.
 
 ## Histórico de releases e changelog
 

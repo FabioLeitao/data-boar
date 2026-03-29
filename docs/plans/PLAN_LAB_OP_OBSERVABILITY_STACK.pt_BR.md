@@ -24,9 +24,10 @@
 | **B** | **Grafana** + **InfluxDB** (+ **Telegraf**)                        | Métricas se preferires InfluxQL/Flux            | Alternativa válida ao TSDB do Prometheus; escolhe **um** pilar TSDB (Prometheus **ou** Influx), salvo divisão explícita (ex.: SNMP no Prometheus, métricas de app no Influx).                                        |
 | **C** | **Promtail** + **Loki** + **Grafana**                              | Agregação de logs, pegada menor que ELK/Graylog | Família “LGTM”; bom para envio de **JSON/syslog** e Explore no Grafana.                                                                                                                                              |
 | **D** | **Graylog** + **OpenSearch**                                       | Busca full-text, streams, pipelines             | **Graylog 5+** usa **OpenSearch** por defeito — ver documentação atual; **Elasticsearch** já não é o default universal. **Pesado:** reserva **≥8 GB** só para OpenSearch em labs pequenos; preferir **VM dedicada**. |
-| **E** | **Wazuh**                                                          | Postura de segurança, vulns, hardening          | [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](../ops/LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md) §6 — complementa métricas/logs; não os substitui.                                                                          |
+| **E** | **Wazuh**                                                          | Postura de segurança, vulns, hardening          | [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](../ops/LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md) §6 — complementa métricas/logs; não os substitui. **NIST/CIS:** [WAZUH_NIST_CIS_LABOP_ALIGNMENT.pt_BR.md](../ops/inspirations/WAZUH_NIST_CIS_LABOP_ALIGNMENT.pt_BR.md). |
+| **F** | **Traces / estilo APM** (escolher **um** de início)                | Fluxos de pedido, latência, dependências        | Profundidade estilo **Dynatrace** sem SaaS por defeito: **SigNoz**, **Grafana Tempo** + **OpenTelemetry**, **Jaeger** ou **Netdata** leve; **Dynatrace** = trial/enterprise — ver **§3**. VM depois de **A** + **C** estáveis. |
 
-**Evitar no mesmo T14 em simultâneo:** Graylog + OpenSearch + Prometheus completo + Loki + Wazuh + k3s. Escolhe **A ou B**, **C ou D**, **E** quando houver recursos.
+**Evitar no mesmo T14 em simultâneo:** Graylog + OpenSearch + Prometheus completo + Loki + Wazuh + k3s + backend de traces. Escolhe **A ou B**, **C ou D**, **E** quando houver recursos, **F** quando traces justificarem a RAM (muitas vezes **VM** à parte).
 
 ---
 
@@ -38,16 +39,23 @@
 
 ---
 
-## 3. Documentação privada
+## 3. Documentação primária (nota mental — revisitar)
+
+Marcadores **oficiais** para **Grafana, Prometheus, Loki, Graylog, OpenSearch, Elasticsearch, OpenTelemetry, backends de trace, Grafana Cloud (free tier) e comparação estilo Dynatrace:** [LAB_OP_OBSERVABILITY_LEARNING_LINKS.pt_BR.md](../ops/inspirations/LAB_OP_OBSERVABILITY_LEARNING_LINKS.pt_BR.md) ([EN](../ops/inspirations/LAB_OP_OBSERVABILITY_LEARNING_LINKS.md)). Não altera a ordem das fases em **§1**; serve ao escolher versões e ler how-tos upstream.
+
+---
+
+## 4. Documentação privada
 
 URLs, retenção, LDAP e regras de firewall na LAN ficam em **`docs/private/homelab/`** (ex.: `OBSERVABILITY_RUNBOOK.md`) — **gitignored**.
 
 ---
 
-## 4. Acompanhamento
+## 5. Acompanhamento
 
 - **PLANS_TODO.md** — linha LAB-OP observabilidade + bullet **H2**.
-- **Sequenciamento (firewall → acesso → logs → Wazuh):** [PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.pt_BR.md](PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.pt_BR.md) ([EN](PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.md)) — usar quando o trabalho UniFi/L3 estiver ativo **antes** ou **em paralelo** com as fases A–E abaixo.
+- **Sequenciamento (firewall → acesso → logs → Wazuh):** [PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.pt_BR.md](PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.pt_BR.md) ([EN](PLAN_LAB_FIREWALL_ACCESS_AND_OBSERVABILITY.md)) — usar quando o trabalho UniFi/L3 estiver ativo **antes** ou **em paralelo** com as fases A–F abaixo.
+- **Links de aprendizado (Grafana / stack Elastic / traces):** [LAB_OP_OBSERVABILITY_LEARNING_LINKS.pt_BR.md](../ops/inspirations/LAB_OP_OBSERVABILITY_LEARNING_LINKS.pt_BR.md) ([EN](../ops/inspirations/LAB_OP_OBSERVABILITY_LEARNING_LINKS.md)).
 - **LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md** §7 — ponteiro para este plano.
 - **Lembrete (quando houver hardware):** primeiro **syslog/logs** (**Promtail + Loki + Grafana**, fase **C**); depois **Wazuh** (fase **E**) numa **VM/torre** com RAM suficiente — checklist mínimo: [OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.pt_BR.md](../private.example/homelab/OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.pt_BR.md) ([EN](../private.example/homelab/OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.md)).
 
