@@ -78,7 +78,19 @@ A tabela em **`.cursor/rules/session-mode-keywords.mdc`** é **pequena e só em 
 
 ---
 
-## 8. Slack AFK + falha de CI (canal B)
+## 8. Recap de progresso recente (`git`, token-aware)
+
+Quando quiseres um **resumo curto** do **ritmo** (o que entrou em **`origin/main`**) sem reler tabelas inteiras de planos:
+
+1. Na raiz do repo: **`.\scripts\git-progress-recap.ps1`** — por padrão **últimos 3 dias** em **`origin/main`**; **`-Days 7`** ou **`-Days 14`** alargam a janela; **`-MaxPerDay`** limita linhas se houve rajada de merges; **`-NoFetch`** se estiveres offline.
+1. A saída agrupa por **data** com **uma linha por commit** (`hash` + assunto) para veres dias **cheios vs calmos** e **temas** pelos prefixos Conventional Commit (`feat`, `docs`, `chore`, …).
+1. **Não** substitui **`PLANS_TODO.md`**, **`today-mode`** nem **`carryover-sweep` / `eod-sync`** — serve como **narrativa barata** antes de planear o dia ou fazer retro.
+
+**Hábito no chat (opcional):** colar a saída do script no Cursor ao alinhar “o que aconteceu esta semana” — menos tokens que um `git log` bruto. **Não** é preciso novo token em inglês; basta linguagem natural (“**progress recap 7 days**”).
+
+---
+
+## 9. Slack AFK + falha de CI (canal B)
 
 Quando estiver **longe do teclado**, **GitHub mobile (canal A)** + **Slack (canal B)** dão redundância: falhas de CI e pings manuais chegam sem precisares ficar no Cursor.
 
@@ -88,7 +100,7 @@ Quando estiver **longe do teclado**, **GitHub mobile (canal A)** + **Slack (cana
 
 ---
 
-## 9. Auto-merge do GitHub (recomendação)
+## 10. Auto-merge do GitHub (recomendação)
 
 **Padrão: manter auto-merge desligado** no fluxo habitual. Preferir merge **explícito** com checks verdes e PR **mergeable**, usando **`pr-merge-when-green.ps1`** ou revisão humana — alinha entrega deliberada, sem cerimônia desnecessária e sem merges surpresa.
 
@@ -98,14 +110,14 @@ Quando estiver **longe do teclado**, **GitHub mobile (canal A)** + **Slack (cana
 
 ---
 
-## 10. Palavras-chave de sessão e “subagents” (onde está documentado)
+## 11. Palavras-chave de sessão e “subagents” (onde está documentado)
 
 - **Tokens em inglês** (`feature`, `docs`, `backlog`, `study-check`, `pmo-view`, …): **`.cursor/rules/session-mode-keywords.mdc`** (tabela canônica).
 - **Código vs docs vs Task só exploração:** esta seção §2 e [TOKEN_AWARE_USAGE.md](../plans/TOKEN_AWARE_USAGE.md).
 
 ---
 
-## 11. Documentação relacionada
+## 12. Documentação relacionada
 
 - [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md) — PR, merge, nota sobre auto-merge.
 - [TOKEN_AWARE_USAGE.md](../plans/TOKEN_AWARE_USAGE.md) — fatias token-aware.
