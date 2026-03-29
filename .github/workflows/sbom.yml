@@ -56,7 +56,7 @@ jobs:
       # mariadb / mysqlclient PyPI packages may build from source when no wheel matches;
       # provide Connector/C and libmysqlclient headers (same class of fix as local Docker/dev docs).
       - name: Install OS packages for DB connector builds
-        run: sudo apt-get update && sudo apt-get install -y libmariadb-dev default-libmysqlclient-dev pkg-config build-essential
+        run: sudo apt-get update && sudo apt-get install -y libmariadb-dev pkg-config build-essential
 
       - name: Install dependencies
         run: uv sync --group dev
