@@ -20,7 +20,9 @@ Authoritative policy and hardening notes: [SECURITY.md](SECURITY.md) ([pt-BR](SE
 
 ## Character encodings and multilingual configs
 
-Configuration and pattern files support **UTF-8** (recommended), **UTF-8 with BOM**, and **legacy encodings** (e.g. Windows ANSI, Latin-1); the main config file is read with **auto-detection** where applicable. Terms and report language can follow regional needs (e.g. EN+FR for Canada, PT-BR+EN for Brazil).
+Configuration and pattern files support **UTF-8** (recommended), **UTF-8 with BOM**, and **legacy encodings** (e.g. Windows ANSI, Latin-1); the main config file is read with **auto-detection** where applicable. Terms and report language can follow regional needs (e.g. EN+FR for Canada, PT-BR+EN for Brazil, **EN+RU for Russia 152-FZ** samples).
+
+**Unicode in scanned data:** Findings and Excel output treat text as **Unicode**—**Latin**, **Cyrillic**, **CJK** (e.g. Japanese), **Arabic script**, and mixed corpora are in scope at the character level. **Byte-level decoding** of sources depends on connectors and file formats; **sniffing and heuristics** can be **tuned** per deployment. **Operator dashboard UI** and **full documentation** in many additional human languages are **not** all shipped yet; direction is **roadmapped** (short- to mid-term) with **en** + **pt-BR** first—see [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md#multi-language-multi-encoding-and-multi-regional-operation) and the **Roadmap — internationalization and regional depth** paragraph in the repository **[README.md](../README.md)**. **Compliance YAML samples** must be **re-reviewed periodically** as regulations and wording change—see [compliance-samples/README.md](compliance-samples/README.md#sample-maintenance).
 
 Step-by-step: [USAGE.md — File encoding, config, and pattern files](USAGE.md#file-encoding-config-and-pattern-files) ([pt-BR](USAGE.pt_BR.md)).
 

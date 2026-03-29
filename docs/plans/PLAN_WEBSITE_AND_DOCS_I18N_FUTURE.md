@@ -9,8 +9,9 @@
 ## 1. Documentation in additional human languages
 
 - **Today:** User-facing docs are **English (canonical)** + **Brazilian Portuguese (pt-BR)** per [docs-policy](../../.cursor/rules/docs-policy.mdc).
-- **Later (evaluate):** Add languages that match **markets or compliance narratives** you care about — e.g. **Spanish (es)** for LatAm, **Japanese (ja)** if there is a concrete channel or partner demand. Each new language implies **ongoing sync** cost with EN; treat as a **deliberate** decision, not a one-off translation burst.
+- **Later (evaluate):** Add languages that match **markets or compliance narratives** you care about — e.g. **Spanish (es)** for LatAm, **Japanese (ja)**, **Russian (ru)**, **Arabic (ar)** when there is a **concrete channel, customer request, or partner**—not speculative “translate everything.” Each new language implies **ongoing sync** cost with EN; treat as a **deliberate** decision, not a one-off translation burst. **Compliance sample YAML** (e.g. **152-FZ** with EN+RU terms) can lead **ahead** of full doc translation where regulations require local language in **data labels and reports** first.
 - **Mechanics (when ready):** Mirror the existing EN ↔ pt-BR pattern: language switchers, index rows in `docs/README.md`, and a rule for which files are translated (product docs yes; `docs/plans/` may stay EN-only).
+- **Encoding / scripts:** Repo docs and the **dashBOARd** reuse the same **Unicode-first** assumptions as the scan pipeline (Cyrillic, CJK, Arabic script in **examples and report text** today; **full localized UI strings** follow the dashboard milestones in [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md)). **Public suggestions** (issues) for missing locales or charset edge cases are welcome; **consulting** can fund **priority** translation or custom compliance wording. A **public** language list (Asian, African, European regional—**Mandarin**, **Cantonese**, **Indonesian**, **Amharic**, **Catalan**, **Basque**, etc.) lives in the repository **README** roadmap paragraph so **marketing** and **buyer** surfaces do not deep-link into this plan file.
 
 ---
 
