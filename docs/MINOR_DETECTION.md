@@ -11,7 +11,7 @@ The application can detect when gathered data may relate to **minors** (e.g. age
 - **Column names** that suggest date of birth or age, in **English and Brazilian Portuguese**, including acronyms (e.g. DOB, DDN, NASC, idade, age).
 - **Sample values**: numeric ages (e.g. `17`) or dates that, when interpreted as date of birth, imply an age below the configurable **threshold** (default **18**). Those findings are flagged as **possible minor data** (`DOB_POSSIBLE_MINOR`) and get a dedicated high-priority recommendation in the report.
 
-See [PLAN_MINOR_DATA_DETECTION.md](plans/completed/PLAN_MINOR_DATA_DETECTION.md) for the full design and list of column names/formats.
+Design rationale and historical column-name tables live in the archived plan **`PLAN_MINOR_DATA_DETECTION`** under `docs/plans/completed/` (in checkout; not linked here from this operator guide).
 
 ---
 
@@ -128,13 +128,13 @@ Findings flagged as possible minor get:
 - **Norm tag:** LGPD Art. 14 – possible minor data; GDPR Art. 8 (and “(full-scan confirmed)” when full-scan was used)
 - **Minor confidence:** “high (cross-ref)” when cross-reference found identifier/health in the same table/path; otherwise empty
 
-In the Excel report, the **Recommendations** sheet includes a dedicated row for possible minor data with **highest priority** (CRÍTICA) and differential treatment text (consent, storage, use, sharing, parental responsibility). That row is listed **first** in the Recommendations sheet. When cross-reference identifies high-confidence cases, an additional row “DOB_POSSIBLE_MINOR (high confidence – cross-ref)” appears at the top. See [PLAN_MINOR_DATA_DETECTION.md](plans/completed/PLAN_MINOR_DATA_DETECTION.md) and the report generator for the exact wording.
+In the Excel report, the **Recommendations** sheet includes a dedicated row for possible minor data with **highest priority** (CRÍTICA) and differential treatment text (consent, storage, use, sharing, parental responsibility). That row is listed **first** in the Recommendations sheet. When cross-reference identifies high-confidence cases, an additional row “DOB_POSSIBLE_MINOR (high confidence – cross-ref)” appears at the top. See the report generator source for the exact wording.
 
 ---
 
 ## Related documentation
 
 - **Documentation index** (all topics, both languages): [README.md](README.md) · [README.pt_BR.md](README.pt_BR.md).
-- [PLAN_MINOR_DATA_DETECTION.md](plans/completed/PLAN_MINOR_DATA_DETECTION.md) – Plan, design, and to-do status.
+- Archived plan **`PLAN_MINOR_DATA_DETECTION`** in `docs/plans/completed/` — historical design and completion checklist (maintainers).
 - [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) ([pt-BR](SENSITIVITY_DETECTION.pt_BR.md)) – ML/DL and regex sensitivity detection.
 - [USAGE.md](USAGE.md) ([pt-BR](USAGE.pt_BR.md)) – General configuration and API usage.

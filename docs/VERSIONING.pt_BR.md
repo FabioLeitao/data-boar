@@ -31,11 +31,11 @@ Exemplos:
 
 Use sufixos em minúsculo de forma consistente:
 
-| Estágio | Uso recomendado | Exemplo |
-| --- | --- | --- |
-| **`-beta`** | Mudanças relevantes de código/comportamento já começaram e estão rastreadas, mas ainda não são candidatas finais de release. | `1.6.8-beta` |
-| **`-rc`** | Candidato pronto para validação final/coreografia de publish (testes verdes, docs sincronizados, release notes prontas, faltando merge/release). | `1.6.8-rc` |
-| **final (sem sufixo)** | Número de release público (tag Git + GitHub Release + publish no Docker Hub). | `1.6.8` |
+| Estágio                | Uso recomendado                                                                                                                                  | Exemplo      |
+| ---                    | ---                                                                                                                                              | ---          |
+| **`-beta`**            | Mudanças relevantes de código/comportamento já começaram e estão rastreadas, mas ainda não são candidatas finais de release.                     | `1.6.8-beta` |
+| **`-rc`**              | Candidato pronto para validação final/coreografia de publish (testes verdes, docs sincronizados, release notes prontas, faltando merge/release). | `1.6.8-rc`   |
+| **final (sem sufixo)** | Número de release público (tag Git + GitHub Release + publish no Docker Hub).                                                                    | `1.6.8`      |
 
 ### Política prática
 

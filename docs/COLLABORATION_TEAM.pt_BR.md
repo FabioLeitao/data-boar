@@ -4,7 +4,7 @@
 
 Este guia resume **como trabalhar em conjunto** (ex.: **Fabio** como mantenedor e **Ivan** como colaborador) com **coesão**: fluxo Git, identidade nos commits, limites do assistente no Cursor e **o que configurar** no repositório (rules, `AGENTS.md`, hábitos).
 
-**Relacionado:** [CONTRIBUTING.pt_BR.md](../CONTRIBUTING.pt_BR.md), [docs/ops/COMMIT_AND_PR.pt_BR.md](ops/COMMIT_AND_PR.pt_BR.md), [AGENTS.md](../AGENTS.md), [docs/plans/TOKEN_AWARE_USAGE.md](plans/TOKEN_AWARE_USAGE.md). Regra Cursor: **`.cursor/rules/collaboration-maintainer-contributor.mdc`**.
+**Relacionado:** [CONTRIBUTING.pt_BR.md](../CONTRIBUTING.pt_BR.md), [docs/ops/COMMIT_AND_PR.pt_BR.md](ops/COMMIT_AND_PR.pt_BR.md), [AGENTS.md](../AGENTS.md), [README.pt_BR.md](README.pt_BR.md) (**Interno e referência** → **TOKEN_AWARE_USAGE** em `docs/plans/`). Regra Cursor: **`.cursor/rules/collaboration-maintainer-contributor.mdc`**.
 
 ---
 
@@ -145,7 +145,7 @@ gh pr list --state open
 
 ## No início de uma sessão (mantenedor):
 
-> Sou o **mantenedor**. Posso referir políticas em `docs/private/` apenas em notas locais — não sugerir colar segredos ou IPs reais em arquivos rastreados. Prioridade: alinhar com [docs/plans/PLANS_TODO.md](plans/PLANS_TODO.md) e [`.cursor/rules/execution-priority-and-pr-batching.mdc`](../.cursor/rules/execution-priority-and-pr-batching.mdc).
+> Sou o **mantenedor**. Posso referir políticas em `docs/private/` apenas em notas locais — não sugerir colar segredos ou IPs reais em arquivos rastreados. Prioridade: alinhar com **PLANS_TODO** (entrada em [README.pt_BR.md](README.pt_BR.md) § Interno e referência) e [`.cursor/rules/execution-priority-and-pr-batching.mdc`](../.cursor/rules/execution-priority-and-pr-batching.mdc).
 
 ## Para reduzir interferência entre pessoas:
 
