@@ -13,6 +13,13 @@ Use this skill when **creating or editing** user-facing documentation (docs/, RE
 1. **English (EN)** – The canonical written source. Update EN first when behaviour or options change; EN must accurately reflect the code.
 1. **Brazilian Portuguese (pt-BR)** – Translation of the EN doc; same structure and coverage. Sync pt-BR after updating EN. Use **Brazil** vocabulary and spelling, **not** European Portuguese (pt-PT): e.g. **arquivo** not *ficheiro*, **compartilhar** not *partilhar*, **seção** not *secção*, **padrão** for IT “default” not *defeito*. See **`.cursor/rules/docs-policy.mdc`**.
 
+## Planning links (audience segregation)
+
+- **External / integrator docs** (USAGE, COMPLIANCE_*, GLOSSARY, deploy guides, releases, etc.) must **not** use markdown links into `docs/plans/` or `.cursor/plans/`. Prefer **USAGE**, **TECH_GUIDE**, **releases/**, or **[docs/README.md](../../docs/README.md)** *Internal and reference* (and plain-text `` `docs/plans/` `` where needed).
+- **Ops runbooks** (`docs/ops/`) may still link to plans. **docs/README.md** / **README.pt_BR.md** intentionally list plan rows.
+- After editing docs, run **`uv run pytest tests/test_docs_external_no_plan_links.py -q`** when you touch external-tier Markdown.
+- **Rule:** **`.cursor/rules/audience-segmentation-docs.mdc`**.
+
 ## Navigability (no dead ends)
 
 Documentation must be **navigable to and from** other documents:
@@ -52,7 +59,7 @@ For all other new docs (guides, reference, deploy, testing, observability, etc.)
 ## Plan files (location and completion)
 
 - **Open plans** live in `docs/plans/` (`PLANS_TODO.md` and `PLAN_*.md`). **Completed plans** live in `docs/plans/completed/`.
-- When you **complete** a plan: mark to-dos done in the plan and in `PLANS_TODO.md`, then **move** the plan file to `docs/plans/completed/`, update `PLANS_TODO.md` and any cross-references (USAGE, SENSITIVITY_DETECTION, etc.) to the new path. **Update the pitch** (README and README.pt_BR): remove the item from the Roadmap sentence and reflect the new capability so the pitch stays in sync (see pitch–roadmap rule below).
+- When you **complete** a plan: mark to-dos done in the plan and in `PLANS_TODO.md`, then **move** the plan file to `docs/plans/completed/`, update `PLANS_TODO.md` and **retarget or remove** links in **product-facing** docs (prefer USAGE / TECH_GUIDE / releases; avoid new `docs/plans/` hyperlinks from external-tier files per **audience-segmentation-docs**). **Update the pitch** (README and README.pt_BR): remove the item from the Roadmap sentence and reflect the new capability so the pitch stays in sync (see pitch–roadmap rule below).
 - **Rule:** `.cursor/rules/docs-plans.mdc` – full workflow for plan location and completion.
 
 ## Pitch and roadmap (keep in sync with plans)
