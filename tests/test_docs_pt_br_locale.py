@@ -1,8 +1,11 @@
 """
 Guard: Brazilian Portuguese (pt-BR) docs must not use common European Portuguese (pt-PT) markers.
 
-Scans ``**/*.pt_BR.md`` under the repo root (excluding ``.venv`` and ``node_modules`` only), including
-``docs/private/**`` when present — same bar as markdown lint for tracked + local operator notes.
+Scans ``**/*.pt_BR.md`` under the repo root (excluding ``.venv`` and ``node_modules``). By default **skips**
+any path with a segment named ``private`` (e.g. ``docs/private/**``), matching ``test_markdown_lint`` and
+``docs/TESTING.md`` — CI and pre-commit do not depend on gitignored operator notes. Opt in locally with
+``pytest --include-private`` or ``INCLUDE_PRIVATE_LINT=1`` (see ``tests/conftest.py``).
+
 Lines that only *illustrate* forbidden forms (policy examples) are skipped — see ``_line_is_locale_example``.
 
 When adding copy for the private pitch (``docs/private/pitch/slides.yaml``) or future website, either keep it
@@ -25,12 +28,14 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 _extra_locale_scan_paths: tuple[str, ...] = ()
 
 
-def _iter_pt_br_markdown_files() -> list[Path]:
+def _iter_pt_br_markdown_files(*, include_private: bool) -> list[Path]:
     out: list[Path] = []
     for p in REPO_ROOT.rglob("*.pt_BR.md"):
         parts = p.parts
         parts_set = set(parts)
         if ".venv" in parts_set or "node_modules" in parts_set:
+            continue
+        if not include_private and "private" in parts:
             continue
         out.append(p)
     for rel in _extra_locale_scan_paths:
@@ -104,17 +109,20 @@ def _violations_in_file(path: Path) -> list[str]:
     return bad
 
 
-@pytest.mark.parametrize(
-    "path", _iter_pt_br_markdown_files(), ids=lambda p: str(p.relative_to(REPO_ROOT))
-)
-def test_pt_br_markdown_avoids_european_portuguese_markers(path: Path) -> None:
-    issues = _violations_in_file(path)
-    if issues:
+def test_pt_br_markdown_avoids_european_portuguese_markers(
+    include_private_lint: bool,
+) -> None:
+    failures: list[str] = []
+    for path in _iter_pt_br_markdown_files(include_private=include_private_lint):
+        issues = _violations_in_file(path)
+        if issues:
+            failures.extend(issues)
+    if failures:
         msg = "pt-PT-like markers in pt_BR docs — prefer pt-BR (see docs-policy / docs-pt-br-locale rule):\n"
-        msg += "\n".join(issues)
+        msg += "\n".join(failures)
         pytest.fail(msg)
 
 
-def test_pt_br_locale_scan_covers_at_least_one_file() -> None:
-    files = _iter_pt_br_markdown_files()
+def test_pt_br_locale_scan_covers_at_least_one_file(include_private_lint: bool) -> None:
+    files = _iter_pt_br_markdown_files(include_private=include_private_lint)
     assert len(files) >= 5, "Expected multiple *.pt_BR.md files under the repo"
