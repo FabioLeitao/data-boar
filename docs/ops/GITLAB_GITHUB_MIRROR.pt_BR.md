@@ -31,7 +31,7 @@ O GitLab **busca** periodicamente (ou sob gatilho) a partir do GitHub. Ninguém 
 1. Abrir o **projeto GitLab** (repo vazio, mesmo nome de branch que no GitHub).
 1. Ir a **Definições → Repositório → Espelhamento de repositórios** (o caminho exato pode variar por versão do GitLab).
 1. **Adicionar espelho:**
-   - **URL do repositório Git:** URL HTTPS do repo GitHub, ex.: `https://github.com/<org>/<repo>.git`
+   - **URL do repositório Git:** URL HTTPS do repo GitHub, ex.: `<https://github.com/><org>/<repo>.git`
    - **Direção do espelho:** **Pull** (puxar)
    - **Autenticação:** usar um **Personal Access Token (classic)** do GitHub com scope **`repo`** (só leitura basta para repo **público**; **privado** precisa de acesso).
 1. Guardar. Usar **“Atualizar agora”** / **“Sincronizar”** uma vez para testar.

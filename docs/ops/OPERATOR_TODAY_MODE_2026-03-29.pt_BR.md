@@ -10,24 +10,24 @@
 
 ## Taxonomia (como chamamos “coisa antiga não feita”)
 
-| Termo | Significado |
-| ----- | ----------- |
+| Termo         | Significado                                                                                                            |
+| -----         | -----------                                                                                                            |
 | **Carryover** | Itens de um **`OPERATOR_TODAY_MODE_*` anterior** que ainda valem — varrer com **`carryover-sweep`** (ritual da manhã). |
-| **Deferred** | Adiado com **data**, linha no **PLANS_TODO** ou **`WORKFLOW_DEFERRED_FOLLOWUPS.md`** — não é backlog silencioso. |
-| **Dangling** | Checkbox **sem dono e sem data** — **evitar**; converter em linha de carryover ou defer. |
+| **Deferred**  | Adiado com **data**, linha no **PLANS_TODO** ou **`WORKFLOW_DEFERRED_FOLLOWUPS.md`** — não é backlog silencioso.       |
+| **Dangling**  | Checkbox **sem dono e sem data** — **evitar**; converter em linha de carryover ou defer.                               |
 
 ---
 
 ## Relatório de sessão — 2026-03-29 (assistente + operador, assíncrono)
 
-**Docs / repo (rastreados):**
+## Docs / repo (rastreados):
 
 - **`docs/ops/inspirations/INSPIRATIONS_HUB.md`** (+ **`.pt_BR.md`**) — hub central de navegação das inspirações.
 - **`docs/ops/inspirations/README.md`** / **`README.pt_BR.md`** — apontar primeiro para o hub.
 - **`docs/ops/inspirations/ENGINEERING_CRAFT_INSPIRATIONS.md`** (+ **`.pt_BR.md`**) — linhas: **Jeremy Ruston**, **Simon Baird**, **TiddlyTools + Eric Shulman** (autoria explícita), **Steve Gibson** como ponteiro (detalhe GRC em **`SECURITY_NOW.md`**).
 - **`docs/ops/README.md`** / **`README.pt_BR.md`** — linha de índice do **hub de inspirações**.
 
-**Privado / workspace (gitignored):**
+## Privado / workspace (gitignored):
 
 - **`docs/private/raw_pastes/supere_blog/20260329_BATCH_INDEX_AND_TW_CROSSREF.pt_BR.md`** — índice dos novos batches Supere + cruzamento TiddlyWiki.
 - **`docs/private/raw_pastes/supere_blog/README.pt_BR.md`** — ligação a esse índice.
@@ -42,15 +42,33 @@
 
 ### 0a — Dívidas de `today mode` antigo (promover ou deferir — não deixar dangling)
 
-| Dia fonte | Carryover (se ainda for verdade) | Próximo passo sugerido |
-| --------- | --------------------------------- | ----------------------- |
-| **2026-03-26** | Tag **`v1.6.7`**, GitHub Release, Docker Hub conforme **`docs/releases/1.6.7.md`** | Uma fatia de release; depois marcar ou mudar data |
-| **2026-03-26** | E-mail **Wabbix** WRB com **`WRB_DELTA_SNAPSHOT_2026-03-26.pt_BR.md`** | Enviar ou deferir com data em PLANS / nota privada |
+| Dia fonte      | Carryover (se ainda for verdade)                                                                  | Próximo passo sugerido                               |
+| ---------      | ---------------------------------                                                                 | -----------------------                              |
+| **2026-03-26** | Tag **`v1.6.7`**, GitHub Release, Docker Hub conforme **`docs/releases/1.6.7.md`**                | Uma fatia de release; depois marcar ou mudar data    |
+| **2026-03-26** | E-mail **Wabbix** WRB com **`WRB_DELTA_SNAPSHOT_2026-03-26.pt_BR.md`**                            | Enviar ou deferir com data em PLANS / nota privada   |
 | **2026-03-27** | **Slack** prova de ping (Windows + iPhone) conforme **`OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md`** | Teste curto; **`CHAN-OK`** / nota se ainda bloqueado |
-| **2026-03-27** | **Help-sync** pytest + follow-ups do **`OPERATOR_HELP_AUDIT.md`** | Correr pytest; um fix ou um issue |
-| **2026-03-27** | **OpenAPI** vs corpo real do **`POST /scan`** | Doc/PR pequeno ou issue fechado em âmbito |
-| **2026-03-27** | README **`--host`** em LAN | Editar ou defer explícito |
-| **2026-03-27** | Web **`/help`** vs flags do **`main.py`** | Passagem rápida de paridade |
+| **2026-03-27** | **Help-sync** pytest + follow-ups do **`OPERATOR_HELP_AUDIT.md`**                                 | Correr pytest; um fix ou um issue                    |
+| **2026-03-27** | **OpenAPI** vs corpo real do **`POST /scan`**                                                     | Doc/PR pequeno ou issue fechado em âmbito            |
+| **2026-03-27** | README **`--host`** em LAN                                                                        | Editar ou defer explícito                            |
+| **2026-03-27** | Web **`/help`** vs flags do **`main.py`**                                                         | Passagem rápida de paridade                          |
+
+### 0a-def — Defers explícitos (registados 2026-03-30)
+
+| Origem (0a)    | Adiar para   | Nota |
+| -----          | -----        | ---- |
+| Tag **`v1.6.7`** + Release + Docker Hub | **2026-04-05** | Fatia de release; rever na véspera |
+| E-mail **Wabbix** WRB | **2026-04-05** | Enviar ou mover data |
+| **Slack** ping (Windows + iPhone) | **2026-04-02** | Teste curto |
+| **Help-sync** + **`OPERATOR_HELP_AUDIT.md`** | **2026-04-03** | `pytest` + um fix ou issue |
+| **OpenAPI** vs **`POST /scan`** | **2026-04-10** | Doc/PR pequeno |
+| README **`--host`** LAN | **2026-04-05** | Editar ou novo defer |
+| Web **`/help`** vs **`main.py`** | **2026-04-05** | Paridade |
+
+### Bloco 0 — Passos 2 → 3 → 1 (fechamento leve, 2026-03-30)
+
+1. **`git status`** — Árvore **grande** (~dezenas de arquivos modificados + untracked). **Sem** commit em massa neste passo; próxima sessão **`houseclean`**: `preview-commit` / PRs por tema (**`.cursor/rules/execution-priority-and-pr-batching.mdc`**).
+2. **Defers** — Tabela **0a-def** acima (nada em **dangling**).
+3. **Link `TiddlyTools.com`** — Verificado com `curl`/HEAD: **HTTP 200 OK** (GitHub Pages); **sem** alteração de URL nas tabelas **`ENGINEERING_CRAFT_INSPIRATIONS*`**.
 
 ### 0b — Continuidade do journal privado
 
@@ -62,10 +80,10 @@
 ## Atividades recomendadas — próximo bloco de trabalho (escolhe 1–3, não todas)
 
 1. **`git status`** — se a árvore for grande, **`preview-commit`** / partir commits por **`.cursor/rules/execution-priority-and-pr-batching.mdc`**.
-2. **Inspirações:** abrir **[INSPIRATIONS_HUB.pt_BR.md](inspirations/INSPIRATIONS_HUB.pt_BR.md)** — confirmar que **tiddlytools.com** abre; ajustar link se precisar.
-3. **Recuperação Supere:** próximo paste ou **`burst-showcase`** quando tiveres energia — **SiteMap** / backlog Nerd conforme **`RESUME_TOPICS_JOURNAL`**.
-4. **Deps:** triagem dos PRs **Dependabot** quando quiseres uma sessão **`deps`** — não é obrigação moral hoje.
-5. **SRE em calma:** um **`check-all`** ou **`lint-only`** só se fores **commitar** — não como castigo.
+1. **Inspirações:** abrir **[INSPIRATIONS_HUB.pt_BR.md](inspirations/INSPIRATIONS_HUB.pt_BR.md)** — confirmar que **tiddlytools.com** abre; ajustar link se precisar.
+1. **Recuperação Supere:** próximo paste ou **`burst-showcase`** quando tiveres energia — **SiteMap** / backlog Nerd conforme **`RESUME_TOPICS_JOURNAL`**.
+1. **Deps:** triagem dos PRs **Dependabot** quando quiseres uma sessão **`deps`** — não é obrigação moral hoje.
+1. **SRE em calma:** um **`check-all`** ou **`lint-only`** só se fores **commitar** — não como castigo.
 
 ---
 

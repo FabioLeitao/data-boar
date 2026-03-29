@@ -4,7 +4,7 @@
 
 Este guia resume **como trabalhar em conjunto** (ex.: **Fabio** como mantenedor e **Ivan** como colaborador) com **coesão**: fluxo Git, identidade nos commits, limites do assistente no Cursor e **o que configurar** no repositório (rules, `AGENTS.md`, hábitos).
 
-**Relacionado:** [CONTRIBUTING.pt_BR.md](../CONTRIBUTING.pt_BR.md), [docs/ops/COMMIT_AND_PR.pt_BR.md](ops/COMMIT_AND_PR.pt_BR.md), [AGENTS.md](../AGENTS.md), [README.pt_BR.md](README.pt_BR.md) (**Interno e referência** → **TOKEN_AWARE_USAGE** em `docs/plans/`). Regra Cursor: **`.cursor/rules/collaboration-maintainer-contributor.mdc`**.
+**Relacionado:** [CONTRIBUTING.pt_BR.md](../CONTRIBUTING.pt_BR.md), [docs/ops/COMMIT_AND_PR.pt_BR.md](ops/COMMIT_AND_PR.pt_BR.md), [AGENTS.md](../AGENTS.md), [README.pt_BR.md](README.pt_BR.md) (**Interno e referência** → **TOKEN_AWARE_USAGE** em `docs/plans/`), [TALENT_POOL_LEARNING_PATHS.pt_BR.md](TALENT_POOL_LEARNING_PATHS.pt_BR.md) (certificações/cursos opcionais por **arquétipo** — sem dados pessoais). Regra Cursor: **`.cursor/rules/collaboration-maintainer-contributor.mdc`**.
 
 ---
 
@@ -31,12 +31,12 @@ Este guia resume **como trabalhar em conjunto** (ex.: **Fabio** como mantenedor 
 
 ## 3. Separar “tarefas do mantenedor” vs “tarefas do colaborador”
 
-| Mecanismo                        | Uso                                                                                                                                                                           |
-| ---------                        | ---                                                                                                                                                                           |
-| **Issues / Projects no GitHub**  | Assignee **Fabio** vs **Ivan**; labels `owner:maintainer`, `owner:contributor` (ou nomes que preferirem).                                                                     |
-| **Nomes de branch**              | Ex.: `ivan/descricao-curta`, `fabio/descricao-curta` ou só `feature/…` com assignee na PR.                                                                                    |
-| **`docs/private/`** (gitignored) | Notas **só do mantenedor** / LAB-OP **reais** — **não** entram no clone público do colaborador da mesma forma; evita misturar “chores” pessoais com o que o Ivan precisa ler. |
-| **Planos (`docs/plans/`)**       | Podem continuar **só em inglês** por política do repo; quem implementa marca progresso em PR + `PLANS_TODO.md` quando fizer sentido.                                          |
+| Mecanismo                        | Uso                                                                                                                                                                                                                                                                                                                                    |
+| ---------                        | ---                                                                                                                                                                                                                                                                                                                                    |
+| **Issues / Projects no GitHub**  | Assignee **Fabio** vs **Ivan**; labels `owner:maintainer`, `owner:contributor` (ou nomes que preferirem).                                                                                                                                                                                                                              |
+| **Nomes de branch**              | Ex.: `ivan/descricao-curta`, `fabio/descricao-curta` ou só `feature/…` com assignee na PR.                                                                                                                                                                                                                                             |
+| **`docs/private/`** (gitignored) | Notas **só do mantenedor** / LAB-OP **reais** — **não** entram no clone público do colaborador da mesma forma; evita misturar “chores” pessoais com o que o Ivan precisa ler.                                                                                                                                                          |
+| **Planos (`docs/plans/`)**       | Podem continuar **só em inglês** por política do repo; visão geral para humanos: **[PLANS_HUB.md](plans/PLANS_HUB.md)** (tabela auto-atualizada); backlog canônico: `PLANS_TODO.md`. Quem implementa marca progresso em PR + `PLANS_TODO.md` quando fizer sentido e roda `plans_hub_sync.py --write` ao criar/arquivar um `PLAN_*.md`. |
 
 ---
 
@@ -163,13 +163,14 @@ gh pr list --state open
 
 ## 7. Rules, skills e guidelines no repositório
 
-| Artefato                                                                                              | Função                                                                                                                                                                            |
-| --------                                                                                              | ------                                                                                                                                                                            |
-| **[`AGENTS.md`](../AGENTS.md)**                                                                       | Contrato global do assistente: idioma, segredos, homelab, Git/PR, testes. **Ambos** devem ler uma vez; o Ivan segue o mesmo arquivo ao clonar.                                    |
-| **[`.cursor/rules/`](../.cursor/rules/)**                                                             | Regras automáticas ou por contexto (ex.: `git-pr-sync-before-advice.mdc`, `execution-priority-and-pr-batching.mdc`). **Colaboração:** `collaboration-maintainer-contributor.mdc`. |
-| **[`.cursor/skills/`](../.cursor/skills/)**                                                           | Playbooks longos (Docker, token-aware, etc.). Use quando a tarefa combinar.                                                                                                       |
-| **[`CONTRIBUTING.md`](../CONTRIBUTING.md)** / **[`CONTRIBUTING.pt_BR.md`](../CONTRIBUTING.pt_BR.md)** | Fluxo de contribuição e testes.                                                                                                                                                   |
-| **Este arquivo**                                                                                      | Papéis, comandos e prompts — **maturidade de equipe** sem substituir o CONTRIBUTING.                                                                                              |
+| Artefato                                                                                                                      | Função                                                                                                                                                                            |
+| --------                                                                                                                      | ------                                                                                                                                                                            |
+| **[`AGENTS.md`](../AGENTS.md)**                                                                                               | Contrato global do assistente: idioma, segredos, homelab, Git/PR, testes. **Ambos** devem ler uma vez; o Ivan segue o mesmo arquivo ao clonar.                                    |
+| **[`.cursor/rules/`](../.cursor/rules/)**                                                                                     | Regras automáticas ou por contexto (ex.: `git-pr-sync-before-advice.mdc`, `execution-priority-and-pr-batching.mdc`). **Colaboração:** `collaboration-maintainer-contributor.mdc`. |
+| **[`.cursor/skills/`](../.cursor/skills/)**                                                                                   | Playbooks longos (Docker, token-aware, etc.). Use quando a tarefa combinar.                                                                                                       |
+| **[`CONTRIBUTING.md`](../CONTRIBUTING.md)** / **[`CONTRIBUTING.pt_BR.md`](../CONTRIBUTING.pt_BR.md)**                         | Fluxo de contribuição e testes.                                                                                                                                                   |
+| **[`TALENT_POOL_LEARNING_PATHS.md`](TALENT_POOL_LEARNING_PATHS.md)** / **[`.pt_BR.md`](TALENT_POOL_LEARNING_PATHS.pt_BR.md)** | Mini-roteiros opcionais (repo + carreira) por **arquétipo**; dados por candidato só em `docs/private/`.                                                                           |
+| **Este arquivo**                                                                                                              | Papéis, comandos e prompts — **maturidade de equipe** sem substituir o CONTRIBUTING.                                                                                              |
 
 ### 7.1 Ajustes opcionais quando a equipe crescer
 
@@ -193,5 +194,6 @@ gh pr list --state open
 | Data       | Nota                                                                         |
 | ----       | ----                                                                         |
 | 2026-03-01 | Versão inicial (Fabio + Ivan, fork ou repo único, comandos, prompts, rules). |
+| 2026-03-27 | Referência a roteiros de talent pool (arquétipos).                           |
 
 Atualizem esta tabela quando mudarem URL canônica, política de branch ou nomes dos remotes.

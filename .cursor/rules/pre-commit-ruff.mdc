@@ -19,6 +19,7 @@ uv run pre-commit install
 
 - **Ruff** check (`--fix`) and **Ruff format** (`--check`) — config in `pyproject.toml`.
 - **plans-stats** — `python scripts/plans-stats.py --check` (dashboard must match `PLANS_TODO.md`).
+- **plans-hub** — `python scripts/plans_hub_sync.py --check` (generated table in `PLANS_HUB.md` must match all `PLAN_*.md` files).
 - **Markdown lint**, **pt-BR locale**, **confidential commercial** guards (pytest).
 
 Manual run on all files:

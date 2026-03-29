@@ -35,6 +35,14 @@ This page states **what Data Boar reveals**, **what it does not do**, **which re
 
 ---
 
+## Risk management (ISO 31000 — framing only)
+
+**ISO 31000** concerns **organizational** risk management—not a software feature list. Data Boar **does not** perform your enterprise risk assessment or substitute for DPO or counsel. It improves **visibility** over personal and sensitive data so you can **prioritize** technical remediation and produce **evidence**; **which** risks to treat, accept, or transfer remains **your** process. We do **not** reproduce the standard on this page. For the same positioning in implementation-oriented language (including how this relates to **SBOM** as supply-chain / incident-response practice), see [ISO 31000 (framing)](COMPLIANCE_FRAMEWORKS.md#iso-31000-framing) under [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md).
+
+When your organization uses **ISO 31000** as its **risk-management framework**, **data inventory and scan reports** fit the **risk-treatment cycle**: they show **where** personal and sensitive data sit, support **prioritisation** of controls and remediation, and yield **repeatable artefacts** for monitoring and review. That is often useful for **DPOs and buyers** aligning technical visibility with **their** process—without the product setting risk appetite or approving treatment choices.
+
+---
+
 ## Evidence and outputs (for audits and governance)
 
 - **Excel reports** per scan **session**: findings by source, field/path, pattern type, sensitivity, and framework-oriented recommendation text (legal basis, risk, suggested action, priority where configured).

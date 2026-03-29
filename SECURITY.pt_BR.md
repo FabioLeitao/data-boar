@@ -39,6 +39,19 @@ sudo apt install -y \
 
 Bibliotecas cliente adicionais podem ser necessárias dependendo de quais conectores você usa (ex.: Oracle, SQL Server, Snowflake); veja o `README.md` principal para notas específicas por conector.
 
+## Lista de materiais de software (SBOM)
+
+SBOMs formais em **CycloneDX JSON** apoiam **visibilidade da cadeia de suprimentos** e **resposta a incidentes** (veja [docs/adr/0003](docs/adr/0003-sbom-roadmap-cyclonedx-then-syft.md)). Complementam o **`pip-audit`**; **não** são gestão de risco organizacional ISO 31000 (veja [COMPLIANCE_FRAMEWORKS.pt_BR.md](docs/COMPLIANCE_FRAMEWORKS.pt_BR.md)).
+
+| Artefato | Conteúdo | Como é gerado |
+| -------- | -------- | ------------- |
+| **`sbom-python.cdx.json`** | Dependências Python alinhadas ao **`uv.lock`** (via `uv export` + **`cyclonedx-py`**) | Workflow **`SBOM`**, local **`scripts/generate-sbom.ps1`** |
+| **`sbom-docker-image.cdx.json`** | Pacotes na imagem OCI **construída** (camadas OS + Python) | **`syft`** em **`anchore/syft:v1.28.0`** sobre a imagem `data_boar:sbom` gerada pelo **`Dockerfile`** no mesmo commit |
+
+**Onde baixar:** o workflow do GitHub Actions [**SBOM**](.github/workflows/sbom.yml) faz upload dos dois arquivos como **artefatos da execução** (em tags de versão `v*`, em **`release: published`**, em **`workflow_dispatch`** e em PRs filtrados por caminho para `main`). Quando já existe um **GitHub Release** para a tag, os mesmos arquivos são **anexados a essa release**.
+
+**Docker Hub:** seguindo [docs/ops/DOCKER_IMAGE_RELEASE_ORDER.md](docs/ops/DOCKER_IMAGE_RELEASE_ORDER.md), a imagem publicada **`fabioleitao/data_boar:<semver>`** deve corresponder à mesma árvore de código da tag usada no workflow de SBOM; o SBOM da **imagem** vem de um **build local** na CI (camadas equivalentes a um `docker build` limpo nesse commit), não de um pull separado no registry.
+
 ## Manter as dependências atualizadas
 
 - As dependências em **`pyproject.toml`** usam versões mínimas (`>=`) para permitir correções de segurança. O **lockfile (`uv.lock`)** é commitado para que todos (e o CI) instalem a mesma árvore; ele é atualizado quando as dependências mudam ou antes de uma release estável, mantendo o app atualizado, compatível e seguro. O **Dependabot** (veja `.github/dependabot.yml`) abre PRs semanais para pip e GitHub Actions e ajuda a sinalizar quando agir: ao aplicar uma atualização (ou antes de uma release), atualize primeiro o **`pyproject.toml`**, execute `uv lock` e `uv export --no-emit-package pyproject.toml -o requirements.txt`, e faça commit de **pyproject.toml**, **uv.lock** e **requirements.txt**. Não faça merge de alteração que edite só `requirements.txt` ou `uv.lock` sem atualizar o outro. Faça merge dos PRs de dependência somente após o CI (testes e auditoria) passar.
@@ -59,6 +72,7 @@ Bibliotecas cliente adicionais podem ser necessárias dependendo de quais conect
 - **Linha de base de code scanning:** O workflow de CodeQL usa **`security-and-quality`** para Python e deve permanecer ativo em push/PR/agendado. Mantenha essa cobertura ampla junto com regras/testes de hardening do projeto; se uma query nova gerar ruído, triar e documentar antes de considerar supressão.
 - **Semgrep (OSS):** O workflow **Semgrep** no GitHub Actions roda o conjunto **`p/python`** em push/PR (complementa o CodeQL). Exclusões e justificativa: **`docs/plans/PLAN_SEMGREP_CI.md`**.
 - **Bandit:** O job **Bandit (medium+)** corre dentro do workflow **CI** em push/PR (`[tool.bandit]` no **`pyproject.toml`**). Detalhes e triagem de achados **low**: **`docs/plans/PLAN_BANDIT_SECURITY_LINTER.md`**.
+- **Cadeia de suprimentos da CI:** Os workflows em **`.github/workflows/`** fixam Actions de terceiros em **SHA de commit completo** (tag de versão em comentários YAML para humanos). O passo **`astral-sh/setup-uv`** fixa um **semver específico** do CLI **uv** — não **`latest`** — para as instalações não variarem silenciosamente entre execuções. O **Dependabot** pode propor bumps de SHA; revisar notas de release antes do merge. Isso **reduz** risco de tag móvel e de atualizações inesperadas da action, mas **não garante** proteção contra zero-day no commit fixo, ataques à cadeia que passem na revisão ou riscos fora da CI (por exemplo ferramentas no ambiente local do desenvolvedor). Veja **`docs/adr/0005-ci-github-actions-supply-chain-pins.md`**.
 
 Essa abordagem faz parte da linha de base de segurança do projeto. Para a lista completa de medidas de endurecimento e status, veja **`docs/plans/completed/PLAN_SECURITY_HARDENING.md`**.
 
