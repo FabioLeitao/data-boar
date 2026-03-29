@@ -16,6 +16,8 @@ cp docs/private.example/operator_economics/README.md docs/private/operator_econo
 cp docs/private.example/author_info/README.md docs/private/author_info/
 cp docs/private.example/academic/README.md docs/private/academic/
 cp docs/private.example/notify/README.md docs/private/notify/
+# Optional: cite Dockerfiles (wf_t1r, uptk) in one place for thesis/CV
+# cp docs/private.example/Dockerfiles_used.md docs/private/
 ```
 
 ```powershell
@@ -28,6 +30,7 @@ Copy-Item docs/private.example/operator_economics/README.md docs/private/operato
 Copy-Item docs/private.example/author_info/README.md docs/private/author_info/
 Copy-Item docs/private.example/academic/README.md docs/private/academic/
 Copy-Item docs/private.example/notify/README.md docs/private/notify/
+# Optional: Copy-Item docs/private.example/Dockerfiles_used.md docs/private/
 ```
 
 Then edit files **only** under `docs/private/` — Git ignores that tree (`git check-ignore -v docs/private/homelab/README.md`).
