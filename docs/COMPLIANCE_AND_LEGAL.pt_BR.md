@@ -35,6 +35,14 @@ Esta página descreve **o que o Data Boar revela**, **o que não faz**, **com qu
 
 ---
 
+## Gestão de risco (ISO 31000 — apenas enquadramento)
+
+A **ISO 31000** trata da **gestão de risco na organização**—não de uma lista de funcionalidades de software. O Data Boar **não** executa sua avaliação de risco corporativo nem substitui DPO ou assessoria jurídica. Ele aumenta a **visibilidade** sobre dados pessoais e sensíveis para **priorizar** remediação técnica e produzir **evidências**; **quais** riscos tratar, aceitar ou transferir permanece **processo da organização**. **Não** reproduzimos a norma nesta página. O mesmo enquadramento em linguagem voltada à implementação (incluindo a relação com **SBOM** como prática de **cadeia de suprimentos / resposta a incidentes**) está em [ISO 31000 (enquadramento)](COMPLIANCE_FRAMEWORKS.pt_BR.md#iso-31000-enquadramento) em [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md).
+
+Quando a empresa adota a **ISO 31000** como **referência de gestão de risco**, o **inventário de dados e os relatórios de varredura** alimentam o **ciclo de tratamento de risco**: indicam **onde** se concentram dados pessoais e sensíveis, apoiam a **priorização** de controles e remediação e geram **artefatos repetíveis** para monitoração e revisão. Isso costuma ser útil para **DPO e comprador** alinharem visibilidade técnica ao **processo de risco da organização**—sem o produto definir apetite a risco nem substituir a decisão sobre tratamento.
+
+---
+
 ## Evidência e saídas (para auditoria e governança)
 
 - **Relatórios Excel** por **sessão** de varredura: achados por fonte, campo/caminho, tipo de padrão, sensibilidade e texto de recomendação orientado a framework (base legal, risco, ação sugerida, prioridade quando configurado).

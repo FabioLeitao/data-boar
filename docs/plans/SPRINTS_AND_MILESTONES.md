@@ -1,6 +1,6 @@
 # Sprints, milestones, and light PM traceability
 
-**Purpose:** Map [PLANS_TODO.md](PLANS_TODO.md) execution to **sprint-sized** focus windows, **milestones** you can celebrate, and optional **Gantt / Kanban** views—while staying **[token-aware](TOKEN_AWARE_USAGE.md)** and honest that **resources = you + agent** (not a PMO team).
+**Purpose:** Map [PLANS_TODO.md](PLANS_TODO.md) execution to **sprint-sized** focus windows, **milestones** you can celebrate, and optional **Gantt / Kanban** views—while staying **[token-aware](TOKEN_AWARE_USAGE.md)** and honest that **resources = you + agent** (not a PMO team). For a **full inventory** of plan files and one-line intent, see **[PLANS_HUB.md](PLANS_HUB.md)** ([pt-BR](PLANS_HUB.pt_BR.md)).
 
 **Português (Brasil):** [SPRINTS_AND_MILESTONES.pt_BR.md](SPRINTS_AND_MILESTONES.pt_BR.md) — keep **EN + pt-BR** sections aligned when you change themes, milestones, or the SRE block.
 
@@ -186,6 +186,8 @@ To reduce ambiguity inside **M-TRUST**, use these small checkpoints:
 - **M-TRUST-02:** confidence-gated output behavior active for degraded/untrusted states.
 - **M-TRUST-03:** crypto baseline self-check surfaced at runtime.
 - **M-TRUST-04:** review packet format used in one external review cycle.
+
+**Dependency supply chain (PyPI + GitHub Actions):** committed lockfile, **`pip-audit`** in CI, **Dependabot** (pip + actions), **SHA-pinned** Actions on main workflows—documented under **PLANS_TODO** *Integration / WIP*; operator notes in [WORKFLOW_DEFERRED_FOLLOWUPS.md](../ops/WORKFLOW_DEFERRED_FOLLOWUPS.md); **SBOM** artifacts: [ADR 0003](../adr/0003-sbom-roadmap-cyclonedx-then-syft.md).
 
 Reference plan: [PLAN_GRC_INSPIRED_ENTERPRISE_TRUST_ACCELERATORS.md](PLAN_GRC_INSPIRED_ENTERPRISE_TRUST_ACCELERATORS.md).
 

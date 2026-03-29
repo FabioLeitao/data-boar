@@ -37,17 +37,17 @@ Este é um guia vivo. Amplie quando a mesma lição surgir de forma recorrente e
 
 Use estes clusters ao garimpar a tabela; um criador pode mentalmente cair em mais de um, mas a **linha da tabela** continua sendo o único alvo de link.
 
-| Cluster | Intenção para o Data Boar | Linhas de exemplo (não exaustivo) |
-| ------- | ------------------------- | ----------------------------------- |
-| **Onboarding inclusivo** | Linguagem simples, menos medo de CLI e primeira execução | Veronica Explains, Savvy Nik, Diolinux Labs, *You Suck at Programming* |
-| **Gancho vs profundidade** | README e “em que caixa isso cai?” sem falsa precisão | Fireship (combinar com docs lentos) |
-| **Homelab e infraestrutura** | Runbooks, realidade de LAN/armazenamento, falhas de operador | Level1Techs, UniFi Academy (caveat de vendor), Gary H Tech, SafeSourceTVs |
-| **Legado e paciência** | Encodings esquisitos, exportações antigas, “o que tentamos” | Michael MJD, Nostalgia Nerd, The 8-Bit Guy, Cathode Ray Dude, Usagi Electric |
-| **Ciência e matemática explicadas** | Ideias contraintuitivas, incerteza honesta, visual | Veritasium, 3Blue1Brown, Steve Mould, Stand-up Maths |
-| **Entrega e profundidade de sistemas** | Narrativa de ferramenta confiável, honestidade em escala de SO | Mark Russinovich, Dave Plummer, GitHub (canal oficial) |
-| **Padrões de doc portátil** | Pequenas peças reutilizáveis, wiki num arquivo | Linhagem TiddlyWiki |
-| **Realidade do operador pt-BR** | Tom, custo/benefício, alfabetização em segurança local | Diolinux Labs, Clube do Hardware, Rodrigo Pimentel, Aviões e Músicas |
-| **Baixo nível e engenharia de segurança** | Primeiros princípios para desempenho e limites de confiança | Low Level Academy / StackSmash / LowLevelTV |
+| Cluster                                   | Intenção para o Data Boar                                      | Linhas de exemplo (não exaustivo)                                            |
+| -------                                   | -------------------------                                      | -----------------------------------                                          |
+| **Onboarding inclusivo**                  | Linguagem simples, menos medo de CLI e primeira execução       | Veronica Explains, Savvy Nik, Diolinux Labs, *You Suck at Programming*       |
+| **Gancho vs profundidade**                | README e “em que caixa isso cai?” sem falsa precisão           | Fireship (combinar com docs lentos)                                          |
+| **Homelab e infraestrutura**              | Runbooks, realidade de LAN/armazenamento, falhas de operador   | Level1Techs, UniFi Academy (caveat de vendor), Gary H Tech, SafeSourceTVs    |
+| **Legado e paciência**                    | Encodings esquisitos, exportações antigas, “o que tentamos”    | Michael MJD, Nostalgia Nerd, The 8-Bit Guy, Cathode Ray Dude, Usagi Electric |
+| **Ciência e matemática explicadas**       | Ideias contraintuitivas, incerteza honesta, visual             | Veritasium, 3Blue1Brown, Steve Mould, Stand-up Maths                         |
+| **Entrega e profundidade de sistemas**    | Narrativa de ferramenta confiável, honestidade em escala de SO | Mark Russinovich, Dave Plummer, GitHub (canal oficial)                       |
+| **Padrões de doc portátil**               | Pequenas peças reutilizáveis, wiki num arquivo                 | Linhagem TiddlyWiki                                                          |
+| **Realidade do operador pt-BR**           | Tom, custo/benefício, alfabetização em segurança local         | Diolinux Labs, Clube do Hardware, Rodrigo Pimentel, Aviões e Músicas         |
+| **Baixo nível e engenharia de segurança** | Primeiros princípios para desempenho e limites de confiança    | Low Level Academy / StackSmash / LowLevelTV                                  |
 
 ## O que vale tentar imitar
 

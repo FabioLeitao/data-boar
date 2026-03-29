@@ -1,0 +1,29 @@
+# Hub de planos — navegação para colaboradores
+
+**English:** [PLANS_HUB.md](PLANS_HUB.md)
+
+**Finalidade:** Página-índice para **candidatos, colaboradores e revisores** entenderem rapidamente **todos os arquivos `PLAN_*.md`** (abertos e arquivados), com **resumo** e **referências cruzadas** opcionais. O **conteúdo canônico da tabela** (nomes de arquivo e textos extraídos dos planos em inglês) fica no arquivo em **inglês**; este arquivo em **pt-BR** resume o fluxo em português.
+
+## Leia também:
+
+- **[PLANS_TODO.md](PLANS_TODO.md)** — fila e estado (fonte única de verdade para to-dos).
+- **[SPRINTS_AND_MILESTONES.pt_BR.md](SPRINTS_AND_MILESTONES.pt_BR.md)** — temas de sprint e marcos (par EN + pt-BR).
+
+**Atualizar a tabela** depois de criar, renomear ou arquivar um `PLAN_*.md`:
+
+```bash
+python scripts/plans_hub_sync.py --write
+```
+
+**Dicas opcionais dentro do plano** (comentários HTML no corpo do `.md`, em inglês):
+
+```html
+<!-- plans-hub-summary: Uma linha curta para humanos. -->
+<!-- plans-hub-related: PLAN_OUTRO.md, completed/PLAN_VELHO.md -->
+```
+
+**Tabela completa:** abra **[PLANS_HUB.md](PLANS_HUB.md)** (Markdown Preview recomendado para linhas largas).
+
+**Documentos meta** (papéis): ver a seção *Meta documents* no **PLANS_HUB.md** em inglês.
+
+**Ver também:** [README.md](../README.md) (índice, **Interno e referência**), [CONTRIBUTING.md](../../CONTRIBUTING.pt_BR.md), [AGENTS.md](../../AGENTS.md).
