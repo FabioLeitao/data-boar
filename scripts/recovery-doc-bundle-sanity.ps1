@@ -72,7 +72,7 @@ if (-not $SkipPytest) {
 
 if ([string]::IsNullOrWhiteSpace($BundlePath)) {
     Write-Host "`n[2/2] No -BundlePath; skipping sliding-window / H1 audits." -ForegroundColor Yellow
-    Write-Host "Tip: pass -BundlePath and optionally -Headerless -IncludeH1Audit — see DOC_BUNDLE_RECOVERY_PLAYBOOK.md" -ForegroundColor Gray
+    Write-Host "Tip: pass -BundlePath and optionally -Headerless -IncludeH1Audit - see DOC_BUNDLE_RECOVERY_PLAYBOOK.md" -ForegroundColor Gray
     Write-Host "recovery-doc-bundle-sanity: OK (tooling step only)." -ForegroundColor Green
     exit 0
 }
