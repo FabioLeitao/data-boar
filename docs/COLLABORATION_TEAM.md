@@ -4,8 +4,9 @@
 
 This English page is a **pointer**: the canonical detailed write-up for the maintainer + contributor workflow (e.g. Fabio + Ivan) lives in the **pt-BR** file above. Repository norms (`AGENTS.md`, `CONTRIBUTING.md`, `.cursor/rules/collaboration-maintainer-contributor.mdc`) apply to **every** clone.
 
-**See also:** [CONTRIBUTING.md](../CONTRIBUTING.md), [docs/ops/COMMIT_AND_PR.md](ops/COMMIT_AND_PR.md), [AGENTS.md](../AGENTS.md).
+**See also:** [CONTRIBUTING.md](../CONTRIBUTING.md), [docs/ops/COMMIT_AND_PR.md](ops/COMMIT_AND_PR.md), [AGENTS.md](../AGENTS.md), [docs/TALENT_POOL_LEARNING_PATHS.md](TALENT_POOL_LEARNING_PATHS.md) (optional certs/courses by **role archetype** — no personal data).
 
-| Revision   | Note                                         |
-| --------   | ----                                         |
-| 2026-03-01 | EN stub + link to pt-BR collaboration guide. |
+| Revision   | Note                                                |
+| --------   | ----                                                |
+| 2026-03-01 | EN stub + link to pt-BR collaboration guide.        |
+| 2026-03-27 | Pointer to talent pool learning paths (archetypes). |
