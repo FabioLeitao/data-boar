@@ -165,7 +165,7 @@ For a **fast** check of JWT / licensing helpers (no network), run from the repo 
 .\scripts\license-smoke.ps1
 ```
 
-This runs `tests/test_licensing.py` and `tests/test_licensing_fingerprint.py` only. Optional: add the same command as a CI job for recurring commercial posture checks (see [PLANS_TODO.md](plans/PLANS_TODO.md) **Priority band A**, step **A6**).
+This runs `tests/test_licensing.py` and `tests/test_licensing_fingerprint.py` only. Optional: add the same command as a CI job for recurring commercial posture checks (maintainers: **Priority band A** context lives under **Internal and reference** in [README.md](README.md) and in [SECURITY.md](../SECURITY.md)).
 
 ## See also
 

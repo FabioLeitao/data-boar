@@ -52,9 +52,9 @@ This document suggests **additional layers** (tools, habits, and workflow) to ke
 
 ## What we do (Bandit):
 
-- **`bandit`** is in the **`uv` dev** group; **`[tool.bandit]`** in **`pyproject.toml`** sets **`exclude_dirs`** and **`skips`** (e.g. **B608** where SQL uses vetted identifiers — aligned with [PLAN_SEMGREP_CI.md](plans/PLAN_SEMGREP_CI.md)).
+- **`bandit`** is in the **`uv` dev** group; **`[tool.bandit]`** in **`pyproject.toml`** sets **`exclude_dirs`** and **`skips`** (e.g. **B608** where SQL uses vetted identifiers — aligned with Semgrep exclusions in [`.github/workflows/semgrep.yml`](../.github/workflows/semgrep.yml)).
 - **CI:** Job **Bandit (medium+)** in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml): `uv run bandit -c pyproject.toml -r api core config connectors database file_scan report main.py -ll -q` (fails on **medium** and **high** only until **low** is triaged).
-- **Triage:** `uv run bandit -c pyproject.toml -r … -i` for **low**; fix, **`# nosec Bxxx`** with a short reason, or extend config — [PLAN_BANDIT_SECURITY_LINTER.md](plans/PLAN_BANDIT_SECURITY_LINTER.md) Phase 3.
+- **Triage:** `uv run bandit -c pyproject.toml -r … -i` for **low**; fix, **`# nosec Bxxx`** with a short reason, or extend config — see [SECURITY.md](../SECURITY.md) and **`[tool.bandit]`** in **`pyproject.toml`**.
 - **Agent habit:** [`.cursor/skills/quality-sonarqube-codeql/SKILL.md`](../.cursor/skills/quality-sonarqube-codeql/SKILL.md) — run Bandit after security-sensitive Python edits when relevant.
 
 **Prevents:** Common security anti-patterns that tests might not cover.
@@ -67,7 +67,7 @@ This document suggests **additional layers** (tools, habits, and workflow) to ke
 
 ## What we do (Semgrep):
 
-- **GitHub Actions:** [`.github/workflows/semgrep.yml`](../.github/workflows/semgrep.yml) runs on push/PR to `main`/`master` using the official **`semgrep/semgrep`** container, ruleset **`p/python`**, **`--metrics=off`**, and one **excluded rule** documented in [docs/plans/PLAN_SEMGREP_CI.md](plans/PLAN_SEMGREP_CI.md) (false positive on vetted `sqlalchemy.text` identifier paths).
+- **GitHub Actions:** [`.github/workflows/semgrep.yml`](../.github/workflows/semgrep.yml) runs on push/PR to `main`/`master` using the official **`semgrep/semgrep`** container, ruleset **`p/python`**, **`--metrics=off`**, and one **excluded rule** documented in workflow comments (false positive on vetted `sqlalchemy.text` identifier paths).
 - **Local (optional):** `uvx semgrep scan --config p/python --metrics=off` (add the same `--exclude-rule` as in the workflow if you want parity). Custom rules can live under `.semgrep/` later.
 
 **Prevents:** Extra Python anti-patterns; complements CodeQL. **Slack:** [slack-ci-failure-notify.yml](../.github/workflows/slack-ci-failure-notify.yml) already lists **`Semgrep`** next to **`CI`** when `SLACK_WEBHOOK_URL` is set ([OPERATOR_NOTIFICATION_CHANNELS.md](ops/OPERATOR_NOTIFICATION_CHANNELS.md) §4.1).
@@ -158,27 +158,27 @@ This document suggests **additional layers** (tools, habits, and workflow) to ke
 
 ## Summary table
 
-| Layer               | Purpose                                   | Effort | Prevents                                                     |
-| ------------------  | -------------------------------           | ------ | ---------------------------------                            |
-| Lint (pre-commit) in CI | Same hooks as `.pre-commit-config.yaml` | Low    | Drift vs local hooks, failed lint job                        |
-| Pre-commit (local)    | Catch on `git commit`                   | Low    | Failed CI, rework                                            |
-| Bandit              | Python security patterns (CI **medium+**) | Low    | Anti-patterns tests may miss; **low** triage in plan Phase 3 |
-| Semgrep             | Custom + community SAST                   | Medium | Extra vulnerability/bug patterns                             |
-| mypy                | Type safety                               | Medium | Refactor bugs, wrong types                                   |
-| MD029 / fix script  | Avoid doc rework                          | Low    | Repeated manual numbering fixes                              |
-| ADRs / architecture | Record "why"                              | Low    | Wrong refactors, repeated mistakes                           |
-| SBOM                | Supply chain visibility                   | Low    | Missing deps in incident response                            |
-| Branch protection   | Block bad merges                          | Low    | Merging broken or insecure code                              |
-| Extend rules/skills | Guide agent on new checks                 | Low    | New violations as you add tools                              |
+| Layer                   | Purpose                                   | Effort | Prevents                                                     |
+| ------------------      | -------------------------------           | ------ | ---------------------------------                            |
+| Lint (pre-commit) in CI | Same hooks as `.pre-commit-config.yaml`   | Low    | Drift vs local hooks, failed lint job                        |
+| Pre-commit (local)      | Catch on `git commit`                     | Low    | Failed CI, rework                                            |
+| Bandit                  | Python security patterns (CI **medium+**) | Low    | Anti-patterns tests may miss; **low** triage in plan Phase 3 |
+| Semgrep                 | Custom + community SAST                   | Medium | Extra vulnerability/bug patterns                             |
+| mypy                    | Type safety                               | Medium | Refactor bugs, wrong types                                   |
+| MD029 / fix script      | Avoid doc rework                          | Low    | Repeated manual numbering fixes                              |
+| ADRs / architecture     | Record "why"                              | Low    | Wrong refactors, repeated mistakes                           |
+| SBOM                    | Supply chain visibility                   | Low    | Missing deps in incident response                            |
+| Branch protection       | Block bad merges                          | Low    | Merging broken or insecure code                              |
+| Extend rules/skills     | Guide agent on new checks                 | Low    | New violations as you add tools                              |
 
 ---
 
 ## What you might not be paying attention to yet
 
 1. **Lint vs local** – CI runs **`pre-commit run --all-files`**; install **`uv run pre-commit install`** so **`git commit`** matches.
-2. **MD029 and semantic lists** – The fix script can overwrite intentional 1/2/3 numbering; see [ADR 0001](adr/0001-markdown-fix-script-md029-and-semantic-step-lists.md).
-3. **Branch protection** – Enable when required check names are stable (include **Semgrep** if merge-blocking). See [WORKFLOW_DEFERRED_FOLLOWUPS.md](ops/WORKFLOW_DEFERRED_FOLLOWUPS.md).
-4. **Types** – mypy is gradual dev-only until triage (§5).
-5. **SBOM** – CycloneDX then Syft; [ADR 0003](adr/0003-sbom-roadmap-cyclonedx-then-syft.md).
+1. **MD029 and semantic lists** – The fix script can overwrite intentional 1/2/3 numbering; see [ADR 0001](adr/0001-markdown-fix-script-md029-and-semantic-step-lists.md).
+1. **Branch protection** – Enable when required check names are stable (include **Semgrep** if merge-blocking). See [WORKFLOW_DEFERRED_FOLLOWUPS.md](ops/WORKFLOW_DEFERRED_FOLLOWUPS.md).
+1. **Types** – mypy is gradual dev-only until triage (§5).
+1. **SBOM** – CycloneDX then Syft; [ADR 0003](adr/0003-sbom-roadmap-cyclonedx-then-syft.md).
 
 Adopt what fits your team and timeline; strong baseline: **pre-commit parity in CI**, **branch protection**, **MD029/fix-script**, **Bandit** + **Semgrep**. **mypy** stays optional until clean.

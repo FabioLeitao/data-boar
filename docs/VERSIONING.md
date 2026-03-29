@@ -31,11 +31,11 @@ Examples:
 
 Use lowercase suffixes consistently:
 
-| Stage | Recommended use | Example |
-| --- | --- | --- |
-| **`-beta`** | Relevant code/behavior changes started and tracked, but not yet considered release-candidate ready. | `1.6.8-beta` |
-| **`-rc`** | Candidate ready for final validation/publish choreography (tests green, docs synced, release notes ready, merge/release pending). | `1.6.8-rc` |
-| **final (no suffix)** | Public release number (Git tag + GitHub Release + Docker Hub publish). | `1.6.8` |
+| Stage                 | Recommended use                                                                                                                   | Example      |
+| ---                   | ---                                                                                                                               | ---          |
+| **`-beta`**           | Relevant code/behavior changes started and tracked, but not yet considered release-candidate ready.                               | `1.6.8-beta` |
+| **`-rc`**             | Candidate ready for final validation/publish choreography (tests green, docs synced, release notes ready, merge/release pending). | `1.6.8-rc`   |
+| **final (no suffix)** | Public release number (Git tag + GitHub Release + Docker Hub publish).                                                            | `1.6.8`      |
 
 ### Practical policy
 

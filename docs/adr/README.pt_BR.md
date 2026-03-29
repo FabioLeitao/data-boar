@@ -2,17 +2,17 @@
 
 **English:** [README.md](README.md)
 
-Notas curtas e duradouras que registram **por que** o projeto escolheu um caminho — não só *o que* o código faz. Complementam [plans](../plans/PLANS_TODO.md) (backlog e execução) e [TESTING.pt_BR.md](../TESTING.pt_BR.md) (o que a CI exige).
+Notas curtas e duradouras que registram **por que** o projeto escolheu um caminho — não só *o que* o código faz. Complementam o **índice da documentação** ([README.pt_BR.md](../README.pt_BR.md) — *Interno e referência* aponta a árvore de planos) para contexto de backlog, e [TESTING.pt_BR.md](../TESTING.pt_BR.md) (o que a CI exige).
 
 ## Convenção
 
-| Item          | Regra                                                                                                                                                  |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------             |
-| **Local**     | Esta pasta: **`docs/adr/`**                                                                                                                            |
+| Item          | Regra                                                                                                                                                                         |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------                                    |
+| **Local**     | Esta pasta: **`docs/adr/`**                                                                                                                                                   |
 | **Nome**      | **`0000-...`** opcional (baseline / meta); **`0001-titulo-kebab-curto.md`**, **`0002-...`** para decisões substantivas — incrementar a cada ADR; título estável após o merge. |
-| **Idioma**    | **Arquivos numerados (`0000-*.md`, `0001-*.md`, …) ficam só em inglês** (texto canônico, como os planos em `docs/plans/`). Este README tem pt-BR.        |
-| **Formato**   | Preferir seções: **Context**, **Decision**, **Consequences**, **References** (estilo MADR serve). Manter em uma ou duas telas.                         |
-| **Quando**    | Comportamento relevante à segurança, trade-offs de docs/ferramenta que voltam a incomodar contribuidores, ou o que não queremos “apagar” sem registro. |
+| **Idioma**    | **Arquivos numerados (`0000-*.md`, `0001-*.md`, …) ficam só em inglês** (texto canônico, como os planos em `docs/plans/`). Este README tem pt-BR.                             |
+| **Formato**   | Preferir seções: **Context**, **Decision**, **Consequences**, **References** (estilo MADR serve). Manter em uma ou duas telas.                                                |
+| **Quando**    | Comportamento relevante à segurança, trade-offs de docs/ferramenta que voltam a incomodar contribuidores, ou o que não queremos “apagar” sem registro.                        |
 
 ## Índice
 
