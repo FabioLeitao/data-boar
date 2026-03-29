@@ -91,9 +91,13 @@ This replaces any older wording that implied “the model cannot touch the lab�
 
 **Cost / tokens:** Brevity matters more than the choice of human language—avoid repeating the same point in two languages unless you ask for a bilingual summary. Say **short** or **token-aware** when you want minimal length.
 
-**Shorthand / taxonomy (English only):** Session keywords are **fixed English tokens**: `deps`, `feature`, `homelab`, `docs`, `houseclean`, `backlog`, `pmo-view`, and the brevity cues `short`, `token-aware`. Use them **exactly** in chat; do not ask for localized aliases in `.cursor/rules/`. **`.cursor/rules/session-mode-keywords.mdc`** and this taxonomy table stay **English-only**; pt-BR is for surrounding explanation, not the tokens.
+**Shorthand / taxonomy (English only):** Session keywords are **fixed English tokens** — **canonical table** in **`.cursor/rules/session-mode-keywords.mdc`** (keep **that file** and **`AGENTS.md`** in sync when adding or renaming a token). **Order** (same as the table): `deps`, `feature`, `homelab`, `docs`, `houseclean`, `backlog`, `pmo-view`, `study-check`, `sidequest` (same message must include subtype `mandatory` / `exploratory` / `pauseable`), `glossary-check`, `today-mode` (with `YYYY-MM-DD`), `carryover-sweep`, `eod-sync`, plus brevity `short`, `token-aware`. Use them **exactly** in chat; do not ask for localized aliases in `.cursor/rules/`. pt-BR is for surrounding explanation, not the tokens.
 
-**Agent entry point:** **`AGENTS.md`** (chat language + shorthand bullets) encodes this for Cursor/Copilot.
+**Do not inflate the taxonomy:** Prefer `backlog` + a concrete topic, `feature` + a plan row, or `docs` instead of many new English tokens. Rationale: **`docs/ops/OPERATOR_WORKFLOW_PACE_AND_FOCUS.md`** §3.
+
+**Session tokens vs Data Boar CLI:** Tokens scope **Cursor** sessions for the assistant. The app’s CLI is **`main.py`** and flags in **`docs/USAGE.md`**—not the same vocabulary.
+
+**Agent entry point:** **`AGENTS.md`** (chat language + taxonomy bullets) encodes this for Cursor/Copilot.
 
 | Layer                   | What happens                                                                                                                                                                                                                                                                                                                                              |
 | -----                   | ------------                                                                                                                                                                                                                                                                                                                                              |

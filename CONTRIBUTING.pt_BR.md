@@ -56,6 +56,10 @@ Obrigado por considerar contribuir. Este documento cobre a configuração local,
 - **Segurança:** Não publique detalhes de exploração em público. Use o modelo [Security issue](.github/ISSUE_TEMPLATE/security.md) (apenas em alto nível) ou o processo em [SECURITY.md](SECURITY.md) ([pt-BR](SECURITY.pt_BR.md)).
 - **Pull requests:** Use o [modelo de PR](.github/PULL_REQUEST_TEMPLATE.md). Antes do push, prefira **`.\scripts\check-all.ps1`** (gate completo: dashboard dos planos, pre-commit, pytest com avisos como erros)—veja [docs/ops/README.pt_BR.md](docs/ops/README.pt_BR.md) § *Antes de abrir um PR*. No mínimo: testes (`uv run pytest -v -W error`; [docs/TESTING.pt_BR.md](docs/TESTING.pt_BR.md)), lint (pre-commit / Ruff) e docs/README quando o comportamento mudar. **Modelo de layout privado (versionado):** copie de **`docs/private.example/`** para **`docs/private/`** (ignorado pelo git), conforme [docs/PRIVATE_OPERATOR_NOTES.pt_BR.md](docs/PRIVATE_OPERATOR_NOTES.pt_BR.md).
 
+### Palavras-chave de sessão no Cursor vs CLI da aplicação
+
+Quem usa **Cursor** pode digitar **tokens em inglês** no chat (`deps`, `feature`, `docs`, …) para definir o **escopo** do assistente. Esses tokens **não** são flags do **`main.py`**. A CLI do Data Boar está em **[docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md)** ([EN](docs/USAGE.md)). Tabela **canônica**: **`.cursor/rules/session-mode-keywords.mdc`**; resumo: **[AGENTS.md](AGENTS.md)**.
+
 ### Higiene do repositório público (LAN, credenciais)
 
 - **`config.yaml` na raiz:** Está no `.gitignore`—costuma ter **caminhos**, hosts de BD e senhas. **Não** use `git add -f config.yaml`. Copie de `deploy/config.example.yaml` e mantenha segredos só localmente. Se o arquivo já foi commitado por engano, use `git rm --cached config.yaml` para parar de rastreá-lo; o **histórico do Git** ainda pode ter blobs antigos—use `git filter-repo` / BFG e **troque** credenciais expostas se o repositório foi público.

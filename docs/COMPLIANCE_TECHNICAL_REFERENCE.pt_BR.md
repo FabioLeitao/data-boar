@@ -20,7 +20,9 @@ Política completa e endurecimento: [SECURITY.pt_BR.md](SECURITY.pt_BR.md) ([EN]
 
 ## Codificações de caractere e configs multilíngues
 
-Arquivos de configuração e de padrões suportam **UTF-8** (recomendado), **UTF-8 com BOM** e **encodings legados** (ex.: ANSI Windows, Latin-1); o config principal usa **detecção automática** quando aplicável. Termos e idioma do relatório podem acompanhar a região (ex.: EN+FR no Canadá, PT-BR+EN no Brasil).
+Arquivos de configuração e de padrões suportam **UTF-8** (recomendado), **UTF-8 com BOM** e **encodings legados** (ex.: ANSI Windows, Latin-1); o config principal usa **detecção automática** quando aplicável. Termos e idioma do relatório podem acompanhar a região (ex.: EN+FR no Canadá, PT-BR+EN no Brasil, **EN+RU na amostra 152-FZ**).
+
+**Unicode nos dados varridos:** achados e Excel tratam texto como **Unicode** — **latim**, **cirílico**, **CJK** (ex.: japonês), **árabe** e corpus mistos entram no âmbito de caracteres. A **decodificação em bytes** das fontes depende de conectores e formatos; **sniffing e heurísticas** podem ser **afinados** por implantação. **Interface web do operador** e **documentação completa** em muitos idiomas adicionais **ainda não** estão todas entregues; a direção está no **roadmap** (curto a médio prazo), com **en** + **pt-BR** primeiro — veja [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md#operação-multilíngue-multi-encoding-e-multirregional) e o parágrafo **Roadmap — internacionalização e profundidade regional** no **[README.pt_BR.md](../README.pt_BR.md)**. **Amostras YAML de compliance** precisam de **revisão periódica** conforme normas e redações mudam — [compliance-samples/README.pt_BR.md](compliance-samples/README.pt_BR.md#manutenção-das-amostras).
 
 Passo a passo: [USAGE.pt_BR.md — Encoding de arquivos, config e padrões](USAGE.pt_BR.md#file-encoding-config-and-pattern-files) ([EN](USAGE.md)).
 
