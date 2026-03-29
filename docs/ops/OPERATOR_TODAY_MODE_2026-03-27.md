@@ -62,6 +62,20 @@ Day is “done” when: **Block 0** has either **Slack proof-of-ping** or a **tr
 
 ---
 
+## Completion log — 2026-03-27 (partial)
+
+| Block | Status | Notes |
+| ----- | ------ | ----- |
+| **A** Help-sync | Done | `uv run pytest tests/test_operator_help_sync.py -v` — all green. |
+| **B** OpenAPI vs `/scan` | Done | [OPERATOR_HELP_AUDIT.md](../OPERATOR_HELP_AUDIT.md) Follow-ups: `ScanStartBody` in `api/routes.py` + `/docs` spot-check when server runs. |
+| **C** README `--host` | Already met | Quick start cites `--host` + loopback; see audit “Done recently”. |
+| **D** Web `/help` | N/c | No new CLI flags since 2026-03-25 transport pass; re-diff when flags change. |
+| **E** Recovery script | Done | `.\scripts\recovery-doc-bundle-sanity.ps1` green; **Tip** line fixed for Windows PowerShell 5.1 (ASCII hyphen). Prefer **`pwsh`** if encoding issues return. |
+| **F** Band A | Operator | S0 checklist in [SPRINTS_AND_MILESTONES.md](../plans/SPRINTS_AND_MILESTONES.md) §4.0 — Dependabot / Scout / Hub. |
+| **0** Carryover + Slack | Operator | [OPERATOR_TODAY_MODE_2026-03-26.md](OPERATOR_TODAY_MODE_2026-03-26.md) (tag **v1.6.7**, Wabbix, Slack mobile/desktop proof) — still manual. |
+
+---
+
 ## Chat shorthand
 
 **`today-mode 2026-03-27`** or open this file.
