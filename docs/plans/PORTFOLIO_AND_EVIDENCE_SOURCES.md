@@ -24,25 +24,48 @@
 | Image           | Docker Hub                                                                                   | GitHub / Dockerfile                                                                                                                                                             | Notes (fetched or from you)                                                                                                      |
 | -----           | ----------                                                                                   | -------------------                                                                                                                                                             | ---------------------------                                                                                                      |
 | **data_boar**   | [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar)     | This repo: **[Dockerfile](https://github.com/FabioLeitao/data-boar/blob/main/Dockerfile)** (multi-stage, **python:3.13-slim**, builder + runtime). Tags e.g. `1.6.0`, `latest`. | Short description on Hub; full description with quick start and link to GitHub. Size ~186 MB (1.6.0).                            |
-| **wildfly_t1r** | [hub.docker.com/r/fabioleitao/wildfly_t1r](https://hub.docker.com/r/fabioleitao/wildfly_t1r) | **[FabioLeitao/wf_t1r](https://github.com/FabioLeitao/wf_t1r)** (Shell). Dockerfiles live in that repo if you want to paste or link them here later.                            | Archived on Hub. Tag e.g. `et-ojdk8-a_w26.1.1-final`. Eclipse Temurin + Wildfly; Ubuntu/Alpine; OpenJDK 8/11/17/19; Oracle JDBC. |
-| **uptk**        | [hub.docker.com/r/fabioleitao/uptk](https://hub.docker.com/r/fabioleitao/uptk)               | No overview on Hub. If you have a repo or Dockerfile for Uptime Kuma, add the link here.                                                                                        | Tag `0.1`, ~3.1 MB. You keep upgrading on the actual server.                                                                     |
+| **wildfly_t1r** | [hub.docker.com/r/fabioleitao/wildfly_t1r](https://hub.docker.com/r/fabioleitao/wildfly_t1r) | **[FabioLeitao/wf_t1r](https://github.com/FabioLeitao/wf_t1r)** — **[Dockerfile](https://github.com/FabioLeitao/wf_t1r/blob/main/Dockerfile)** at repo root (Eclipse Temurin + WildFly; see README for variants). | Archived on Hub. Tag e.g. `et-ojdk8-a_w26.1.1-final`. **Citable “Dockerfile I created”:** public link above.                  |
+| **uptk**        | [hub.docker.com/r/fabioleitao/uptk](https://hub.docker.com/r/fabioleitao/uptk)               | **No public GitHub repo** for this image at last check; Dockerfile may live only on the server or under private notes.                                                            | Tag `0.1`, ~3.1 MB. **Citable path:** add a one-line pointer in **`docs/private/Dockerfiles_used.md`** (copy from **`docs/private.example/Dockerfiles_used.md`**) if you need “Dockerfile I built for Uptime Kuma” without publishing the repo. |
 
-**Optional:** You can add a short `docs/private/Dockerfiles_used.md` (or paste Dockerfiles there) for wf_t1r/uptk so thesis or narrative can cite “Dockerfiles created and used” without opening GitHub in every session.
+**Optional:** Copy **`docs/private.example/Dockerfiles_used.md`** → **`docs/private/Dockerfiles_used.md`** and list **wf_t1r** (public Dockerfile) plus **uptk** (where the file lives, if private) so thesis/CV can cite “Dockerfiles created and used” in one place.
 
 ---
 
 ## 2. GitHub repositories (public)
 
-| Repo                                                                     | Description                                             | Use in narrative                                        |
-| ----                                                                     | -----------                                             | -----------------                                       |
-| **FabioLeitao/data-boar**                                                | This project (Data Boar).                               | Main compliance/LGPD artifact; Dockerfile in repo root. |
-| **FabioLeitao/python3-lgpd-crawler**                                     | Legacy/history-only (no push).                          | Historical reference for naming and evolution.          |
-| **FabioLeitao/wf_t1r**                                                   | Container Eclipse Temurin + Wildfly tunado para testes. | Java/infra/SRE; multi-version JDK/Wildfly.              |
-| **FabioLeitao/python3-qrcodegenerator**                                  | QRCode images from file list (labels).                  | Utility/automation.                                     |
-| **FabioLeitao/auto_uploader**                                            | Bash automação de transferência de arquivos.            | Automation/SRE.                                         |
-| **bash_busca_vm_proxmox**, **bash_cups_control**, **bash_jboss_monitor** | PRTG/Proxmox/CUPS/jBoss scripts.                        | Monitoring, infra, ops.                                 |
+**Source of truth for the list below:** `gh repo list FabioLeitao --limit 200 --json name,description` (public, non-archived). **Refresh** this table when you add or rename repos.
 
-**Profile:** [github.com/FabioLeitao](https://github.com/FabioLeitao) – 26 public repos; location Niterói; recent activity data-boar.
+| Repo | Description (from GitHub) | Use in narrative |
+| ---- | ---- | ---- |
+| **[ada-sample-guid](https://github.com/FabioLeitao/ada-sample-guid)** | Simple sample to learn ada | Ada learning; languages breadth. |
+| **[auto_uploader](https://github.com/FabioLeitao/auto_uploader)** | Bash script para automação de transferência de arquivos | Automation / SRE; file transfer. |
+| **[bash_busca_vm_proxmox](https://github.com/FabioLeitao/bash_busca_vm_proxmox)** | Busca de VM rodando no Proxmox para uso dentro do PRTG como Script SSH | Proxmox + PRTG; infra monitoring. |
+| **[bash_cups_control](https://github.com/FabioLeitao/bash_cups_control)** | cups_control | CUPS / printing automation. |
+| **[bash_jboss_monitor](https://github.com/FabioLeitao/bash_jboss_monitor)** | Bash jBoss 7.4 Monitor for PRTG | JBoss monitoring; PRTG sensors. |
+| **[bash_localiza_danfe_por_id_de_upload](https://github.com/FabioLeitao/bash_localiza_danfe_por_id_de_upload)** | Bash script para automação de busca de arquivos DANFE em PDF enviadas no processo de Checkin Documental do TOSP para uma determinada DI. | Logistics / document automation (context-specific). |
+| **[batch_reload_ap](https://github.com/FabioLeitao/batch_reload_ap)** | Scripts para automatizar reload de APs CISCO na LAN | Cisco Wi‑Fi; batch ops. |
+| **[cifras](https://github.com/FabioLeitao/cifras)** | Cifras diversas para estudos de Guitarra e Violão | Optional PT text samples; personal corpus. |
+| **[data-boar](https://github.com/FabioLeitao/data-boar)** | Dashboard com capacidade de sondagem, apreciação e mapeamento dos dados pessoais e/ou sensíveis | **Main product**; compliance/LGPD; Dockerfile in repo root. |
+| **[go-healthcheck-and-reconnect-sgat](https://github.com/FabioLeitao/go-healthcheck-and-reconnect-sgat)** | Poc em GO para healthcheck do cosetting SGAD no TOSP | Go; healthcheck / reconnect patterns. |
+| **[go-rest-api](https://github.com/FabioLeitao/go-rest-api)** | Curso de go, para criar uma API rest simples | Go; REST API learning. |
+| **[java-ictsi-tosp](https://github.com/FabioLeitao/java-ictsi-tosp)** | Poc para integracao com SonarQube | SonarQube POC; cite employer context only if policy allows. |
+| **[memory-rust](https://github.com/FabioLeitao/memory-rust)** | memory-rust | Rust experiment (see repo README). |
+| **[odin_breakout_simple_game](https://github.com/FabioLeitao/odin_breakout_simple_game)** | Simple breakeout game | Odin; small game demo. |
+| **[odin_cat_simple_game](https://github.com/FabioLeitao/odin_cat_simple_game)** | Seguindo curso de raylib com odin | Odin + raylib. |
+| **[odin_hellorld](https://github.com/FabioLeitao/odin_hellorld)** | Simple testing in Odin | Odin learning. |
+| **[poc-api-siscomex-rfb](https://github.com/FabioLeitao/poc-api-siscomex-rfb)** | POC de consumos das APIs Siscomex no portal da RFB | Siscomex / customs API integration POC. |
+| **[powershell_nddprint_control](https://github.com/FabioLeitao/powershell_nddprint_control)** | nddprint_control | Windows print control automation. |
+| **[python3-healthcheck-and-reconnect-sgad](https://github.com/FabioLeitao/python3-healthcheck-and-reconnect-sgad)** | python3-healthcheck-and-reconnect-sgad | SGAD healthcheck / reconnect (Python). |
+| **[python3-lgpd-crawler](https://github.com/FabioLeitao/python3-lgpd-crawler)** | Dashboard com capacidade de sondagem, apreciação e mapeamento dos dados pessoais e/ou sensíveis | Legacy name; history of Data Boar; **no push** per repo note. |
+| **[python3-qrcodegenerator](https://github.com/FabioLeitao/python3-qrcodegenerator)** | Script to read from file with a list of strings to generate as QRCode images ready to print as labels | QR labels; small utility. |
+| **[python3-sabor-express](https://github.com/FabioLeitao/python3-sabor-express)** | Projeto da aula de backend em Python3 | Python backend course project. |
+| **[rust-healthcheck-and-reconnect-sgad](https://github.com/FabioLeitao/rust-healthcheck-and-reconnect-sgad)** | rust-healthcheck-and-reconnect-sgad | SGAD healthcheck / reconnect (Rust). |
+| **[selenium-robots](https://github.com/FabioLeitao/selenium-robots)** | Selenium Applications for monitoring robots | Selenium; monitoring automation. |
+| **[tmux-configs](https://github.com/FabioLeitao/tmux-configs)** | Personal tmux | Dotfiles; terminal productivity. |
+| **[tosp-healthcheck](https://github.com/FabioLeitao/tosp-healthcheck)** | TOSP Healthcheck | Healthcheck service patterns. |
+| **[wf_t1r](https://github.com/FabioLeitao/wf_t1r)** | Container Eclipse-Temurin com Wildfly Tunado para Testes | Java/infra; **Dockerfile** at repo root; Docker Hub `wildfly_t1r`. |
+
+**Profile:** [github.com/FabioLeitao](https://github.com/FabioLeitao) — **27** public repositories (per `gh repo list`, non-archived); location Niterói; recent activity **data-boar**.
 
 ---
 
@@ -55,6 +78,7 @@ Add only what you are comfortable making reference to in docs; keep wording fact
 - **Safe to cite in public profiles and talks:** institution names, program titles, years, workload (hours), public **edital** or catalog URLs, official **certificate validation** pages (when the issuer publishes a code), and high-level status (e.g. “awaiting convocation,” “in progress”).
 - **Do not paste into GitHub, public issues/PRs, or open LinkedIn attachments:** CPF or national ID numbers, full **contract** scans, banking or payment lines, exam **registration** numbers, or unredacted PDFs that combine identity with competition data. Keep those only under **`docs/private/`** (see **`docs/private.example/`** layouts).
 - **Dataprev (public competition):** Link to the **FGV concourse hub** and the **official Edital** PDF; describe placement and profile at **CV-level** abstraction. For personal screenshots or PDFs, use **`docs/private/`** and reference by filename in this file—not by pasting document contents here.
+- **Dataprev classification “not showing” in this file:** If you shared a **classification screenshot or PDF** with the assistant, it is **not** reproduced here **by design** (PII / inscrição). The **same facts** you approve for public narrative (e.g. **6th** in the **Rio** vacancy, **not summoned**) are already in the **§3 table row** **DataPrev 2024**; keep **redacted** files only under **`docs/private/`** (e.g. `dataprev_status_2024_redacted.pdf`).
 - **PUCRS / PUC-Rio:** Cite **course name**, **issuer school**, **hours**, and **validation** instructions the institution already publishes; do not quote **contract** clauses or ID fields in tracked docs.
 
 | Item                                                                                                            | How to use                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
