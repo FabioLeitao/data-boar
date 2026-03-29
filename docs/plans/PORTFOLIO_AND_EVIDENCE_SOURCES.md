@@ -106,6 +106,8 @@ Use this when you (re)find **paid but incomplete** certs or want to pick **low-e
 
 **Low-effort, high-gain (suggestions):** Prefer certs that support **both** production readiness and academic narrative: e.g. **LGPD / privacy / DPO awareness** (short courses, many on Udemy/Alura), **ISO 27001/27701 awareness**, **cloud fundamentals** (AWS/GCP/Azure free or low-cost), **security basics** (e.g. CompTIA Security+ prep, or platform-specific). Avoid long, expensive ones unless they’re already paid and near completion. When in doubt, finish one you’ve already paid for before buying new.
 
+**Talent pool (trusted contributors):** Optional **role-archetype** mini-roadmaps (repo onboarding + career-aligned certs, including PUCRS supplements in section 3.3) live in **[`docs/TALENT_POOL_LEARNING_PATHS.md`](../TALENT_POOL_LEARNING_PATHS.md)** — **no** candidate names or LinkedIn data in that file; per-person notes stay under **`docs/private/`**.
+
 ---
 
 ### 3.2 CWL (CyberWarFare Labs) – paid courses in progress (from `docs/private/` images)
@@ -156,6 +158,43 @@ Source: **`docs/private/LEITAO_Candidates_Resume_BR.pdf`**, section "CERTIFICAÇ
 | Alura                   | Go (linguagem, OO, app web); Go e Gin API rest; AZ-900 Azure Fundamentals; SRE confiabilidade                           | 2023–2024 |
 | LPI                     | LPIC-1 Exam 101                                                                                                         | 2008      |
 | Microsoft               | Microsoft Certified Professional (70-271)                                                                               | 2000      |
+
+#### PUCRS extension supplements (candidate list — confirm on official catalog)
+
+**Before enrolling:** verify syllabus, workload, certificate validation (e.g. **educon.pucrs.br**), fees, and any prerequisites on the **official PUCRS** page for each offering. This block is **planning alignment only**, not a substitute for the institution’s rules.
+
+| PUCRS course (name as listed)                      | Data Boar / delivery                                                                                                                                                                    | Lato sensu & thesis (compliance / cyber narrative)                                                    | CWL / technical cyber lane                                                                                | Suggested priority                                                                                     |
+| ----                                               | ----                                                                                                                                                                                    | ----                                                                                                  | ----                                                                                                      | ----                                                                                                   |
+| **Gestão do Conhecimento e Transformação Digital** | Strong fit: **knowledge** artifacts (reports, inventories), **digital transformation** story alongside the product; complements your completed **IA e IoT** PUCRS extension (§3 table). | High: bridges **governance**, **DPO-facing** evidence, and **organizational** context for the TCC.    | Low direct overlap; use as the **“other subject”** block in the weekly cadence (§3.0) when not doing CWL. | **1** — finish one paid lane (e.g. **BTF/C3SA**) slice first, then take this **one course at a time**. |
+| **Compliance Criminal**                            | Medium: reinforces **Brazilian corporate criminal compliance** narrative; useful when pitching to **legal/compliance** buyers; little impact on code.                                   | High for **jurídico**-weighted thesis chapters (program integrity, accountability).                   | Some overlap with **defensive** mindset (risk, controls); does not replace CWL labs.                      | **2** — after or alongside thesis **background** drafting; avoid same month as heavy release.          |
+| **Gestão de Mudança**                              | Medium: **rollout** of Data Boar in enterprises (adoption, resistance, comms); good for **professional services** and **implementation** storyline.                                     | Medium: TCC **discussion** on deploying technical controls in real orgs.                              | Low.                                                                                                      | **3**                                                                                                  |
+| **A Escuta dos Excessos**                          | Medium: **ethics, proportionality, limits** of automated scanning — use carefully in **COMPLIANCE** wording; supports “**not exhaustive** / human review” positioning.                  | High if the thesis includes **fundamentos éticos** or **direitos fundamentais** vs surveillance tech. | Low.                                                                                                      | **3–4**                                                                                                |
+| **Economia Circular**                              | Lower direct fit unless you frame **data lifecycle**, **retention**, or **ESG** reporting; optional for **sustainability** pitch.                                                       | Low unless advisor wants **ESG × dados** angle.                                                       | Low.                                                                                                      | **5** — only if thesis or employer explicitly values **circular economy** narrative.                   |
+
+**How to slot without a new “plan file”:** Treat PUCRS extensions like §3.1 — **one completion at a time**; store enrolment and proof under **`docs/private/Learning_and_certs.md`**; after each certificate, add a row to the §3 **Certifications and community** table (issuer PUCRS, course title, year). Keep **CWL** as the **primary paid cyber** lane unless you deliberately pause it for a short PUCRS sprint; use the **alternating week’s “other” block** (§3.0) for PUCRS reading/assessment first.
+
+#### PUC-Rio Digital extension courses (lato sensu benefit — verify contract)
+
+**Catalog (public):** [PUC-Rio Digital — Cursos de extensão](https://especializacao.ccec.puc-rio.br/cursos-extensao) — short **Aperfeiçoamento** and **Cursos livres** (often up to ~30h). Titles and availability change; confirm syllabus, price, and schedule on the official page.
+
+**Enrollment terms:** If your **especialização** includes a benefit (e.g. **up to two paid extension courses** and/or a **per-course value cap**), treat this table as **advisory only** until the **coordenação/secretaria** confirms **eligible offerings**, **deadlines**, and whether the cap is **per course** or **aggregate**. Store the **signed contract or PDF** only under **`docs/private/`** (see **`docs/private.example/academic/README.md`**); **do not** commit it to Git.
+
+**Priority (aligned with Data Boar, professional narrative, and TCC):** Favour courses that add **governance / data / secure engineering** language without duplicating your existing deep Python–SRE stack.
+
+| Priority | Offering (name on catalog) | Why |
+| -------- | -------------------------- | --- |
+| **1** | **Curso livre: Gestão e Governança de Dados** | Strong fit for **LGPD / ISO** narrative, inventory and **evidence** story, and **TCC** “fundamentação” — complements the product positioning. |
+| **2a** | **Aperfeiçoamento: Qualidade de Software, Segurança e Sistemas Inteligentes** | Covers **quality, secure development, intelligent systems** — maps to hybrid detection, **CI/quality** habits, and defensible engineering claims. |
+| **2b** *(alternative to 2a)* | **Curso livre: Desenvolvimento de Software Seguro** | Narrower **AppSec** focus if you prefer explicit secure-development framing over the broader aperfeiçoamento. |
+| **3** | **Curso livre: Engenharia de Requisitos e Gestão Ágil de Produtos** | Use if the bottleneck is **product discovery, roadmap, and specs** rather than core cyber or data governance. |
+| **Lower marginal gain (unless TCC explicitly needs the citation)** | **Machine Learning e Analytics** / **Curso livre: Machine Learning** | Useful for **formal curriculum alignment** with ML in the thesis; often **redundant** with existing hands-on depth — take only with a clear academic or credential goal. |
+
+**Suggested two-course bundles (if both are contract-eligible and affordable):**
+
+- **Default:** **Gestão e Governança de Dados** + **Qualidade de Software, Segurança e Sistemas Inteligentes**.
+- **More AppSec-specific:** **Gestão e Governança de Dados** + **Desenvolvimento de Software Seguro**.
+
+After completion, add a row to the §3 **Certifications and community** table (issuer **PUC-Rio Digital** / **CCEC**, course title, year) and keep receipts in **`docs/private/Learning_and_certs.md`**.
 
 ## For in-progress or paid-not-started, add or update `docs/private/Learning_and_certs.md`.
 

@@ -8,6 +8,7 @@ Create **`docs/private/commercial/`** locally (same **`docs/private/`** tree as 
 
 - Maturity / readiness **consulting pricing** study (EN + pt-BR pair).
 - Partner margin notes, proposal templates with **numbers** (redact before any copy to tracked files).
+- **Talent candidates** (dossiers, per-person learning roadmaps): see **`candidates/README.md`** in this folder for layout; public **archetype** guide: **`docs/TALENT_POOL_LEARNING_PATHS.md`**.
 
 ## Bootstrap (PowerShell, repo root)
 
