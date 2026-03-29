@@ -62,6 +62,20 @@ O dia está “fechado” quando: o **Bloco 0** tem **prova de ping no Slack** o
 
 ---
 
+## Registo de conclusão — 2026-03-27 (parcial)
+
+| Bloco | Estado | Notas |
+| ----- | ------ | ----- |
+| **A** Help-sync | Feito | `uv run pytest tests/test_operator_help_sync.py -v` — tudo verde. |
+| **B** OpenAPI vs `/scan` | Feito | [OPERATOR_HELP_AUDIT.md](../OPERATOR_HELP_AUDIT.md) Follow-ups: `ScanStartBody` em `api/routes.py` + verificação em `/docs` com o servidor a correr. |
+| **C** README `--host` | Já cumprido | Quick start com `--host` + loopback; ver audit “Done recently”. |
+| **D** Web `/help` | N/A | Sem flags CLI novas desde o passe de 2026-03-25; novo re-diff quando houver flags. |
+| **E** Script de recuperação | Feito | `.\scripts\recovery-doc-bundle-sanity.ps1` verde; linha **Tip** corrigida para PowerShell 5.1 (hífen ASCII). Preferir **`pwsh`** se voltarem problemas de encoding. |
+| **F** Banda A | Operador | Checklist S0 em [SPRINTS_AND_MILESTONES.md](../plans/SPRINTS_AND_MILESTONES.pt_BR.md) §4.0 — Dependabot / Scout / Hub. |
+| **0** Carryover + Slack | Operador | [OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md](OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md) (tag **v1.6.7**, Corporate-Entity-C, prova Slack telemóvel/desktop) — ainda manual. |
+
+---
+
 ## Atalho no chat
 
 **`today-mode 2026-03-27`** ou abre este arquivo.
