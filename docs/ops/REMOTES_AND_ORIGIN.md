@@ -75,4 +75,6 @@ git log python3-lgpd-crawler-legacy-and-history-only/main..origin/main --oneline
 
 If the first command lists commits, those exist only on the old repository. You can leave them as legacy history, or bring specific changes into data-boar (e.g. cherry-pick or merge) if needed.
 
+**See also:** [GitLab read-only mirror of GitHub](GITLAB_GITHUB_MIRROR.md) — GitLab is **not** a second `origin` for PRs; it mirrors the canonical GitHub repo.
+
 **Documentation index:** [README.md](../README.md) · [README.pt_BR.md](../README.pt_BR.md).

@@ -8,13 +8,13 @@
 
 ## Progress already made (2026-03-25 — sleep summary)
 
-| Area | Outcome |
-| ---- | ------- |
+| Area                | Outcome                                                                                                                                                                            |
+| ----                | -------                                                                                                                                                                            |
 | **CI / pre-commit** | Lint job runs **`uv run pre-commit run --all-files`**; **`.pre-commit-config.yaml`** includes **`plans-stats-check`**; local **`pre-commit install`** recommended in CONTRIBUTING. |
-| **Docs / ADR** | **0000–0003** in `docs/adr/`; **WORKFLOW_DEFERRED_FOLLOWUPS** (EN + pt-BR); **ACADEMIC_USE_AND_THESIS** (EN + pt-BR) indexed in `docs/README`. |
-| **Quality** | **quality-sonarqube** rule + skill aligned; **check-all-gate** notes pre-commit scope. |
-| **Wabbix** | Guideline fixed so reviewers **derive tag vs pyproject**; **WRB_DELTA_SNAPSHOT_2026-03-26** ready to paste. |
-| **Version** | **No 1.6.8.** Repo string **1.6.7**; **tag** still **v1.6.6** until you publish — next step is **tag + release**, not another bump. |
+| **Docs / ADR**      | **0000–0003** in `docs/adr/`; **WORKFLOW_DEFERRED_FOLLOWUPS** (EN + pt-BR); **ACADEMIC_USE_AND_THESIS** (EN + pt-BR) indexed in `docs/README`.                                     |
+| **Quality**         | **quality-sonarqube** rule + skill aligned; **check-all-gate** notes pre-commit scope.                                                                                             |
+| **Wabbix**          | Guideline fixed so reviewers **derive tag vs pyproject**; **WRB_DELTA_SNAPSHOT_2026-03-26** ready to paste.                                                                        |
+| **Version**         | **No 1.6.8.** Repo string **1.6.7**; **tag** still **v1.6.6** until you publish — next step is **tag + release**, not another bump.                                                |
 
 ---
 

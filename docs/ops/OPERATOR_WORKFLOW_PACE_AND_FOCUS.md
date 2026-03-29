@@ -78,7 +78,19 @@ A **freeze or OOM** in Cursor is usually **local memory pressure** (large chat, 
 
 ---
 
-## 8. Slack AFK + CI failure (channel B)
+## 8. Recent progress recap (`git`, token-aware)
+
+When you want a **compact** sense of **pace** (what landed on **`origin/main`**) without rereading entire plan tables:
+
+1. From repo root: **`.\scripts\git-progress-recap.ps1`** — default **last 3 calendar days** on **`origin/main`**; use **`-Days 7`** or **`-Days 14`** to widen the window; **`-MaxPerDay`** caps lines per day if a merge burst was huge; **`-NoFetch`** if you are offline.
+1. Output is **grouped by date** with **one line per commit** (`hash` + subject) so you can see **busy vs quiet** days and **themes** from Conventional Commit prefixes (`feat`, `docs`, `chore`, …).
+1. This **does not** replace **`PLANS_TODO.md`**, **`today-mode`**, or **`carryover-sweep` / `eod-sync`** — use it as a **cheap narrative** before a day plan or retro.
+
+**Chat habit (optional):** paste the script output into Cursor when aligning on “what happened this week” — fewer tokens than dumping raw `git log`. No new English session token is required; natural language (“**progress recap 7 days**”) is enough.
+
+---
+
+## 9. Slack AFK + CI failure (channel B)
 
 When you are **away from the desk**, **GitHub mobile (channel A)** plus **Slack (channel B)** give redundancy: CI failures and manual pings reach you without staying in Cursor.
 
@@ -88,7 +100,7 @@ When you are **away from the desk**, **GitHub mobile (channel A)** plus **Slack 
 
 ---
 
-## 9. GitHub auto-merge (recommendation)
+## 10. GitHub auto-merge (recommendation)
 
 **Default: keep auto-merge off** for this repo’s usual flow. Prefer **explicit** merge when checks are green and you (or the agent via **`pr-merge-when-green.ps1`**) have confirmed **mergeable** + **no regression doubt** — matches deliberate, low-ceremony delivery without surprise merges.
 
@@ -98,14 +110,14 @@ When you are **away from the desk**, **GitHub mobile (channel A)** plus **Slack 
 
 ---
 
-## 10. Session keywords and “subagents” (where it is documented)
+## 11. Session keywords and “subagents” (where it is documented)
 
 - **English tokens** (`feature`, `docs`, `backlog`, `study-check`, `pmo-view`, …): **`.cursor/rules/session-mode-keywords.mdc`** (canonical table).
 - **Splitting code vs docs vs Task exploration:** this file §2 and [TOKEN_AWARE_USAGE.md](../plans/TOKEN_AWARE_USAGE.md).
 
 ---
 
-## 11. Related docs
+## 12. Related docs
 
 - [COMMIT_AND_PR.md](COMMIT_AND_PR.md) — PR batching, merge, auto-merge note.
 - [TOKEN_AWARE_USAGE.md](../plans/TOKEN_AWARE_USAGE.md) — token-aware slices.
