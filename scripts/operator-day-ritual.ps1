@@ -57,7 +57,7 @@ if ($Mode -eq "Morning") {
     }
     Write-Host ""
     Write-Host "Recent OPERATOR_TODAY_MODE_*.md (open today's first, then yesterday's):" -ForegroundColor Yellow
-    Get-ChildItem -Path (Join-Path $repoRoot "docs/ops") -Filter "OPERATOR_TODAY_MODE_*.md" -File |
+    Get-ChildItem -Path (Join-Path $repoRoot "docs/ops/today-mode") -Filter "OPERATOR_TODAY_MODE_*.md" -File |
         Where-Object { $_.Name -notlike "*.pt_BR.md" } |
         Sort-Object Name -Descending |
         Select-Object -First 6 |
@@ -97,8 +97,8 @@ if (Invoke-GhOptional @("pr", "list", "--state", "open", "--limit", "15")) {
 }
 
 $tomorrow = [DateTime]::Today.AddDays(1).ToString("yyyy-MM-dd")
-$modeEn = Join-Path $repoRoot "docs/ops/OPERATOR_TODAY_MODE_$tomorrow.md"
-$modePt = Join-Path $repoRoot "docs/ops/OPERATOR_TODAY_MODE_$tomorrow.pt_BR.md"
+$modeEn = Join-Path $repoRoot "docs/ops/today-mode/OPERATOR_TODAY_MODE_$tomorrow.md"
+$modePt = Join-Path $repoRoot "docs/ops/today-mode/OPERATOR_TODAY_MODE_$tomorrow.pt_BR.md"
 Write-Host ""
 Write-Host "Tomorrow today-mode paths (create if missing):" -ForegroundColor Yellow
 Write-Host "  $modeEn"
