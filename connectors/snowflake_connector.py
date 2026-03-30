@@ -176,7 +176,10 @@ class SnowflakeConnector:
         return " ".join(parts)
 
     def run(self) -> None:
+        from utils.audit_log_display import audit_log_target_label
+
         target_name = self.config.get("name", "Snowflake")
+        audit_name = audit_log_target_label(self.config, default="Snowflake")
         account = self.config.get("account", "")
         try:
             self.connect()
@@ -187,7 +190,7 @@ class SnowflakeConnector:
             try:
                 from utils.logger import log_connection
 
-                log_connection(target_name, "database", account or "snowflake")
+                log_connection(audit_name, "database", account or "snowflake")
             except Exception:
                 pass
             tables = self._list_tables()
@@ -234,7 +237,7 @@ class SnowflakeConnector:
                         )
                         log_finding(
                             "database",
-                            target_name,
+                            audit_name,
                             location,
                             res.get("sensitivity_level", ""),
                             res.get("pattern_detected", ""),

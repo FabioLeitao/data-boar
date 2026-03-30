@@ -239,6 +239,8 @@ class SQLConnector:
         table: str,
         cname: str,
         ctype: str,
+        *,
+        audit_log_name: str | None = None,
     ) -> None:
         """Sample column, run detection, optionally full-scan for minor; save finding and log."""
         sample = self.sample(schema, table, cname)
@@ -281,9 +283,10 @@ class SQLConnector:
         try:
             from utils.logger import log_finding
 
+            log_label = audit_log_name or target_name
             log_finding(
                 "database",
-                target_name,
+                log_label,
                 f"{schema}.{table}.{cname}",
                 res["sensitivity_level"],
                 res["pattern_detected"],
@@ -333,7 +336,10 @@ class SQLConnector:
 
     def run(self) -> None:
         """Connect, discover, sample each column, detect, save_finding; on error save_failure."""
+        from utils.audit_log_display import audit_log_target_label
+
         target_name = self.config.get("name", "database")
+        audit_name = audit_log_target_label(self.config, default="database")
         server_ip = self.config.get("host", "localhost")
         try:
             self.connect()
@@ -343,7 +349,7 @@ class SQLConnector:
         try:
             from utils.logger import log_connection
 
-            log_connection(target_name, "database", server_ip or "local")
+            log_connection(audit_name, "database", server_ip or "local")
             engine_name = self.engine.dialect.name if self.engine else "sql"
             self._save_inventory_snapshot(target_name, engine_name)
             for item in self.discover():
@@ -358,6 +364,7 @@ class SQLConnector:
                         table,
                         col["name"],
                         col["type"],
+                        audit_log_name=audit_name,
                     )
         except Exception as e:
             self.db_manager.save_failure(target_name, "error", str(e))

@@ -15,6 +15,22 @@ def test_normalize_config_empty():
     assert out["api"].get("port") == 8088
 
 
+def test_normalize_config_sets_unique_audit_log_names():
+    out = normalize_config(
+        {
+            "targets": [
+                {"name": "db|one", "type": "database", "host": "h"},
+                {"name": "db|one", "type": "database", "host": "h2"},
+            ],
+            "report": {"output_dir": "."},
+        }
+    )
+    names = [t["audit_log_name"] for t in out["targets"]]
+    assert names[0] == "db_one"
+    assert names[1] == "db_one__2"
+    assert len(set(names)) == 2
+
+
 def test_normalize_config_legacy_databases():
     # Use placeholder for password field; test only verifies normalization (no real credentials).
     out = normalize_config(

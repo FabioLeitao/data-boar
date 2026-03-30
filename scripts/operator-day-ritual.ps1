@@ -77,7 +77,7 @@ $sinceLabel = [DateTime]::Today.ToString("yyyy-MM-dd")
 Write-Host "Today's progress (origin/main since local midnight $sinceLabel, max 15):" -ForegroundColor Yellow
 $progressLines = @(git -C $repoRoot log origin/main --oneline --since=midnight -15 2>$null)
 if ($progressLines.Count -eq 0 -or ($progressLines.Count -eq 1 -and [string]::IsNullOrWhiteSpace($progressLines[0]))) {
-    Write-Host "  (no new commits on origin/main since midnight — or detached/fresh clone)" -ForegroundColor DarkGray
+    Write-Host "  (no new commits on origin/main since midnight - or detached/fresh clone)" -ForegroundColor DarkGray
 } else {
     foreach ($ln in $progressLines) {
         Write-Host "  $ln"
@@ -104,5 +104,5 @@ Write-Host "Tomorrow today-mode paths (create if missing):" -ForegroundColor Yel
 Write-Host "  $modeEn"
 Write-Host "  $modePt"
 Write-Host ""
-Write-Host "Next: merge open PRs when green (.\scripts\pr-merge-when-green.ps1), git checkout main && git pull, rest." -ForegroundColor Gray
+Write-Host "Next: merge open PRs when green (.\scripts\pr-merge-when-green.ps1); then git checkout main, git pull, rest." -ForegroundColor Gray
 exit 0

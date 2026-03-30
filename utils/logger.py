@@ -6,6 +6,9 @@ import logging
 from datetime import datetime, timezone
 from typing import Any
 
+from core.validation import redact_secrets_for_log
+from utils.audit_log_display import sanitize_target_name_for_audit_log
+
 _LOGGER: logging.Logger | None = None
 _VIOLATION_HANDLER: logging.Handler | None = None
 
@@ -35,7 +38,9 @@ def setup_live_logger() -> logging.Logger:
 
 def log_connection(target_name: str, target_type: str, location: str) -> None:
     """Log successful connection to a database or path."""
-    get_logger().info("Connected: %s (%s) at %s", target_name, target_type, location)
+    safe_name = sanitize_target_name_for_audit_log(target_name, default="target")
+    safe_loc = redact_secrets_for_log(location)
+    get_logger().info("Connected: %s (%s) at %s", safe_name, target_type, safe_loc)
 
 
 def log_finding(
@@ -47,15 +52,17 @@ def log_finding(
 ) -> None:
     """Log a finding (possible violation). Also notifies operator on console."""
     logger = get_logger()
+    safe_name = sanitize_target_name_for_audit_log(target_name, default="target")
+    safe_loc = redact_secrets_for_log(location)
     logger.warning(
         "Finding: %s | %s | %s | %s | %s",
         source_type,
-        target_name,
-        location,
+        safe_name,
+        safe_loc,
         sensitivity,
         pattern,
     )
-    notify_violation(f"{sensitivity} | {pattern} @ {target_name} / {location}")
+    notify_violation(f"{sensitivity} | {pattern} @ {safe_name} / {safe_loc}")
 
 
 def notify_violation(message: str | dict[str, Any]) -> None:
