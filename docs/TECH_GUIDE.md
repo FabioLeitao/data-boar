@@ -22,13 +22,14 @@ This guide covers installation, configuration, CLI and API reference, supported 
 ## Requirements and environment preparation
 
 - **Operating system**: Ubuntu 24.04 LTS / Debian 13 (recommended) or a recent Linux/macOS/Windows.
-- **Python**: 3.12+.
+- **Python**: **≥3.12** supported; **3.13 recommended** for local parity with the **published Docker image** (`python:3.13-slim`).
 - **Package manager**: [uv](https://github.com/astral-sh/uv) (recommended) or `pip`.
 
 ### Python minor versions (local development vs Docker image)
 
 - **Declared:** `pyproject.toml` requires **Python ≥3.12**. **CI** runs **pytest** on **3.12 and 3.13** (see `.github/workflows/ci.yml`).
-- **Static analysis:** `sonar.python.version` in `sonar-project.properties` is **3.12** (single value for Sonar’s Python analyzer).
+- **Recommended locally:** Use **3.13** when your OS packages it (same interpreter family as **Docker Hub** / `latest`); **3.12** remains fully supported.
+- **Static analysis:** `sonar.python.version` in `sonar-project.properties` is **3.12** (single value for Sonar’s Python analyzer — not a cap on runtime).
 - **Dockerfile** uses **`python:3.13-slim`** — published container images run **CPython 3.13** end-to-end; bump discipline and matrix notes: `docs/plans/PYTHON_UPGRADE_PLAYBOOK.md` (also `PYTHON_UPGRADE_PLAYBOOK.pt_BR.md`).
 
 ### Install Python and system libraries (Linux example)
@@ -37,11 +38,12 @@ On Debian/Ubuntu:
 
 ```bash
 sudo apt update
-sudo apt install -y python3.12 python3.12-venv python3.12-dev build-essential \
+sudo apt install -y python3.13 python3.13-venv python3.13-dev build-essential \
   libpq-dev libssl-dev libffi-dev unixodbc-dev default-libmysqlclient-dev
 ```
 
-- `python3.12[-dev]` and `build-essential` are required to build some drivers (e.g. database clients).
+- On older distros without **`python3.13`**, substitute **`python3.12`** / **`python3.12-venv`** / **`python3.12-dev`** (still in CI).
+- Matching `python3.*[-dev]` and `build-essential` are required to build some drivers (e.g. database clients).
 - `libpq-dev`, `unixodbc-dev` and SSL/FFI headers help when using PostgreSQL, SQL Server, Oracle, or other SQLAlchemy drivers.
 - `default-libmysqlclient-dev` provides headers/libs for **mysqlclient** (MySQL/MariaDB); omit it if you use **pymysql** only and wheels cover your platform.
 
@@ -51,7 +53,7 @@ sudo apt install -y python3.12 python3.12-venv python3.12-dev build-essential \
 
 On Windows:
 
-- Install **Python 3.12** from `python.org` and ensure "Add Python to PATH" is checked.
+- Install **Python 3.13** (recommended) or any **3.12+** build from `python.org` and ensure "Add Python to PATH" is checked.
 - **WSL2:** Many developers run **`uv sync`** / **`pytest`** inside a **Linux** distro (Debian, Ubuntu, …) for parity with server docs; clone the repo on the **Linux filesystem** inside WSL, not only under `/mnt/c/...`. Optional **extra distros** for compatibility matrix: [WINDOWS_WSL_MULTI_DISTRO_LAB.md](ops/WINDOWS_WSL_MULTI_DISTRO_LAB.md).
 - Install database client tools as needed (e.g. Oracle Instant Client, SQL Server ODBC driver) following their vendor docs.
 

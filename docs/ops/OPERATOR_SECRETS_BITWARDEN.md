@@ -64,9 +64,23 @@
 
 ---
 
+## Repository contract — `bw` CLI, CI, docs, and tests
+
+**Agreed policy** (operator + assistants + contributors): treat this as **non-negotiable** alongside [SECURITY.md](../../SECURITY.md).
+
+| Rule | Detail |
+| ---- | ------ |
+| **Never commit** | Secrets, **`BW_SESSION`** (or any vault session token), or **`.env`** files containing **live** credentials. |
+| **Local use only** | **`bw unlock`** / **`bw get`** in **local** scripts or in **documentation** only as **example commands** (placeholders, no real values). Use **`BW_SESSION`** with **short TTL**; the **operator** unlocks on **their own** machine. |
+| **CI (GitHub Actions)** | **Do not** connect Bitwarden to **public** GitHub-hosted runners **without an explicit, reviewed design**. Prefer **[GitHub Actions secrets](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions)** for what the pipeline needs. **`bw`** stays for **local dev** and **homelab** workflows. |
+| **Skills / `.cursor/rules`** | May describe the **flow** (e.g. “after `bw unlock`, export env vars…”) **without** real passwords, tokens, or session strings. |
+| **Tests** | **Mock** environment variables; **pytest** in **CI** must **not** depend on a **real** Bitwarden vault or live **`bw`** session. |
+
+---
+
 ## Verify `bw` on each machine (no remote check from the repo)
 
-**This repository and Cursor cannot SSH into your LAN** or read `/usr/local/bin` on your **Latitude** or **mini-PC**. Only **you** can confirm install paths.
+**This repository and Cursor cannot SSH into your LAN** or read `/usr/local/bin` on **your** workstations. Only **you** can confirm install paths.
 
 **On each Linux host** (SSH or local terminal), run:
 
@@ -91,7 +105,7 @@ dpkg-query -W -f='${Status}\t${Package}\t${Version}\n' bitwarden-cli 2>/dev/null
 
 **Automated bundle:** [HOMELAB_HOST_PACKAGE_INVENTORY.md](HOMELAB_HOST_PACKAGE_INVENTORY.md) — run `scripts/homelab-host-report.sh` on **each** host; it prints a **`bw`** block when present.
 
-**Windows (e.g. dev laptop):** If you use CLI there, check `where bw` in **cmd** or `Get-Command bw` in **PowerShell** after install.
+**Windows (e.g. dev laptop):** The **desktop** Bitwarden app does **not** install **`bw`**. Install **Bitwarden CLI** separately (for example **`winget install Bitwarden.CLI`** — confirm the current package ID with **`winget search`**). After install, reopen the terminal and check `where bw` in **cmd** or `Get-Command bw` in **PowerShell**. Full workstation notes (Topgrade, WSL, one-package-manager-per-tool): [OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.md](OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.md).
 
 ---
 
@@ -102,8 +116,13 @@ dpkg-query -W -f='${Status}\t${Package}\t${Version}\n' bitwarden-cli 2>/dev/null
 
 ---
 
+## Plan decision notes (maintainer-only path)
+
+**Families / Premium / Teams** trade-offs and “no AI seat” — optional private notes: **`docs/private/operator_economics/BITWARDEN_SUBSCRIPTION_DECISION_NOTES.md`** (local workspace only; layout pointer: **`docs/private.example/operator_economics/README.md`**).
+
 ## See also
 
+- [OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.md](OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.md) — Windows / WSL / Linux package hygiene, `bw` install, Topgrade and `gta`.
 - [SECURITY.md](../../SECURITY.md) — redaction, env-based secrets, `config.yaml` hygiene.
 - [PLAN_SECRETS_VAULT.md](../plans/PLAN_SECRETS_VAULT.md) — Phase B in-app vault (separate track).
 - [CONTRIBUTING.md](../../CONTRIBUTING.md) — do not commit credentials.

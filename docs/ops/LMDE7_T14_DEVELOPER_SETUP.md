@@ -1,9 +1,44 @@
 # ThinkPad T14 + LMDE 7 — developer setup (Data Boar)
 
-**Português (Brasil):** **canonical concrete steps** — **[LMDE7_T14_DEVELOPER_SETUP.pt_BR.md](LMDE7_T14_DEVELOPER_SETUP.pt_BR.md)** (§0–§8: updates, security, Python/`uv`/pytest, optional Podman/Docker, final checklist; **§9** = related links). **Prerequisite:** LMDE 7 must **already boot** on the T14; **USB installer / disk partitioning** are **out of scope** here (see Mint LMDE + Lenovo UEFI docs), then start at **§0** in the pt-BR file.
+**Português (Brasil):** Full step-by-step (install from Ventoy through lab-op readiness) — **[LMDE7_T14_DEVELOPER_SETUP.pt_BR.md](LMDE7_T14_DEVELOPER_SETUP.pt_BR.md)**. **Use that file as the primary recipe;** this English page is a structured summary and cross-reference.
 
-**Summary:** LMDE 7 is **Debian 13–based**; use the same `apt` package names as [TECH_GUIDE.md](../TECH_GUIDE.md) (Python 3.12, `build-essential`, `libpq-dev`, `libssl-dev`, `libffi-dev`, `unixodbc-dev`), install **`uv`**, run **`uv sync`** / **`pytest`** in the repo, optional **Podman** per [LAB_OP_MINIMAL_CONTAINER_STACK.md](LAB_OP_MINIMAL_CONTAINER_STACK.md). Security baseline: **`ufw`**, **`unattended-upgrades`**, **`fwupd`** for ThinkPad firmware.
+---
 
-For firewall, SSH, and Data Boar port **8088** notes, follow the Portuguese doc (operator LAN subnets are site-specific).
+## Install and firmware context (what the pt-BR doc covers in §0)
 
-**After the laptop is ready:** optional lab-op instrumentation sequence (Grafana, Prometheus, Loki, Graylog, Influx) — **[PLAN_LAB_OP_OBSERVABILITY_STACK.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md)**.
+- **Ventoy:** Keep the USB updated from the official [Ventoy releases](https://github.com/ventoy/Ventoy/releases) (as of late 2025 / early 2026 the line is **1.1.x**, e.g. **v1.1.10** — re-check the releases page on the day you refresh the stick). On UEFI + **Secure Boot** enabled, follow Ventoy’s **Secure Boot** documentation (enrol the Ventoy certificate into **MOK** when prompted — do **not** turn off Secure Boot “just to boot”).
+- **“Device Guard”:** That label is **Windows** (virtualization-based security). On **LMDE/Linux**, the parallel goal is **UEFI Secure Boot** (Debian/LMDE signed shim + kernel) **plus** hardening in §3 of the pt-BR doc (`ufw`, `unattended-upgrades`, `AppArmor`, audits).
+- **Concrete flow:** §0 in the Portuguese file walks: firmware defaults → boot Ventoy with Secure Boot → optional **F31 fix** if the ISO’s GRUB path is wrong → LMDE installer → after first boot confirm **`mokutil --sb-state`** is still **enabled**.
+
+---
+
+## After the OS boots (baseline)
+
+LMDE 7 is **Debian 13–based**. Align packages with [TECH_GUIDE.md](../TECH_GUIDE.md): Python **3.13** on the host when available (**≥3.12** still supported), plus `build-essential`, `libpq-dev`, `libssl-dev`, `libffi-dev`, `unixodbc-dev`; install **`uv`**; in the repo run **`uv sync`** and **`uv run pytest`**.
+
+Security baseline (details in pt-BR §3): **`ufw`**, **`unattended-upgrades`**, **`fwupd`** for ThinkPad firmware, optional **Lynis** and **`debsecan` / `needrestart`**.
+
+---
+
+## Performance tuning (summary — full commands in pt-BR §3.6 and §6)
+
+- **I/O schedulers / fstab:** NVMe-oriented notes and `noatime` example in §6.2.
+- **Kernel:** Prefer **distribution kernels** so signatures stay aligned with **Secure Boot** (§6.3); avoid third-party kernel builds unless you manage signing/MOK.
+- **Memory:** Optional **`zram-tools`** for compressed swap (§6.4); otherwise tune **`vm.swappiness`** conservatively (§3.6).
+
+---
+
+## Containers and lab-op
+
+- **Podman** (preferred) or **docker.io** — §7 in pt-BR, consistent with [LAB_OP_MINIMAL_CONTAINER_STACK.md](LAB_OP_MINIMAL_CONTAINER_STACK.md).
+- When the T14 is a lab host: SSH hardening, **`docs/private/homelab/lab-op-hosts.manifest.json`** from the example manifest, then **`scripts/lab-op-sync-and-collect.ps1`** from the workstation — §6.5.
+
+---
+
+## Related plans and links
+
+- Observability stack (optional, after baseline): [PLAN_LAB_OP_OBSERVABILITY_STACK.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md).
+- Package inventory: [HOMELAB_HOST_PACKAGE_INVENTORY.md](HOMELAB_HOST_PACKAGE_INVENTORY.md).
+- Workstation updates, **Topgrade**, **`gta`**, **Bitwarden CLI** (`bw`): [OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.md](OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.md).
+
+**Last review:** Matches Debian 13 / LMDE 7 and Data Boar `pyproject.toml` (**≥3.12**, **3.13** recommended on the laptop); confirm packages with `apt-cache policy python3.13` (or `python3.12` as fallback).
