@@ -466,7 +466,13 @@ class FilesystemConnector:
         elif self.scan_image_ocr:
             self.extensions = set(self.extensions) | set(IMAGE_EXTENSIONS)
 
-    def _scan_archive_contents(self, file_path: Path, target_name: str) -> None:
+    def _scan_archive_contents(
+        self,
+        file_path: Path,
+        target_name: str,
+        scan_root: Path,
+        audit_log_name: str,
+    ) -> None:
         """Open archive and scan inner members with supported extensions; save findings with path like archive.zip|inner/path.txt."""
         scan_archive_at_path(
             archive_path=file_path,
@@ -484,11 +490,20 @@ class FilesystemConnector:
             ocr_max_dimension=self.ocr_max_dimension,
             ocr_lang=self.ocr_lang,
             use_content_type=self.use_content_type,
+            scan_root=scan_root,
+            audit_log_name=audit_log_name,
         )
 
     def run(self) -> None:
         """Walk target path, check permission, read sample, detect, save_finding or save_failure."""
+        from utils.audit_log_display import (
+            audit_log_target_label,
+            format_filesystem_finding_location_for_audit_log,
+            format_filesystem_scan_root_for_audit_log,
+        )
+
         target_name = self.config.get("name", "filesystem")
+        audit_name = audit_log_target_label(self.config, default="filesystem")
         root = self.config.get("path", "")
         recursive = self.config.get("recursive", True)
         path = Path(root)
@@ -505,7 +520,11 @@ class FilesystemConnector:
         try:
             from utils.logger import log_connection
 
-            log_connection(target_name, "filesystem", str(path))
+            log_connection(
+                audit_name,
+                "filesystem",
+                format_filesystem_scan_root_for_audit_log(path),
+            )
         except Exception:
             pass
         pattern = "**/*" if recursive else "*"
@@ -526,7 +545,7 @@ class FilesystemConnector:
             if self.scan_compressed and is_supported_archive(
                 file_path, exts=self.compressed_extensions
             ):
-                self._scan_archive_contents(file_path, target_name)
+                self._scan_archive_contents(file_path, target_name, path, audit_name)
                 continue
             # 2.6: treat .sqlite/.sqlite3/.db as DBs when scan_sqlite_as_db is True
             if self.scan_sqlite_as_db and ext in self.SQLITE_EXTENSIONS:
@@ -549,8 +568,13 @@ class FilesystemConnector:
 
                         log_finding(
                             "filesystem",
-                            target_name,
-                            finding["file_name"],
+                            audit_name,
+                            format_filesystem_finding_location_for_audit_log(
+                                path,
+                                file_path,
+                                audit_name,
+                                finding["file_name"],
+                            ),
                             finding["sensitivity_level"],
                             finding["pattern_detected"],
                         )
@@ -594,8 +618,13 @@ class FilesystemConnector:
 
                 log_finding(
                     "filesystem",
-                    target_name,
-                    str(file_path),
+                    audit_name,
+                    format_filesystem_finding_location_for_audit_log(
+                        path,
+                        file_path,
+                        audit_name,
+                        file_path.name,
+                    ),
                     res["sensitivity_level"],
                     res["pattern_detected"],
                 )
@@ -620,11 +649,17 @@ def scan_archive_at_path(
     ocr_max_dimension: int = 2000,
     ocr_lang: str = "eng",
     use_content_type: bool = False,
+    scan_root: Path | None = None,
+    audit_log_name: str | None = None,
 ) -> None:
     """
     Open archive at path and scan inner members; save findings with file_name like archive.zip|inner/path.txt.
     Used by FilesystemConnector and by share connectors (SMB, WebDAV, SharePoint) when scan_compressed is True.
     Inner plain-text reads use *file_sample_max_chars* (not SQL row limits).
+
+    When *scan_root* and *audit_log_name* are set (local filesystem), audit log lines use
+    ``format_filesystem_finding_location_for_audit_log`` for the third column. Share connectors
+    pass only *audit_log_name* so logs stay ``archive|inner`` without a temp path.
     """
     archive_type = detect_archive_type(archive_path)
     if not archive_type:
@@ -680,12 +715,25 @@ def scan_archive_at_path(
                     ml_confidence=res.get("ml_confidence", 0),
                 )
                 try:
+                    from utils.audit_log_display import (
+                        format_filesystem_finding_location_for_audit_log,
+                    )
                     from utils.logger import log_finding
 
+                    log_label = audit_log_name or target_name
+                    if scan_root is not None and audit_log_name is not None:
+                        log_loc = format_filesystem_finding_location_for_audit_log(
+                            scan_root,
+                            archive_path,
+                            audit_log_name,
+                            f"{archive_display_name}|{member_name}",
+                        )
+                    else:
+                        log_loc = f"{archive_display_name}|{member_name}"
                     log_finding(
                         "filesystem",
-                        target_name,
-                        f"{archive_display_name}|{member_name}",
+                        log_label,
+                        log_loc,
                         res["sensitivity_level"],
                         res["pattern_detected"],
                     )

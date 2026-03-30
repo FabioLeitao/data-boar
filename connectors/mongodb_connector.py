@@ -78,7 +78,10 @@ class MongoDBConnector:
             self._client = None
 
     def run(self) -> None:
+        from utils.audit_log_display import audit_log_target_label
+
         target_name = self.config.get("name", "mongodb")
+        audit_name = audit_log_target_label(self.config, default="mongodb")
         try:
             self.connect()
         except Exception as e:
@@ -87,7 +90,7 @@ class MongoDBConnector:
         try:
             from utils.logger import log_connection
 
-            log_connection(target_name, "mongodb", self.config.get("host", "localhost"))
+            log_connection(audit_name, "mongodb", self.config.get("host", "localhost"))
             self._save_inventory_snapshot(target_name)
             for coll_name in self._db.list_collection_names():
                 coll = self._db[coll_name]
@@ -134,7 +137,7 @@ class MongoDBConnector:
 
                         log_finding(
                             "database",
-                            target_name,
+                            audit_name,
                             f"{coll_name}.{key}",
                             res["sensitivity_level"],
                             res["pattern_detected"],

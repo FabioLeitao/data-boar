@@ -69,7 +69,10 @@ class RedisConnector:
             self._client = None
 
     def run(self) -> None:
+        from utils.audit_log_display import audit_log_target_label
+
         target_name = self.config.get("name", "redis")
+        audit_name = audit_log_target_label(self.config, default="redis")
         try:
             self.connect()
         except Exception as e:
@@ -78,7 +81,7 @@ class RedisConnector:
         try:
             from utils.logger import log_connection
 
-            log_connection(target_name, "redis", self.config.get("host", "localhost"))
+            log_connection(audit_name, "redis", self.config.get("host", "localhost"))
             self._save_inventory_snapshot(target_name)
             keys = []
             for k in self._client.scan_iter(count=self.sample_limit):
@@ -113,7 +116,7 @@ class RedisConnector:
 
                     log_finding(
                         "database",
-                        target_name,
+                        audit_name,
                         f"keys.{key}",
                         res["sensitivity_level"],
                         res["pattern_detected"],

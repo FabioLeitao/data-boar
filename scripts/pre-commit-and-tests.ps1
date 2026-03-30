@@ -12,6 +12,17 @@ $ErrorActionPreference = "Stop"
 $repoRoot = (Get-Item $PSScriptRoot).Parent.FullName
 Set-Location $repoRoot
 
+# Recover from a broken/missing project venv (uv run needs .venv/pyvenv.cfg).
+$venvCfg = Join-Path $repoRoot ".venv/pyvenv.cfg"
+if (-not (Test-Path -LiteralPath $venvCfg)) {
+    Write-Host "No .venv/pyvenv.cfg — running uv sync to recreate the environment..." -ForegroundColor Yellow
+    uv sync
+    if (-not (Test-Path -LiteralPath $venvCfg)) {
+        Write-Host "check gate: uv sync did not create .venv; fix disk path or UV_* env and retry." -ForegroundColor Red
+        exit 2
+    }
+}
+
 if (-not $SkipPreCommit) {
     Write-Host "Running pre-commit (Ruff + markdown + pt-BR locale guards)..." -ForegroundColor Cyan
     uv run pre-commit run --all-files
