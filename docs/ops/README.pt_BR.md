@@ -23,6 +23,12 @@ Definido em **`.cursor/rules/session-mode-keywords.mdc`**.
 
 ---
 
+## Modo “hoje” (foco de um dia)
+
+Checklists **datados** (`OPERATOR_TODAY_MODE_YYYY-MM-DD.md`), **fila de carryover** e **sincronização do publicado com `pyproject.toml`** estão em **[`today-mode/`](today-mode/README.pt_BR.md)** — comece por ali em vez de procurar arquivos soltos em `docs/ops/`. Token no chat: **`today-mode YYYY-MM-DD`** (só em inglês).
+
+---
+
 ## Índice
 
 | Tópico                                                   | English                                                                                          | Português (pt-BR)                                                                                            |
@@ -34,10 +40,7 @@ Definido em **`.cursor/rules/session-mode-keywords.mdc`**.
 | Convenções de commit e PR                                | [COMMIT_AND_PR.md](COMMIT_AND_PR.md)                                                             | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md)                                                             |
 | Follow-ups de workflow (branch protection, SBOM, etc.)   | [WORKFLOW_DEFERRED_FOLLOWUPS.md](WORKFLOW_DEFERRED_FOLLOWUPS.md)                                 | [WORKFLOW_DEFERRED_FOLLOWUPS.pt_BR.md](WORKFLOW_DEFERRED_FOLLOWUPS.pt_BR.md)                                 |
 | Instantâneo WRB (bloco para colar no próximo e-mail)     | [WRB_DELTA_SNAPSHOT_2026-03-26.md](WRB_DELTA_SNAPSHOT_2026-03-26.md)                             | [WRB_DELTA_SNAPSHOT_2026-03-26.pt_BR.md](WRB_DELTA_SNAPSHOT_2026-03-26.pt_BR.md)                             |
-| Modo “hoje” do operador (2026-03-26)                     | [OPERATOR_TODAY_MODE_2026-03-26.md](OPERATOR_TODAY_MODE_2026-03-26.md)                           | [OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md](OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md)                           |
-| Modo “hoje” do operador (2026-03-27 — help + OpenAPI)    | [OPERATOR_TODAY_MODE_2026-03-27.md](OPERATOR_TODAY_MODE_2026-03-27.md)                           | [OPERATOR_TODAY_MODE_2026-03-27.pt_BR.md](OPERATOR_TODAY_MODE_2026-03-27.pt_BR.md)                           |
-| Modo “hoje” do operador (2026-03-29 — fecho + carryover) | [OPERATOR_TODAY_MODE_2026-03-29.md](OPERATOR_TODAY_MODE_2026-03-29.md)                           | [OPERATOR_TODAY_MODE_2026-03-29.pt_BR.md](OPERATOR_TODAY_MODE_2026-03-29.pt_BR.md)                           |
-| Modo “hoje” do operador (2026-03-30)                     | [OPERATOR_TODAY_MODE_2026-03-30.md](OPERATOR_TODAY_MODE_2026-03-30.md)                           | [OPERATOR_TODAY_MODE_2026-03-30.pt_BR.md](OPERATOR_TODAY_MODE_2026-03-30.pt_BR.md)                           |
+| **Modo “hoje”** (índice + carryover + sync do publicado)  | [today-mode/README.md](today-mode/README.md)                                                     | [today-mode/README.pt_BR.md](today-mode/README.pt_BR.md)                                                     |
 | Wabbix — caminhos baseline no repositório (revisores)    | [WABBIX_IN_REPO_BASELINE.md](WABBIX_IN_REPO_BASELINE.md)                                         | — (nota EN; pedidos WRB em [WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md](WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md))       |
 | Bloqueios do secure-by-default + trilha de migração      | [SECURE_BY_DEFAULT_BLOCKERS_AND_MIGRATION.md](SECURE_BY_DEFAULT_BLOCKERS_AND_MIGRATION.md)       | [SECURE_BY_DEFAULT_BLOCKERS_AND_MIGRATION.pt_BR.md](SECURE_BY_DEFAULT_BLOCKERS_AND_MIGRATION.pt_BR.md)       |
 | Revisão de inspiração em segurança (GRC / Security Now)  | [SECURITY_INSPIRATION_GRC_SECURITY_NOW.md](SECURITY_INSPIRATION_GRC_SECURITY_NOW.md)             | [SECURITY_INSPIRATION_GRC_SECURITY_NOW.pt_BR.md](SECURITY_INSPIRATION_GRC_SECURITY_NOW.pt_BR.md)             |

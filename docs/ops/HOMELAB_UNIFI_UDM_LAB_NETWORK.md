@@ -59,6 +59,8 @@ Use VLANs to **separate** roles without putting **real VLAN IDs, subnet names, o
 
 **Data Boar note:** The app does not need UniFi-specific config; it follows **IP/DNS + ports** in `config.yaml`. VLANs only change **which paths** are allowed.
 
+**Future (collaborators):** a **public**, **anonymized** pattern for “lab laptop vs untrusted internal networks” — no real IPs, hostnames, or vendor-specific blocklists — is tracked as **[LAB_NETWORK_SEGREGATION_GUIDELINE.md](LAB_NETWORK_SEGREGATION_GUIDELINE.md)** ([pt-BR](LAB_NETWORK_SEGREGATION_GUIDELINE.pt_BR.md)). It is a **stub** until expanded; site-specific steps stay in **`docs/private/homelab/`** only.
+
 ---
 
 ## 3. Traffic “checking” without full NMS
@@ -83,6 +85,7 @@ We can suggest **rule ordering** and **test ideas** in text; we cannot apply set
 
 ## 5. See also
 
+- [LAB_NETWORK_SEGREGATION_GUIDELINE.md](LAB_NETWORK_SEGREGATION_GUIDELINE.md) — **stub**: generic lab segregation alignment (public); expand without pasting LAN secrets.
 - [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md) — multi-host matrix; keep LAN details private.
 - [HOMELAB_POWER_AND_ELECTRICAL_PLANNING.md](HOMELAB_POWER_AND_ELECTRICAL_PLANNING.md) — AC + breaker planning; **§5.2** UniFi **SmartPower (USP-RPS)** vs **second nobreak** to **free watts** on your main UPS.
 - [SECURITY.md](../../SECURITY.md) — binding, API keys, least exposure.
