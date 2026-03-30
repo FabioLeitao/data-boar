@@ -221,6 +221,8 @@ curl -o report.xlsx http://localhost:8088/report
 curl -o audit.log http://localhost:8088/logs
 ```
 
+**Formato das linhas do audit log (leia antes de interpretar caminhos):** As linhas seguem o padrão `Finding: origem | rótulo_do_target | localização | sensibilidade | padrão` e `Connected: rótulo_do_target (tipo) em localização`. O **`rótulo_do_target`** é um nome **único e higienizado** por alvo (`audit_log_name`), derivado do config — pode não ser idêntico ao `name` bruto. Em alvos **filesystem**, a **`localização`** costuma ser um **caminho POSIX relativo à raiz de varredura resolvida** (sem letra de drive nem home). A própria raiz aparece como `nome_da_pasta?8_hex` (não é caminho absoluto completo). Se um arquivo **resolve fora** da raiz (ex.: symlink), a **localização** vira `rótulo_do_target?12_hex` em vez de vazar caminho absoluto — use a linha no SQLite/Excel como evidência canônica. Conectores de compartilhamento remoto que abrem arquivos compactados via temporário mantêm no log estilo `arquivo.zip|caminho/interno.txt`.
+
 ### Baixar o último heatmap PNG
 
 ```bash
@@ -288,6 +290,12 @@ ml_patterns_file: docs/compliance-samples/compliance-sample-pipeda.yaml
 **Padrões regex customizados:** Para a aplicação se atentar a **novos valores possivelmente pessoais ou sensíveis** (ex.: RG, placa, número de plano de saúde), defina **`regex_overrides_file`** no config com o caminho de um arquivo YAML/JSON contendo uma lista de `{ name, pattern, norm_tag }`. O detector aplica cada padrão ao nome da coluna e ao texto amostrado; qualquer match é reportado com sensibilidade HIGH (ou MEDIUM em contexto de letras/cifras). Formato e exemplos (RG, placa, CEP, telefone EUA, etc.): [SENSITIVITY_DETECTION.pt_BR.md#padrões-regex-customizados-detectar-novos-dados-pessoaissensíveis](SENSITIVITY_DETECTION.pt_BR.md#padrões-regex-customizados-detectar-novos-dados-pessoaissensíveis) (pt-BR) · [SENSITIVITY_DETECTION.md#custom-regex-patterns-detecting-new-personalsensitive-values](SENSITIVITY_DETECTION.md#custom-regex-patterns-detecting-new-personalsensitive-values) (EN). Para **múltiplas regulamentações e exemplos de configuração** (embutidas: LGPD, GDPR, CCPA, HIPAA, GLBA; extensibilidade para UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS ou custom) e ajuda com ajuste fino, veja [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) ([EN](COMPLIANCE_FRAMEWORKS.md)).
 
 **Outras regulamentações e amostras de conformidade:** Amostras de config prontas para **UK GDPR**, **EU GDPR**, **Benelux**, **PIPEDA**, **POPIA**, **APPI**, **PCI-DSS** e outras regiões estão em [compliance-samples/](compliance-samples/). Defina `regex_overrides_file` e `ml_patterns_file` com o arquivo da amostra e mescle o `recommendation_overrides` da amostra em `report.recommendation_overrides`. Lista completa, o que vai onde e como usar: [COMPLIANCE_FRAMEWORKS.pt_BR.md – Amostras de conformidade](COMPLIANCE_FRAMEWORKS.pt_BR.md#amostras-de-conformidade) ([EN](COMPLIANCE_FRAMEWORKS.md#compliance-samples)).
+
+**Checklist ao usar arquivo de amostra de compliance:**
+
+1. **Mesclar** o `recommendation_overrides` da amostra em `report.recommendation_overrides` na config principal — sem isso, a aba **Recomendações** cai só no texto genérico embutido.
+1. **Revisar** entradas `regex` opcionais; padrões regionais com dígitos podem gerar ruído em texto amplo (veja [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md#padrões-genéricos-de-dígitos-e-escopo-de-falso-positivo)).
+1. **Ordenar** `recommendation_overrides` com `norm_tag_pattern` **mais específico** **antes** de substrings genéricas (ex.: **UK GDPR** antes de **GDPR**). O casamento usa **primeira entrada** (semântica de substring).
 
 **Exemplo `recommendation_overrides` para categorias sensíveis (LGPD Art. 5 II, 11; GDPR Art. 9):** Você pode adicionar entradas para que achados de saúde, religião, política, PEP, raça, sindicato, genético, biométrico e vida sexual tenham Base legal, Risco e Prioridade corretos na aba Recomendações. Exemplo (inglês): [USAGE.md](USAGE.md). Em pt-BR, use os mesmos `norm_tag_pattern` (ex.: `health`, `religious`, `political`, `PEP`, `race`, `union`, `genetic`, `biometric`, `sex life`) e preencha `base_legal`, `risk`, `recommendation`, `priority`, `relevant_for` conforme sua política. Ver [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md).
 
@@ -392,10 +400,11 @@ Ambos usam o mesmo `norm_tag` (`LGPD Art. 5`). Nesta etapa a detecção é apena
 
 ### Notificações ao operador (opcional)
 
-Após o fim da varredura (CLI ou `POST /scan` / `POST /start` em segundo plano), a aplicação pode enviar um **resumo curto em pt-BR** para **Slack**, **Microsoft Teams**, **Telegram** ou um **webhook JSON genérico**. O padrão é **desligado** (`notifications.enabled: false`).
+Após o fim da varredura (CLI ou `POST /scan` / `POST /start` em segundo plano), a aplicação pode enviar um **resumo curto em pt-BR** para **Slack**, **Microsoft Teams**, um **webhook JSON genérico** (ex.: ferramentas de automação ou ponte **Signal**) ou **Telegram** (campos opcionais para instalações legadas/de terceiros). O padrão é **desligado** (`notifications.enabled: false`).
 
+- **Política do mantenedor (repositório canónico):** O mantenedor **não** usa **Telegram** para notificações ao operador do Data Boar; prefira **Slack**, **Teams** ou **webhook genérico** para **Signal**. Ver [OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md](ops/OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md).
 - **Config (caminho único legado):** `notifications.operator` com `slack_webhook_url`, `teams_webhook_url`, `telegram_bot_token` + `telegram_chat_id` ou `generic_webhook_url` — vale o primeiro tipo configurado (Slack → Teams → Telegram → genérico).
-- **Config (vários canais ao operador):** `notifications.operator.channels` como **lista** de objetos; cada item é **um** canal (ex.: um webhook Slack e um Telegram). Todos recebem a mesma mensagem (varredura concluída ou script manual).
+- **Config (vários canais ao operador):** `notifications.operator.channels` como **lista** de objetos; cada item é **um** canal (ex.: um webhook Slack e um webhook genérico). Todos recebem a mesma mensagem (varredura concluída ou script manual).
 - **Cópia ao tenant (opcional):** `notifications.tenant.by_tenant` mapeia o nome do tenant em **minúsculas** para um bloco de webhook (ou string URL para POST genérico). `default_slack_webhook_url` / `default_generic_webhook_url` aplicam quando há `tenant_name` na sessão mas não há entrada específica. Exige `tenant_name` não vazio na sessão.
 - **Deduplicação:** `notifications.dedupe_scan_complete_per_session` (padrão `true`) evita um segundo POST para o mesmo `session_id` depois de **pelo menos um** envio bem-sucedido (por processo; use `false` só se precisar repetir em todo hook de conclusão).
 - **Registro de auditoria (opcional):** `notifications.notify_audit_log` (padrão `true`) grava uma linha por tentativa/canal na tabela SQLite **`notification_send_log`** (sessão, *trigger*, destino `operator`/`tenant`, canal, sucesso, texto de erro redigido, carimbo de tempo). **Não** armazena o corpo da mensagem. Use `false` para desligar escritas.

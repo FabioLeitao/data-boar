@@ -57,7 +57,7 @@
 | **`OPERATOR_REFERENCE_PCLOUD_AND_MAC_MINI.md`**                                                                                                                                              | **Resumo numa página:** upgrade **pCloud** + notas de **manutenção Mac mini** (A1347) — aponta para **`LAB_OP_SHOPPING_LIST_AND_POWER.md`** **§11** (pCloud completo)                                                                                                                                       |
 | **`LAB_OP_TEST_MATRIX_HARDWARE_AND_NETWORK.md`**                                                                                                                                             | **Estratégia:** ligar **hardware do lab** (incl. **NHS** após revisão, **módulo isolador**…) a **dimensões de teste** (latência, **NAT**/hops, **Wi‑Fi**, OS legados) para o **motor de scan** — complementa **[HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md)**                                             |
 
-**Raiz `docs/private/`:** também **`CONTEXT_ACADEMIC_AND_FAMILY.md`** (trabalho [redacted] + planos académicos — preencher quando quiser).
+**Raiz `docs/private/`:** também **`CONTEXT_ACADEMIC_AND_FAMILY.md`** (trabalho [redacted] + planos acadêmicos — preencher quando quiser).
 
 **Modelo:** **`docs/private.example/`** → copiar para **`docs/private/`**.
 
