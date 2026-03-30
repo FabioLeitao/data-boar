@@ -23,6 +23,12 @@ Defined in **`.cursor/rules/session-mode-keywords.mdc`**.
 
 ---
 
+## Today mode (one-day focus)
+
+**Dated** checklists (`OPERATOR_TODAY_MODE_YYYY-MM-DD.md`), **carryover queue**, and **publish vs `pyproject.toml` sync** live under **[`today-mode/`](today-mode/README.md)** — start there instead of hunting loose files in `docs/ops/`. Chat token: **`today-mode YYYY-MM-DD`** (English-only).
+
+---
+
 ## Index
 
 | Topic                                                          | English                                                                                          | Português (pt-BR)                                                                                                             |
@@ -31,15 +37,13 @@ Defined in **`.cursor/rules/session-mode-keywords.mdc`**.
 | Home lab — deploy smoke & data targets                         | [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md)                                                   | [HOMELAB_VALIDATION.pt_BR.md](HOMELAB_VALIDATION.pt_BR.md)                                                                    |
 | Lab-op — minimal container stack (Podman + k3s)                | [LAB_OP_MINIMAL_CONTAINER_STACK.md](LAB_OP_MINIMAL_CONTAINER_STACK.md)                           | [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md)                                            |
 | ThinkPad T14 + LMDE 7 — dev setup (apt, uv, segurança)         | [LMDE7_T14_DEVELOPER_SETUP.md](LMDE7_T14_DEVELOPER_SETUP.md)                                     | [LMDE7_T14_DEVELOPER_SETUP.pt_BR.md](LMDE7_T14_DEVELOPER_SETUP.pt_BR.md)                                                      |
+| Pacotes, Topgrade, `gta`, Bitwarden CLI (`bw`) — workstation    | [OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.md](OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.md)         | [OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md](OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md)                          |
 | Suggested **full-day** operator checklist (homelab + Band A)   | [OPERATOR_NEXT_DAY_CHECKLIST.md](OPERATOR_NEXT_DAY_CHECKLIST.md)                                 | [OPERATOR_NEXT_DAY_CHECKLIST.pt_BR.md](OPERATOR_NEXT_DAY_CHECKLIST.pt_BR.md)                                                  |
 | Pace, focus, session tokens (Wabbix + demo path)               | [OPERATOR_WORKFLOW_PACE_AND_FOCUS.md](OPERATOR_WORKFLOW_PACE_AND_FOCUS.md)                       | [OPERATOR_WORKFLOW_PACE_AND_FOCUS.pt_BR.md](OPERATOR_WORKFLOW_PACE_AND_FOCUS.pt_BR.md)                                        |
 | Commit conventions & PR hygiene                                | [COMMIT_AND_PR.md](COMMIT_AND_PR.md)                                                             | [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md)                                                                              |
 | Workflow follow-ups (branch protection, SBOM, deferred)        | [WORKFLOW_DEFERRED_FOLLOWUPS.md](WORKFLOW_DEFERRED_FOLLOWUPS.md)                                 | [WORKFLOW_DEFERRED_FOLLOWUPS.pt_BR.md](WORKFLOW_DEFERRED_FOLLOWUPS.pt_BR.md)                                                  |
 | WRB delta snapshot (paste block for next mail)                 | [WRB_DELTA_SNAPSHOT_2026-03-26.md](WRB_DELTA_SNAPSHOT_2026-03-26.md)                             | [WRB_DELTA_SNAPSHOT_2026-03-26.pt_BR.md](WRB_DELTA_SNAPSHOT_2026-03-26.pt_BR.md)                                              |
-| Operator “today mode” (2026-03-26)                             | [OPERATOR_TODAY_MODE_2026-03-26.md](OPERATOR_TODAY_MODE_2026-03-26.md)                           | [OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md](OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md)                                            |
-| Operator “today mode” (2026-03-27 — help sync + OpenAPI day)   | [OPERATOR_TODAY_MODE_2026-03-27.md](OPERATOR_TODAY_MODE_2026-03-27.md)                           | [OPERATOR_TODAY_MODE_2026-03-27.pt_BR.md](OPERATOR_TODAY_MODE_2026-03-27.pt_BR.md)                                            |
-| Operator “today mode” (2026-03-29 — session close + carryover) | [OPERATOR_TODAY_MODE_2026-03-29.md](OPERATOR_TODAY_MODE_2026-03-29.md)                           | [OPERATOR_TODAY_MODE_2026-03-29.pt_BR.md](OPERATOR_TODAY_MODE_2026-03-29.pt_BR.md)                                            |
-| Operator “today mode” (2026-03-30)                             | [OPERATOR_TODAY_MODE_2026-03-30.md](OPERATOR_TODAY_MODE_2026-03-30.md)                           | [OPERATOR_TODAY_MODE_2026-03-30.pt_BR.md](OPERATOR_TODAY_MODE_2026-03-30.pt_BR.md)                                            |
+| **Today mode** (index + carryover + publish sync)              | [today-mode/README.md](today-mode/README.md)                                                     | [today-mode/README.pt_BR.md](today-mode/README.pt_BR.md)                                                                     |
 | Wabbix — in-repo baseline paths (reviewers)                    | [WABBIX_IN_REPO_BASELINE.md](WABBIX_IN_REPO_BASELINE.md)                                         | — (EN ops note; WRB template remains bilingual in [WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md](WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md)) |
 | API key from environment (`api_key_from_env`)                  | [API_KEY_FROM_ENV_OPERATOR_STEPS.md](API_KEY_FROM_ENV_OPERATOR_STEPS.md)                         | — (EN-only; reduces ambiguity for operators and reviewers)                                                                    |
 | Secure-by-default blockers + migration path                    | [SECURE_BY_DEFAULT_BLOCKERS_AND_MIGRATION.md](SECURE_BY_DEFAULT_BLOCKERS_AND_MIGRATION.md)       | [SECURE_BY_DEFAULT_BLOCKERS_AND_MIGRATION.pt_BR.md](SECURE_BY_DEFAULT_BLOCKERS_AND_MIGRATION.pt_BR.md)                        |
