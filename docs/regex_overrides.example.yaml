@@ -17,6 +17,7 @@
   pattern: "\\b[A-Z]{3}\\d[A-Z]\\d{2}\\b"
   norm_tag: "Personal data context"
 
+# CEP (BR): format-only; also matches many 8-digit product/internal codes — validate findings.
 - name: "CEP_BR"
   pattern: "\\b\\d{5}-?\\d{3}\\b"
   norm_tag: "LGPD Art. 5"

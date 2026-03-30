@@ -20,7 +20,8 @@ To reduce false positives on song lyrics and music tablature/chord sheets:
 - Content heuristics detect lyrics (verse/chorus keywords, short lines), tabs (digit/pipe lines),
   and **interleaved cifra** rows (chord lines alternating with lyric lines; chords may mix cases,
   e.g. ``C``, ``Am``, ``EM7``, ``D2sus9``).
-- In that context, weak patterns (DATE_DMY, PHONE_BR) are downgraded to MEDIUM; ML/DL confidence
+- In that context, weak patterns (DATE_DMY, PHONE_BR, CEP_BR when loaded via overrides) are
+  downgraded to MEDIUM; ML/DL confidence
   is penalized so borderline cases stay MEDIUM/LOW. Strong PII (CPF, EMAIL, CREDIT_CARD, SSN)
   still reports HIGH.
 - Open-source Markdown docs (README, CONTRIBUTING, …) with typical heading structure: same downgrade
@@ -303,8 +304,9 @@ DEFAULT_ML_TERMS = [
     ("tuning", 0),
 ]
 
-# Regex patterns that often match in lyrics/tabs without real PII (dates in lyrics, digits in tabs)
-WEAK_PATTERNS_IN_ENTERTAINMENT = frozenset({"DATE_DMY", "PHONE_BR"})
+# Regex patterns that often match in lyrics/tabs without real PII (dates in lyrics, digits in tabs).
+# CEP_BR is optional (compliance sample / overrides only): same 8-digit shape as many SKUs/part IDs.
+WEAK_PATTERNS_IN_ENTERTAINMENT = frozenset({"DATE_DMY", "PHONE_BR", "CEP_BR"})
 
 # Column-name tokens that are ambiguous (may be PII or internal ID). When the only signal is ML match
 # and column name matches one of these, we return MEDIUM and PII_AMBIGUOUS so the report recommends manual confirmation.
