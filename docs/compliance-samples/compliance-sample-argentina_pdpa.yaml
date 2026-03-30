@@ -18,6 +18,8 @@ regex:
   - name: "CUIL_AR"
     pattern: "\\b20-?\\d{8}-?\\d\\b"
     norm_tag: "Argentina PDPA"
+  # DNI: 7–8 digits. Same shape as many internal numeric IDs and counters — expect false
+  # positives outside true ID columns; tighten with a stricter regex in a private override if needed.
   - name: "DNI_AR"
     pattern: "\\b\\d{7,8}\\b"
     norm_tag: "Argentina PDPA"
