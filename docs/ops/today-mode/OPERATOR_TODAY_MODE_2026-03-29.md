@@ -44,7 +44,7 @@
 
 | Source day     | Carryover item (if still true)                                                         | Suggested next step                                    |
 | ----------     | -------------------------------                                                        | ---------------------                                  |
-| **2026-03-26** | Tag **`v1.6.7`**, GitHub Release, Docker Hub per **`docs/releases/1.6.7.md`**          | One focused release slice; then check off or move date |
+| **2026-03-26** | ~~Tag **`v1.6.7`**, GitHub Release, Docker Hub~~ — **✅ done 2026-03-26** (see [PUBLISHED_SYNC.md](PUBLISHED_SYNC.md)) | No action unless you are shipping **1.6.8** |
 | **2026-03-26** | **Wabbix** WRB e-mail using **`WRB_DELTA_SNAPSHOT_2026-03-26.md`**                     | Send or defer with date in PLANS / private note        |
 | **2026-03-27** | **Slack** proof-of-ping (Windows + iPhone) per **`OPERATOR_NOTIFICATION_CHANNELS.md`** | Short test; **`CHAN-OK`** / note if still blocked      |
 | **2026-03-27** | **Help-sync** pytest + **`OPERATOR_HELP_AUDIT.md`** follow-ups                         | Run pytest; one fix or one issue                       |
@@ -52,17 +52,17 @@
 | **2026-03-27** | README **`--host`** LAN callout                                                        | Edit or explicit defer                                 |
 | **2026-03-27** | Web **`/help`** vs **`main.py`** flags skim                                            | Quick parity pass                                      |
 
-### 0a-def — Explicit defers (recorded 2026-03-30)
+### 0a-def — Explicit defers (recorded 2026-03-30; publish row cleared **2026-03-31**)
 
 | Source (0a) | Defer to | Note |
 | ----- | ----- | ---- |
-| Tag **`v1.6.7`** + Release + Docker Hub | **2026-04-05** | Release slice; review the day before |
+| ~~Tag **`v1.6.7`** + Release + Docker Hub~~ | — | **Shipped 2026-03-26** — see [PUBLISHED_SYNC.md](PUBLISHED_SYNC.md); next public bump is **1.6.8** |
 | **Wabbix** WRB e-mail | **2026-04-05** | Send or move date |
 | **Slack** ping (Windows + iPhone) | **2026-04-02** | Short test |
-| **Help-sync** + **`OPERATOR_HELP_AUDIT.md`** | **2026-04-03** | `pytest` + one fix or issue |
-| **OpenAPI** vs **`POST /scan`** | **2026-04-10** | Small doc/PR |
-| README **`--host`** LAN | **2026-04-05** | Edit or new defer |
-| Web **`/help`** vs **`main.py`** | **2026-04-05** | Parity |
+| **Help-sync** + **`OPERATOR_HELP_AUDIT.md`** | **2026-04-03** | `pytest` when flags change |
+| **OpenAPI** vs **`POST /scan`** | — | Closed — spot-check `/docs` after schema edits |
+| README **`--host`** LAN | — | Met |
+| Web **`/help`** vs **`main.py`** | **2026-04-05** | Parity when new CLI flags |
 
 ### Block 0 — Steps 2 → 3 → 1 (light close, 2026-03-30)
 
@@ -80,7 +80,7 @@
 ## Recommended activities — next working block (pick 1–3, not all)
 
 1. **`git status`** — if the tree is large, **`preview-commit`** / split commits per **`.cursor/rules/execution-priority-and-pr-batching.mdc`**.
-1. **Inspirations:** open **[INSPIRATIONS_HUB.md](inspirations/INSPIRATIONS_HUB.md)** — confirm **TiddlyTools.com** loads; adjust link if needed.
+1. **Inspirations:** open **[INSPIRATIONS_HUB.md](../inspirations/INSPIRATIONS_HUB.md)** — confirm **TiddlyTools.com** loads; adjust link if needed.
 1. **Supere recovery:** next paste or **`burst-showcase`** when you have energy — **SiteMap** / Nerd backlog per **`RESUME_TOPICS_JOURNAL`**.
 1. **Deps:** triage **Dependabot** PRs when you want a **`deps`** session — not a moral obligation today.
 1. **SRE calm:** one **`check-all`** or **`lint-only`** only if you’re about to commit — not as self-punishment.
