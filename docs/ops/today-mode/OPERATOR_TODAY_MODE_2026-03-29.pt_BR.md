@@ -44,25 +44,25 @@
 
 | Dia fonte      | Carryover (se ainda for verdade)                                                                  | Próximo passo sugerido                               |
 | ---------      | ---------------------------------                                                                 | -----------------------                              |
-| **2026-03-26** | Tag **`v1.6.7`**, GitHub Release, Docker Hub conforme **`docs/releases/1.6.7.md`**                | Uma fatia de release; depois marcar ou mudar data    |
+| **2026-03-26** | ~~Tag **`v1.6.7`**, GitHub Release, Docker Hub~~ — **✅ feito 2026-03-26** (ver [PUBLISHED_SYNC.pt_BR.md](PUBLISHED_SYNC.pt_BR.md)) | Só ação se fores lançar **1.6.8** |
 | **2026-03-26** | E-mail **Wabbix** WRB com **`WRB_DELTA_SNAPSHOT_2026-03-26.pt_BR.md`**                            | Enviar ou deferir com data em PLANS / nota privada   |
-| **2026-03-27** | **Slack** prova de ping (Windows + iPhone) conforme **`OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md`** | Teste curto; **`CHAN-OK`** / nota se ainda bloqueado |
-| **2026-03-27** | **Help-sync** pytest + follow-ups do **`OPERATOR_HELP_AUDIT.md`**                                 | Correr pytest; um fix ou um issue                    |
-| **2026-03-27** | **OpenAPI** vs corpo real do **`POST /scan`**                                                     | Doc/PR pequeno ou issue fechado em âmbito            |
-| **2026-03-27** | README **`--host`** em LAN                                                                        | Editar ou defer explícito                            |
-| **2026-03-27** | Web **`/help`** vs flags do **`main.py`**                                                         | Passagem rápida de paridade                          |
+| **2026-03-27** | **Slack** prova de ping (Windows + iPhone) conforme **`docs/ops/OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md`** | Teste curto; **`CHAN-OK`** / nota se ainda bloqueado |
+| **2026-03-27** | ~~**Help-sync**~~ / **`OPERATOR_HELP_AUDIT.md`**                                                  | **Feito** no registro 2026-03-27 — repetir `pytest` quando mudar CLI |
+| **2026-03-27** | ~~**OpenAPI** vs **`POST /scan`**~~                                                               | **Feito** (ver audit Follow-ups)                     |
+| **2026-03-27** | ~~README **`--host`**~~                                                                           | **Cumprido** — reabrir se o quick start mudar       |
+| **2026-03-27** | Web **`/help`** vs flags do **`main.py`**                                                         | Paridade quando houver flags novas                   |
 
-### 0a-def — Defers explícitos (registados 2026-03-30)
+### 0a-def — Defers explícitos (registados 2026-03-30; linha de publish limpa **2026-03-31**)
 
 | Origem (0a)    | Adiar para   | Nota |
 | -----          | -----        | ---- |
-| Tag **`v1.6.7`** + Release + Docker Hub | **2026-04-05** | Fatia de release; rever na véspera |
+| ~~Tag **`v1.6.7`** + Release + Docker Hub~~ | — | **Enviado 2026-03-26** — ver [PUBLISHED_SYNC.pt_BR.md](PUBLISHED_SYNC.pt_BR.md); próximo público **1.6.8** |
 | E-mail **Wabbix** WRB | **2026-04-05** | Enviar ou mover data |
 | **Slack** ping (Windows + iPhone) | **2026-04-02** | Teste curto |
-| **Help-sync** + **`OPERATOR_HELP_AUDIT.md`** | **2026-04-03** | `pytest` + um fix ou issue |
-| **OpenAPI** vs **`POST /scan`** | **2026-04-10** | Doc/PR pequeno |
-| README **`--host`** LAN | **2026-04-05** | Editar ou novo defer |
-| Web **`/help`** vs **`main.py`** | **2026-04-05** | Paridade |
+| **Help-sync** + **`OPERATOR_HELP_AUDIT.md`** | **2026-04-03** | `pytest` quando mudar flags |
+| **OpenAPI** vs **`POST /scan`** | — | Fechado — rever `/docs` após mudanças de schema |
+| README **`--host`** LAN | — | Cumprido |
+| Web **`/help`** vs **`main.py`** | **2026-04-05** | Paridade quando houver flags novas |
 
 ### Bloco 0 — Passos 2 → 3 → 1 (fechamento leve, 2026-03-30)
 
@@ -80,7 +80,7 @@
 ## Atividades recomendadas — próximo bloco de trabalho (escolhe 1–3, não todas)
 
 1. **`git status`** — se a árvore for grande, **`preview-commit`** / partir commits por **`.cursor/rules/execution-priority-and-pr-batching.mdc`**.
-1. **Inspirações:** abrir **[INSPIRATIONS_HUB.pt_BR.md](inspirations/INSPIRATIONS_HUB.pt_BR.md)** — confirmar que **tiddlytools.com** abre; ajustar link se precisar.
+1. **Inspirações:** abrir **[INSPIRATIONS_HUB.pt_BR.md](../inspirations/INSPIRATIONS_HUB.pt_BR.md)** — confirmar que **tiddlytools.com** abre; ajustar link se precisar.
 1. **Recuperação Supere:** próximo paste ou **`burst-showcase`** quando tiveres energia — **SiteMap** / backlog Nerd conforme **`RESUME_TOPICS_JOURNAL`**.
 1. **Deps:** triagem dos PRs **Dependabot** quando quiseres uma sessão **`deps`** — não é obrigação moral hoje.
 1. **SRE em calma:** um **`check-all`** ou **`lint-only`** só se fores **commitar** — não como castigo.
