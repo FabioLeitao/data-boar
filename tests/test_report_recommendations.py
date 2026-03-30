@@ -331,6 +331,97 @@ def test_config_scope_hash_stored_and_in_report_info(tmp_path):
         mgr.dispose()
 
 
+def test_recommendation_overrides_first_match_wins_put_specific_before_generic(
+    tmp_path,
+):
+    """norm_tag_pattern uses substring matching; first list entry wins — order specific before generic."""
+    db_path = str(tmp_path / "audit_order.db")
+    out_dir = str(tmp_path / "out_order")
+    Path(out_dir).mkdir(parents=True, exist_ok=True)
+    mgr = LocalDBManager(db_path)
+    try:
+        mgr.set_current_session_id("s-order")
+        mgr.create_session_record("s-order")
+        mgr.save_finding(
+            "database",
+            target_name="T1",
+            column_name="id",
+            sensitivity_level="HIGH",
+            pattern_detected="ID_DOC",
+            norm_tag="UK GDPR",
+            ml_confidence=80,
+        )
+        mgr.finish_session("s-order")
+        # Wrong order: generic "GDPR" matches "UK GDPR" first and steals the row.
+        config_wrong = {
+            "report": {
+                "output_dir": out_dir,
+                "recommendation_overrides": [
+                    {
+                        "norm_tag_pattern": "GDPR",
+                        "base_legal": "Generic GDPR row",
+                        "risk": "generic",
+                        "recommendation": "generic GDPR text",
+                        "priority": "MÉDIA",
+                        "relevant_for": "DPO",
+                    },
+                    {
+                        "norm_tag_pattern": "UK GDPR",
+                        "base_legal": "UK GDPR Art. X",
+                        "risk": "uk-specific",
+                        "recommendation": "UK ICO guidance",
+                        "priority": "ALTA",
+                        "relevant_for": "DPO",
+                    },
+                ],
+            },
+        }
+        path_wrong = generate_report(
+            mgr, "s-order", output_dir=out_dir, config=config_wrong
+        )
+        assert path_wrong is not None
+        with pd.ExcelFile(path_wrong) as xl:
+            df_wrong = pd.read_excel(xl, sheet_name="Recommendations")
+        row_w = df_wrong[df_wrong["Data / Pattern"] == "ID_DOC"].iloc[0]
+        assert "Generic GDPR row" in str(row_w["Base legal"])
+
+        # Right order: UK-specific before generic substring.
+        config_right = {
+            "report": {
+                "output_dir": out_dir,
+                "recommendation_overrides": [
+                    {
+                        "norm_tag_pattern": "UK GDPR",
+                        "base_legal": "UK GDPR Art. X",
+                        "risk": "uk-specific",
+                        "recommendation": "UK ICO guidance",
+                        "priority": "ALTA",
+                        "relevant_for": "DPO",
+                    },
+                    {
+                        "norm_tag_pattern": "GDPR",
+                        "base_legal": "Generic GDPR row",
+                        "risk": "generic",
+                        "recommendation": "generic GDPR text",
+                        "priority": "MÉDIA",
+                        "relevant_for": "DPO",
+                    },
+                ],
+            },
+        }
+        path_right = generate_report(
+            mgr, "s-order", output_dir=out_dir, config=config_right
+        )
+        assert path_right is not None
+        with pd.ExcelFile(path_right) as xl:
+            df_right = pd.read_excel(xl, sheet_name="Recommendations")
+        row_r = df_right[df_right["Data / Pattern"] == "ID_DOC"].iloc[0]
+        assert "UK GDPR Art. X" in str(row_r["Base legal"])
+        assert "ALTA" in str(row_r["Prioridade"])
+    finally:
+        mgr.dispose()
+
+
 def test_report_recommendations_unicode_in_override(tmp_path):
     """Excel Recommendations sheet contains Unicode from recommendation_overrides (multilingual support)."""
     db_path = str(tmp_path / "audit_unicode.db")
