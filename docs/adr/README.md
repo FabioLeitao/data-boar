@@ -24,6 +24,7 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0003  | [SBOM roadmap — CycloneDX then Syft](0003-sbom-roadmap-cyclonedx-then-syft.md)                                                | Accepted |
 | 0004  | [Information architecture — external-tier docs must not link into `plans/`](0004-external-docs-no-markdown-links-to-plans.md) | Accepted |
 | 0005  | [CI and GitHub Actions supply chain — pinned SHAs and pinned uv CLI](0005-ci-github-actions-supply-chain-pins.md)              | Accepted |
+| 0006  | [Operator today-mode layout and published-release sync](0006-operator-today-mode-layout-and-published-sync.md)                 | Accepted |
 
 ## Related docs
 
