@@ -12,6 +12,10 @@ permissions:
         description: Plain-text message to post to Slack
         required: false
         default: "Data Boar — manual Slack ping from GitHub Actions (workflow_dispatch)."
+      mention_user_id:
+        description: Optional Slack member ID (U…) to @mention for mobile/desktop alert; empty uses repo variable SLACK_MENTION_USER_ID if set
+        required: false
+        default: ""
 
 jobs:
   ping:
@@ -21,6 +25,7 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           NOTIFY_TEXT: ${{ inputs.message }}
+          SLACK_MENTION_USER_ID: ${{ inputs.mention_user_id || vars.SLACK_MENTION_USER_ID }}
         run: |
           python3 <<'PY'
           import json
@@ -28,11 +33,28 @@ jobs:
           import urllib.error
           import urllib.request
 
+          def _normalize_slack_member_id(raw_id: str) -> str:
+              mid = (raw_id or "").strip()
+              if not mid:
+                  return ""
+              if mid.startswith("<@") and mid.endswith(">"):
+                  mid = mid[2:-1]
+              return mid.strip()
+
+          def with_optional_mention(text: str, raw_id: str) -> str:
+              mid = _normalize_slack_member_id(raw_id)
+              if not mid:
+                  return text
+              return f"<@{mid}> {text}"
+
           url = os.environ.get("SLACK_WEBHOOK_URL", "").strip()
           if not url:
               print("SLACK_WEBHOOK_URL is unset; skipping manual ping.")
               raise SystemExit(0)
-          text = os.environ.get("NOTIFY_TEXT", "ping")
+          text = with_optional_mention(
+              os.environ.get("NOTIFY_TEXT", "ping"),
+              os.environ.get("SLACK_MENTION_USER_ID", ""),
+          )
           data = json.dumps({"text": text}).encode("utf-8")
           req = urllib.request.Request(
               url,

@@ -8,6 +8,8 @@
 
 External LLM review (e.g. Gemini on **`export_public_gemini_bundle.py`** output) is **optional batch triage**—not a stand-alone audit report and **not** a substitute for **`git` history**, **CI**, or **pytest**. Use it like other **external digests** (e.g. Wabbix / WRB-style inputs): good for **prioritization**, still subordinate to reproducible checks. In-repo guardrails include **`--verify`** on bundle export, **`audit_concat_*`** helpers where you use them, **`recovery-doc-bundle-sanity.ps1`**, and the **recovery playbook** when a bundle goes wrong.
 
+**After each run:** capture suggestions in **[plans/PLAN_GEMINI_FEEDBACK_TRIAGE.md](../plans/PLAN_GEMINI_FEEDBACK_TRIAGE.md)** (optional to-dos, non-authoritative) before promoting anything into **[PLANS_TODO.md](../plans/PLANS_TODO.md)** or an issue.
+
 This runbook avoids **manual `cat *.md`** mistakes: the bundle is built from **`git ls-files` only**, excludes **`docs/private/`**, and wraps every file as:
 
 ```text
