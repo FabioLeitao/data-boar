@@ -15,6 +15,7 @@ from typing import Any
 import yaml
 
 from config.scan_defaults import clamp_file_sample_max_chars
+from utils.audit_log_display import assign_unique_audit_log_names
 from utils.file_encoding import read_text_auto_encoding
 
 # Optional JSON support without requiring top-level json for YAML-first flow
@@ -666,5 +667,8 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
             "by_tenant": by_tenant,
         },
     }
+
+    # Unique, sanitized audit log labels per target (text logs only; DB keeps config ``name``).
+    assign_unique_audit_log_names(out.get("targets") or [])
 
     return out

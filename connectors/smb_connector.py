@@ -119,6 +119,9 @@ class SMBConnector:
             )
             return
         target_name = self.config.get("name", "SMB")
+        from utils.audit_log_display import audit_log_target_label
+
+        audit_name = audit_log_target_label(self.config, default="SMB")
         host = self.config.get("host", "").strip()
         if not host:
             self.db_manager.save_failure(
@@ -224,6 +227,7 @@ class SMBConnector:
                                 ocr_max_dimension=self.ocr_max_dimension,
                                 ocr_lang=self.ocr_lang,
                                 use_content_type=self.use_content_type,
+                                audit_log_name=audit_name,
                             )
                     finally:
                         try:
