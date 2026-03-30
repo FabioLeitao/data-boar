@@ -6,7 +6,9 @@
 
 **Scope:** Maintainer / operator pings (you + agents automating checks). Product **tenant** notifications (scan-complete, etc.) stay in the main **Notifications** plan ([PLANS_TODO.md](../plans/PLANS_TODO.md) order 6)—reuse the same channel list where appropriate.
 
-**Sequencing (maintainer):** **Channel A only**—GitHub **mobile app** plus watch/email settings—is **enough to start** for PRs, reviews, Dependabot, Security, and **failed Actions**. Tweak **GitHub → Settings → Notifications** and the official iOS/Android app. When you want **redundancy** or chat-native pings, add **B** (Slack) or **C** (Telegram) per §1; **D** (Signal) stays optional and higher-effort. This doc is the **integration reminder** for those next steps.
+**Maintainer policy (this repository):** **Telegram is not used** for Data Boar operator or project notifications—trust posture and operator choice. The **only** chat alternative to **Slack** for ops pings is **Signal** (HTTP API from **`signal-cli`** / **signald** in Docker on your LAN or homelab—see §3 and **[private.example/notify/README.md](../private.example/notify/README.md)**). Do not add Telegram-based workflows or recommend Telegram for Data Boar reachability in tracked docs.
+
+**Sequencing (maintainer):** **Channel A only**—GitHub **mobile app** plus watch/email settings—is **enough to start** for PRs, reviews, Dependabot, Security, and **failed Actions**. Tweak **GitHub → Settings → Notifications** and the official iOS/Android app. When you want **redundancy** or chat-native pings, add **B** (Slack—already wired in Actions) and/or **C** (Signal bridge); Slack is the lowest-friction vendor from GitHub Actions; Signal is the **preferred** second chat if you want to rely less on Slack’s UX. This doc is the **integration reminder** for those next steps.
 
 ---
 
@@ -16,21 +18,20 @@
 | -------- | -------                       | ---                                                                                                                                    | -----------                                                                                                                   |
 | **A**    | **GitHub**                    | Already tied to the repo; **mobile app** push for assignments, review requests, **failed workflow** runs, Dependabot, Security alerts. | Turn on notifications for **data-boar**; watch **Actions** failures; optional **Issue** opened by automation with `@mention`. |
 | **B**    | **Slack** (workspace you use) | **Incoming webhook** (one URL) or bot; easy from GitHub Actions `curl`.                                                                | Single `#data-boar-ops` channel; webhook in repo secret `SLACK_WEBHOOK_URL`.                                                  |
-| **C**    | **Telegram**                  | **HTTP Bot API**; one bot token + your **chat_id**; very small scripts.                                                                | BotFather → bot token as secret; post to yourself or a small group.                                                           |
-| **D**    | **Signal**                    | Strong privacy; **higher ops cost** (linked device / `signal-cli` / community **signald** Docker images).                              | Optional; see §3. Respect **Signal Terms** and your jurisdiction.                                                             |
+| **C**    | **Signal**                    | Strong privacy; **REST** via **`signal-cli`** / **signald** in **Docker** (linked device / LAN bridge).                               | `curl` from Actions or local script to `SIGNAL_NOTIFY_URL` / homelab endpoint; secrets only in GitHub or `docs/private/notify/`. |
 
-**Practical minimum:** **A + B** or **A + C** gives redundancy without Signal. **A** alone is acceptable if Slack/Telegram are off, but two channels reduce “I missed the only ping.”
+**Practical minimum:** **A + B** (GitHub + Slack webhooks) matches current CI workflows. **A + C** (GitHub + Signal only) is valid if you post from a **trusted runner** or **local script** to your Signal bridge—**Telegram is not** a substitute path for this project.
 
-### 1.1 Phased rollout: Slack first, Signal later (stay informed on both)
+### 1.1 Phased rollout: Slack (Actions) + Signal (preferred second chat)
 
-You can **hate the app** and still use **Slack** first—it is the **lowest-friction** path from **GitHub Actions** (incoming webhook, one secret). Then add **Signal** as a **second vendor** and **stronger privacy** layer so you are not dependent on a single chat provider or on GitHub alone.
+**Slack** remains the **default** GitHub Actions integration (incoming webhook, one secret). **Signal** is the **endorsed non-Slack chat** for Data Boar: same short text to a **private REST** endpoint on your LAN (Docker image you operate—see §3).
 
 | Phase | Channels      | Goal                                                                                                                                                                                                                   |
 | ----- | --------      | ----                                                                                                                                                                                                                   |
 | **1** | **A + B**     | GitHub push/email + **Slack** `#data-boar-ops` (or your channel): **manual ping** workflow, **CI failure** workflow (when `SLACK_WEBHOOK_URL` is set), optional same webhook in app config for scan-complete (USAGE).  |
-| **2** | **A + B + D** | Keep Slack; add **Signal** via **home-lab HTTP bridge** (§3) + secret e.g. `SIGNAL_NOTIFY_URL` (or generic `NOTIFY_SECONDARY_URL`). Same workflow posts **the same short text** to both endpoints where secrets exist. |
+| **2** | **A + B + C** | Add **Signal**: **home-lab HTTP bridge** (§3) + secret e.g. `SIGNAL_NOTIFY_URL` (or generic `NOTIFY_SECONDARY_URL`). Same workflow or script posts **the same short text** to Slack **and** Signal where secrets exist. |
 
-**Why both Slack and Signal:** Independent failure modes (Slack outage vs your Signal bridge vs GitHub app). **Telegram (C)** remains optional if you want a third chat vendor; it is not required for this pattern.
+**Why both Slack and Signal:** Independent failure modes (Slack outage vs your Signal bridge vs GitHub app). **Do not** add Telegram as a third vendor for this repository.
 
 **CI sketch:** One reusable step/script: if `SLACK_WEBHOOK_URL` → `curl` Slack; if `SIGNAL_NOTIFY_URL` → `curl` Signal REST on LAN (or tunnel); failures on one branch **do not** block the other (log warning, continue).
 
@@ -53,7 +54,7 @@ No custom server required; use **GITHUB_TOKEN** in Actions (permissions scoped i
 Community setups often use **`signal-cli`** or **`signald`** (REST/gRPC) in **Docker**, with a **linked device** or number registration flow. Behaviour you described matches common patterns:
 
 - Messages **from your linked identity** to **contacts** use normal delivery semantics.
-- **Note to self** / “annotation” UX when messaging **your own** number or linked device can appear as a conversation with yourself—useful for **operator reminders** (same as many people use Telegram “Saved messages”).
+- **Note to self** / “annotation” UX when messaging **your own** number or linked device can appear as a conversation with yourself—useful for **operator reminders**.
 
 ## Caveats (read before investing):
 
@@ -62,19 +63,19 @@ Community setups often use **`signal-cli`** or **`signald`** (REST/gRPC) in **Do
 - **Automation:** the agent in Cursor **cannot** hold your Signal session; only **your** runners (home server, laptop script, CI with secrets you control) should call the API.
 - **LAB‑OP offload:** Running the Signal Docker image on **another lab machine** (not the dev PC) is a good fit: your workstation sends **`curl`** (headers + JSON body) to the REST API on the LAN—same integration style as **Uptime Kuma** webhooks. Lock the service to **private network**; store the URL/token only under **gitignored** `docs/private/notify/`. See **[private.example/notify/README.md](../private.example/notify/README.md)** § *Signal on a different machine*.
 
-**Not blocking:** treat Signal as **tier D** after GitHub + one messaging webhook.
+**Priority:** For this maintainer, Signal is the **only** non-Slack chat channel used for Data Boar ops pings—after GitHub (**A**) and alongside or instead of Slack webhooks depending on your wiring.
 
 ---
 
-## 4. Slack vs Telegram (quick comparison)
+## 4. Slack vs Signal (quick comparison)
 
-|                      | Slack                                                 | Telegram                                                                |
-| ---                  | ---                                                   | ---                                                                     |
-| **Setup**            | Slack app → Incoming Webhook to channel               | BotFather → bot token; get `chat_id` once                               |
-| **From Actions**     | `curl -X POST -d '{"text":"..."}' $SLACK_WEBHOOK_URL` | `<https://api.telegram.org/bot$TOKEN/sendMessage?chat_id=...&text=..>.` |
-| **Personal vs team** | Good if you already live in Slack                     | Good for **direct-to-you** mobile push                                  |
+|                      | Slack                                                 | Signal (this project)                                                                 |
+| ---                  | ---                                                   | ---                                                                                    |
+| **Setup**            | Slack app → Incoming Webhook to channel               | **`signal-cli`** / **signald** in Docker; REST on **private LAN**; see §3              |
+| **From Actions**     | `curl -X POST -d '{"text":"..."}' $SLACK_WEBHOOK_URL` | `curl` to your bridge URL + JSON body (per image docs); secret `SIGNAL_NOTIFY_URL` etc. |
+| **Operator stance**  | Lowest friction for GitHub Actions                    | **Preferred** chat UX for some operators; **not** Telegram—policy in intro paragraph   |
 
-Implement **one generic “notify” step** in CI (bash/PowerShell) that posts the same payload to **multiple** endpoints if secrets exist (try Slack; on failure optionally try Telegram—avoid infinite loops).
+Implement **one generic “notify” step** in CI (bash/PowerShell) that posts the same payload to **Slack and/or Signal** if secrets exist (independent `curl`s; failures on one path do not block the other).
 
 ### 4.1 Slack setup checklist (channel B)
 
@@ -82,6 +83,7 @@ Implement **one generic “notify” step** in CI (bash/PowerShell) that posts t
 1. Create an [**Incoming Webhook**](https://api.slack.com/messaging/webhooks) for your workspace (Slack app → choose channel → copy the webhook URL).
 1. On GitHub: **Settings → Secrets and variables → Actions → New repository secret** — name **`SLACK_WEBHOOK_URL`**, value = the webhook URL.
 1. **Smoke test:** **Actions → Slack operator ping (manual) → Run workflow** (optional custom message). If the secret is unset, the job is **skipped** (no failure).
+1. **Optional @mention for mobile/desktop push:** Repository **variable** **`SLACK_MENTION_USER_ID`** (Slack member ID, `U…`) — see §4.2 D). Manual ping also accepts input **`mention_user_id`** for a one-off test.
 1. **CI / Semgrep failure ping (phase 1):** workflow **`Slack CI failure notify`** (`.github/workflows/slack-ci-failure-notify.yml`) runs when **`CI`** or **`Semgrep`** finishes with **`failure`** (push/PR to `main` or `master`). Uses the **same** `SLACK_WEBHOOK_URL`. If the secret is unset, the notify job is **skipped**. The Slack line uses the failing workflow’s display name (e.g. **Test (Python 3.13)** or **Semgrep (OSS, Python)**). *Fork PRs:* failures may still produce a ping—reduce noise later (branch filters) if needed.
 1. **Release published ping (opt-in):** workflow **`Slack release published notify`** (`.github/workflows/slack-release-published-notify.yml`) posts a short message when a GitHub Release is published. Toggle with repo variable **`SLACK_NOTIFY_RELEASE_PUBLISHED=true`**.
 1. **PR merged ping (opt-in):** workflow **`Slack PR merged notify`** (`.github/workflows/slack-pr-merged-notify.yml`) posts when a PR is merged into `main`/`master`. Toggle with **`SLACK_NOTIFY_PR_MERGED=true`**.
@@ -125,13 +127,28 @@ If your workspace blocks custom apps, ask a workspace admin to approve app insta
 
 If **manual** job is **skipped**, confirm the secret name is exactly **`SLACK_WEBHOOK_URL`** and that `.github/workflows/slack-operator-ping.yml` is on the default branch (or the branch you run Actions from).
 
+#### D) Message posted but no mobile or desktop push
+
+An **incoming webhook** only **posts to a channel**. That is not the same as a **personal notification**: Slack may show the message in the channel without **pushing** to your iPhone, Android, or Windows desktop if:
+
+- The channel is **muted** or set to notify only for **mentions** / keywords.
+- A **notification schedule**, **Focus**, or **Do Not Disturb** is blocking alerts.
+- OS-level permissions for the **Slack** app are off (iOS **Settings → Slack → Notifications**, Windows **Focus assist**, etc.).
+
+**What usually fixes it:**
+
+1. **Slack channel:** Open the ops channel → channel name → **Notifications** (or channel settings) → choose **All messages** / **Every new message** for that channel, or at least **unmute** the channel.
+2. **Optional @mention (recommended for CI + manual ping):** Add a repository **variable** (Settings → **Secrets and variables** → **Actions** → **Variables** tab) named **`SLACK_MENTION_USER_ID`** with your Slack **member ID** (starts with `U`, for example `U0123ABCD`). Find it: Slack → your avatar → **Profile** → **More** → **Copy member ID** (labels vary slightly by client). The workflows **`Slack operator ping (manual)`** and **`Slack CI failure notify`** will prepend `<@USER_ID>` to the message so Slack applies your **mention** notification rules (typically a stronger mobile/desktop alert than “any channel message”). For a one-off test without saving the variable, use the **`mention_user_id`** input when running the manual ping workflow.
+3. **GitHub (channel A):** Install the official **GitHub** mobile app and enable notifications for **Actions** / workflow runs under **GitHub → Settings → Notifications** on the web; on iPhone, also check **Settings → GitHub** for notification style. Cursor mobile does **not** replace GitHub push for failed Actions (see §2).
+
+**Do not** paste your member ID into public issues or commits; keep it in the **Variables** UI only.
+
 ---
 
 ## 5. Multi-channel pattern
 
 1. **Primary:** GitHub (issue comment or failed check).
-1. **Secondary:** Slack *or* Telegram (operator preference).
-1. **Optional tertiary:** Signal (home lab only, until stable).
+1. **Secondary:** **Slack** (webhook) and/or **Signal** (REST bridge)—**not** Telegram for this repository.
 1. **Redundancy upgrade:** **Slack + Signal together** (see §1.1)—same payload to both when you want **two chat vendors** plus GitHub.
 
 **Do not** store webhooks or bot tokens in git; use **GitHub Actions secrets** and/or a local `.env` listed in `.gitignore`.
@@ -142,7 +159,7 @@ If **manual** job is **skipped**, confirm the secret name is exactly **`SLACK_WE
 
 Baseline script: [scripts/kpi-export.py](../../scripts/kpi-export.py) (needs `gh auth`). **Optional extension (backlog):**
 
-- **Weekly** `workflow_dispatch` or cron workflow: run `python scripts/kpi-export.py --out kpi_snapshot.md`, upload as **artifact**, or post excerpt to Slack/Telegram.
+- **Weekly** `workflow_dispatch` or cron workflow: run `python scripts/kpi-export.py --out kpi_snapshot.md`, upload as **artifact**, or post excerpt to **Slack** and/or **Signal** (never Telegram for this maintainer policy).
 - **Do not** commit snapshots with live URLs if they’re sensitive; keep artifacts **retention short** or post summary only.
 
 See [PLAN_READINESS_AND_OPERATIONS.md](../plans/PLAN_READINESS_AND_OPERATIONS.md) §4.7.
@@ -163,7 +180,7 @@ See [PLAN_READINESS_AND_OPERATIONS.md](../plans/PLAN_READINESS_AND_OPERATIONS.md
 | **Progress / PM view** | Paste the **Kanban** table from [SPRINTS_AND_MILESTONES.md](../plans/SPRINTS_AND_MILESTONES.md) or a **Mermaid `gantt`** block as **plain text** in the message. The agent can **draft** that Markdown in chat; **CI** sends it—you copy nothing manually if the workflow builds the body. |
 | **SMS**                | **Twilio** (or similar) **HTTP API** from Actions; store **Account SID / auth token / From** in GitHub **secrets**; costs and compliance are **yours**.                                                                                                                                    |
 | **Email**              | SMTP via an Action (e.g. **`dawidd6/action-send-mail`**) or your provider’s REST API; **secrets** for credentials.                                                                                                                                                                         |
-| **Low-friction**       | **Telegram** `sendMessage` or **Slack** webhook (same as §2–§4)—often enough for “end of day” without SMS fees.                                                                                                                                                                            |
+| **Low-friction**       | **Slack** webhook and/or **Signal** `curl` to your LAN bridge (same as §2–§4)—often enough for “end of day” without SMS fees.                                                                                                                                                                 |
 
 **Twilio (SMS API — optional):** **Twilio** is a US-based **CPaaS** (*Communications Platform as a Service*) vendor: one **HTTP API** to send **SMS** across many countries without a direct contract with each mobile operator—why it appears often in tutorials and pairs well with **GitHub Actions** or a **`curl`** script. You typically pay **per message** (and sometimes for a **sender number**); rates depend on **destination country** and product—use the official **[Twilio SMS pricing](https://www.twilio.com/en-us/messaging/pricing)** page for a current quote, not a fixed number in this doc. **Alternatives:** **AWS SNS**, **Vonage**, or **local carriers** in your region. Data is processed on **US** (and other) Twilio infrastructure; separate **marketing** SMS rules from **personal operational** pings; involve **counsel / DPO** if your org needs that check.
 
@@ -183,4 +200,4 @@ See [PLAN_READINESS_AND_OPERATIONS.md](../plans/PLAN_READINESS_AND_OPERATIONS.md
 
 ---
 
-*Last updated: EOD/sprint digest pattern (SMS/email/chat via your automation); multi-channel + KPI hook.*
+*Last updated: Maintainer policy—no Telegram for Data Boar ops; Signal as the only non-Slack chat alternative; Slack vs Signal comparison table.*

@@ -2,7 +2,7 @@
 name: operator-notification-channels
 description: >-
   When implementing CI pings, KPI exports, or operator alerts, use at least two channels
-  (GitHub + Slack or Telegram), keep secrets out of git, and treat Signal as optional tier D.
+  (GitHub + Slack and/or Signal). Telegram is not used for Data Boar operator notifications in this repo; keep secrets out of git.
 ---
 
 # Operator notification channels
@@ -10,15 +10,15 @@ description: >-
 ## When to use
 
 - Adding or editing **GitHub Actions** that should alert a human (failures, long jobs, KPI runs).
-- Discussing **Slack, Telegram, Signal, or GitHub mobile** for “reach the operator.”
+- Discussing **Slack, Signal, or GitHub mobile** for “reach the operator” (not Telegram for this maintainer policy).
 - Extending **scripts/kpi-export.py** automation with notify-on-complete.
 
 ## Instructions
 
 1. Read **[docs/ops/OPERATOR_NOTIFICATION_CHANNELS.md](../../../docs/ops/OPERATOR_NOTIFICATION_CHANNELS.md)** (EN + pt-BR sibling).
 1. **Tier A:** GitHub (watch, failed workflows, Issue `@mention`).
-1. **Tier B/C:** Slack incoming webhook **or** Telegram Bot API—**never** commit URLs/tokens; use `${{ secrets.* }}` or gitignored `.env`. Repo workflows: **`Slack operator ping (manual)`** (`slack-operator-ping.yml`) and **`Slack CI failure notify`** (`slack-ci-failure-notify.yml`) both use **`SLACK_WEBHOOK_URL`**; jobs skip if unset.
-1. **Tier D:** Signal (`signal-cli` / **signald** in Docker)—only after A+(B|C); operator must own pairing and ToS compliance.
+1. **Tier B:** Slack incoming webhook—**never** commit URLs; use `${{ secrets.SLACK_WEBHOOK_URL }}`. Workflows: **`Slack operator ping (manual)`**, **`Slack CI failure notify`**. Optional **variable** **`SLACK_MENTION_USER_ID`** for mentions—see **OPERATOR_NOTIFICATION_CHANNELS.md** §4.2 D).
+1. **Tier C (chat, non-Slack):** Signal only—`signal-cli` / **signald** Docker REST on LAN; secret e.g. `SIGNAL_NOTIFY_URL`. **Telegram is not** a recommended path for this repository (maintainer policy).
 1. For **KPI:** optional scheduled `workflow_dispatch` + artifact or chat summary per [PLAN_READINESS_AND_OPERATIONS.md](../../../docs/plans/PLAN_READINESS_AND_OPERATIONS.md) §4.7.
 
 ## Legacy Git + cleanup

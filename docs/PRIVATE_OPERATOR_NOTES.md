@@ -17,6 +17,11 @@ git check-ignore -v docs/private/anything.md
 
 **Cursor / agents:** **`docs/private/`** is **workspace-local context** shared with the assistant on this machine: it is **excluded from Git / GitHub only**, not “hidden until `@`.” Agents should **`read_file`** paths under **`docs/private/`** when homelab, operator layout, or **`AGENT_LAB_ACCESS`** topics apply—**no** requirement to **`@`-mention** or keep files open (unless you add **`docs/private/`** to **`.cursorignore`**). Still **disclosure to Cursor’s product** per their terms; avoid plaintext production secrets in files.
 
+### Partner / collaborator / client feedback (separate from `docs/private/`)
+
+- **Path:** **`docs/feedbacks, reviews, comments and criticism/`** — **gitignored** (see root **`.gitignore`**), **not** a subtree of **`docs/private/`**. Same **WRB**-style habit as Wabbix/Gemini review drops: the operator **posts** all incoming feedback there.
+- **Agents:** When asked to find or interpret such feedback, look **there first**; if empty or origin is unclear (**Wabbix** vs **Gemini** vs other), **ask the operator** before attributing in tracked plans. Rule **`.cursor/rules/operator-feedback-inbox.mdc`** · tracked blueprint **`docs/private.example/feedbacks-inbox/README.md`**.
+
 ---
 
 ## 2. Recommended layout (you create this locally)
