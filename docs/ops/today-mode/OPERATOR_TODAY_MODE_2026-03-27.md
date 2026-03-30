@@ -12,13 +12,13 @@
 
 ### 0a — Sweep prior “today mode” dangling (no immortal backlog)
 
-- Open **[OPERATOR_TODAY_MODE_2026-03-26.md](OPERATOR_TODAY_MODE_2026-03-26.md)** — anything still unchecked (e.g. **tag `v1.6.7` + GitHub Release + Docker**, **Wabbix WRB**, optional **branch protection**) either **do today**, **move to one PLANS row / issue**, or **defer explicitly** with a date — don’t leave it **dangling forever**.
-- Optional weekly habit: skim **all** `docs/ops/OPERATOR_TODAY_MODE_*.md` still relevant; operator note **`docs/private/TODAY_MODE_CARRYOVER_AND_FOUNDER_RHYTHM.md`** explains daily vs founder checkpoint.
+- Open **[OPERATOR_TODAY_MODE_2026-03-26.md](OPERATOR_TODAY_MODE_2026-03-26.md)** — anything still unchecked (e.g. **Wabbix WRB**, optional **branch protection**, **Slack proof-of-ping**). **Release `v1.6.7`** is already on **GitHub** (Latest) and **Docker Hub** (`:1.6.7`, `:latest`, **2026-03-26**) — see the **Update** section there; don’t re-list tag/Hub as manual unless you are re-publishing. Either **do today**, **move to one PLANS row / issue**, or **defer explicitly** with a date — don’t leave it **dangling forever**.
+- Optional weekly habit: skim **all** `docs/ops/today-mode/OPERATOR_TODAY_MODE_*.md` still relevant; operator note **`docs/private/TODAY_MODE_CARRYOVER_AND_FOUNDER_RHYTHM.md`** explains daily vs founder checkpoint.
 
 ### 0b — Slack notifications (hard requirement before trusting “you were pinged”)
 
 - **Problem to solve:** private channel + desktop open is **not enough** if **Windows** and **iPhone** never show a notification — you won’t see agent/CI signals on channel B.
-- **Do:** read **[OPERATOR_NOTIFICATION_CHANNELS.md](OPERATOR_NOTIFICATION_CHANNELS.md)** (+ **[pt-BR](OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md)**) and **prove** delivery: send a **test** to the channel, confirm **notification settings** (app + OS: Focus/DND, Slack mobile alerts), and trigger or verify the **“Slack operator ping (manual)”** / **CI failure** workflow path if configured. Goal: **one** confirmed ding on **phone** and **desktop** you actually notice.
+- **Do:** read **[OPERATOR_NOTIFICATION_CHANNELS.md](../OPERATOR_NOTIFICATION_CHANNELS.md)** (+ **[pt-BR](../OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md)**) and **prove** delivery: send a **test** to the channel, confirm **notification settings** (app + OS: Focus/DND, Slack mobile alerts), and trigger or verify the **“Slack operator ping (manual)”** / **CI failure** workflow path if configured. Goal: **one** confirmed ding on **phone** and **desktop** you actually notice.
 - **Secrets** stay in GitHub Actions / env — never paste webhooks in chat or tracked docs.
 
 ---
@@ -48,7 +48,7 @@
 ### Block E — Recovery tooling dry run (≈ 15–30 min, optional)
 
 - **`.\scripts\recovery-doc-bundle-sanity.ps1`** (no bundle) — confirms pytest compile slice.
-- If you keep a private concat copy: one **`--sweep-windows`** run for peace of mind ([DOC_BUNDLE_RECOVERY_PLAYBOOK.md](DOC_BUNDLE_RECOVERY_PLAYBOOK.md)).
+- If you keep a private concat copy: one **`--sweep-windows`** run for peace of mind ([DOC_BUNDLE_RECOVERY_PLAYBOOK.md](../DOC_BUNDLE_RECOVERY_PLAYBOOK.md)).
 
 ### Block F — Plans / Band A thin pass (≈ 30–45 min, optional)
 
@@ -71,8 +71,8 @@ Day is “done” when: **Block 0** has either **Slack proof-of-ping** or a **tr
 | **C** README `--host` | Already met | Quick start cites `--host` + loopback; see audit “Done recently”. |
 | **D** Web `/help` | N/c | No new CLI flags since 2026-03-25 transport pass; re-diff when flags change. |
 | **E** Recovery script | Done | `.\scripts\recovery-doc-bundle-sanity.ps1` green; **Tip** line fixed for Windows PowerShell 5.1 (ASCII hyphen). Prefer **`pwsh`** if encoding issues return. |
-| **F** Band A | Operator | S0 checklist in [SPRINTS_AND_MILESTONES.md](../plans/SPRINTS_AND_MILESTONES.md) §4.0 — Dependabot / Scout / Hub. |
-| **0** Carryover + Slack | Operator | [OPERATOR_TODAY_MODE_2026-03-26.md](OPERATOR_TODAY_MODE_2026-03-26.md) (tag **v1.6.7**, Wabbix, Slack mobile/desktop proof) — still manual. |
+| **F** Band A | Operator | S0 checklist in [SPRINTS_AND_MILESTONES.md](../../plans/SPRINTS_AND_MILESTONES.md) §4.0 — Dependabot / Scout / Hub. |
+| **0** Carryover + Slack | Operator | [OPERATOR_TODAY_MODE_2026-03-26.md](OPERATOR_TODAY_MODE_2026-03-26.md): **GitHub + Hub `v1.6.7` done** (verified); **Wabbix** + **Slack mobile/desktop proof** — still manual. |
 
 ---
 
