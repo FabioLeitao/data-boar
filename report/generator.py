@@ -432,7 +432,14 @@ def _praise_rows(db_rows: list[dict], fs_rows: list[dict]) -> list[dict]:
 
 def _find_override_row(pat: str, norm: str, overrides: list[dict]) -> dict | None:
     """
-    Find first override whose norm_tag_pattern matches norm (substring or exact).
+    Find first override whose norm_tag_pattern matches norm (substring match both ways).
+
+    Matching uses inclusive substring semantics: the pattern matches if it appears inside
+    ``norm`` *or* ``norm`` appears inside the pattern (so short tags still match longer
+    ``norm_tag`` text). **List order matters:** put **more specific** ``norm_tag_pattern``
+    entries **before** generic ones (e.g. ``UK GDPR`` before ``GDPR``), otherwise a broad
+    pattern listed first will win and the specific row is never used.
+
     Return a recommendation row dict built from that override, or None.
     """
     for o in overrides:
