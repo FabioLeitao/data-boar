@@ -8,6 +8,8 @@
 
 Revisão por LLM externa (ex.: Gemini sobre a saída do **`export_public_gemini_bundle.py`**) é **triagem em lote opcional** — não um relatório de auditoria isolado nem substituto de **histórico `git`**, **CI** ou **pytest**. Trate como outros **insumos externos** (ex.: digests estilo Wabbix / WRB): úteis para **priorizar**, sempre abaixo de checagens reproduzíveis. No repositório: **`--verify`** na exportação do pacote, helpers **`audit_concat_*`** quando usar, **`recovery-doc-bundle-sanity.ps1`** e o **playbook de recuperação** quando o pacote correr mal.
 
+**Depois de cada execução:** registre sugestões em **[plans/PLAN_GEMINI_FEEDBACK_TRIAGE.md](../plans/PLAN_GEMINI_FEEDBACK_TRIAGE.md)** (to-dos opcionais, não autoritativos) antes de promover qualquer coisa para **[PLANS_TODO.md](../plans/PLANS_TODO.md)** ou uma issue.
+
 Este runbook evita erros do tipo **`cat *.md` manual**: o pacote vem só de **`git ls-files`**, **exclui** **`docs/private/`** e envolve cada arquivo assim:
 
 ```text
@@ -61,7 +63,7 @@ Formato de saída:
 ## Automação relacionada
 
 - Pacotes antigos sem marcadores: `scripts/audit_concatenated_markdown.py` (divisão por H1 ou `--cat-order` por bytes).
-- **Heurística de “peças do puzzle” (janela deslizante):** `scripts/audit_concat_sliding_window.py` indexa **todas** as janelas de *N* linhas nos `*.md` / `*.yaml` / `*.yml` rastreados e marca quais linhas do teu **blob concatenado** coincidem com **alguma** janela do repositório. Trechos **sem cobertura** podem ser cola entre arquivos, edição manual ou texto que **já não existe** no disco — **não** provam perda (linhas genéricas e limites de janela geram ruído). Exemplo:
+- **Heurística de “peças do puzzle” (janela deslizante):** `scripts/audit_concat_sliding_window.py` indexa **todas** as janelas de *N* linhas nos `*.md` / `*.yaml` / `*.yml` rastreados e marca quais linhas do **blob concatenado** (bundle de export) coincidem com **alguma** janela do repositório. Trechos **sem cobertura** podem ser cola entre arquivos, edição manual ou texto que **já não existe** no disco — **não** provam perda (linhas genéricas e limites de janela geram ruído). Exemplo:
 
   ```bash
   uv run python scripts/audit_concat_sliding_window.py \

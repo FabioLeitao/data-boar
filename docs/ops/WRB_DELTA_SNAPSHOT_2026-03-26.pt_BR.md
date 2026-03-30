@@ -19,7 +19,7 @@ Cola o **parágrafo** da seção seguinte no e-mail à Wabbix **depois** do prom
 ```text
 Contexto complementar (2026-03-26):
 
-Desde o nosso último ciclo WRB e desde a tag v1.6.6, o main acumulou (ou vai integrar no próximo merge) trabalho que inclui: job de lint na CI alinhado com `pre-commit run --all-files` (Ruff, plans-stats --check, markdown, locale pt-BR, guarda commercial); novo hook local `plans-stats-check`; workflow Semgrep para SAST Python; série ADR 0000–0003 (baseline de origem, MD029, docs do operador, roadmap SBOM); docs/ops/WORKFLOW_DEFERRED_FOLLOWUPS; guia académico para tese (ACADEMIC_USE_AND_THESIS + pt-BR); atualizações de regra/skill de qualidade; ping Slack ao operador verificado.
+Desde o nosso último ciclo WRB e desde a tag v1.6.6, o main acumulou (ou vai integrar no próximo merge) trabalho que inclui: job de lint na CI alinhado com `pre-commit run --all-files` (Ruff, plans-stats --check, markdown, locale pt-BR, guarda commercial); novo hook local `plans-stats-check`; workflow Semgrep para SAST Python; série ADR 0000–0003 (baseline de origem, MD029, docs do operador, roadmap SBOM); docs/ops/WORKFLOW_DEFERRED_FOLLOWUPS; guia acadêmico para tese (ACADEMIC_USE_AND_THESIS + pt-BR); atualizações de regra/skill de qualidade; ping Slack ao operador verificado.
 
 Manter as três lentes temporais separadas. Para “desde a última release etiquetada”, usar v1.6.7 como baseline (última release publicada) e separar trabalho não publicado em `main`, se houver.
 ```

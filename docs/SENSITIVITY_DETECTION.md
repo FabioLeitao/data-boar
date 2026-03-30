@@ -27,6 +27,15 @@ The detector applies **entertainment / low-PII document** treatment (confidence 
 
 **Strong regex matches** (CPF, email, credit card, …) still produce **HIGH** where applicable. Raising **`medium_confidence_threshold`** mainly affects the MEDIUM band; the default **70** boundary for ML-only **HIGH** is unchanged— these heuristics target false **HIGH** on cloned repos and music libraries scanned as filesystem targets.
 
+### Generic digit patterns and false-positive scope
+
+Optional regional regexes in **compliance samples** (e.g. **CEP_BR**, **DNI_AR**) often use **short numeric shapes** that also appear in SKUs, internal IDs, counters, and line numbers. Expect **many false positives** when scanning unconstrained text or catalogs; review findings in context and tighten overrides for production. **Entertainment** context applies weaker treatment to selected patterns (see `WEAK_PATTERNS_IN_ENTERTAINMENT` in the detector). Remember to **merge** `recommendation_overrides` from samples into your config so the **Recommendations** sheet reflects framework-specific text — see [USAGE.md](USAGE.md) (compliance samples checklist).
+
+| Pattern class | Typical risk | Operator mitigation |
+| --- | --- | --- |
+| Postal / national-ID digit runs | Match non-PII codes | Column/context review; stricter private regex |
+| Broad `\d{n,m}` in sample YAML | Flood of alerts | Override pattern; disable pattern name if unused |
+
 ---
 
 ## CNPJ formats (Brazil): legacy numeric and alphanumeric
@@ -505,9 +514,11 @@ The application already includes these patterns; you do not need to redefine the
 
   `\b\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b`
 
-- **Postal code (Brazil):** `99999-999`:
+- **Postal code (Brazil, CEP):** `99999-999`:
 
   `\b\d{5}-?\d{3}\b`
+
+  **Precision:** This shape also matches many **non-CEP** values (product SKUs, internal numeric IDs, codes in tables). Treat matches as **format hits**, not proof of a postal address; review findings in catalog/inventory exports. In **lyrics/tabs/cifra** context, `CEP_BR` is downgraded with other weak patterns (see `WEAK_PATTERNS_IN_ENTERTAINMENT` in `core/detector.py`). For stricter matching you would need contextual rules (e.g. column names containing `cep`, `postal`) outside the generic regex engine—not shipped by default.
 
 When a custom pattern matches the column name or sample text, the finding is reported with **HIGH** sensitivity (or MEDIUM in lyrics/tabs context for weak patterns), with `pattern_detected` set to your `name` and `norm_tag` in the report.
 
