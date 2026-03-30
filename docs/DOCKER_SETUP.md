@@ -6,6 +6,10 @@ Run these steps in a terminal where **Docker** is available (e.g. PowerShell or 
 
 **Pre-built image:** The application is published on Docker Hub as `fabioleitao/data_boar:latest` ([hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar)). You can `docker pull` and run that image instead of building from source (see [README](../README.md) and [deploy/DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md))). The image includes the latest features (hybrid regex + ML + optional DL sensitivity detection; configurable ML/DL training terms via `ml_patterns_file`, `dl_patterns_file`, or `sensitivity_detection` in config — see [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md)).
 
+## Data persistence (`/data` volume)
+
+The default image sets **`CONFIG_PATH=/data/config.yaml`**. Session **SQLite**, **Excel reports**, **heatmaps**, and **audit logs** are written to paths taken from that configuration (typically under `/data` when paths are relative to the config file). **Without a bind mount**, those files live in the container layer and are **lost** when the container is removed. Always use **`-v <host_dir>:/data`** with the same host directory for config and outputs (the examples below use `${PWD}/data:/data`). Compose overrides should mount the same host path — see [deploy/DEPLOY.md](deploy/DEPLOY.md).
+
 **Upgrading your local image:** To refresh Docker Desktop with the current version from the repository, pull the image and restart your container(s):
 
 ```powershell

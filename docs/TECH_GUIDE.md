@@ -25,6 +25,12 @@ This guide covers installation, configuration, CLI and API reference, supported 
 - **Python**: 3.12+.
 - **Package manager**: [uv](https://github.com/astral-sh/uv) (recommended) or `pip`.
 
+### Python minor versions (local development vs Docker image)
+
+- **Declared:** `pyproject.toml` requires **Python ≥3.12**. **CI** runs **pytest** on **3.12 and 3.13** (see `.github/workflows/ci.yml`).
+- **Static analysis:** `sonar.python.version` in `sonar-project.properties` is **3.12** (single value for Sonar’s Python analyzer).
+- **Dockerfile** uses **`python:3.13-slim`** — published container images run **CPython 3.13** end-to-end; bump discipline and matrix notes: `docs/plans/PYTHON_UPGRADE_PLAYBOOK.md` (also `PYTHON_UPGRADE_PLAYBOOK.pt_BR.md`).
+
 ### Install Python and system libraries (Linux example)
 
 On Debian/Ubuntu:
@@ -32,11 +38,12 @@ On Debian/Ubuntu:
 ```bash
 sudo apt update
 sudo apt install -y python3.12 python3.12-venv python3.12-dev build-essential \
-  libpq-dev libssl-dev libffi-dev unixodbc-dev
+  libpq-dev libssl-dev libffi-dev unixodbc-dev default-libmysqlclient-dev
 ```
 
 - `python3.12[-dev]` and `build-essential` are required to build some drivers (e.g. database clients).
 - `libpq-dev`, `unixodbc-dev` and SSL/FFI headers help when using PostgreSQL, SQL Server, Oracle, or other SQLAlchemy drivers.
+- `default-libmysqlclient-dev` provides headers/libs for **mysqlclient** (MySQL/MariaDB); omit it if you use **pymysql** only and wheels cover your platform.
 
 **ThinkPad T14 + LMDE 7 (Debian 13 base):** full operator checklist (updates, `ufw`, `fwupd`, optional Podman/Docker) — **[LMDE7_T14_DEVELOPER_SETUP.pt_BR.md](ops/LMDE7_T14_DEVELOPER_SETUP.pt_BR.md)** ([short EN summary](ops/LMDE7_T14_DEVELOPER_SETUP.md)).
 
