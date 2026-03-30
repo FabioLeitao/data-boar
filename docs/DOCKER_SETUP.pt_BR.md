@@ -6,6 +6,10 @@ Execute estes passos em um terminal onde o **Docker** esteja disponível (ex.: P
 
 **Imagem pré-construída:** A aplicação é publicada no Docker Hub como `fabioleitao/data_boar:latest` ([hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar)). Você pode usar `docker pull` e executar essa imagem em vez de construir a partir do código (veja [README](../README.md) e [deploy/DEPLOY.md](deploy/DEPLOY.md) ([pt-BR](deploy/DEPLOY.pt_BR.md))). A imagem inclui as funcionalidades atuais (detecção de sensibilidade híbrida regex + ML + DL opcional; termos de treino ML/DL configuráveis via `ml_patterns_file`, `dl_patterns_file` ou `sensitivity_detection` no config — veja [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md)).
 
+## Persistência de dados (volume `/data`)
+
+A imagem padrão define **`CONFIG_PATH=/data/config.yaml`**. O **SQLite** da sessão, **relatórios Excel**, **heatmaps** e **logs de auditoria** seguem caminhos derivados dessa config (em geral sob `/data` quando os caminhos são relativos ao arquivo de config). **Sem bind mount**, esses arquivos ficam na camada do container e **se perdem** ao remover o container. Use sempre **`-v <pasta_host>:/data`** com a mesma pasta no host para config e saídas (os exemplos abaixo usam `${PWD}/data:/data`). No Compose, o override deve montar o mesmo caminho — veja [deploy/DEPLOY.pt_BR.md](deploy/DEPLOY.pt_BR.md).
+
 **Atualizando sua imagem local:** Para atualizar o Docker Desktop com a versão atual do repositório, faça pull da imagem e reinicie o(s) container(es):
 
 ```powershell

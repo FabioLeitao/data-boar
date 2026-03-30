@@ -265,6 +265,8 @@ curl -o audit.log http://localhost:8088/logs
 - Returns the most recent `audit_YYYYMMDD.log` file written by the application.
 - If no log file is found, you get **404** with `{"detail": "No log files found."}`.
 
+**Audit log line format (read this before interpreting paths):** Lines look like `Finding: source | target_label | location | sensitivity | pattern` and `Connected: target_label (type) at location`. The **`target_label`** is a **sanitized, unique** per-target name derived from config (`audit_log_name`), not necessarily identical to the raw `name` string. For **filesystem** targets, **`location`** is usually a **POSIX path relative to the resolved scan root** (no drive letter or home directory). The scan root itself is logged as `folder_name?8_hex` (not a full absolute path). If a file **resolves outside** the scan root (e.g. symlink), **`location`** becomes `target_label?12_hex` instead of leaking an absolute path—use the SQLite/Excel row for the authoritative path. Remote share connectors that scan archives via a temp file keep archive-style locations like `archive.zip|inner/path.txt` in the log.
+
 ### Download current (last) heatmap PNG
 
 ```bash
@@ -403,6 +405,12 @@ in your config. To **enable alphanumeric CNPJ via overrides only** (for example,
 To detect **new possibly personal or sensitive values** (e.g. RG, vehicle plate, health plan ID), add custom regex patterns. In the main config set **`regex_overrides_file`** to the path of a YAML or JSON file with a list of `{ name, pattern, norm_tag }`. The detector matches each pattern against the column name and sample text; any match is reported with HIGH sensitivity. Your file adds to or overrides built-in patterns (CPF, CNPJ, email, phone, SSN, credit card, dates). **Format and examples:** [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md#custom-regex-patterns-detecting-new-personalsensitive-values) (EN) · [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md#padrões-regex-customizados-detectar-novos-dados-pessoaissensíveis) (pt-BR). For **multiple regulations and sample configuration** (built-in: LGPD, GDPR, CCPA, HIPAA, GLBA; extensibility for UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS, or custom), and for assistance with tuning, see [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) ([pt-BR](COMPLIANCE_FRAMEWORKS.pt_BR.md)).
 
 **Other regulations and compliance samples:** Ready-to-use sample configs for **UK GDPR**, **EU GDPR**, **Benelux**, **PIPEDA**, **POPIA**, **APPI**, **PCI-DSS**, and other regions are in [compliance-samples/](compliance-samples/). Set `regex_overrides_file` and `ml_patterns_file` to the sample file and merge its `recommendation_overrides` into `report.recommendation_overrides`. Full list, what goes where, and how to use: [COMPLIANCE_FRAMEWORKS.md – Compliance samples](COMPLIANCE_FRAMEWORKS.md#compliance-samples) ([pt-BR](COMPLIANCE_FRAMEWORKS.pt_BR.md#amostras-de-conformidade)).
+
+**Checklist when using a compliance sample file:**
+
+1. **Merge** the sample’s `recommendation_overrides` into `report.recommendation_overrides` in your main config — otherwise the **Recommendations** sheet falls back to built-in generic text only.
+1. **Review** optional `regex` entries; regional digit patterns can be noisy on unconstrained text (see [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md#generic-digit-patterns-and-false-positive-scope)).
+1. **Order** `recommendation_overrides` so **more specific** `norm_tag_pattern` strings appear **before** broader substrings (e.g. **UK GDPR** before **GDPR**). The matcher uses **first match** (substring semantics).
 
 ### Rate limiting and safe concurrency
 
@@ -885,10 +893,11 @@ scan:
 
 ### 5.1 Operator notifications (optional)
 
-After a scan finishes (CLI one-shot or `POST /scan` / `POST /start` background run), the app can **POST a short pt-BR brief** to **Slack**, **Microsoft Teams**, **Telegram**, or a **generic JSON webhook** (e.g. automation tools). Default is **off** (`notifications.enabled: false`).
+After a scan finishes (CLI one-shot or `POST /scan` / `POST /start` background run), the app can **POST a short pt-BR brief** to **Slack**, **Microsoft Teams**, a **generic JSON webhook** (e.g. automation tools or a **Signal** REST bridge), or **Telegram** (optional fields for legacy/third-party installs only). Default is **off** (`notifications.enabled: false`).
 
+- **Maintainer policy (canonical repo):** The maintainer does **not** use **Telegram** for Data Boar operator notifications; prefer **Slack**, **Teams**, or **generic webhook** for **Signal**. See [OPERATOR_NOTIFICATION_CHANNELS.md](ops/OPERATOR_NOTIFICATION_CHANNELS.md).
 - **Config (legacy single path):** `notifications.operator` with `slack_webhook_url`, `teams_webhook_url`, `telegram_bot_token` + `telegram_chat_id`, or `generic_webhook_url` — first configured type wins (Slack → Teams → Telegram → generic).
-- **Config (multiple operator channels):** `notifications.operator.channels` as a **list** of objects; each object is **one** channel (e.g. one Slack webhook and one Telegram bot). All configured channels receive the same message (scan-complete or manual script).
+- **Config (multiple operator channels):** `notifications.operator.channels` as a **list** of objects; each object is **one** channel (e.g. one Slack webhook and one generic webhook). All configured channels receive the same message (scan-complete or manual script).
 - **Tenant copy (optional):** `notifications.tenant.by_tenant` maps a **lowercased** tenant name to a webhook block (or string URL for generic POST). `default_slack_webhook_url` / `default_generic_webhook_url` apply when `tenant_name` is set but there is no per-tenant entry. Requires a non-empty `tenant_name` on the session.
 - **Dedupe:** `notifications.dedupe_scan_complete_per_session` (default `true`) avoids a second POST for the same `session_id` after **at least one** outbound send succeeded (process-local; use `false` only if you need retries on every completion hook).
 - **Audit log (optional):** `notifications.notify_audit_log` (default `true`) appends one row per channel attempt to SQLite table **`notification_send_log`** (session id, trigger, recipient `operator`/`tenant`, channel, success, redacted error text, timestamp). No message body stored. Set to `false` to disable writes.

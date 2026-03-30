@@ -27,6 +27,15 @@ O detector aplica tratamento de **entretenimento / documento de baixo risco de P
 
 **Regex forte** (CPF, e-mail, cartão, …) ainda produz **HIGH** quando aplicável. Subir **`medium_confidence_threshold`** afeta sobretudo a faixa MEDIUM; o limite padrão **70** para ML só **HIGH** não muda — essas heurísticas atacam **HIGH** falso em clones de repo e bibliotecas de música no filesystem.
 
+### Padrões genéricos de dígitos e escopo de falso positivo
+
+Regex regionais opcionais em **amostras de compliance** (ex.: **CEP_BR**, **DNI_AR**) costumam usar **formatos numéricos curtos** que também aparecem em SKUs, IDs internos, contadores e linhas. Espere **muitos falsos positivos** em texto amplo ou catálogos; revise no contexto e aperte overrides para produção. O contexto **entretenimento** trata alguns padrões como mais fracos (veja `WEAK_PATTERNS_IN_ENTERTAINMENT` no detector). Lembre-se de **mesclar** `recommendation_overrides` das amostras na config para a aba **Recomendações** refletir texto por framework — veja [USAGE.pt_BR.md](USAGE.pt_BR.md) (checklist de amostras).
+
+| Classe de padrão | Risco típico | Mitigação do operador |
+| --- | --- | --- |
+| Sequências tipo CEP/DNI | Batem em códigos não-PII | Revisão por coluna/contexto; regex mais estrita |
+| `\d{n,m}` amplo no YAML | Inundação de alertas | Sobrescrever padrão; desativar o nome do padrão se não usar |
+
 ---
 
 ## Formatos de CNPJ (Brasil): numérico legado e alfanumérico
@@ -506,6 +515,8 @@ A aplicação já inclui estes padrões; não é preciso redefini-los a menos qu
 - **CEP (Brasil):** `99999-999`:
 
   `\b\d{5}-?\d{3}\b`
+
+  **Precisão:** O mesmo formato casa com muitos valores que **não** são CEP (SKU de produto, IDs internos, códigos em planilhas). Trate o match como **indício de formato**, não como prova de endereço; revise achados em exportações de catálogo/estoque. Em contexto de **letras/cifras/tablatura**, `CEP_BR` é tratado como padrão fraco (como datas/telefone), ver `WEAK_PATTERNS_IN_ENTERTAINMENT` em `core/detector.py`. Regras mais estritas (ex.: exigir a palavra “CEP” ou coluna `cep`) não vêm habilitadas por padrão no motor genérico de regex.
 
 Quando um padrão customizado der match no nome da coluna ou no texto amostrado, o achado é reportado com sensibilidade **HIGH** (ou MEDIUM em contexto de letras/cifras para padrões fracos), com `pattern_detected` igual ao seu `name` e `norm_tag` no relatório.
 

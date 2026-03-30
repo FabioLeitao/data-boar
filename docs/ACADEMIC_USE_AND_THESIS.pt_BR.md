@@ -10,7 +10,7 @@ Este documento ajuda **estudantes, orientadores e bancas** a usar a documentaç�
 
 - **Visão de produto e mensagem:** [README.md](../README.md) ([pt-BR](../README.pt_BR.md)) (enquadramento para decisores e compliance).
 - **Operação técnica:** [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md) (instalação, CLI, API, conectores, config).
-- **Enquadramento de compliance (não substitui parecer jurídico para o teu estudo):** [COMPLIANCE_AND_LEGAL.pt_BR.md](COMPLIANCE_AND_LEGAL.pt_BR.md), [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md).
+- **Enquadramento de compliance (não substitui parecer jurídico para o seu estudo):** [COMPLIANCE_AND_LEGAL.pt_BR.md](COMPLIANCE_AND_LEGAL.pt_BR.md), [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md).
 - **Linha de base histórica do repositório e ADRs:** [adr/0000-project-origin-and-adr-baseline.md](adr/0000-project-origin-and-adr-baseline.md) *(EN).*
 
 ---
@@ -18,7 +18,7 @@ Este documento ajuda **estudantes, orientadores e bancas** a usar a documentaç�
 ## 2. Licença e atribuição
 
 - **Licença do open core (árvore pública):** [LICENSE](../LICENSE) — **BSD 3-Clause** (permissiva; em redistribuições, manter aviso de copyright e texto da licença — veja o arquivo para condições exatas).
-- **Enforcement comercial opcional** (tokens em runtime) está em [LICENSING_SPEC.md](LICENSING_SPEC.md) *(EN)*; em desenvolvimento e replicação académica costuma usar-se o modo **`open`** (sem token pago). Vê também [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md) *(EN)* para o desenho pretendido do produto.
+- **Enforcement comercial opcional** (tokens em runtime) está em [LICENSING_SPEC.md](LICENSING_SPEC.md) *(EN)*; em desenvolvimento e replicação acadêmica costuma usar-se o modo **`open`** (sem token pago). Veja também [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md) *(EN)* para o desenho pretendido do produto.
 - **Como citar o software** na tese (adapta ao estilo da instituição):
 - **Repositório:** URL Git canónica (ex.: GitHub `FabioLeitao/data-boar` ou sucessor), **hash de commit** ou **tag de release**, e **data de acesso**.
 - **Versão:** alinha com [VERSIONING.pt_BR.md](VERSIONING.pt_BR.md) / `pyproject.toml` quando congelares uma linha de reprodução.
@@ -29,16 +29,16 @@ Este documento ajuda **estudantes, orientadores e bancas** a usar a documentaç�
 ## 3. O que normalmente você pode usar no trabalho acadêmico
 
 - **Código-fonte público** e **documentação rastreada** neste repositório para: metodologia, descrição de arquitetura, comparação de heurísticas ou pipelines ao nível de **desenho**, e instruções de reprodutibilidade.
-- **Figuras ou citações** de docs, com referência (respeita **direitos de autor** sobre texto expressivo e **marca** no branding — vê [COPYRIGHT_AND_TRADEMARK.pt_BR.md](COPYRIGHT_AND_TRADEMARK.pt_BR.md)).
-- **Dados sintéticos ou públicos** para experiências; vê [tests/README.md](../tests/README.md) sobre amostras de texto opcionais (respeita **termos** e **copyright** de terceiros).
+- **Figuras ou citações** de docs, com referência (respeita **direitos de autor** sobre texto expressivo e **marca** no branding — veja [COPYRIGHT_AND_TRADEMARK.pt_BR.md](COPYRIGHT_AND_TRADEMARK.pt_BR.md)).
+- **Dados sintéticos ou públicos** para experiências; veja [tests/README.md](../tests/README.md) sobre amostras de texto opcionais (respeita **termos** e **copyright** de terceiros).
 
 ---
 
 ## 4. O que exige cuidado extra (muitas vezes obrigatório)
 
-- **Dados pessoais (PII):** **não** incluas datasets reais de produção em anexo de tese. Prefer **dados sintéticos**, **corpora públicos** ou amostras **fortemente redigidas**; segue **LGPD** / **GDPR** e o teu comité de ética, quando aplicável.
+- **Dados pessoais (PII):** **não** incluas datasets reais de produção em anexo de tese. Prefer **dados sintéticos**, **corpora públicos** ou amostras **fortemente redigidas**; segue **LGPD** / **GDPR** e o seu comitê de ética, quando aplicável.
 - **Confidencialidade de operador e cliente:** **sem** hostnames, **IPs** de LAN, **credenciais** ou cenários **identificáveis** de clientes no texto público da tese, salvo **autorização escrita** e plano de **redação**.
-- **`docs/private/`** (e árvores **gitignored** semelhantes): **não** fazem parte do pacote académico público — **não** colar em repositórios institucionais rastreados como se fosse doc pública do produto.
+- **`docs/private/`** (e árvores **gitignored** semelhantes): **não** fazem parte do pacote acadêmico público — **não** colar em repositórios institucionais rastreados como se fosse doc pública do produto.
 - **Material só comercial** (estudos de precificação, propostas, rate cards): mantém **fora** da entrega pública da tese; guarda segundo política acordada com a instituição (muitas vezes **anexo separado** com controlo de acesso, ou omissão).
 
 ---
@@ -48,14 +48,14 @@ Este documento ajuda **estudantes, orientadores e bancas** a usar a documentaç�
 1. Indica **commit Git** ou **tag**, versão de **Python** (ex.: 3.12/3.13) e como instalaste dependências (**`uv sync`** / lockfile).
 1. Inclui excerto de `config` **sanitizado** baseado em [deploy/config.example.yaml](../deploy/config.example.yaml) — **sem segredos**.
 1. Se usaste Docker, cita **tag da imagem** e referência ao **`Dockerfile`** / compose em [DOCKER_SETUP.pt_BR.md](DOCKER_SETUP.pt_BR.md).
-1. Regista **`licensing.mode: open`** (ou equivalente) se quem replica **não** deve precisar de token comercial.
-1. Lista **testes** ou **scripts** que correste (alvos `pytest`, flags CLI) para outros verificarem afirmações **sem** os teus dados privados.
+1. Registre **`licensing.mode: open`** (ou equivalente) se quem replica **não** deve precisar de token comercial.
+1. Liste **testes** ou **scripts** que você executou (alvos `pytest`, flags CLI) para outros verificarem afirmações **sem** seus dados privados.
 
 ---
 
 ## 6. Instituição, autoria e PI
 
-- Muitas universidades têm regras sobre **autoria de software**, **direitos do orientador** e **PI da empresa** se estiveres empregado durante o mestrado/doutoramento. Esclarece **cedo** com a **secretaria do programa** ou **inovação / transferência de tecnologia**.
+- Muitas universidades têm regras sobre **autoria de software**, **direitos do orientador** e **PI da empresa** se estiveres empregado durante o mestrado ou doutorado. Esclarece **cedo** com a **secretaria do programa** ou **inovação / transferência de tecnologia**.
 - Se fores simultaneamente **mantenedor** e **autor**, explicita na tese **qual é a contribuição científica** (ex.: heurística nova, desenho de avaliação) face à **documentação de produto** escrita para operadores.
 
 ---
@@ -66,7 +66,7 @@ Este documento ajuda **estudantes, orientadores e bancas** a usar a documentaç�
 - [CONTRIBUTING.pt_BR.md](../CONTRIBUTING.pt_BR.md) — higiene do contribuidor (sem segredos no repo público).
 - [SECURITY.pt_BR.md](../SECURITY.pt_BR.md) — versões suportadas e reporte de vulnerabilidades.
 - [TESTING.pt_BR.md](TESTING.pt_BR.md) — que verificações automáticas existem (útil para capítulos de “validação”).
-- [docs/adr/README.pt_BR.md](adr/README.pt_BR.md) — decisões **porquê** registadas após adoção de ADRs.
+- [docs/adr/README.pt_BR.md](adr/README.pt_BR.md) — decisões **porquê** registradas após adoção de ADRs.
 
 ---
 
