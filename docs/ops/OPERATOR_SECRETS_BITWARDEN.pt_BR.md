@@ -10,7 +10,7 @@
 
 **Bitwarden Authenticator (ex. iPhone):** QR → **TOTP/OTP**, sincronização com a conta Bitwarden — alinhado ao mesmo cofre que extensão/desktop; capacidades exatas conforme plano e documentação atual da Bitwarden.
 
-**Confirmar `bw` em cada máquina:** o repositório **não** consegue ver o seu Latitude ou mini-PC. Em cada Linux: `command -v bw && bw --version`. Ou **execute** `scripts/homelab-host-report.sh` (inclui bloco `bw` se existir no `PATH`). Ver a seção **“Verify bw”** no EN.
+**Confirmar `bw` em cada máquina:** o repositório **não** tem visibilidade dos **hosts** a partir deste clone. Em cada Linux: `command -v bw && bw --version`. No **Windows**, o **desktop** Bitwarden **não** instala **`bw`** — exemplo: **`winget install Bitwarden.CLI`** (confirmar o **ID** com **`winget search`**); detalhes em [OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md](OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md). Ou **execute** `scripts/homelab-host-report.sh` (inclui bloco `bw` se existir no **PATH**). Ver também **“Verify bw”** no EN de [OPERATOR_SECRETS_BITWARDEN.md](OPERATOR_SECRETS_BITWARDEN.md).
 
 ---
 
@@ -31,4 +31,24 @@
 
 **CLI `bw`:** Depois de `bw login` / `bw unlock`, itens da org aparecem na CLI conforme **suas** permissões nas coleções. Usar **`BW_SESSION`** com TTL curto em scripts; **nunca** commitar o token de sessão.
 
-**Documento EN (detalhe + “Practices”):** [OPERATOR_SECRETS_BITWARDEN.md](OPERATOR_SECRETS_BITWARDEN.md)
+---
+
+## Contrato do repositório — `bw`, CI, documentação e testes
+
+**Combinado** (operador + assistentes + contribuidores): política **obrigatória** junto com [SECURITY.md](../../SECURITY.md).
+
+| Regra | Detalhe |
+| ----- | ------- |
+| **Nunca commitar** | Segredos, **`BW_SESSION`** (ou qualquer token de sessão do cofre), ou **`.env`** com **credenciais reais**. |
+| **Só uso local** | **`bw unlock`** / **`bw get`** em **scripts locais** ou na **documentação** **só** como **comandos de exemplo** (placeholders, sem valores reais). **`BW_SESSION`** com **TTL curto**; o **operador** desbloqueia na **própria máquina**. |
+| **CI (GitHub Actions)** | **Não** ligar Bitwarden a runners **públicos** do GitHub **sem** desenho explícito e revisado. Preferir **[secrets do GitHub Actions](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions)** para o que a pipeline precisa. **`bw`** fica para **dev local** e **homelab**. |
+| **Skills / `.cursor/rules`** | Podem descrever o **fluxo** (ex.: “após `bw unlock`, exportar variáveis…”) **sem** valores reais. |
+| **Testes** | **Mockar** variáveis de ambiente; **pytest** na **CI** **não** pode depender de cofre Bitwarden **real** nem de sessão **`bw`** ativa. |
+
+**Documento EN (detalhe + “Practices” + contrato completo):** [OPERATOR_SECRETS_BITWARDEN.md](OPERATOR_SECRETS_BITWARDEN.md)
+
+**Decisão de plano (pessoal, gitignored):** matriz **Famílias / Premium / Teams** e notas sobre “assento para IA” — **`docs/private/operator_economics/BITWARDEN_SUBSCRIPTION_DECISION_NOTES.pt_BR.md`** (só na tua árvore local; ver **`docs/private.example/operator_economics/README.md`**).
+
+## Ver também
+
+- [OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md](OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md) — hábitos de pacotes no Windows / WSL / Linux, instalação do `bw`, Topgrade e `gta`.

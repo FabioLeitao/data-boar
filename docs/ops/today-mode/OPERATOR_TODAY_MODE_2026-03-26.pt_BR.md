@@ -24,14 +24,22 @@
 1. **`.\scripts\check-all.ps1`** — tudo verde antes do push (ou `-SkipPreCommit` se já correste pre-commit).
 1. **Commit + PR** (ou push direto se a política permitir) — merge para `main`.
 1. **Tag `v1.6.7`** no commit de release e **GitHub Release** + **Docker** conforme checklist interno — *isto completa* o que `docs/releases/1.6.7.md` já descreve.
-1. **Manhã: Wabbix** — enviar WRB com o guideline + bloco em [WRB_DELTA_SNAPSHOT_2026-03-26.pt_BR.md](WRB_DELTA_SNAPSHOT_2026-03-26.pt_BR.md).
+1. **Manhã: Wabbix** — enviar WRB com o guideline + bloco em [WRB_DELTA_SNAPSHOT_2026-03-26.pt_BR.md](../WRB_DELTA_SNAPSHOT_2026-03-26.pt_BR.md).
+
+---
+
+## Atualização (verificado **2026-03-31** — GitHub + Docker Hub)
+
+**`v1.6.7` está publicada:** tag git **`v1.6.7`**, GitHub Release **Latest** (publicada **2026-03-26**), Docker Hub **`fabioleitao/data_boar:1.6.7`** e **`:latest`** (push **2026-03-26**). A linha “tag ainda **v1.6.6**” na tabela acima era **antes da publicação**; não tratar tag / Release / Hub como pendentes.
+
+**Continua contigo:** envio Wabbix WRB, prova de notificação Slack, branch protection opcional.
 
 ---
 
 ## Opcional
 
 - **Branch protection:** ativar checks obrigatórios depois deste merge estar verde (Semgrep + CI).
-- **SBOM (CycloneDX):** seguir [ADR 0003](../adr/0003-sbom-roadmap-cyclonedx-then-syft.md) noutro PR.
+- **SBOM (CycloneDX):** seguir [ADR 0003](../../adr/0003-sbom-roadmap-cyclonedx-then-syft.md) noutro PR.
 
 ---
 

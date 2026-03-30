@@ -12,13 +12,13 @@
 
 ### 0a — Limpar pendências de “today mode” antigos (sem backlog imortal)
 
-- Abre **[OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md](OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md)** — o que ainda não estiver feito (ex.: **tag `v1.6.7` + GitHub Release + Docker**, **e-mail Wabbix WRB**, **branch protection** opcional) ou **fazes hoje**, ou **passas para uma linha no PLANS / issue**, ou **adias com data explícita** — não deixes **sem dono para sempre**.
-- Hábito semanal opcional: rever **todos** os `docs/ops/OPERATOR_TODAY_MODE_*.md` ainda pertinentes; nota privada **`docs/private/TODAY_MODE_CARRYOVER_AND_FOUNDER_RHYTHM.md`** explica ritmo **diário** vs **checkpoint do founder**.
+- Abre **[OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md](OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md)** — o que ainda não estiver feito (ex.: **e-mail Wabbix WRB**, **branch protection** opcional, **prova de ping no Slack**). **Release `v1.6.7`** já está no **GitHub** (Latest) e no **Docker Hub** (`:1.6.7`, `:latest`, **2026-03-26**) — ver a **seção Atualização** nesse arquivo; não voltar a listar tag/Hub como manual salvo republicação. Ou **fazes hoje**, ou **passas para uma linha no PLANS / issue**, ou **adias com data explícita** — não deixes **sem dono para sempre**.
+- Hábito semanal opcional: rever **todos** os `docs/ops/today-mode/OPERATOR_TODAY_MODE_*.md` ainda pertinentes; nota privada **`docs/private/TODAY_MODE_CARRYOVER_AND_FOUNDER_RHYTHM.md`** explica ritmo **diário** vs **checkpoint do founder**.
 
 ### 0b — Notificações Slack (obrigatório antes de confiar em “te avisaram”)
 
 - **Problema:** canal privado + PC com a app aberta **não chega** se **Windows** e **iPhone** **nunca** mostram alerta — não vês sinais do agente/CI no **canal B**.
-- **Faz:** lê **[OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md](OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md)** (e o EN se precisares) e **prova** entrega: **teste** no canal, confirma **definições de notificação** (app + SO: Focus/DND, alertas no Slack móvel) e verifica o fluxo **“Slack operator ping (manual)”** / falha de CI se estiver configurado. **Meta:** **um** alerta real no **telefone** e no **PC** que tu **notas**.
+- **Faz:** lê **[OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md](../OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md)** (e o EN se precisares) e **prova** entrega: **teste** no canal, confirma **definições de notificação** (app + SO: Focus/DND, alertas no Slack móvel) e verifica o fluxo **“Slack operator ping (manual)”** / falha de CI se estiver configurado. **Meta:** **um** alerta real no **telefone** e no **PC** que tu **notas**.
 - **Segredos** só em GitHub Actions / env — **nunca** colar webhooks no chat ou em docs rastreados.
 
 ---
@@ -48,7 +48,7 @@
 ### Bloco E — Dry-run ferramentas de recuperação (≈ 15–30 min, opcional)
 
 - **`.\scripts\recovery-doc-bundle-sanity.ps1`** (sem bundle) — confirma o conjunto de testes de compilação dos scripts.
-- Se guardares concat privado: uma corrida **`--sweep-windows`** para tranquilidade ([DOC_BUNDLE_RECOVERY_PLAYBOOK.pt_BR.md](DOC_BUNDLE_RECOVERY_PLAYBOOK.pt_BR.md)).
+- Se guardares concat privado: uma corrida **`--sweep-windows`** para tranquilidade ([DOC_BUNDLE_RECOVERY_PLAYBOOK.pt_BR.md](../DOC_BUNDLE_RECOVERY_PLAYBOOK.pt_BR.md)).
 
 ### Bloco F — Planos / banda A fino (≈ 30–45 min, opcional)
 
@@ -67,12 +67,12 @@ O dia está “fechado” quando: o **Bloco 0** tem **prova de ping no Slack** o
 | Bloco | Estado | Notas |
 | ----- | ------ | ----- |
 | **A** Help-sync | Feito | `uv run pytest tests/test_operator_help_sync.py -v` — tudo verde. |
-| **B** OpenAPI vs `/scan` | Feito | [OPERATOR_HELP_AUDIT.md](../OPERATOR_HELP_AUDIT.md) Follow-ups: `ScanStartBody` em `api/routes.py` + verificação em `/docs` com o servidor a correr. |
+| **B** OpenAPI vs `/scan` | Feito | [OPERATOR_HELP_AUDIT.md](../../OPERATOR_HELP_AUDIT.md) Follow-ups: `ScanStartBody` em `api/routes.py` + verificação em `/docs` com o servidor a correr. |
 | **C** README `--host` | Já cumprido | Quick start com `--host` + loopback; ver audit “Done recently”. |
 | **D** Web `/help` | N/A | Sem flags CLI novas desde o passe de 2026-03-25; novo re-diff quando houver flags. |
 | **E** Script de recuperação | Feito | `.\scripts\recovery-doc-bundle-sanity.ps1` verde; linha **Tip** corrigida para PowerShell 5.1 (hífen ASCII). Preferir **`pwsh`** se voltarem problemas de encoding. |
-| **F** Banda A | Operador | Checklist S0 em [SPRINTS_AND_MILESTONES.md](../plans/SPRINTS_AND_MILESTONES.pt_BR.md) §4.0 — Dependabot / Scout / Hub. |
-| **0** Carryover + Slack | Operador | [OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md](OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md) (tag **v1.6.7**, Wabbix, prova Slack telemóvel/desktop) — ainda manual. |
+| **F** Banda A | Operador | Checklist S0 em [SPRINTS_AND_MILESTONES.md](../../plans/SPRINTS_AND_MILESTONES.pt_BR.md) §4.0 — Dependabot / Scout / Hub. |
+| **0** Carryover + Slack | Operador | [OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md](OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md): **GitHub + Hub `v1.6.7` feitos** (verificado); **Wabbix** + **prova Slack telemóvel/desktop** — ainda manual. |
 
 ---
 
