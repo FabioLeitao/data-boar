@@ -6,6 +6,8 @@
 
 **Note:** If you *do* want a carryover pass later, run **`carryover-sweep`** separately or open **[OPERATOR_TODAY_MODE_2026-03-29.md](OPERATOR_TODAY_MODE_2026-03-29.md)** — it is **not** part of this checklist.
 
+**Publish truth (verified 2026-03-30):** **`pyproject.toml`** on `main` is **1.6.7**, matching **GitHub Release Latest [`v1.6.7`](https://github.com/FabioLeitao/data-boar/releases/tag/v1.6.7)** (published **2026-03-26**) and **Docker Hub** **`fabioleitao/data_boar:1.6.7`** + **`latest`**. The next **public** version after meaningful new commits → **`1.6.8`** (bump + release notes), not a **re-publish** of **1.6.7**.
+
 ---
 
 ## Block A — Working tree → coherent commits / PR(s) (≈ 60–120 min)
@@ -26,7 +28,7 @@
 ## Block C — Optional thin follow-ups (≈ 30 min, pick one)
 
 - **Supply chain sanity:** confirm **`uv.lock`** still has **no `litellm`** after any dep refresh; optional one-line note in **`SECURITY.md`** / private journal pointing to the Mar 2026 PyPI **`litellm`** incident if you want a durable reminder (not required).
-- **Inspirations:** skim **[ENGINEERING_CRAFT_INSPIRATION_ANALYSIS.md](ENGINEERING_CRAFT_INSPIRATION_ANALYSIS.md)** — add one **cluster** bullet only if a new pattern emerged.
+- **Inspirations:** skim **[ENGINEERING_CRAFT_INSPIRATION_ANALYSIS.md](../ENGINEERING_CRAFT_INSPIRATION_ANALYSIS.md)** — add one **cluster** bullet only if a new pattern emerged.
 
 ---
 
