@@ -6,7 +6,7 @@
 
 **Contexto mais largo:** [OPERATOR_MANUAL_ACTIONS.pt_BR.md](OPERATOR_MANUAL_ACTIONS.pt_BR.md) · [PLANS_TODO.md](../plans/PLANS_TODO.md) § “Resume next session”.
 
-**Foco de um dia (datado — exemplo):** [OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md](OPERATOR_TODAY_MODE_2026-03-26.pt_BR.md) ([EN](OPERATOR_TODAY_MODE_2026-03-26.md)) — merge, tag **v1.6.7**, bloco WRB. **Texto delta WRB:** [WRB_DELTA_SNAPSHOT_2026-03-26.pt_BR.md](WRB_DELTA_SNAPSHOT_2026-03-26.pt_BR.md).
+**Foco de um dia (datado):** ver **[today-mode/README.pt_BR.md](today-mode/README.pt_BR.md)** (checklists indexados). Exemplo: [OPERATOR_TODAY_MODE_2026-03-31.pt_BR.md](today-mode/OPERATOR_TODAY_MODE_2026-03-31.pt_BR.md) ([EN](today-mode/OPERATOR_TODAY_MODE_2026-03-31.md)). **Delta WRB (exemplo):** [WRB_DELTA_SNAPSHOT_2026-03-26.pt_BR.md](WRB_DELTA_SNAPSHOT_2026-03-26.pt_BR.md). **`v1.6.7` já publicada** — [today-mode/PUBLISHED_SYNC.pt_BR.md](today-mode/PUBLISHED_SYNC.pt_BR.md).
 
 ---
 
