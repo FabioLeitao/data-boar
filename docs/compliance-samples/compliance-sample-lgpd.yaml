@@ -43,6 +43,7 @@ regex:
   - name: "RG_BR"
     pattern: "\\b\\d{1,2}\\.?\\d{3}\\.?\\d{3}-?[0-9Xx]\\b"
     norm_tag: "LGPD Art. 5"
+  # CEP: same 8-digit shape as many SKUs/internal IDs — review noisy sources; see SENSITIVITY_DETECTION.md (CEP precision).
   - name: "CEP_BR"
     pattern: "\\b\\d{5}-?\\d{3}\\b"
     norm_tag: "LGPD Art. 5"

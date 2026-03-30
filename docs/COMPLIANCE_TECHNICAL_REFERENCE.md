@@ -42,7 +42,7 @@ Step-by-step: [USAGE.md — File encoding, config, and pattern files](USAGE.md#f
 
 ## Optional notifications (webhooks)
 
-Off-band, after a scan **completes**, the app can send a **short summary** (Slack, Teams, Telegram, or a generic webhook), including **multiple operator channels** and an optional **tenant copy** when configured — **disabled by default**; treat URLs and tokens as **secrets**. This does not replace Excel reports or TLS/network policy. See [USAGE.md — Operator notifications](USAGE.md#51-operator-notifications-optional) and [SECURITY.md](SECURITY.md).
+Off-band, after a scan **completes**, the app can send a **short summary** (Slack, Teams, generic webhook / Signal bridge, or legacy Telegram fields), including **multiple operator channels** and an optional **tenant copy** when configured — **disabled by default**; treat URLs and tokens as **secrets**. Maintainer channel policy: [OPERATOR_NOTIFICATION_CHANNELS.md](ops/OPERATOR_NOTIFICATION_CHANNELS.md). This does not replace Excel reports or TLS/network policy. See [USAGE.md — Operator notifications](USAGE.md#51-operator-notifications-optional) and [SECURITY.md](SECURITY.md).
 
 ---
 
