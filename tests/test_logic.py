@@ -1,6 +1,9 @@
 """Tests for audit logic: core.scanner.DataScanner scan_column and analyze_data."""
 
+import tempfile
 import unittest
+from pathlib import Path
+
 from core.scanner import DataScanner
 
 
@@ -24,6 +27,50 @@ class TestAuditLogic(unittest.TestCase):
         if out is not None:
             self.assertIn("sensitivity_level", out)
             self.assertIn("pattern_detected", out)
+
+    def test_cep_br_in_lyrics_downgraded_when_loaded_via_override(self):
+        """G-26-03: CEP-shaped digits in lyrics/tabs context → MEDIUM with override (weak pattern)."""
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".yaml", delete=False, encoding="utf-8"
+        ) as f:
+            f.write(
+                "regex:\n"
+                '  - name: "CEP_BR"\n'
+                '    pattern: "\\\\b\\\\d{5}-?\\\\d{3}\\\\b"\n'
+                '    norm_tag: "LGPD Art. 5"\n'
+            )
+            path = f.name
+        try:
+            scanner = DataScanner(regex_overrides_path=path)
+            lyrics = """Verse 1
+Chorus
+CEP aparente 01310-100 na letra
+La la la"""
+            result = scanner.scan_column("lyrics", lyrics)
+            self.assertIn(result["sensitivity_level"], ("LOW", "MEDIUM"))
+            self.assertIn("lyrics", result.get("pattern_detected", "").lower())
+        finally:
+            Path(path).unlink(missing_ok=True)
+
+    def test_cep_br_non_entertainment_still_high_with_override(self):
+        """Same CEP regex on short catalog-like text stays HIGH (SKU/ID false positives possible)."""
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".yaml", delete=False, encoding="utf-8"
+        ) as f:
+            f.write(
+                "regex:\n"
+                '  - name: "CEP_BR"\n'
+                '    pattern: "\\\\b\\\\d{5}-?\\\\d{3}\\\\b"\n'
+                '    norm_tag: "LGPD Art. 5"\n'
+            )
+            path = f.name
+        try:
+            scanner = DataScanner(regex_overrides_path=path)
+            result = scanner.scan_column("sku", "01310-100")
+            self.assertEqual(result["sensitivity_level"], "HIGH")
+            self.assertIn("CEP_BR", result.get("pattern_detected", ""))
+        finally:
+            Path(path).unlink(missing_ok=True)
 
     def test_lyrics_with_date_like_content_downgraded(self):
         """Dates/numbers in song lyrics should not be classified as HIGH (false positive)."""

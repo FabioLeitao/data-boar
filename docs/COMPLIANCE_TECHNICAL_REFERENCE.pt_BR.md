@@ -42,7 +42,7 @@ Execuções **agendáveis** via **API interna** permitem monitoramento contínuo
 
 ## Notificações opcionais (webhooks)
 
-Fora de banda, ao **fim da varredura**, a aplicação pode enviar um **resumo curto** (Slack, Teams, Telegram ou webhook genérico), com suporte a **vários canais** e **cópia ao tenant** quando configurado — **desligado por padrão**; trate URLs e tokens como **segredos**. Não substitui relatórios nem política de rede/TLS. Ver [USAGE.pt_BR.md — Notificações ao operador](USAGE.pt_BR.md#notificações-ao-operador-opcional) e [SECURITY.pt_BR.md](SECURITY.pt_BR.md).
+Fora de banda, ao **fim da varredura**, a aplicação pode enviar um **resumo curto** (Slack, Teams, webhook genérico / ponte Signal ou campos Telegram legados), com suporte a **vários canais** e **cópia ao tenant** quando configurado — **desligado por padrão**; trate URLs e tokens como **segredos**. Política de canais: [OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md](ops/OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md). Não substitui relatórios nem política de rede/TLS. Ver [USAGE.pt_BR.md — Notificações ao operador](USAGE.pt_BR.md#notificações-ao-operador-opcional) e [SECURITY.pt_BR.md](SECURITY.pt_BR.md).
 
 ---
 

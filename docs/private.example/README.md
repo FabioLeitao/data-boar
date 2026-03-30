@@ -4,6 +4,8 @@
 
 Optional **local notify** (Signal/SMS/SMTP credentials for operator digests): copy **`private.example/notify/README.md`** into **`docs/private/notify/`** and follow that template—still **gitignored** once under `docs/private/`.
 
+**Partner / client feedback inbox (WRB-style):** read **`private.example/feedbacks-inbox/README.md`**. The real drop folder **`docs/feedbacks, reviews, comments and criticism/`** is **gitignored** at repo root (not under `docs/private/`); create it locally when you start collecting reviews.
+
 ```bash
 # From repo root (Linux/macOS/Git Bash)
 mkdir -p docs/private/homelab docs/private/author_info docs/private/notify docs/private/commercial docs/private/operator_economics docs/private/academic

@@ -23,6 +23,7 @@ jobs:
       - name: Post CI failure summary to Slack
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_MENTION_USER_ID: ${{ vars.SLACK_MENTION_USER_ID }}
           RUN_HTML_URL: ${{ github.event.workflow_run.html_url }}
           RUN_NAME: ${{ github.event.workflow_run.name }}
           HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
@@ -35,6 +36,20 @@ jobs:
           import urllib.error
           import urllib.request
 
+          def _normalize_slack_member_id(raw_id: str) -> str:
+              mid = (raw_id or "").strip()
+              if not mid:
+                  return ""
+              if mid.startswith("<@") and mid.endswith(">"):
+                  mid = mid[2:-1]
+              return mid.strip()
+
+          def with_optional_mention(text: str, raw_id: str) -> str:
+              mid = _normalize_slack_member_id(raw_id)
+              if not mid:
+                  return text
+              return f"<@{mid}>\n{text}"
+
           url = os.environ["SLACK_WEBHOOK_URL"]
           lines = [
               f"Data Boar — {os.environ['RUN_NAME']} falhou",
@@ -44,7 +59,8 @@ jobs:
               f"Workflow: {os.environ['RUN_NAME']}",
               f"Abrir run: {os.environ['RUN_HTML_URL']}",
           ]
-          text = "\n".join(lines)
+          body = "\n".join(lines)
+          text = with_optional_mention(body, os.environ.get("SLACK_MENTION_USER_ID", ""))
           data = json.dumps({"text": text}).encode("utf-8")
           req = urllib.request.Request(
               url,
