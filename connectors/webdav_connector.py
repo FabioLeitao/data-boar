@@ -142,6 +142,9 @@ class WebDAVConnector:
             )
             return
         target_name = self.config.get("name", "WebDAV")
+        from utils.audit_log_display import audit_log_target_label
+
+        audit_name = audit_log_target_label(self.config, default="WebDAV")
         base_url = (
             self.config.get("base_url")
             or self.config.get("url")
@@ -235,6 +238,7 @@ class WebDAVConnector:
                         ocr_max_dimension=self.ocr_max_dimension,
                         ocr_lang=self.ocr_lang,
                         use_content_type=self.use_content_type,
+                        audit_log_name=audit_name,
                     )
                 elif self.scan_sqlite_as_db and ext in SQLITE_EXTENSIONS:
                     for finding in _scan_sqlite_file_as_db(
