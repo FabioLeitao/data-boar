@@ -102,6 +102,33 @@ sudo bash Ventoy2Disk.sh -i -s /dev/sdX   # substitui sdX pelo dispositivo USB c
 - **Date/Time**
   - Confirme data/hora; depois no Linux configure `timedatectl set-local-rtc 0` (recomendado em dual boot para evitar drift).
 
+#### 0.3.2 Checklist por tela (do seu BIOS) — o que manter ligado/desligado
+
+Esta subseção traduz “o que você viu nas fotos” em uma decisão prática para o seu objetivo: **LMDE como default**, Windows como **fallback** e **firmware updates**, e **mínimo risco de drift**.
+
+- **Security → Security Chip (TPM 2.0 / Intel PTT)**
+  - **Security Chip**: **On**.
+  - **Intel PTT**: **On**.
+  - **Physical Presence for Clear**: **On** (bom: evita “limpeza silenciosa” do TPM).
+  - **Por quê**: o TPM ajuda postura, e pode ajudar fluxo de disco criptografado no futuro; manter “clear” como ação física reduz risco operacional.
+- **Security → UEFI BIOS Update Option**
+  - **Secure RollBack Prevention**: **On**.
+  - **Windows UEFI Firmware Update**: **On** (faz sentido para seu dual boot “Windows só pra firmware”).
+  - **Flash BIOS Updating by End-Users**: prefira **Off** se você quer reduzir superfície/erro humano; deixe **On** só se você realmente usa flashes manuais fora do Windows/ferramentas oficiais.
+- **Security → Memory Protection**
+  - **Execution Prevention**: **On**.
+  - **Intel Total Memory Encryption**: **Off** é OK (em geral não é requisito para seu cenário; pode trazer custo/compatibilidade).
+- **Security → Virtualization**
+  - **Intel Virtualization Technology**: **On**.
+  - **Intel VT-d Feature**: **On** (ajuda isolamento/DMA quando o kernel usa; bom para VMs e postura).
+  - **Kernel DMA Protection**: **On**.
+  - **Enhanced Windows Biometric Security**: não é crítico para o LMDE; pode ficar **On** se você usa Windows como fallback e não quer mexer.
+  - **Por quê**: você ganha capacidade de VM/containers sem ter que voltar no BIOS; VT-d/DMA protection são bons defaults.
+- **Security → I/O Port Access**
+  - Para laptop de dev/lab, manter **habilitado** costuma ser a escolha prática (Wi‑Fi, Bluetooth, câmera, USB).
+  - Se você quiser reduzir superfície, o maior “ganho fácil” costuma ser **desligar o que você não usa nunca** (ex.: **microfone/câmera** quando o laptop fica em bancada; Bluetooth se você não usa).
+  - **Regra do projeto**: qualquer desativação aqui deve ser “consciente” (com motivo) para não virar um tipo de drift (ex.: Wi‑Fi off e depois achar que o LMDE “não tem driver”).
+
 ### 0.4 Primeiro arranque do Ventoy com Secure Boot
 
 1. Liga o USB, **boot** pelo dispositivo UEFI (menu de boot do ThinkPad).
