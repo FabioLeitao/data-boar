@@ -10,6 +10,21 @@
 
 **Sequenciamento (mantenedor):** Por ora, **só o canal A** — app **GitHub** no celular + watch/e-mail nas configurações — **basta** para PRs, reviews, Dependabot, Security e **Actions com falha**. Quando quiser **redundância** ou alertas no estilo “chat”, use **B** (Slack — já integrado no Actions) e/ou **C** (ponte Signal); o Slack é o fornecedor de menor atrito a partir do GitHub Actions; o Signal é o **segundo chat preferido** se quiseres depender menos da UX do Slack. **Este doc é o lembrete de integração** para esses próximos passos.
 
+## Prova rápida “CHAN-OK” (Slack) — 10 minutos, sem mistério
+
+**Objetivo:** sair daqui com a confirmação **“chega no canal e notifica no PC e no iPhone”**.
+
+1. **Webhook + secret (GitHub)**: confirme que existe `SLACK_WEBHOOK_URL` em **GitHub → Settings → Secrets and variables → Actions**.
+1. **Canal no Slack**: no canal de ops (ex.: `#data-boar-ops`), tire **silenciar** e ajuste para notificar **All messages** (ou, no mínimo, menções).
+1. **Menção forte (recomendado)**: crie a variável **`SLACK_MENTION_USER_ID`** (Settings → **Variables**) com seu **Member ID** (`U…`). Isso faz o ping virar `<@U…>` e o Slack tende a notificar melhor.
+1. **Teste manual**: GitHub **Actions → Slack operator ping (manual) → Run workflow**. (Se houver campo `mention_user_id`, use seu `U…` também.)
+1. **Critério de sucesso**:
+   - Mensagem aparece no canal **e**
+   - aparece notificação no **Slack Desktop** **e**
+   - aparece notificação no **iPhone** (Slack habilitado em iOS + Focus/DND não bloqueando).
+
+Se a mensagem aparece no canal mas **não** notifica: o problema quase sempre é **config do canal** (silenciado/menções), **Focus/DND**, ou permissões do app no sistema — veja §4.2 D.
+
 ---
 
 ## 1. Pilha recomendada (menos atrito → mais montagem)
