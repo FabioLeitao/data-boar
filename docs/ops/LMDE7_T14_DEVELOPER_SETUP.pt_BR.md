@@ -128,6 +128,31 @@ Esta subseção traduz “o que você viu nas fotos” em uma decisão prática 
   - Para laptop de dev/lab, manter **habilitado** costuma ser a escolha prática (Wi‑Fi, Bluetooth, câmera, USB).
   - Se você quiser reduzir superfície, o maior “ganho fácil” costuma ser **desligar o que você não usa nunca** (ex.: **microfone/câmera** quando o laptop fica em bancada; Bluetooth se você não usa).
   - **Regra do projeto**: qualquer desativação aqui deve ser “consciente” (com motivo) para não virar um tipo de drift (ex.: Wi‑Fi off e depois achar que o LMDE “não tem driver”).
+- **Security → Secure Boot**
+  - **Secure Boot**: **On**.
+  - **Secure Boot Mode**: **User Mode** (padrão OK).
+  - **Allow Microsoft 3rd Party UEFI CA**: **On** (normalmente necessário para `shim`/Debian/Ubuntu-family funcionarem com Secure Boot ligado).
+  - **Key Management**: **não mexer** (não “Clear keys”, não “Setup mode”), a não ser que você esteja seguindo um runbook explícito.
+- **Security → ThinkShield / Presence / Passwordless power-on**
+  - **ThinkShield Passwordless Power-On**: prefira **Off** (reduz complexidade de pré‑boot; biometria fica no SO).
+  - **Intelligent Security → User Presence Sensing**: opcional; se o foco é previsibilidade no lab, prefira **Off**.
+  - **ThinkShield secure wipe**: prefira **Off** no dia a dia e só ligue quando for usar (evita ativação acidental).
+- **Config → Intel AMT**
+  - Se você não usa gerenciamento remoto/vPro de forma consciente: prefira **Disabled**.
+  - Se manter habilitado por algum motivo: deixe **USB key provisioning** **Off** (como nas suas telas) e trate AMT como “superfície extra” (documente o motivo).
+- **Config → Thunderbolt 4**
+  - **PCIe Tunneling**: se você **não** usa dock/armazenamento Thunderbolt, deixar **Off** reduz risco de DMA e costuma ser mais simples.
+  - Se você usa TB dock/armazenamento e algo “não funciona” no Linux, esta é a primeira chave a revisitar (aí sim considere **On**).
+- **Config → Network**
+  - **UEFI IPv4/IPv6 Network Stack**: se você não usa PXE/boot por rede, prefira **Off** (menos superfície/tempo de boot).
+  - **Network Boot (PXE)**: se você não usa, prefira **Disabled**.
+  - **Lenovo Cloud Services**: prefira **Off** para “mínimo drift” (a menos que você tenha um motivo explícito).
+  - Wake-on-LAN/dock: use só se precisar; caso contrário, **Off** é mais previsível.
+- **Config → USB**
+  - **Always On USB**: opcional; se você quer menos consumo/surpresas com carga, pode deixar **Off**.
+- **Startup**
+  - **Boot Mode**: mantenha “Quick” durante uso normal; se estiver depurando boot/firmware, mude temporariamente para um modo mais verboso/diagnóstico (quando existir).
+  - **Boot Order Lock**: deixe **Off** enquanto estiver instalando/ajustando; depois você pode ligar para “travar” a ordem.
 
 ### 0.4 Primeiro arranque do Ventoy com Secure Boot
 
@@ -238,6 +263,73 @@ sudo fwupdmgr update
 ```
 
 Reinicie se o `fwupd` pedir. Isto ajuda **Wi‑Fi, TPM, BIOS/UEFI** quando há pacotes na LVFS.
+
+#### 3.3.1 Troubleshooting: “tentei atualizar a BIOS e ela volta do boot sem mudar nada”
+
+**Sintoma:** você inicia o fluxo de update (Windows / Lenovo / `fwupd`), o notebook reinicia, parece “fazer algo”, mas ao voltar a versão da BIOS **não mudou**.
+
+**Objetivo deste checklist:** isolar **causa provável** sem tentar “forçar” (evitar brick) e juntar evidências mínimas para decidir o próximo passo.
+
+**O que capturar (foto ou anotação) antes de tentar de novo:**
+
+- **Tela Main do BIOS**: versão atual do UEFI/BIOS + data.
+- **Tela Security → UEFI BIOS Update Option**: estado de opções de update/rollback.
+- **Tela Security → Secure Boot**: ON/OFF + mode (User/Setup) + “Allow Microsoft 3rd Party UEFI CA”.
+- **Tela Security → Security Chip (TPM)**: Security Chip / Intel PTT ON/OFF.
+- **Tela Startup/Boot**: UEFI only vs Legacy/CSM, Quick/Diagnostics boot, e se há “Boot order lock”.
+- **Fonte de energia**: AC conectado (muitos updates recusam sem bateria/AC).
+
+**Regras de segurança (não pule):**
+
+- **Não** desligue o notebook durante um update real.
+- **Não** altere chaves de Secure Boot (não “Clear keys”, não “Setup mode”) só para “ver se vai” — isso costuma criar incidentes de boot.
+- Se houver **BitLocker** no Windows, **suspenda temporariamente** antes de mexer em firmware (para não cair em recovery key após mudanças no TPM/boot).
+
+**Causas comuns (na prática) e como validar:**
+
+- **Pré‑requisitos não atendidos**: bateria mínima/AC obrigatório, temperatura alta, laptop em dock/USB‑C instável.
+  - Ação: ligar no **carregador original**, remover periféricos “estranhos”, esperar resfriar.
+- **Configuração bloqueando update**: opção de “flash by end users” off (ou política corporativa), rollback prevention.
+  - Ação: conferir em **Security → UEFI BIOS Update Option**; documentar o estado (não “chutar”).
+- **Tentativa via método errado para o modelo**: alguns ThinkPads funcionam melhor com **Lenovo Vantage (Windows)**; outros aceitam `fwupd`/LVFS.
+  - Ação: tente 1 método por vez; anote resultado.
+- **Secure Boot/TPM interferindo**: normalmente não impede update, mas pode disparar proteções (especialmente com BitLocker).
+  - Ação: manter Secure Boot **ON** (padrão), mas garantir BitLocker suspenso no Windows durante a janela.
+
+**Se o seu caso é ainda mais “duro” (como você descreveu no L14):** *Vantage*, *Lenovo System Update* e o instalador baixado do site **nem chegam a mostrar progresso**, só reiniciam e voltam igual.
+
+Neste caso, além dos itens acima, capture e valide estes pontos:
+
+- **Security → UEFI BIOS Update Option**
+  - Confirme se existe e como está a opção **“Flash BIOS Updating by End-Users”**.
+    - Se estiver **Off**, isso pode impedir que alguns métodos iniciem o flash.
+    - Se você quiser reduzir risco, você pode manter **Off** no dia a dia, mas precisa ficar **On** durante a janela de atualização.
+  - Confirme se **“Windows UEFI Firmware Update”** está **On** (para o método Windows).
+- **Security → Secure Boot**
+  - Secure Boot **On** não deveria impedir update, mas **não** altere keys/mode para tentar “resolver”.
+- **Startup**
+  - **Boot Order Lock**: deixe **Off** durante a atualização.
+  - Evite boot por dock/USB-C “instável” enquanto tenta atualizar.
+- **Windows**
+  - Se houver **BitLocker**: **suspenda** antes de tentar (para evitar bloqueios/recusas silenciosas por mudança de TPM/boot).
+  - Garanta energia estável (AC + bateria com carga suficiente).
+
+**Evidência no Linux (se você estiver tentando via `fwupd`):**
+
+```bash
+fwupdmgr --version
+fwupdmgr get-devices
+fwupdmgr get-updates
+fwupdmgr update
+```
+
+Se falhar, salve o output completo (em nota privada) e rode:
+
+```bash
+journalctl -u fwupd --no-pager -n 200
+```
+
+**Nota importante (para “não esquecermos”):** você mencionou que isso está acontecendo também no **ThinkPad L14**. Este checklist é o ponto de partida; quando você trouxer as fotos do L14, a gente compara as telas equivalentes (Main / Update Option / Secure Boot / TPM / Boot) e decide se há alguma configuração específica que está impedindo a aplicação do update.
 
 ### 3.4 SSH servidor (só se precisares)
 
