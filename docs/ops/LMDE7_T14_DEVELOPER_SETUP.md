@@ -35,6 +35,22 @@ Security baseline (details in pt-BR §3): **`ufw`**, **`unattended-upgrades`**, 
 
 ---
 
+## Repeatable automation (Ansible + OpenTofu) (summary)
+
+The Portuguese guide now includes an optional section on **repeatability** using:
+
+- **Ansible** for host bootstrap (packages, files, services),
+- **OpenTofu** for declarative infrastructure (when a real provider/API exists).
+
+Key guardrails match the rest of the repo:
+
+- Do **not** commit secrets (PATs, tokens, keys); keep sensitive configs under gitignored `docs/private/` or in a separate private automation repo.
+- Treat assistant/tool suggestions as **inputs**: run, validate, then standardize.
+
+See **§7.1** in the pt-BR file for a minimal skeleton (inventory/playbook/tofu layout) and a post-run validation checklist.
+
+---
+
 ## Related plans and links
 
 - Observability stack (optional, after baseline): [PLAN_LAB_OP_OBSERVABILITY_STACK.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md).
