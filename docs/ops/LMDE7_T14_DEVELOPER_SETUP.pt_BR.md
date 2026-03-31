@@ -29,6 +29,15 @@
 
 ---
 
+## 0.x Decisão de instalação: dual boot (Windows 11 + LMDE) vs LMDE-only
+
+**Recomendação padrão para este projeto:** manter **dual boot** (Windows 11 + LMDE) quando o T14 for uma **workstation do operador**.
+
+- **Por quê**: reduz risco operacional (firmware/BIOS tools, recovery, apps específicas de Windows), sem impedir que o LMDE seja o ambiente principal para dev/lab.
+- **Como mitigar drift**: trate o Windows como **fallback** (mínimo necessário), e concentre o fluxo Data Boar no LMDE.
+
+**Quando faz sentido LMDE-only:** quando o T14 for um host dedicado de laboratório (quase “appliance”) e você quiser minimizar variação operacional. Nesse caso, registre a decisão em nota privada (custo/benefício + riscos) e mantenha backups.
+
 ## 0. Instalação no T14 — Ventoy, UEFI e **Secure Boot** ligado
 
 **Objetivo:** preparar o USB com **Ventoy**, manter **Secure Boot ativo** no ThinkPad durante a instalação **e** depois no Linux, sem pedir que desligues o Secure Boot de forma permanente. **“Device Guard”** (e **Credential Guard**) são nomes de recursos **do Windows**; no **LMDE** não existem com esses nomes — o paralelo é **Secure Boot + TPM (se usares LUKS/TPM) + endurecimento em camadas (§3)**. Na **máquina onde geras o USB** (ex. Windows 11 com **HVCI/Device Guard**), **você pode manter** essas políticas; o **Ventoy2Disk** não exige desligá-las.
@@ -384,6 +393,143 @@ sudo usermod -aG docker "$USER"
 Não corras **k3s** no T14 a menos que queiras consumir RAM/CPU para testes de cluster — para “só desenvolver”, **Podman** ou **Docker** basta para `build`/`run` do `Dockerfile`.
 
 ---
+
+## 7.1 Automação repetível (Ansible + OpenTofu) — opcional, recomendado para “não esquecer passos”
+
+Se você quer **repetibilidade** (reinstalar o T14, padronizar baseline, ou reaplicar ajustes sem “lembrar de cabeça”), uma dupla comum é:
+
+- **Ansible**: configurações no host (pacotes, arquivos, serviços, hardening leve).
+- **OpenTofu**: infraestrutura declarativa (quando você tem APIs/provedores; útil para lab com providers suportados).
+
+**Guardrails (sem regressão e sem segredos):**
+
+- **Não** coloque segredos (tokens, chaves, senhas) em arquivos rastreados neste repo. Prefira:
+  - variáveis de ambiente no terminal da sessão,
+  - vault externo,
+  - ou árvore **gitignored** (`docs/private/…`) se for só para você.
+- Trate a automação como **insumo**: execute, valide, e só então torne “padrão”.
+
+### 7.1.1 Ansible (host bootstrap)
+
+Instalação (preferir `apt`):
+
+```bash
+sudo apt update
+sudo apt install -y ansible
+ansible --version
+```
+
+**Esqueleto mínimo** (recomendação: manter em um repositório separado `lab-automation/` ou em `docs/private/`):
+
+```text
+lab-automation/
+  ansible/
+    inventory.ini
+    bootstrap-t14.yml
+    group_vars/
+      all.yml
+```
+
+`inventory.ini` (localhost):
+
+```ini
+[t14]
+localhost ansible_connection=local
+```
+
+`bootstrap-t14.yml` (exemplo intencionalmente curto):
+
+```yaml
+---
+- name: Bootstrap T14 (LMDE 7)
+  hosts: t14
+  become: true
+  tasks:
+    - name: Install baseline packages
+      ansible.builtin.apt:
+        update_cache: true
+        name:
+          - git
+          - curl
+          - ca-certificates
+          - build-essential
+          - jq
+          - ufw
+          - unattended-upgrades
+          - fwupd
+        state: present
+
+    - name: Enable UFW with safe defaults
+      ansible.builtin.shell: |
+        set -euo pipefail
+        ufw default deny incoming
+        ufw default allow outgoing
+        ufw --force enable
+      args:
+        executable: /bin/bash
+```
+
+Execução:
+
+```bash
+cd lab-automation/ansible
+ansible-playbook -i inventory.ini bootstrap-t14.yml
+```
+
+### 7.1.2 OpenTofu (infra declarativa)
+
+**Nota honesta:** OpenTofu vale quando você tem um provider real para o alvo (ex.: DNS/Cloud, GitHub, algum appliance com API). Para “só configurar o Linux”, Ansible costuma bastar.
+
+Instalação:
+
+- Primeiro tente `apt` (se existir na tua base Debian/LMDE):
+
+```bash
+sudo apt update
+sudo apt install -y opentofu || true
+tofu version
+```
+
+- Se não existir no `apt`, siga o método oficial de instalação do OpenTofu (binário assinado / checksum) e **documente** o caminho que você adotou em `docs/private/` para repetibilidade.
+
+**Esqueleto mínimo**:
+
+```text
+lab-automation/
+  tofu/
+    versions.tf
+    main.tf
+    outputs.tf
+```
+
+`versions.tf` (exemplo genérico):
+
+```hcl
+terraform {
+  required_version = ">= 1.6.0"
+}
+```
+
+Execução (com variáveis fora do Git quando houver segredos):
+
+```bash
+cd lab-automation/tofu
+tofu init
+tofu plan
+tofu apply
+```
+
+### 7.1.3 “Não esquecer” (checklist de validação pós-automação)
+
+Depois de rodar automações, valide manualmente (mesma lógica do §9):
+
+- `mokutil --sb-state` (Secure Boot ainda **enabled**)
+- `ufw status verbose`
+- `unattended-upgrades --dry-run --debug` (sem erro óbvio)
+- `fwupdmgr get-updates` (sem falha)
+- `uv sync` + `uv run pytest` no repo Data Boar
+
+Se qualquer item “quebrar”, ajuste o playbook/tofu e reexecute — objetivo é **idempotência**.
 
 ## 8. Pacotes úteis para auditoria / homelab (opcional)
 

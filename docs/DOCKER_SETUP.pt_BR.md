@@ -54,6 +54,30 @@ Depois adicione o servidor Docker MCP em Cursor Settings → MCP usando o caminh
 
 Se você usa um MCP Docker da comunidade (ex.: `cursor-docker-mcp`), adicione-o em Cursor Settings → MCP com o command/args do servidor.
 
+### Docker Hub MCP (recomendado para checagens “pré-push”, sem navegação manual)
+
+Se você já criou um **Personal Access Token (PAT)** dedicado no Docker Hub (com expiração, ex.: 90 dias), dá para usar um MCP de **Docker Hub** para checar rapidamente:
+
+- quais **namespaces** você tem acesso,
+- se um **repositório** existe,
+- quais **tags** existem (e em quais arquiteturas/OS),
+- metadados de um tag (digest, last pushed, etc.).
+
+Isso é útil para automações humanas “token-aware” (menos cliques e menos copy/paste): antes de um push, você confirma se a tag esperada já existe, e depois do push você valida que ela apareceu.
+
+**Importante (segurança):**
+
+- **Não** salve o PAT em arquivos rastreados (`docs/`, `scripts/`, `.env` versionado). Use o storage de **secrets do MCP** (Cursor/Docker Desktop) ou variáveis de ambiente locais.
+- Rotacione o PAT na cadência definida (ex.: 90 dias) e mantenha o escopo mínimo (somente o que o MCP precisa).
+- **Least privilege recomendado:** `read/write` costuma ser suficiente para checagens e publicação; **evite `delete`** (você já fez isso) para reduzir risco de remoção acidental.
+
+Se você estiver usando o catálogo MCP do Docker, o servidor costuma se chamar **`dockerhub`** e pede:
+
+- `dockerhub.username` (público, ex.: seu usuário Docker Hub)
+- secret `dockerhub.pat_token` (o PAT — **nunca** comitar)
+
+**Formato do secret:** em algumas integrações, o `dockerhub.pat_token` precisa vir como `namespace:PAT` (ex.: `fabioleitao:<pat>`). Se a checagem do namespace falhar com erro “missing part #2”, é forte indício de que o MCP está recebendo apenas uma das partes.
+
 ---
 
 ## 2. Construir a imagem (modo API web)
@@ -151,13 +175,13 @@ Ou com Compose: `docker compose -f deploy/docker-compose.yml -f deploy/docker-co
 
 Execuções repetidas de `docker run` / `docker build` em testes de smoke ou no homelab deixam **vários containers parados** no Docker Desktop. Isso atrapalha portas, volumes e saber qual imagem está “ativa”.
 
-## Convenção do projeto:
+## Convenção do projeto
 
 1. Preferir **um** container principal local (ex.: `--name data-boar-audit`) ou **uma** stack Compose.
 1. No máximo **dois** containers com nome **só** quando houver **A/B** explícito (ex.: `fabioleitao/data_boar:latest` vs `data_boar:lab` construída localmente). Evitar containers anônimos “soltos”.
 1. Ao terminar um teste descartável, **parar e remover** os extras: `docker rm -f <nome>` (após confirmar que essa instância não é mais necessária).
 
-## Listar candidatos a remoção:
+## Listar candidatos a remoção
 
 ```powershell
 docker ps -a --filter "name=data-boar"
