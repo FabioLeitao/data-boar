@@ -12,9 +12,9 @@
 
 | Item | Origem | Estado | Próximo passo / defer |
 | ---- | ------ | ------ | ----- |
-| E-mail **Wabbix WRB** | 2026-03-26 / 03-29 | ⬜ Pendente | Bloco: **`docs/ops/WRB_DELTA_SNAPSHOT_2026-03-26.pt_BR.md`** — enviar ou data em PLANS/privado |
+| E-mail **Wabbix WRB** | 2026-03-26 / 03-29 / 03-31 | ⬜ Pendente | Bloco: **`docs/ops/WRB_DELTA_SNAPSHOT_2026-03-31.pt_BR.md`** — enviar hoje ou adiar com data em PLANS/privado |
 | **Slack** prova de ping (PC + telemóvel) | 2026-03-27 | ⬜ Pendente | **`docs/ops/OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md`** — alerta real ou nota **CHAN-OK** |
-| PRs **Dependabot** (#134 pypdf, #143 grupo pip, #144 starlette) | 2026-03-29 / 30 | ⬜ Pendente | Sessão **`deps`**; **`gh pr checks`** + merge verde conforme **`SECURITY.md`** |
+| PRs **Dependabot** (#134 pypdf, #144 starlette, #147 grupo pip) | 2026-03-29 / 30 / 03-31 | ✅ Feito | Mergeado (verde + mergeable). Próximo: manter olho em novos PRs e seguir `SECURITY.md` |
 | **Branch protection** (checks obrigatórios) | 2026-03-26 opcional | ⬜ Opcional | Ativar quando quiseres CI/Semgrep obrigatórios em `main` |
 | Fatia **Gemini Cold** (ex. G-26-04 + G-26-13) | `PLANS_TODO.md` | ⬜ Opcional | Um PR **`docs`**; itens mais seguros primeiro |
 | Espreitar **`/help` vs `main.py`** | 2026-03-29 | ⬜ Quando houver flags | Após próxima flag CLI/dashboard — **`tests/test_operator_help_sync.py`** |
