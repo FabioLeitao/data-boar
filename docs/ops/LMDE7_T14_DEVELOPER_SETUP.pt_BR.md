@@ -56,7 +56,15 @@ O suporte documental oficial: **[Ventoy — about Secure Boot (UEFI)](https://ww
 1. Executa **`Ventoy2Disk.exe`** como administrador.
 1. Escolhe o disco USB correto (cuidado a não apontar para outro disco).
 1. Em **Option → Secure Boot Support**: mantém **ativo** (as versões recentes já vêm assim).
+1. Em **Option → Partition Style**: prefira **GPT** (UEFI nativo; combina com Secure Boot).
+1. (Opcional) Em **Option → Partition Configuration**: mantenha o padrão, a não ser que você tenha um motivo claro (ex.: reservar espaço fixo para ISO vs dados).
 1. **Install** (ou **Update** se já for um stick Ventoy).
+
+**Recomendação prática para este projeto (para evitar “surpresas”):**
+
+- **UEFI + Secure Boot**: use o USB em modo **UEFI** (não Legacy/CSM).
+- **GPT + exFAT**: manter **GPT** e filesystem de dados **exFAT** funciona bem para copiar ISOs pelo Windows e também acessar no Linux.
+- **“Mostrar todos os dispositivos”**: só use se você estiver com dúvida no enumerador do Windows; é fácil selecionar o disco errado quando o filtro é removido.
 
 **Linux (script):**
 
@@ -74,6 +82,52 @@ sudo bash Ventoy2Disk.sh -i -s /dev/sdX   # substitui sdX pelo dispositivo USB c
 1. **Boot mode:** **UEFI only** — **não** uses Legacy/CSM para esta instalação.
 1. **Secure Boot:** **Enabled** (mantém **ligado**).
 1. Grava e sai.
+
+### 0.3.1 Checklist rápido do BIOS/UEFI (antes de instalar)
+
+**Objetivo:** garantir que o T14 está com o básico certo para **dual boot com fallback**, **Secure Boot ligado**, e boa compatibilidade com Linux.
+
+- **Boot**
+  - **UEFI only** (sem Legacy/CSM).
+  - **Secure Boot: Enabled**.
+  - **Startup / Boot order**: deixe o SSD interno como padrão; use o menu de boot só para iniciar o USB quando necessário.
+- **Security**
+  - **TPM 2.0**: habilitado (útil para postura e, se você escolher, integração futura com LUKS/TPM).
+  - **Fingerprint / Predesktop authentication**: se você não precisa desbloquear **antes** do SO, prefira deixar **desligado** e usar o fingerprint **já no Linux** (reduz complexidade de pré-boot).
+- **Config → CPU**
+  - **Intel Hyper-Threading**: **On** (padrão ok).
+  - **Intel Virtualization Technology**: **On** (útil para Docker/VMs; pode ficar ligado).
+- **Config → Power**
+  - Para instalação e testes, **Balanced** costuma ser mais previsível que “Maximum Performance”. Se você estiver caçando bugs térmicos, aí sim faz sentido forçar “Maximum Performance” temporariamente.
+- **Date/Time**
+  - Confirme data/hora; depois no Linux configure `timedatectl set-local-rtc 0` (recomendado em dual boot para evitar drift).
+
+#### 0.3.2 Checklist por tela (do seu BIOS) — o que manter ligado/desligado
+
+Esta subseção traduz “o que você viu nas fotos” em uma decisão prática para o seu objetivo: **LMDE como default**, Windows como **fallback** e **firmware updates**, e **mínimo risco de drift**.
+
+- **Security → Security Chip (TPM 2.0 / Intel PTT)**
+  - **Security Chip**: **On**.
+  - **Intel PTT**: **On**.
+  - **Physical Presence for Clear**: **On** (bom: evita “limpeza silenciosa” do TPM).
+  - **Por quê**: o TPM ajuda postura, e pode ajudar fluxo de disco criptografado no futuro; manter “clear” como ação física reduz risco operacional.
+- **Security → UEFI BIOS Update Option**
+  - **Secure RollBack Prevention**: **On**.
+  - **Windows UEFI Firmware Update**: **On** (faz sentido para seu dual boot “Windows só pra firmware”).
+  - **Flash BIOS Updating by End-Users**: prefira **Off** se você quer reduzir superfície/erro humano; deixe **On** só se você realmente usa flashes manuais fora do Windows/ferramentas oficiais.
+- **Security → Memory Protection**
+  - **Execution Prevention**: **On**.
+  - **Intel Total Memory Encryption**: **Off** é OK (em geral não é requisito para seu cenário; pode trazer custo/compatibilidade).
+- **Security → Virtualization**
+  - **Intel Virtualization Technology**: **On**.
+  - **Intel VT-d Feature**: **On** (ajuda isolamento/DMA quando o kernel usa; bom para VMs e postura).
+  - **Kernel DMA Protection**: **On**.
+  - **Enhanced Windows Biometric Security**: não é crítico para o LMDE; pode ficar **On** se você usa Windows como fallback e não quer mexer.
+  - **Por quê**: você ganha capacidade de VM/containers sem ter que voltar no BIOS; VT-d/DMA protection são bons defaults.
+- **Security → I/O Port Access**
+  - Para laptop de dev/lab, manter **habilitado** costuma ser a escolha prática (Wi‑Fi, Bluetooth, câmera, USB).
+  - Se você quiser reduzir superfície, o maior “ganho fácil” costuma ser **desligar o que você não usa nunca** (ex.: **microfone/câmera** quando o laptop fica em bancada; Bluetooth se você não usa).
+  - **Regra do projeto**: qualquer desativação aqui deve ser “consciente” (com motivo) para não virar um tipo de drift (ex.: Wi‑Fi off e depois achar que o LMDE “não tem driver”).
 
 ### 0.4 Primeiro arranque do Ventoy com Secure Boot
 
