@@ -54,6 +54,30 @@ Then add the Docker MCP server in Cursor Settings → MCP using the path shown b
 
 If you use a community Docker MCP (e.g. `cursor-docker-mcp`), add it in Cursor Settings → MCP with the server's command/args.
 
+### Docker Hub MCP (recommended for pre-push checks, no manual browsing)
+
+If you already created a dedicated Docker Hub **Personal Access Token (PAT)** (with an expiry like 90 days), a **Docker Hub** MCP can be used for fast checks such as:
+
+- which **namespaces** you can access,
+- whether a **repository** exists,
+- which **tags** exist (and which architectures/OS they cover),
+- tag metadata (digest, last pushed, etc.).
+
+This is useful for token-aware operator workflows (fewer clicks, less copy/paste): before pushing, confirm the expected tag isn’t already present; after pushing, validate it showed up.
+
+**Security notes:**
+
+- Do **not** store PATs in tracked files (`docs/`, `scripts/`, versioned `.env`). Use the MCP **secrets storage** (Cursor/Docker Desktop) or local environment variables.
+- Rotate PATs on the agreed cadence (e.g. 90 days) and keep scope minimal.
+- **Recommended least privilege:** `read/write` is usually enough for checks and publishing; avoid `delete` (as you did) to reduce accidental deletion risk.
+
+If you’re using Docker’s MCP catalog, the server is commonly named **`dockerhub`** and typically requires:
+
+- `dockerhub.username` (public, e.g. your Docker Hub username)
+- secret `dockerhub.pat_token` (the PAT — **never** commit)
+
+**Secret format:** in some integrations, `dockerhub.pat_token` must be provided as `namespace:PAT` (e.g. `fabioleitao:<pat>`). If a namespace check fails with “missing part #2”, it’s a strong sign the MCP only received one of the two parts.
+
 ---
 
 ## 2. Build the image (web API mode)
@@ -151,13 +175,13 @@ Or with Compose: `docker compose -f deploy/docker-compose.yml -f deploy/docker-c
 
 Repeated `docker run` / `docker build` during smoke tests or homelab checks can leave **many stopped containers** on Docker Desktop. That complicates ports, volumes, and knowing which image is “current.”
 
-## Policy (project convention):
+## Policy (project convention)
 
 1. Prefer **one** primary local container (e.g. `--name data-boar-audit`) or **one** Compose stack.
 1. Allow **at most two** named containers **only when** you need an explicit **A/B** (e.g. `fabioleitao/data_boar:latest` vs a locally built `data_boar:lab`). Use clear names; avoid ad-hoc unnamed containers.
 1. When a throwaway test is done, **stop and remove** extras: `docker rm -f <name>` (after confirming you do not need that instance).
 
-## List likely leftovers:
+## List likely leftovers
 
 ```powershell
 docker ps -a --filter "name=data-boar"
