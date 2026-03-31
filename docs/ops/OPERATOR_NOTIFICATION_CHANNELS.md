@@ -10,6 +10,21 @@
 
 **Sequencing (maintainer):** **Channel A only**—GitHub **mobile app** plus watch/email settings—is **enough to start** for PRs, reviews, Dependabot, Security, and **failed Actions**. Tweak **GitHub → Settings → Notifications** and the official iOS/Android app. When you want **redundancy** or chat-native pings, add **B** (Slack—already wired in Actions) and/or **C** (Signal bridge); Slack is the lowest-friction vendor from GitHub Actions; Signal is the **preferred** second chat if you want to rely less on Slack’s UX. This doc is the **integration reminder** for those next steps.
 
+## “CHAN-OK” quick proof (Slack) — 10 minutes, no guesswork
+
+**Goal:** confirm **“message posts to the channel and notifies on desktop and iPhone.”**
+
+1. **Webhook + secret (GitHub):** confirm `SLACK_WEBHOOK_URL` exists in **GitHub → Settings → Secrets and variables → Actions**.
+1. **Slack channel settings:** in the ops channel (e.g. `#data-boar-ops`), remove **mute** and set notifications to **All messages** (or at least mentions).
+1. **Stronger signal (recommended):** create repo variable **`SLACK_MENTION_USER_ID`** (Settings → **Variables**) with your Slack **Member ID** (`U…`). This turns the ping into `<@U…>` and Slack tends to alert more reliably.
+1. **Manual test:** GitHub **Actions → Slack operator ping (manual) → Run workflow**. (If there’s an input `mention_user_id`, also set your `U…` there.)
+1. **Success criteria**:
+   - Message appears in the channel **and**
+   - you get a notification on **Slack Desktop** **and**
+   - you get a notification on **iPhone** (Slack notifications enabled in iOS + Focus/DND not blocking).
+
+If the message posts but you get **no notification**, it’s almost always channel notification settings, Focus/DND, or OS-level Slack permissions — see §4.2 D.
+
 ---
 
 ## 1. Recommended stack (least friction → most setup)
