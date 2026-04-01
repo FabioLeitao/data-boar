@@ -1,0 +1,10 @@
+---
+- name: Set default UMASK for login sessions (best-effort)
+  when: t14_login_umask_enable | bool
+  ansible.builtin.lineinfile:
+    path: /etc/login.defs
+    regexp: '^\s*UMASK\s+'
+    line: "UMASK\t{{ t14_login_umask }}"
+    create: false
+  failed_when: false
+

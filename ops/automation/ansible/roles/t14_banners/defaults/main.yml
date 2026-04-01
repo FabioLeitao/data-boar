@@ -1,0 +1,29 @@
+---
+# Banner model learned from existing LAB-OP hosts (pi3b/<lab-host-2>/latitude).
+# Keep it generic and non-sensitive; override per-host in inventory if desired.
+t14_banner_plain_header: "{{ ansible_distribution | default('Linux') }} {{ ansible_distribution_version | default('') }} - {{ inventory_hostname }}"
+t14_banner_figlet_text: "{{ t14_banner_plain_header }}"
+
+t14_banner_disclaimer_lines:
+  - "You are entering into a secure area! Your IP, Login time, Username"
+  - "has been noted and has been sent to the server administrator!"
+  - "This service is restricted to authorized users only."
+  - "All activities on this system are logged."
+  - "Unauthorized access will be fully investigated and reported to the"
+  - "appropriate law enforcement agencies."
+  - ""
+  - "Você está entrando em uma área segura! Seu IP, horário de acesso, usuário"
+  - "foram anotados e encaminhados para o administrador do servidor!"
+  - "Esse serviço é restrito somente a usuários autorizedos."
+  - "Todas as atividades são registradas em logs."
+  - "Acessos não autorizados serão plenamente auditados, investigados, e"
+  - "reportados as devidas autoridades legais."
+
+# Where to write banners.
+t14_banner_issue_path: /etc/issue
+t14_banner_issue_net_path: /etc/issue.net
+t14_banner_net_path: /etc/banner.net
+
+# Whether to configure sshd Banner directive (opt-in; requires SSH reload/restart).
+t14_banner_enable_sshd_banner: false
+
