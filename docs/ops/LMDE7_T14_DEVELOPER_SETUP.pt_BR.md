@@ -38,6 +38,49 @@
 
 **Quando faz sentido LMDE-only:** quando o T14 for um host dedicado de laboratório (quase “appliance”) e você quiser minimizar variação operacional. Nesse caso, registre a decisão em nota privada (custo/benefício + riscos) e mantenha backups.
 
+### 0.x.1 Pré-flight no Windows (dual boot sem drama): BitLocker, chaves e espaço livre
+
+**Objetivo:** antes de bootar o instalador do LMDE, deixar o Windows num estado “boring” para particionamento/UEFI/Secure Boot, reduzindo risco de travar em recovery.
+
+- **BitLocker (recomendação prática)**:
+  - Para a janela de instalação (mudança de boot/partição), prefira **desligar** ou ao menos **suspender** o BitLocker no `C:`. Isso evita cair em **BitLocker Recovery** após mudanças em UEFI/TPM/boot order.
+  - **Backup da recovery key**: faça o backup no seu cofre (ex.: **Bitwarden**) *antes* de mexer no BIOS/partições. **Nunca** cole chaves em issues/PRs/arquivos rastreados no Git.
+  - **Depois que o dual boot estiver estável**: você pode reconsiderar reativar BitLocker (com disciplina de **Suspend/Resume** antes de qualquer mudança de firmware/boot).
+- **Desligar hibernação/fast startup** (evita NTFS “sujo” e atrito de dual boot):
+
+```powershell
+powercfg /h off
+```
+
+- **Criar espaço não alocado (recomendado: pelo Windows)**:
+  - Abra **Gerenciamento de Disco** (`diskmgmt.msc`) → `C:` → **Diminuir volume…** e crie espaço **não alocado** para o LMDE.
+  - Evite encolher NTFS pelo instalador Linux se o Windows conseguir fazer (menos risco).
+  - **Regra prática (ordem ideal):** faça este “shrink” **antes** de bootar o Live/instalador do LMDE. Assim, quando você chegar no particionamento manual do instalador, o espaço já aparece como **Free space / Unallocated**, sem precisar redimensionar NTFS “do lado Linux”.
+  - **Se você esqueceu e já está no Live:** pode voltar ao Windows com segurança para fazer o shrink.
+    - Saia/cancele o instalador (não aplique mudanças).
+    - Reinicie no Windows.
+    - Faça o shrink em `diskmgmt.msc`.
+    - Volte ao Live/instalador e continue do particionamento manual — agora o free space vai aparecer.
+- **Evidências mínimas (SRE-friendly)**:
+  - Foto da tela do BitLocker (estado “ligado/suspenso/desligado”).
+  - Foto do `diskmgmt.msc` mostrando o **espaço não alocado**.
+  - Foto do Boot Menu/UEFI mostrando USB/UEFI e Secure Boot ligado (se necessário).
+
+#### 0.x.1.1 Passphrase LUKS (sem “errar digitando”) — workaround opcional
+
+**Preferido (recomendação):** usar o **Bitwarden** diretamente no mesmo dispositivo em que você está digitando (desktop app/mobile) e colar via clipboard local. Isso reduz a superfície (não passa por mensageria).
+
+**Workaround (último caso, mas prático em instalação):** enviar a passphrase por **Bitwarden Send** para você mesmo, com controles agressivos:
+
+- **Senha forte** para abrir o Send
+- **Expiração curta** (ex.: **1h**)
+- **Limite de acessos** (ex.: **1 leitura**)
+- **Revogar/expirar** o Send assim que terminar
+
+**Importante:** isso ainda aumenta a superfície se você abrir o link em um app de chat (WhatsApp/Signal/etc.). Se usar mensageria, trate como “canal de conveniência”, não como local de armazenamento; prefira abrir o Send no navegador/app Bitwarden e colar localmente.
+
+**Regra de ouro:** nunca cole a passphrase em chat/issue/arquivo versionado; não tire screenshot da passphrase.
+
 ## 0. Instalação no T14 — Ventoy, UEFI e **Secure Boot** ligado
 
 **Objetivo:** preparar o USB com **Ventoy**, manter **Secure Boot ativo** no ThinkPad durante a instalação **e** depois no Linux, sem pedir que desligues o Secure Boot de forma permanente. **“Device Guard”** (e **Credential Guard**) são nomes de recursos **do Windows**; no **LMDE** não existem com esses nomes — o paralelo é **Secure Boot + TPM (se usares LUKS/TPM) + endurecimento em camadas (§3)**. Na **máquina onde geras o USB** (ex. Windows 11 com **HVCI/Device Guard**), **você pode manter** essas políticas; o **Ventoy2Disk** não exige desligá-las.
@@ -167,6 +210,186 @@ Esta subseção traduz “o que você viu nas fotos” em uma decisão prática 
 1. **Disco:** recomenda-se **criptografia LUKS** (passphrase forte; regista num **local seguro** — ex. gestor de segredos). Isto alinha com **TPM** presente no T14 para arranque **posterior** conforme opções que o instalador oferecer.
 1. Cria o usuário; ao fim, reinicia e **remove o USB** quando pedido.
 
+### 0.5.1 Dual boot (Windows + LMDE) com LUKS via particionamento manual (GParted + `cryptsetup`)
+
+**Quando usar:** se o instalador não oferecer claramente “install alongside Windows” com LUKS, ou se você quer **zero ambiguidade** controlando o particionamento.
+
+**Pré-requisito:** o `C:` já foi reduzido no Windows e existe **Free space / Unallocated** no NVMe (ver **§0.x.1**).
+
+**Regra de ouro:** não formatar as partições NTFS do Windows e não formatar a **EFI System Partition** existente.
+
+1. No instalador, escolha **Manual partitioning** (não use “Automated installation / Erase disk”).
+1. Clique em **Launch GParted**.
+1. No disco **`/dev/nvme0n1`**, dentro do free space:
+   - Crie uma partição **ext4** para **`/boot`** (1–2 GiB; label sugerido: `boot_lmde`).
+   - Crie outra partição com **todo o resto** (tipo **unformatted**; label sugerido: `crypt_lmde`).
+   - Clique **Apply (✓)** e confirme.
+1. Ainda no Live, abra um terminal e identifique as partições recém-criadas:
+
+```bash
+lsblk -f
+```
+
+1. Formate a partição grande como **LUKS** e abra como `cryptroot` (ajuste `pX` para o número real):
+
+```bash
+sudo cryptsetup luksFormat /dev/nvme0n1pX
+sudo cryptsetup open /dev/nvme0n1pX cryptroot
+```
+
+1. Escolha o filesystem **dentro** do LUKS (recomendação depende do objetivo):
+   - **`ext4`**: mais simples/boring (bom se você não vai manter snapshots).
+   - **`btrfs` + Snapper**: snapshots/rollback desde o dia 1 (alinha com `mini-bt`).
+
+**Opção A — ext4 (mais simples):**
+
+```bash
+sudo mkfs.ext4 -L root_lmde /dev/mapper/cryptroot
+```
+
+**Opção B — btrfs (snapshots desde o dia 1):**
+
+```bash
+sudo mkfs.btrfs -L root_lmde /dev/mapper/cryptroot
+```
+
+1. Volte ao instalador (particionamento manual) e configure mounts:
+   - **EFI existente** (`/dev/nvme0n1p1`, FAT32): mount **`/boot/efi`**, **não** formatar.
+   - `boot_lmde` (ext4): mount **`/boot`**, formatar.
+   - `cryptroot` (ext4/btrfs em `/dev/mapper/cryptroot`): mount **`/`**, formatar.
+   - Swap: opcional (swapfile depois é OK se você não usa hibernação).
+
+#### Armadilha comum: instalador não lista `/dev/mapper/*` (dm-crypt)
+
+Algumas versões do instalador do Mint/LMDE **não exibem** devices `dm-crypt` (ex.: **`/dev/mapper/cryptroot`**) na tela de particionamento manual. Se isso acontecer:
+
+- **Não** selecione **`/dev/nvme0n1p6`** como `/` e marque “format btrfs/ext4” achando que está formatando “dentro do LUKS” — isso **sobrescreve o header do LUKS** e te joga num loop de reinstall.
+- Sinal de que você caiu na armadilha: você “tem `cryptsetup status cryptroot` ok”, mas o instalador só oferece **`/dev/nvme0n1p6`** e nunca aparece um item `/dev/mapper/...`.
+
+**Workaround recomendado:** use o **Plano B (§0.5.3)**: instalar primeiro em **btrfs normal** no `p6`, e só depois criptografar via **`cryptsetup reencrypt`** (padrão “Mint-like”).
+
+### 0.5.2 Snapshots “desde o dia 1” (btrfs + Snapper) — referência `mini-bt`
+
+**Motivação:** o host `mini-bt` usa **btrfs no `/`** e o **Snapper** mantém snapshots em **`/.snapshots`** (subvolume dedicado). No LMDE (Debian-family + systemd), fica ainda mais fácil automatizar via timers.
+
+**Nota:** o instalador pode formatar/montar o `/` em btrfs sem criar subvolumes. Isso é ok para começar; depois da instalação você cria `/.snapshots` e configura o Snapper.
+
+Depois do primeiro boot no LMDE (já instalado), rode:
+
+```bash
+sudo apt update
+sudo apt install -y snapper btrfs-progs
+```
+
+Crie o subvolume de snapshots (modelo do `mini-bt`) e monte no lugar certo:
+
+```bash
+sudo mkdir -p /.snapshots
+sudo btrfs subvolume create /.snapshots
+```
+
+Crie a config do Snapper para o root (`/`) e habilite timers:
+
+```bash
+sudo snapper -c root create-config /
+sudo systemctl enable --now snapperd
+sudo systemctl enable --now snapper-timeline.timer snapper-cleanup.timer
+```
+
+Verificações rápidas:
+
+```bash
+sudo snapper list-configs
+sudo snapper -c root list | head -n 30
+sudo btrfs subvolume list /.snapshots | head
+systemctl list-timers --all | grep -i snapper || true
+```
+
+#### 0.5.2.1 Retenção (para não “comer o disco”)
+
+**Objetivo:** manter rollback fácil **sem** acumular snapshots indefinidamente.
+
+**Importante:** snapshots **não** substituem **backup**. Snapshot te salva de “oops/upgrade ruim” no mesmo disco. Backup te salva de **falha do SSD**, perda/roubo, ou corrupção ampla.
+
+O Snapper limpa snapshots automaticamente com o **`snapper-cleanup.timer`**; o que manda é a política em **`/etc/snapper/configs/root`**.
+
+Defaults “conservadores” (bom para workstation):
+
+- **Timeline**: mantenha, mas com limites baixos (ex.: alguns horários, poucos diários, poucos mensais).
+- **Number cleanup**: mantenha um número máximo de snapshots “importantes”.
+
+Exemplo de valores razoáveis (ajuste ao seu apetite):
+
+- `TIMELINE_LIMIT_HOURLY="6"` (últimas 6 horas)
+- `TIMELINE_LIMIT_DAILY="7"` (7 dias)
+- `TIMELINE_LIMIT_WEEKLY="4"` (4 semanas)
+- `TIMELINE_LIMIT_MONTHLY="3"` (3 meses)
+- `TIMELINE_LIMIT_YEARLY="0"` (desligado)
+- `NUMBER_LIMIT="10"` e `NUMBER_LIMIT_IMPORTANT="5"` (cap geral)
+
+Para editar:
+
+```bash
+sudoedit /etc/snapper/configs/root
+sudo systemctl restart snapperd
+```
+
+E para validar que o cleanup roda:
+
+```bash
+systemctl list-timers --all | grep -i snapper
+sudo snapper -c root list | tail -n 20
+```
+
+**Dica prática:** marque snapshots realmente importantes como “important” (quando fizer uma mudança grande e estável) e deixe os de timeline serem “descartáveis”.
+
+#### 0.5.2.2 Guardrails de “alocação vs backup” (workstation sem stress)
+
+- **Tenha um budget mental de espaço**:
+  - reserve um “piso” para o próprio sistema + dev (ex.: 30–40% do volume) e trate o resto como espaço de trabalho;
+  - se o `/.snapshots` começar a crescer demais, é sinal de retenção alta *ou* dados grandes sendo versionados por snapshot.
+- **Monitore uso do btrfs e do `/.snapshots`** (1 min, sem tooling extra):
+
+```bash
+sudo btrfs filesystem usage -T /
+sudo du -sh /.snapshots 2>/dev/null || true
+```
+
+- **Evite snapshot de lixo volumoso**:
+  - mantenha downloads/ISOs/VM images fora do root sempre que possível (ex.: outro volume/diretório que você não precisa snapshotar).
+  - para cache que explode (containers), escolha conscientemente onde fica (`/var/lib/docker`, `~/.cache`, etc.). Snapshots vão capturar *mudanças* nesses diretórios.
+- **Backups “de verdade” (fora do disco)**:
+  - snapshots são a camada 1 (rollback rápido);
+  - mantenha pelo menos 1 cópia off-host (pCloud/drive externo/NAS) do que é crítico (configs, chaves, documentos, repositórios). A política/como fazer isso fica em docs/ops separados; aqui só o lembrete.
+
+### 0.5.3 Plano B (recomendado quando o instalador não vê `/dev/mapper`): instalar em btrfs e criptografar depois (`cryptsetup reencrypt`)
+
+**Ideia:** completar a instalação do LMDE normalmente (root em btrfs no `p6`), **sem reboot**, e então transformar **o mesmo `p6`** em LUKS2 **sem destruir o btrfs**, usando `cryptsetup reencrypt`.
+
+**Quando usar:** quando o instalador não lista `/dev/mapper/*`, mas você quer **FDE com LUKS2** + **btrfs**.
+
+**Checkpoint de segurança antes de começar:**
+
+- `lsblk -f` deve mostrar `p6` como **btrfs** (não `crypto_LUKS`).
+- O instalador deve apontar **`/dev/nvme0n1p6` → `/`** e format **btrfs**.
+- Ao terminar, **NÃO reinicie**.
+
+**Passos (resumo):**
+
+1. Instale LMDE com particionamento manual:
+   - `p1` → `/boot/efi` (não formatar)
+   - `p5` → `/boot` (ext4)
+   - `p6` → `/` (btrfs)
+   - GRUB em `/dev/nvme0n1`
+2. Antes de criptografar, reduza o filesystem em **32 MiB** para caber o header do LUKS (em `@` se existir):
+3. Rode `cryptsetup reencrypt --encrypt --type luks2 --reduce-device-size 32m /dev/nvme0n1p6`
+4. Abra o LUKS, monte root/boot/efi e, em chroot:
+   - configure `/etc/crypttab`
+   - `update-initramfs -u`
+   - `update-grub`
+
+**Nota:** este Plano B é descrito em detalhe em referências públicas (ex.: guias de Mint/LMDE btrfs+FDE). Ele evita depender do instalador “enxergar” o mapper.
+
 ### 0.6 Depois da instalação — Secure Boot com Debian/LMDE
 
 O LMDE baseado em **Debian** usa normalmente **`shim`** + kernel assinado: com **Secure Boot ligado**, o sistema instalado deve **continuar a arrancar** sem desligar Secure Boot no firmware. Se **após** a instalação o firmware reclamar:
@@ -174,6 +397,58 @@ O LMDE baseado em **Debian** usa normalmente **`shim`** + kernel assinado: com *
 1. Confirma que não há **outro** bootloader não assinado a “saltar” à frente do `shim`.
 1. Corre **`sudo dpkg-reconfigure shim-unsigned`** / pacotes **`shim-signed`** conforme a tua imagem (nomes exactos: `apt search shim` no LMDE).
 1. Mantém **Secure Boot: Enabled** no UEFI; só em último caso segue notas do Debian para **MOK** (procedimento consciente, não “desligar tudo”).
+
+### 0.6.1 Troubleshooting: “GRUB bootloader was not configured properly” no fim da instalação
+
+**Sintoma:** ao final do instalador, aparece um aviso do tipo:
+
+- *“WARNING: the grub bootloader was not configured properly! You need to configure it manually.”*
+
+**Regra de ouro:** **não reinicie ainda**. Corrija **no Live** enquanto os volumes/mapeamentos estão frescos.
+
+**Nota sobre outro alerta comum:** *“Low Disk Space … remaining”* costuma ser do **Live session** (overlay/ram/USB), não do SSD interno. Em geral é seguro **ignorar** para concluir a correção do bootloader; depois do primeiro boot no sistema instalado, esse alerta some.
+
+#### Correção (Live → abrir LUKS → mount → chroot → `grub-install`)
+
+1. No Live, abra um terminal.
+1. Abra o LUKS e monte o sistema instalado (ajuste dispositivos se o seu layout diferir):
+
+```bash
+sudo cryptsetup open /dev/nvme0n1p6 cryptroot
+sudo mkdir -p /mnt/target
+sudo mount /dev/mapper/cryptroot /mnt/target
+
+sudo mkdir -p /mnt/target/boot
+sudo mount /dev/nvme0n1p5 /mnt/target/boot
+
+sudo mkdir -p /mnt/target/boot/efi
+sudo mount /dev/nvme0n1p1 /mnt/target/boot/efi
+
+for i in /dev /dev/pts /proc /sys /run; do sudo mount --bind "$i" "/mnt/target$i"; done
+sudo chroot /mnt/target /bin/bash
+```
+
+1. Dentro do `chroot`, reinstale/configure GRUB (UEFI) + `shim`:
+
+```bash
+apt update
+apt install -y grub-efi-amd64 shim-signed
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=LMDE --recheck
+update-grub
+exit
+```
+
+1. Desmonte e feche o LUKS:
+
+```bash
+for i in /run /sys /proc /dev/pts /dev; do sudo umount -R "/mnt/target$i"; done
+sudo umount -R /mnt/target/boot/efi
+sudo umount -R /mnt/target/boot
+sudo umount -R /mnt/target
+sudo cryptsetup close cryptroot
+```
+
+1. Reinicie e remova o USB quando o instalador pedir. Confirme que o menu do GRUB lista LMDE e (idealmente) o Windows.
 
 ### 0.7 Resumo de requisitos que pediste
 
