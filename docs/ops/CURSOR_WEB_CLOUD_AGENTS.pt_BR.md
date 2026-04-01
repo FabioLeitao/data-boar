@@ -77,6 +77,36 @@ e ao mesmo tempo **na DMZ ou hotspot do iPhone** tudo passa, então o problema e
 - Guarde 2 screenshots: Diagnostic **falhando** no SSID “<SSID_NAME>” e **passando** na DMZ/hotspot.
 - Registre o “toggle” que resolveu (qual item do checklist acima).
 
+## Docker MCP Toolkit (MCP_DOCKER) no Cursor (integração local)
+
+Se `Settings → Tools & MCP` mostrar `MCP_DOCKER` com erro, a causa mais comum é:
+
+- gateway não está rodando **ou**
+- o client `cursor` está **disconnected** no `docker mcp`.
+
+### Passo a passo (Windows)
+
+1) Em um terminal, deixe o gateway rodando:
+
+```powershell
+docker mcp gateway run
+```
+
+1) Em outro terminal, conecte o client do Cursor:
+
+```powershell
+docker mcp client connect cursor
+docker mcp client ls
+docker mcp tools ls
+```
+
+1) Reinicie o Cursor se necessário (o próprio CLI avisa quando precisa).
+
+### Observações
+
+- `docker mcp gateway` nesta versão usa `run` (não existe `start/status`).
+- Se algum servidor (ex.: `dockerhub`) falhar por token, isso não impede o `MCP_DOCKER` básico; trate como opcional.
+
 ## Captura de evidências (hábito SRE)
 
 Trate output do Cloud Agent como output de CI:
@@ -86,4 +116,3 @@ Trate output do Cloud Agent como output de CI:
 - resumos redigidos podem ir em docs rastreadas quando fizer sentido
 
 Template privado: `docs/private.example/cursor_web/README.md` (copie para `docs/private/cursor_web/`).
-
