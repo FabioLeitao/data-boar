@@ -43,6 +43,8 @@ foreach ($a in $ExtraSshArgs) { [void]$argList.Add($a) }
 [void]$argList.Add($SshHost)
 [void]$argList.Add("bash")
 [void]$argList.Add("-s")
+# Keep room for optional script args in the future.
+[void]$argList.Add("--")
 
 $errFile = Join-Path $env:TEMP "homelab-ssh-stderr-$stamp.txt"
 Remove-Item -LiteralPath $errFile -ErrorAction SilentlyContinue
