@@ -77,6 +77,36 @@ and at the same time **DMZ or phone hotspot** passes, the issue is in the **UDM/
 - Keep two screenshots: Diagnostic **failing** on LAB SSID and **passing** on DMZ/hotspot.
 - Record which toggle fixed it.
 
+## Docker MCP Toolkit (MCP_DOCKER) in Cursor (local integration)
+
+If `Settings → Tools & MCP` shows `MCP_DOCKER` as error, the most common causes are:
+
+- the gateway is not running, and/or
+- the `cursor` client is disconnected in `docker mcp`.
+
+### Step-by-step (Windows)
+
+1) In one terminal, keep the gateway running:
+
+```powershell
+docker mcp gateway run
+```
+
+1) In another terminal, connect the Cursor client:
+
+```powershell
+docker mcp client connect cursor
+docker mcp client ls
+docker mcp tools ls
+```
+
+1) Restart Cursor if needed (the CLI will hint when required).
+
+### Notes
+
+- This `docker mcp gateway` version uses `run` (no `start/status`).
+- If an optional server (e.g. `dockerhub`) fails due to missing token, it doesn't block basic `MCP_DOCKER` usage.
+
 ## Evidence capture (SRE habit)
 
 Treat Cloud Agent output like CI output:
@@ -86,4 +116,3 @@ Treat Cloud Agent output like CI output:
 - keep redacted summaries in tracked docs when helpful
 
 Private template: `docs/private.example/cursor_web/README.md` (copy to `docs/private/cursor_web/`).
-
