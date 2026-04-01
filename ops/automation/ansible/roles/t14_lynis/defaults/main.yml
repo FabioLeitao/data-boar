@@ -1,0 +1,16 @@
+---
+# Install Lynis via distro packages.
+t14_lynis_install: true
+
+# Optionally clone the upstream repo to a fixed path for diffing / bleeding edge.
+t14_lynis_clone_upstream: true
+t14_lynis_upstream_repo: "https://github.com/CISOfy/lynis.git"
+t14_lynis_upstream_dir: "/opt/lynis"
+t14_lynis_upstream_ref: "master"
+
+# Where Lynis reads its default profile on Debian-family.
+t14_lynis_default_prf_path: "/etc/lynis/default.prf"
+
+# Keep suggestions as comments; operator can "uncomment to activate".
+t14_lynis_profile_write: true
+

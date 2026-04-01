@@ -1,0 +1,67 @@
+---
+- name: Skip Docker CE installation unless opted-in
+  when: not (t14_install_docker_ce | bool)
+  ansible.builtin.debug:
+    msg: "Docker CE install is disabled (t14_install_docker_ce=false)."
+
+- name: Install Docker CE (repo-based; opt-in)
+  when: t14_install_docker_ce | bool
+  block:
+    - name: Install Docker dependencies
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+        state: present
+        update_cache: true
+
+    - name: Ensure Docker keyrings directory exists
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: "0755"
+
+    - name: Add Docker GPG key (Debian)
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/debian/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: "0644"
+
+    - name: Add Docker apt repository (Debian)
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+        filename: docker
+        state: present
+
+    - name: Install docker-ce
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+        update_cache: true
+
+    - name: Optionally write daemon.json (minimal baseline)
+      when: t14_docker_manage_daemon_json | bool
+      ansible.builtin.copy:
+        dest: "{{ t14_docker_daemon_json_path }}"
+        owner: root
+        group: root
+        mode: "0644"
+        content: "{{ t14_docker_daemon_json | to_nice_json }}\n"
+
+    - name: Ensure docker is enabled
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Optionally initialize Docker Swarm (manager)
+      when: t14_docker_swarm_init | bool
+      ansible.builtin.command: docker swarm init
+      register: t14_swarm_init
+      changed_when: "'Swarm initialized' in (t14_swarm_init.stdout | default(''))"
+      failed_when: false
+
