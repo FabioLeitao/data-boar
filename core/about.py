@@ -15,7 +15,7 @@ def get_about_info() -> dict:
 
         ver = version("python3-lgpd-crawler")
     except Exception:
-        ver = "1.6.7"
+        ver = "1.6.8"
     return {
         "name": "Data Boar",
         "version": ver,
