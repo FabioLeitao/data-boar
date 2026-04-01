@@ -1,0 +1,37 @@
+---
+- name: Ensure fail2ban package is installed
+  ansible.builtin.apt:
+    name: fail2ban
+    state: present
+    update_cache: false
+
+- name: Ensure fail2ban is enabled
+  when: lab-node-01_fail2ban_enable | bool
+  ansible.builtin.service:
+    name: fail2ban
+    state: started
+    enabled: true
+
+- name: Configure fail2ban jail (SSH only, conservative)
+  when: lab-node-01_fail2ban_enable | bool
+  ansible.builtin.copy:
+    dest: /etc/fail2ban/jail.d/99-ssh-local.conf
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [DEFAULT]
+      # Learned from LAB-OP (LAB-NODE-04): keep LAN trusted by ignoreip if you confirm.
+      # To adopt, set `lab-node-01_fail2ban_ignoreip` in inventory (e.g. ["127.0.0.1/8","::1","192.0.2.0/24"]).
+      {% if lab-node-01_fail2ban_ignoreip | length > 0 %}
+      ignoreip = {{ lab-node-01_fail2ban_ignoreip | join(' ') }}
+      {% endif %}
+
+      [sshd]
+      enabled = {{ 'true' if (lab-node-01_fail2ban_sshd_enabled | bool) else 'false' }}
+      maxretry = {{ lab-node-01_fail2ban_maxretry }}
+      findtime = {{ lab-node-01_fail2ban_findtime }}
+      bantime = {{ lab-node-01_fail2ban_bantime }}
+      banaction = {{ lab-node-01_fail2ban_banaction }}
+  notify: Restart fail2ban
+

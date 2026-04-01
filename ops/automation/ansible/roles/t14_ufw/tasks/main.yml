@@ -1,0 +1,24 @@
+---
+- name: Ensure ufw package is installed
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+    update_cache: false
+
+- name: Enable UFW service
+  when: lab-node-01_ufw_enable | bool
+  ansible.builtin.service:
+    name: ufw
+    state: started
+    enabled: true
+
+- name: Set UFW defaults (deny incoming; allow outgoing)
+  when: lab-node-01_ufw_enable | bool
+  ansible.builtin.command: "{{ item }}"
+  changed_when: false
+  failed_when: false
+  loop:
+    - "ufw default {{ lab-node-01_ufw_default_incoming }} incoming"
+    - "ufw default {{ lab-node-01_ufw_default_outgoing }} outgoing"
+    - "ufw --force enable"
+

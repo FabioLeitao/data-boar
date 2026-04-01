@@ -18,7 +18,9 @@ param(
     [string] $ManifestPath = "",
     [switch] $SkipFping,
     [switch] $SkipGitPull,
-    [string] $RepoRoot = ""
+    [string] $RepoRoot = "",
+    [switch] $Privileged,
+    [switch] $Deep
 )
 
 $ErrorActionPreference = "Stop"
@@ -51,6 +53,18 @@ New-Item -ItemType Directory -Force -Path $outDir | Out-Null
 
 $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
 $fping = Get-Command fping -ErrorAction SilentlyContinue
+
+$reportArgs = @()
+if ($Privileged) { $reportArgs += "--privileged" }
+if ($Deep) { $reportArgs += "--deep" }
+$reportArgsText = ""
+if ($reportArgs.Count -gt 0) {
+    $reportArgsText = " " + ($reportArgs -join " ")
+}
+
+# Prevent a single host from hanging the whole run.
+# Uses GNU timeout if present on the remote host; otherwise runs without a hard timeout.
+$remoteReportTimeoutSecs = 600
 
 function Get-SshHostname {
     param([string]$Alias)
@@ -96,10 +110,10 @@ foreach ($h in $manifest.hosts) {
         [void]$sb.AppendLine("--- repo: $rp ---")
         $rpEsc = $rp -replace "'", "'\''"
         if ($SkipGitPull) {
-            $remoteCmd = "cd '$rpEsc' && bash scripts/homelab-host-report.sh"
+            $remoteCmd = "cd '$rpEsc' && (command -v timeout >/dev/null 2>&1 && timeout $remoteReportTimeoutSecs bash scripts/homelab-host-report.sh$reportArgsText || bash scripts/homelab-host-report.sh$reportArgsText)"
         }
         else {
-            $remoteCmd = "cd '$rpEsc' && git fetch origin && git pull --ff-only && bash scripts/homelab-host-report.sh"
+            $remoteCmd = "cd '$rpEsc' && git fetch origin && git pull --ff-only && (command -v timeout >/dev/null 2>&1 && timeout $remoteReportTimeoutSecs bash scripts/homelab-host-report.sh$reportArgsText || bash scripts/homelab-host-report.sh$reportArgsText)"
         }
         # Single argument for remote command (paths with spaces: avoid or use manifest carefully).
         $remoteOut = & ssh.exe -o BatchMode=yes -o ConnectTimeout=120 $alias $remoteCmd 2>&1
