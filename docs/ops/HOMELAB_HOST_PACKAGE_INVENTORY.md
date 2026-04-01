@@ -182,6 +182,8 @@ It also captures a **read-only sample** of **sysctl** (`vm.*` dirty ratios / swa
 
 Save stdout to a file, **redact**, then share if you want a structured review.
 
+**Extended security posture snapshot:** see [HOMELAB_HOST_REPORT_EXTENDED.md](HOMELAB_HOST_REPORT_EXTENDED.md).
+
 ### 4.1 Lynis line looks wrong (`db/languages/.../data-boar` or `lynis: not in PATH`)
 
 **Cause (common on Debian/Ubuntu/Zorin):** the real binary is **`/usr/sbin/lynis`**, but **non-login** environments sometimes omit **`/usr/sbin`** from **`PATH`**, so **`command -v lynis`** fails. Running **`lynis`** from the repo directory can also confuse some builds that resolve paths relative to **cwd**.
