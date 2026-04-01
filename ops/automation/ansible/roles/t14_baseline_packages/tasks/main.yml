@@ -1,0 +1,7 @@
+---
+- name: Ensure baseline packages are installed
+  ansible.builtin.apt:
+    name: "{{ t14_baseline_packages }}"
+    state: present
+    update_cache: true
+
