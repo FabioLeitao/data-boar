@@ -10,20 +10,20 @@
 
 **Reinstalação “do zero”:** segue o **§0** (Ventoy + UEFI + **Secure Boot** ligado) e o instalador gráfico do **LMDE 7**. **Quando o T14 já estiver no LMDE 7 com sudo**, continua no **§1**.
 
-## Onde está cada parte (mapa rápido):
+## Onde está cada parte (mapa rápido)
 
-| Seção      | Conteúdo                                                                                  |
-| -----      | --------                                                                                  |
-| **§0**     | Instalação: **Ventoy** (USB), **UEFI**, **Secure Boot** ativo, LMDE 7 no ThinkPad **T14**. |
-| **§1**     | Checklist antes de começar (disco, rede, backup).                                         |
-| **§2**     | `apt update` / `full-upgrade`, reboot se necessário.                                      |
-| **§3**     | Segurança: `ufw`, `unattended-upgrades`, `fwupd`, Lynis, sysctl conservador; SSH opcional. |
-| **§4**     | Ferramentas de dev gerais (`git`, `build-essential`, etc.).                               |
-| **§5**     | Python **3.13** (recomendado; **≥3.12** ok) + libs de sistema, **`uv`**, clone, `uv sync`, `pytest`. |
-| **§6**     | T14: energia (**`tlp`**), **I/O NVMe**, **kernel/sysctl** (performance prudente).       |
-| **§7**     | Podman/Docker opcional.                                                                   |
-| **§8–§9**  | Pacotes homelab/auditoria; checklist final.                                               |
-| **§10**    | Links relacionados no repositório.                                                        |
+|Seção|Conteúdo|
+|---|---|
+|**§0**|Instalação: **Ventoy** (USB), **UEFI**, **Secure Boot** ativo, LMDE 7 no ThinkPad **T14**.|
+|**§1**|Checklist antes de começar (disco, rede, backup).|
+|**§2**|`apt update` / `full-upgrade`, reboot se necessário.|
+|**§3**|Segurança: `ufw`, `unattended-upgrades`, `fwupd`, Lynis, sysctl conservador; SSH opcional.|
+|**§4**|Ferramentas de dev gerais (`git`, `build-essential`, etc.).|
+|**§5**|Python **3.13** (recomendado; **≥3.12** ok) + libs de sistema, **`uv`**, clone, `uv sync`, `pytest`.|
+|**§6**|T14: energia (**`tlp`**), **I/O NVMe**, **kernel/sysctl** (performance prudente).|
+|**§7**|Podman/Docker opcional.|
+|**§8–§9**|Pacotes homelab/auditoria; checklist final.|
+|**§10**|Links relacionados no repositório.|
 
 **Depois disto (não é instalação de SO):** stack mínima lab-op → [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md); Grafana/Prometheus/logs → [PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md).
 
@@ -38,6 +38,89 @@
 
 **Quando faz sentido LMDE-only:** quando o T14 for um host dedicado de laboratório (quase “appliance”) e você quiser minimizar variação operacional. Nesse caso, registre a decisão em nota privada (custo/benefício + riscos) e mantenha backups.
 
+### 0.x.1 Pré-flight no Windows (dual boot sem drama): BitLocker, chaves e espaço livre
+
+**Objetivo:** antes de bootar o instalador do LMDE, deixar o Windows num estado “boring” para particionamento/UEFI/Secure Boot, reduzindo risco de travar em recovery.
+
+- **BitLocker (recomendação prática)**:
+  - Para a janela de instalação (mudança de boot/partição), prefira **desligar** ou ao menos **suspender** o BitLocker no `C:`. Isso evita cair em **BitLocker Recovery** após mudanças em UEFI/TPM/boot order.
+  - **Backup da recovery key**: faça o backup no seu cofre (ex.: **Bitwarden**) *antes* de mexer no BIOS/partições. **Nunca** cole chaves em issues/PRs/arquivos rastreados no Git.
+  - **Depois que o dual boot estiver estável**: você pode reconsiderar reativar BitLocker (com disciplina de **Suspend/Resume** antes de qualquer mudança de firmware/boot).
+- **Desligar hibernação/fast startup** (evita NTFS “sujo” e atrito de dual boot):
+
+```powershell
+powercfg /h off
+```
+
+- **Criar espaço não alocado (recomendado: pelo Windows)**:
+  - Abra **Gerenciamento de Disco** (`diskmgmt.msc`) → `C:` → **Diminuir volume…** e crie espaço **não alocado** para o LMDE.
+  - Evite encolher NTFS pelo instalador Linux se o Windows conseguir fazer (menos risco).
+  - **Regra prática (ordem ideal):** faça este “shrink” **antes** de bootar o Live/instalador do LMDE. Assim, quando você chegar no particionamento manual do instalador, o espaço já aparece como **Free space / Unallocated**, sem precisar redimensionar NTFS “do lado Linux”.
+  - **Se você esqueceu e já está no Live:** pode voltar ao Windows com segurança para fazer o shrink.
+    - Saia/cancele o instalador (não aplique mudanças).
+    - Reinicie no Windows.
+    - Faça o shrink em `diskmgmt.msc`.
+    - Volte ao Live/instalador e continue do particionamento manual — agora o free space vai aparecer.
+- **Evidências mínimas (SRE-friendly)**:
+  - Foto da tela do BitLocker (estado “ligado/suspenso/desligado”).
+  - Foto do `diskmgmt.msc` mostrando o **espaço não alocado**.
+  - Foto do Boot Menu/UEFI mostrando USB/UEFI e Secure Boot ligado (se necessário).
+
+#### 0.x.1.1 Passphrase LUKS (sem “errar digitando”) — workaround opcional
+
+**Preferido (recomendação):** usar o **Bitwarden** diretamente no mesmo dispositivo em que você está digitando (desktop app/mobile) e colar via clipboard local. Isso reduz a superfície (não passa por mensageria).
+
+**Workaround (último caso, mas prático em instalação):** enviar a passphrase por **Bitwarden Send** para você mesmo, com controles agressivos:
+
+- **Senha forte** para abrir o Send
+- **Expiração curta** (ex.: **1h**)
+- **Limite de acessos** (ex.: **1 leitura**)
+- **Revogar/expirar** o Send assim que terminar
+
+**Importante:** isso ainda aumenta a superfície se você abrir o link em um app de chat (WhatsApp/Signal/etc.). Se usar mensageria, trate como “canal de conveniência”, não como local de armazenamento; prefira abrir o Send no navegador/app Bitwarden e colar localmente.
+
+**Regra de ouro:** nunca cole a passphrase em chat/issue/arquivo versionado; não tire screenshot da passphrase.
+
+## 0.x.2 Biometria (fingerprint / face) no Linux (opcional, estilo “Windows Hello”)
+
+**Objetivo:** quando o hardware suportar, usar biometria para **login/unlock** e (opcionalmente) prompts de **polkit**. Para **sudo**, trate como decisão consciente (conveniência vs postura).
+
+### 0.x.2.1 Compatibilidade (antes de prometer que “vai funcionar”)
+
+1) Descubra o USB ID do leitor (interno ou USB):
+
+```bash
+lsusb
+```
+
+2) Confirme suporte no `libfprint`:
+
+- `https://fprint.freedesktop.org/supported-devices.html`
+
+> Exemplo real (comum): alguns leitores Microsoft/DP podem aparecer como `045e:00bb` e constar como suportados no `libfprint` — sempre confirme pelo seu `lsusb`.
+
+### 0.x.2.2 Setup básico no LMDE (login/unlock)
+
+Em Debian/LMDE o caminho típico é `fprintd` + integração PAM:
+
+```bash
+sudo apt update
+sudo apt install -y fprintd libpam-fprintd
+fprintd-enroll
+fprintd-verify
+```
+
+Depois, habilite via PAM (tela interativa):
+
+```bash
+sudo pam-auth-update
+```
+
+### 0.x.2.3 Decisão: usar biometria para `sudo`?
+
+- **Recomendação conservadora (padrão lab-op):** habilitar biometria para **login/unlock** e evitar mexer em `sudo` até você decidir conscientemente.
+- Se você optar por biometria no `sudo`, faça isso de forma testável e documentada, mantendo um caminho de fallback (senha) e registrando a decisão em nota privada (trade-offs).
+
 ## 0. Instalação no T14 — Ventoy, UEFI e **Secure Boot** ligado
 
 **Objetivo:** preparar o USB com **Ventoy**, manter **Secure Boot ativo** no ThinkPad durante a instalação **e** depois no Linux, sem pedir que desligues o Secure Boot de forma permanente. **“Device Guard”** (e **Credential Guard**) são nomes de recursos **do Windows**; no **LMDE** não existem com esses nomes — o paralelo é **Secure Boot + TPM (se usares LUKS/TPM) + endurecimento em camadas (§3)**. Na **máquina onde geras o USB** (ex. Windows 11 com **HVCI/Device Guard**), **você pode manter** essas políticas; o **Ventoy2Disk** não exige desligá-las.
@@ -48,7 +131,7 @@ A linha de releases mudou de **`1.0.x`** para **`1.1.x`**. Em **dezembro de 2025
 
 ### 0.2 Preparar o USB com **suporte a Secure Boot**
 
-O suporte documental oficial: **[Ventoy — about Secure Boot (UEFI)](https://www.ventoy.net/en/doc_secure.html)** (desde **1.0.07**; opção **ligada por defeito** desde **1.0.76** no `Ventoy2Disk`).
+O suporte documental oficial: **[Ventoy — about Secure Boot (UEFI)](https://www.ventoy.net/en/doc_secure.html)** (desde **1.0.07**; opção **ligada por padrão** desde **1.0.76** no `Ventoy2Disk`).
 
 **Windows (GUI):**
 
@@ -167,6 +250,247 @@ Esta subseção traduz “o que você viu nas fotos” em uma decisão prática 
 1. **Disco:** recomenda-se **criptografia LUKS** (passphrase forte; regista num **local seguro** — ex. gestor de segredos). Isto alinha com **TPM** presente no T14 para arranque **posterior** conforme opções que o instalador oferecer.
 1. Cria o usuário; ao fim, reinicia e **remove o USB** quando pedido.
 
+### 0.5.1 Dual boot (Windows + LMDE) com LUKS via particionamento manual (GParted + `cryptsetup`)
+
+**Quando usar:** se o instalador não oferecer claramente “install alongside Windows” com LUKS, ou se você quer **zero ambiguidade** controlando o particionamento.
+
+**Pré-requisito:** o `C:` já foi reduzido no Windows e existe **Free space / Unallocated** no NVMe (ver **§0.x.1**).
+
+**Regra de ouro:** não formatar as partições NTFS do Windows e não formatar a **EFI System Partition** existente.
+
+1. No instalador, escolha **Manual partitioning** (não use “Automated installation / Erase disk”).
+1. Clique em **Launch GParted**.
+1. No disco **`/dev/nvme0n1`**, dentro do free space:
+   - Crie uma partição **ext4** para **`/boot`** (1–2 GiB; label sugerido: `boot_lmde`).
+   - Crie outra partição com **todo o resto** (tipo **unformatted**; label sugerido: `crypt_lmde`).
+   - Clique **Apply (✓)** e confirme.
+1. Ainda no Live, abra um terminal e identifique as partições recém-criadas:
+
+```bash
+lsblk -f
+```
+
+1. Formate a partição grande como **LUKS** e abra como `cryptroot` (ajuste `pX` para o número real):
+
+```bash
+sudo cryptsetup luksFormat /dev/nvme0n1pX
+sudo cryptsetup open /dev/nvme0n1pX cryptroot
+```
+
+1. Escolha o filesystem **dentro** do LUKS (recomendação depende do objetivo):
+   - **`ext4`**: mais simples/boring (bom se você não vai manter snapshots).
+   - **`btrfs` + Snapper**: snapshots/rollback desde o dia 1 (alinha com `<lab-host-2>`).
+
+**Opção A — ext4 (mais simples):**
+
+```bash
+sudo mkfs.ext4 -L root_lmde /dev/mapper/cryptroot
+```
+
+**Opção B — btrfs (snapshots desde o dia 1):**
+
+```bash
+sudo mkfs.btrfs -L root_lmde /dev/mapper/cryptroot
+```
+
+1. Volte ao instalador (particionamento manual) e configure mounts:
+   - **EFI existente** (`/dev/nvme0n1p1`, FAT32): mount **`/boot/efi`**, **não** formatar.
+   - `boot_lmde` (ext4): mount **`/boot`**, formatar.
+   - `cryptroot` (ext4/btrfs em `/dev/mapper/cryptroot`): mount **`/`**, formatar.
+   - Swap: opcional (swapfile depois é OK se você não usa hibernação).
+
+#### Armadilha comum: instalador não lista `/dev/mapper/*` (dm-crypt)
+
+Algumas versões do instalador do Mint/LMDE **não exibem** devices `dm-crypt` (ex.: **`/dev/mapper/cryptroot`**) na tela de particionamento manual. Se isso acontecer:
+
+- **Não** selecione **`/dev/nvme0n1p6`** como `/` e marque “format btrfs/ext4” achando que está formatando “dentro do LUKS” — isso **sobrescreve o header do LUKS** e te joga num loop de reinstall.
+- Sinal de que você caiu na armadilha: você “tem `cryptsetup status cryptroot` ok”, mas o instalador só oferece **`/dev/nvme0n1p6`** e nunca aparece um item `/dev/mapper/...`.
+
+**Workaround recomendado:** use o **Plano B (§0.5.3)**: instalar primeiro em **btrfs normal** no `p6`, e só depois criptografar via **`cryptsetup reencrypt`** (padrão “Mint-like”).
+
+### 0.5.2 Snapshots “desde o dia 1” (btrfs + Snapper) — referência `<lab-host-2>`
+
+**Motivação:** o host `<lab-host-2>` usa **btrfs no `/`** e o **Snapper** mantém snapshots em **`/.snapshots`** (subvolume dedicado). No LMDE (Debian-family + systemd), fica ainda mais fácil automatizar via timers.
+
+**Nota:** o instalador pode formatar/montar o `/` em btrfs sem criar subvolumes. Isso é ok para começar; depois da instalação você cria `/.snapshots` e configura o Snapper.
+
+Depois do primeiro boot no LMDE (já instalado), rode:
+
+```bash
+sudo apt update
+sudo apt install -y snapper btrfs-progs
+```
+
+Crie o subvolume de snapshots (modelo do `<lab-host-2>`) e monte no lugar certo:
+
+```bash
+sudo mkdir -p /.snapshots
+sudo btrfs subvolume create /.snapshots
+```
+
+Crie a config do Snapper para o root (`/`) e habilite timers:
+
+```bash
+sudo snapper -c root create-config /
+sudo systemctl enable --now snapperd
+sudo systemctl enable --now snapper-timeline.timer snapper-cleanup.timer
+```
+
+Verificações rápidas:
+
+```bash
+sudo snapper list-configs
+sudo snapper -c root list | head -n 30
+sudo btrfs subvolume list /.snapshots | head
+systemctl list-timers --all | grep -i snapper || true
+```
+
+#### 0.5.2.1 Retenção (para não “comer o disco”)
+
+**Objetivo:** manter rollback fácil **sem** acumular snapshots indefinidamente.
+
+**Importante:** snapshots **não** substituem **backup**. Snapshot te salva de “oops/upgrade ruim” no mesmo disco. Backup te salva de **falha do SSD**, perda/roubo, ou corrupção ampla.
+
+O Snapper limpa snapshots automaticamente com o **`snapper-cleanup.timer`**; o que manda é a política em **`/etc/snapper/configs/root`**.
+
+Defaults “conservadores” (bom para workstation):
+
+- **Timeline**: mantenha, mas com limites baixos (ex.: alguns horários, poucos diários, poucos mensais).
+- **Number cleanup**: mantenha um número máximo de snapshots “importantes”.
+
+Exemplo de valores razoáveis (ajuste ao seu apetite):
+
+- `TIMELINE_LIMIT_HOURLY="6"` (últimas 6 horas)
+- `TIMELINE_LIMIT_DAILY="7"` (7 dias)
+- `TIMELINE_LIMIT_WEEKLY="4"` (4 semanas)
+- `TIMELINE_LIMIT_MONTHLY="3"` (3 meses)
+- `TIMELINE_LIMIT_YEARLY="0"` (desligado)
+- `NUMBER_LIMIT="10"` e `NUMBER_LIMIT_IMPORTANT="5"` (cap geral)
+
+Para editar:
+
+```bash
+sudoedit /etc/snapper/configs/root
+sudo systemctl restart snapperd
+```
+
+E para validar que o cleanup roda:
+
+```bash
+systemctl list-timers --all | grep -i snapper
+sudo snapper -c root list | tail -n 20
+```
+
+**Dica prática:** marque snapshots realmente importantes como “important” (quando fizer uma mudança grande e estável) e deixe os de timeline serem “descartáveis”.
+
+#### 0.5.2.2 Guardrails de “alocação vs backup” (workstation sem stress)
+
+- **Tenha um budget mental de espaço**:
+  - reserve um “piso” para o próprio sistema + dev (ex.: 30–40% do volume) e trate o resto como espaço de trabalho;
+  - se o `/.snapshots` começar a crescer demais, é sinal de retenção alta *ou* dados grandes sendo versionados por snapshot.
+- **Monitore uso do btrfs e do `/.snapshots`** (1 min, sem tooling extra):
+
+```bash
+sudo btrfs filesystem usage -T /
+sudo du -sh /.snapshots 2>/dev/null || true
+```
+
+- **Evite snapshot de lixo volumoso**:
+  - mantenha downloads/ISOs/VM images fora do root sempre que possível (ex.: outro volume/diretório que você não precisa snapshotar).
+  - para cache que explode (containers), escolha conscientemente onde fica (`/var/lib/docker`, `~/.cache`, etc.). Snapshots vão capturar *mudanças* nesses diretórios.
+- **Backups “de verdade” (fora do disco)**:
+  - snapshots são a camada 1 (rollback rápido);
+  - mantenha pelo menos 1 cópia off-host (pCloud/drive externo/NAS) do que é crítico (configs, chaves, documentos, repositórios). A política/como fazer isso fica em docs/ops separados; aqui só o lembrete.
+
+### 0.5.3 Plano B (recomendado quando o instalador não vê `/dev/mapper`): instalar em btrfs e criptografar depois (`cryptsetup reencrypt`)
+
+**Ideia:** completar a instalação do LMDE normalmente (root em btrfs no `p6`), **sem reboot**, e então transformar **o mesmo `p6`** em LUKS2 **sem destruir o btrfs**, usando `cryptsetup reencrypt`.
+
+**Quando usar:** quando o instalador não lista `/dev/mapper/*`, mas você quer **FDE com LUKS2** + **btrfs**.
+
+**Checkpoint de segurança antes de começar:**
+
+- `lsblk -f` deve mostrar `p6` como **btrfs** (não `crypto_LUKS`).
+- O instalador deve apontar **`/dev/nvme0n1p6` → `/`** e format **btrfs**.
+- Ao terminar, **NÃO reinicie**.
+
+**Passos (resumo):**
+
+1. Instale LMDE com particionamento manual:
+   - `p1` → `/boot/efi` (não formatar)
+   - `p5` → `/boot` (ext4)
+   - `p6` → `/` (btrfs)
+   - GRUB em `/dev/nvme0n1`
+2. Antes de criptografar, reduza o filesystem em **32 MiB** para caber o header do LUKS (em `@` se existir):
+3. Rode `cryptsetup reencrypt --encrypt --type luks2 --reduce-device-size 32m /dev/nvme0n1p6`
+4. Abra o LUKS, monte root/boot/efi e, em chroot:
+   - configure `/etc/crypttab`
+   - `update-initramfs -u`
+   - `update-grub`
+
+**Notas de troubleshooting (do mundo real):**
+
+- **DNS falha no `chroot` (`apt update`: “Temporary failure resolving …”)**: no Live, às vezes o `chroot` não herda um `resolv.conf` funcional. Workaround rápido (dentro do `chroot`):
+
+```bash
+printf "nameserver 1.1.1.1\nnameserver 8.8.8.8\n" > /etc/resolv.conf
+apt update
+```
+
+- **`update-initramfs -u` com warnings `Unknown key type PC_SUPER_LEVEL2`**: já observamos esses warnings durante este fluxo; normalmente não impedem o boot e parecem ligados a keymap/console-setup. Se o comando termina e o `initrd.img-*` é gerado, trate como **warning** (e registre como evidência).
+
+**Nota:** este Plano B é descrito em detalhe em referências públicas (ex.: guias de Mint/LMDE btrfs+FDE). Ele evita depender do instalador “enxergar” o mapper.
+
+#### 0.5.3.1 Pós-boot: auto-unlock “BitLocker-like” (TPM-only) com Clevis (opcional)
+
+**Objetivo:** manter o disco protegido **se o SSD for extraído** (roubo), mas permitir boot **sem digitar** a passphrase longa no dia a dia — modelo similar a BitLocker em modo **TPM-only**.
+
+**Trade-off:** se o atacante tiver o **laptop inteiro** e conseguir bootar “normalmente” (mesmo firmware/boot chain), o TPM pode liberar e o sistema sobe. Para elevar o bar, você precisa de **PIN pré-boot** (TPM+PIN) — este manual registra TPM-only como padrão “sem atrito”.
+
+**Pré-requisitos:**
+
+- Secure Boot habilitado (para manter PCR7 estável e útil).
+- Repositórios Debian com **`contrib non-free non-free-firmware`** habilitados (em LMDE isso não é “multiverse”; é Debian-style).
+
+Checar/inspecionar repositórios (sem colar dados sensíveis do seu ambiente):
+
+```bash
+grep -R --line-number -E '^(deb|deb-src)\s+' /etc/apt/sources.list /etc/apt/sources.list.d/*.list 2>/dev/null
+```
+
+Instalar dependências:
+
+```bash
+sudo apt update
+sudo apt install -y clevis clevis-luks clevis-tpm2 clevis-initramfs tpm2-tools
+```
+
+Sanity check do TPM + PCR (recomendação prática: usar **PCR 7**; em alguns setups o PCR 11 pode vir zerado):
+
+```bash
+sudo tpm2_getcap properties-fixed | sed -n '1,40p'
+sudo tpm2_pcrread sha256:7,11
+```
+
+Fazer bind do LUKS ao TPM2 (PCR 7):
+
+```bash
+sudo clevis luks bind -d /dev/nvme0n1p6 tpm2 '{"pcr_bank":"sha256","pcr_ids":[7]}'
+sudo update-initramfs -u
+sudo reboot
+```
+
+Validar que o token/slot existe:
+
+```bash
+sudo clevis luks list -d /dev/nvme0n1p6
+sudo cryptsetup luksDump /dev/nvme0n1p6 | sed -n '1,180p'
+```
+
+**Comportamento esperado no boot:** pode “pausar” por 1–2 segundos no prompt de passphrase e seguir sozinho quando o TPM liberar.
+
+**Nota importante de privacidade:** outputs como `w`, “Last login”, IPs e hostnames são úteis para LAB-OP, mas **não devem** ir para arquivos rastreados. Se precisar registrar evidências, use `docs/private/homelab/` (gitignored).
+
 ### 0.6 Depois da instalação — Secure Boot com Debian/LMDE
 
 O LMDE baseado em **Debian** usa normalmente **`shim`** + kernel assinado: com **Secure Boot ligado**, o sistema instalado deve **continuar a arrancar** sem desligar Secure Boot no firmware. Se **após** a instalação o firmware reclamar:
@@ -174,6 +498,58 @@ O LMDE baseado em **Debian** usa normalmente **`shim`** + kernel assinado: com *
 1. Confirma que não há **outro** bootloader não assinado a “saltar” à frente do `shim`.
 1. Corre **`sudo dpkg-reconfigure shim-unsigned`** / pacotes **`shim-signed`** conforme a tua imagem (nomes exactos: `apt search shim` no LMDE).
 1. Mantém **Secure Boot: Enabled** no UEFI; só em último caso segue notas do Debian para **MOK** (procedimento consciente, não “desligar tudo”).
+
+### 0.6.1 Troubleshooting: “GRUB bootloader was not configured properly” no fim da instalação
+
+**Sintoma:** ao final do instalador, aparece um aviso do tipo:
+
+- *“WARNING: the grub bootloader was not configured properly! You need to configure it manually.”*
+
+**Regra de ouro:** **não reinicie ainda**. Corrija **no Live** enquanto os volumes/mapeamentos estão frescos.
+
+**Nota sobre outro alerta comum:** *“Low Disk Space … remaining”* costuma ser do **Live session** (overlay/ram/USB), não do SSD interno. Em geral é seguro **ignorar** para concluir a correção do bootloader; depois do primeiro boot no sistema instalado, esse alerta some.
+
+#### Correção (Live → abrir LUKS → mount → chroot → `grub-install`)
+
+1. No Live, abra um terminal.
+1. Abra o LUKS e monte o sistema instalado (ajuste dispositivos se o seu layout diferir):
+
+```bash
+sudo cryptsetup open /dev/nvme0n1p6 cryptroot
+sudo mkdir -p /mnt/target
+sudo mount /dev/mapper/cryptroot /mnt/target
+
+sudo mkdir -p /mnt/target/boot
+sudo mount /dev/nvme0n1p5 /mnt/target/boot
+
+sudo mkdir -p /mnt/target/boot/efi
+sudo mount /dev/nvme0n1p1 /mnt/target/boot/efi
+
+for i in /dev /dev/pts /proc /sys /run; do sudo mount --bind "$i" "/mnt/target$i"; done
+sudo chroot /mnt/target /bin/bash
+```
+
+1. Dentro do `chroot`, reinstale/configure GRUB (UEFI) + `shim`:
+
+```bash
+apt update
+apt install -y grub-efi-amd64 shim-signed
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=LMDE --recheck
+update-grub
+exit
+```
+
+1. Desmonte e feche o LUKS:
+
+```bash
+for i in /run /sys /proc /dev/pts /dev; do sudo umount -R "/mnt/target$i"; done
+sudo umount -R /mnt/target/boot/efi
+sudo umount -R /mnt/target/boot
+sudo umount -R /mnt/target
+sudo cryptsetup close cryptroot
+```
+
+1. Reinicie e remova o USB quando o instalador pedir. Confirme que o menu do GRUB lista LMDE e (idealmente) o Windows.
 
 ### 0.7 Resumo de requisitos que pediste
 
@@ -381,7 +757,7 @@ sudo debsecan --suite trixie 2>/dev/null | head -40   # ajusta o suite ao que /e
 
 Depois de **upgrades** de kernel/libs, o **`needrestart`** indica o que precisa de reinício de serviço — útil para não ficares com `sshd` ou libs antigas carregadas.
 
-**AppArmor:** o perfil por defeito do Debian/LMDE costuma estar ativo; não desligues sem motivo. Para Cursor/AppArmor vê também [CURSOR_UBUNTU_APPARMOR.pt_BR.md](CURSOR_UBUNTU_APPARMOR.pt_BR.md).
+**AppArmor:** o perfil padrão do Debian/LMDE costuma estar ativo; não desligue sem motivo. Para Cursor/AppArmor veja também [CURSOR_UBUNTU_APPARMOR.pt_BR.md](CURSOR_UBUNTU_APPARMOR.pt_BR.md).
 
 ---
 
@@ -703,15 +1079,15 @@ Inventário completo sugerido pelo projeto: [HOMELAB_HOST_PACKAGE_INVENTORY.md](
 
 ## 10. Documentação relacionada no repositório
 
-| Documento                                                                                     | Uso                                                                                   |
-| ---------                                                                                     | ---                                                                                   |
-| [TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md)                                                 | Instalação app, conectores, `uv`.                                                     |
-| [HOMELAB_HOST_PACKAGE_INVENTORY.md](HOMELAB_HOST_PACKAGE_INVENTORY.md)                        | Lista de pacotes e captura de inventário.                                             |
-| [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md)            | Podman + k3s no host de lab (opcional no T14).                                        |
-| [PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md) | Grafana, Prometheus/Influx, Loki, Graylog — **depois** da baseline (§7 do doc acima). |
-| [OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md](OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md) | Atualizações no workstation, **Topgrade**, **`gta`**, **Bitwarden CLI** (`bw`).       |
-| [SECURITY.md](../../SECURITY.md)                                                              | API key, binding, boas práticas.                                                      |
-| [PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)                                     | Onde guardar notas **não públicas**.                                                  |
+|Documento|Uso|
+|---|---|
+|[TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md)|Instalação app, conectores, `uv`.|
+|[HOMELAB_HOST_PACKAGE_INVENTORY.md](HOMELAB_HOST_PACKAGE_INVENTORY.md)|Lista de pacotes e captura de inventário.|
+|[LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md)|Podman + k3s no host de lab (opcional no T14).|
+|[PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md)|Grafana, Prometheus/Influx, Loki, Graylog — **depois** da baseline (§7 do doc acima).|
+|[OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md](OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md)|Atualizações no workstation, **Topgrade**, **`gta`**, **Bitwarden CLI** (`bw`).|
+|[SECURITY.md](../../SECURITY.md)|API key, binding, boas práticas.|
+|[PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)|Onde guardar notas **não públicas**.|
 
 ---
 

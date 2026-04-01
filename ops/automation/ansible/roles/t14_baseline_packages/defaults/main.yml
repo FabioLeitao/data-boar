@@ -1,0 +1,23 @@
+---
+# Baseline "operator workstation" packages. Keep conservative and common.
+t14_baseline_packages:
+  - ca-certificates
+  - curl
+  - git
+  - gnupg
+  - openssh-client
+  - openssh-server
+  - auditd
+  - audispd-plugins
+  - aide
+  - debsums
+  - needrestart
+  - dlocate
+  - lsof
+  - lm-sensors
+  - htop
+  - btop
+  - ncdu
+  - tree
+  - sqlite3
+
