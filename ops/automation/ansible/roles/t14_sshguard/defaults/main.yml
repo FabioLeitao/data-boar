@@ -1,0 +1,6 @@
+---
+t14_sshguard_enable: true
+
+# Optional whitelist additions (comment-only; adopt via inventory).
+t14_sshguard_whitelist_lines: []
+

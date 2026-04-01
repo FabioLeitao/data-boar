@@ -1,0 +1,23 @@
+---
+- name: Ensure aide package is installed
+  when: t14_aide_enable | bool
+  ansible.builtin.apt:
+    name: aide
+    state: present
+    update_cache: false
+  failed_when: false
+
+- name: Optionally append operator AIDE lines (comment-only unless overridden)
+  when: t14_aide_enable | bool
+  ansible.builtin.blockinfile:
+    path: "{{ t14_aide_conf_path }}"
+    marker: "# {mark} managed by ansible (t14_aide)"
+    block: |
+      # Learned baseline: keep custom additions small and reviewable.
+      # Add host/profile-specific ignores in a private overlay, not in tracked files.
+      {% for line in t14_aide_extra_lines %}
+      {{ line }}
+      {% endfor %}
+    create: false
+  failed_when: false
+

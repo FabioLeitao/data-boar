@@ -3,187 +3,27 @@
   hosts: t14
   become: true
   vars:
-    baseline_packages:
-      - ca-certificates
-      - curl
-      - etckeeper
-      - git
-      - gnupg
-      - openssh-client
-      - openssh-server
-      - ufw
-      - fail2ban
-      - auditd
-      - audispd-plugins
-      - aide
-      - debsums
-      - usbguard
-      - sshguard
-      - unattended-upgrades
-      - needrestart
-      - dlocate
-      - lsof
-      - lm-sensors
-      - htop
-      - btop
-      - ncdu
-      - tree
-      - sqlite3
+    # Profile presets: "lab_op_fixed" (desk-bound) vs "roaming" (untrusted networks)
+    # The playbook stays safe-default: do not change remote access posture unless you opt-in.
+    host_profile: lab_op_fixed
 
-    # Opt-in hardening knobs (default: do not change remote access posture)
+    # Opt-in knobs
     harden_ssh: false
     install_docker_ce: false
-    default_umask: "027"
 
-  tasks:
-    - name: Ensure baseline packages are installed
-      ansible.builtin.apt:
-        name: "{{ baseline_packages }}"
-        state: present
-        update_cache: true
-
-    - name: Enable UFW
-      ansible.builtin.service:
-        name: ufw
-        state: started
-        enabled: true
-
-    - name: Set UFW defaults (deny incoming; allow outgoing)
-      ansible.builtin.command: "{{ item }}"
-      changed_when: false
-      failed_when: false
-      loop:
-        - ufw default deny incoming
-        - ufw default allow outgoing
-        - ufw --force enable
-
-    - name: Ensure fail2ban is enabled
-      ansible.builtin.service:
-        name: fail2ban
-        state: started
-        enabled: true
-
-    - name: Ensure unattended-upgrades is enabled
-      ansible.builtin.service:
-        name: unattended-upgrades
-        state: started
-        enabled: true
-      failed_when: false
-
-    - name: Configure fail2ban jail.local (SSH only, conservative)
-      ansible.builtin.copy:
-        dest: /etc/fail2ban/jail.d/99-ssh-local.conf
-        owner: root
-        group: root
-        mode: "0644"
-        content: |
-          [sshd]
-          enabled = true
-          maxretry = 5
-          findtime = 10m
-          bantime = 1h
-          banaction = ufw
-      notify: Restart fail2ban
-
-    - name: Ensure etckeeper is initialized (best-effort)
-      ansible.builtin.command: etckeeper init
-      args:
-        creates: /etc/.git
-      failed_when: false
-
-    - name: Set default UMASK for login sessions (best-effort)
-      ansible.builtin.lineinfile:
-        path: /etc/login.defs
-        regexp: '^\s*UMASK\s+'
-        line: "UMASK\t{{ default_umask }}"
-        create: false
-      failed_when: false
-
-    - name: Configure sshguard (best-effort)
-      ansible.builtin.service:
-        name: sshguard
-        state: started
-        enabled: true
-      failed_when: false
-
-    - name: Configure usbguard (best-effort; do not enable by default)
-      ansible.builtin.service:
-        name: usbguard
-        state: stopped
-        enabled: false
-      failed_when: false
-
-    - name: Optionally harden SSH server config
-      when: harden_ssh | bool
-      block:
-        - name: Ensure PasswordAuthentication is disabled
-          ansible.builtin.lineinfile:
-            path: /etc/ssh/sshd_config
-            regexp: '^\s*PasswordAuthentication\s+'
-            line: 'PasswordAuthentication no'
-            create: false
-          notify: Restart ssh
-
-    - name: Optionally install Docker CE (repo-based; opt-in)
-      when: install_docker_ce | bool
-      block:
-        - name: Install Docker dependencies
-          ansible.builtin.apt:
-            name:
-              - ca-certificates
-              - curl
-              - gnupg
-            state: present
-            update_cache: true
-
-        - name: Ensure Docker keyrings directory exists
-          ansible.builtin.file:
-            path: /etc/apt/keyrings
-            state: directory
-            mode: "0755"
-
-        - name: Add Docker GPG key (Debian)
-          ansible.builtin.get_url:
-            url: https://download.docker.com/linux/debian/gpg
-            dest: /etc/apt/keyrings/docker.asc
-            mode: "0644"
-
-        - name: Add Docker apt repository (Debian)
-          ansible.builtin.apt_repository:
-            repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
-            filename: docker
-            state: present
-
-        - name: Install docker-ce
-          ansible.builtin.apt:
-            name:
-              - docker-ce
-              - docker-ce-cli
-              - containerd.io
-            state: present
-            update_cache: true
-
-        - name: Ensure docker is enabled
-          ansible.builtin.service:
-            name: docker
-            state: started
-            enabled: true
-
-        - name: Ensure PermitRootLogin is disabled
-          ansible.builtin.lineinfile:
-            path: /etc/ssh/sshd_config
-            regexp: '^\s*PermitRootLogin\s+'
-            line: 'PermitRootLogin no'
-            create: false
-          notify: Restart ssh
-
-  handlers:
-    - name: Restart fail2ban
-      ansible.builtin.service:
-        name: fail2ban
-        state: restarted
-
-    - name: Restart ssh
-      ansible.builtin.service:
-        name: ssh
-        state: restarted
+  roles:
+    - role: t14_baseline_packages
+    - role: t14_banners
+    - role: t14_lynis
+    - role: t14_ufw
+    - role: t14_fail2ban
+    - role: t14_unattended_upgrades
+    - role: t14_etckeeper
+    - role: t14_login_umask
+    - role: t14_sshguard
+    - role: t14_usbguard
+    - role: t14_aide
+    - role: t14_auditd
+    - role: t14_zram
+    - role: t14_ssh_hardening
+    - role: t14_docker_ce
