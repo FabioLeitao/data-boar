@@ -1,0 +1,11 @@
+---
+t14_install_docker_ce: false
+
+# Optional: initialize swarm on the node (manager) after install.
+t14_docker_swarm_init: false
+
+# Optional: daemon.json baseline (kept minimal; can be extended privately).
+t14_docker_manage_daemon_json: true
+t14_docker_daemon_json_path: /etc/docker/daemon.json
+t14_docker_daemon_json: {}
+
