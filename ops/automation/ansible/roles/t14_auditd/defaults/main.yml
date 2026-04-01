@@ -1,0 +1,6 @@
+---
+t14_auditd_enable: true
+t14_auditd_rules_path: /etc/audit/rules.d/99-labop.rules
+
+# Copy the existing LAB-OP model (pi3b) into a template; keep optional noisy rules commented.
+t14_auditd_profile: lab_op_fixed

@@ -1,0 +1,5 @@
+---
+t14_ufw_enable: true
+t14_ufw_default_incoming: deny
+t14_ufw_default_outgoing: allow
+

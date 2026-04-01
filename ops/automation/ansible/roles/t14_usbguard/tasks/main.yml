@@ -1,0 +1,25 @@
+---
+- name: Ensure usbguard package is installed
+  ansible.builtin.apt:
+    name: usbguard
+    state: present
+    update_cache: false
+  failed_when: false
+
+- name: Write /etc/usbguard/rules.conf baseline (comment-only)
+  when: t14_usbguard_manage_rules | bool
+  ansible.builtin.template:
+    src: rules.conf.j2
+    dest: "{{ t14_usbguard_rules_path }}"
+    owner: root
+    group: root
+    mode: "0600"
+  failed_when: false
+
+- name: Configure usbguard service state (best-effort)
+  ansible.builtin.service:
+    name: usbguard
+    state: "{{ 'started' if (t14_usbguard_enable | bool) else 'stopped' }}"
+    enabled: "{{ true if (t14_usbguard_enable | bool) else false }}"
+  failed_when: false
+
