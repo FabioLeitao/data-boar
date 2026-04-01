@@ -1,0 +1,6 @@
+---
+# Do not change remote access posture by default.
+t14_harden_ssh: false
+t14_sshd_password_authentication: "no"
+t14_sshd_permit_root_login: "no"
+

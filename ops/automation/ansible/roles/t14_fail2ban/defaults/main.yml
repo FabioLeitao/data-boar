@@ -1,0 +1,11 @@
+---
+t14_fail2ban_enable: true
+t14_fail2ban_sshd_enabled: true
+t14_fail2ban_maxretry: 5
+t14_fail2ban_findtime: "10m"
+t14_fail2ban_bantime: "1h"
+t14_fail2ban_banaction: ufw
+
+# Comment-only suggestions catalog (operator can adopt by overriding via inventory).
+t14_fail2ban_ignoreip: []
+
