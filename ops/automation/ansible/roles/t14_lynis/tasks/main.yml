@@ -1,0 +1,44 @@
+---
+- name: Ensure lynis package is installed
+  when: t14_lynis_install | bool
+  ansible.builtin.apt:
+    name: lynis
+    state: present
+    update_cache: false
+  failed_when: false
+
+- name: Ensure git is installed (for upstream clone)
+  when: t14_lynis_clone_upstream | bool
+  ansible.builtin.apt:
+    name: git
+    state: present
+    update_cache: false
+
+- name: Ensure upstream directory exists
+  when: t14_lynis_clone_upstream | bool
+  ansible.builtin.file:
+    path: "{{ t14_lynis_upstream_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Clone Lynis upstream repo (best-effort)
+  when: t14_lynis_clone_upstream | bool
+  ansible.builtin.git:
+    repo: "{{ t14_lynis_upstream_repo }}"
+    dest: "{{ t14_lynis_upstream_dir }}"
+    version: "{{ t14_lynis_upstream_ref }}"
+    update: true
+  failed_when: false
+
+- name: Write /etc/lynis/default.prf (comment-only suggestions)
+  when: t14_lynis_profile_write | bool
+  ansible.builtin.template:
+    src: default.prf.j2
+    dest: "{{ t14_lynis_default_prf_path }}"
+    owner: root
+    group: root
+    mode: "0644"
+  failed_when: false
+

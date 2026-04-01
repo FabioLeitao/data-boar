@@ -1,0 +1,20 @@
+---
+- name: Optionally harden SSH server config
+  when: t14_harden_ssh | bool
+  block:
+    - name: Ensure PasswordAuthentication is set
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^\s*PasswordAuthentication\s+'
+        line: "PasswordAuthentication {{ t14_sshd_password_authentication }}"
+        create: false
+      notify: Restart ssh
+
+    - name: Ensure PermitRootLogin is set
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^\s*PermitRootLogin\s+'
+        line: "PermitRootLogin {{ t14_sshd_permit_root_login }}"
+        create: false
+      notify: Restart ssh
+
