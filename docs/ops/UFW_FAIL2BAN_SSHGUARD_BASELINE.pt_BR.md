@@ -1,0 +1,25 @@
+# Baseline UFW + Fail2ban + sshguard (LAB-OP friendly)
+
+**English:** [UFW_FAIL2BAN_SSHGUARD_BASELINE.md](UFW_FAIL2BAN_SSHGUARD_BASELINE.md)
+
+## Objetivo
+
+Proteger o acesso remoto mantendo a operação segura no LAB-OP.
+
+## O que aprendemos com hosts existentes do LAB-OP
+
+- `pi3b` usa `fail2ban` com uma lista explícita de LAN em `ignoreip` (ex.: `192.168.40.0/24`).
+- `sshguard` está habilitado e usa `/etc/sshguard/whitelist`.
+- Alguns hosts não são Debian-family; podem usar `nftables` diretamente (sem `ufw`).
+
+## Automação
+
+- UFW baseline: `ops/automation/ansible/roles/t14_ufw`
+- Fail2ban baseline: `ops/automation/ansible/roles/t14_fail2ban`
+- sshguard baseline: `ops/automation/ansible/roles/t14_sshguard`
+
+## Botões opt-in
+
+- **Fail2ban ignore list**: definir `t14_fail2ban_ignoreip` no inventory.
+- **sshguard whitelist**: definir `t14_sshguard_whitelist_lines` no inventory.
+
