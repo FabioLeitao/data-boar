@@ -1,0 +1,6 @@
+---
+# Do not change remote access posture by default.
+lab-node-01_harden_ssh: false
+lab-node-01_sshd_password_authentication: "no"
+lab-node-01_sshd_permit_root_login: "no"
+

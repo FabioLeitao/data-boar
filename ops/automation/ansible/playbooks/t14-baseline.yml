@@ -1,0 +1,29 @@
+---
+- name: LAB-NODE-01 baseline (LMDE 7) - safe defaults
+  hosts: lab-node-01
+  become: true
+  vars:
+    # Profile presets: "lab_op_fixed" (desk-bound) vs "roaming" (untrusted networks)
+    # The playbook stays safe-default: do not change remote access posture unless you opt-in.
+    host_profile: lab_op_fixed
+
+    # Opt-in knobs
+    harden_ssh: false
+    install_docker_ce: false
+
+  roles:
+    - role: lab-node-01_baseline_packages
+    - role: lab-node-01_banners
+    - role: lab-node-01_lynis
+    - role: lab-node-01_ufw
+    - role: lab-node-01_fail2ban
+    - role: lab-node-01_unattended_upgrades
+    - role: lab-node-01_etckeeper
+    - role: lab-node-01_login_umask
+    - role: lab-node-01_sshguard
+    - role: lab-node-01_usbguard
+    - role: lab-node-01_aide
+    - role: lab-node-01_auditd
+    - role: lab-node-01_zram
+    - role: lab-node-01_ssh_hardening
+    - role: lab-node-01_docker_ce

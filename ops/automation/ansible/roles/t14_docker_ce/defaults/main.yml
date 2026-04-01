@@ -1,0 +1,11 @@
+---
+lab-node-01_install_docker_ce: false
+
+# Optional: initialize swarm on the node (manager) after install.
+lab-node-01_docker_swarm_init: false
+
+# Optional: daemon.json baseline (kept minimal; can be extended privately).
+lab-node-01_docker_manage_daemon_json: true
+lab-node-01_docker_daemon_json_path: /etc/docker/daemon.json
+lab-node-01_docker_daemon_json: {}
+
