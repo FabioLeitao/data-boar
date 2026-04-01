@@ -81,6 +81,46 @@ powercfg /h off
 
 **Regra de ouro:** nunca cole a passphrase em chat/issue/arquivo versionado; não tire screenshot da passphrase.
 
+## 0.x.2 Biometria (fingerprint / face) no Linux (opcional, estilo “Windows Hello”)
+
+**Objetivo:** quando o hardware suportar, usar biometria para **login/unlock** e (opcionalmente) prompts de **polkit**. Para **sudo**, trate como decisão consciente (conveniência vs postura).
+
+### 0.x.2.1 Compatibilidade (antes de prometer que “vai funcionar”)
+
+1) Descubra o USB ID do leitor (interno ou USB):
+
+```bash
+lsusb
+```
+
+2) Confirme suporte no `libfprint`:
+
+- `https://fprint.freedesktop.org/supported-devices.html`
+
+> Exemplo real (comum): alguns leitores Microsoft/DP podem aparecer como `045e:00bb` e constar como suportados no `libfprint` — sempre confirme pelo seu `lsusb`.
+
+### 0.x.2.2 Setup básico no LMDE (login/unlock)
+
+Em Debian/LMDE o caminho típico é `fprintd` + integração PAM:
+
+```bash
+sudo apt update
+sudo apt install -y fprintd libpam-fprintd
+fprintd-enroll
+fprintd-verify
+```
+
+Depois, habilite via PAM (tela interativa):
+
+```bash
+sudo pam-auth-update
+```
+
+### 0.x.2.3 Decisão: usar biometria para `sudo`?
+
+- **Recomendação conservadora (padrão lab-op):** habilitar biometria para **login/unlock** e evitar mexer em `sudo` até você decidir conscientemente.
+- Se você optar por biometria no `sudo`, faça isso de forma testável e documentada, mantendo um caminho de fallback (senha) e registrando a decisão em nota privada (trade-offs).
+
 ## 0. Instalação no LAB-NODE-01 — Ventoy, UEFI e **Secure Boot** ligado
 
 **Objetivo:** preparar o USB com **Ventoy**, manter **Secure Boot ativo** no ThinkPad durante a instalação **e** depois no Linux, sem pedir que desligues o Secure Boot de forma permanente. **“Device Guard”** (e **Credential Guard**) são nomes de recursos **do Windows**; no **LMDE** não existem com esses nomes — o paralelo é **Secure Boot + TPM (se usares LUKS/TPM) + endurecimento em camadas (§3)**. Na **máquina onde geras o USB** (ex. Windows 11 com **HVCI/Device Guard**), **você pode manter** essas políticas; o **Ventoy2Disk** não exige desligá-las.
