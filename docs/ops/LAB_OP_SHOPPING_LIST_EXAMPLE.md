@@ -34,3 +34,33 @@ This is a **public, tracked** example shopping list that demonstrates how we str
 - Private cover note (tracked): `docs/private.example/homelab/LAB_OP_SHOPPING_LIST_COVER_NOTE.md`
 - Real list (gitignored): `docs/private/homelab/LAB_OP_SHOPPING_LIST_AND_POWER.md`
 
+## Example: Biometrics (fingerprint / face) for Linux hosts (generic)
+
+### Goal (operator UX)
+
+- Use biometrics (at least **fingerprint**) in Linux in a “Windows Hello-like” way where possible:
+  - login / unlock
+  - (optionally) polkit prompts
+  - (optionally) sudo (see caution)
+
+### Compatibility checklist (before buying or assuming it works)
+
+- **Identify the device**:
+  - built-in laptop reader: `lsusb` (or `lspci` if internal) to get the vendor:product ID
+  - USB reader: `lsusb` to get the vendor:product ID
+- **Check support**: `libfprint` supported devices list:
+  - `https://fprint.freedesktop.org/supported-devices.html`
+- **Enroll & verify** (on a Linux host):
+  - install `fprintd` + PAM integration
+  - run `fprintd-enroll` and `fprintd-verify`
+
+### Example “shopping rows” (no prices, no store links)
+
+- **USB fingerprint reader**: pick a model explicitly supported by `libfprint` (confirm by USB ID).
+- **Spare input**: enroll multiple fingers (thumb + index) to avoid lockouts.
+- **Webcam / IR camera**: face recognition on Linux exists but is less standardized than fingerprints; treat as “nice-to-have” unless you’re ready to maintain it.
+
+### Caution (security posture)
+
+- For admin elevation (`sudo`), prefer keeping the **password requirement** as the baseline, and treat fingerprint as convenience only if you accept the trade-offs (e.g., shoulder-surfing vs biometric spoofing vs auditability).
+

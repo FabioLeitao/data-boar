@@ -1,74 +1,97 @@
-# Rascunho: instalador do LMDE não mostra dm-crypt (`/dev/mapper/*`) no particionamento manual
+# Bug report (copy/paste): instalador do LMDE não mostra dm-crypt (`/dev/mapper/*`) no particionamento manual
 
-Este é um **rascunho** para colar num bug tracker do instalador do LMDE/Linux Mint (Ubiquity / UI de particionamento). Ele evita de propósito segredos e detalhes sensíveis do ambiente.
+Este texto é para os mantenedores do instalador do LMDE/Linux Mint (Ubiquity / UI de particionamento). Ele evita de propósito segredos e detalhes sensíveis do ambiente.
 
-## Onde reportar
+## Onde reportar (canais recomendados)
 
-- Primário: abrir issue no `linuxmint/ubiquity` (GitHub).
-- Guia: `https://linuxmint.github.io/reporting-an-issue.html` (regras gerais de “como reportar” e como escolher o projeto certo).
+- **Primário**: abrir issue no GitHub do `linuxmint/ubiquity` (aba Issues).
+- **Guia da comunidade**: [Reporting an issue](https://linuxmint.github.io/reporting-an-issue.html)
 
 ## Resumo
 
-Ao instalar **LMDE** com **particionamento manual**, dispositivos **dm-crypt** já desbloqueados (por exemplo `cryptsetup open … cryptroot` → `/dev/mapper/cryptroot`) **não aparecem** na lista de partições do instalador, então não dá para selecioná-los como `/`.
+Ao instalar **LMDE** usando **particionamento manual**, mapeamentos **dm-crypt** já desbloqueados (ex.: `cryptsetup open … cryptroot` → `/dev/mapper/cryptroot`) **não aparecem** na lista de partições. Com isso, o instalador não permite selecionar o mapper como `/`.
 
-Isso empurra o usuário a selecionar o device “cru” por baixo (ex.: `/dev/nvme0n1p6`) e formatar — o que destrói o header do LUKS e inviabiliza o fluxo de criptografia de disco desejado.
+Isso torna o caminho de particionamento manual inseguro: o usuário é empurrado para selecionar a partição “crua” por baixo (ex.: `/dev/nvme0n1p6`) e formatar — o que destrói o header do LUKS e quebra o fluxo pretendido de criptografia de disco.
+
+## Impacto
+
+- **Risco para o usuário**: é fácil “quebrar” a instalação criptografada ao formatar o device cru.
+- **Problema de UX**: particionamento manual fica, na prática, não funcional para dm-crypt/FDE.
+- **Custo de suporte**: leva a loop de tentativa/erro e recuperação manual.
 
 ## Ambiente
 
-- **Distro / instalador**: LMDE 7 “Gigi” live ISO (instalador “Install Linux Mint” / UI de particionamento manual)
+- **Distro**: LMDE 7 “Gigi” live ISO
+- **Instalador**: “Install Linux Mint” (UI de particionamento manual baseada em Ubiquity)
 - **Firmware**: UEFI, Secure Boot habilitado
-- **Layout do disco** (um NVMe):
-  - ESP (FAT32) montada em `/boot/efi`
+- **Objetivo do layout**:
+  - ESP (FAT32) montada em `/boot/efi` (existente)
   - ext4 `/boot`
   - root pretendido dentro de LUKS2 (btrfs)
-- **Objetivo**: dual boot preservando Windows; root com LUKS2; snapshots btrfs depois
+- **Objetivo**: dual boot (Windows preservado), LUKS2 para root, snapshots btrfs depois
 
-## Passos para reproduzir
+> Se necessário, posso adicionar versões exatas dos pacotes `ubiquity`/componentes do instalador; por favor indiquem o comando preferido no live session.
+
+## Passos para reproduzir (mínimo)
 
 1. Boot no live ISO do LMDE.
-2. Criar partições:
-   - manter a ESP existente (FAT32)
-   - criar `/boot` em ext4
+2. Preparar partições (ou usar uma partição alvo existente):
+   - manter a ESP (FAT32)
+   - criar ext4 `/boot`
    - criar uma partição grande para criptografar (ex.: `/dev/nvme0n1p6`)
-3. Desbloquear o alvo criptografado:
+3. No live, criar e desbloquear o dm-crypt:
 
 ```bash
 sudo cryptsetup luksFormat /dev/nvme0n1p6
 sudo cryptsetup open /dev/nvme0n1p6 cryptroot
-ls -la /dev/mapper/cryptroot
 ```
 
-4. Abrir o instalador e ir para **Manual partitioning**.
+4. Validar que o mapper existe (antes de abrir o instalador):
 
-## Esperado
+```bash
+ls -la /dev/mapper/
+lsblk -f
+```
 
-- A UI lista **`/dev/mapper/cryptroot`** (ou equivalente) e permite selecioná-lo como `/` (e formatar como btrfs/ext4).
+5. Abrir o instalador e ir para **Manual partitioning**.
 
-## Observado
+## Comportamento esperado
 
-- A UI **não lista** entradas `/dev/mapper/*`.
-- Só aparece o device cru (`/dev/nvme0n1p6`) para seleção/formatação.
-- Formatar `/dev/nvme0n1p6` quebra o header do LUKS e leva a loop de tentativa/erro e recuperação manual.
+- A UI lista `/dev/mapper/cryptroot` (ou equivalente) e permite selecioná-lo como `/` (e formatar como btrfs/ext4).
 
-## Impacto
+## Comportamento observado
 
-- Usuário fica entre uma opção insegura (formatar o device cru) e um workaround não óbvio.
-- O caminho “particionamento manual” não é confiável para setups com dm-crypt/FDE.
+- A UI não lista entradas `/dev/mapper/*`.
+- Só aparece a partição crua (`/dev/nvme0n1p6`) como alvo selecionável para `/` e formatação.
 
-## Workaround usado (funciona)
+## Evidências para anexar (sem dados sensíveis)
 
-Instalar primeiro em **btrfs sem criptografia** na partição crua, **não reiniciar**, e depois criptografar “in-place” com `cryptsetup reencrypt`:
+- **Screenshot 1**: tela de particionamento manual mostrando a ausência de `/dev/mapper/*`.
+- **Saída de terminal**:
+  - `ls -la /dev/mapper/` (mostra que o mapping `cryptroot` existe)
+  - `lsblk -f` (mostra `crypto_LUKS` + mapping)
 
-- Guia comunitário: `https://gist.github.com/Leniwcowaty/4b2c239ca74629cad60d4718f79ff600`
+> Screenshots não estão incluídos neste rascunho versionado. Ao abrir a issue, anexe os screenshots coletados durante a tentativa de instalação.
 
-## Evidências úteis para anexar (sem dados sensíveis)
+## Workaround usado (funciona, mas não é óbvio)
 
-- Foto/print da tela de particionamento manual **sem** `/dev/mapper/*` listados.
-- Saída de `ls -la /dev/mapper/` no Live, mostrando o mapper criado (ex.: `cryptroot`).
-- Saída de `lsblk -f` antes de abrir o instalador (para mostrar que o mapper existe).
+Instalar primeiro em **btrfs sem criptografia** na partição crua, **não reiniciar**, e depois criptografar “in-place” com `cryptsetup reencrypt`, seguido de updates de initramfs/GRUB via chroot (detalhes disponíveis se necessário).
+
+- Referência comunitária: `https://gist.github.com/Leniwcowaty/4b2c239ca74629cad60d4718f79ff600`
+
+## Contexto adicional (breve)
+
+No nosso setup, também tentamos chegar num UX “BitLocker-like” com FDE forte (LUKS) e menos atrito no boot:
+
+- `systemd-cryptenroll` não estava disponível no LMDE instalado, então não conseguimos testar TPM2+PIN via `systemd-cryptenroll`.
+- Usamos `clevis+tpm2` como workaround para reduzir a digitação de passphrase, mas isso tende a desbloqueio TPM-only a menos que haja uma camada extra de autenticação no boot.
+
+Isto **não** é o núcleo deste bug report, mas aumentou o custo dos workarounds depois que o instalador falhou em expor `/dev/mapper/*` no particionamento manual.
+
+Issue relacionada (TPM2+PIN / disponibilidade do `systemd-cryptenroll`): `https://github.com/linuxmint/live-installer/issues/177`
 
 ## Direção sugerida de correção
 
-- No particionamento manual, atualizar a lista de dispositivos após o unlock do dm-crypt e incluir `/dev/mapper/*`.
-- Alternativamente, oferecer uma ação explícita “desbloquear volume criptografado” e, uma vez desbloqueado, expor o mapper device na UI.
+- No particionamento manual, atualizar/incluir `/dev/mapper/*` após o unlock do dm-crypt.
+- Alternativamente, oferecer uma ação explícita “desbloquear volume criptografado” e, após o unlock, expor o mapper como alvo selecionável.
 
