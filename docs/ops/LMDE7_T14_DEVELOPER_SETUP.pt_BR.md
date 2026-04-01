@@ -10,20 +10,20 @@
 
 **Reinstalação “do zero”:** segue o **§0** (Ventoy + UEFI + **Secure Boot** ligado) e o instalador gráfico do **LMDE 7**. **Quando o LAB-NODE-01 já estiver no LMDE 7 com sudo**, continua no **§1**.
 
-## Onde está cada parte (mapa rápido):
+## Onde está cada parte (mapa rápido)
 
-| Seção      | Conteúdo                                                                                  |
-| -----      | --------                                                                                  |
-| **§0**     | Instalação: **Ventoy** (USB), **UEFI**, **Secure Boot** ativo, LMDE 7 no ThinkPad **LAB-NODE-01**. |
-| **§1**     | Checklist antes de começar (disco, rede, backup).                                         |
-| **§2**     | `apt update` / `full-upgrade`, rColleague-Sot se necessário.                                      |
-| **§3**     | Segurança: `ufw`, `unattended-upgrades`, `fwupd`, Lynis, sysctl conservador; SSH opcional. |
-| **§4**     | Ferramentas de dev gerais (`git`, `build-essential`, etc.).                               |
-| **§5**     | Python **3.13** (recomendado; **≥3.12** ok) + libs de sistema, **`uv`**, clone, `uv sync`, `pytest`. |
-| **§6**     | LAB-NODE-01: energia (**`tlp`**), **I/O NVMe**, **kernel/sysctl** (performance prudente).       |
-| **§7**     | Podman/Docker opcional.                                                                   |
-| **§8–§9**  | Pacotes homelab/auditoria; checklist final.                                               |
-| **§10**    | Links relacionados no repositório.                                                        |
+|Seção|Conteúdo|
+|---|---|
+|**§0**|Instalação: **Ventoy** (USB), **UEFI**, **Secure Boot** ativo, LMDE 7 no ThinkPad **LAB-NODE-01**.|
+|**§1**|Checklist antes de começar (disco, rede, backup).|
+|**§2**|`apt update` / `full-upgrade`, rColleague-Sot se necessário.|
+|**§3**|Segurança: `ufw`, `unattended-upgrades`, `fwupd`, Lynis, sysctl conservador; SSH opcional.|
+|**§4**|Ferramentas de dev gerais (`git`, `build-essential`, etc.).|
+|**§5**|Python **3.13** (recomendado; **≥3.12** ok) + libs de sistema, **`uv`**, clone, `uv sync`, `pytest`.|
+|**§6**|LAB-NODE-01: energia (**`tlp`**), **I/O NVMe**, **kernel/sysctl** (performance prudente).|
+|**§7**|Podman/Docker opcional.|
+|**§8–§9**|Pacotes homelab/auditoria; checklist final.|
+|**§10**|Links relacionados no repositório.|
 
 **Depois disto (não é instalação de SO):** stack mínima lab-op → [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md); Grafana/Prometheus/logs → [PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md).
 
@@ -91,7 +91,7 @@ A linha de releases mudou de **`1.0.x`** para **`1.1.x`**. Em **dezembro de 2025
 
 ### 0.2 Preparar o USB com **suporte a Secure Boot**
 
-O suporte documental oficial: **[Ventoy — about Secure Boot (UEFI)](https://www.ventoy.net/en/doc_secure.html)** (desde **1.0.07**; opção **ligada por defeito** desde **1.0.76** no `Ventoy2Disk`).
+O suporte documental oficial: **[Ventoy — about Secure Boot (UEFI)](https://www.ventoy.net/en/doc_secure.html)** (desde **1.0.07**; opção **ligada por padrão** desde **1.0.76** no `Ventoy2Disk`).
 
 **Windows (GUI):**
 
@@ -388,7 +388,68 @@ sudo du -sh /.snapshots 2>/dev/null || true
    - `update-initramfs -u`
    - `update-grub`
 
+**Notas de troubleshooting (do mundo real):**
+
+- **DNS falha no `chroot` (`apt update`: “Temporary failure resolving …”)**: no Live, às vezes o `chroot` não herda um `resolv.conf` funcional. Workaround rápido (dentro do `chroot`):
+
+```bash
+printf "nameserver 1.1.1.1\nnameserver 8.8.8.8\n" > /etc/resolv.conf
+apt update
+```
+
+- **`update-initramfs -u` com warnings `Unknown key type PC_SUPER_LEVEL2`**: já observamos esses warnings durante este fluxo; normalmente não impedem o boot e parecem ligados a keymap/console-setup. Se o comando termina e o `initrd.img-*` é gerado, trate como **warning** (e registre como evidência).
+
 **Nota:** este Plano B é descrito em detalhe em referências públicas (ex.: guias de Mint/LMDE btrfs+FDE). Ele evita depender do instalador “enxergar” o mapper.
+
+#### 0.5.3.1 Pós-boot: auto-unlock “BitLocker-like” (TPM-only) com Clevis (opcional)
+
+**Objetivo:** manter o disco protegido **se o SSD for extraído** (roubo), mas permitir boot **sem digitar** a passphrase longa no dia a dia — modelo similar a BitLocker em modo **TPM-only**.
+
+**Trade-off:** se o atacante tiver o **laptop inteiro** e conseguir bootar “normalmente” (mesmo firmware/boot Colleague-Nn), o TPM pode liberar e o sistema sobe. Para elevar o bar, você precisa de **PIN pré-boot** (TPM+PIN) — este manual registra TPM-only como padrão “sem atrito”.
+
+**Pré-requisitos:**
+
+- Secure Boot habilitado (para manter PCR7 estável e útil).
+- Repositórios Debian com **`contrib non-free non-free-firmware`** habilitados (em LMDE isso não é “multiverse”; é Debian-style).
+
+Checar/inspecionar repositórios (sem colar dados sensíveis do seu ambiente):
+
+```bash
+grep -R --line-number -E '^(deb|deb-src)\s+' /etc/apt/sources.list /etc/apt/sources.list.d/*.list 2>/dev/null
+```
+
+Instalar dependências:
+
+```bash
+sudo apt update
+sudo apt install -y clevis clevis-luks clevis-tpm2 clevis-initramfs tpm2-tools
+```
+
+Sanity check do TPM + PCR (recomendação prática: usar **PCR 7**; em alguns setups o PCR 11 pode vir zerado):
+
+```bash
+sudo tpm2_getcap properties-fixed | sed -n '1,40p'
+sudo tpm2_pcrread sha256:7,11
+```
+
+Fazer bind do LUKS ao TPM2 (PCR 7):
+
+```bash
+sudo clevis luks bind -d /dev/nvme0n1p6 tpm2 '{"pcr_bank":"sha256","pcr_ids":[7]}'
+sudo update-initramfs -u
+sudo rColleague-Sot
+```
+
+Validar que o token/slot existe:
+
+```bash
+sudo clevis luks list -d /dev/nvme0n1p6
+sudo cryptsetup luksDump /dev/nvme0n1p6 | sed -n '1,180p'
+```
+
+**Comportamento esperado no boot:** pode “pausar” por 1–2 segundos no prompt de passphrase e seguir sozinho quando o TPM liberar.
+
+**Nota importante de privacidade:** outputs como `w`, “Last login”, IPs e hostnames são úteis para LAB-OP, mas **não devem** ir para arquivos rastreados. Se precisar registrar evidências, use `docs/private/homelab/` (gitignored).
 
 ### 0.6 Depois da instalação — Secure Boot com Debian/LMDE
 
@@ -656,7 +717,7 @@ sudo debsecan --suite trixie 2>/dev/null | head -40   # ajusta o suite ao que /e
 
 Depois de **upgrades** de kernel/libs, o **`needrestart`** indica o que precisa de reinício de serviço — útil para não ficares com `sshd` ou libs antigas carregadas.
 
-**AppArmor:** o perfil por defeito do Debian/LMDE costuma estar ativo; não desligues sem motivo. Para Cursor/AppArmor vê também [CURSOR_UBUNTU_APPARMOR.pt_BR.md](CURSOR_UBUNTU_APPARMOR.pt_BR.md).
+**AppArmor:** o perfil padrão do Debian/LMDE costuma estar ativo; não desligue sem motivo. Para Cursor/AppArmor veja também [CURSOR_UBUNTU_APPARMOR.pt_BR.md](CURSOR_UBUNTU_APPARMOR.pt_BR.md).
 
 ---
 
@@ -978,15 +1039,15 @@ Inventário completo sugerido pelo projeto: [HOMELAB_HOST_PACKAGE_INVENTORY.md](
 
 ## 10. Documentação relacionada no repositório
 
-| Documento                                                                                     | Uso                                                                                   |
-| ---------                                                                                     | ---                                                                                   |
-| [TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md)                                                 | Instalação app, conectores, `uv`.                                                     |
-| [HOMELAB_HOST_PACKAGE_INVENTORY.md](HOMELAB_HOST_PACKAGE_INVENTORY.md)                        | Lista de pacotes e captura de inventário.                                             |
-| [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md)            | Podman + k3s no host de lab (opcional no LAB-NODE-01).                                        |
-| [PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md) | Grafana, Prometheus/Influx, Loki, Graylog — **depois** da baseline (§7 do doc acima). |
-| [OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md](OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md) | Atualizações no workstation, **Topgrade**, **`gta`**, **Bitwarden CLI** (`bw`).       |
-| [SECURITY.md](../../SECURITY.md)                                                              | API key, binding, boas práticas.                                                      |
-| [PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)                                     | Onde guardar notas **não públicas**.                                                  |
+|Documento|Uso|
+|---|---|
+|[TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md)|Instalação app, conectores, `uv`.|
+|[HOMELAB_HOST_PACKAGE_INVENTORY.md](HOMELAB_HOST_PACKAGE_INVENTORY.md)|Lista de pacotes e captura de inventário.|
+|[LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md)|Podman + k3s no host de lab (opcional no LAB-NODE-01).|
+|[PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md)|Grafana, Prometheus/Influx, Loki, Graylog — **depois** da baseline (§7 do doc acima).|
+|[OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md](OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md)|Atualizações no workstation, **Topgrade**, **`gta`**, **Bitwarden CLI** (`bw`).|
+|[SECURITY.md](../../SECURITY.md)|API key, binding, boas práticas.|
+|[PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)|Onde guardar notas **não públicas**.|
 
 ---
 
