@@ -13,7 +13,7 @@
 | Item | Source | Status | Next step / defer |
 | ---- | ------ | ------ | ----- |
 | **Wabbix WRB** e-mail | 2026-03-26 / 03-29 / 03-31 | ⬜ Pending | Paste block: **`docs/ops/WRB_DELTA_SNAPSHOT_2026-03-31.md`** — send today or defer with a date in PLANS/private |
-| **Slack** proof-of-ping (desktop + phone) | 2026-03-27 | ⬜ Pending | **`docs/ops/OPERATOR_NOTIFICATION_CHANNELS.md`** — confirmed ding or note **CHAN-OK** |
+| **Slack** proof-of-ping (desktop + phone) | 2026-03-27 | ✅ Done | Founder-only channel confirmed; ping received on desktop + phone (**CHAN-OK**) |
 | **Dependabot** PRs (#134 pypdf, #143 pip group, #144 starlette) | 2026-03-29 / 30 | ⬜ Pending | **`deps`** session; **`gh pr checks`** + merge when green per **`SECURITY.md`** |
 | **Branch protection** (required checks) | 2026-03-26 optional | ⬜ Optional | Enable when you want CI/Semgrep enforced on `main` |
 | **Gemini Cold doc slice** (e.g. G-26-04 + G-26-13) | `PLANS_TODO.md` | ⬜ Optional | One **`docs`** PR; safest items first |
