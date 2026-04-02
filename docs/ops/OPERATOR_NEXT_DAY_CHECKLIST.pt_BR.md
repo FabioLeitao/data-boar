@@ -6,7 +6,7 @@
 
 **Contexto mais largo:** [OPERATOR_MANUAL_ACTIONS.pt_BR.md](OPERATOR_MANUAL_ACTIONS.pt_BR.md) · [PLANS_TODO.md](../plans/PLANS_TODO.md) § “Resume next session”.
 
-**Foco de um dia (datado):** ver **[today-mode/README.pt_BR.md](today-mode/README.pt_BR.md)** (checklists indexados). Exemplo: [OPERATOR_TODAY_MODE_2026-03-31.pt_BR.md](today-mode/OPERATOR_TODAY_MODE_2026-03-31.pt_BR.md) ([EN](today-mode/OPERATOR_TODAY_MODE_2026-03-31.md)). **Delta WRB (exemplo):** [WRB_DELTA_SNAPSHOT_2026-03-26.pt_BR.md](WRB_DELTA_SNAPSHOT_2026-03-26.pt_BR.md). **`v1.6.7` já publicada** — [today-mode/PUBLISHED_SYNC.pt_BR.md](today-mode/PUBLISHED_SYNC.pt_BR.md).
+**Foco de um dia (datado):** ver **[today-mode/README.pt_BR.md](today-mode/README.pt_BR.md)** (checklists indexados). Exemplo atual: [OPERATOR_TODAY_MODE_2026-04-02.pt_BR.md](today-mode/OPERATOR_TODAY_MODE_2026-04-02.pt_BR.md) ([EN](today-mode/OPERATOR_TODAY_MODE_2026-04-02.md)). **Delta WRB (exemplo):** [WRB_DELTA_SNAPSHOT_2026-03-31.pt_BR.md](WRB_DELTA_SNAPSHOT_2026-03-31.pt_BR.md). **Versão de trabalho atual `1.6.8`** vs publish em [today-mode/PUBLISHED_SYNC.pt_BR.md](today-mode/PUBLISHED_SYNC.pt_BR.md).
 
 ---
 
@@ -40,6 +40,14 @@ Nota: se não tiveres T14 à mão, troca M4 por mais uma linha de Band A ou M3.
 | N1 | Atualizar **`docs/private/WHAT_TO_SHARE_WITH_AGENT.md`** (estado homelab, bloqueios, próximo alvo)                                                                    | Arquivo salvo                                   |
 | N2 | Se o **Task Scheduler SNMP** estiver activo — abrir última linha do `snmp_udm_probe_*.log` em `reports/`                                                              | Olhar “OK”/erros; nada a fazer se estiver verde |
 | N3 | **Uma** fatia produto **só** se sobrar energia: ver tabela “What to start next” em [PLANS_TODO.md](../plans/PLANS_TODO.md) (ex.: FN reduction, strong crypto Phase 1) | Issue/branch nomeados para a manhã seguinte     |
+
+---
+
+## Ritual curto de abertura e fechamento (anti-caos)
+
+- **Abertura (5 min):** rodar `carryover-sweep` (ou `.\scripts\operator-day-ritual.ps1 -Mode Morning`) e escolher apenas uma frente principal do dia.
+- **Fechamento (5-10 min):** rodar `eod-sync` (ou `.\scripts\operator-day-ritual.ps1 -Mode Eod`) e registrar no `CARRYOVER` o que ficou pendente com data.
+- **Regra simples:** se não está no today-mode datado ou no carryover, não existe para amanhã.
 
 ---
 
