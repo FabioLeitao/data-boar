@@ -1,4 +1,4 @@
-# Commit locally or create a PR (Agent Review Panel–style workflow).
+# Commit locally or create a PR (Agent Review Panel-style workflow).
 # Usage:
 #   .\scripts\commit-or-pr.ps1 -Action Preview
 #   .\scripts\commit-or-pr.ps1 -Action Commit -Title "Short description" -Body "Bullet1`nBullet2"

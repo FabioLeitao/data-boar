@@ -1,4 +1,4 @@
-# Priority band A6 — licensing smoke (fast, no network).
+# Priority band A6  - licensing smoke (fast, no network).
 # Runs the pytest slice that covers JWT / licensing helpers used in production paths.
 # From repo root: .\scripts\license-smoke.ps1
 # Equivalent: uv run pytest tests/test_licensing.py tests/test_licensing_fingerprint.py -q
