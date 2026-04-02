@@ -34,11 +34,11 @@ if (-not $ManifestPath) {
         $ManifestPath = $primaryManifest
     } elseif (Test-Path -LiteralPath $fallbackManifest) {
         $ManifestPath = $fallbackManifest
-        Write-Warning "Using $fallbackManifest — rename to lab-op-hosts.manifest.json when final; replace REPLACE_USER / paths."
+        Write-Warning "Using $fallbackManifest - rename to lab-op-hosts.manifest.json when final; replace REPLACE_USER / paths."
     }
 }
 if (-not $ManifestPath -or -not (Test-Path -LiteralPath $ManifestPath)) {
-    throw "Missing manifest: $primaryManifest — copy docs/private.example/homelab/lab-op-hosts.manifest.example.json to docs/private/homelab/, edit SSH hosts + repoPaths, save as lab-op-hosts.manifest.json."
+    throw "Missing manifest: $primaryManifest - copy docs/private.example/homelab/lab-op-hosts.manifest.example.json to docs/private/homelab/, edit SSH hosts + repoPaths, save as lab-op-hosts.manifest.json."
 }
 
 $manifest = Get-Content -LiteralPath $ManifestPath -Raw -Encoding utf8 | ConvertFrom-Json
@@ -78,6 +78,16 @@ function Get-SshHostname {
     return $null
 }
 
+function Invoke-CmdCapture {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $CmdLine
+    )
+    # Use cmd.exe to avoid Windows PowerShell 5.1 NativeCommandError noise on stderr.
+    # Caller can read $LASTEXITCODE for the exit code.
+    return (& cmd.exe /c $CmdLine | Out-String)
+}
+
 foreach ($h in $manifest.hosts) {
     $alias = $h.sshHost
     if (-not $alias) { continue }
@@ -88,17 +98,18 @@ foreach ($h in $manifest.hosts) {
         if ($hn) {
             & fping -c 1 -t 400 $hn 2>&1 | Write-Host
             if ($LASTEXITCODE -ne 0) {
-                Write-Warning "fping failed for $hn — continuing with SSH probe."
+                Write-Warning "fping failed for $hn - continuing with SSH probe."
             }
         }
     }
 
     # Flatten stdout+stderr (MOTD on stderr) so -match works; capture exit code immediately.
-    $probeText = (& ssh.exe -o BatchMode=yes -o ConnectTimeout=12 $alias "echo LABOP_SSH_OK" 2>&1 | Out-String)
+    $probeCmd = "ssh.exe -o BatchMode=yes -o ConnectTimeout=12 $alias `"echo LABOP_SSH_OK`" 2>&1"
+    $probeText = Invoke-CmdCapture -CmdLine $probeCmd
     $probeExit = $LASTEXITCODE
     Write-Host $probeText
     if ($probeExit -ne 0 -or $probeText -notmatch "LABOP_SSH_OK") {
-        Write-Warning "SSH probe failed for $alias — skip repos for this host."
+        Write-Warning "SSH probe failed for $alias - skip repos for this host."
         continue
     }
 
@@ -110,13 +121,15 @@ foreach ($h in $manifest.hosts) {
         [void]$sb.AppendLine("--- repo: $rp ---")
         $rpEsc = $rp -replace "'", "'\''"
         if ($SkipGitPull) {
-            $remoteCmd = "cd '$rpEsc' && (command -v timeout >/dev/null 2>&1 && timeout $remoteReportTimeoutSecs bash scripts/homelab-host-report.sh$reportArgsText || bash scripts/homelab-host-report.sh$reportArgsText)"
+            $remoteCmd = "cd '$rpEsc' && (command -v timeout >/dev/null 2>&1 && timeout $remoteReportTimeoutSecs bash scripts/homelab-host-report.sh$reportArgsText || bash scripts/homelab-host-report.sh$reportArgsText) 2>&1"
         }
         else {
-            $remoteCmd = "cd '$rpEsc' && git fetch origin && git pull --ff-only && (command -v timeout >/dev/null 2>&1 && timeout $remoteReportTimeoutSecs bash scripts/homelab-host-report.sh$reportArgsText || bash scripts/homelab-host-report.sh$reportArgsText)"
+            $remoteCmd = "cd '$rpEsc' && git fetch origin && git pull --ff-only && (command -v timeout >/dev/null 2>&1 && timeout $remoteReportTimeoutSecs bash scripts/homelab-host-report.sh$reportArgsText || bash scripts/homelab-host-report.sh$reportArgsText) 2>&1"
         }
         # Single argument for remote command (paths with spaces: avoid or use manifest carefully).
-        $remoteOut = & ssh.exe -o BatchMode=yes -o ConnectTimeout=120 $alias $remoteCmd 2>&1
+        $remoteCmdEsc = $remoteCmd.Replace('"', '\"')
+        $remoteLine = "ssh.exe -o BatchMode=yes -o ConnectTimeout=120 $alias `"$remoteCmdEsc`" 2>&1"
+        $remoteOut = Invoke-CmdCapture -CmdLine $remoteLine
         [void]$sb.AppendLine($remoteOut)
     }
 
