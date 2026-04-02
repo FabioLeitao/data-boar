@@ -87,6 +87,9 @@ Version-signal heuristic (to avoid timing confusion):
 - Monitoring/off-band design (webhook-first architecture, Zabbix/PRTG/Nagios/Splunk fit).
 - Legal/commercial wording risk (tamper-evident vs tamper-proof claims).
 - Prioritization sanity (best risk reduction per implementation step).
+- Code-as-truth discipline: flag any doc/plan claim not grounded in current implementation/tests.
+- Audience-fit quality: check if executive/legal text stays decision-ready while operator docs remain concrete how-to.
+- Roadmap representativeness: verify whether current priorities are visible for SMB, mid-market, and enterprise buyers without overclaim.
 
 ## Time-scope framing (request multiple lenses)
 
