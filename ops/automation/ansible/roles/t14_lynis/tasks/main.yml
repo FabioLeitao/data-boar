@@ -32,6 +32,30 @@
     update: true
   failed_when: false
 
+- name: Install Lynis wrapper scripts (best-effort)
+  when: t14_lynis_install_wrappers | bool
+  ansible.builtin.copy:
+    dest: "{{ t14_lynis_wrapper_dir }}/{{ item.name }}"
+    owner: root
+    group: root
+    mode: "0755"
+    content: "{{ item.content }}"
+  loop:
+    - name: lynis-upstream
+      content: |
+        #!/bin/sh
+        set -eu
+        exec "{{ t14_lynis_upstream_dir }}/lynis" "$@"
+    - name: lynis-labop
+      content: |
+        #!/bin/sh
+        set -eu
+        if [ -x "{{ t14_lynis_upstream_dir }}/lynis" ]; then
+          exec "{{ t14_lynis_upstream_dir }}/lynis" "$@"
+        fi
+        exec lynis "$@"
+  failed_when: false
+
 - name: Write /etc/lynis/default.prf (comment-only suggestions)
   when: t14_lynis_profile_write | bool
   ansible.builtin.template:

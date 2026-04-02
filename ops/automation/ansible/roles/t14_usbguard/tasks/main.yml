@@ -14,6 +14,7 @@
     owner: root
     group: root
     mode: "0600"
+    force: "{{ false if (t14_usbguard_preserve_existing_rules | bool) else true }}"
   failed_when: false
 
 - name: Configure usbguard service state (best-effort)

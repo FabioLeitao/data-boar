@@ -1,6 +1,6 @@
 # Compliance frameworks and extensibility
 
-The application helps DPO, security, and compliance teams discover and map personal or sensitive data in line with multiple regulations. This document describes which frameworks are explicitly referenced today, where to find sample configuration, and how to extend support to others (e.g. UK GDPR, PIPEDA, APPI, POPIA) without code changes.
+The application helps DPO, security, and compliance teams discover and map personal or sensitive data with configurable regulation-oriented labels and recommendation text. This document describes which frameworks are explicitly referenced today, where to find sample configuration, and how to extend support to others (e.g. UK GDPR, PIPEDA, APPI, POPIA) without code changes.
 
 **Decision-makers (legal / compliance leadership):** start with the non-technical summary [COMPLIANCE_AND_LEGAL.md](COMPLIANCE_AND_LEGAL.md) ([pt-BR](COMPLIANCE_AND_LEGAL.pt_BR.md)); return here for **files, samples, and merge steps**.
 
