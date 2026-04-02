@@ -776,7 +776,28 @@ sudo apt install -y \
   openssh-client
 ```
 
-**Editor:** instala **Cursor**, **VS Code**, **Vim**, etc. pelo método oficial — não fixamos pacote único aqui. Se usares **Cursor** em Debian/Ubuntu, vê também [CURSOR_UBUNTU_APPARMOR.pt_BR.md](CURSOR_UBUNTU_APPARMOR.pt_BR.md) (AppArmor / permissões).
+### 4.1 Editor padrão do sistema (`/usr/bin/editor`) — evita prompts surpresa
+
+Algumas ferramentas (ex.: `visudo`, `crontab -e`, `git commit` em certos fluxos) dependem do **editor padrão do sistema** (`/usr/bin/editor`). Em instalações novas, isso pode abrir `nano`/`ed` e travar teu fluxo.
+
+**Recomendação:** escolher um editor e fixar via `update-alternatives` (não interativo).
+
+Exemplo com **Neovim**:
+
+```bash
+sudo apt install -y neovim
+sudo update-alternatives --set editor /usr/bin/nvim
+```
+
+Para checar:
+
+```bash
+readlink -f /usr/bin/editor
+```
+
+> Nota: `select-editor` é útil, mas é **interativo** (menos bom para automação). Para automação (Ansible), prefira `update-alternatives --set`.
+
+**Cursor:** se usares **Cursor** em Debian/Ubuntu, vê também [CURSOR_UBUNTU_APPARMOR.pt_BR.md](CURSOR_UBUNTU_APPARMOR.pt_BR.md) (AppArmor / permissões).
 
 ---
 
