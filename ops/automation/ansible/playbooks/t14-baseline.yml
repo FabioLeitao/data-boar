@@ -14,6 +14,7 @@
   roles:
     - role: t14_baseline_packages
     - role: t14_banners
+    - role: t14_editor_defaults
     - role: t14_lynis
     - role: t14_ufw
     - role: t14_fail2ban
@@ -22,6 +23,8 @@
     - role: t14_login_umask
     - role: t14_sshguard
     - role: t14_usbguard
+    - role: t14_labop_sudoers
+    - role: t14_snmpd_v3_only
     - role: t14_aide
     - role: t14_auditd
     - role: t14_zram
