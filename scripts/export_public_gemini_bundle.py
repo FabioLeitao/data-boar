@@ -72,37 +72,58 @@ def collect_paths(
     return sorted(set(out), key=lambda p: p.replace("/", "\0"))
 
 
-def verify_bundle(bundle_path: Path, repo_root: Path) -> int:
-    """Ensure every FILE section matches on-disk UTF-8 text (exact)."""
+def verify_bundle(
+    bundle_path: Path,
+    repo_root: Path,
+    *,
+    include_md: bool,
+    include_workflows: bool,
+    include_compliance_yaml: bool,
+    include_cursor: bool,
+    include_plans: bool,
+) -> int:
+    """Ensure every expected FILE section matches disk content sequentially.
+
+    We intentionally avoid regex-based marker scanning here because marker-like text
+    can appear inside documentation examples and would cause false mismatches.
+    """
     text = bundle_path.read_text(encoding="utf-8")
-    matches = list(_FILE_HEADER.finditer(text))
-    if not matches:
-        print("ERROR: no FILE markers found", file=sys.stderr)
-        return 1
-    preamble = text[: matches[0].start()].strip()
-    if preamble:
-        print(
-            f"WARN: text before first FILE marker ({len(preamble)} chars)",
-            file=sys.stderr,
-        )
+    expected_paths = collect_paths(
+        repo_root,
+        include_md=include_md,
+        include_workflows=include_workflows,
+        include_compliance_yaml=include_compliance_yaml,
+        include_cursor=include_cursor,
+        include_plans=include_plans,
+    )
+
+    pos = 0
     bad = 0
-    for i, m in enumerate(matches):
-        rel = m.group(1).strip()
-        start = m.end()
-        end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
-        body = text[start:end]
+    checked = 0
+    for rel in expected_paths:
         p = repo_root / rel
         if not p.is_file():
-            print(f"MISSING: {rel}", file=sys.stderr)
-            bad += 1
             continue
         disk = p.read_text(encoding="utf-8")
-        if disk != body:
+        header = f"--- FILE: {rel} ---\n"
+        expected_block = header + disk
+        block_len = len(expected_block)
+        candidate = text[pos : pos + block_len]
+        if candidate != expected_block:
             print(f"MISMATCH: {rel}", file=sys.stderr)
             bad += 1
         else:
             print(f"OK {rel}")
-    print(f"--- verify: {len(matches)} sections, {bad} problems ---", file=sys.stderr)
+        pos += block_len
+        checked += 1
+
+    if pos != len(text):
+        print(
+            f"MISMATCH: trailing or missing content after verify cursor ({len(text) - pos} chars delta)",
+            file=sys.stderr,
+        )
+        bad += 1
+    print(f"--- verify: {checked} sections, {bad} problems ---", file=sys.stderr)
     return 1 if bad else 0
 
 
@@ -202,7 +223,15 @@ def main() -> int:
     )
 
     if args.verify:
-        return verify_bundle(out_path, repo_root)
+        return verify_bundle(
+            out_path,
+            repo_root,
+            include_md=not args.no_md,
+            include_workflows=not args.no_workflows,
+            include_compliance_yaml=args.compliance_yaml,
+            include_cursor=args.cursor,
+            include_plans=args.plans,
+        )
     return 0
 
 
