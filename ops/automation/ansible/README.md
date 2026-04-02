@@ -15,11 +15,38 @@ This folder provides **generic**, reviewable Ansible automation for workstation 
 cp inventory.example.ini inventory.local.ini
 ```
 
-2) Run the baseline playbook (example):
+1) One interactive step (sudo warm-up):
+
+On the target host (or in an SSH session), run:
 
 ```bash
-ansible-playbook -i inventory.local.ini playbooks/t14-baseline.yml --diff
+sudo -v
 ```
+
+1) Run the baseline playbook (example):
+
+```bash
+ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini playbooks/t14-baseline.yml --diff
+```
+
+## Token-aware wrapper (Windows → SSH → Ansible on T14)
+
+If you want minimal toil from Windows (one password prompt, then automation), use:
+
+```powershell
+.\scripts\t14-ansible-baseline.ps1 -SshHost t14
+```
+
+To apply changes after a check pass:
+
+```powershell
+.\scripts\t14-ansible-baseline.ps1 -SshHost t14 -Apply
+```
+
+### Note (toil reduction, zero prompts)
+
+- **Current workaround**: keep `sudo` warm on the target with `sudo -v` (extends the timeout for a few minutes).
+- **Preferred end state**: a **restricted sudoers rule** (guardrailed, command-scoped) to allow the baseline automation to run **without prompts** when explicitly requested, aligned with the LAB-OP privileged-collection approach.
 
 ## What this does (safe-default)
 
@@ -31,6 +58,12 @@ ansible-playbook -i inventory.local.ini playbooks/t14-baseline.yml --diff
 - Installs `aide` and `auditd` with a reviewable baseline (host-specific exceptions should stay private)
 - Optional: enables zram-based swap (host-dependent sizing; opt-in)
 - Ensures SSH hardening defaults (no root login; password auth off) **only if you opt-in**
+
+## Post-automation validation (checklist)
+
+After a `CHECK` + `APPLY`, run the quick validation checklist:
+
+- `POST_AUTOMATION_VALIDATION.pt_BR.md`
 
 ## Important
 
@@ -44,4 +77,3 @@ By default we generate a generic banner suitable for multiple hosts and environm
 - `/etc/issue`, `/etc/issue.net`: short, non-sensitive banner (best for local console/tty)
 
 To enable SSH banner, set `t14_banner_enable_sshd_banner=true` in your inventory/group vars.
-
