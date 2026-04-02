@@ -34,6 +34,15 @@ uv run pre-commit run --all-files
 - If **ruff-format** fails: **`uv run ruff format .`** and re-stage.
 - Do not bypass checks with **`--no-verify`** unless intentional; keep **`.pre-commit-config.yaml`** aligned with **`.github/workflows/ci.yml`** **lint** job.
 
+## PowerShell scripts: ASCII-only rule (PS 5.1 safety)
+
+**Never use em-dash (`—` U+2014), curly quotes, or other non-ASCII characters in `.ps1` scripts.** Windows PowerShell 5.1 emits a `ParserError` on non-ASCII characters even inside comments or strings, causing the script to fail silently on the operator's machine.
+
+- Use plain hyphen `-` instead of `—`.
+- Use straight quotes `"` instead of curly `"` / `"`.
+- **Guard**: `tests/test_scripts.py::test_powershell_scripts_ascii_safe` catches this in CI.
+- **Fix**: replace with ASCII equivalent and re-run `.\scripts\lint-only.ps1`.
+
 ## Other lint
 
 Broader quality layers: **`docs/QUALITY_WORKFLOW_RECOMMENDATIONS.md`**, **Bandit**, **Semgrep**, **CodeQL** (separate CI jobs or workflows).

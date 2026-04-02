@@ -1,6 +1,6 @@
 #Requires -Version 5.1
 # Read-only inventory via Network Integration API: sites + devices (+ clients if available).
-# Loads secrets from docs/private/homelab/.env.api.LAB-ROUTER-01-se.local — does not echo API key.
+# Loads secrets from docs/private/homelab/.env.api.LAB-ROUTER-01-se.local  - does not echo API key.
 # Output: summary to stdout; optional JSON under docs/private/homelab/reports/ (gitignored).
 param(
     [string] $EnvFile = "",

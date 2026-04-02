@@ -6,6 +6,7 @@ obvious injection; these tests ensure they parse and (where possible) run a no-o
 """
 
 import py_compile
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -447,4 +448,83 @@ def test_operator_day_ritual_ps1_syntax():
         return
     assert _parse_powershell_script(script, root), (
         "operator-day-ritual.ps1 parse failed"
+    )
+
+
+def test_lab-node-01_ansible_baseline_ps1_syntax():
+    """scripts/lab-node-01-ansible-baseline.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "lab-node-01-ansible-baseline.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), (
+        "lab-node-01-ansible-baseline.ps1 parse failed"
+    )
+
+
+def test_run_homelab_host_report_all_ps1_syntax():
+    """scripts/run-homelab-host-report-all.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "run-homelab-host-report-all.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), (
+        "run-homelab-host-report-all.ps1 parse failed"
+    )
+
+
+def test_lab_op_ps1_syntax():
+    """scripts/lab-op.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "lab-op.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), "lab-op.ps1 parse failed"
+
+
+# ---------------------------------------------------------------------------
+# PowerShell ASCII-safety guard
+# Non-ASCII characters (em-dash U+2014, curly quotes, etc.) cause
+# Windows PowerShell 5.1 to emit ParserError even when the file is otherwise
+# syntactically correct.  This test catches those regressions early.
+# ---------------------------------------------------------------------------
+
+_PS1_ASCII_UNSAFE_RE: re.Pattern[str] = re.compile(r"[^\x00-\x7F]")
+
+_PS1_ASCII_EXEMPT: frozenset[str] = frozenset(
+    {
+        # candidate-dossier-scaffold.ps1: intentionally contains Portuguese text in
+        # output strings for candidate dossier generation; targets pwsh 7+ only.
+        "candidate-dossier-scaffold.ps1",
+    }
+)
+
+
+def test_powershell_scripts_ascii_safe():
+    """All .ps1 scripts under scripts/ are ASCII-only (no em-dash, curly quotes, etc.).
+
+    Windows PowerShell 5.1 emits ParserError on non-ASCII characters in string literals
+    or comments even when the file is otherwise valid.  We enforce ASCII-only to prevent
+    silent breakage on the operator's Windows dev machine.
+
+    Exemptions: add a script name (not path) to _PS1_ASCII_EXEMPT only if it explicitly
+    targets pwsh 7+ and the non-ASCII is intentional.
+    """
+    root = _project_root()
+    violations: list[str] = []
+    for script in sorted((root / "scripts").glob("*.ps1")):
+        if script.name in _PS1_ASCII_EXEMPT:
+            continue
+        text = script.read_text(encoding="utf-8", errors="replace")
+        for lineno, line in enumerate(text.splitlines(), start=1):
+            m = _PS1_ASCII_UNSAFE_RE.search(line)
+            if m:
+                char = m.group(0)
+                violations.append(
+                    f"  scripts/{script.name}:{lineno} non-ASCII char {char!r}"
+                    f" (U+{ord(char):04X}) - use ASCII equivalent"
+                )
+    assert not violations, (
+        "PowerShell scripts contain non-ASCII characters that break PS 5.1:\n"
+        + "\n".join(violations)
     )

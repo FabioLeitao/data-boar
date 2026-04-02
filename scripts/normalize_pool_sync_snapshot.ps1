@@ -13,13 +13,13 @@ $content = Get-Content -LiteralPath $SnapshotPath -Raw -Encoding UTF8
 
 # Target only the mojibake patterns we have seen so far.
 $replacements = @(
-    @("Andr� Colleague-I", "André Colleague-I"),
-    @("Ferr�o", "Ferrão"),
-    @("Re-run de pool sync apos", "Re-run de pool sync após"),
-    @("Re-run de pool sync apos", "Re-run de pool sync após"),
-    @("automa��o", "automaçao"),
-    @("automacao", "automaçao"),
-    @("automacao", "automaçao")
+    @("Andr? Colleague-I", "Andr? Colleague-I"),
+    @("Ferr?o", "Ferr?o"),
+    @("Re-run de pool sync apos", "Re-run de pool sync ap?s"),
+    @("Re-run de pool sync apos", "Re-run de pool sync ap?s"),
+    @("automa??o", "automa?ao"),
+    @("automacao", "automa?ao"),
+    @("automacao", "automa?ao")
 )
 
 foreach ($r in $replacements) {

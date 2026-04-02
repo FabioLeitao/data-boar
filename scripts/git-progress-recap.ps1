@@ -8,7 +8,7 @@
     high-level themes (Conventional Commit prefixes). Default window: last 3 calendar days.
     Uses origin/main when available after a best-effort fetch; falls back to main.
 
-    Pair with today-mode / carryover-sweep / eod-sync — does not replace PLANS_TODO.md.
+    Pair with today-mode / carryover-sweep / eod-sync  - does not replace PLANS_TODO.md.
 
 .PARAMETER Days
     How many calendar days back from today (local midnight) to include. Default 3.

@@ -17,7 +17,7 @@
 
   Install Net-SNMP **inside WSL** (not on Windows): open your Linux distro, then:
     sudo apt update && sudo apt install -y snmp
-  (Optional MIB names: `snmp-mibs-downloader` on some releases needs **non-free**; not required for this script — numeric OIDs work without it.)
+  (Optional MIB names: `snmp-mibs-downloader` on some releases needs **non-free**; not required for this script  - numeric OIDs work without it.)
 
   Optional: -WslDistro "Ubuntu-22.04" if your default distro is wrong (see: wsl -l -v).
 
@@ -97,12 +97,12 @@ snmpwalk was not found on PATH, and wsl.exe was not found.
 
 On Windows, use one of these:
 
-  **A) WSL (recommended)** — Install:  wsl --install   (then rColleague-Sot if prompted).
+  **A) WSL (recommended)**  - Install:  wsl --install   (then rColleague-Sot if prompted).
   In your Linux distro terminal:
     sudo apt update && sudo apt install -y snmp
   Back in PowerShell (same session where you set LAB_LAB-ROUTER-01_SNMP_*), run this script again.
 
-  **B) Linux laptop/VM on the LAN** — Run snmpwalk there (see HOMELAB_UNIFI_LAB-ROUTER-01_LAB_NETWORK.md).
+  **B) Linux laptop/VM on the LAN**  - Run snmpwalk there (see HOMELAB_UNIFI_LAB-ROUTER-01_LAB_NETWORK.md).
 
   **C) Rare:** Add a Net-SNMP Windows build to PATH (project does not ship binaries).
 "@
@@ -135,8 +135,8 @@ Then run **once** (Debian/Ubuntu inside WSL):
   sudo apt update
   sudo apt install -y snmp
   command -v snmpwalk
-  # Expect: /usr/bin/snmpwalk — if empty, snmp did not install.
-  # Do NOT require snmp-mibs-downloader — on Debian 13 (trixie) it may be in non-free or absent; this probe uses numeric OIDs only.
+  # Expect: /usr/bin/snmpwalk  - if empty, snmp did not install.
+  # Do NOT require snmp-mibs-downloader  - on Debian 13 (trixie) it may be in non-free or absent; this probe uses numeric OIDs only.
 
 Return to **PowerShell**, keep your `$env:LAB_LAB-ROUTER-01_SNMP_*` variables, and run:
   .\scripts\snmp-LAB-ROUTER-01-lab-probe.ps1$(if ($WslDistro) { " -WslDistro `"$WslDistro`"" })
