@@ -1,0 +1,13 @@
+---
+# Opt-in: writing sudoers is sensitive; keep disabled by default.
+t14_labop_sudoers_enable: false
+
+# Target sudoers include path.
+t14_labop_sudoers_include_path: /etc/sudoers.d/labop-host-report
+
+# User allowed to run the host report without a password.
+t14_labop_sudoers_user: "{{ ansible_user | default('leitao') }}"
+
+# Absolute repo path on the host (no ~ expansion in sudoers).
+t14_labop_repo_path: "/home/{{ t14_labop_sudoers_user }}/Projects/dev/data-boar"
+

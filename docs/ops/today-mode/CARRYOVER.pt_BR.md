@@ -12,8 +12,13 @@
 
 | Item | Origem | Estado | Próximo passo / defer |
 | ---- | ------ | ------ | ----- |
+| Fechar gate de release **1.6.8** (nota + testes + decisão publish/defer) | 2026-04-02 | ⬜ Pendente | Seguir `OPERATOR_TODAY_MODE_2026-04-02.pt_BR.md` Bloco C; se adiar, registrar data-alvo explícita |
+| Rodada externa **WRB + Gemini** com framing "código é verdade" | 2026-04-02 | ⬜ Pendente | Enviar WRB com 3 lentes temporais e gerar bundle Gemini com `--verify`; triar em `PLAN_GEMINI_FEEDBACK_TRIAGE.md` |
+| Snapshot quantitativo (hoje / 3 dias / 7 dias) com split por frente | 2026-04-02 | ⬜ Pendente | Rodar `.\scripts\progress-snapshot.ps1 -OutputMarkdown docs/private/progress/progress_snapshot_2026-04-02.md` |
+| LinkedIn/ATS do fundador (perfil completo) | 2026-04-02 | ⬜ Pendente | Aplicar seção nova no playbook private (`LINKEDIN_ATS_AND_POSITIONING_PLAYBOOK.pt_BR.md`) com headline + about + evidências |
+| Recuperação de dados Time Machine (disco USB) para virar backup externo P0 | 2026-04-02 | ⬜ Pendente | Seguir `docs/ops/TIME_MACHINE_USB_RECOVERY_AND_REPURPOSE.pt_BR.md` (forense read-only -> cópia -> wipe -> novo backup) |
 | E-mail **Wabbix WRB** | 2026-03-26 / 03-29 / 03-31 | ⬜ Pendente | Bloco: **`docs/ops/WRB_DELTA_SNAPSHOT_2026-03-31.pt_BR.md`** — enviar hoje ou adiar com data em PLANS/privado |
-| **Slack** prova de ping (PC + telemóvel) | 2026-03-27 | ⬜ Pendente | **`docs/ops/OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md`** — alerta real ou nota **CHAN-OK** |
+| **Slack** prova de ping (PC + telemóvel) | 2026-03-27 | ✅ Feito | Canal founder-only confirmado; ping recebido no desktop + celular (**CHAN-OK**) |
 | PRs **Dependabot** (#134 pypdf, #144 starlette, #147 grupo pip) | 2026-03-29 / 30 / 03-31 | ✅ Feito | Mergeado (verde + mergeable). Próximo: manter olho em novos PRs e seguir `SECURITY.md` |
 | **Branch protection** (checks obrigatórios) | 2026-03-26 opcional | ⬜ Opcional | Ativar quando quiseres CI/Semgrep obrigatórios em `main` |
 | Fatia **Gemini Cold** (ex. G-26-04 + G-26-13) | `PLANS_TODO.md` | ⬜ Opcional | Um PR **`docs`**; itens mais seguros primeiro |

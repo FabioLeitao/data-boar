@@ -4,6 +4,8 @@
 
 Sample configuration files to enable **additional compliance frameworks** with the same scan-and-report flow. Copy the relevant blocks into your main config, or set `regex_overrides_file` / `ml_patterns_file` and merge the sample’s `report.recommendation_overrides`. The set includes **Russia (Federal Law 152-FZ)** alongside LGPD, GDPR family, PIPEDA, APPI, and others—see the table below and [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md#list-of-samples-and-links) ([pt-BR](../COMPLIANCE_FRAMEWORKS.pt_BR.md#lista-de-amostras-e-links)). For how to use and how each framework maps to config, see [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md) ([pt-BR](../COMPLIANCE_FRAMEWORKS.pt_BR.md)).
 
+For operational governance (scope, minimization, retention, traceability), use [OPERATOR_GOVERNANCE_CHECKLIST.md](OPERATOR_GOVERNANCE_CHECKLIST.md) ([pt-BR](OPERATOR_GOVERNANCE_CHECKLIST.pt_BR.md)).
+
 ## Sample files (one per regulation)
 
 | File                                           | Purpose                                                                                                                                                             |
