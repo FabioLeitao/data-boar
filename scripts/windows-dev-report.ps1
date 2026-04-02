@@ -1,4 +1,4 @@
-# Data Boar — Windows dev workstation inventory (run on the PC; redact before sharing).
+# Data Boar  - Windows dev workstation inventory (run on the PC; redact before sharing).
 # Usage: pwsh -File scripts/windows-dev-report.ps1
 # See: docs/ops/WINDOWS_WSL_MULTI_DISTRO_LAB.md
 
@@ -27,7 +27,7 @@ Write-Host "--- Visual Studio (vswhere) ---"
 $vswhere = Join-Path ${env:ProgramFiles(x86)} "Microsoft Visual Studio\Installer\vswhere.exe"
 if (Test-Path $vswhere) {
     # Insiders/Preview need -prerelease. -property accepts only ONE name per run (comma list -> Error 0x57).
-    Write-Host "(summary — JSON):"
+    Write-Host "(summary  - JSON):"
     $jsonText = & $vswhere -all -prerelease -products * -format json 2>&1
     if ($LASTEXITCODE -eq 0 -and $jsonText) {
         try {
