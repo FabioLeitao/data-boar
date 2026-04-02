@@ -61,7 +61,9 @@ followed by the file body. Do not assume private or unpublished files exist.
 Tasks:
 1) P0/P1/P2 issues (same semantics as our internal checklist): onboarding, security posture, contradiction, missing limits, CI footguns.
 2) If YAML samples: operational footguns and maintainability (not legal opinions).
-3) Do not invent features; if unsure, say “confirm in code”.
+3) Treat implemented code and tests as source of truth; docs/plans must be evaluated against that.
+4) Flag EN <-> pt-BR drift where translation sounds unnatural, ambiguous, or too literal for technical documentation.
+5) Do not invent features; if unsure, say “confirm in code”.
 
 Output format:
 ## Executive summary (5 bullets max)

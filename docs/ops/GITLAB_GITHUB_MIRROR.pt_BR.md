@@ -118,3 +118,49 @@ Cada push na `main` do GitHub corre um workflow que faz **push** dos refs para o
 
 - [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md) — hábitos locais de `git remote`; o espelho **não** substitui o `origin` nas máquinas de desenvolvimento.
 - [COMMIT_AND_PR.md](COMMIT_AND_PR.md) — o fluxo de PR continua no GitHub.
+
+---
+
+## 11. Política de bloqueio forte (baseline anti-caos)
+
+Aplicar estes controles no GitLab para ele não virar fonte alternativa de verdade:
+
+1. **Desativar push direto** na branch padrão para qualquer papel humano abaixo de Maintainer.
+1. Proteger `main` e definir:
+   - **Allowed to merge:** apenas Maintainers (ou sem merge se o projeto for só espelho),
+   - **Allowed to push:** ninguém além da identidade de automação do espelho.
+1. **Desativar force push** em branches protegidas.
+1. Desativar ou restringir **edição via web IDE** e **pipelines manuais em refs arbitrários**, quando possível.
+1. Manter projeto **Private** salvo política explícita de espelho público.
+1. Usar conta/token dedicado para escrita do espelho e girar periodicamente.
+1. Desativar Issues/MRs se o repositório for estritamente espelho + CI.
+
+Se algum item não for suportado no teu tier do GitLab, registar controle compensatório no runbook privado.
+
+---
+
+## 12. Arquitetura recomendada (safe default)
+
+- **GitHub:** fonte da verdade, PR, merge, release, tags.
+- **GitLab:** espelho + pipeline adicional opcional.
+- **Sem caminho de escrita humana** para branch padrão no GitLab.
+- **Sem espelhamento bidirecional.**
+
+Fluxo:
+
+1. Humano faz merge no GitHub.
+1. Espelho atualiza GitLab (pull ou push por Actions).
+1. GitLab CI roda checks extras não bloqueantes.
+1. Achados retornam ao GitHub como issue/comentário ou nota privada de operação.
+
+---
+
+## 13. Verificação de saúde do espelho (script)
+
+Usar `scripts/gitlab-mirror-health-check.ps1` para comparar SHA de `origin/main` e do espelho no GitLab:
+
+```powershell
+.\scripts\gitlab-mirror-health-check.ps1 -GitLabRepoUrl "git@gitlab.com:<grupo>/<repo>.git"
+```
+
+Você pode usar uma janela de tolerância opcional antes de alertar.
