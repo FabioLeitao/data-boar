@@ -48,7 +48,7 @@ if ($prev) {
     Write-Host "Pulling ${HubImage}:$prev (previous patch) ..." -ForegroundColor Yellow
     docker pull "${HubImage}:$prev"
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "Note: pull failed for $prev — tag may not exist on Hub yet; safe to ignore." -ForegroundColor DarkYellow
+        Write-Host "Note: pull failed for $prev  - tag may not exist on Hub yet; safe to ignore." -ForegroundColor DarkYellow
     }
 } else {
     Write-Host "Skipping previous patch (use -PreviousVersion or clear -SkipPrevious when patch > 0)." -ForegroundColor DarkGray

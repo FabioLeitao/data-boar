@@ -5,8 +5,8 @@
 
 .DESCRIPTION
   Mirrors the logic in `.github/workflows/sbom.yml`. Outputs:
-  - `sbom-python.cdx.json` — CycloneDX 1.6 JSON from `uv export` + `cyclonedx-py`.
-  - `sbom-docker-image.cdx.json` — Syft in `anchore/syft:v1.28.0` against `data_boar:sbom`.
+  - `sbom-python.cdx.json`  - CycloneDX 1.6 JSON from `uv export` + `cyclonedx-py`.
+  - `sbom-docker-image.cdx.json`  - Syft in `anchore/syft:v1.28.0` against `data_boar:sbom`.
 
   The Syft step expects Docker to reach the daemon (Linux, macOS, or Docker Desktop with a
   Linux engine). If `docker run` with a Unix socket fails on your host, use the CI workflow

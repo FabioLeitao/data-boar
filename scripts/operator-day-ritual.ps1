@@ -5,8 +5,8 @@
 
 .DESCRIPTION
     English session tokens (see .cursor/rules/session-mode-keywords.mdc):
-    - carryover-sweep  →  -Mode Morning
-    - eod-sync         →  -Mode Eod
+    - carryover-sweep  ->  -Mode Morning
+    - eod-sync         ->  -Mode Eod
 
     Does not post to Slack or GitHub; runs local git/gh read-only steps and prints
     paths. Secrets stay in Actions / env per OPERATOR_NOTIFICATION_CHANNELS.
