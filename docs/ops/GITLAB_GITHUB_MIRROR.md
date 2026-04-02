@@ -118,3 +118,49 @@ Every push to `main` on GitHub runs a workflow that **pushes** refs to GitLab.
 
 - [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md) — local `git remote` habits; mirror does not replace `origin` on developer machines.
 - [COMMIT_AND_PR.md](COMMIT_AND_PR.md) — PR flow stays on GitHub.
+
+---
+
+## 11. Hard lock policy (minimum anti-chaos baseline)
+
+Apply these controls in GitLab so it cannot become an alternate truth source:
+
+1. **Disable direct pushes** to default branch for all human roles below Maintainer.
+1. Protect `main` and set:
+   - **Allowed to merge:** Maintainers only (or no merge if mirror-only project),
+   - **Allowed to push:** no one except mirror automation identity.
+1. **Disable force push** on protected branches.
+1. Disable or restrict **web IDE edits** and **manual pipelines from arbitrary refs** where possible.
+1. Keep project **Private** unless you have an explicit public mirror policy.
+1. Use a dedicated machine account/token for mirror writes; rotate regularly.
+1. Keep Issues/MRs disabled if this repository is strictly mirror + CI.
+
+If any of the above is not supported by your GitLab tier, document the compensating control in private ops notes.
+
+---
+
+## 12. Recommended architecture (safe default)
+
+- **GitHub:** source of truth, PR, merge, release, tags.
+- **GitLab:** mirror + optional extra pipeline only.
+- **No human write path to GitLab default branch.**
+- **No bidirectional mirroring.**
+
+Flow:
+
+1. Human merges PR in GitHub.
+1. Mirror updates GitLab (pull or Actions push).
+1. GitLab CI runs additional non-blocking checks.
+1. Findings return to GitHub as issues/comments or private operator notes.
+
+---
+
+## 13. Mirror health check (scripted)
+
+Use `scripts/gitlab-mirror-health-check.ps1` to compare `origin/main` and GitLab mirror SHA:
+
+```powershell
+.\scripts\gitlab-mirror-health-check.ps1 -GitLabRepoUrl "git@gitlab.com:<group>/<repo>.git"
+```
+
+Optional tolerance window can be used before raising alerts.
