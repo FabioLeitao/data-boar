@@ -93,8 +93,22 @@
 
 ---
 
+## 9. LinkedIn and ATS narrative checklist (public-safe)
+
+Use this checklist to improve discoverability without leaking private customer data:
+
+- Keep headline outcome-oriented (privacy engineering, compliance enablement, secure-by-design).
+- In About/Summary, separate **what was built** from **what is roadmap**.
+- Mention measurable engineering evidence (tests, CI gates, releases, docs ownership).
+- Use role-appropriate keywords (AppSec, Data Privacy, DPO support, API security, SRE, governance).
+- Avoid overclaims (no "certifies compliance" language; use "supports evidence and remediation").
+- Link only public artifacts (docs, release notes, PRs, talks) and keep customer identifiers private.
+
+---
+
 ## Revision
 
 | Date       | Note                                                   |
 | ---------- | ----                                                   |
 | 2026-03-27 | Initial archetype roadmaps + private template pointer. |
+| 2026-04-01 | Added LinkedIn/ATS narrative checklist for public profiles. |

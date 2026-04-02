@@ -50,7 +50,9 @@ seguido do corpo do arquivo. Não assuma arquivos privados ou não publicados.
 Tarefas:
 1) Problemas P0/P1/P2 (onboarding, segurança, contradições, limites, footguns de CI).
 2) Nos YAML de amostra: risco operacional e manutenção (sem parecer jurídico).
-3) Não invente funcionalidades; na dúvida diga “confirmar no código”.
+3) Trate código implementado e testes como fonte da verdade; docs/planos devem ser avaliados contra isso.
+4) Aponte drift EN <-> pt-BR quando a tradução soar literal demais, ambígua ou pouco natural para documentação técnica.
+5) Não invente funcionalidades; na dúvida diga “confirmar no código”.
 
 Formato de saída:
 ## Resumo executivo (máx. 5 bullets)
