@@ -9,7 +9,7 @@
 #   .\scripts\docker-prune-local.ps1 -KeepSmoke:$false
 #
 # Does not remove containers; stop/remove them first if docker rmi fails.
-# See: docs/ops/BRANCH_AND_DOCKER_CLEANUP.md §4, scripts/docker/README.md
+# See: docs/ops/BRANCH_AND_DOCKER_CLEANUP.md S.4, scripts/docker/README.md
 
 param(
     [switch]$WhatIf = $false,
@@ -91,7 +91,7 @@ foreach ($ref in $toRemove) {
     Write-Host "Removing $ref ..." -ForegroundColor Yellow
     docker rmi $ref 2>&1
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "  (failed — may be in use by a container; docker stop/rm first)" -ForegroundColor DarkYellow
+        Write-Host "  (failed  - may be in use by a container; docker stop/rm first)" -ForegroundColor DarkYellow
         $failed++
     }
 }
