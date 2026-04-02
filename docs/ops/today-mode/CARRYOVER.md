@@ -12,9 +12,14 @@
 
 | Item | Source | Status | Next step / defer |
 | ---- | ------ | ------ | ----- |
+| Close **1.6.8 release gate** (notes + tests + publish/defer decision) | 2026-04-02 | ⬜ Pending | Follow `OPERATOR_TODAY_MODE_2026-04-02.md` Block C; if deferred, write explicit target date |
+| New external round **WRB + Gemini** with "code is truth" framing | 2026-04-02 | ⬜ Pending | Send WRB with 3 time lenses and build Gemini bundle with `--verify`; triage in `PLAN_GEMINI_FEEDBACK_TRIAGE.md` |
+| Quantified snapshot (today / 3 days / 7 days) with front split | 2026-04-02 | ⬜ Pending | Run `.\scripts\progress-snapshot.ps1 -OutputMarkdown docs/private/progress/progress_snapshot_2026-04-02.md` |
+| Founder LinkedIn/ATS profile full refresh | 2026-04-02 | ⬜ Pending | Apply private playbook section in `LINKEDIN_ATS_AND_POSITIONING_PLAYBOOK.pt_BR.md` |
+| Time Machine USB recovery before repurposing as P0 external backup | 2026-04-02 | ⬜ Pending | Follow `docs/ops/TIME_MACHINE_USB_RECOVERY_AND_REPURPOSE.md` (read-only triage -> copy -> wipe -> new backup policy) |
 | **Wabbix WRB** e-mail | 2026-03-26 / 03-29 / 03-31 | ⬜ Pending | Paste block: **`docs/ops/WRB_DELTA_SNAPSHOT_2026-03-31.md`** — send today or defer with a date in PLANS/private |
-| **Slack** proof-of-ping (desktop + phone) | 2026-03-27 | ⬜ Pending | **`docs/ops/OPERATOR_NOTIFICATION_CHANNELS.md`** — confirmed ding or note **CHAN-OK** |
-| **Dependabot** PRs (#134 pypdf, #143 pip group, #144 starlette) | 2026-03-29 / 30 | ⬜ Pending | **`deps`** session; **`gh pr checks`** + merge when green per **`SECURITY.md`** |
+| **Slack** proof-of-ping (desktop + phone) | 2026-03-27 | ✅ Done | Founder-only channel confirmed; ping received on desktop + phone (**CHAN-OK**) |
+| **Dependabot** PRs (#134 pypdf, #144 starlette, #147 pip group) | 2026-03-29 / 30 / 03-31 | ✅ Done | Merged (green + mergeable). Keep watching new PRs per **`SECURITY.md`** |
 | **Branch protection** (required checks) | 2026-03-26 optional | ⬜ Optional | Enable when you want CI/Semgrep enforced on `main` |
 | **Gemini Cold doc slice** (e.g. G-26-04 + G-26-13) | `PLANS_TODO.md` | ⬜ Optional | One **`docs`** PR; safest items first |
 | **`/help` vs `main.py`** parity skim | 2026-03-29 | ⬜ When flags change | After next CLI/dashboard flag — **`tests/test_operator_help_sync.py`** |
