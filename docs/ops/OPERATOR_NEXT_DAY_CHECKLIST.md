@@ -6,7 +6,7 @@
 
 **Broader context:** [OPERATOR_MANUAL_ACTIONS.md](OPERATOR_MANUAL_ACTIONS.md) · [PLANS_TODO.md](../plans/PLANS_TODO.md) “Resume next session”.
 
-**Dated one-day focus:** see **[today-mode/README.md](today-mode/README.md)** (indexed checklists). Example day: [OPERATOR_TODAY_MODE_2026-03-31.md](today-mode/OPERATOR_TODAY_MODE_2026-03-31.md) ([pt-BR](today-mode/OPERATOR_TODAY_MODE_2026-03-31.pt_BR.md)). **WRB delta (example):** [WRB_DELTA_SNAPSHOT_2026-03-26.md](WRB_DELTA_SNAPSHOT_2026-03-26.md). **Published `v1.6.7`** is shipped — see [today-mode/PUBLISHED_SYNC.md](today-mode/PUBLISHED_SYNC.md).
+**Dated one-day focus:** see **[today-mode/README.md](today-mode/README.md)** (indexed checklists). Current example: [OPERATOR_TODAY_MODE_2026-04-02.md](today-mode/OPERATOR_TODAY_MODE_2026-04-02.md) ([pt-BR](today-mode/OPERATOR_TODAY_MODE_2026-04-02.pt_BR.md)). **WRB delta (example):** [WRB_DELTA_SNAPSHOT_2026-03-31.md](WRB_DELTA_SNAPSHOT_2026-03-31.md). **Working version is `1.6.8`**; keep publish truth in [today-mode/PUBLISHED_SYNC.md](today-mode/PUBLISHED_SYNC.md).
 
 ---
 
@@ -38,6 +38,14 @@
 | N1 | Refresh **`docs/private/WHAT_TO_SHARE_WITH_AGENT.md`**                                                         | File saved                          |
 | N2 | If **SNMP Task Scheduler** runs — tail latest `snmp_udm_probe_*.log`                                           | Glance OK/errors                    |
 | N3 | **One** product slice only if energy left: see “What to start next” in [PLANS_TODO.md](../plans/PLANS_TODO.md) | Named issue/branch for next morning |
+
+---
+
+## Opening/closing mini-ritual (anti-chaos)
+
+- **Open (5 min):** run `carryover-sweep` (or `.\scripts\operator-day-ritual.ps1 -Mode Morning`) and lock exactly one primary front for the day.
+- **Close (5-10 min):** run `eod-sync` (or `.\scripts\operator-day-ritual.ps1 -Mode Eod`) and write deferred items with a date in `CARRYOVER`.
+- **Simple rule:** if it is not in today-mode or carryover, it does not exist tomorrow.
 
 ---
 

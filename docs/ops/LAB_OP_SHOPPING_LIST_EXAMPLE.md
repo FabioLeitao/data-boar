@@ -8,6 +8,20 @@ This is a **public, tracked** example shopping list that demonstrates how we str
 - **Prefer compatibility facts** (DDR generation, voltage, speed, rank) over “best deal” links.
 - Keep the **real** shopping plan in `docs/private/` (gitignored).
 
+## Full structure (how to think about “everything”)
+
+In the real lab, the shopping list is a **master map** spanning:
+
+- hosts (laptops/servers/SBCs) + upgrades (RAM/SSD)
+- storage + backup strategy
+- networking (UDM/switch/APs) + redundancy
+- power (UPS, circuit capacity) + solar + monitoring
+- HVAC/environment (cooling, sensors)
+- physical/operational safety (spares, labeling, tooling)
+- software/services: licenses, subscriptions, tokens, training
+
+We keep that master plan in a private file (gitignored) so it can contain real prices, store links, and local constraints.
+
 ## Example: RAM upgrade planning (generic)
 
 ### Identify your target
@@ -31,8 +45,9 @@ This is a **public, tracked** example shopping list that demonstrates how we str
 
 ## Where the real plan lives
 
+- Tracked decision spine (no prices): `docs/plans/PLAN_LAB_OP_CAPEX_OPEX_AND_PROCUREMENT.md`
 - Private cover note (tracked): `docs/private.example/homelab/LAB_OP_SHOPPING_LIST_COVER_NOTE.md`
-- Real list (gitignored): `docs/private/homelab/LAB_OP_SHOPPING_LIST_AND_POWER.md`
+- Real list (gitignored): `docs/private/homelab/LAB_OP_SHOPPING_LIST_AND_POWER.pt_BR.md`
 
 ## Example: Biometrics (fingerprint / face) for Linux hosts (generic)
 

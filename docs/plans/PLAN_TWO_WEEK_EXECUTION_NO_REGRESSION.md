@@ -31,6 +31,9 @@ Deliver a short, realistic 2-week sprint that keeps **tests green**, avoids regr
    - Avoid broad test rewrites; prioritize deterministic tests around changed behavior.
 1. Wabbix progression:
    - Pick one Wabbix recommendation row and ship one evidence-backed slice.
+1. Storage/backup urgency checkpoint (P0):
+   - Execute Time Machine USB recovery triage in read-only mode and decide copy path.
+   - Only repurpose disk after recovered data is validated.
 1. Slack channel B (AFK awareness):
    - `SLACK_WEBHOOK_URL` set; manual ping once; **Slack CI failure notify** validated or accepted (see `OPERATOR_NOTIFICATION_CHANNELS.md` §4.1).
 
@@ -63,6 +66,25 @@ Deliver a short, realistic 2-week sprint that keeps **tests green**, avoids regr
 1. Close (5 min):
    - Record what was done and next atomic step.
 
+## Auto mode execution pack (token-aware default)
+
+Use this pack when running outside MAX/Turbo, keeping one coherent objective per session:
+
+1. Session start (scope lock):
+   - `git status -sb`
+   - `git fetch origin`
+   - `gh pr list --state open`
+1. One-slice execution:
+   - pick one slice from `PLANS_TODO.md` and avoid side tracks unless blocking.
+1. Quality gate by slice type:
+   - docs-only: `.\scripts\lint-only.ps1`
+   - code/behavior: `.\scripts\check-all.ps1`
+1. Safe close:
+   - `.\scripts\preview-commit.ps1`
+   - `.\scripts\commit-or-pr.ps1 -Action Preview -Title "<title>" -Body "<bullets>"`
+1. Optional progress snapshot:
+   - `.\scripts\progress-snapshot.ps1` (today / 3 days / 7 days).
+
 ## Today mode (low-attention / high-speed)
 
 When the operator has limited attention/time, run this order:
@@ -93,6 +115,7 @@ When the operator has limited attention/time, run this order:
 - At least 2 targeted regression tests added (or updated) for real bug-risk areas.
 - At least 1 repeatable toil converted to script/automation or a short runbook step.
 - One demo-relevant feature slice shipped with docs + tests.
+- Carryover has explicit status/date for deferred items (no silent backlog).
 
 ## Not in scope (for this 2-week sprint)
 
