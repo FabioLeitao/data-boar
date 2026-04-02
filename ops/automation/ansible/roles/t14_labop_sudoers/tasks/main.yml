@@ -1,0 +1,27 @@
+---
+- name: Write restricted sudoers include for LAB-OP host report (opt-in)
+  when: t14_labop_sudoers_enable | bool
+  ansible.builtin.copy:
+    dest: "{{ t14_labop_sudoers_include_path }}"
+    owner: root
+    group: root
+    mode: "0440"
+    content: |
+      # Allow only the LAB-OP host report to run without a password.
+      #
+      # Guardrails:
+      # - Do NOT use NOPASSWD: ALL.
+      # - Restrict to one script path + fixed arguments.
+      # - Prefer removing this include when not actively collecting.
+      #
+      Cmnd_Alias LABOP_HOST_REPORT = /bin/bash {{ t14_labop_repo_path }}/scripts/homelab-host-report.sh --privileged, \
+                                     /bin/bash {{ t14_labop_repo_path }}/scripts/homelab-host-report.sh --privileged --deep
+      {{ t14_labop_sudoers_user }} ALL=(root) NOPASSWD: LABOP_HOST_REPORT
+  failed_when: false
+
+- name: Validate sudoers include syntax (visudo -c)
+  when: t14_labop_sudoers_enable | bool
+  ansible.builtin.command: "visudo -cf {{ t14_labop_sudoers_include_path }}"
+  changed_when: false
+  failed_when: false
+
