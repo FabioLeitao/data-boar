@@ -6,6 +6,10 @@
 
 set -u
 
+# Non-interactive shells (SSH/batch) may miss sbin paths; normalize early to reduce false negatives
+# (e.g. ufw, auditctl, iptables/nft may live under /usr/sbin).
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin${PATH+:$PATH}"
+
 HR_PRIVILEGED=0
 HR_DEEP=0
 for arg in "$@"; do
@@ -303,7 +307,17 @@ if [[ "$HR_DEEP" == "1" ]]; then
       echo "(skipped: low memory host; run lynis manually if desired)"
     else
       echo "(running: sudo -n lynis audit system --quick; timeout 180s)"
-      _hr_timeout 180 sudo -n "$LYNIS_BIN" audit system --quick 2>&1 | tail -n 120 || true
+      # Run with a minimal environment and safe cwd to avoid path-resolution quirks
+      # (some Lynis builds may mis-resolve language/DB paths when invoked from a project repo).
+      _hr_timeout 180 sudo -n env -i \
+        HOME="${HOME:-/tmp}" \
+        PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" \
+        LANG="${LANG:-C.UTF-8}" \
+        LC_ALL="${LC_ALL:-C.UTF-8}" \
+        TERM="${TERM:-dumb}" \
+        USER="${USER:-}" \
+        bash -lc "cd /tmp 2>/dev/null || cd / 2>/dev/null || true; \"$LYNIS_BIN\" audit system --quick" \
+        2>&1 | tail -n 120 || true
     fi
   else
     echo "(skipped: needs --privileged and lynis installed)"
