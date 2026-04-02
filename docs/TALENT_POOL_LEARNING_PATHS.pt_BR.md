@@ -93,8 +93,22 @@
 
 ---
 
+## 9. Checklist de narrativa LinkedIn e ATS (seguro para público)
+
+Use este checklist para melhorar descoberta profissional sem vazar dados privados de clientes:
+
+- Deixe o headline orientado a resultado (engenharia de privacidade, habilitação de compliance, secure-by-design).
+- No About/Resumo, separe claramente **o que já existe** do **que está em roadmap**.
+- Cite evidências mensuráveis de engenharia (testes, gates de CI, releases, ownership de docs).
+- Use palavras-chave por papel (AppSec, privacidade de dados, apoio ao DPO, segurança de APIs, SRE, governança).
+- Evite overclaim (nada de "certifica conformidade"; use "apoia evidência e remediação").
+- Linke apenas artefatos públicos (docs, release notes, PRs, talks) e mantenha identificadores de clientes em privado.
+
+---
+
 ## Revisão
 
 | Data       | Nota                                                           |
 | ---------- | ----                                                           |
 | 2026-03-27 | Roteiros iniciais por arquétipo + ponte para template privado. |
+| 2026-04-01 | Adicionado checklist de narrativa LinkedIn/ATS para perfis públicos. |

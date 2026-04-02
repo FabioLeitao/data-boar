@@ -45,6 +45,7 @@ We keep that master plan in a private file (gitignored) so it can contain real p
 
 ## Where the real plan lives
 
+- Tracked decision spine (no prices): `docs/plans/PLAN_LAB_OP_CAPEX_OPEX_AND_PROCUREMENT.md`
 - Private cover note (tracked): `docs/private.example/homelab/LAB_OP_SHOPPING_LIST_COVER_NOTE.md`
 - Real list (gitignored): `docs/private/homelab/LAB_OP_SHOPPING_LIST_AND_POWER.pt_BR.md`
 
