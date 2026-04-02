@@ -4,6 +4,8 @@
 
 Arquivos de configuração de exemplo para habilitar **frameworks de conformidade adicionais** com o mesmo fluxo de varredura e relatório. Copie os blocos relevantes para seu config principal ou defina `regex_overrides_file` / `ml_patterns_file` e mescle os `report.recommendation_overrides` do sample. O conjunto inclui **Rússia (Lei federal 152-FZ)** junto com LGPD, família GDPR, PIPEDA, APPI e outras — veja a tabela abaixo e [COMPLIANCE_FRAMEWORKS.pt_BR.md](../COMPLIANCE_FRAMEWORKS.pt_BR.md#lista-de-amostras-e-links) ([EN](../COMPLIANCE_FRAMEWORKS.md#list-of-samples-and-links)). Para como usar e como cada framework mapeia para o config, veja [COMPLIANCE_FRAMEWORKS.pt_BR.md](../COMPLIANCE_FRAMEWORKS.pt_BR.md) ([EN](../COMPLIANCE_FRAMEWORKS.md)).
 
+Para governança operacional (escopo, minimização, retenção e rastreabilidade), use [OPERATOR_GOVERNANCE_CHECKLIST.pt_BR.md](OPERATOR_GOVERNANCE_CHECKLIST.pt_BR.md) ([EN](OPERATOR_GOVERNANCE_CHECKLIST.md)).
+
 ## Arquivos de amostra (um por regulamento)
 
 | Arquivo                                        | Finalidade                                                                                                                                                                                          |

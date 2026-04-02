@@ -1,0 +1,80 @@
+# Decision-maker value brief
+
+**Português (Brasil):** [DECISION_MAKER_VALUE_BRIEF.pt_BR.md](DECISION_MAKER_VALUE_BRIEF.pt_BR.md)
+
+This brief helps leadership, legal, compliance, and security teams evaluate Data Boar without overclaims.
+
+## Positioning in one sentence
+
+Data Boar is a configurable technical discovery and evidence-support platform that helps organizations locate and classify possible personal and sensitive data exposure across heterogeneous sources.
+
+## What it is and what it is not
+
+- **It is**
+  - A discovery and mapping engine for data inventory and remediation prioritization.
+  - A metadata-first reporting workflow (findings, norm tags, trend context) for governance.
+  - A bridge between IT operations and compliance/legal review processes.
+- **It is not**
+  - A legal decision engine or legal advice.
+  - A certification authority for ISO, SOC, or regulatory compliance.
+  - A replacement for DPO, counsel, or formal audit firms.
+
+## Shared responsibility model
+
+- **Data Boar**
+  - Runs configured scans against approved targets.
+  - Produces technical findings and operational evidence artifacts.
+  - Supports norm-aligned language via configuration profiles.
+- **Customer organization**
+  - Defines lawful scope, legal basis, and risk acceptance.
+  - Approves credentials, retention, and access governance.
+  - Interprets findings for legal/regulatory decisions.
+
+## Value by segment
+
+### SMB (lean IT)
+
+- Fast visibility into high-risk data exposure with controlled operational overhead.
+- Practical outputs for immediate remediation prioritization.
+- Suitable when teams need progress without full enterprise platforms.
+
+### Mid-market (growing governance pressure)
+
+- Repeatable scans and trend evidence for compliance and security coordination.
+- Structured bridge between IT teams and legal/compliance stakeholders.
+- Config-driven adaptation for multi-jurisdiction and policy growth.
+
+### Enterprise / public sector
+
+- Technical evidence support for broader governance and assurance programs.
+- Integration path with stricter operational controls and segmented environments.
+- Professional-services-friendly model for phased maturity programs.
+
+## Minimum procurement questions
+
+Before purchase, confirm:
+
+1. Which data domains and systems are in the first scan scope?
+2. Which audience consumes the first evidence package (IT, DPO, legal, board)?
+3. What timeline is expected for first actionable findings?
+4. Which controls remain outside tool scope and need parallel ownership?
+5. What success metric defines value in 30/60/90 days?
+
+## Evidence package expectations
+
+Typical outcomes include:
+
+- Source and pattern findings with sensitivity context.
+- Norm-tagged recommendation language suitable for triage.
+- Session-over-session trend visibility.
+- Operational trace artifacts for repeatability.
+
+These outcomes support governance and audit preparation; they do not, by themselves, prove legal compliance.
+
+## Related documentation
+
+- [COMPLIANCE_AND_LEGAL.md](COMPLIANCE_AND_LEGAL.md) ([pt-BR](COMPLIANCE_AND_LEGAL.pt_BR.md))
+- [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) ([pt-BR](COMPLIANCE_FRAMEWORKS.pt_BR.md))
+- [COMPLIANCE_TECHNICAL_REFERENCE.md](COMPLIANCE_TECHNICAL_REFERENCE.md) ([pt-BR](COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md))
+- [SECURITY.md](SECURITY.md) ([pt-BR](SECURITY.pt_BR.md))
+- [README.md](README.md) ([pt-BR](README.pt_BR.md))
