@@ -1,5 +1,5 @@
 #!/usr/bin/env pwsh
-# Build local lab image as data_boar:lab (mutable tag — overwrites each run).
+# Build local lab image as data_boar:lab (mutable tag  - overwrites each run).
 # Optionally preserves the previous lab digest as data_boar:lab-prev before rebuilding.
 # Optionally tags data_boar:smoke for A/B (Hub vs local, or two locals).
 #
@@ -9,7 +9,7 @@
 #   .\scripts\docker-lab-build.ps1 -TagSmoke   # copy lab -> smoke after build (A/B slot)
 #   .\scripts\docker-lab-build.ps1 -SkipLabPrev
 #
-# See: docs/DOCKER_SETUP.md §7, scripts/docker/README.md
+# See: docs/DOCKER_SETUP.md S.7, scripts/docker/README.md
 
 param(
     [switch]$NoCache = $false,
