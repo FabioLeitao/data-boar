@@ -1,6 +1,5 @@
 ---
-description: At natural breakpoints during coding, briefly remind the operator of the agreed study cadence (CWL + alternating AI + other)—without nagging or interrupting focus work.
-globs: ["**/*"]
+description: Study cadence reminders — operator calendar alignment vs deep code; surface nudge at natural stopping points.
 alwaysApply: true
 ---
 
@@ -37,3 +36,4 @@ Offer a **short** (2–5 lines) **optional pause / study nudge** in **pt-BR** if
 ## Coordination with execution priority
 
 Study reminders **do not** override **`.cursor/rules/execution-priority-and-pr-batching.mdc`**. They are a **human calendar** cue after **safe stopping points**, not a reason to abandon critical fixes.
+
