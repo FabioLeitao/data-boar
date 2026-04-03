@@ -1,0 +1,239 @@
+# Skill: candidate-ats-evaluation
+
+**Proposito:** Importar PDF de perfil LinkedIn/CV, extrair dados estruturados,
+gerar ou atualizar arquivo ATS individual, e (quando autenticado) visitar perfis ao vivo.
+
+**Quando usar:**
+- Um novo PDF de candidato foi adicionado em `docs/private/team_info/`
+- Operador quer importar ou atualizar ATS de um candidato especifico
+- Sessao tem autenticacao LinkedIn ativa no browser Cursor (aproveitamento maximo)
+- Exploracao de redes sociais complementares (X, GitHub, Gravatar, etc.)
+
+---
+
+## Wrapper CLI (USE PRIMEIRO - economiza tokens)
+
+```powershell
+# LISTA todos os candidatos
+.\scripts\talent.ps1 list
+
+# ESCANEIA PDFs novos
+.\scripts\talent.ps1 scan
+
+# IMPORTA PDF novo (aceita nome parcial - busca em docs/private/team_info/)
+.\scripts\talent.ps1 import "Ivan.pdf"
+.\scripts\talent.ps1 import "Linked in Profile - Pedro 2026.pdf"
+
+# ABRE ATS de um candidato no editor (aceita apelido do pool)
+.\scripts\talent.ps1 review ivan
+.\scripts\talent.ps1 review pedro
+.\scripts\talent.ps1 review andre_eudes
+
+# ABRE LinkedIn no browser
+.\scripts\talent.ps1 linkedin ivan
+.\scripts\talent.ps1 linkedin talita
+
+# BUSCA keyword em todos os ATS
+.\scripts\talent.ps1 search "LGPD"
+.\scripts\talent.ps1 search "CTO"
+.\scripts\talent.ps1 search "Open to Work"
+
+# EXTRAI JSON estruturado do PDF
+.\scripts\talent.ps1 extract "Ivan.pdf"
+```
+
+---
+
+## Workflow (siga nesta ordem)
+
+### Passo 1 — Deteccao de novos PDFs
+
+```powershell
+.\scripts\talent.ps1 scan
+```
+
+### Passo 2 — Extracao automatica (sem IA)
+
+```powershell
+# Para um PDF especifico:
+.\scripts\talent.ps1 import "Linked in Profile - <NOME>.pdf"
+
+# Para processar todos de uma vez (batch):
+Get-ChildItem "docs\private\team_info\" -Filter "*.pdf" | ForEach-Object {
+    uv run --with pypdf python scripts/extract_cv_pdf.py "$($_.FullName)" --json
+}
+```
+
+### Passo 3 — Verificar e enriquecer ATS (leve, sem browser)
+
+```powershell
+# Abrir o arquivo gerado no editor:
+.\scripts\talent.ps1 review <apelido>
+```
+
+### Passo 4 — Visitar LinkedIn ao vivo (requer autenticacao no browser Cursor)
+
+Quando o operador esta autenticado no LinkedIn pelo browser Cursor, usar o browser para:
+1. Navegar ao perfil: `browser_navigate(url: Candidates[$key].LinkedIn)`
+2. Extrair via snapshot acessibilidade:
+   - Headline atual, empresa atual, localizacao
+   - Open to Work (se ativo, buscar no snapshot por "Buscando emprego")
+   - Seguidores (buscar "seguidores" no snapshot)
+   - Posts/certificacoes recentes (secao "Atividades")
+   - Conexoes em comum
+3. Atualizar ATS individual com dados ao vivo
+
+**Dados chave a buscar no LinkedIn snapshot:**
+
+```
+- Headline: link com nome completo contem o headline
+- Open to Work: listitem com "Buscando emprego" + lista de cargos
+- Seguidores: "N.NNN seguidores"
+- Empresa: button com nome da empresa
+- Conexoes: "N conexoes" ou "Mais de 500 conexoes"
+- Conexoes em comum: "Nome, Nome e mais N conexoes em comum"
+- Posts recentes: listitems com data relativa (2 sem, 1 m, etc.)
+```
+
+### Passo 5 — Redes sociais complementares
+
+**LinkedIn:** Principal - coberto pelo workflow acima.
+
+**X/Twitter:** Buscar no ATS ou PDF por "@" handles. Visitar <https://x.com/HANDLE> se encontrado.
+
+**GitHub:** Para perfis tecnicos (SWE, DevOps), buscar por nome no GitHub:
+
+```
+https://github.com/<nome-normalizado>
+https://api.github.com/search/users?q=<nome>
+```
+
+**Gravatar:** Baseado no email extraido do PDF:
+
+```
+https://www.gravatar.com/<md5-do-email>
+```
+
+**YouTube:** Buscar por nome completo se o candidato cria conteudo.
+
+**Google Search rapido:**
+
+```
+"Nome Completo" site:linkedin.com OR site:github.com OR site:twitter.com
+```
+
+---
+
+## Estrutura de arquivos
+
+```
+docs/private/team_info/                              # PDFs fonte (gitignored)
+  Linked in Profile - <Nome> 2026.pdf
+
+docs/private/commercial/candidates/linkedin_peer_review/
+  POOL_INDEX.pt_BR.md                               # Indice central com emails e URLs
+  individual/
+    IVAN_FILHO_ATS.pt_BR.md                         # Por candidato
+    PEDRO_HERMINIO_ALTOE_ATS.pt_BR.md
+    ANDRE_EUDES_SANTOS_ATS.pt_BR.md
+    ...
+
+scripts/
+  talent.ps1                                        # WRAPPER CLI (use este!)
+  ats-candidate-import.ps1                          # Pipeline completo de importacao
+  extract_cv_pdf.py                                 # Extracao JSON do PDF
+```
+
+---
+
+## Template de campos obrigatorios (ATS individual)
+
+```markdown
+# <Nome Completo> - Avaliacao ATS/LinkedIn (ATUALIZADO <DATA>)
+
+**Nome completo:** ...
+**LinkedIn:** https://www.linkedin.com/in/...
+**Email:** ...@...
+**PDF fonte:** `Linked in Profile - <Nome> 2026.pdf`
+**Avaliado em:** YYYY-MM-DD
+
+## 1. Headline LinkedIn Atual
+## 2. Status Atual (empresa, localizacao, conexoes, Open to Work)
+## 3. Certificacoes/Experiencias
+## 4. Keywords ATS
+## 5. Score ATS (tabela)
+## 6. Recomendacoes Especificas (alta/media/baixa prioridade)
+## 7. Alinhamento com Data Boar
+## 8. Observacoes do Operador
+```
+
+---
+
+## Apelidos do Pool (para usar no wrapper)
+
+| Apelido | Nome Real |
+|---|---|
+| ivan | Ivan Filho |
+| pedro | Pedro Herminio Altoe |
+| andre_eudes | Andre Eudes S. dos Santos |
+| andre_lucas | Andre Lucas |
+| aca | Antonio Carlos Azevedo |
+| braga | Rodrigo Braga |
+| caterine | Caterine Pastorino |
+| clebinho | Cleber Rebelo |
+| ebo | Eliezio Oliveira |
+| ferrao | Felippe Ferrao |
+| freire | Rodrigo Freire |
+| freitas | Luis Freitas |
+| gondim | Ricardo Gondim |
+| irlan | Irlan Sales |
+| madruga | Marcelo Madruga |
+| marcos | Marcos Rocha |
+| marluce | Marluce Leitao |
+| murillo | Murillo Restier |
+| pim | Pim Waaijenberg |
+| rafael_gomez | Rafael Gomez |
+| rafael_silva | Rafael Silva |
+| ramon | Ramon Oliveira |
+| talita | Talita Moreira |
+| wagner | Wagner Silva |
+
+---
+
+## Guardrails
+
+- **Nunca commitar** dados de candidatos (gitignored em `docs/private/`)
+- **Nao criar arquivos** fora de `individual/` ou `POOL_INDEX.pt_BR.md`
+- **LinkedIn:** respeitar rate limits - nao visitar todos os 24 em sequencia rapida
+- **Emails:** validar antes de usar em campanhas (extraidos por regex, podem ter truncamentos)
+- **Score ATS:** sempre contextualizar - score e estimado, nao definitivo
+- **Open to Work:** dado senssivel - nao compartilhar sem consentimento do candidato
+
+---
+
+## Credenciais e Autenticacao
+
+**LinkedIn:** Autenticacao via browser Cursor (operador faz login, sessao persiste)
+
+**Bitwarden:** Para credenciais do UDM e outras - habilitar via:
+
+```powershell
+# Instalar Bitwarden CLI
+npm install -g @bitwarden/cli
+# Login
+bw login
+# Buscar secret
+bw get password "UDM auto.cursor"
+```
+
+**Arquivo .env para credenciais locais (gitignored):**
+
+```
+docs/private/homelab/.env.api.udm-se.local  # API key UDM (ja existe)
+docs/private/homelab/.env.udm.cursor        # senha auto.cursor (criar quando necessario)
+```
+
+---
+
+*Skill versao 2.0 - 2026-04-02 | Incorpora wrapper CLI, LinkedIn ao vivo, redes sociais e Bitwarden*
+
