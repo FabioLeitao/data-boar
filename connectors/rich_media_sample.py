@@ -20,6 +20,15 @@ from core.rich_media_magic import (
     VIDEO_EXTENSIONS,
 )
 
+# Register pillow-heif opener once at module load so PIL.Image.open() handles HEIC/HEIF
+# transparently.  Idempotent; safe to call multiple times.
+try:
+    import pillow_heif  # type: ignore[import-untyped]
+
+    pillow_heif.register_heif_opener()
+except ImportError:
+    pass
+
 
 def build_rich_media_text_sample(
     path: Path,
