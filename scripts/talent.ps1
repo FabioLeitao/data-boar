@@ -60,6 +60,8 @@ $Candidates = @{
     "rafael_silva" = @{ Name="Rafael Silva";              LinkedIn="https://www.linkedin.com/in/rafael-c-silva";                         File="RAFAEL_SILVA_ATS.pt_BR.md"            }
     "ramon"        = @{ Name="Ramon Oliveira";            LinkedIn="https://www.linkedin.com/in/ramon-oliveira-bb2317a3";                File="RAMON_OLIVEIRA_ATS.pt_BR.md"          }
     "talita"       = @{ Name="Talita Moreira";            LinkedIn="https://www.linkedin.com/in/talita-mmoreira";                        File="TALITA_MOREIRA_ATS.pt_BR.md"          }
+    "felipe"       = @{ Name="Felipe F. (planozero)";     LinkedIn="https://www.linkedin.com/in/felipe-f-7a270099";                      File="FELIPE_F_ATS.pt_BR.md"                }
+    "felipe"       = @{ Name="Felipe F. (planozero)";     LinkedIn="https://www.linkedin.com/in/felipe-f-7a270099";                      File="FELIPE_F_ATS.pt_BR.md"                }
     "wagner"       = @{ Name="Wagner Silva";              LinkedIn="https://www.linkedin.com/in/waferreira";                             File="WAGNER_SILVA_ATS.pt_BR.md"            }
 }
 
@@ -70,8 +72,8 @@ function Write-Err  { param([string]$M) Write-Host "[ERR] $M" -ForegroundColor R
 
 function Resolve-Candidate {
     param([string]$Input)
-    $key = $Input.ToLower() -replace "[áàâãä]","a" -replace "[éèêë]","e" -replace "[íìîï]","i" `
-        -replace "[óòôõö]","o" -replace "[úùûü]","u" -replace "[ç]","c" -replace "\s+","_"
+    $key = $Input.ToLower() -replace "[aaaaä]","a" -replace "[eèeë]","e" -replace "[iìîï]","i" `
+        -replace "[ooooö]","o" -replace "[uùûu]","u" -replace "[c]","c" -replace "\s+","_"
     if ($Candidates.ContainsKey($key)) { return $key }
     $ms = $Candidates.Keys | Where-Object { $_ -like "*$key*" }
     if ($ms.Count -eq 1) { return $ms[0] }
@@ -226,3 +228,4 @@ switch ($Action) {
         }
     }
 }
+
