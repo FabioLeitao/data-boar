@@ -76,10 +76,10 @@ The assistant **does not** have a separate network connection to your house. It 
 
 ## Default expectation (this repo / this operator):
 
-1. **Document a `Host` alias** under **`docs/private/homelab/`** (see **[private.example/homelab/README.md](private.example/homelab/README.md)**) — e.g. `Host latitude-lab` with `HostName`, `User`, `IdentityFile` / agent — **gitignored**, never committed.
-1. When you ask the assistant to **list files, pull reports, check Docker, or run diagnostics** on that machine, it should use commands like **`ssh latitude-lab '…'`** (or non-interactive flags you prefer) **from the project terminal**, not assume files appear magically in the workspace.
+1. **Document a `Host` alias** under **`docs/private/homelab/`** (see **[private.example/homelab/README.md](private.example/homelab/README.md)**) — e.g. `Host latitude` with `HostName` (DNS name or LAN IP), `User`, `IdentityFile` / agent — **gitignored**, never committed.
+1. When you ask the assistant to **list files, pull reports, check Docker, or run diagnostics** on that machine, it should use commands like **`ssh latitude '…'`** (or non-interactive flags you prefer) **from the project terminal**, not assume files appear magically in the workspace.
 1. **You** must have **LAN or VPN reachability** from the dev PC to the homelab; **key-based auth** is strongly preferred so sessions are non-interactive where possible.
-1. If a command fails with “connection refused” / “timed out” / “Permission denied”, fix **network, `sshd`, user, keys** on your side — the assistant can only suggest checks (`ssh -G latitude-lab`, `ping`, etc.).
+1. If a command fails with “connection refused” / “timed out” / “Permission denied”, fix **network, `sshd`, user, keys** on your side — the assistant can only suggest checks (`ssh -G latitude`, `ping`, etc.).
 
 This replaces any older wording that implied “the model cannot touch the lab” without also saying **“use SSH from the dev terminal.”**
 

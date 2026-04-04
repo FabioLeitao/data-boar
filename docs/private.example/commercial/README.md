@@ -8,7 +8,7 @@ Create **`docs/private/commercial/`** locally (same **`docs/private/`** tree as 
 
 - Maturity / readiness **consulting pricing** study (EN + pt-BR pair).
 - Partner margin notes, proposal templates with **numbers** (redact before any copy to tracked files).
-- **Talent candidates** (dossiers, per-person learning roadmaps): see **`candidates/README.md`** in this folder for layout; public **archetype** guide: **`docs/TALENT_POOL_LEARNING_PATHS.md`**.
+- **Talent candidates** (dossiers, per-person learning roadmaps): see **`candidates/README.md`** in this folder for layout; public **archetype** guide: **`docs/TALENT_POOL_LEARNING_PATHS.md`**. **LinkedIn / ATS private supplement** (headline, About, featured — copy to `docs/private/commercial/`): **`LINKEDIN_ATS_PRIVATE_SUPPLEMENT_TEMPLATE.pt_BR.md`**. Operator runbooks: **`docs/ops/TALENT_DOSSIER_AND_POOL_SYNC.md`**, **`docs/ops/LINKEDIN_ATS_PLAYBOOK.md`**.
 
 ## Bootstrap (PowerShell, repo root)
 

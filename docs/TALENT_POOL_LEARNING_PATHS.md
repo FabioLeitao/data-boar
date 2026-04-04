@@ -104,6 +104,8 @@ Use this checklist to improve discoverability without leaking private customer d
 - Avoid overclaims (no "certifies compliance" language; use "supports evidence and remediation").
 - Link only public artifacts (docs, release notes, PRs, talks) and keep customer identifiers private.
 
+**Full playbook** (sections, ATS export, SSI context, archetype keyword seeds): **[`docs/ops/LINKEDIN_ATS_PLAYBOOK.md`](ops/LINKEDIN_ATS_PLAYBOOK.md)** ([pt-BR](ops/LINKEDIN_ATS_PLAYBOOK.pt_BR.md)).
+
 ---
 
 ## Revision
@@ -112,3 +114,4 @@ Use this checklist to improve discoverability without leaking private customer d
 | ---------- | ----                                                   |
 | 2026-03-27 | Initial archetype roadmaps + private template pointer. |
 | 2026-04-01 | Added LinkedIn/ATS narrative checklist for public profiles. |
+| 2026-04-02 | Linked to full **`LINKEDIN_ATS_PLAYBOOK`** in `docs/ops/`. |
