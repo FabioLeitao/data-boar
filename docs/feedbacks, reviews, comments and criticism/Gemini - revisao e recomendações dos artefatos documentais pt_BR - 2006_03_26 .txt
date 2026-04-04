@@ -1,0 +1,33 @@
+Recebi o ficheiro concatenado em pt-BR (sobre-data-boar-pt_BR.bin) e realizei a leitura técnica comparando-o com os artefatos de infraestrutura e a lógica do motor (v1.6.7) que analisámos anteriormente.
+Conforme o teu protocolo, aqui está a revisão focada em eliminar o "drift" para o português de Portugal e garantir a clareza para o operador brasileiro.
+Resumo executivo (5 bullets máx.)
+ * Presença de PT-PT: O texto apresenta diversas construções gramaticais e léxico típicos de Portugal (clíticos, infinitivo flexionado e termos como "vê", "pede", "enviares").
+ * Inconsistência de Tratamento: Mistura de "você" (implícito) com a segunda pessoa do singular ("teu", "vê", "enviares"), o que soa informal ou estrangeiro em documentação técnica no Brasil.
+ * Risco de Ambiguidade em Compliance: O termo "aconselhamento" é usado onde o mercado brasileiro de privacidade utiliza "parecer" ou "consultoria".
+ * Terminologia Técnica: Nomes de arquivos e flags estão preservados, mas as instruções de ação (verbos) precisam de tropicalização.
+P0 — Erro que pode induzir operação errada ou mal-entendido grave
+ * Seção 1 (O que é o Data Boar) → "não substitui parecer jurídico para o teu estudo" → Correção: "não substitui parecer jurídico para seu estudo ou projeto". O uso de "teu" pode descaracterizar a seriedade da advertência legal em ambientes corporativos brasileiros.
+ * Seção "Verdade das versões" → "vê docs/releases/1.6.7.md" → Correção: "consulte docs/releases/1.6.7.md". No Brasil, o imperativo "vê" é informal; "consulte" ou "veja" é o padrão para instrução de sistema.
+P1 — Friction alta ou inconsistência interna no pt-BR
+ * Bloco de contexto complementar → "guia académico" / "ping Slack ao operador" → Correção: "guia acadêmico" (acentuação BR) / "alerta de Slack" ou "notificação". No Brasil, "ping" é quase exclusivamente o comando de rede ICMP; para notificações de app, usa-se "alerta" ou "aviso".
+ * Geral → "enviares após um merge novo" → Correção: "enviar após um novo merge". O infinitivo flexionado ("enviares") é o marcador mais forte de PT-PT e causa estranheza imediata ao desenvolvedor brasileiro.
+P2 — Polish (opcional)
+ * Seção 1 → "estudantes, orientadores e bancas" → Correção: "estudantes, orientadores e comissões examinadoras" (embora 'banca' seja aceito, o termo formal em teses é comissão).
+ * Rodapé → "Pede à Corporate-Entity-C" → Correção: "Solicite à Corporate-Entity-C".
+Lista pt-PT / não-brasileiro (tabela curta)
+| Trecho ou expressão | Por quê é problema | Sugestão pt-BR |
+|---|---|---|
+| "vê" / "vêem" | Imperativo informal/PT-PT | Consulte / Veja |
+| "enviares" | Infinitivo flexionado (inexistente no uso técnico BR) | enviar |
+| "académico" | Grafia com 'o' aberto (PT-PT) | acadêmico |
+| "o teu estudo" | Uso de possessivo + artigo (comum em PT-PT) | seu estudo |
+| "se enviares" | Futuro do conjuntivo com desinência 'es' | se você enviar / caso envie |
+Glossário mini
+ * Ponteiros → Links ou Referências (No Brasil, 'ponteiro' é estritamente pointer de memória/C++).
+ * Guarda commercial → Proteção comercial ou Filtro comercial.
+ * Parecer jurídico → (Manter assim, excelente escolha para traduzir legal advice no contexto de compliance).
+“Precisa olhar o par EN”
+ * SUSPEITA_PARIDADE_BAIXA: O trecho "sem misturar segredos de produto" parece uma tradução livre de trade secrets. Se no EN estiver IP/Trade Secrets, no BR seria melhor "propriedade intelectual".
+ * SUSPEITA_PARIDADE_BAIXA: O termo "Corporate-Entity-C" aparece como um agente/entidade. Confirmar se no EN ele é tratado como uma IA, um bot ou uma pessoa, pois no PT-BR a concordância ("Pede à...") assume uma entidade feminina ou pessoa.
+Conclusão da Revisão: O conteúdo técnico está correto e reflete a v1.6.7, mas a "roupagem" linguística está 70% PT-PT. Para um projeto que visa conformidade com a LGPD (lei brasileira), é fundamental que a documentação use o padrão pt-BR para transmitir autoridade e confiança ao DPO/Auditor brasileiro.
+Desejas que eu gere uma versão "limpa" de um desses blocos específicos (ex: o sobre-data-boar.pt_BR.md) já com estas correções aplicadas?

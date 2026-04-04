@@ -1,0 +1,216 @@
+--- Page 1 ---
+Commits no período
+61
+Resumo git
+139 files changed, 7120
+insertions(+), 1188
+deletions(-)
+Eixo dominante
+Core + Connectors +
+Testes + Compliance
+Docs
+Veredito WABIX
+9.1 / 10
+Evolução forte e
+consistente.
+1) Síntese executiva
+Houve avanço relevante do repositório em engenharia de detecção, conectores e
+testes.
+As releases 1.6.0 e 1.6.1 consolidam uma cadência de entrega com melhoria contínua.
+Compliance e documentação foram expandidos, com cobertura regional e material
+operacional para auditoria.
+A base está mais madura, mas ainda com oportunidade de desacoplamento de regras
+centrais e formalização de KPIs.
+2) Distribuição do esforço
+Diretório Arquivos +Linhas -Linhas Total
+docs 39 1703 312 2015
+tests 39 1673 229 1902
+core 16 1250 181 1431
+connectors 13 900 160 1060
+(root) 9 601 102 703
+report 2 354 115 469
+api 5 232 35 267
+config 3 204 41 245
+scripts 6 92 3 95
+.cursor 2 92 0 92
+Análise Profunda Atualizada — data-boar
+(Leitão)
+Repo: FabioLeitao/data-boar • Comparação: ddba94f → 4a6377c • Gerado em 2026-03-
+18 08:36
+18/03/2026, 08:36 Análise Evolutiva — data-boar
+ﬁle:///Users/felippeColleague-C/OPEN/.openclaw/workspace/exports/reports/analise_evolucao_data_boar_2026-03-18.html 1/4
+
+--- Page 2 ---
+database 2 14 6 20
+deploy 2 4 4 8
+3) Arquivos de maior impacto
+Arquivo +Linhas -Linhas Total
+report/generator.py 353 115 468
+uv.lock 413 40 453
+core/detector.py 325 69 394
+docs/compliance-samples/compliance-sample-lgpd.yaml 342 44 386
+connectors/filesystem_connector.py 336 45 381
+core/archives.py 303 0 303
+core/database.py 188 51 239
+tests/test_aggregated_identification.py 195 33 228
+config/loader.py 168 39 207
+api/routes.py 160 31 191
+tests/test_database.py 144 43 187
+docs/plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md 184 0 184
+docs/plans/PLANS_TODO.md 136 43 179
+tests/test_filesystem_scan_compressed_wiring.py 169 0 169
+tests/test_file_scan_use_content_type_flag.py 152 0 152
+4) Comparativo: já resolveu vs precisa resolver
+✅  Resolvido
+Tema Status Evidência
+Detecção por tipo de conteúdo
+(PDF/content-type)
+ResolvidoImplementada e documentada; melhora cobertura em casos de
+extensão enganosa.
+Fortalecimento de documentação de
+compliance
+ResolvidoAtualizações em frameworks (incluindo ISO/IEC 27701) e guias
+EN/PT-BR.
+Governança de release ResolvidoReleases 1.6.0 e 1.6.1 com versionamento, notas e ajustes de
+qualidade.
+18/03/2026, 08:36 Análise Evolutiva — data-boar
+ﬁle:///Users/felippeColleague-C/OPEN/.openclaw/workspace/exports/reports/analise_evolucao_data_boar_2026-03-18.html 2/4
+
+--- Page 3 ---
+⚠  Pendências / próximos passos
+Tema Status Gap atual
+Métricas operacionais/KPIs de releasePendente Ainda sem painel objetivo consolidado para lead time, falhas CI
+e rollback.
+Arquitetura do núcleo de regras
+(desacoplamento)
+Parcial Core evoluiu bastante, mas ainda concentra lógica extensa em
+módulos críticos (ex.: detector/gerador).
+Fechamento de itens de segurança
+contínua (vuln triage)
+Em
+progresso
+Planos citam Dependabot/Scout e triagem contínua, mas
+requer rotina formalizada de execução.
+5) Commits-chave
+Data Hash Autor Resumo
+2026-
+03-18
+4a6377cFabio
+Tavares
+Leitão
+Merge pull request #56 from FabioLeitao/docs-detect-host-64903
+2026-
+03-18
+8ec5aacFabioLeitaoAdd section 9 to PLAN_SELF_UPGRADE_AND_VERSION_CHECK.md detailing
+optional delivery via .deb packages and apt repository. Update PLANS_TODO.md to
+reflect this addition and clarify the complexity and gain associated with the
+implementation of this phase.
+2026-
+03-18
+9b8d454Fabio
+Tavares
+Leitão
+Merge pull request #55 from FabioLeitao/docs-detect-host-64903
+2026-
+03-18
+e7d102aFabioLeitaoUpdate PLANS_TODO.md to prioritize security and maintenance tasks, including
+Dependabot alerts and Docker Hub Scout for image CVEs. Marked completion of
+compliance standards alignment and CNPJ validation phases. Added detailed steps
+for upcoming security reviews and feature work.
+2026-
+03-18
+1c3927eFabio
+Tavares
+Leitão
+Merge pull request #54 from FabioLeitao/docs-detect-host-64903
+2026-
+03-18
+7956c3bFabioLeitaochore: update uv.lock version to 1.6.1
+2026-
+03-18
+18018cfFabioLeitaoRelease 1.6.1: version bump, release notes, docs and Ruff format
+2026-
+03-18
+c72079eFabioLeitaoUpdate plans documentation to enhance clarity and organization. Added sections for
+framing, objectives, and artifacts in various plans, ensuring consistent formatting.
+Updated the status of the CNPJ alphanumeric format validation plan to reflect
+completed phases and improved the exclusion criteria in markdown linting tests.
+2026-
+03-18
+8df351eFabio
+Tavares
+Leitão
+Merge pull request #53 from FabioLeitao/docs-detect-host-64903
+2026-
+03-18
+922d1baFabioLeitaoAdd candidate titles and abstracts for thesis plan; update .gitignore for private
+artifacts
+2026-
+03-17
+dc2947fFabioLeitaoUpdate PLANS_TODO.md to reflect completion of the magic-byte table and content
+type inference task. Marked the task as done, indicating progress in the
+documentation of supported formats.
+18/03/2026, 08:36 Análise Evolutiva — data-boar
+ﬁle:///Users/felippeColleague-C/OPEN/.openclaw/workspace/exports/reports/analise_evolucao_data_boar_2026-03-18.html 3/4
+
+--- Page 4 ---
+2026-
+03-17
+d5e82c2FabioLeitaoUpdate compliance documentation to reflect ISO/IEC 27701 standards. Adjusted
+references in COMPLIANCE_FRAMEWORKS.md and its Portuguese version,
+ensuring consistency in terminology. Enhanced README.md to clarify the
+application's role in supporting compliance and audit preparation. Updated
+PLANS_TODO.md to track documentation tasks related to compliance standards
+alignment.
+2026-
+03-17
+8abda0fFabio
+Tavares
+Leitão
+Merge pull request #52 from FabioLeitao/docs-detect-host-64903
+2026-
+03-17
+5956177FabioLeitaoUpdate CNPJ documentation to clarify legacy and alphanumeric formats, including
+details on new regulations and opt-in detection. Adjust status of CNPJ alphanumeric
+format validation plan to in progress.
+2026-
+03-17
+f3692f1FabioLeitaoUpdate compliance documentation to reflect ISO/IEC 27701 standards. Adjusted
+references in COMPLIANCE_FRAMEWORKS.md and its Portuguese version,
+ensuring consistency in terminology. Enhanced README.md to clarify the
+application's role in supporting compliance and audit preparation. Updated
+PLANS_TODO.md to track documentation tasks related to compliance standards
+alignment.
+2026-
+03-17
+a516da0FabioLeitaoDocument compliance standards alignment for ISO 27701, SOC 2, and FELCA in
+COMPLIANCE_FRAMEWORKS.md and its Portuguese counterpart. Added details
+on the application's role in supporting audit preparation and accountability through
+data discovery and mapping. Updated README.md to reflect these changes and
+enhance the compliance narrative. Updated PLANS_TODO.md to track the
+completion of documentation tasks related to compliance standards.
+2026-
+03-17
+668b71cFabioLeitaoEnhance README documentation by adding details on shadow IT risks and the
+importance of uncovering hidden data sources. Updated sections on data ingestion
+capabilities and compliance support, including new content-type detection features
+and roadmap items for future improvements.
+2026-
+03-17
+23244afFabioLeitaoRefine API host resolution and update documentation for safer defaults
+2026-
+03-17
+b0b30bfFabioLeitaoUpdate API host resolution in main.py for improved flexibility
+2026-
+03-17
+b7205c0Fabio
+Tavares
+Leitão
+Merge pull request #51 from FabioLeitao/code-format-64903
+6) Recomendação executiva WABIX
+1. Adicionar painel de KPIs de release e segurança operacional.
+2. Criar bateria de testes de contrato para saída de relatórios e APIs críticas.
+3. Desacoplar regras centrais em módulos de domínio para reduzir risco de regressão.
+4. Manter disciplina de release com snapshot de documentação por versão.
+18/03/2026, 08:36 Análise Evolutiva — data-boar
+ﬁle:///Users/felippeColleague-C/OPEN/.openclaw/workspace/exports/reports/analise_evolucao_data_boar_2026-03-18.html 4/4
