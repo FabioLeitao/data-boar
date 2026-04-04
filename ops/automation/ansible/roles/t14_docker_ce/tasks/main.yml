@@ -34,7 +34,7 @@
         filename: docker
         state: present
 
-    - name: Install docker-ce
+    - name: Install docker-ce base
       ansible.builtin.apt:
         name:
           - docker-ce
@@ -42,6 +42,14 @@
           - containerd.io
         state: present
         update_cache: true
+
+    - name: Install docker-compose-plugin and buildx (opt-in)
+      when: lab-node-01_docker_install_compose_plugin | bool
+      ansible.builtin.apt:
+        name:
+          - docker-compose-plugin
+          - docker-buildx-plugin
+        state: present
 
     - name: Optionally write daemon.json (minimal baseline)
       when: lab-node-01_docker_manage_daemon_json | bool

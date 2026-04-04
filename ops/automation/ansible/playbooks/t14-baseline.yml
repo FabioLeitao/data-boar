@@ -7,11 +7,38 @@
     # The playbook stays safe-default: do not change remote access posture unless you opt-in.
     host_profile: lab_op_fixed
 
-    # Opt-in knobs
-    harden_ssh: false
-    install_docker_ce: false
+    # --- Opt-in knobs (containers) ---
+    # Docker CE (from official Docker repo) with Compose plugin
+    lab-node-01_install_docker_ce: false
+    lab-node-01_docker_install_compose_plugin: true
+    # Initialize Docker Swarm (single-node manager) after install
+    lab-node-01_docker_swarm_init: false
+    # Podman (rootless containers, OCI-compatible)
+    lab-node-01_install_podman: false
+    # k3s (lightweight Kubernetes — installs from get.k3s.io; opt-in deliberately)
+    lab-node-01_install_k3s: false
+
+    # --- Opt-in knobs (observability) ---
+    # Install CLI tools (iotop, iftop, ctop, munin-node, monit, node_exporter) — safe default: true
+    lab-node-01_obs_install_cli_tools: true
+    lab-node-01_obs_install_ctop: true
+    # Syslog forwarding to central server (set IP in group_vars/host_vars, never committed)
+    lab-node-01_obs_syslog_forward_enabled: false
+    lab-node-01_obs_syslog_server_ip: ""
+    # Munin node (expose to Munin master)
+    lab-node-01_obs_munin_node_enabled: true
+    lab-node-01_obs_munin_allowed_ips: []
+    # Monit (local process supervision)
+    lab-node-01_obs_monit_enabled: true
+    lab-node-01_obs_monit_web_enabled: false
+    # Prometheus node_exporter
+    lab-node-01_obs_node_exporter_enabled: true
+    # Wazuh SIEM agent (requires manager IP; off by default until lab is ready)
+    lab-node-01_obs_wazuh_agent_enabled: false
+    lab-node-01_obs_wazuh_manager_ip: ""
 
   roles:
+    # --- System baseline ---
     - role: lab-node-01_baseline_packages
     - role: lab-node-01_banners
     - role: lab-node-01_editor_defaults
@@ -29,4 +56,9 @@
     - role: lab-node-01_auditd
     - role: lab-node-01_zram
     - role: lab-node-01_ssh_hardening
+    # --- Containers (opt-in) ---
     - role: lab-node-01_docker_ce
+    - role: lab-node-01_podman
+    - role: lab-node-01_k3s
+    # --- Observability (progressive opt-in) ---
+    - role: lab-node-01_observability

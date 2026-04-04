@@ -1,0 +1,9 @@
+---
+lab-node-01_install_podman: false
+
+# Install podman-compose for docker-compose.yml compatibility.
+lab-node-01_podman_install_compose: true
+
+# Add optional docker CLI alias (alias docker=podman) to /etc/profile.d/.
+# Disabled by default — edge cases exist; enable consciously.
+lab-node-01_podman_docker_alias: false
