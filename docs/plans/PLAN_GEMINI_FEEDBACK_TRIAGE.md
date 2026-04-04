@@ -72,7 +72,7 @@ Answer **all** that apply for each candidate item:
 
 ## 6. Triage rows — Gemini bundle **2026-03-26** (from local WRB folder)
 
-**Instructions:** These rows **summarize** the four Gemini text files in `docs/feedbacks, reviews, comments and criticism/`. They are **not** approved work — decide per §3 before any PR. Update the **Status** column as you dismiss, verify, or promote.
+**Instructions:** These rows **summarize** the four Gemini text files in `docs/feedbacks, reviews, comments and criticism/` (historical split: EN+infra, pt-BR, YAML samples, deep pass). New runs can use **one** consolidated prompt — see **[GEMINI_PUBLIC_BUNDLE_REVIEW.md](../ops/GEMINI_PUBLIC_BUNDLE_REVIEW.md)** § *Suggested Gemini prompt* ([pt-BR](../ops/GEMINI_PUBLIC_BUNDLE_REVIEW.pt_BR.md)). Rows are **not** approved work — decide per §3 before any PR. Update the **Status** column as you dismiss, verify, or promote.
 
 ### 6.1 Document + infra bundle (EN + configs)
 
