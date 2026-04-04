@@ -1,4 +1,4 @@
-﻿#Requires -Version 5.1
+#Requires -Version 5.1
 <#
 .SYNOPSIS
     Aguas de Niteroi -- coleta READ-ONLY de consumo e faturas.
