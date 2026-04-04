@@ -1,7 +1,7 @@
 {
   "hosts": [
     {
-      "sshHost": "lab-node-02-lab",
+      "sshHost": "lab-node-02",
       "repoPaths": [
         "/home/REPLACE_USER/projects/python3-lgpd-crawler"
       ]
