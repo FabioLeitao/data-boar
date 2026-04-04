@@ -270,6 +270,72 @@ domains are still scannable; decrypted values are out of scope.
 | **PST/OST** | `.pst`, `.ost` | Outlook desktop | Email, contacts, calendar | HIGH — `libpff` |
 | **Windows Event Log** | `.evtx` | Windows system | Usernames, IPs, login events | HIGH — `python-evtx` |
 
+### 5E. Firefox and Safari derivative browsers + Linux browser landscape
+
+All modern browsers fall into two storage families. Data Boar's `scan_sqlite_as_db: true`
+already covers **both families** for any profile directory the operator points the scan at.
+The remaining gap is **profile path discovery** (knowing WHERE to look).
+
+#### Chromium-family (same SQLite schema as Chrome)
+
+| Browser | Platform | Profile path (typical) |
+|---|---|---|
+| **Google Chrome** | Win/Mac/Linux | `%LOCALAPPDATA%\Google\Chrome\User Data\Default\` / `~/Library/Application Support/Google/Chrome/Default/` |
+| **Brave** | Win/Mac/Linux | `%LOCALAPPDATA%\BraveSoftware\Brave-Browser\User Data\Default\` |
+| **Microsoft Edge** | Win/Mac | `%LOCALAPPDATA%\Microsoft\Edge\User Data\Default\` |
+| **Vivaldi** | Win/Mac/Linux | `%LOCALAPPDATA%\Vivaldi\User Data\Default\` |
+| **Opera / Opera GX** | Win/Mac | `%APPDATA%\Opera Software\Opera Stable\` |
+| **Chromium** | Linux | `~/.config/chromium/Default/` |
+| **Falkon** | Linux | `~/.config/falkon/profiles/` (uses QtWebEngine/Chromium) |
+| **qutebrowser** | Linux | `~/.local/share/qutebrowser/history.sqlite` (own schema; standard SQLite) |
+
+**Key files** (same across all Chromium browsers): `History`, `Cookies`, `Web Data`, `Login Data`
+(bare filenames — require `use_content_type: true` for magic-byte routing per ADR 0013).
+
+#### Firefox-family (places.sqlite + cookies.sqlite schema)
+
+| Browser | Platform | Profile path (typical) |
+|---|---|---|
+| **Firefox** | Win/Mac/Linux | `%APPDATA%\Mozilla\Firefox\Profiles\<hash>.default\` / `~/.mozilla/firefox/<hash>.default/` |
+| **LibreWolf** | Win/Mac/Linux | Same structure as Firefox (direct fork) |
+| **Waterfox** | Win/Mac/Linux | `%APPDATA%\Waterfox\Profiles\` |
+| **Pale Moon** | Win/Linux | `%APPDATA%\Moonchild Productions\Pale Moon\Profiles\` |
+| **GNU IceCat** | Linux | `~/.mozilla/icecat/<hash>.default/` |
+| **Floorp** | Win/Mac/Linux | Same structure as Firefox (Japanese fork) |
+| **Basilisk** | Win/Linux | Same structure as Pale Moon |
+
+**Key files**: `places.sqlite` (history + bookmarks), `cookies.sqlite`, `formhistory.sqlite`,
+`logins.json` (passwords - JSON, not SQLite, and encrypted with key4.db).
+
+#### WebKit/Safari-family
+
+| Browser | Platform | Notes |
+|---|---|---|
+| **Safari** | macOS/iOS | `~/Library/Safari/History.db` (SQLite); Bookmarks.plist (binary plist) |
+| **GNOME Web (Epiphany)** | Linux | `~/.local/share/epiphany/` — SQLite for history; WebKit-based |
+| **Midori** | Linux | WebKit-based; SQLite history at `~/.config/midori/history.db` |
+| **Konqueror** | Linux | KHTML/WebKit; bookmark file is XML (`.xbel`); limited persistent storage |
+
+**Note:** Safari's `History.db` is standard SQLite and already scannable. Bookmarks in
+`.plist` format are covered by the Tier 5 plist to-do (#14).
+
+#### Profile path discovery (future feature)
+
+Rather than hardcoding browser paths, a `scan_browser_profiles: true` flag could
+auto-detect known browser profile directories on the current OS and add them to the scan
+queue. This is a **Tier 5 product feature**, not a format addition — the SQLite/plist
+extractors already exist. Implementation: enumerate known paths, filter for existing
+directories, append to `paths` before scan.
+
+#### Summary for Data Boar
+
+- **Already works (zero code needed):** Any browser SQLite file that the operator puts in
+  the scan path IS scanned when `scan_sqlite_as_db: true`. Column names (host_key, name,
+  url, title, ...) are already sensitivity-detected.
+- **Use `use_content_type: true`** for extensionless Chrome/Edge/Brave files (bare `History`, `Cookies`, etc.).
+- **Need code:** Profile path auto-discovery (`scan_browser_profiles`), LevelDB opt-in, logins.json (Firefox) parser.
+- **New formats not yet in plan:** `.eml`/`.emlx` (single emails), Jupyter `.ipynb`, MHTML, NDJSON/JSONL — added as to-dos 19-22.
+
 ### 5D. Implementation priority
 
 1. **HAR (`.har`)** — lowest effort, highest sensitivity, common in QA/dev workflows.
@@ -301,6 +367,11 @@ domains are still scannable; decrypted values are out of scope.
 | 15  | **Tier 5 - mbox (.mbox):** Streaming/chunked; header-only first; body sampling with size budget. | ⬜ |
 | 16  | **Tier 5 - Browser artifact USAGE docs:** Chrome/Firefox SQLite via scan_sqlite_as_db; locked file guidance; ADR 0013. | ⬜ |
 | 17  | **Tier 5 - LevelDB (opt-in):** scan_leveldb: true; [browserartifacts] extra; plyvel; Chrome localStorage/IndexedDB. | ⬜ |
+| 18  | **Tier 5 - Firefox/Safari derivatives and Linux browsers:** Profile path discovery + browser-family mapping (see §5E). | ⬜ |
+| 19  | **Tier 5 - .eml / .emlx (single email files):** RFC 2822 parser; headers + body sampling; simpler than mbox. | ⬜ |
+| 20  | **Tier 5 - Jupyter NotColleague-Soks (.ipynb):** Parse JSON; extract cell outputs (DataFrames with PII); very common in data science. | ⬜ |
+| 21  | **Tier 5 - MHTML (.mhtml, .mht):** Saved web pages; MIME multipart; headers reveal origin domain + embedded PII. | ⬜ |
+| 22  | **Tier 5 - NDJSON/JSONL (.ndjson, .jsonl):** Newline-delimited JSON (logging, Kafka exports, AI datasets); stream-sample first N lines. | ⬜ |
 **Sync:** When a step is done, update this table and [PLANS_TODO.md](PLANS_TODO.md). This plan remains a **backlog/catalogue** until we prioritise a specific phase.
 
 ---
@@ -318,4 +389,4 @@ domains are still scannable; decrypted values are out of scope.
 
 ## Last updated
 
-Plan created. Updated with default vs opt-in section, ORC/Feather in Tier 1, corporate relevance column, pyarrow dependency note, and stego opt-in (CLI + web). **2026-03:** Rich media Tier 3 (metadata OCR, subtitles, magic bytes with `use_content_type`) implemented in code; stego remains explicitly future opt-in. **2026-03-25:** Added **Tier 3b** (optional embedded tracker / tracking-pixel-style heuristics for rich media; Security Now–inspired backlog; opt-in CLI/dashboard; report + log warnings; future licensing note). **2026-03-25:** Added **Tier 4** taxonomy (document-layer hidden ingredients, Unicode cloaking, embedded objects, encoded graphics) and reporting design notes. **2026-04-03:** Added **Tier 5** browser/device artifact section: Chrome/Firefox SQLite databases already reachable via scan_sqlite_as_db (ADR 0013 for WAL lock + encrypted values + extension-less routing); HAR, LevelDB, vCard, iCalendar, plist, mbox as new candidates; to-dos 12-17 added.
+Plan created. Updated with default vs opt-in section, ORC/Feather in Tier 1, corporate relevance column, pyarrow dependency note, and stego opt-in (CLI + web). **2026-03:** Rich media Tier 3 (metadata OCR, subtitles, magic bytes with `use_content_type`) implemented in code; stego remains explicitly future opt-in. **2026-03-25:** Added **Tier 3b** (optional embedded tracker / tracking-pixel-style heuristics for rich media; Security Now–inspired backlog; opt-in CLI/dashboard; report + log warnings; future licensing note). **2026-03-25:** Added **Tier 4** taxonomy (document-layer hidden ingredients, Unicode cloaking, embedded objects, encoded graphics) and reporting design notes. **2026-04-03:** Added **Tier 5** browser/device artifact section: Chrome/Firefox SQLite databases already reachable via scan_sqlite_as_db (ADR 0013 for WAL lock + encrypted values + extension-less routing); HAR, LevelDB, vCard, iCalendar, plist, mbox as new candidates; to-dos 12-17 added. **2026-04-04:** Added §5E (Firefox/Safari derivative browsers + Linux browser landscape); added to-dos 18-22 for .eml/.emlx, Jupyter notColleague-Soks (.ipynb), MHTML, and NDJSON/JSONL.
