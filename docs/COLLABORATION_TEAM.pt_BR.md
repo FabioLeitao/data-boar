@@ -4,7 +4,7 @@
 
 Este guia resume **como trabalhar em conjunto** (ex.: **Fabio** como mantenedor e **Ivan** como colaborador) com **coesão**: fluxo Git, identidade nos commits, limites do assistente no Cursor e **o que configurar** no repositório (rules, `AGENTS.md`, hábitos).
 
-**Relacionado:** [CONTRIBUTING.pt_BR.md](../CONTRIBUTING.pt_BR.md), [docs/ops/COMMIT_AND_PR.pt_BR.md](ops/COMMIT_AND_PR.pt_BR.md), [AGENTS.md](../AGENTS.md), [README.pt_BR.md](README.pt_BR.md) (**Interno e referência** → **TOKEN_AWARE_USAGE** em `docs/plans/`), [TALENT_POOL_LEARNING_PATHS.pt_BR.md](TALENT_POOL_LEARNING_PATHS.pt_BR.md) (certificações/cursos opcionais por **arquétipo** — sem dados pessoais). Regra Cursor: **`.cursor/rules/collaboration-maintainer-contributor.mdc`**.
+**Relacionado:** [CONTRIBUTING.pt_BR.md](../CONTRIBUTING.pt_BR.md), [docs/ops/COMMIT_AND_PR.pt_BR.md](ops/COMMIT_AND_PR.pt_BR.md), [AGENTS.md](../AGENTS.md), [README.pt_BR.md](README.pt_BR.md) (**Interno e referência** → **TOKEN_AWARE_USAGE** em `docs/plans/`), [TALENT_POOL_LEARNING_PATHS.pt_BR.md](TALENT_POOL_LEARNING_PATHS.pt_BR.md) (certificações/cursos opcionais por **arquétipo** — sem dados pessoais), [docs/ops/TALENT_DOSSIER_AND_POOL_SYNC.pt_BR.md](ops/TALENT_DOSSIER_AND_POOL_SYNC.pt_BR.md), [docs/ops/LINKEDIN_ATS_PLAYBOOK.pt_BR.md](ops/LINKEDIN_ATS_PLAYBOOK.pt_BR.md). Regra Cursor: **`.cursor/rules/collaboration-maintainer-contributor.mdc`**.
 
 ---
 
@@ -170,6 +170,8 @@ gh pr list --state open
 | **[`.cursor/skills/`](../.cursor/skills/)**                                                                                   | Playbooks longos (Docker, token-aware, etc.). Use quando a tarefa combinar.                                                                                                       |
 | **[`CONTRIBUTING.md`](../CONTRIBUTING.md)** / **[`CONTRIBUTING.pt_BR.md`](../CONTRIBUTING.pt_BR.md)**                         | Fluxo de contribuição e testes.                                                                                                                                                   |
 | **[`TALENT_POOL_LEARNING_PATHS.md`](TALENT_POOL_LEARNING_PATHS.md)** / **[`.pt_BR.md`](TALENT_POOL_LEARNING_PATHS.pt_BR.md)** | Mini-roteiros opcionais (repo + carreira) por **arquétipo**; dados por candidato só em `docs/private/`.                                                                           |
+| **[`ops/TALENT_DOSSIER_AND_POOL_SYNC.md`](ops/TALENT_DOSSIER_AND_POOL_SYNC.md)** / **[`.pt_BR.md`](ops/TALENT_DOSSIER_AND_POOL_SYNC.pt_BR.md)** | `talent-dossier next` + snapshot do pool; PDFs em `docs/private/team_info/`.                                                                                                    |
+| **[`ops/LINKEDIN_ATS_PLAYBOOK.md`](ops/LINKEDIN_ATS_PLAYBOOK.md)** / **[`.pt_BR.md`](ops/LINKEDIN_ATS_PLAYBOOK.pt_BR.md)** | Playbook público LinkedIn + ATS; redação final por pessoa em `docs/private/commercial/`.                                                                                         |
 | **Este arquivo**                                                                                                              | Papéis, comandos e prompts — **maturidade de equipe** sem substituir o CONTRIBUTING.                                                                                              |
 
 ### 7.1 Ajustes opcionais quando a equipe crescer
