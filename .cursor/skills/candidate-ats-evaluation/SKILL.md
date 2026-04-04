@@ -197,6 +197,8 @@ scripts/
 | ramon | Collaborator-X |
 | talita | Collaborator-B |
 | wagner | Collaborator-G |
+| felipe | Collaborator-Y (planozero.com.br) -- advisor-remote |
+| dudu | Rodrigo Baptista (Dudu) -- CNseg infra |
 
 ---
 
@@ -235,5 +237,5 @@ docs/private/homelab/.env.udm.cursor        # senha auto.cursor (criar quando ne
 
 ---
 
-*Skill versao 2.0 - 2026-04-02 | Incorpora wrapper CLI, LinkedIn ao vivo, redes sociais e Bitwarden*
+*Skill versao 2.1 - 2026-04-03 | Adicionados IDENTIDADE_COLABORADOR_B (advisor-remote) e Dudu ao pool*
 
