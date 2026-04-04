@@ -72,8 +72,8 @@ function Write-Err  { param([string]$M) Write-Host "[ERR] $M" -ForegroundColor R
 
 function Resolve-Candidate {
     param([string]$Input)
-    $key = $Input.ToLower() -replace "[aaaaä]","a" -replace "[eèeë]","e" -replace "[iìîï]","i" `
-        -replace "[ooooö]","o" -replace "[uùûu]","u" -replace "[c]","c" -replace "\s+","_"
+    $key = $Input.ToLower() -replace "[aaaaae]","a" -replace "[eeee]","e" -replace "[iiii]","i" `
+        -replace "[oooooe]","o" -replace "[uuuu]","u" -replace "[c]","c" -replace "\s+","_"
     if ($Candidates.ContainsKey($key)) { return $key }
     $ms = $Candidates.Keys | Where-Object { $_ -like "*$key*" }
     if ($ms.Count -eq 1) { return $ms[0] }
