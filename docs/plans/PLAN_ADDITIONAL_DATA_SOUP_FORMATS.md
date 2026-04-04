@@ -1,4 +1,4 @@
-# Plan: Additional "data soup" formats and rich media
+﻿# Plan: Additional "data soup" formats and rich media
 
 **Status:** Tier 3 **metadata + subtitles + magic-byte cloaking** — **merged to `main` when shipped** (see [PLANS_TODO.md](PLANS_TODO.md) **Integration / WIP** until then); Tier 1 formats and **stego** remain backlog (see to-dos below).
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md)
@@ -218,6 +218,67 @@ Suggested order:
 
 ---
 
+---
+
+## Tier 5: Browser and device artifact databases (2026-04)
+
+Modern operating systems and browsers leave a trail of **structured databases and export formats**
+that are relevant for compliance scans. Many are SQLite files with `.sqlite` / `.db` extension
+(already scanned by `scan_sqlite_as_db`); others use proprietary containers.
+
+### 5A. Browser artifacts — already reachable via `scan_sqlite_as_db`
+
+Chrome, Edge, Firefox, and Safari all use SQLite under the hood. When
+`file_scan.scan_sqlite_as_db: true` (default), the filesystem connector opens these as
+databases and runs column-name + sample-row sensitivity detection.
+
+| File | Browser | Contains |
+|---|---|---|
+| `History` / `History.sqlite` | Chrome / Edge | Visited URLs, search terms, download paths |
+| `Cookies` | Chrome / Edge | Cookie names/domains (values encrypted); reveals tracker patterns |
+| `Web Data` | Chrome / Edge | Autofill — names, addresses, phone, card metadata |
+| `Login Data` | Chrome / Edge | Saved plaintext usernames + encrypted passwords |
+| `places.sqlite` | Firefox | History + bookmarks + form autofill |
+| `cookies.sqlite` | Firefox | Cookies |
+| `formhistory.sqlite` | Firefox | Form autofill — extremely sensitive |
+
+**Caveat (lock):** Files are WAL-locked while browser runs. Scan with browser closed or from
+backup copies. See ADR 0013.
+
+**Caveat (encryption):** Chrome encrypts cookie *values* (DPAPI/KeyColleague-Nn). Column names and
+domains are still scannable; decrypted values are out of scope.
+
+**Caveat (extension-less):** Chrome's bare filenames (`History`, `Cookies`, ...) require
+`use_content_type: true` for magic-byte routing. Document in USAGE.
+
+### 5B. Browser artifacts — NOT yet reachable (new candidates)
+
+| Format | Browser/App | Contains | Effort |
+|---|---|---|---|
+| **LevelDB** (dirs: `*.ldb`) | Chrome localStorage/IndexedDB | Key-value JS objects, session tokens, cached API | HIGH — opt-in, `plyvel` |
+| **HAR** (`.har`) | All browsers (Export) | Full HTTP archive: headers, bodies, cookies, tokens | LOW — JSON; parse + sample |
+| **WARC** (`.warc`, `.warc.gz`) | wget/Heritrix/Archive.org | Web crawl dumps with personal content | MEDIUM — `warcio` |
+
+### 5C. Device and system artifact formats (new candidates)
+
+| Format | Extension | Origin | Contains | Effort |
+|---|---|---|---|---|
+| **Apple plist** | `.plist` | iOS/macOS apps, backups | Configs, location history, contacts | LOW — `plistlib` stdlib |
+| **vCard** | `.vcf` | Phone/CRM/HR contacts | Name, phone, email, address — rich PII | LOW — text structured |
+| **iCalendar** | `.ics` | Calendar exports | Names, emails, locations, attendees | LOW — text structured |
+| **mbox** | `.mbox` | Thunderbird, Gmail Takeout | Email headers + bodies | MEDIUM — chunked |
+| **PST/OST** | `.pst`, `.ost` | Outlook desktop | Email, contacts, calendar | HIGH — `libpff` |
+| **Windows Event Log** | `.evtx` | Windows system | Usernames, IPs, login events | HIGH — `python-evtx` |
+
+### 5D. Implementation priority
+
+1. **HAR (`.har`)** — lowest effort, highest sensitivity, common in QA/dev workflows.
+2. **vCard (`.vcf`) and iCalendar (`.ics`)** — low effort, PII-rich, common in HR/CRM exports.
+3. **Apple plist (`.plist`)** — `plistlib` stdlib; handle XML + binary variants.
+4. **mbox (`.mbox`)** — header-only first pass; body sampling with size budget.
+5. **LevelDB** — opt-in `[browserartifacts]` extra; `plyvel`; flag `scan_leveldb: true`.
+6. **PST/OST / EVTX** — long tail; opt-in, heavy dependencies.
+
 ## To-dos (backlog; not sequential until we pick a phase)
 
 | #   | To-do                                                                                                                                                                                                | Status                                                                                                                                                            |
@@ -234,6 +295,12 @@ Suggested order:
 | 10  | **Tier 4 – Document “hidden structure” signals:** Hidden sheets/columns, out-of-bounds text, low-contrast/micro text where extractors support it; report exposure class.                             | ⬜                                                                                                                                                                 |
 | 11  | **Tier 4 – Embedded objects / PDF attachments:** Bounded recursion consistent with compressed-file limits; exposure class `embedded_object`.                                                         | ⬜                                                                                                                                                                 |
 
+| 12  | **Tier 5 - HAR (.har):** Add to _DATA_EXTENSIONS; parse as JSON; sample headers and cookies; document as high-sensitivity. | ⬜ |
+| 13  | **Tier 5 - vCard (.vcf) and iCalendar (.ics):** Text-based parsers; extract name/email/phone/address fields. | ⬜ |
+| 14  | **Tier 5 - Apple plist (.plist):** plistlib (stdlib); flatten key-value tree; handle binary plist. | ⬜ |
+| 15  | **Tier 5 - mbox (.mbox):** Streaming/chunked; header-only first; body sampling with size budget. | ⬜ |
+| 16  | **Tier 5 - Browser artifact USAGE docs:** Chrome/Firefox SQLite via scan_sqlite_as_db; locked file guidance; ADR 0013. | ⬜ |
+| 17  | **Tier 5 - LevelDB (opt-in):** scan_leveldb: true; [browserartifacts] extra; plyvel; Chrome localStorage/IndexedDB. | ⬜ |
 **Sync:** When a step is done, update this table and [PLANS_TODO.md](PLANS_TODO.md). This plan remains a **backlog/catalogue** until we prioritise a specific phase.
 
 ---
@@ -251,4 +318,4 @@ Suggested order:
 
 ## Last updated
 
-Plan created. Updated with default vs opt-in section, ORC/Feather in Tier 1, corporate relevance column, pyarrow dependency note, and stego opt-in (CLI + web). **2026-03:** Rich media Tier 3 (metadata OCR, subtitles, magic bytes with `use_content_type`) implemented in code; stego remains explicitly future opt-in. **2026-03-25:** Added **Tier 3b** (optional embedded tracker / tracking-pixel-style heuristics for rich media; Security Now–inspired backlog; opt-in CLI/dashboard; report + log warnings; future licensing note). **2026-03-25:** Added **Tier 4** taxonomy (document-layer hidden ingredients, Unicode cloaking, embedded objects, encoded graphics) and reporting design notes.
+Plan created. Updated with default vs opt-in section, ORC/Feather in Tier 1, corporate relevance column, pyarrow dependency note, and stego opt-in (CLI + web). **2026-03:** Rich media Tier 3 (metadata OCR, subtitles, magic bytes with `use_content_type`) implemented in code; stego remains explicitly future opt-in. **2026-03-25:** Added **Tier 3b** (optional embedded tracker / tracking-pixel-style heuristics for rich media; Security Now–inspired backlog; opt-in CLI/dashboard; report + log warnings; future licensing note). **2026-03-25:** Added **Tier 4** taxonomy (document-layer hidden ingredients, Unicode cloaking, embedded objects, encoded graphics) and reporting design notes. **2026-04-03:** Added **Tier 5** browser/device artifact section: Chrome/Firefox SQLite databases already reachable via scan_sqlite_as_db (ADR 0013 for WAL lock + encrypted values + extension-less routing); HAR, LevelDB, vCard, iCalendar, plist, mbox as new candidates; to-dos 12-17 added.
