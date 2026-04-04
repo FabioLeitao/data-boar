@@ -7,9 +7,15 @@
 
 Does **not** read ``docs/private/`` (those paths are not in Git).
 
-Usage:
+Usage (bash):
   uv run python scripts/export_public_gemini_bundle.py \\
       --output docs/private/gemini_bundles/public_bundle_$(date -I).txt
+
+Usage (PowerShell — do not use ``$(date -I)``; it is bash-only and breaks the path):
+  uv run python scripts/export_public_gemini_bundle.py `
+      --output "docs/private/gemini_bundles/public_bundle_$(Get-Date -Format 'yyyy-MM-dd').txt" `
+      --compliance-yaml --verify
+
   uv run python scripts/export_public_gemini_bundle.py -o /tmp/bundle.txt --verify
 
 See ``docs/ops/GEMINI_PUBLIC_BUNDLE_REVIEW.md`` for the suggested review prompt.

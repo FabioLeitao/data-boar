@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    UDM — acessa a API do UniFi Dream Machine SE via API key (Bitwarden).
+    UDM -- acessa a API do UniFi Dream Machine SE via API key (Bitwarden).
 
 .DESCRIPTION
     Busca a API key do UDM no Bitwarden (item "cursor.auto.ai" / UDM Integration),
@@ -113,7 +113,7 @@ function Save-Or-Print($data, $section) {
 }
 
 # --- Comandos ---
-Write-Header "UDM API — $Command"
+Write-Header "UDM API -- $Command"
 $key = Get-UdmApiKey
 
 switch ($Command.ToLower()) {
