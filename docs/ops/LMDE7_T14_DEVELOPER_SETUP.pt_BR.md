@@ -1074,7 +1074,7 @@ Depois de rodar automações, valide manualmente (mesma lógica do §9):
 
 Se qualquer item “quebrar”, ajuste o playbook/tofu e reexecute — objetivo é **idempotência**.
 
-## 8. Pacotes úteis para auditoria / homelab (opcional)
+## 9. Pacotes úteis para auditoria / homelab (opcional)
 
 - **Lynis** — vê **§3.5** (instalação e auditoria)
 - **Net-SNMP** (cliente), se fores usar [snmp-LAB-ROUTER-01-lab-probe.ps1](../../scripts/snmp-LAB-ROUTER-01-lab-probe.ps1) a partir de **outra** máquina ou WSL — no Linux nativo: `sudo apt install -y snmp` (MIBs opcionais: `snmp-mibs-downloader` pode exigir `non-free` no Debian 13; não é obrigatório para OIDs numéricos)
@@ -1083,7 +1083,7 @@ Inventário completo sugerido pelo projeto: [HOMELAB_HOST_PACKAGE_INVENTORY.md](
 
 ---
 
-## 9. Verificação final (checklist)
+## 10. Verificação final (checklist — expandida)
 
 - [ ] **UEFI / Secure Boot:** `mokutil --sb-state` mostra **enabled**; se usaste **Ventoy + enrolment**, confirmas que o assistente ficou concluído e não desligaste Secure Boot para “facilitar”.
 - [ ] **Ventoy:** versão no stick alinhada ao release atual em [Ventoy releases](https://github.com/ventoy/Ventoy/releases) (atualiza com **`Ventoy2Disk`** no teu Windows de manutenção quando fizer sentido).
@@ -1095,10 +1095,17 @@ Inventário completo sugerido pelo projeto: [HOMELAB_HOST_PACKAGE_INVENTORY.md](
 - [ ] No clone do repo: `uv sync` sem erro; `uv run pytest` conforme o projeto.
 - [ ] `config.yaml` **não** commitado (política do `.gitignore`).
 - [ ] **Lab-op:** manifesto (`lab-op-hosts.manifest.json`) e SSH/chaves prontos se o LAB-NODE-01 for host de coleta (§6.5).
+- [ ] **Containers:** `docker --version` e `docker compose version` (CE) ou `podman --version`; hello-world roda sem erro.
+- [ ] **Swarm (se habilitado):** `docker info | grep Swarm` mostra `Active`.
+- [ ] **Observabilidade CLI:** `iotop --version`, `iftop -v`, `ctop --version`, `monit --version`, `sensors` (lm-sensors).
+- [ ] **Munin node:** `systemctl is-active munin-node` → `active`; plugins configurados.
+- [ ] **Syslog forward (se configurado):** `journalctl -u rsyslog` sem erros de conexão.
+- [ ] **Prometheus node_exporter (se instalado):** `curl -s localhost:9100/metrics | head -5`.
+- [ ] **Wazuh agent (se instalado):** `/var/ossec/bin/wazuh-control status` → `wazuh-agentd running`.
 
 ---
 
-## 10. Documentação relacionada no repositório
+## 11. Documentação relacionada no repositório
 
 |Documento|Uso|
 |---|---|
@@ -1113,3 +1120,4 @@ Inventário completo sugerido pelo projeto: [HOMELAB_HOST_PACKAGE_INVENTORY.md](
 ---
 
 **Última revisão:** alinhada a Debian 13 / LMDE 7 e a `pyproject.toml` do Data Boar (**≥3.12**, **3.13** recomendado em host); confirme pacotes com `apt-cache policy python3.13` (ou `python3.12` em fallback).
+

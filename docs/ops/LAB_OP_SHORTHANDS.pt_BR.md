@@ -17,7 +17,7 @@ Dar comandos “memória muscular” para fluxos do LAB-OP, sem incentivar atalh
 Use `scripts/lab-op.ps1` como entry point estável:
 
 ```powershell
-.\scripts\lab-op.ps1 -Action report -Host lab-node-02
+.\scripts\lab-op.ps1 -Action report -SshHost lab-node-02
 .\scripts\lab-op.ps1 -Action report-all
 .\scripts\lab-op.ps1 -Action report-all -Privileged -Deep
 .\scripts\lab-op.ps1 -Action sync-collect -SkipFping
