@@ -1,0 +1,22 @@
+# WRB — instantâneo de delta para o próximo e-mail (2026-04-03)
+
+**English:** [WRB_DELTA_SNAPSHOT_2026-04-03.md](WRB_DELTA_SNAPSHOT_2026-04-03.md)
+
+Cole o **parágrafo** (bloco EN no arquivo EN) no e-mail à Wabbix **depois** do prompt mestre em [WABBIX_REVIEW_REQUEST_GUIDELINE.md](WABBIX_REVIEW_REQUEST_GUIDELINE.md) (ou funda em §2 de [WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md](WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md) antes de enviar). Atualize o **hash de commit** se enviares depois de um merge novo.
+
+---
+
+## Verdade de versão (evitar confusão)
+
+- **`pyproject.toml` / docs** em `main` com meta **1.6.8** (ver `docs/releases/1.6.8.md`).
+- **Última tag publicada** no envio: confirmar **`v1.6.8`** em GitHub Releases e tags Docker Hub (`1.6.8`, `latest`).
+- Pedir à Wabbix para tratar **“desde última entrega mercado”** como **desde a tag `v1.6.8`**, salvo confirmação de tag mais nova.
+- **Alterações locais não commitadas** no PC de desenvolvimento — indicar como **ainda não em `origin/main`**; lente separada do release etiquetado.
+
+---
+
+## Relacionado
+
+- [WABBIX_IN_REPO_BASELINE.md](WABBIX_IN_REPO_BASELINE.md) — caminhos para revisores.
+- [PLANS_TODO.md](../plans/PLANS_TODO.md) — estado do backlog.
+- [GEMINI_PUBLIC_BUNDLE_REVIEW.pt_BR.md](GEMINI_PUBLIC_BUNDLE_REVIEW.pt_BR.md) — fluxo seguro do pacote (saída em `docs/private/`).
