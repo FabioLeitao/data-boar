@@ -1,5 +1,5 @@
 # =============================================================================
-# ATS / Pool de Talentos — atalhos globais (adicionar ao $PROFILE do PowerShell)
+# ATS / Pool de Talentos -- atalhos globais (adicionar ao $PROFILE do PowerShell)
 # =============================================================================
 # Adicione ao seu perfil PowerShell:
 #   code $PROFILE   (ou notepad $PROFILE)

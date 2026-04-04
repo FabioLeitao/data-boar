@@ -3,6 +3,10 @@
 # Goal: make `talent-dossier next --advisor-remote --caution` available without
 # needing to search in docs/scripts every time.
 #
+# Repo root: defaults to parent of this script's folder; override with
+#   -Environment variable DATA_BOAR_REPO_ROOT, or
+#   -Flag --repo-root <path> (must appear before subcommand is not required; parsed globally).
+#
 # This file is meant to be dot-sourced from your PowerShell `$PROFILE`.
 
 function Get-SafeSlug {
@@ -155,14 +159,29 @@ function Update-PoolSyncSnapshotNow {
     }
 }
 
+function Get-TalentDossierRepoRoot {
+    param([string]$ExplicitRepoRoot)
+    if (-not [string]::IsNullOrWhiteSpace($ExplicitRepoRoot)) {
+        return (Resolve-Path -LiteralPath $ExplicitRepoRoot).Path
+    }
+    $envRoot = $env:DATA_BOAR_REPO_ROOT
+    if (-not [string]::IsNullOrWhiteSpace($envRoot) -and (Test-Path -LiteralPath $envRoot)) {
+        return (Resolve-Path -LiteralPath $envRoot).Path
+    }
+    # Same directory layout as other repo scripts: scripts/ -> repo root
+    $here = $PSScriptRoot
+    if ([string]::IsNullOrWhiteSpace($here)) {
+        $here = Split-Path -Parent $MyInvocation.MyCommand.Path
+    }
+    return (Resolve-Path (Join-Path $here "..")).Path
+}
+
 function Invoke-TalentDossier {
     [CmdletBinding()]
     param(
         [Parameter(ValueFromRemainingArguments = $true)]
         [string[]]$RemainingArgs
     )
-
-    $repoRoot = "C:\\Users\\<username>\\Documents\\dev\\python3-lgpd-crawler"
 
     if ($RemainingArgs.Count -eq 0) {
         $RemainingArgs = @("next")
@@ -175,6 +194,7 @@ function Invoke-TalentDossier {
     $DryRun = $false
     $Overwrite = $false
     $OperatorRelationship = ""
+    $ExplicitRepoRoot = ""
 
     for ($i = 0; $i -lt $RemainingArgs.Count; $i++) {
         $t = $RemainingArgs[$i]
@@ -192,6 +212,13 @@ function Invoke-TalentDossier {
             "--loop" { $Loop = $true }
             "--dry-run" { $DryRun = $true }
             "--overwrite" { $Overwrite = $true }
+            "--repo-root" {
+                if ($i + 1 -ge $RemainingArgs.Count) {
+                    throw "--repo-root expects a path (next token)."
+                }
+                $ExplicitRepoRoot = $RemainingArgs[$i + 1]
+                $i++
+            }
             "--operator-relationship" {
                 if ($i + 1 -ge $RemainingArgs.Count) {
                     throw "--operator-relationship expects a value (next token)."
@@ -201,6 +228,8 @@ function Invoke-TalentDossier {
             }
         }
     }
+
+    $repoRoot = Get-TalentDossierRepoRoot -ExplicitRepoRoot $ExplicitRepoRoot
 
     if ([string]::IsNullOrWhiteSpace($subcommand)) {
         $subcommand = "next"
