@@ -236,5 +236,7 @@ marimo/_lsp/
 __marimo__/
 # Session-capture / personal notes saved as .txt at repo root (not project files)
 # These are operator notes/chat-dumps accidentally placed at root; keep gitignored.
-"Persona Você é um Engenheiro de Sof.txt"
-"e agora, lojas (preferencialmente o.txt"
+# Use wildcard prefix matches to avoid encoding issues with accented filenames.
+/Persona*.txt
+/e agora*.txt
+/*.txt
