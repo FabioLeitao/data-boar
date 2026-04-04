@@ -105,4 +105,14 @@ Write-Host "  $modeEn"
 Write-Host "  $modePt"
 Write-Host ""
 Write-Host "Next: merge open PRs when green (.\scripts\pr-merge-when-green.ps1); then git checkout main, git pull, rest." -ForegroundColor Gray
+Write-Host ""
+Write-Host "Private repo sync (stacked private git):" -ForegroundColor Yellow
+Write-Host "  .\scripts\private-git-sync.ps1          # sync feedbacks + commit pending private files"
+Write-Host "  .\scripts\private-git-sync.ps1 -Push    # + push to lab-latitude remote"
+$privateStatus = git -C (Join-Path $repoRoot "docs/private") status --short 2>$null
+if ($privateStatus) {
+    Write-Host "  AVISO: Private repo tem arquivos pendentes ($($privateStatus.Count) linhas de status)." -ForegroundColor Yellow
+} else {
+    Write-Host "  Private repo esta em dia." -ForegroundColor Green
+}
 exit 0
