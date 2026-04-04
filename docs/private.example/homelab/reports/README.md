@@ -7,7 +7,7 @@
 ## Populate from Windows (dev PC with repo + SSH):
 
 ```powershell
-.\scripts\collect-homelab-report-remote.ps1 -SshHost latitude-lab
+.\scripts\collect-homelab-report-remote.ps1 -SshHost latitude
 ```
 
 **Batch (multiple hosts + `git pull` on canonical clone paths):** save **`docs/private/homelab/lab-op-hosts.manifest.json`** (preferred) from **`../lab-op-hosts.manifest.example.json`**. If only **`lab-op-hosts.manifest.example.json`** exists under `homelab/`, **`scripts/lab-op-sync-and-collect.ps1`** uses it as fallback (with a warning). Then:
