@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    LAB-ROUTER-01 — acessa a API do UniFi Dream Machine SE via API key (Bitwarden).
+    LAB-ROUTER-01 -- acessa a API do UniFi Dream Machine SE via API key (Bitwarden).
 
 .DESCRIPTION
     Busca a API key do LAB-ROUTER-01 no Bitwarden (item "cursor.auto.ai" / LAB-ROUTER-01 Integration),
@@ -113,7 +113,7 @@ function Save-Or-Print($data, $section) {
 }
 
 # --- Comandos ---
-Write-Header "LAB-ROUTER-01 API — $Command"
+Write-Header "LAB-ROUTER-01 API -- $Command"
 $key = Get-LAB-ROUTER-01ApiKey
 
 switch ($Command.ToLower()) {
