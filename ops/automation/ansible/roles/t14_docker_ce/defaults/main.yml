@@ -1,11 +1,23 @@
 ---
 t14_install_docker_ce: false
 
+# Install docker-compose-plugin and docker-buildx-plugin alongside docker-ce.
+t14_docker_install_compose_plugin: true
+
 # Optional: initialize swarm on the node (manager) after install.
 t14_docker_swarm_init: false
 
 # Optional: daemon.json baseline (kept minimal; can be extended privately).
 t14_docker_manage_daemon_json: true
 t14_docker_daemon_json_path: /etc/docker/daemon.json
-t14_docker_daemon_json: {}
+t14_docker_daemon_json:
+  log-driver: json-file
+  log-opts:
+    max-size: "20m"
+    max-file: "5"
+  storage-driver: overlay2
+  live-restore: true
+  default-address-pools:
+    - base: "172.30.0.0/16"
+      size: 24
 

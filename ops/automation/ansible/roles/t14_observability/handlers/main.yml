@@ -1,0 +1,20 @@
+---
+- name: Restart rsyslog
+  ansible.builtin.service:
+    name: rsyslog
+    state: restarted
+
+- name: Restart munin-node
+  ansible.builtin.service:
+    name: munin-node
+    state: restarted
+
+- name: Restart monit
+  ansible.builtin.service:
+    name: monit
+    state: restarted
+
+- name: Restart wazuh-agent
+  ansible.builtin.service:
+    name: wazuh-agent
+    state: restarted
