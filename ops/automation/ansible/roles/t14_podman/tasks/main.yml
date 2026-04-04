@@ -1,0 +1,40 @@
+---
+- name: Skip Podman installation unless opted-in
+  when: not (t14_install_podman | bool)
+  ansible.builtin.debug:
+    msg: "Podman install is disabled (t14_install_podman=false)."
+
+- name: Install Podman (rootless containers)
+  when: t14_install_podman | bool
+  block:
+    - name: Install podman
+      ansible.builtin.apt:
+        name:
+          - podman
+          - buildah
+          - skopeo
+        state: present
+        update_cache: true
+
+    - name: Install podman-compose
+      when: t14_podman_install_compose | bool
+      ansible.builtin.apt:
+        name: podman-compose
+        state: present
+
+    - name: Enable lingering for current user (rootless containers survive logout)
+      ansible.builtin.command: loginctl enable-linger "{{ ansible_user_id }}"
+      changed_when: false
+
+    - name: Write docker alias to profile.d (optional)
+      when: t14_podman_docker_alias | bool
+      ansible.builtin.copy:
+        dest: /etc/profile.d/podman-docker-alias.sh
+        content: |
+          # Podman as docker drop-in (opt-in; edge cases exist)
+          if command -v podman &>/dev/null && ! command -v docker &>/dev/null; then
+            alias docker=podman
+          fi
+        owner: root
+        group: root
+        mode: "0644"

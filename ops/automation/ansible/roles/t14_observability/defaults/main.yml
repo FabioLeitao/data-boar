@@ -1,0 +1,34 @@
+---
+# --- CLI tools ---
+t14_obs_install_cli_tools: true
+# ctop is not in apt; install via binary download.
+t14_obs_install_ctop: true
+t14_obs_ctop_version: "0.7.7"
+
+# --- Syslog forwarding ---
+t14_obs_syslog_forward_enabled: false
+# Set this to your Graylog/syslog server IP (keep real IPs in docs/private/).
+t14_obs_syslog_server_ip: ""
+t14_obs_syslog_port: 514
+t14_obs_syslog_protocol: "udp"   # "udp" or "tcp"
+
+# --- Munin node ---
+t14_obs_munin_node_enabled: true
+# List of IPs allowed to scrape munin-node (Munin master addresses).
+t14_obs_munin_allowed_ips: []   # e.g. ["192.168.1.10"]
+
+# --- Monit ---
+t14_obs_monit_enabled: true
+t14_obs_monit_web_enabled: false
+t14_obs_monit_web_port: 2812
+t14_obs_monit_web_user: "admin"
+t14_obs_monit_web_password: "changeme_in_vault"
+
+# --- Prometheus node_exporter ---
+t14_obs_node_exporter_enabled: true
+t14_obs_node_exporter_ufw_allow_from: "192.168.0.0/16"
+
+# --- Wazuh agent ---
+t14_obs_wazuh_agent_enabled: false
+t14_obs_wazuh_manager_ip: ""   # real IP in docs/private/; do NOT commit
+t14_obs_wazuh_version: "4"     # major version for apt repo
