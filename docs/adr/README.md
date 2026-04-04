@@ -16,15 +16,21 @@ Short, durable notes that capture **why** the project chose an approach—not on
 
 ## Index
 
-| ADR   | Title                                                                                                                         | Status   |
-| ----- | ----------------------------------------------------------------------------------------------------------------              | -------- |
-| 0000  | [Project origin and ADR baseline](0000-project-origin-and-adr-baseline.md)                                                    | Accepted |
-| 0001  | [Markdown fix script, MD029, and semantic step lists](0001-markdown-fix-script-md029-and-semantic-step-lists.md)              | Accepted |
-| 0002  | [Operator-facing security and technical docs](0002-operator-facing-security-and-technical-docs.md)                            | Accepted |
-| 0003  | [SBOM roadmap — CycloneDX then Syft](0003-sbom-roadmap-cyclonedx-then-syft.md)                                                | Accepted |
-| 0004  | [Information architecture — external-tier docs must not link into `plans/`](0004-external-docs-no-markdown-links-to-plans.md) | Accepted |
-| 0005  | [CI and GitHub Actions supply chain — pinned SHAs and pinned uv CLI](0005-ci-github-actions-supply-chain-pins.md)              | Accepted |
-| 0006  | [Operator today-mode layout and published-release sync](0006-operator-today-mode-layout-and-published-sync.md)                 | Accepted |
+| ADR   | Title                                                                                                                                                  | Status   |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| 0000  | [Project origin and ADR baseline](0000-project-origin-and-adr-baseline.md)                                                                             | Accepted |
+| 0001  | [Markdown fix script, MD029, and semantic step lists](0001-markdown-fix-script-md029-and-semantic-step-lists.md)                                       | Accepted |
+| 0002  | [Operator-facing security and technical docs](0002-operator-facing-security-and-technical-docs.md)                                                      | Accepted |
+| 0003  | [SBOM roadmap — CycloneDX then Syft](0003-sbom-roadmap-cyclonedx-then-syft.md)                                                                         | Accepted |
+| 0004  | [Information architecture — external-tier docs must not link into `plans/`](0004-external-docs-no-markdown-links-to-plans.md)                          | Accepted |
+| 0005  | [CI and GitHub Actions supply chain — pinned SHAs and pinned uv CLI](0005-ci-github-actions-supply-chain-pins.md)                                       | Accepted |
+| 0006  | [Operator today-mode layout and published-release sync](0006-operator-today-mode-layout-and-published-sync.md)                                          | Accepted |
+| 0007  | [Synthetic data corpus as mandatory pre-requisite before real production data](0007-synthetic-data-corpus-before-real-data.md)                          | Accepted |
+| 0008  | [Docker CE (official repo) + Compose plugin + Swarm as primary lab container runtime](0008-docker-ce-swarm-over-docker-io-and-podman-only.md)           | Accepted |
+| 0009  | [Ansible idempotent roles as single automation source for T14 lab baseline](0009-ansible-idempotent-roles-as-single-automation-source.md)               | Accepted |
+| 0010  | [IP Declaration as prior-art protection for Data Boar at CLT employment](0010-ip-declaration-prior-art-protection-at-employment.md)                     | Accepted |
+| 0011  | [Layered observability stack for lab-op (Munin + Wazuh + Prometheus + Monit + rsyslog/GELF)](0011-lab-op-observability-stack-layered.md)                | Accepted |
+| 0012  | [OCR and image-based sensitive data detection (Tesseract primary, EasyOCR opt-in, BLOB/base64)](0012-ocr-image-sensitive-data-detection.md)             | Proposed |
 
 ## Related docs
 
