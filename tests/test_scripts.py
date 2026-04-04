@@ -321,6 +321,27 @@ def test_candidate_dossier_scaffold_ps1_has_core_params():
     assert "Overwrite" in text
 
 
+def test_talent_dossier_ps1_syntax():
+    """scripts/talent-dossier.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "talent-dossier.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), "talent-dossier.ps1 parse failed"
+
+
+def test_talent_dossier_ps1_resolves_repo_root():
+    """talent-dossier supports portable repo root (env, --repo-root, PSScriptRoot)."""
+    root = _project_root()
+    script = root / "scripts" / "talent-dossier.ps1"
+    if not script.exists():
+        return
+    text = script.read_text(encoding="utf-8", errors="replace")
+    assert "DATA_BOAR_REPO_ROOT" in text
+    assert "--repo-root" in text
+    assert "Get-TalentDossierRepoRoot" in text
+
+
 def test_commit_or_pr_mentions_gh_default_repo_guard():
     """commit-or-pr includes gh default repository guard for PR flow."""
     root = _project_root()

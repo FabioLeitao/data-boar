@@ -1,4 +1,4 @@
-# SBOM local outputs (ADR 0003; CI generates inside the workflow)
+﻿# SBOM local outputs (ADR 0003; CI generates inside the workflow)
 sbom-python.cdx.json
 sbom-docker-image.cdx.json
 requirements-sbom.txt
@@ -234,3 +234,7 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+# Session-capture / personal notes saved as .txt at repo root (not project files)
+# These are operator notes/chat-dumps accidentally placed at root; keep gitignored.
+"Persona Você é um Engenheiro de Sof.txt"
+"e agora, lojas (preferencialmente o.txt"
