@@ -93,8 +93,13 @@ compressed = ["py7zr>=0.20.0"]
 dl = ["sentence-transformers>=3.0.0"]
 # Optional typo-tolerant column name vs sensitive terms (see sensitivity_detection.fuzzy_column_match)
 detection-fuzzy = ["rapidfuzz>=3.9.0"]
-# Rich media: ID3/Vorbis/FLAC tags (mutagen), OCR wrapper (pytesseract; install system tesseract-ocr)
-richmedia = ["mutagen>=1.47.0", "pytesseract>=0.3.13"]
+# Rich media: ID3/Vorbis/FLAC tags (mutagen), OCR wrapper (pytesseract; install system tesseract-ocr),
+# HEIC/HEIF decoding for iPhone photos (pillow-heif; bridges PIL to libheif).
+richmedia = [
+    "mutagen>=1.47.0",
+    "pillow-heif>=0.16.0",
+    "pytesseract>=0.3.13",
+]
 
 [tool.pytest.ini_options]
 # Fail on any warning (DeprecationWarning, ResourceWarning, etc.) so the suite stays clean
@@ -165,4 +170,5 @@ dev = [
     "types-pyyaml>=6.0.12.20250915",
     # CycloneDX SBOM from uv-exported requirements (ADR 0003); same CLI as CI `sbom.yml`.
     "cyclonedx-bom>=7.0.0",
+    "markdown>=3.10.2",
 ]
