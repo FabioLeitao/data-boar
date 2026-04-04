@@ -82,6 +82,76 @@ This supports compliance reports and retention/processing rules. For detailed de
 - **Findings**: Include location (table/column, file path, line/offset), matched pattern or ML score, category, and suggested norm.
 - **Code**: Document which patterns and categories each module implements; keep the mapping between “pattern → category → norm” explicit (e.g. in code comments or a small config).
 
+## Image and Binary Data Detection
+
+Images are a significant PII surface that text-only scanning misses. Apply this guidance when scanning filesystems, databases, or document collections that may contain image files or binary blobs.
+
+### When images matter for compliance
+
+| Image content | Category | Norm |
+|---|---|---|
+| CPF, RG, CNH, passaporte photo | Personal data — ID document | LGPD Art. 5, X |
+| Face / biometric photo | Sensitive personal data — biometric | LGPD Art. 5, II |
+| Medical record / prescription | Sensitive personal data — health | LGPD Art. 5, II |
+| Minor in photo | Children's personal data | LGPD Art. 14 |
+| Bank statement / credit card | Personal data — financial | LGPD Art. 5; PCI DSS |
+
+### OCR strategy (local-first, no cloud by default)
+
+1. **Detect images by magic bytes** — not by extension. Check for JPEG (`FF D8 FF`), PNG (`89 50 4E 47`), GIF, TIFF, WebP, BMP magic bytes. Flag any file whose magic bytes indicate an image but the extension differs as **cloaked**.
+2. **Pre-process** with Pillow: convert to grayscale, resize if very small (improves Tesseract accuracy).
+3. **OCR tier 1 (default):** `pytesseract` with `lang=por+eng`. Fast, local, CPU-only.
+4. **OCR tier 2 (opt-in):** `easyocr` for higher accuracy on complex layouts. Enable via config `image_ocr_engine: easyocr`.
+5. **Apply existing LGPD regex patterns** (CPF, CNPJ, dates, phone, email, card numbers) to OCR output.
+6. **Tag findings** with: `file_path`, `ocr_engine`, `ocr_confidence`, `pattern_matched`, `category`, `norm`.
+
+```python
+import pytesseract
+from PIL import Image
+
+def ocr_image(path: str, lang: str = "por+eng") -> str:
+    img = Image.open(path).convert("L")  # grayscale
+    return pytesseract.image_to_string(img, lang=lang)
+```
+
+### Database BLOB and base64 detection
+
+- **BLOB columns:** Look for types `BLOB`, `BYTEA`, `LONGBLOB`, `MEDIUMBLOB`, `RAW`, `IMAGE`, `VARBINARY`. Also check column names: `foto`, `imagem`, `photo`, `thumbnail`, `avatar`, `documento`, `attachment`, `scan`.
+- **base64 in text columns:** Detect long base64 strings (`[A-Za-z0-9+/=]{100,}`), attempt decode, check magic bytes.
+- **Sampling:** Never load the full table. Sample `N` rows (configurable, default 3–5) per candidate column.
+- **Privacy by design:** Never persist decoded image bytes in reports, logs, or artifact files. Only record findings (column, row sample ID, pattern matched, category).
+
+### Embedded images (PDF, DOCX, EML)
+
+- **PDF:** Use `pymupdf` (fitz) to extract embedded images page by page. Fallback: render page as image for scanned PDFs with no text layer.
+- **DOCX:** Use `python-docx` to read `word/media/` images.
+- **EML/MSG:** Parse `image/*` MIME parts from existing email parser.
+- Associate findings with `parent_path + page_number` or `attachment_name`.
+
+### Cloaking detection
+
+Always check magic bytes regardless of extension. Report as:
+
+```python
+finding = {
+    "file_path": str(path),
+    "declared_extension": path.suffix,
+    "actual_type": "image/jpeg",
+    "cloaked": True,
+    "category": "image_cloaking_attempt",
+}
+```
+
+### Architecture pointers
+
+- Module: `core/image_detector.py` (or `core/detectors/image.py`).
+- Config flags: `enable_image_scanning`, `image_ocr_engine`, `image_blob_sampling_rows`.
+- Dependencies: optional group `image` in `pyproject.toml` (`pytesseract`, `Pillow`, `easyocr`).
+- ADR: `docs/adr/0012-ocr-image-sensitive-data-detection.md`.
+- Plan: `docs/plans/PLAN_IMAGE_SENSITIVE_DATA_DETECTION.pt_BR.md`.
+
 ## Additional Resources
 
 - For regulatory definitions and pattern–norm mapping, see [reference.md](reference.md).
+- ADR 0012: `docs/adr/0012-ocr-image-sensitive-data-detection.md`
+- Plan: `docs/plans/PLAN_IMAGE_SENSITIVE_DATA_DETECTION.pt_BR.md`
