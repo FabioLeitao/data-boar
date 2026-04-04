@@ -1,0 +1,121 @@
+#Requires -Version 5.1
+<#
+.SYNOPSIS
+    Sincroniza e commita o stacked private repo (docs/private).
+
+.DESCRIPTION
+    Workflow obrigatorio apos qualquer sessao que modifique docs/private/:
+    1. Copia feedbacks do inbox gitignored para docs/private/feedbacks_and_reviews/
+    2. Faz git add -A e commit no private repo
+    3. Opcionalmente faz push para lab-latitude/main
+    4. Relata status e contagem de arquivos committed
+
+.PARAMETER Message
+    Mensagem de commit (default: auto-gerada com timestamp).
+
+.PARAMETER Push
+    Se informado, faz push para o remote configurado (lab-latitude).
+
+.PARAMETER FeedbacksOnly
+    Apenas sincroniza feedbacks (nao faz commit geral).
+
+.EXAMPLE
+    .\scripts\private-git-sync.ps1
+    .\scripts\private-git-sync.ps1 -Push
+    .\scripts\private-git-sync.ps1 -Message "chore(private): update homelab notes after lab-op session"
+#>
+param(
+    [string]$Message = "",
+    [switch]$Push,
+    [switch]$FeedbacksOnly
+)
+
+$ErrorActionPreference = "Stop"
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+$privateDir = Join-Path $repoRoot "docs\private"
+$inboxDir = Join-Path $repoRoot "docs\feedbacks, reviews, comments and criticism"
+$feedbacksDest = Join-Path $privateDir "feedbacks_and_reviews"
+
+function Write-Header($m) { Write-Host "`n=== $m ===" -ForegroundColor Cyan }
+function Write-Ok($m)     { Write-Host "  OK  $m" -ForegroundColor Green }
+function Write-Info($m)   { Write-Host "  ... $m" -ForegroundColor Gray }
+function Write-Warn($m)   { Write-Host " WARN $m" -ForegroundColor Yellow }
+
+Write-Header "private-git-sync: Stacked Private Repo Sync"
+
+# --- 1. Sync feedbacks from gitignored inbox to private canonical ---
+Write-Header "Passo 1: Sincronizar feedbacks do inbox para docs/private/feedbacks_and_reviews/"
+if (Test-Path $inboxDir) {
+    if (-not (Test-Path $feedbacksDest)) {
+        New-Item -ItemType Directory -Path $feedbacksDest | Out-Null
+        Write-Info "Criado: $feedbacksDest"
+    }
+    $before = (Get-ChildItem $feedbacksDest -Recurse -File -ErrorAction SilentlyContinue).Count
+    Copy-Item "$inboxDir\*" -Destination $feedbacksDest -Recurse -Force -ErrorAction SilentlyContinue
+    $after = (Get-ChildItem $feedbacksDest -Recurse -File -ErrorAction SilentlyContinue).Count
+    Write-Ok "Feedbacks sincronizados: $before -> $after arquivos em feedbacks_and_reviews/"
+} else {
+    Write-Info "Inbox nao encontrado em: $inboxDir (ok se vazio)"
+}
+
+if ($FeedbacksOnly) {
+    Write-Info "Modo FeedbacksOnly: encerrado apos sync de feedbacks."
+    exit 0
+}
+
+# --- 2. Remove stale index.lock if exists ---
+$lockFile = Join-Path $privateDir ".git\index.lock"
+if (Test-Path $lockFile) {
+    Remove-Item $lockFile -Force
+    Write-Warn "Removido stale index.lock"
+}
+
+# --- 3. git add -A e commit ---
+Write-Header "Passo 2: Commit no private repo"
+Set-Location $privateDir
+
+$status = git status --short 2>&1
+$pendingCount = ($status | Measure-Object).Count
+Write-Info "Arquivos pendentes (M/A/?): $pendingCount"
+
+if ($pendingCount -eq 0) {
+    Write-Ok "Private repo ja esta em dia. Nenhum arquivo pendente."
+} else {
+    # Staged explicito por pasta (git add -A pode falhar silenciosamente)
+    $folders = @("feedbacks_and_reviews", "homelab", "author_info", "commercial", "operator_economics", "legal_dossier", "raw_pastes", "plans", "pitch")
+    foreach ($f in $folders) {
+        $fp = Join-Path $privateDir $f
+        if (Test-Path $fp) { git add $f 2>&1 | Out-Null }
+    }
+    # Root-level files
+    git add *.md *.ps1 *.py *.yml *.json *.txt 2>&1 | Out-Null
+
+    $stagedCount = (git diff --cached --name-only 2>&1 | Measure-Object).Count
+    Write-Info "Staged: $stagedCount arquivos"
+
+    if ($stagedCount -eq 0) {
+        Write-Warn "Nenhum arquivo staged. Verificar .gitignore interno ou paths."
+    } else {
+        if (-not $Message) {
+            $ts = Get-Date -Format "yyyy-MM-dd HH:mm"
+            $Message = "chore(private): session sync $ts"
+        }
+        git commit --trailer "Made-with: Cursor" -m $Message 2>&1 | Select-Object -First 3
+        Write-Ok "Commit realizado: $Message"
+    }
+}
+
+# --- 4. Push (opcional) ---
+if ($Push) {
+    Write-Header "Passo 3: Push para lab-latitude"
+    $remote = git remote 2>&1 | Select-Object -First 1
+    if ($remote) {
+        git push $remote main 2>&1 | Select-Object -First 5
+        Write-Ok "Push concluido para $remote/main"
+    } else {
+        Write-Warn "Nenhum remote configurado no private repo. Configure com: git -C docs/private remote add lab-latitude <url>"
+    }
+}
+
+Write-Header "private-git-sync: Concluido"
+Set-Location $repoRoot
