@@ -1,6 +1,7 @@
 ---
 # Baseline "operator workstation" packages. Keep conservative and common.
 lab-node-01_baseline_packages:
+  # Core system
   - ca-certificates
   - procps
   - curl
@@ -9,20 +10,42 @@ lab-node-01_baseline_packages:
   - openssh-client
   - openssh-server
   - wget
+  - rsync
+  # Security hardening
   - auditd
   - audispd-plugins
   - aide
   - debsums
   - needrestart
   - dlocate
+  # Process / file inspection
   - lsof
+  - strace
+  - sysstat
+  # Hardware monitoring
   - lm-sensors
+  - smartmontools
+  # Interactive process monitors
   - htop
   - btop
+  - iotop
+  - iftop
+  - nethogs
+  # Disk / filesystem
   - ncdu
   - tree
   - pydf
+  # Log viewers
   - lnav
   - multitail
+  # Data
   - sqlite3
+  - jq
+  # Process supervision
+  - monit
+  # Host metrics collection
+  - munin-node
+  - prometheus-node-exporter
+  # Syslog
+  - rsyslog
 
