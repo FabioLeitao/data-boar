@@ -7,11 +7,38 @@
     # The playbook stays safe-default: do not change remote access posture unless you opt-in.
     host_profile: lab_op_fixed
 
-    # Opt-in knobs
-    harden_ssh: false
-    install_docker_ce: false
+    # --- Opt-in knobs (containers) ---
+    # Docker CE (from official Docker repo) with Compose plugin
+    t14_install_docker_ce: false
+    t14_docker_install_compose_plugin: true
+    # Initialize Docker Swarm (single-node manager) after install
+    t14_docker_swarm_init: false
+    # Podman (rootless containers, OCI-compatible)
+    t14_install_podman: false
+    # k3s (lightweight Kubernetes — installs from get.k3s.io; opt-in deliberately)
+    t14_install_k3s: false
+
+    # --- Opt-in knobs (observability) ---
+    # Install CLI tools (iotop, iftop, ctop, munin-node, monit, node_exporter) — safe default: true
+    t14_obs_install_cli_tools: true
+    t14_obs_install_ctop: true
+    # Syslog forwarding to central server (set IP in group_vars/host_vars, never committed)
+    t14_obs_syslog_forward_enabled: false
+    t14_obs_syslog_server_ip: ""
+    # Munin node (expose to Munin master)
+    t14_obs_munin_node_enabled: true
+    t14_obs_munin_allowed_ips: []
+    # Monit (local process supervision)
+    t14_obs_monit_enabled: true
+    t14_obs_monit_web_enabled: false
+    # Prometheus node_exporter
+    t14_obs_node_exporter_enabled: true
+    # Wazuh SIEM agent (requires manager IP; off by default until lab is ready)
+    t14_obs_wazuh_agent_enabled: false
+    t14_obs_wazuh_manager_ip: ""
 
   roles:
+    # --- System baseline ---
     - role: t14_baseline_packages
     - role: t14_banners
     - role: t14_editor_defaults
@@ -29,4 +56,9 @@
     - role: t14_auditd
     - role: t14_zram
     - role: t14_ssh_hardening
+    # --- Containers (opt-in) ---
     - role: t14_docker_ce
+    - role: t14_podman
+    - role: t14_k3s
+    # --- Observability (progressive opt-in) ---
+    - role: t14_observability
