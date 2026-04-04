@@ -23,6 +23,9 @@ IMAGE_EXTENSIONS = frozenset(
         ".tif",
         ".tiff",
         ".webp",
+        # Apple HEIF/HEIC - iPhone default photo format; needs pillow-heif for decoding.
+        ".heic",
+        ".heif",
     }
 )
 AUDIO_EXTENSIONS = frozenset(
@@ -79,6 +82,14 @@ def infer_rich_media_suffix(data: bytes) -> str | None:
     if len(data) >= 4 and data[:4] == b"OggS":
         return ".ogg"
     if len(data) >= 12 and data[4:8] == b"ftyp":
+        # ISO Base Media File Format: brand in bytes 8-11 distinguishes HEIC from video.
+        # HEIC/HEIF brands: heic heis heim heix mif1 msf1 hevc hevx avif avis
+        brand = data[8:12]
+        _HEIC_BRANDS = frozenset(
+            b"heic heis heim heix mif1 msf1 hevc hevx avif avis".split()
+        )
+        if brand in _HEIC_BRANDS:
+            return ".heic"
         return ".mp4"
     return None
 
