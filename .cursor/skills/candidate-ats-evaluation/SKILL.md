@@ -197,6 +197,8 @@ scripts/
 | ramon | Collaborator-X |
 | colleague-a | Collaborator-B |
 | wagner | Collaborator-G |
+| Colleague-B | Collaborator-Y (planozero.com.br) -- advisor-remote |
+| dudu | Colleague-Q Baptista (Dudu) -- CNseg infra |
 
 ---
 
@@ -235,5 +237,5 @@ docs/private/homelab/.env.LAB-ROUTER-01.cursor        # senha auto.cursor (criar
 
 ---
 
-*Skill versao 2.0 - 2026-04-02 | Incorpora wrapper CLI, LinkedIn ao vivo, redes sociais e Bitwarden*
+*Skill versao 2.1 - 2026-04-03 | Adicionados Colleague-B (advisor-remote) e Dudu ao pool*
 

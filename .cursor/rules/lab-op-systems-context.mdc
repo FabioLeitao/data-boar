@@ -49,6 +49,7 @@ Read in this order -- stop when you have enough context for the task:
 | `.\scripts\lab-op.ps1 -Action report-all` | Todos os hosts via SSH + manifest | -- |
 | `.\scripts\lab-op.ps1 -Action sync-collect` | git pull + collect all hosts | -- |
 | `.\scripts\talent.ps1 scan` | Varredura de CVs no pool ATS | -- |
+| `. .\scripts\lab-env-load.ps1` | Carrega vars LAB-OP na sessao (LAB-ROUTER-01, Growatt, Enel, SSH) -- dot-source! | `. .\scripts\lab-env-load.ps1 -Systems LAB-ROUTER-01` |
 
 ## 4. CRITICAL -- Guardrails de interacao por sistema
 
@@ -114,8 +115,8 @@ docs/private/homelab/
   AGENT_LAB_ACCESS.md          <- SSH aliases, P:, ports, Data Boar
   HARDWARE_CATALOG.md          <- hardware only (sem credenciais)
   .env.api.LAB-ROUTER-01-se.local        <- LAB-ROUTER-01 API key (nao commitar, nao mostrar)
+  .env.*.local                 <- fallback offline para lab-env-load.ps1
   reports/                     <- snapshots JSON LAB-ROUTER-01 + host reports
 ```
 
 See also: `.cursor/skills/homelab-lab-op-data/SKILL.md` (workflow detalhado por sistema).
-
