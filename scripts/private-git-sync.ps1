@@ -105,15 +105,32 @@ if ($pendingCount -eq 0) {
     }
 }
 
-# --- 4. Push (opcional) ---
+# --- 4. Push para todos os remotes configurados (opcional) ---
 if ($Push) {
-    Write-Header "Passo 3: Push para lab-latitude"
-    $remote = git remote 2>&1 | Select-Object -First 1
-    if ($remote) {
-        git push $remote main 2>&1 | Select-Object -First 5
-        Write-Ok "Push concluido para $remote/main"
+    Write-Header "Passo 3: Push para todos os lab remotes"
+    $remotes = git remote 2>&1
+    $labRemotes = $remotes | Where-Object { $_ -match "^lab-" }
+    if (-not $labRemotes) {
+        Write-Warn "Nenhum remote 'lab-*' configurado. Configure com:"
+        Write-Warn "  git -C docs/private remote add lab-latitude ssh://<user>@<lab-host-1>/home/user/Documents/.kb-cache/repos/notes-sync.git"
+        Write-Warn "  git -C docs/private remote add lab-<lab-host-2>  ssh://<user>@<lab-host-2>/home/user/Documents/.kb-cache/repos/notes-sync.git"
+        Write-Warn "  git -C docs/private remote add lab-t14      ssh://<user>@<lab-host-3>/home/user/Documents/.kb-cache/repos/notes-sync.git"
     } else {
-        Write-Warn "Nenhum remote configurado no private repo. Configure com: git -C docs/private remote add lab-latitude <url>"
+        foreach ($r in $labRemotes) {
+            Write-Info "Pushing para $r ..."
+            $out = git push $r main 2>&1 | Select-Object -First 5
+            if ($LASTEXITCODE -eq 0) { Write-Ok "Push OK: $r" }
+            else { Write-Warn "Push FALHOU: $r -- $out" }
+        }
+    }
+    # pCloud via robocopy (se P: montado)
+    if (Test-Path "P:\") {
+        $pcloudDest = "P:\lab-private-backup\notes-sync"
+        if (-not (Test-Path $pcloudDest)) { New-Item -ItemType Directory -Path $pcloudDest -Force | Out-Null }
+        robocopy $privateDir $pcloudDest /MIR /XD ".git" /NFL /NDL /NJH /NJS 2>&1 | Out-Null
+        Write-Ok "pCloud sync OK: $pcloudDest"
+    } else {
+        Write-Info "pCloud (P:) nao montado -- pulando backup pCloud"
     }
 }
 
