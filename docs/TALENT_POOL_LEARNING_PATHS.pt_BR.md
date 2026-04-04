@@ -104,6 +104,8 @@ Use este checklist para melhorar descoberta profissional sem vazar dados privado
 - Evite overclaim (nada de "certifica conformidade"; use "apoia evidência e remediação").
 - Linke apenas artefatos públicos (docs, release notes, PRs, talks) e mantenha identificadores de clientes em privado.
 
+**Playbook completo** (seções, exportação ATS, contexto de SSI, sementes de keywords por arquétipo): **[`docs/ops/LINKEDIN_ATS_PLAYBOOK.pt_BR.md`](ops/LINKEDIN_ATS_PLAYBOOK.pt_BR.md)** ([EN](ops/LINKEDIN_ATS_PLAYBOOK.md)).
+
 ---
 
 ## Revisão
@@ -112,3 +114,4 @@ Use este checklist para melhorar descoberta profissional sem vazar dados privado
 | ---------- | ----                                                           |
 | 2026-03-27 | Roteiros iniciais por arquétipo + ponte para template privado. |
 | 2026-04-01 | Adicionado checklist de narrativa LinkedIn/ATS para perfis públicos. |
+| 2026-04-02 | Link para o playbook completo **`LINKEDIN_ATS_PLAYBOOK`** em `docs/ops/`. |
