@@ -1,0 +1,100 @@
+---
+description: Mandatory dossier update routine whenever new evidence is imported or ingested for the ICTSI legal dossier.
+alwaysApply: true
+---
+
+# Dossie ICTSI -- Atualizacao Obrigatoria ao Importar Evidencias
+
+## Quando esta regra dispara
+
+Sempre que qualquer uma das seguintes acoes ocorrer no workspace:
+
+- Leitura, analise ou catalogacao de novo arquivo em `docs/private/raw_pastes/` ou `docs/private/ictsi_dossie/`
+- Importacao de evidencia para o dossie (foto, log, PDF, audio, planilha, email)
+- Qualquer conversa ou analise envolvendo o caso trabalhista/penal ICTSI Rio Brasil Terminal
+- Atualizacao nos status do INSS, CAT, DUT ou processo juridico
+- Novos dados sobre beneficios previdenciarios (B-91, B-31, estabilidade)
+
+## Acoes obrigatorias (nesta ordem)
+
+### 1. Registrar no INDICE_EVIDENCIAS.pt_BR.md
+
+Arquivo: `docs/private/ictsi_dossie/INDICE_EVIDENCIAS.pt_BR.md`
+
+Para cada nova evidencia importada, adicionar ou atualizar linha na tabela correspondente com:
+- Nome do arquivo (sem caminho completo)
+- Tipo e formato
+- Valor probatorio (ALTO / MEDIO / BAIXO)
+- Localizacao e contexto resumido
+
+### 2. Atualizar SUMARIO_EXECUTIVO_DOSSIE.pt_BR.md
+
+Arquivo: `docs/private/ictsi_dossie/SUMARIO_EXECUTIVO_DOSSIE.pt_BR.md`
+
+- Adicionar nova secao numerada se for sessao nova (ex: `## 10. Atualizacao -- YYYY-MM-DD`)
+- Resumir os novos achados por categoria (INC, TRAB, LGPD, etc.)
+- Atualizar a lista "O que ainda falta" se algum item foi coletado
+- Atualizar recomendacoes de proximos passos juridicos se aplicavel
+
+### 3. Atualizar RISCOS_E_PROTECOES_PARA_ESPOSA.pt_BR.md
+
+Arquivo: `docs/private/ictsi_dossie/RISCOS_E_PROTECOES_PARA_ESPOSA.pt_BR.md`
+
+- Se nova evidencia muda o perfil de risco: adicionar secao "## ATUALIZACAO -- YYYY-MM-DD"
+- Se nova protecao foi confirmada: adicionar a PARTE 3
+- Se novos riscos foram identificados: adicionar a PARTE 2
+- Atualizar o resumo executivo da PARTE 5 quando houver mudanca significativa
+
+### 4. Registrar no OPERATOR_RETEACH.md
+
+Arquivo: `docs/private/homelab/OPERATOR_RETEACH.md`
+
+- Adicionar entrada na sessao mais recente ou criar nova sessao
+- Registrar o que foi encontrado, analisado, e guardado
+- Incluir decisoes tomadas e pendencias levantadas
+
+### 5. Commitar no stacked private repo
+
+Apos qualquer atualizacao relevante ao dossie:
+
+```powershell
+# No diretorio do private repo
+git add -A
+git commit --trailer "Made-with: Cursor" -m "docs(dossie): update YYYY-MM-DD -- <resumo 1 linha>"
+.\scripts\private-git-sync.ps1
+```
+
+Remotes minimos esperados:
+- latitude
+- mini-bt
+- t14 (quando configurado)
+- pCloud P: via robocopy (nao git)
+
+## Checklist rapido (apos cada sessao com evidencias)
+
+- INDICE_EVIDENCIAS.pt_BR.md atualizado com novos arquivos
+- SUMARIO_EXECUTIVO atualizado com nova secao ou linha
+- RISCOS_ESPOSA atualizado se mudanca no perfil de risco/protecao
+- OPERATOR_RETEACH com log da sessao
+- Commit no private repo
+- private-git-sync.ps1 executado
+
+## Backups minimos obrigatorios
+
+O dossie juridico e evidencia legal. Deve existir em pelo menos 4 copias:
+
+| Destino | Metodo | Frequencia minima |
+|---|---|---|
+| L14 (origem) | git repo local | Apos cada sessao |
+| Latitude | git remote push | Apos cada commit |
+| Mini-BT | git remote push | Apos cada commit |
+| T14 | git remote push (quando configurado) | Apos cada commit |
+| pCloud (P:) | robocopy ou rsync | Diario / apos sessao importante |
+| Latitude cloud backup | programa do Latitude (a confirmar) | Automatico |
+
+## Nota de confidencialidade
+
+Estes documentos contem dados sensiveis (saude, processo judicial, dados de terceiros).
+- NUNCA commitar nada de `docs/private/ictsi_dossie/` no repo publico do GitHub
+- NUNCA mencionar nomes de medicos, advogados, ou detalhes do processo em issues/PRs publicos
+- Sempre verificar `.gitignore` antes de qualquer `git add` no repo publico
