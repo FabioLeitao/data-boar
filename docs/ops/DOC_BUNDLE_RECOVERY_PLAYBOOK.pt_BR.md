@@ -28,6 +28,8 @@
 | 6     | Divisão fiél ao byte (melhor com **ordem exata** de `cat`) | `uv run python scripts/audit_concatenated_markdown.py -i blob.md --cat-order order.txt` — gera **`order.txt`** com `--emit-order-glob` (ver `--help` e doc GEMINI).                                                                                    |
 | 7     | Sem headers / ordem desconhecida                           | **Janela deslizante:** `uv run python scripts/audit_concat_sliding_window.py -i blob.md --window 25` e **`--strip-bundle-markers`** se existirem linhas `--- FILE: ... ---`. **H1:** `uv run python scripts/audit_concatenated_markdown.py -i blob.md` |
 
+**PowerShell (passo 4):** o trecho `$(date -I)` é só para **bash**. No Windows use `--output "docs/private/gemini_bundles/recovery_$(Get-Date -Format 'yyyy-MM-dd').txt"` — ver **[GEMINI_PUBLIC_BUNDLE_REVIEW.pt_BR.md](GEMINI_PUBLIC_BUNDLE_REVIEW.pt_BR.md)**.
+
 ---
 
 ## Script meta (Windows, um comando)
