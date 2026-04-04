@@ -67,6 +67,10 @@ def _iter_strict_markdown_files() -> list[Path]:
                 continue
             if len(parts) >= 2 and parts[:2] == ("docs", "private"):
                 continue
+            # feedbacks/reviews inbox is gitignored operator material; ARCHIVE_* copies
+            # of tracked docs may legitimately link into plans — skip entire subtree.
+            if len(parts) >= 2 and parts[1].startswith("feedbacks"):
+                continue
             rel_posix = rel.as_posix()
             if _docs_path_skips_plan_link_guard(rel_posix):
                 continue
