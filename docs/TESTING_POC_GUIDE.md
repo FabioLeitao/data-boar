@@ -299,3 +299,65 @@ bash run_error_tests.sh 2>&1 | tee error_test_results.txt
 | `config_api_key_wrong.yaml` | HTTP 401 on API (test with curl) |
 
 **Score each on 1-5** using `docs/private/plans/POC_METRICS_TEMPLATE.pt_BR.md` Section 2.1.
+
+---
+
+## 10. Prerequisites for Windows 11 collaborators (IDENTIDADE_COLABORADOR_A / IDENTIDADE_COLABORADOR_B)
+
+If you are running on **Windows 11** (not Linux/macOS), follow these steps before the quick
+start in §1.
+
+### Step A — Install WSL2 + Ubuntu
+
+```powershell
+# Run in PowerShell as Administrator (one-time)
+wsl --install -d Ubuntu-24.04
+# Restart when prompted, then open "Ubuntu" from the Start menu and set up a username/password.
+```
+
+### Step B — Install Docker Desktop
+
+1. Download from <https://www.docker.com/products/docker-desktop/>
+2. Install with default settings.
+3. Open Docker Desktop → Settings → **Resources → WSL Integration** → enable for **Ubuntu-24.04**.
+4. Confirm Docker is available inside WSL:
+
+```bash
+# Run inside Ubuntu WSL terminal
+docker run --rm hello-world
+```
+
+### Step C — Clone and run inside WSL
+
+```bash
+# Inside Ubuntu WSL terminal
+git clone https://github.com/FabioLeitao/data-boar.git
+cd data-boar
+pip install uv
+uv sync
+uv run python scripts/generate_synthetic_poc_corpus.py
+```
+
+> **Note:** all `uv run` and `docker` commands in this guide should be run inside the WSL
+> Ubuntu terminal, **not** PowerShell, unless noted otherwise.
+
+### Step D — Database scenarios on Windows
+
+The `scripts/populate_poc_database.py --docker-setup` flag spins up PostgreSQL and MariaDB via
+Docker Compose. On Windows, run it inside the WSL terminal (Docker Desktop routes the daemon
+from WSL automatically):
+
+```bash
+# Inside WSL Ubuntu
+uv run python scripts/populate_poc_database.py --docker-setup --dry-run
+uv run python scripts/populate_poc_database.py --docker-setup
+```
+
+### Step E — Postman on Windows (GUI, no WSL needed)
+
+Download and install [Postman for Windows](https://www.postman.com/downloads/).
+Import `tests/postman/Data_Boar_POC_ErrorScenarios.postman_collection.json` via
+**File → Import → Upload Files**.
+
+> The Data Boar API must be running (Step C above via WSL) before sending requests.
+
