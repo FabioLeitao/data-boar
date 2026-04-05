@@ -1,0 +1,246 @@
+# Data Boar — POC Testing Guide
+
+> **Audience:** collaborators (Colleague-A, Colleague-B, lab-op team) running validation passes on the scanner.
+> **Version:** 2026-04-05 | **Related:** `scripts/generate_synthetic_poc_corpus.py`
+
+This guide walks through the full test coverage plan for Data Boar POC validation:
+how to generate the synthetic test corpus, what each scenario tests, and how to
+interpret and document findings.
+
+---
+
+## 1. Quick start (5 minutes)
+
+```bash
+# 1. Clone and set up
+git clone https://github.com/FabioLeitao/data-boar.git
+cd data-boar
+
+# 2. Install dependencies
+pip install uv
+uv sync
+
+# 3. Generate the full synthetic corpus
+uv run python scripts/generate_synthetic_poc_corpus.py
+
+# 4. Point the scanner at the corpus
+uv run python main.py --config deploy/config.example.yaml \
+    --scan --target tests/synthetic_corpus --report
+
+# 5. Compare findings to expected results
+# Each sub-folder in tests/synthetic_corpus/ has an EXPECTED.txt file.
+```
+
+---
+
+## 2. What the corpus covers
+
+| Folder | Scenario | Goal |
+|---|---|---|
+| `1_happy/` | **Happy path** | Scanner finds CPF/RG/email in clear text, PDF, DOCX, XLSX, SQLite, PNG (OCR) |
+| `2_unhappy/` | **Unhappy path** | Scanner handles OCR noise, latin-1 encoding, BOM, CRLF, base64-embedded PII |
+| `3_catastrophic/` | **Catastrophic** | Scanner attempts nested ZIPs, password-protected ZIP, tar.gz, disguised extensions |
+| `4_false_positive/` | **False positive** | Scanner does NOT trigger on invalid CPF-shaped serials, IP addresses, versions |
+| `5_manual_review/` | **Manual review** | Scanner flags partially masked PII for human review (not a hard positive) |
+| `6_stego/` | **Steganography** | Scanner does NOT find CPF hidden in PNG LSB (expected gap — document it) |
+| `7_extensions/` | **Extension coverage** | Every supported format has one CPF — map which formats are found vs missed |
+
+---
+
+## 3. Detailed scenario expectations
+
+### Scenario 1 — Happy path
+
+**Files:** `.txt`, `.csv`, `.json`, `.pdf`, `.docx`, `.xlsx`, `.db` (SQLite), `.png` (OCR)
+
+**Expected:** scanner finds CPF `123.456.789-09` in ALL files.
+
+**How to validate:**
+1. Run scanner against `1_happy/`
+2. Check the report for findings in each file type
+3. Record any missed files in the gap table (Section 5)
+
+**Common failure mode:** OCR not enabled — `id_card_visible.png` is missed.
+To enable: set `ocr.enabled: true` in `config.yaml`.
+
+---
+
+### Scenario 2 — Unhappy path
+
+**Files:** OCR-noisy text, latin-1, BOM CSV, CRLF, partial redaction, base64-embedded
+
+**Expected:** scanner finds PII in most files; base64 detection is optional.
+
+**Key test — base64:**
+- File: `base64_embedded.txt`
+- Contains: `campo_documento: <base64-encoded CPF + Nome>`
+- If scanner decodes base64 before scanning: **FOUND** (good)
+- If scanner reads raw text only: **NOT FOUND** (document as gap)
+
+**Key test — encoding:**
+- `latin1_encoded.txt`: scanner must handle non-UTF-8 gracefully (no crash, finding or miss)
+- `bom_utf8.csv`: BOM should be stripped before scanning
+
+---
+
+### Scenario 3 — Catastrophic
+
+**Files:** nested ZIP, password-protected ZIP, tar.gz, disguised `.jpg` extension, 500KB+ line
+
+**Password for `password_protected.zip`:** `poc-test-123`
+
+To configure: add to `config.yaml`:
+
+```yaml
+file_scan:
+  zip_passwords:
+    - poc-test-123
+```
+
+**Expected outcomes:**
+
+| File | Expected without password config | Expected with password config |
+|---|---|---|
+| `nested.zip` | MAY be found (depends on depth limit) | Same |
+| `password_protected.zip` | NOT found | FOUND |
+| `archive.tar.gz` | FOUND | FOUND |
+| `report_2026.jpg` | FOUND (magic-byte detection) or MISSED (extension filter) | Same |
+| `long_line_stress.txt` | FOUND (no crash) | Same |
+
+---
+
+### Scenario 4 — False positive pressure
+
+**Files:** invalid CPF-shaped serials, IP addresses, version strings, invalid CNPJs
+
+**Expected:** scanner does NOT flag any file.
+
+**How to validate:** run scanner and confirm the report shows **zero findings** for this folder.
+
+If findings appear: check whether the CPF validator is using checksum validation.
+False positives here indicate missing checksum enforcement (report as gap, not bug).
+
+---
+
+### Scenario 5 — Manual review triggers
+
+**Files:** partially masked CPF, PII in prose, foreign patterns (DNI, SSN), anonymized columns
+
+**Expected:** scanner flags some content for **manual review** (not a hard positive finding).
+
+Look for findings with confidence `LOW` or `REVIEW_RECOMMENDED` in the report.
+
+If scanner returns hard positives here: may indicate false positive risk in production.
+Document in gap table with the specific pattern that triggered.
+
+---
+
+### Scenario 6 — Steganography (expected gap)
+
+**Files:** `innocent_photo.png` (CPF in LSB), `photo_with_exif_pii.png` (CPF in PNG metadata)
+
+**Expected:**
+- `innocent_photo.png`: scanner does **NOT** find CPF (LSB is invisible to standard scanners)
+- `photo_with_exif_pii.png`: scanner **MAY** find CPF if it reads PNG metadata/comments
+
+**This is a known gap.** Document it, do not treat as a bug.
+
+To manually verify the LSB-hidden CPF is there:
+
+```bash
+uv run python -c "
+from scripts.generate_synthetic_poc_corpus import _extract_lsb
+from pathlib import Path
+print(_extract_lsb(Path('tests/synthetic_corpus/6_stego/innocent_photo.png')))
+"
+```
+
+Expected output: `CPF:123.456.789-09;Nome:Ana Paula Souza`
+
+---
+
+### Scenario 7 — Extension coverage
+
+**Files:** one file per supported extension, all containing `CPF: 123.456.789-09`
+
+**Expected:** scanner finds CPF in all files. Missing = gap.
+
+**How to fill the gap table:**
+
+| Extension | Found | Notes |
+|---|---|---|
+| .txt | | |
+| .csv | | |
+| .json | | |
+| .xml | | |
+| .pdf | | |
+| .docx | | |
+| .xlsx | | |
+| .db (SQLite) | | |
+| .png (OCR) | | |
+| .jpg (OCR) | | |
+| .zip | | |
+| .tar.gz | | |
+| .tar.bz2 | | |
+| .md | | |
+| .log | | |
+| .yml / .yaml | | |
+| .ini / .cfg | | |
+
+---
+
+## 4. How to run against your lab-op environment
+
+```bash
+# On the lab node (LAB-NODE-01 or any host with Data Boar deployed via Ansible):
+ssh your-user@lab-node
+
+# Generate corpus on the target
+cd /opt/data_boar
+uv run python scripts/generate_synthetic_poc_corpus.py --output /tmp/poc_corpus
+
+# Run scan
+uv run python main.py --config config.yaml \
+    --scan --target /tmp/poc_corpus --report
+
+# Download report to your machine
+scp your-user@lab-node:/opt/data_boar/reports/latest.* ./
+```
+
+---
+
+## 5. Gap reporting template
+
+When you find a gap, add a row to this table and open a GitHub issue:
+
+| Scenario | File / Format | Expected | Actual | Notes | Issue |
+|---|---|---|---|---|---|
+| 1_happy | .parquet | FOUND | NOT FOUND | pyarrow not installed in Docker image | #XX |
+| 6_stego | innocent_photo.png | NOT FOUND (expected) | NOT FOUND | Known gap — LSB invisible to scanner | — |
+
+---
+
+## 6. Regenerating the corpus
+
+If you change the scanner or add new detection rules, regenerate the corpus:
+
+```bash
+# Full regeneration
+uv run python scripts/generate_synthetic_poc_corpus.py --output tests/synthetic_corpus
+
+# Specific scenarios only
+uv run python scripts/generate_synthetic_poc_corpus.py --scenario stego,extensions
+```
+
+The corpus is gitignored (`tests/synthetic_corpus/`) — it is generated on demand,
+never committed. This prevents test data bloat and keeps the repo clean.
+
+---
+
+## 7. Related documentation
+
+- `scripts/generate_synthetic_poc_corpus.py` — the corpus generator
+- `docs/private/plans/OPEN_CORE_POC_GAP_ANALYSIS.pt_BR.md` — gap analysis and priorities
+- `deploy/ansible/README.md` — how to deploy Data Boar for lab-op testing
+- `docs/TECH_GUIDE.md` — architecture and connector reference
+- `docs/USAGE.md` — CLI and configuration reference
