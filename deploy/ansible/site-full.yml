@@ -1,0 +1,21 @@
+---
+# Path B — Full stack: Docker CE + Swarm + ctop + Data Boar service.
+# Usage:
+#   ansible-playbook site-full.yml --check   # dry-run
+#   ansible-playbook site-full.yml           # apply
+
+- name: Install Docker CE and initialise Swarm
+  hosts: data_boar
+  become: true
+  vars:
+    swarm_enabled: true
+  roles:
+    - docker
+
+- name: Deploy Data Boar as Swarm service
+  hosts: data_boar
+  become: true
+  vars:
+    swarm_enabled: true
+  roles:
+    - data_boar
