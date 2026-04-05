@@ -648,6 +648,26 @@ Core flow first (sections 1–7); then optional Phase 9 (complexity/gain: high c
 
 ---
 
+## [H3][U2] Branding rename — `python3-lgpd-crawler` -> `data-boar` (next release)
+
+**ADR:** `docs/adr/0014-rename-repo-and-package-python3-lgpd-crawler-to-data-boar.md`
+**Scope:** cosmetic/houseclean — no behavior change, no history rewrite needed.
+
+GitHub repo and `origin` remote already point to `data-boar`. Remaining work:
+
+| # | To-do | Status |
+|---|---|---|
+| 1 | `pyproject.toml`: change `name = "python3-lgpd-crawler"` to `name = "data-boar"` | Pending |
+| 2 | Batch replace `python3-lgpd-crawler` -> `data-boar` in ~50 tracked doc files (non-historical) | Pending |
+| 3 | Run `check-all` to confirm no regressions | Pending |
+| 4 | Notify Ivan: `git remote set-url origin git@github.com:FabioLeitao/data-boar.git` | Pending |
+| 5 | Tag release with changelog note: "Repository fully renamed to data-boar" | Pending |
+| 6 | Remove `python3-lgpd-crawler-legacy-and-history-only` remote from `.git/config` | Pending |
+
+Historical mentions (ADRs, changelogs, `docs/plans/completed/`) may stay as-is — they document the project origin.
+
+---
+
 ## Completed plans (reference)
 
 - **Corporate compliance** – [.cursor/plans/](.cursor/plans/) (reference)
