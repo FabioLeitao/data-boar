@@ -1,4 +1,4 @@
-# How to Use Data Boar (LGPD Audit Application)
+﻿# How to Use Data Boar (LGPD Audit Application)
 
 **Data Boar** is the application name (based on lgpd_crawler technology; package/distribution id: `python3-lgpd-crawler`). This guide covers **command-line arguments and outcomes**, **deploying and using the web API**, **configuration (targets and credentials)**, and **downloading reports** (current and previous sessions). Operators can use it to learn how to run, configure, and navigate the app.
 
@@ -78,6 +78,45 @@ python main.py --config config.yaml --web --allow-insecure-http --host 0.0.0.0 -
 ## 2. Deploying and accessing the web API
 
 ### Deploying the server
+
+### Automated deployment with Ansible (two paths)
+
+For reproducible, one-command deployments on Debian/Ubuntu servers, Data Boar ships
+Ansible playbooks under `deploy/ansible/`. Two paths are available:
+
+**Path A — Simple (Docker Compose, existing Docker install):**
+
+```bash
+# 1. Install Ansible on your control machine
+sudo apt install ansible
+ansible-galaxy collection install community.docker
+
+# 2. Clone the repo
+git clone https://github.com/FabioLeitao/data-boar.git
+cd data-boar/deploy/ansible
+
+# 3. Configure your inventory
+cp inventory/hosts.ini.example inventory/hosts.ini
+# Edit hosts.ini: add your server IP and SSH user
+
+# 4. Dry-run, then apply
+ansible-playbook site.yml --check
+ansible-playbook site.yml
+```
+
+**Path B — Full stack (Docker CE + Swarm + ctop + Data Boar service, fresh server):**
+
+```bash
+# Steps 1-3 same as Path A, then:
+ansible-playbook site-full.yml --check
+ansible-playbook site-full.yml
+```
+
+This installs Docker CE from the official repository, initialises a single-node Swarm,
+installs `ctop` for container monitoring, and deploys Data Boar as a Swarm service.
+
+After either path, Data Boar is reachable at `http://<server>:8088`.
+See `deploy/ansible/README.md` for variables, multi-node Swarm, and troubleshooting.
 
 ## Option: run from Docker (no Git clone)
 
