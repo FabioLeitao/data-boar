@@ -26,6 +26,10 @@ param(
     [Parameter(Mandatory = $true)]
     [ValidateSet("Morning", "Eod")]
     [string]$Mode
+,
+
+    [Parameter(Mandatory = $false)]
+    [int]$Days = 0
 )
 
 $ErrorActionPreference = "Stop"
@@ -73,9 +77,16 @@ Write-Host "git fetch origin..."
 git fetch origin 2>&1 | ForEach-Object { Write-Host $_ }
 Write-Host ""
 
-$sinceLabel = [DateTime]::Today.ToString("yyyy-MM-dd")
-Write-Host "Today's progress (origin/main since local midnight $sinceLabel, max 15):" -ForegroundColor Yellow
-$progressLines = @(git -C $repoRoot log origin/main --oneline --since=midnight -15 2>$null)
+if ($Days -gt 0) {
+    $sinceDate  = [DateTime]::Today.AddDays(-$Days).ToString("yyyy-MM-dd")
+    $sinceLabel = "last $Days days (since $sinceDate)"
+    $sinceArg   = $sinceDate
+} else {
+    $sinceLabel = "today since midnight"
+    $sinceArg   = "midnight"
+}
+Write-Host "Progress ($sinceLabel, origin/main, max 30):" -ForegroundColor Yellow
+$progressLines = @(git -C $repoRoot log origin/main --oneline --since=$sinceArg --format="%ad %s" --date=short -30 2>$null)
 if ($progressLines.Count -eq 0 -or ($progressLines.Count -eq 1 -and [string]::IsNullOrWhiteSpace($progressLines[0]))) {
     Write-Host "  (no new commits on origin/main since midnight - or detached/fresh clone)" -ForegroundColor DarkGray
 } else {
