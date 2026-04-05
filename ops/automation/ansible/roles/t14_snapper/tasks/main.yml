@@ -1,0 +1,88 @@
+---
+# Role: t14_snapper
+# Installs and configures snapper for automatic btrfs snapshots.
+# Skips without error if root filesystem is not btrfs.
+
+- name: Detect root filesystem type
+  ansible.builtin.command: stat -f --format="%T" /
+  register: rootfs_type
+  changed_when: false
+
+- name: Abort gracefully if root is not btrfs
+  ansible.builtin.debug:
+    msg: >
+      Snapper skipped: root filesystem is {{ rootfs_type.stdout }}, not btrfs.
+      To use snapper, reinstall with a btrfs root partition and re-run this role.
+  when: rootfs_type.stdout != "btrfs"
+
+- name: Install snapper and btrfs-progs
+  ansible.builtin.apt:
+    name:
+      - snapper
+      - btrfs-progs
+    state: present
+    update_cache: true
+  when:
+    - t14_snapper_enabled | bool
+    - rootfs_type.stdout == "btrfs"
+
+- name: Check if snapper config already exists
+  ansible.builtin.command: snapper -c {{ t14_snapper_config_name }} list
+  register: snapper_config_check
+  failed_when: false
+  changed_when: false
+  when:
+    - t14_snapper_enabled | bool
+    - rootfs_type.stdout == "btrfs"
+
+- name: Create snapper root config
+  ansible.builtin.command: >
+    snapper -c {{ t14_snapper_config_name }} create-config {{ t14_snapper_subvolume }}
+  when:
+    - t14_snapper_enabled | bool
+    - rootfs_type.stdout == "btrfs"
+    - snapper_config_check.rc != 0
+
+- name: Configure snapper timeline limits
+  ansible.builtin.lineinfile:
+    path: "/etc/snapper/configs/{{ t14_snapper_config_name }}"
+    regexp: "^{{ item.key }}="
+    line: "{{ item.key }}={{ item.value }}"
+  loop:
+    - { key: "TIMELINE_CREATE",        value: "\"{{ t14_snapper_timeline_create | string | upper }}\"" }
+    - { key: "TIMELINE_CLEANUP",       value: "\"{{ t14_snapper_timeline_cleanup | string | upper }}\"" }
+    - { key: "NUMBER_LIMIT_HOURLY",    value: "\"{{ t14_snapper_timeline_limit_hourly }}\"" }
+    - { key: "NUMBER_LIMIT_DAILY",     value: "\"{{ t14_snapper_timeline_limit_daily }}\"" }
+    - { key: "NUMBER_LIMIT_WEEKLY",    value: "\"{{ t14_snapper_timeline_limit_weekly }}\"" }
+    - { key: "NUMBER_LIMIT_MONTHLY",   value: "\"{{ t14_snapper_timeline_limit_monthly }}\"" }
+    - { key: "NUMBER_LIMIT_YEARLY",    value: "\"{{ t14_snapper_timeline_limit_yearly }}\"" }
+  when:
+    - t14_snapper_enabled | bool
+    - rootfs_type.stdout == "btrfs"
+
+- name: Enable and start snapper timeline timer
+  ansible.builtin.systemd:
+    name: snapper-timeline.timer
+    enabled: true
+    state: started
+  when:
+    - t14_snapper_enabled | bool
+    - rootfs_type.stdout == "btrfs"
+
+- name: Enable and start snapper cleanup timer
+  ansible.builtin.systemd:
+    name: snapper-cleanup.timer
+    enabled: true
+    state: started
+  when:
+    - t14_snapper_enabled | bool
+    - rootfs_type.stdout == "btrfs"
+
+- name: Create a baseline snapshot now
+  ansible.builtin.command: >
+    snapper -c {{ t14_snapper_config_name }} create
+    --description "ansible-baseline-$(date +%Y%m%d)"
+  when:
+    - t14_snapper_enabled | bool
+    - rootfs_type.stdout == "btrfs"
+  changed_when: true
