@@ -565,6 +565,302 @@ def gen_all_extensions(base: Path) -> None:
 
 # ---------------------------------------------------------------------------
 # Main
+
+
+# ---------------------------------------------------------------------------
+# Scenario 8 - Stress / Load (OOM, large files, high concurrency corpus)
+# ---------------------------------------------------------------------------
+def gen_stress_load(base: Path) -> None:
+    """
+    Generates files designed to stress the scanner:
+    - Very large text file with PII scattered at known offsets
+    - Many small files (directory flood)
+    - Deeply nested directory tree
+    - File with millions of lines (minimal PII density)
+    - Binary file with PII embedded in non-printable bytes
+    All are expected to be found; OOM or timeout = reportable failure.
+    """
+    out = base / "8_stress_load"
+    out.mkdir(parents=True, exist_ok=True)
+
+    # Large file: 50 MB of padding with 10 CPF instances
+    large = out / "large_50mb.txt"
+    chunk = "x" * 1000 + "\n"
+    with large.open("w", encoding="utf-8") as f:
+        for i in range(50000):  # ~50 MB
+            f.write(chunk)
+            if i % 5000 == 0 and i > 0:
+                f.write(f"CPF: {_p(_CPFS, i // 5000)}\nNome: {_p(_NAMES, i // 5000)}\n")
+    print(f"    -> large file: {large} ({large.stat().st_size // 1024 // 1024} MB)")
+
+    # Directory flood: 500 tiny files
+    flood_dir = out / "directory_flood"
+    flood_dir.mkdir(exist_ok=True)
+    for i in range(500):
+        (flood_dir / f"file_{i:04d}.txt").write_text(
+            f"ref:{i}\nCPF: {_p(_CPFS, i)}\n"
+            if i % 50 == 0
+            else f"ref:{i}\nnada aqui\n",
+            encoding="utf-8",
+        )
+    print(f"    -> directory flood: 500 files (10 with PII) -> {flood_dir}")
+
+    # Deep nesting: 10 levels, PII at the bottom
+    deep = out / "deep_nesting"
+    current = deep
+    for lvl in range(10):
+        current = current / f"level_{lvl:02d}"
+        current.mkdir(parents=True, exist_ok=True)
+    (current / "hidden_pii.txt").write_text(
+        f"CPF: {_p(_CPFS, 0)}\nNome: {_p(_NAMES, 0)}\n# 10 levels deep\n",
+        encoding="utf-8",
+    )
+    print(f"    -> deep nesting (10 levels): {current / 'hidden_pii.txt'}")
+
+    # High line count: 1 million lines, PII on lines 100000, 500000, 999999
+    million_lines = out / "million_lines.txt"
+    with million_lines.open("w", encoding="utf-8") as f:
+        for i in range(1_000_000):
+            if i in {100_000, 500_000, 999_999}:
+                f.write(f"CPF: {_p(_CPFS, i % len(_CPFS))}\n")
+            else:
+                f.write(f"linha {i}\n")
+    print(f"    -> million lines: {million_lines}")
+
+    _w(
+        out / "EXPECTED.txt",
+        "STRESS TEST -- OBJETIVO: scanner nao deve crashar nem perder PIIs.\n"
+        "Esperado: CPF encontrado em large_50mb.txt (10x), directory_flood (10 arquivos),\n"
+        "deep_nesting/hidden_pii.txt, e million_lines.txt (3x).\n"
+        "Falha: OOM, timeout, crash, ou PII nao encontrado.\n"
+        "Metrica: tempo de scan, memoria maxima (medir com /usr/bin/time -v ou psutil).\n",
+    )
+
+    _w(
+        out / "STRESS_TEST_COMMANDS.sh",
+        "#!/bin/bash\n"
+        "# Medir tempo e memoria do scan de stress\n"
+        "/usr/bin/time -v uv run python main.py \\\n"
+        "    --config config.yaml \\\n"
+        "    --scan --target tests/synthetic_corpus/8_stress_load \\\n"
+        "    --report 2> stress_metrics.txt\n"
+        "echo 'Metricas em stress_metrics.txt'\n"
+        "grep -E 'Maximum resident|Elapsed|Exit code' stress_metrics.txt\n",
+    )
+    print(f"  v  Scenario 8 (stress/load) -> {out}")
+
+
+# ---------------------------------------------------------------------------
+# Scenario 9 - Config errors (intentional misconfigs for UX/error message QA)
+# ---------------------------------------------------------------------------
+def gen_config_errors(base: Path) -> None:
+    """
+    Generates intentionally broken config files + a test script to run each.
+    The goal is NOT to scan PII — it is to evaluate:
+    - Quality of error messages (stdout/stderr)
+    - Dashboard troubleshooting recommendations
+    - Recovery / retry behavior
+    Each config has a documented EXPECTED_ERROR and TROUBLESHOOT hint.
+    """
+    out = base / "9_config_errors"
+    out.mkdir(parents=True, exist_ok=True)
+
+    configs: list[dict] = [
+        {
+            "name": "wrong_db_host",
+            "description": "Database host does not exist (DNS failure)",
+            "config": {
+                "targets": [
+                    {
+                        "type": "postgresql",
+                        "host": "nonexistent-db.local",
+                        "port": 5432,
+                        "database": "testdb",
+                        "user": "admin",
+                        "password": "secret",
+                    }
+                ],
+                "report": {"output_dir": "./reports"},
+            },
+            "expected_error": "connection refused OR DNS resolution failure",
+            "troubleshoot": "Verifique se o host esta acessivel (ping / nslookup). "
+            "Confirme VPN ativa se DB for interno.",
+        },
+        {
+            "name": "wrong_db_credentials",
+            "description": "Valid host but wrong username/password",
+            "config": {
+                "targets": [
+                    {
+                        "type": "postgresql",
+                        "host": "localhost",
+                        "port": 5432,
+                        "database": "testdb",
+                        "user": "wrong_user",
+                        "password": "wrong_pass",
+                    }
+                ],
+                "report": {"output_dir": "./reports"},
+            },
+            "expected_error": "authentication failed for user 'wrong_user'",
+            "troubleshoot": "Verifique as credenciais. Use variavel de ambiente DB_PASSWORD "
+            "em vez de senha em texto no config.",
+        },
+        {
+            "name": "missing_output_dir",
+            "description": "Report output_dir does not exist and cannot be created",
+            "config": {
+                "targets": [
+                    {"type": "filesystem", "path": "./tests/synthetic_corpus/1_happy"}
+                ],
+                "report": {"output_dir": "/nonexistent/readonly/path"},
+            },
+            "expected_error": "permission denied OR directory not found",
+            "troubleshoot": "Crie o diretorio manualmente ou aponte para um caminho gravavel. "
+            "Em Docker: monte o volume correto.",
+        },
+        {
+            "name": "invalid_target_type",
+            "description": "Unknown connector type specified",
+            "config": {
+                "targets": [
+                    {"type": "oracle_xyz_invalid", "host": "localhost", "port": 1521}
+                ],
+                "report": {"output_dir": "./reports"},
+            },
+            "expected_error": "unknown connector type 'oracle_xyz_invalid'",
+            "troubleshoot": "Tipos validos: postgresql, mysql, mssql, oracle, mongodb, redis, "
+            "filesystem. Verifique a documentacao em docs/USAGE.md.",
+        },
+        {
+            "name": "malformed_yaml",
+            "description": "Syntactically invalid YAML config",
+            "raw_content": "targets:\n  - type: postgresql\n    host: localhost\n  bad yaml: [unclosed\n",
+            "expected_error": "YAML parse error",
+            "troubleshoot": "Valide o YAML em https://www.yamllint.com/ ou com: "
+            "python -c \"import yaml; yaml.safe_load(open('config.yaml'))\"",
+        },
+        {
+            "name": "missing_required_field",
+            "description": "Config missing required 'targets' key",
+            "config": {
+                "report": {"output_dir": "./reports"},
+            },
+            "expected_error": "missing required field 'targets' in config",
+            "troubleshoot": "Copie o config de exemplo: cp deploy/config.example.yaml config.yaml "
+            "e edite os targets.",
+        },
+        {
+            "name": "path_not_found",
+            "description": "Filesystem target path does not exist",
+            "config": {
+                "targets": [
+                    {"type": "filesystem", "path": "/nonexistent/data/path/12345"}
+                ],
+                "report": {"output_dir": "./reports"},
+            },
+            "expected_error": "path '/nonexistent/data/path/12345' does not exist",
+            "troubleshoot": "Confirme que o caminho existe e que o usuario tem permissao de leitura. "
+            "Em Docker: monte o volume com -v /seu/caminho:/data.",
+        },
+        {
+            "name": "api_key_wrong",
+            "description": "API request with wrong X-API-Key header",
+            "config": {
+                "targets": [
+                    {"type": "filesystem", "path": "./tests/synthetic_corpus/1_happy"}
+                ],
+                "api": {"require_api_key": True, "api_key": "correct-key-12345"},
+                "report": {"output_dir": "./reports"},
+            },
+            "expected_error": "HTTP 401 Unauthorized when calling API with wrong key",
+            "troubleshoot": "Use X-API-Key: correct-key-12345 no header. "
+            "Para testar: curl -H 'X-API-Key: wrong-key' http://localhost:8088/api/v1/scan",
+            "test_curl": (
+                "curl -s -o /dev/null -w '%{http_code}' "
+                "-H 'X-API-Key: WRONG-KEY' http://localhost:8088/api/v1/status"
+            ),
+        },
+    ]
+
+    import yaml as _yaml  # may not be available; fall back to json dump
+
+    test_script_lines = [
+        "#!/bin/bash",
+        "# Auto-generated: test each broken config and capture exit code + output",
+        "# Usage: bash 9_config_errors/run_error_tests.sh 2>&1 | tee error_test_results.txt",
+        "",
+        "PASS=0; FAIL=0; SKIP=0",
+        "",
+    ]
+
+    for cfg in configs:
+        cfg_path = out / f"config_{cfg['name']}.yaml"
+        if "raw_content" in cfg:
+            _w(cfg_path, cfg["raw_content"])
+        else:
+            try:
+                import yaml as _yaml
+
+                _w(
+                    cfg_path,
+                    _yaml.dump(
+                        cfg["config"], allow_unicode=True, default_flow_style=False
+                    ),
+                )
+            except ImportError:
+                _w(cfg_path, json.dumps(cfg["config"], ensure_ascii=False, indent=2))
+
+        doc_path = out / f"doc_{cfg['name']}.txt"
+        _w(
+            doc_path,
+            (
+                f"Config: {cfg['name']}\n"
+                f"Descricao: {cfg['description']}\n"
+                f"Erro esperado: {cfg['expected_error']}\n"
+                f"Troubleshoot: {cfg['troubleshoot']}\n"
+                + (f"Teste curl: {cfg.get('test_curl', 'N/A')}\n")
+            ),
+        )
+
+        name_val = cfg["name"]
+        cfg_file = cfg_path.name
+        scan_tgt = "./tests/synthetic_corpus/1_happy"
+        test_script_lines += [
+            f'echo "--- Testing: {name_val} ---"',
+            f"uv run python main.py --config {cfg_file} --scan --target {scan_tgt} 2>&1 | head -20",
+            "RC=$?; if [ $RC -ne 0 ]; then"
+            f' echo "EXPECTED FAILURE (rc=$RC): {name_val} -- OK"; PASS=$((PASS+1));'
+            f' else echo "UNEXPECTED SUCCESS: {name_val} -- REVIEW"; FAIL=$((FAIL+1)); fi',
+            "",
+        ]
+
+    test_script_lines += [
+        'echo ""',
+        'echo "Results: PASS=$PASS  FAIL=$FAIL  SKIP=$SKIP"',
+        'echo "(PASS = expected failure triggered correctly)"',
+    ]
+
+    _w(out / "run_error_tests.sh", "\n".join(test_script_lines))
+
+    _w(
+        out / "EXPECTED.txt",
+        "CENARIO 9 -- CONFIG ERRORS\n"
+        "Objetivo: avaliar qualidade das mensagens de erro e recomendacoes de troubleshooting.\n"
+        "Cada config_*.yaml e proposital e incorreto.\n\n"
+        "Para cada caso, avaliar:\n"
+        "  [ ] Mensagem de erro e clara e actionable?\n"
+        "  [ ] Exit code nao-zero (distingue erro de sucesso)?\n"
+        "  [ ] Dashboard mostra recomendacao de troubleshooting?\n"
+        "  [ ] Nenhum stacktrace interno exposto para usuario final?\n"
+        "  [ ] Log tem nivel correto (ERROR vs WARNING vs INFO)?\n\n"
+        "Score qualitativo (1-5 por caso):\n"
+        "  5 = mensagem clara, troubleshoot acionavel, sem stacktrace, exit code correto\n"
+        "  1 = crash sem mensagem, stacktrace exposto, exit 0 em erro\n",
+    )
+    print(f"  v  Scenario 9 (config_errors) -> {out} ({len(configs)} configs)")
+
+
 # ---------------------------------------------------------------------------
 _SCENARIO_MAP: dict[str, Callable[[Path], None]] = {
     "happy": gen_scenario_1,
@@ -574,6 +870,8 @@ _SCENARIO_MAP: dict[str, Callable[[Path], None]] = {
     "manual_review": gen_scenario_5,
     "stego": gen_scenario_6,
     "extensions": gen_all_extensions,
+    "stress_load": gen_stress_load,
+    "config_errors": gen_config_errors,
 }
 ALL_SCENARIOS = list(_SCENARIO_MAP)
 
