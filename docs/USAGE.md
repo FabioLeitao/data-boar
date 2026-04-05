@@ -1,4 +1,4 @@
-﻿# How to Use Data Boar (LGPD Audit Application)
+# How to Use Data Boar (LGPD Audit Application)
 
 **Data Boar** is the application name (based on lgpd_crawler technology; package/distribution id: `python3-lgpd-crawler`). This guide covers **command-line arguments and outcomes**, **deploying and using the web API**, **configuration (targets and credentials)**, and **downloading reports** (current and previous sessions). Operators can use it to learn how to run, configure, and navigate the app.
 
@@ -946,7 +946,42 @@ After a scan finishes (CLI one-shot or `POST /scan` / `POST /start` background r
 
 ---
 
-## 6. Quick reference
+## 6. Infrastructure as Code — OpenTofu / Terraform
+
+For corporate and enterprise environments that manage infrastructure via OpenTofu or Terraform,
+Data Boar ships a minimal HCL module under `deploy/opentofu/`.
+
+**The recommended workflow for IaC-first teams:**
+
+```bash
+# Step 1 — Provision infrastructure (Docker container, ports, volumes)
+cd deploy/opentofu
+tofu init
+tofu apply                       # or: terraform apply
+
+# Step 2 — Configure and deploy the application
+cd ../..
+ansible-playbook -i deploy/opentofu/generated_inventory.ini deploy/ansible/site.yml
+```
+
+**With a POC database (PostgreSQL) for testing:**
+
+```bash
+tofu apply -var="db_enabled=true" -var="db_password=poc-test-123"
+uv run python scripts/populate_poc_database.py --db-type postgres --host localhost --write-config
+```
+
+Key variables: `data_boar_image`, `data_boar_port` (default `8088`), `data_boar_config_path`,
+`data_boar_output_dir`, `db_enabled`, `db_password`.
+
+Full module docs: `deploy/opentofu/README.md` — design rationale: `docs/adr/0016-opentofu-corporate-iac-path-alongside-ansible.md`.
+
+> OpenTofu >= 1.6 and Terraform >= 1.5 are both compatible with this module (HCL-identical).
+> For remote Docker hosts, set `DOCKER_HOST` or configure an SSH tunnel before `tofu apply`.
+
+---
+
+## 7. Quick reference
 
 - **CLI one-shot:** `python main.py --config config.yaml`
 - **CLI start API:** `python main.py --config config.yaml --web --port 8088`
