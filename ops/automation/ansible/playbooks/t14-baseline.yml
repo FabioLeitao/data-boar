@@ -35,7 +35,13 @@
     t14_obs_node_exporter_enabled: true
     # Wazuh SIEM agent (requires manager IP; off by default until lab is ready)
     t14_obs_wazuh_agent_enabled: false
-    t14_obs_wazuh_manager_ip: ""
+    t14_obs_wazuh_manager_ip: ""    # --- Opt-in knobs (snapshots / btrfs) ---
+    # Snapper: automatic BTRFS snapshots (skips gracefully if root is not btrfs)
+    t14_snapper_enabled: true
+    t14_snapper_timeline_limit_hourly: "5"
+    t14_snapper_timeline_limit_daily: "7"
+
+
 
   roles:
     # --- System baseline ---
@@ -62,3 +68,6 @@
     - role: t14_k3s
     # --- Observability (progressive opt-in) ---
     - role: t14_observability
+    # --- Snapshots (btrfs only, skips gracefully on ext4) ---
+    - role: t14_snapper
+      when: t14_snapper_enabled | bool

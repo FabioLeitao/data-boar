@@ -1,0 +1,22 @@
+---
+# Snapper — BTRFS snapshot automation for T14 lab node.
+# IMPORTANT: snapper only works on btrfs subvolumes.
+# This role skips gracefully if the filesystem is not btrfs.
+
+# Enable/disable the role entirely.
+t14_snapper_enabled: true
+
+# Subvolume to protect (default: root — requires root on btrfs).
+t14_snapper_config_name: "root"
+t14_snapper_subvolume: "/"
+
+# Snapshot schedule (systemd timer — snapper ships timeline timers).
+t14_snapper_timeline_create: true
+t14_snapper_timeline_cleanup: true
+
+# How many snapshots to keep in each category.
+t14_snapper_timeline_limit_hourly:  "5"
+t14_snapper_timeline_limit_daily:   "7"
+t14_snapper_timeline_limit_weekly:  "2"
+t14_snapper_timeline_limit_monthly: "2"
+t14_snapper_timeline_limit_yearly:  "1"
