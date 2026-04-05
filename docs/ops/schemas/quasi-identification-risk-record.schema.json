@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://data-boar.local/schemas/quasi-identification-risk-record.schema.json",
+  "title": "QuasiIdentificationRiskRecord",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_id",
+    "risk_score",
+    "risk_label",
+    "confidence_score",
+    "confidence_label",
+    "fired_signals",
+    "uncertainty_reasons",
+    "redaction_applied"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "risk_score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "risk_label": {
+      "type": "string",
+      "enum": ["LOW", "MEDIUM", "HIGH"]
+    },
+    "confidence_score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "confidence_label": {
+      "type": "string",
+      "enum": ["LOW", "MEDIUM", "HIGH"]
+    },
+    "fired_signals": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "uncertainty_reasons": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "redaction_applied": {
+      "type": "boolean"
+    },
+    "source_scope": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["proxy_log", "app_log", "report_log", "other"]
+      }
+    },
+    "action_hint": {
+      "type": "string",
+      "enum": [
+        "informational",
+        "monitor",
+        "suggested_review",
+        "priority_review",
+        "mandatory_review"
+      ]
+    }
+  }
+}

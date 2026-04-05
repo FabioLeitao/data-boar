@@ -25,6 +25,7 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0004  | [Information architecture — external-tier docs must not link into `plans/`](0004-external-docs-no-markdown-links-to-plans.md) | Accepted |
 | 0005  | [CI and GitHub Actions supply chain — pinned SHAs and pinned uv CLI](0005-ci-github-actions-supply-chain-pins.md)              | Accepted |
 | 0006  | [Operator today-mode layout and published-release sync](0006-operator-today-mode-layout-and-published-sync.md)                 | Accepted |
+| 0007  | [Quasi-identification risk/confidence contract and LGPD guardrails](0007-quasi-identification-risk-confidence-contract-and-lgpd-guardrails.md) | Accepted |
 
 ## Related docs
 

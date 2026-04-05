@@ -1,0 +1,24 @@
+{
+  "record_id": "sample-2026-04-05-001",
+  "risk_score": 72,
+  "risk_label": "HIGH",
+  "confidence_score": 64,
+  "confidence_label": "MEDIUM",
+  "fired_signals": [
+    "raw_ip_present",
+    "cep_detected",
+    "municipality_detected",
+    "sensitive_route_breadcrumb",
+    "cross_source_correlation"
+  ],
+  "uncertainty_reasons": [
+    "single_day_sample",
+    "partial_proxy_coverage"
+  ],
+  "redaction_applied": true,
+  "source_scope": [
+    "proxy_log",
+    "app_log"
+  ],
+  "action_hint": "mandatory_review"
+}
