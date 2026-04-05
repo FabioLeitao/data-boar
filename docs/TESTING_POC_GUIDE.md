@@ -1,4 +1,4 @@
-# Data Boar — POC Testing Guide
+﻿# Data Boar — POC Testing Guide
 
 > **Audience:** collaborators (IDENTIDADE_COLABORADOR_A, IDENTIDADE_COLABORADOR_B, lab-op team) running validation passes on the scanner.
 > **Version:** 2026-04-05 | **Related:** `scripts/generate_synthetic_poc_corpus.py`
@@ -244,3 +244,58 @@ never committed. This prevents test data bloat and keeps the repo clean.
 - `deploy/ansible/README.md` — how to deploy Data Boar for lab-op testing
 - `docs/TECH_GUIDE.md` — architecture and connector reference
 - `docs/USAGE.md` — CLI and configuration reference
+
+---
+
+## 8. Stress and load testing (Scenario 8)
+
+**Generate:**
+
+```bash
+uv run python scripts/generate_synthetic_poc_corpus.py --scenario stress_load
+```
+
+**Files:** 50 MB large file, 500-file directory flood, 10-level deep nesting, 1 million lines file.
+
+**Measure performance:**
+
+```bash
+# Linux (shows max RSS, elapsed time):
+/usr/bin/time -v uv run python main.py --config config.yaml \
+    --scan --target tests/synthetic_corpus/8_stress_load 2> stress_metrics.txt
+grep -E "Maximum resident|Elapsed" stress_metrics.txt
+
+# PowerShell:
+Measure-Command { uv run python main.py --config config.yaml --scan --target tests/synthetic_corpus/8_stress_load }
+```
+
+**Acceptable baseline:** < 15 min, < 1 GB RAM, no crash, all PIIs found.
+
+---
+
+## 9. Config error QA (Scenario 9)
+
+Tests 8 intentional misconfigs to evaluate error message quality and troubleshooting UX.
+
+**Generate:**
+
+```bash
+uv run python scripts/generate_synthetic_poc_corpus.py --scenario config_errors
+cd tests/synthetic_corpus/9_config_errors
+bash run_error_tests.sh 2>&1 | tee error_test_results.txt
+```
+
+**Evaluate each config** (doc_*.txt files describe the expected error and troubleshoot hint):
+
+| Config | Error type |
+|---|---|
+| `config_wrong_db_host.yaml` | DNS failure / connection refused |
+| `config_wrong_db_credentials.yaml` | Auth failure |
+| `config_missing_output_dir.yaml` | Permission denied / dir not found |
+| `config_invalid_target_type.yaml` | Unknown connector type |
+| `config_malformed_yaml.yaml` | YAML parse error |
+| `config_missing_required_field.yaml` | Missing required key |
+| `config_path_not_found.yaml` | Filesystem path not found |
+| `config_api_key_wrong.yaml` | HTTP 401 on API (test with curl) |
+
+**Score each on 1-5** using `docs/private/plans/POC_METRICS_TEMPLATE.pt_BR.md` Section 2.1.
