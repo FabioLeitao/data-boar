@@ -240,3 +240,6 @@ __marimo__/
 /Persona*.txt
 /e agora*.txt
 /*.txt
+
+# Generated POC test corpus (on-demand, not tracked)
+tests/synthetic_corpus/
