@@ -1,151 +1,233 @@
 # PLAN: Product Tiers and Open-Core Boundary Definition
 
-**Status:** Draft — strategic, not yet legal-reviewed
-**Priority:** [H2][U1] — critical before partner onboarding or public pricing page
-**Related plans:** `PLAN_NEXT_WAVE_PLATFORM_AND_GTM.md`, `PLAN_GRC_INSPIRED_ENTERPRISE_TRUST_ACCELERATORS.md`, `PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md`, `PLAN_IMAGE_SENSITIVE_DATA_DETECTION.pt_BR.md`
-**Commercial details (pricing, margins):** `docs/private/commercial/DATA_BOAR_FEATURE_TIER_STRATEGY.md` (gitignored)
+**Status:** Draft — not yet legal-reviewed
+**Priority:** [H2][U1] — near-term before partner onboarding
+**Related:** `docs/LICENSING_OPEN_CORE_AND_COMMERCIAL.md`, `docs/LICENSING_SPEC.md`, `docs/plans/PLANS_TODO.md`
+
+> This plan defines **which capabilities belong to each tier** of the Data Boar product.
+> Final pricing, contract terms, and JWT claim enforcement require legal review first.
+> The feature matrix here drives product decisions and must be kept in sync with
+> `LICENSING_OPEN_CORE_AND_COMMERCIAL.md` and `LICENSING_SPEC.md` (dbtier claim).
 
 ---
 
-## Summary
+## Tier Model (4+1 levels)
 
-Define the sustainable open-core boundary for Data Boar: what is always free, what is
-licensed, and why. Encode the boundary in the JWT enforcement model and document the
-rationale so partners, reviewers, and contributors understand the product strategy.
-
-This plan covers the feature matrix, tier rationale, and enforcement model.
-Pricing, margin, and competitive intelligence live in the private commercial strategy doc above.
-
----
-
-## Tier Model (5 levels)
-
-| Tier | JWT claim | Target audience | Enforcement mode |
+| Tier | Token claim | Target audience | Enforcement |
 |---|---|---|---|
-| **Community / Open Core** | absent or `community` | Researchers, DPOs, IT teams, students, freelancers | `open` — no token required |
-| **Trial / POC** | `trial` | Pre-sales evaluations, proof-of-concept engagements | `enforced`; row-capped + watermarked |
-| **Pro / Consultant** | `pro` | Independent consultants, MSSP, solo integrators | `enforced`; full features, single-client use |
-| **Partner / Integrator** | `partner` | Resellers, MSPs, multi-client system integrators | `enforced`; multi-client + co-brand rights |
-| **Enterprise** | `enterprise` | Large orgs, regulated industries, white-label OEM | `enforced`; all features + SLA + SSO + SIEM |
+| **Community / Open Core** | `dbtier: community` (or absent) | Researchers, DPOs, IT teams, students, freelancers | Mode `open` — no JWT required |
+| **Trial / POC** | `dbtier: trial` | Pre-sales evaluators, POC engagements | Mode `enforced`; row-capped + watermarked |
+| **Pro / Consultant** | `dbtier: pro` | Independent consultants, MSSP, small integrators | Mode `enforced`; full features for single-client engagements |
+| **Partner** | `dbtier: partner` | Resellers, system integrators, multi-client MSP | Mode `enforced`; multi-client use permitted; co-brand rules apply |
+| **Enterprise** | `dbtier: enterprise` | Large orgs, regulated industries, white-label | Mode `enforced`; all features + SLA + custom support |
+
+> The `dbtier` claim is already planned in `LICENSING_SPEC.md` §Future extensions.
+> Enforcement of feature gates per tier is NOT yet implemented — this plan drives that work.
 
 ---
 
-## Feature Tier Assignment (non-exhaustive)
+## Feature Matrix
 
-### Ingestion sources
+Legend: ✅ Included | 🔶 Limited | ❌ Not included | 🔜 Planned for this tier
 
-| Source | Community | Pro | Partner | Enterprise |
-|---|---|---|---|---|
-| Local filesystem, any path | ✅ | ✅ | ✅ | ✅ |
-| MySQL, PostgreSQL, SQLite, MongoDB | ✅ | ✅ | ✅ | ✅ |
-| Oracle, MSSQL, DB2 | — | ✅ | ✅ | ✅ |
-| SAP HANA / R3 | — | — | ✅ | ✅ |
-| Cloud storage (S3, GCS, Azure Blob) | — | ✅ | ✅ | ✅ |
-| OneDrive / SharePoint (local sync path) | ✅ | ✅ | ✅ | ✅ |
-| OneDrive / SharePoint API (tenant-wide) | — | — | ✅ | ✅ |
-| Teams attachments (manual path) | ✅ | ✅ | ✅ | ✅ |
-| Teams attachments (auto path discovery) | — | ✅ | ✅ | ✅ |
-| Teams Graph API (live tenant scan) | — | — | — | ✅ |
-| Outlook PST / OST archives | — | ✅ | ✅ | ✅ |
-| IMAP live mailbox | — | — | ✅ | ✅ |
+### Core Detection Engine
 
-### File formats
+| Capability | Community | Trial | Pro | Partner | Enterprise |
+|---|---|---|---|---|---|
+| LGPD regex patterns (CPF, RG, email, phone, address) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| GDPR patterns (EU formats) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| CCPA / US patterns | ✅ | ✅ | ✅ | ✅ | ✅ |
+| COPPA / child data patterns | ✅ | ✅ | ✅ | ✅ | ✅ |
+| CNPJ (including alphanumeric format) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Quasi-identifier aggregation | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Minor data detection | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Fuzzy column name matching | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Content-type cloaking detection | 🔶 basic | 🔶 | ✅ | ✅ | ✅ |
+| ML/DL-assisted sensitivity heuristics | ❌ | 🔶 limited | ✅ | ✅ | ✅ |
+| Confidence scoring + FN reduction techniques | ❌ | 🔶 | ✅ | ✅ | ✅ |
+| Synthetic data validation | ❌ | ❌ | 🔜 | ✅ | ✅ |
 
-| Format | Community | Pro | Enterprise |
-|---|---|---|---|
-| Text, CSV, JSON, XML, YAML, HTML | ✅ | ✅ | ✅ |
-| DOCX, XLSX, PPTX, ODT, ODS | ✅ | ✅ | ✅ |
-| PDF (text layer) | ✅ | ✅ | ✅ |
-| PDF (image-only, via OCR) | — | ✅ | ✅ |
-| Images / screenshots (OCR) | — | ✅ | ✅ |
-| Screen capture folder auto-discovery | — | ✅ | ✅ |
-| Legacy Office (XLS, DOC, WordPerfect) | ✅ | ✅ | ✅ |
-| Archive files (ZIP, TAR, 7Z — recursive) | — | ✅ | ✅ |
-| Audio files (Whisper transcription) | — | — | ✅ |
-| JVM heap dumps (.hprof) | — | — | ✅ |
-| OS core dumps / minidumps | — | — | ✅ |
-| Browser artefacts | — | ✅ | ✅ |
+### Data Sources / Connectors
 
-### Detection capabilities
+| Capability | Community | Trial | Pro | Partner | Enterprise |
+|---|---|---|---|---|---|
+| Filesystem (local directories) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| SQLite, CSV, JSON, JSONL | ✅ | ✅ | ✅ | ✅ | ✅ |
+| PostgreSQL, MySQL, MariaDB | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Microsoft SQL Server | ✅ | ✅ | ✅ | ✅ | ✅ |
+| MongoDB, Redis | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Oracle DB | 🔶 config only | ✅ | ✅ | ✅ | ✅ |
+| SAP connector | ❌ | ❌ | 🔜 | ✅ | ✅ |
+| Enterprise HR / ERP connectors (RM, TOTVS, SAP HR) | ❌ | ❌ | ❌ | 🔜 | ✅ |
+| Object storage (S3, Azure Blob, GCS) | ❌ | ❌ | 🔜 | ✅ | ✅ |
+| Office 365 / SharePoint / OneDrive (Graph API) | ❌ | ❌ | 🔜 | ✅ | ✅ |
+| Google Drive / Workspace | ❌ | ❌ | 🔜 | ✅ | ✅ |
+| Confluence / Jira (Atlassian) | ❌ | ❌ | ❌ | 🔜 | ✅ |
+| Opt-in network port/service scanning | ❌ | ❌ | ❌ | 🔜 | ✅ |
 
-| Capability | Community | Pro | Enterprise |
-|---|---|---|---|
-| Regex patterns (CPF, CNPJ, email, CC, phone) | ✅ | ✅ | ✅ |
-| International patterns (SSN, NI, IBAN, etc.) | ✅ | ✅ | ✅ |
-| Custom user-defined pattern sets | ✅ | ✅ | ✅ |
-| ML/NLP entity recognition (spaCy) | — | ✅ | ✅ |
-| Confidence scoring + calibration | — | ✅ | ✅ |
-| Context-aware detection | — | ✅ | ✅ |
-| Secrets detection (API keys, private keys) | ✅ | ✅ | ✅ |
+### File Format Ingestion (Data Soup)
 
-### Reporting
+| Capability | Community | Trial | Pro | Partner | Enterprise |
+|---|---|---|---|---|---|
+| Plain text, Markdown, HTML | ✅ | ✅ | ✅ | ✅ | ✅ |
+| PDF (pdfminer baseline) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Office (DOCX, XLSX, PPTX) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Email (EML, MSG) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Archives (ZIP, TAR, GZIP) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| EPUB, Parquet, ORC | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Images with EXIF / HEIC (Apple) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Rich media (video/audio metadata, subtitles) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| SQLite (browser history, app caches) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Legacy office (WPD, Lotus 1-2-3, ODF, RTF) | ❌ | 🔶 | ✅ | ✅ | ✅ |
+| OpenDocument (LibreOffice full suite) | ❌ | 🔶 | ✅ | ✅ | ✅ |
+| MS Access (.mdb/.accdb) | ❌ | ❌ | ✅ | ✅ | ✅ |
+| MS OneNote, MS Project, MS Visio | ❌ | ❌ | ✅ | ✅ | ✅ |
+| PostScript, LaTeX, DVI | ❌ | ❌ | 🔜 | ✅ | ✅ |
+| MHTML/MHT (browser saves) | ❌ | ❌ | ✅ | ✅ | ✅ |
+| Binary strings extraction (ELF, MZ, DLL, EXE) | ❌ | ❌ | 🔜 | ✅ | ✅ |
+| Browser artifact ingestion (Chrome/Firefox history, cache) | ❌ | ❌ | 🔜 | 🔜 | ✅ |
 
-| Output | Community | Pro | Partner | Enterprise |
-|---|---|---|---|---|
-| Console, JSON, CSV, Excel, HTML | ✅ | ✅ | ✅ | ✅ |
-| PDF report | — | ✅ | ✅ | ✅ |
-| Trend dashboard (multi-scan history) | — | ✅ | ✅ | ✅ |
-| GRC-mapped report (LGPD/GDPR articles) | — | — | ✅ | ✅ |
-| White-label / custom branding | — | — | — | ✅ |
-| Audit trail (Colleague-Nn of custody) | — | — | ✅ | ✅ |
-| RBAC multi-user dashboard | — | — | ✅ | ✅ |
-| SIEM export (Elastic, Splunk, CEF) | — | — | — | ✅ |
+### Report and Dashboard
+
+| Capability | Community | Trial | Pro | Partner | Enterprise |
+|---|---|---|---|---|---|
+| Excel report (risk heatmap + findings) | ✅ | 🔶 capped | ✅ | ✅ | ✅ |
+| Dashboard (dashBOARd) web UI | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Report RBAC / access control | ❌ | ❌ | ❌ | 🔜 | ✅ |
+| Multi-session report history | ✅ | 🔶 | ✅ | ✅ | ✅ |
+| Compliance evidence mapping output | 🔶 | 🔶 | ✅ | ✅ | ✅ |
+| GRC-ready output (ISO 27701, FELCA) | ❌ | ❌ | 🔜 | ✅ | ✅ |
+| White-label / custom logo in report | ❌ | ❌ | ❌ | 🔜 | ✅ |
+| Dashboard i18n (multi-language) | ❌ | ❌ | 🔜 | ✅ | ✅ |
+| Dashboard HTTPS by default | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Audit trail / immutable scan log | ❌ | ❌ | 🔶 | ✅ | ✅ |
+
+### Security and Compliance Hardening
+
+| Capability | Community | Trial | Pro | Partner | Enterprise |
+|---|---|---|---|---|---|
+| Strong crypto validation (AES-256, TLS 1.2+) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Machine-bound license (dbmfp) | ❌ | ❌ | ✅ | ✅ | ✅ |
+| Secrets vault integration (Bitwarden CLI, env) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Release integrity / tamper detection | ✅ | ✅ | ✅ | ✅ | ✅ |
+| SBOM generation | ✅ | ✅ | ✅ | ✅ | ✅ |
+| SSO / LDAP / SAML integration | ❌ | ❌ | ❌ | 🔜 | ✅ |
+| Custom revocation lists | ❌ | ❌ | ✅ | ✅ | ✅ |
+
+### Deployment and Operations
+
+| Capability | Community | Trial | Pro | Partner | Enterprise |
+|---|---|---|---|---|---|
+| CLI (main.py) + API (FastAPI) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Docker Hub image | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Self-hosted (bare metal / VM) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Self-upgrade / version check | ❌ | ❌ | 🔜 | ✅ | ✅ |
+| Notifications (Slack, GitHub, webhook) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| API key auth (enforced) | 🔶 optional | ✅ | ✅ | ✅ | ✅ |
+| Multi-tenant deployment (data isolation) | ❌ | ❌ | ❌ | 🔜 | ✅ |
+| SLA / priority support | ❌ | ❌ | ❌ | 🔶 | ✅ |
+| Kubernetes / orchestration guides | ❌ | ❌ | 🔜 | ✅ | ✅ |
+| Custom installation and config | ❌ | ❌ | 🔶 | ✅ | ✅ |
+
+### Commercial / Partner Rights
+
+| Capability | Community | Trial | Pro | Partner | Enterprise |
+|---|---|---|---|---|---|
+| Use for internal DPO audit | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Deliver audit as service to 1 client | ❌ | ❌ | ✅ | ✅ | ✅ |
+| Deliver audit to multiple clients (MSP/MSSP) | ❌ | ❌ | ❌ | ✅ | ✅ |
+| Co-brand in report cover | ❌ | ❌ | 🔶 | ✅ | ✅ |
+| White-label (remove Data Boar attribution) | ❌ | ❌ | ❌ | ❌ | ✅ (add-on) |
+| Redistribute to end-customers | ❌ | ❌ | ❌ | ✅ (with contract) | ✅ |
+| OEM / embed in own product | ❌ | ❌ | ❌ | ❌ | ✅ (add-on) |
 
 ---
 
-## Surveillance-Adjacent Features — Policy
+## Tier Value Narrative (for sales / partner conversations)
 
-Some features (screenshot scanning, audio transcription, browser artefacts, memory dumps)
-have legitimate compliance uses but could be misused for covert employee monitoring.
+### Community
+The full audit capability for a single organization's internal DPO, IT team, or researcher.
+Not for consulting delivery to third-party clients. Builds trust, ecosystem, and inbound leads.
+**Constraint:** Must not be used to deliver paid services to third-party clients.
 
-**Policy:** These features require minimum Pro license and explicit `--scope` flag.
-The generated report includes a legal notice about appropriate-use requirements.
-The EULA at all paid tiers explicitly requires operator legal basis for scanning.
+### Trial / POC
+Time-limited (e.g. 30-90 days), row-capped (15 findings visible), watermarked.
+Ideal for enterprise pre-sales and formal POC engagements. JWT required.
+**Revenue model:** Convert to Pro/Partner/Enterprise after trial.
 
-See the commercial strategy document for the "Compliance Investigator" add-on option.
+### Pro / Consultant
+For the independent consultant, solo MSSP operator, or small integrator who delivers to
+**one client engagement at a time**. Full detection capabilities, legacy format ingestion,
+cloud connectors (planned), compliance output.
+**Revenue model:** Annual license per consultant seat. Possible per-engagement add-ons.
+**Key differentiator from Community:** Can deliver the tool output as a professional service.
 
----
+### Partner
+For system integrators, MSSPs, and resellers managing **multiple client engagements concurrently**.
+Multi-client use is explicitly licensed. Co-branding in reports is permitted.
+Access to SSO (planned), advanced connectors, and the partner portal (future).
+**Revenue model:** Annual subscription per partner org + per-seat or per-customer usage tier.
+**Key differentiator from Pro:** Multi-client use rights; partner brand in deliverables.
 
-## Enforcement Roadmap
-
-| Milestone | Description |
-|---|---|
-| M1 — Token parsing | JWT read + `dbtier` claim extraction (no hard block yet) |
-| M2 — Soft enforcement | Warn when Pro+ feature used without token; log to report |
-| M3 — Hard enforcement | Block Pro+ features without valid token; Trial row cap |
-| M4 — Partner enforcement | Multi-client use allowed only with `partner`+ claim |
-| M5 — Enterprise features | Audio, dumps, SSO, SIEM gated behind `enterprise` claim |
-
----
-
-## What to Protect as IP (vs. Open Core)
-
-| Asset | Protection model |
-|---|---|
-| Core regex engine + patterns | Open (drives trust, adoption, and contributions) |
-| OCR integration (Tesseract) | Open (it's an existing OSS library) |
-| ML/NLP model weights | Closed (trained by us; not committed to repo) |
-| License issuance tooling | Closed (separate private repo) |
-| Audit trail / Colleague-Nn-of-custody module | Closed (Pro+) |
-| Audio transcription pipeline | Closed (Enterprise) |
-| Dump parsing engine | Closed (Enterprise) |
-| White-label customization hooks | Closed (Enterprise add-on) |
+### Enterprise
+For large organizations deploying internally at scale, regulated industries (banking, health, port
+terminals), and OEM partners embedding Data Boar in their own product suite.
+All features, SLA, dedicated support, white-label rights as an add-on.
+**Revenue model:** Annual enterprise agreement; custom pricing based on scope, users, connectors.
 
 ---
 
-## Open Questions (operator decision required)
+## Technical Enforcement Roadmap (JWT claims → runtime gates)
 
-- [ ] Should OCR on images be Open Core or Pro? (currently assigned to Pro — revisit)
-- [ ] Is there a "Compliance Investigator" add-on tier, or does everything escalate to Enterprise?
-- [ ] Should the SAP connector be Partner or Enterprise? (currently Partner)
-- [ ] Audio transcription: use `openai-whisper` (GPL) or `faster-whisper` (MIT/LGPL)? License matters commercially.
-- [ ] Where does the git secrets scanning fit vs. TruffleHog? Differentiation or overlap?
+| Phase | What to implement | Status |
+|---|---|---|
+| 0 (done) | `dbtier` planned in LICENSING_SPEC.md; JWT infra exists | ✅ Done |
+| 1 | Add `dbtier` and `dbfeatures` claims to issued tokens | Not started |
+| 2 | `LicenseGuard.check_feature(feature_name)` helper | Not started |
+| 3 | Gate Pro features behind `check_feature()` in connectors/reports | Not started |
+| 4 | Gate Partner rights (multi-client, co-brand) via `dbtier` check | Not started |
+| 5 | Gate Enterprise features (white-label, SSO, RBAC) | Not started |
+| 6 | `dbextras_profile` drives `uv` install profiles for heavy deps | Not started |
+
+> Priority: implement Phase 1-2 before first paid engagements.
+> Phase 6 last — requires uv extras redesign.
 
 ---
 
-## Next Steps
+## What to Protect as IP (Monetizable Moats)
 
-- [ ] Legal review of EULA language for surveillance-adjacent features
-- [ ] Implement M1 token parsing (low-risk, no behavior change)
-- [ ] Define trial row cap and watermark design
-- [ ] Validate pricing with 5-10 prospect conversations (see commercial strategy doc)
+Listed in priority order from a "partner trying to steal value" perspective:
+
+1. **Advanced connector logic** (SAP, Enterprise HR/ERP, cloud APIs) — high implementation cost
+2. **ML/DL heuristics** (the trained models, prompt engineering, confidence calibration) — not open-sourceable
+3. **Compliance evidence mapping** (the legal mapping from findings to LGPD/GDPR articles) — expert knowledge
+4. **Multi-tenant isolation architecture** (when implemented) — enterprise trust requirement
+5. **Report/dashboard trade dress** — mascot, Excel layout, heatmap visual — brand value
+6. **Legacy/exotic format ingestion** — niche, high-effort, differentiator from basic grep tools
+7. **Partner multi-client licensing model** — the right to serve third parties is the Pro→Partner upsell
+
+---
+
+## Open Questions (to resolve with legal + product)
+
+- [ ] Final tier names: Community / Pro / Partner / Enterprise — or different marketing names?
+- [ ] Can a Community license user self-host and charge for it indirectly? (CLT → license clear?)
+- [ ] Should Oracle connector be Community or gated? (it's complex to configure)
+- [ ] Trial tier: time-limited only, or feature-limited only, or both?
+- [ ] Partner tier: per-org pricing, per-seat, or per-audit-engagement?
+- [ ] White-label: separate add-on SKU or only Enterprise-included?
+- [ ] Academic/thesis exception: grant letter or special license type?
+
+---
+
+## Pending Tasks
+
+| # | Task | Priority |
+|---|---|---|
+| 1 | Legal review of tier definitions and partner rights language | [H2] before first paid deal |
+| 2 | Implement Phase 1-2 JWT enforcement (dbtier + check_feature) | [H2][U1] |
+| 3 | Update LICENSING_OPEN_CORE_AND_COMMERCIAL.md with link to this plan | [H1] |
+| 4 | Draft Pro/Partner one-pager for partner conversations | [H2] |
+| 5 | Create `tools/license-studio` private repo for issuer tooling | [H2] |
+| 6 | Define academic/thesis exception policy | [H3] |
+| 7 | Add `dbfeatures` to LICENSING_SPEC.md claims table | [H2] |
