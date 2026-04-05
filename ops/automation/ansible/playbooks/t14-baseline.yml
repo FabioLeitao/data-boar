@@ -35,7 +35,13 @@
     lab-node-01_obs_node_exporter_enabled: true
     # Wazuh SIEM agent (requires manager IP; off by default until lab is ready)
     lab-node-01_obs_wazuh_agent_enabled: false
-    lab-node-01_obs_wazuh_manager_ip: ""
+    lab-node-01_obs_wazuh_manager_ip: ""    # --- Opt-in knobs (snapshots / btrfs) ---
+    # Snapper: automatic BTRFS snapshots (skips gracefully if root is not btrfs)
+    lab-node-01_snapper_enabled: true
+    lab-node-01_snapper_timeline_limit_hourly: "5"
+    lab-node-01_snapper_timeline_limit_daily: "7"
+
+
 
   roles:
     # --- System baseline ---
@@ -62,3 +68,6 @@
     - role: lab-node-01_k3s
     # --- Observability (progressive opt-in) ---
     - role: lab-node-01_observability
+    # --- Snapshots (btrfs only, skips gracefully on ext4) ---
+    - role: lab-node-01_snapper
+      when: lab-node-01_snapper_enabled | bool
