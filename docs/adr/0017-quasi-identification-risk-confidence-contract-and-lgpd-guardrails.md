@@ -1,4 +1,4 @@
-# ADR 0007: Quasi-identification risk/confidence contract and LGPD guardrails
+# ADR 0017: Quasi-identification risk/confidence contract and LGPD guardrails
 
 ## Context
 
