@@ -46,8 +46,8 @@ gh gpg-key add "$env:TEMP\gpg_pub.asc"
 ## Why some keys show "Verified" on GitHub
 
 GitHub marks a GPG key as "Verified" if **at least one UID email** in the key matches a **verified email** in the GitHub account settings.
-- `fabio.tleitao@gmail.com` and `fabio.tleitao@outlook.com` are verified on GitHub → ED25519 shows Verified
-- Old company emails (`@wingscg.com`, `@cnseg.org.br`, etc.) are not verified → those keys show Unverified
+- UIDs that match verified account emails show **Verified**.
+- Legacy/corporate UIDs that are no longer verified show **Unverified**.
 
 ## Revoking a key (interactive via Process)
 
