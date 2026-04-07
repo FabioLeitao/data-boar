@@ -13,7 +13,7 @@ Data Boar was approaching its first real client POC. The team needed:
 1. **Test data** covering the full scanner surface — OCR-noisy files, nested archives, steganography, false-positive pressure, and catastrophic scenarios.
 2. **Database coverage** — enterprise clients store PII in PostgreSQL, MariaDB, and MSSQL.
 3. **API testing** — the REST API must be validated by collaborators not comfortable with Python/CLI.
-4. **Reproducibility** — collaborators (Talita, Felipe) must run the same test pass independently and get comparable results.
+4. **Reproducibility** — collaborators (team members) must run the same test pass independently and get comparable results.
 5. **Gap discovery** — false negatives, error message quality, and troubleshooting UX are as important as detection coverage for a first POC.
 
 ---
