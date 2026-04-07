@@ -243,3 +243,4 @@ __marimo__/
 
 # Generated POC test corpus (on-demand, not tracked)
 tests/synthetic_corpus/
+.cursor/rules/dossier-update-on-evidence.mdc

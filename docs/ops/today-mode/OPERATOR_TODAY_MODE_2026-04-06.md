@@ -14,14 +14,8 @@ Branch: main — sincronizado com origin.
 
 ## PENDÊNCIAS DO DIA ANTERIOR (carryover)
 
-### DOSSIE / LEGAL
-- [ ] **Aguardar dados atualizados do outro whistle blower** sobre POC TraumaZero (Tomcat 7.0.86 + Wazuh)
-      → Quando receber: atualizar CARTA_DISCLOSURE_CISO_v4 com dados confirmados
-- [ ] **Confirmar DB usado pelo TraumaZero** (Oracle / MSSQL / Postgres?) — via contato interno
-      → Se confirmado: adicionar entrada no CARTA_DISCLOSURE_CISO_v4 seção 4
-- [ ] **Aguardar resposta Wabbix** (WRB enviado; estão em Portugal — pode demorar)
-- [ ] **Revisar DENUNCIA_ANPD_RASCUNHO_v2 com advogada** — agendar
-- [ ] **Revisar REVISAO_JURIDICA_CONSOLIDADA com Clebinho** — agendar
+### LEGAL (detalhes em docs/private/)
+- [ ] Pendencias juridicas: ver docs/private/ para checklist detalhado
 
 ### DATA BOAR / PRODUTO
 - [ ] **Commit e push das alterações desta sessão** (ansible/, USAGE.md)
