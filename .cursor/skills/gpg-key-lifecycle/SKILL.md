@@ -74,7 +74,7 @@ $proc.StandardInput.Close(); $proc.WaitForExit(15000)
 
 ```
 gpg.format = ssh
-user.signingkey = C:\Users\fabio\.ssh\id_ed25519
+user.signingkey = C:\Users\<username>\.ssh\id_ed25519
 commit.gpgsign = true
 ```
 

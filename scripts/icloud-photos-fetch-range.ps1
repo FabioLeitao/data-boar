@@ -20,7 +20,7 @@
     .\scripts\icloud-photos-fetch-range.ps1 -Start "2022-11-01" -End "2022-11-30"
     .\scripts\icloud-photos-fetch-range.ps1 -Start "2025-01-01" -End "2025-06-30" -MaxFiles 50
     .\scripts\icloud-photos-fetch-range.ps1 -Cleanup
-    .\scripts\icloud-photos-fetch-range.ps1 -FilePath "C:\Users\fabio\Arquivo das Fotos do iCloud\IMG_7641.JPEG"
+    .\scripts\icloud-photos-fetch-range.ps1 -FilePath "C:\Users\<username>\Arquivo das Fotos do iCloud\IMG_7641.JPEG"
 .NOTES
     Guia: docs/private/homelab/ICLOUD_PHOTOS_SYNC_GUIDE.md
 #>
@@ -40,8 +40,8 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $tempDir  = Join-Path $repoRoot "docs\private\icloud_temp"
 
 $libraries = @{
-    main   = "C:\Users\fabio\Arquivo das Fotos do iCloud"
-    recent = "C:\Users\fabio\Arquivo das Fotos do iCloud(1)"
+    main   = "C:\Users\<username>\Arquivo das Fotos do iCloud"
+    recent = "C:\Users\<username>\Arquivo das Fotos do iCloud(1)"
 }
 
 function Write-Header($msg) { Write-Host "`n=== $msg ===" -ForegroundColor Cyan }
