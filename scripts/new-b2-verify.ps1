@@ -20,6 +20,10 @@
 .PARAMETER RunCheckAll
     Also run full validation gate (uv sync + scripts/check-all.ps1).
 
+.PARAMETER TargetUserSegment
+    Username segment to probe (for incident response on a known leaked username).
+    Do not commit real usernames in this file; pass at runtime only.
+
 .EXAMPLE
     .\scripts\new-b2-verify.ps1
 
@@ -30,7 +34,8 @@ param(
     [string]$RepoUrl = "https://github.com/FabioLeitao/data-boar.git",
     [string]$TempCloneName = "data-boar-reaudit-short",
     [switch]$KeepClone,
-    [switch]$RunCheckAll
+    [switch]$RunCheckAll,
+    [string]$TargetUserSegment = ""
 )
 
 Set-StrictMode -Version Latest
@@ -88,7 +93,11 @@ function Invoke-AuditCheck {
 
 $tempRoot = $env:TEMP
 $clonePath = Join-Path $tempRoot $TempCloneName
-$targetUserPath = "C:\Users\" + "fabio"
+$targetUserPath = if ($TargetUserSegment) {
+    "C:\Users\" + $TargetUserSegment
+} else {
+    "C:\Users\<username>"
+}
 $targetPlaceholder = "C:\Users\<username>"
 
 Write-Step "Preparing fresh clone"
