@@ -6,7 +6,7 @@ Runbook operacional para verificar PII/dados sensiveis em repositório publico c
 
 Antes de marcar qualquer execucao como SAFE, revise os criterios locais/privados que nao ficam em docs versionados.
 
-- [ ] Revisei os criterios locais atuais em `docs/private/security_audit/`.
+- [ ] Revisei os criterios locais atuais em `docs/private/security_audit/` (esse caminho **nao** vem no clone publico; use [`docs/private.example/security_audit/`](../private.example/security_audit/README.md) ou outro canal do maintainer).
 - [ ] Atualizei seeds locais de allow/deny (se necessario) em notas/arquivos privados.
 - [ ] Confirmei que nenhum novo identificador sensivel precisa entrar nos guardrails versionados.
 
@@ -48,6 +48,22 @@ git status
 ```
 
 Esperado: working tree limpo em `main`.
+
+### Bundle privado `security_audit` (ausente apos clone)
+
+`docs/private/` e **gitignored**; um `git clone` normal **nao** cria `PII_LOCAL_SEEDS.txt`. Se `grep` ou `mapfile` falhar com **No such file or directory**, crie o diretorio e copie o exemplo:
+
+```bash
+mkdir -p docs/private/security_audit
+cp docs/private.example/security_audit/PII_LOCAL_SEEDS.example.txt docs/private/security_audit/PII_LOCAL_SEEDS.txt
+# Edite PII_LOCAL_SEEDS.txt com literais aprovados pelo maintainer (uma por linha).
+```
+
+```powershell
+New-Item -ItemType Directory -Force -Path docs/private/security_audit | Out-Null
+Copy-Item docs/private.example/security_audit/PII_LOCAL_SEEDS.example.txt docs/private/security_audit/PII_LOCAL_SEEDS.txt
+# Edite PII_LOCAL_SEEDS.txt com literais aprovados pelo maintainer (uma por linha).
+```
 
 ## 1) Short run (semanal / antes de PR sensivel)
 
