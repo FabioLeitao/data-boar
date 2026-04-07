@@ -82,7 +82,7 @@ if ($pendingCount -eq 0) {
     Write-Ok "Private repo ja esta em dia. Nenhum arquivo pendente."
 } else {
     # Staged explicito por pasta (git add -A pode falhar silenciosamente)
-    $folders = @("feedbacks_and_reviews", "homelab", "author_info", "commercial", "operator_economics", "legal_dossier", "raw_pastes", "plans", "pitch")
+    $folders = @("feedbacks_and_reviews", "homelab", "author_info", "commercial", "operator_economics", "legal_dossier", "raw_pastes", "plans", "pitch", "security_audit")
     foreach ($f in $folders) {
         $fp = Join-Path $privateDir $f
         if (Test-Path $fp) { git add $f 2>&1 | Out-Null }
