@@ -59,7 +59,7 @@ e ao mesmo tempo **na DMZ ou hotspot do iPhone** tudo passa, então o problema e
 ### Checklist rápido (UDM / UniFi Network) — ordem mais provável
 
 1) **Traffic Routes / Policy-based routing (VPN client / rota especial)**
-   - Procure regras que façam o SSID/VLAN “Marluce” sair por algum túnel/rota diferente.
+   - Procure regras que façam o SSID/VLAN “<SSID_NAME>” sair por algum túnel/rota diferente.
    - Desative a regra temporariamente e reteste o Diagnostic.
 
 2) **Threat Management (IDS/IPS)**
@@ -74,7 +74,7 @@ e ao mesmo tempo **na DMZ ou hotspot do iPhone** tudo passa, então o problema e
 
 ### Evidência SRE
 
-- Guarde 2 screenshots: Diagnostic **falhando** no SSID “Marluce” e **passando** na DMZ/hotspot.
+- Guarde 2 screenshots: Diagnostic **falhando** no SSID “<SSID_NAME>” e **passando** na DMZ/hotspot.
 - Registre o “toggle” que resolveu (qual item do checklist acima).
 
 ## Docker MCP Toolkit (MCP_DOCKER) no Cursor (integração local)

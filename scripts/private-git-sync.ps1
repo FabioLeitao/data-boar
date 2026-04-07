@@ -112,9 +112,9 @@ if ($Push) {
     $labRemotes = $remotes | Where-Object { $_ -match "^lab-" }
     if (-not $labRemotes) {
         Write-Warn "Nenhum remote 'lab-*' configurado. Configure com:"
-        Write-Warn "  git -C docs/private remote add lab-latitude ssh://leitao@latitude/home/leitao/Documents/.kb-cache/repos/notes-sync.git"
-        Write-Warn "  git -C docs/private remote add lab-mini-bt  ssh://leitao@mini-bt/home/leitao/Documents/.kb-cache/repos/notes-sync.git"
-        Write-Warn "  git -C docs/private remote add lab-t14      ssh://leitao@t14-leitao/home/leitao/Documents/.kb-cache/repos/notes-sync.git"
+        Write-Warn "  git -C docs/private remote add lab-host-1 ssh://<user>@<host-1>/<home>/<user>/Documents/.kb-cache/repos/notes-sync.git"
+        Write-Warn "  git -C docs/private remote add lab-host-2 ssh://<user>@<host-2>/<home>/<user>/Documents/.kb-cache/repos/notes-sync.git"
+        Write-Warn "  git -C docs/private remote add lab-host-3 ssh://<user>@<host-3>/<home>/<user>/Documents/.kb-cache/repos/notes-sync.git"
     } else {
         foreach ($r in $labRemotes) {
             Write-Info "Pushing para $r ..."

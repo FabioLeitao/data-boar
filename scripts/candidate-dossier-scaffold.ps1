@@ -42,16 +42,6 @@ function Get-OperatorRelationshipTag {
         return $ExplicitOperatorRelationship.Trim().ToUpperInvariant()
     }
 
-    $name = $CandidateName.ToLowerInvariant()
-    if ($name.Contains("my wife")) {
-        return "FAMILY_SPOUSE"
-    }
-    if ($name.Contains("my sister") -and $name.Contains("husband")) {
-        return "FAMILY_BROTHER_IN_LAW"
-    }
-    if ($name.Contains("my husband")) {
-        return "FAMILY_HUSBAND"
-    }
     return "NOT_DOCUMENTED"
 }
 
@@ -67,7 +57,7 @@ function Get-OperatorRelationshipEvidence {
     if ($RelationshipTag -eq "NOT_DOCUMENTED") {
         return "No explicit relationship marker in source file name."
     }
-    return "Inferred from source file name marker."
+    return "No explicit relationship provided."
 }
 
 $resolvedPdfPath = [System.IO.Path]::GetFullPath($CandidatePdfPath)
@@ -238,7 +228,7 @@ $enRelationshipBlock
 ## 8) Next actions
 
 - [ ] Validate assumptions with candidate conversation.
-- [ ] Align role split against Ivan/Andre/core technical lead.
+- [ ] Align role split against <lead-1>/<lead-2>/core technical lead.
 - [ ] Update offer archetypes and proposal language.
 "@
 
@@ -300,7 +290,7 @@ $ptRelationshipBlock
 ## 8) Próximas ações
 
 - [ ] Validar premissas com conversa com o candidato.
-- [ ] Alinhar split de papéis com Ivan/André/liderança técnica.
+- [ ] Alinhar split de papeis com <lead-1>/<lead-2>/lideranca tecnica.
 - [ ] Atualizar arquétipos de oferta e linguagem de proposta.
 "@
 

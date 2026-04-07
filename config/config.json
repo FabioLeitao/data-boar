@@ -2,7 +2,7 @@
     "databases": [
         {
             "name": "postgres",
-            "host": "192.168.40.100",
+            "host": "192.0.2.10",
             "port": 5432,
             "user": "admin",
             "password": "senha123",
@@ -10,7 +10,7 @@
         },
         {
             "name": "mysql",
-            "host": "192.168.40.101",
+            "host": "192.0.2.11",
             "port": 3306,
             "user": "root",
             "password": "senha456",
@@ -19,8 +19,8 @@
     ],
     "file_scan": {
         "directories": [
-            "/home/leitao/Documents/LGPD/",
-            "/home/leitao/Documents/Concursos/"
+            "/home/user/Documents/LGPD/",
+            "/home/user/Documents/sample_data/"
         ],
         "extensions": ["*.pdf", "*.csv", "*.xls", "*.xlsx", "*.doc", "*.txt", "*.docx"]
     }

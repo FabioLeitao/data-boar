@@ -171,34 +171,34 @@ scripts/
 
 ## Apelidos do Pool (para usar no wrapper)
 
-| Apelido | Nome Real |
+| Apelido | Nome (placeholder) |
 |---|---|
-| ivan | Ivan Filho |
-| pedro | Pedro Herminio Altoe |
-| andre_eudes | Andre Eudes S. dos Santos |
-| andre_lucas | Andre Lucas |
-| aca | Antonio Carlos Azevedo |
-| braga | Rodrigo Braga |
-| caterine | Caterine Pastorino |
-| clebinho | Cleber Rebelo |
-| ebo | Eliezio Oliveira |
-| ferrao | Felippe Ferrao |
-| freire | Rodrigo Freire |
-| freitas | Luis Freitas |
-| gondim | Ricardo Gondim |
-| irlan | Irlan Sales |
-| madruga | Marcelo Madruga |
-| marcos | Marcos Rocha |
-| marluce | Marluce Leitao |
-| murillo | Murillo Restier |
-| pim | Pim Waaijenberg |
-| rafael_gomez | Rafael Gomez |
-| rafael_silva | Rafael Silva |
-| ramon | Ramon Oliveira |
-| talita | Talita Moreira |
-| wagner | Wagner Silva |
-| felipe | Felipe F. (planozero.com.br) -- advisor-remote |
-| dudu | Rodrigo Baptista (Dudu) -- CNseg infra |
+| candidate-1 | Candidate One |
+| candidate-2 | Candidate Two |
+| candidate-3 | Candidate Three |
+| candidate-4 | Candidate Four |
+| candidate-5 | Candidate Five |
+| candidate-6 | Candidate Six |
+| candidate-7 | Candidate Seven |
+| candidate-8 | Candidate Eight |
+| candidate-9 | Candidate Nine |
+| candidate-10 | Candidate Ten |
+| candidate-11 | Candidate Eleven |
+| candidate-12 | Candidate Twelve |
+| candidate-13 | Candidate Thirteen |
+| candidate-14 | Candidate Fourteen |
+| candidate-15 | Candidate Fifteen |
+| candidate-16 | Candidate Sixteen |
+| candidate-17 | Candidate Seventeen |
+| candidate-18 | Candidate Eighteen |
+| candidate-19 | Candidate Nineteen |
+| candidate-20 | Candidate Twenty |
+| candidate-21 | Candidate Twenty-One |
+| candidate-22 | Candidate Twenty-Two |
+| candidate-23 | Candidate Twenty-Three |
+| candidate-24 | Candidate Twenty-Four |
+| candidate-25 | Candidate Twenty-Five |
+| candidate-26 | Candidate Twenty-Six |
 
 ---
 
