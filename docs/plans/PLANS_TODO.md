@@ -175,7 +175,7 @@ Complete **in order** when you need to reduce public artifact exposure or tighte
 | **A2** | **Docker Scout / image CVEs**       | You + agent (Dockerfile) | `docker scout quickview` acceptable or documented exceptions; image rebuilt; smoke test. Same as **–1b**.                                                         |
 | **A3** | **Docker Hub tag hygiene**          | **You (manual Hub UI)**  | Obsolete tags deleted or documented; only supported tags documented in [DEPLOY.md](../deploy/DEPLOY.md) §8; CI/partners confirmed not pinning removed tags.       |
 | **A4** | **Private repo for issuer tooling** | **You**                  | `tools/license-studio` copied to a **private** GitHub/GitLab repo; no signing keys in any public remote; README/runbook only in private or `docs/private/`.       |
-| **A5** | **Partner access (e.g. Ivan)**      | **You**                  | Collaborator role on private repos as needed; no shared personal secrets via chat.                                                                                |
+| **A5** | **Partner access (e.g. collaborator)**      | **You**                  | Collaborator role on private repos as needed; no shared personal secrets via chat.                                                                                |
 | **A6** | **Licensing smoke automation**      | Agent                    | `scripts/license-smoke.ps1` runs `tests/test_licensing.py` + `tests/test_licensing_fingerprint.py`; optional CI job — token-aware single session.                 |
 | **A7** | **Legal / license boundary**        | **You + counsel**        | Open-core vs commercial terms documented; no repo change required for first call.                                                                                 |
 
@@ -660,7 +660,7 @@ GitHub repo and `origin` remote already point to `data-boar`. Remaining work:
 | 1 | `pyproject.toml`: change `name = "python3-lgpd-crawler"` to `name = "data-boar"` | Pending |
 | 2 | Batch replace `python3-lgpd-crawler` -> `data-boar` in ~50 tracked doc files (non-historical) | Pending |
 | 3 | Run `check-all` to confirm no regressions | Pending |
-| 4 | Notify Ivan: `git remote set-url origin git@github.com:FabioLeitao/data-boar.git` | Pending |
+| 4 | Notify collaborator: `git remote set-url origin git@github.com:FabioLeitao/data-boar.git` | Pending |
 | 5 | Tag release with changelog note: "Repository fully renamed to data-boar" | Pending |
 | 6 | Remove `python3-lgpd-crawler-legacy-and-history-only` remote from `.git/config` | Pending |
 
