@@ -48,7 +48,7 @@ _BUILTIN_REGEXES: list[tuple[str, re.Pattern[str]]] = [
         "Linux absolute /home path (non-placeholder)",
         re.compile(
             r"(?i)(?<!\w)/home/"
-            r"(?!user(?:/|$)|you(?:/|$)|<user>(?:/|$)|replace_user(?:/|$)|\{\{)"
+            r"(?!user/|you/|<user>/|replace_user/|\{\{)"
             r"[a-z0-9._-]+/"
         ),
     ),
