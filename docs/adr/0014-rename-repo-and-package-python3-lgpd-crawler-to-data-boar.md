@@ -42,7 +42,7 @@ for Python identifiers) as part of the next planned release:
 | All `*.md` docs referencing old name | ~50 files | batch replace |
 | CI workflow file names (if any hardcoded) | lgpd-crawler | data-boar |
 | Docker Hub image tags | `data_boar:*` already in use | confirm consistency |
-| Collaborator clone remotes (Ivan) | lgpd-crawler.git | data-boar.git (one command) |
+| Collaborator clone remotes (collaborator) | lgpd-crawler.git | data-boar.git (one command) |
 
 **Historical mentions** in ADRs, changelogs, and `docs/plans/completed/` describing the
 original name are acceptable and should be retained for historical accuracy — they do not
@@ -63,7 +63,7 @@ need to be changed.
 
 - ~50 files to touch — automated batch replace needed to avoid partial replacement
 - `git filter-repo` is NOT required; only a `sed`/`StrReplace` pass on HEAD files
-- Ivan's clone remote needs one manual update: `git remote set-url origin git@github.com:FabioLeitao/data-boar.git`
+- Collaborator clone remote needs one manual update: `git remote set-url origin git@github.com:FabioLeitao/data-boar.git`
 - GitHub redirect for the old URL expires eventually (~1 year) — the sooner the better
 
 ### Not a concern
@@ -80,6 +80,6 @@ need to be changed.
 - [ ] Batch replace references in CI workflows if hardcoded
 - [ ] Run `check-all` to confirm no regressions
 - [ ] Update `docs/ops/REMOTES_AND_ORIGIN.md` to remove legacy remote documentation
-- [ ] Notify Ivan with: `git remote set-url origin git@github.com:FabioLeitao/data-boar.git`
+- [ ] Notify collaborator with: `git remote set-url origin git@github.com:FabioLeitao/data-boar.git`
 - [ ] Tag the release with a changelog note: "Repository fully renamed to data-boar"
 - [ ] Verify `python3-lgpd-crawler-legacy-and-history-only` remote can be removed from `.git/config`
