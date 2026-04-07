@@ -35,40 +35,27 @@ $PoolDir    = Join-Path $RepoRoot "docs\private\commercial\candidates\linkedin_p
 $IndividDir = Join-Path $PoolDir "individual"
 $ExtractPy  = Join-Path $RepoRoot "scripts\extract_cv_pdf.py"
 $ImportPs1  = Join-Path $RepoRoot "scripts\ats-candidate-import.ps1"
+$TalentPoolPath = Join-Path $RepoRoot "docs\private\commercial\talent_pool.json"
 
 $Candidates = @{
-    "contributor-a"         = @{ Name="Collaborator-A";                LinkedIn="https://www.example.com/profile/redacted";                              File="Contributor-A_Contributor-A_ATS.pt_BR.md"              }
-    "pedro"        = @{ Name="Collaborator-D";      LinkedIn="https://www.example.com/profile/redacted";    File="PEDRO_Colleague-F_Colleague-G_ATS.pt_BR.md"    }
-    "andre_Colleague-H"  = @{ Name="Collaborator-C S. dos Santos"; LinkedIn="https://www.example.com/profile/redacted";                             File="ANDRE_Colleague-H_SANTOS_ATS.pt_BR.md"      }
-    "andre_Colleague-I"  = @{ Name="Collaborator-H";               LinkedIn="https://www.example.com/profile/redacted";                            File="ANDRE_Colleague-I_ATS.pt_BR.md"             }
-    "aca"          = @{ Name="Collaborator-L";    LinkedIn="https://www.example.com/profile/redacted";         File="ANTONIO_CARLOS_AZEVEDO_ATS.pt_BR.md"  }
-    "braga"        = @{ Name="Collaborator-M";             LinkedIn="https://www.example.com/profile/redacted";                        File="Colleague-Q_BRAGA_ATS.pt_BR.md"           }
-    "caterine"     = @{ Name="Collaborator-N";        LinkedIn="https://www.example.com/profile/redacted";           File="CATERINE_PASTORINO_ATS.pt_BR.md"      }
-    "Colleague-J"     = @{ Name="Collaborator-E";             LinkedIn="https://www.example.com/profile/redacted";                                File="CLEBER_REBELO_ATS.pt_BR.md"           }
-    "Colleague-S"          = @{ Name="Collaborator-O";          LinkedIn="https://www.example.com/profile/redacted";                                File="Colleague-R_OLIVEIRA_ATS.pt_BR.md"        }
-    "Colleague-C"       = @{ Name="Collaborator-F";            LinkedIn="https://www.example.com/profile/redacted";          File="FELIPPE_Colleague-C_ATS.pt_BR.md"          }
-    "freire"       = @{ Name="Collaborator-P";            LinkedIn="https://www.example.com/profile/redacted";                File="Colleague-Q_FREIRE_ATS.pt_BR.md"          }
-    "freitas"      = @{ Name="Collaborator-Q";              LinkedIn="https://www.example.com/profile/redacted";                  File="LUIS_FREITAS_ATS.pt_BR.md"            }
-    "Colleague-P"       = @{ Name="Collaborator-R";            LinkedIn="https://www.example.com/profile/redacted";                          File="Colleague-O_Colleague-P_ATS.pt_BR.md"          }
-    "irlan"        = @{ Name="Collaborator-S";               LinkedIn="https://www.example.com/profile/redacted";                   File="IRLAN_SALES_ATS.pt_BR.md"             }
-    "madruga"      = @{ Name="Collaborator-T";           LinkedIn="https://www.example.com/profile/redacted";                        File="MARCELO_MADRUGA_ATS.pt_BR.md"         }
-    "marcos"       = @{ Name="Collaborator-U";              LinkedIn="https://www.example.com/profile/redacted";                       File="MARCOS_ROCHA_ATS.pt_BR.md"            }
-    "Colleague-D"      = @{ Name="Collaborator-J";            LinkedIn="https://www.example.com/profile/redacted";           File="Colleague-D_LEITAO_ATS.pt_BR.md"          }
-    "Colleague-T"      = @{ Name="Collaborator-I";           LinkedIn="https://www.example.com/profile/redacted";                         File="Colleague-T_RESTIER_ATS.pt_BR.md"         }
-    "Colleague-K"          = @{ Name="Collaborator-K";           LinkedIn="https://www.example.com/profile/redacted";                           File="Colleague-K_Colleague-L_ATS.pt_BR.md"         }
-    "Colleague-U_gomez" = @{ Name="Collaborator-V";              LinkedIn="https://www.example.com/profile/redacted";                              File="Colleague-U_GOMEZ_ATS.pt_BR.md"            }
-    "Colleague-U_Colleague-V" = @{ Name="Collaborator-W";              LinkedIn="https://www.example.com/profile/redacted";                         File="Colleague-U_Colleague-V_ATS.pt_BR.md"            }
-    "ramon"        = @{ Name="Collaborator-X";            LinkedIn="https://www.example.com/profile/redacted";                File="RAMON_OLIVEIRA_ATS.pt_BR.md"          }
-    "colleague-a"       = @{ Name="Collaborator-B";            LinkedIn="https://www.example.com/profile/redacted";                        File="Colleague-A_MOREIRA_ATS.pt_BR.md"          }
-    "Colleague-B"       = @{ Name="Collaborator-Y (planozero)";     LinkedIn="https://www.example.com/profile/redacted";                      File="Colleague-B_F_ATS.pt_BR.md"                }
-    "Colleague-B"       = @{ Name="Collaborator-Y (planozero)";     LinkedIn="https://www.example.com/profile/redacted";                      File="Colleague-B_F_ATS.pt_BR.md"                }
-    "wagner"       = @{ Name="Collaborator-G";              LinkedIn="https://www.example.com/profile/redacted";                             File="WAGNER_Colleague-V_ATS.pt_BR.md"            }
+    "example" = @{ Name="Example Person"; LinkedIn="https://www.example.com/profile/example"; File="EXAMPLE_ATS.pt_BR.md" }
 }
 
 function Write-Ok   { param([string]$M) Write-Host "[OK]  $M" -ForegroundColor Green  }
 function Write-Info { param([string]$M) Write-Host "[>>]  $M" -ForegroundColor Cyan   }
 function Write-Warn { param([string]$M) Write-Host "[!!]  $M" -ForegroundColor Yellow }
 function Write-Err  { param([string]$M) Write-Host "[ERR] $M" -ForegroundColor Red    }
+
+if (Test-Path -LiteralPath $TalentPoolPath) {
+    try {
+        $privateCandidates = Get-Content -Raw -LiteralPath $TalentPoolPath | ConvertFrom-Json -AsHashtable
+        foreach ($key in $privateCandidates.Keys) {
+            $Candidates[$key] = $privateCandidates[$key]
+        }
+    } catch {
+        Write-Warn "Falha ao carregar pool privado em '$TalentPoolPath': $($_.Exception.Message)"
+    }
+}
 
 function Resolve-Candidate {
     param([string]$Input)
