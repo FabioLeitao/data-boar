@@ -36,6 +36,35 @@ _BUILTIN_LITERALS: list[str] = [
 
 _BUILTIN_REGEXES: list[tuple[str, re.Pattern[str]]] = [
     ("CRM with digits (medical license)", re.compile(r"CRM-\d{4,}")),
+    (
+        "Windows absolute user path (non-placeholder)",
+        re.compile(
+            r"(?i)\bc:\\users\\"
+            r"(?!<username>|<you>|user(?:name)?\b|public\b|default\b|all users\b|\.\.\.)"
+            r"[a-z0-9._-]+\\"
+        ),
+    ),
+    (
+        "Linux absolute /home path (non-placeholder)",
+        re.compile(
+            r"(?i)(?<!\w)/home/"
+            r"(?!user(?:/|$)|you(?:/|$)|<user>(?:/|$)|replace_user(?:/|$)|\{\{)"
+            r"[a-z0-9._-]+/"
+        ),
+    ),
+    (
+        "LinkedIn profile URL (explicit personal slug)",
+        re.compile(
+            r"(?i)https?://(?:www\.)?linkedin\.com/in/"
+            r"(?!example\b|<|\.{3}|replaced|redacted|\$|\{)[a-z0-9_-]+/?"
+        ),
+    ),
+    (
+        "Family relationship phrase (sensitive context)",
+        re.compile(
+            r"(?i)\b(my\s+wif[e]|my\s+sister(?:'s|s)\s+husband|esposa|cunhad[oa])\b"
+        ),
+    ),
 ]
 
 _PRIVATE_PATTERNS_FILE = REPO_ROOT / "docs" / "private" / "pii-patterns.txt"
@@ -45,6 +74,7 @@ _ALLOWED_PATHS_PREFIXES = (
     "docs/private.example/",
     ".cursor/private/",
     "tests/test_pii_guard.py",
+    "scripts/pii_history_guard.py",
 )
 
 _BINARY_EXTENSIONS = frozenset(
@@ -117,6 +147,18 @@ def _is_binary(path: str) -> bool:
     return Path(path).suffix.lower() in _BINARY_EXTENSIONS
 
 
+def _collect_violations(content: str, fpath: str, all_literals: list[str]) -> list[str]:
+    lower_content = content.lower()
+    violations: list[str] = []
+    for lit in all_literals:
+        if lit.lower() in lower_content:
+            violations.append(f"  {fpath}: contains PII literal '{lit}'")
+    for label, pattern in _BUILTIN_REGEXES:
+        if pattern.search(content):
+            violations.append(f"  {fpath}: matches PII regex '{label}'")
+    return violations
+
+
 def test_tracked_files_contain_no_pii_patterns():
     """Fail CI if any tracked file contains a known PII pattern."""
     all_literals = list(_BUILTIN_LITERALS) + _load_private_patterns()
@@ -134,14 +176,7 @@ def test_tracked_files_contain_no_pii_patterns():
         except OSError:
             continue
 
-        lower_content = content.lower()
-        for lit in all_literals:
-            if lit.lower() in lower_content:
-                violations.append(f"  {fpath}: contains PII literal '{lit}'")
-
-        for label, pattern in _BUILTIN_REGEXES:
-            if pattern.search(content):
-                violations.append(f"  {fpath}: matches PII regex '{label}'")
+        violations.extend(_collect_violations(content, fpath, all_literals))
 
     assert not violations, (
         "PII guard failed -- move sensitive content to docs/private/ "
