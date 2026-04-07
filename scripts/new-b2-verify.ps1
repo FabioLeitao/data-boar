@@ -20,6 +20,10 @@
 .PARAMETER RunCheckAll
     Also run full validation gate (uv sync + scripts/check-all.ps1).
 
+.PARAMETER TargetUserSegment
+    Username segment to probe (for incident response on a known leaked username).
+    Do not commit real usernames in this file; pass at runtime only.
+
 .EXAMPLE
     .\scripts\new-b2-verify.ps1
 
@@ -30,7 +34,8 @@ param(
     [string]$RepoUrl = "https://github.com/FabioLeitao/data-boar.git",
     [string]$TempCloneName = "data-boar-reaudit-short",
     [switch]$KeepClone,
-    [switch]$RunCheckAll
+    [switch]$RunCheckAll,
+    [string]$TargetUserSegment = ""
 )
 
 Set-StrictMode -Version Latest
@@ -88,7 +93,12 @@ function Invoke-AuditCheck {
 
 $tempRoot = $env:TEMP
 $clonePath = Join-Path $tempRoot $TempCloneName
-$targetUserPath = "C:\Users\" + "fabio"
+$targetUserPath = if ($TargetUserSegment) {
+    "C:\Users\" + $TargetUserSegment
+} else {
+    "C:\Users\<username>"
+}
+$targetUserPathLower = $targetUserPath.ToLowerInvariant()
 $targetPlaceholder = "C:\Users\<username>"
 
 Write-Step "Preparing fresh clone"
@@ -107,15 +117,21 @@ try {
     Write-Step "Running short audit checks"
     $results = @()
     $results += Invoke-AuditCheck `
-        -Name "log_s_users_fabio" `
+        -Name "log_s_users_path_uppercase" `
         -CommandText ("git log --all -S `"{0}`" --oneline" -f $targetUserPath) `
         -Command { git log --all -S $targetUserPath --oneline } `
         -Expected "zero"
 
     $results += Invoke-AuditCheck `
-        -Name "grep_all_revs_users_fabio" `
-        -CommandText ("git grep -n -F `"{0}`" $(git rev-list --all)" -f $targetUserPath) `
-        -Command { git grep -n -F $targetUserPath $(git rev-list --all) } `
+        -Name "log_s_users_path_lowercase" `
+        -CommandText ("git log --all -S `"{0}`" --oneline" -f $targetUserPathLower) `
+        -Command { git log --all -S $targetUserPathLower --oneline } `
+        -Expected "zero"
+
+    $results += Invoke-AuditCheck `
+        -Name "grep_all_revs_users_path_case_insensitive" `
+        -CommandText ("git grep -n -i -F `"{0}`" $(git rev-list --all)" -f $targetUserPath) `
+        -Command { git grep -n -i -F $targetUserPath $(git rev-list --all) } `
         -Expected "zero"
 
     $results += Invoke-AuditCheck `
