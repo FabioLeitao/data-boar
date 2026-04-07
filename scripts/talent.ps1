@@ -35,40 +35,27 @@ $PoolDir    = Join-Path $RepoRoot "docs\private\commercial\candidates\linkedin_p
 $IndividDir = Join-Path $PoolDir "individual"
 $ExtractPy  = Join-Path $RepoRoot "scripts\extract_cv_pdf.py"
 $ImportPs1  = Join-Path $RepoRoot "scripts\ats-candidate-import.ps1"
+$TalentPoolPath = Join-Path $RepoRoot "docs\private\commercial\talent_pool.json"
 
 $Candidates = @{
-    "ivan"         = @{ Name="Collaborator-A";                LinkedIn="https://www.linkedin.com/in/REDACTED";                              File="IVAN_FILHO_ATS.pt_BR.md"              }
-    "pedro"        = @{ Name="Collaborator-D";      LinkedIn="https://www.linkedin.com/in/pedro-herminio-alto%C3%A9-0a360a227";    File="PEDRO_HERMINIO_ALTOE_ATS.pt_BR.md"    }
-    "andre_eudes"  = @{ Name="Collaborator-C S. dos Santos"; LinkedIn="https://www.linkedin.com/in/REDACTED";                             File="ANDRE_EUDES_SANTOS_ATS.pt_BR.md"      }
-    "andre_lucas"  = @{ Name="Collaborator-H";               LinkedIn="https://www.linkedin.com/in/REDACTED";                            File="ANDRE_LUCAS_ATS.pt_BR.md"             }
-    "aca"          = @{ Name="Collaborator-L";    LinkedIn="https://www.linkedin.com/in/REDACTED-08328b9";         File="ANTONIO_CARLOS_AZEVEDO_ATS.pt_BR.md"  }
-    "braga"        = @{ Name="Collaborator-M";             LinkedIn="https://www.linkedin.com/in/REDACTED-";                        File="RODRIGO_BRAGA_ATS.pt_BR.md"           }
-    "caterine"     = @{ Name="Collaborator-N";        LinkedIn="https://www.linkedin.com/in/REDACTED-017538350";           File="CATERINE_PASTORINO_ATS.pt_BR.md"      }
-    "clebinho"     = @{ Name="Collaborator-E";             LinkedIn="https://www.linkedin.com/in/REDACTED";                                File="CLEBER_REBELO_ATS.pt_BR.md"           }
-    "ebo"          = @{ Name="Collaborator-O";          LinkedIn="https://www.linkedin.com/in/REDACTED";                                File="ELIEZIO_OLIVEIRA_ATS.pt_BR.md"        }
-    "ferrao"       = @{ Name="Collaborator-F";            LinkedIn="https://www.linkedin.com/in/felippe-ferr%C3%A3o-343b0328";          File="FELIPPE_FERRAO_ATS.pt_BR.md"          }
-    "freire"       = @{ Name="Collaborator-P";            LinkedIn="https://www.linkedin.com/in/REDACTED-66875242";                File="RODRIGO_FREIRE_ATS.pt_BR.md"          }
-    "freitas"      = @{ Name="Collaborator-Q";              LinkedIn="https://www.linkedin.com/in/REDACTED-5ab2702a";                  File="LUIS_FREITAS_ATS.pt_BR.md"            }
-    "gondim"       = @{ Name="Collaborator-R";            LinkedIn="https://www.linkedin.com/in/REDACTED";                          File="RICARDO_GONDIM_ATS.pt_BR.md"          }
-    "irlan"        = @{ Name="Collaborator-S";               LinkedIn="https://www.linkedin.com/in/REDACTED-3871b076";                   File="IRLAN_SALES_ATS.pt_BR.md"             }
-    "madruga"      = @{ Name="Collaborator-T";           LinkedIn="https://www.linkedin.com/in/REDACTED";                        File="MARCELO_MADRUGA_ATS.pt_BR.md"         }
-    "marcos"       = @{ Name="Collaborator-U";              LinkedIn="https://www.linkedin.com/in/REDACTED-dba";                       File="MARCOS_ROCHA_ATS.pt_BR.md"            }
-    "marluce"      = @{ Name="Collaborator-J";            LinkedIn="https://www.linkedin.com/in/REDACTED%C3%A3o-53600089";           File="MARLUCE_LEITAO_ATS.pt_BR.md"          }
-    "murillo"      = @{ Name="Collaborator-I";           LinkedIn="https://www.linkedin.com/in/REDACTED";                         File="MURILLO_RESTIER_ATS.pt_BR.md"         }
-    "pim"          = @{ Name="Collaborator-K";           LinkedIn="https://www.linkedin.com/in/REDACTED";                           File="PIM_WAAIJENBERG_ATS.pt_BR.md"         }
-    "rafael_gomez" = @{ Name="Collaborator-V";              LinkedIn="https://www.linkedin.com/in/REDACTED";                              File="RAFAEL_GOMEZ_ATS.pt_BR.md"            }
-    "rafael_silva" = @{ Name="Collaborator-W";              LinkedIn="https://www.linkedin.com/in/REDACTED";                         File="RAFAEL_SILVA_ATS.pt_BR.md"            }
-    "ramon"        = @{ Name="Collaborator-X";            LinkedIn="https://www.linkedin.com/in/REDACTED-bb2317a3";                File="RAMON_OLIVEIRA_ATS.pt_BR.md"          }
-    "talita"       = @{ Name="Collaborator-B";            LinkedIn="https://www.linkedin.com/in/REDACTED";                        File="TALITA_MOREIRA_ATS.pt_BR.md"          }
-    "felipe"       = @{ Name="Collaborator-Y (planozero)";     LinkedIn="https://www.linkedin.com/in/REDACTED7a270099";                      File="FELIPE_F_ATS.pt_BR.md"                }
-    "felipe"       = @{ Name="Collaborator-Y (planozero)";     LinkedIn="https://www.linkedin.com/in/REDACTED7a270099";                      File="FELIPE_F_ATS.pt_BR.md"                }
-    "wagner"       = @{ Name="Collaborator-G";              LinkedIn="https://www.linkedin.com/in/REDACTED";                             File="WAGNER_SILVA_ATS.pt_BR.md"            }
+    "example" = @{ Name="Example Person"; LinkedIn="https://www.linkedin.com/in/example"; File="EXAMPLE_ATS.pt_BR.md" }
 }
 
 function Write-Ok   { param([string]$M) Write-Host "[OK]  $M" -ForegroundColor Green  }
 function Write-Info { param([string]$M) Write-Host "[>>]  $M" -ForegroundColor Cyan   }
 function Write-Warn { param([string]$M) Write-Host "[!!]  $M" -ForegroundColor Yellow }
 function Write-Err  { param([string]$M) Write-Host "[ERR] $M" -ForegroundColor Red    }
+
+if (Test-Path -LiteralPath $TalentPoolPath) {
+    try {
+        $privateCandidates = Get-Content -Raw -LiteralPath $TalentPoolPath | ConvertFrom-Json -AsHashtable
+        foreach ($key in $privateCandidates.Keys) {
+            $Candidates[$key] = $privateCandidates[$key]
+        }
+    } catch {
+        Write-Warn "Falha ao carregar pool privado em '$TalentPoolPath': $($_.Exception.Message)"
+    }
+}
 
 function Resolve-Candidate {
     param([string]$Input)
