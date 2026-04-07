@@ -1,6 +1,6 @@
 ﻿# Data Boar — POC Testing Guide
 
-> **Audience:** collaborators (Colleague-A, Colleague-B, lab-op team) running validation passes on the scanner.
+> **Audience:** collaborators (team members, lab-op team) running validation passes on the scanner.
 > **Version:** 2026-04-05 | **Related:** `scripts/generate_synthetic_poc_corpus.py`
 
 This guide walks through the full test coverage plan for Data Boar POC validation:
@@ -302,7 +302,7 @@ bash run_error_tests.sh 2>&1 | tee error_test_results.txt
 
 ---
 
-## 10. Prerequisites for Windows 11 collaborators (Colleague-A / Colleague-B)
+## 10. Prerequisites for Windows 11 collaborators (team members)
 
 If you are running on **Windows 11** (not Linux/macOS), follow these steps before the quick
 start in §1.

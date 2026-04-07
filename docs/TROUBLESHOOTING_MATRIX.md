@@ -1,6 +1,6 @@
 # Data Boar - Troubleshooting Matrix
 
-> **Audience:** POC testers, collaborators (Colleague-A, Colleague-B), operators.
+> **Audience:** POC testers, collaborators (team members), operators.
 > **Version:** 2026-04-05 | **Related:** `scripts/run_poc_error_scenarios.py`
 
 Use this matrix when Data Boar returns an unexpected result, dashboard error, or
@@ -246,7 +246,7 @@ After `run_poc_error_scenarios.py`, share the JSON output. For manual findings:
   "finding": "Port as string accepted without error",
   "recommendation": "Add int validator for port field",
   "severity": "MEDIUM",
-  "reproduced_by": "Colleague-A",
+  "reproduced_by": "tester-1",
   "date": "2026-04-06",
   "github_issue": "#XX"
 }
