@@ -54,7 +54,10 @@ FORBIDDEN_LINE_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ),
 )
 
-_HISTORY_GUARD_EXEMPT_PATHS = {"scripts/pii_history_guard.py"}
+_HISTORY_GUARD_EXEMPT_PATHS = {
+    "scripts/pii_history_guard.py",
+    "tests/test_pii_guard.py",
+}
 
 
 def _git(args: list[str]) -> subprocess.CompletedProcess[str]:
