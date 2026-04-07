@@ -11,7 +11,7 @@ The lab-op environment (ThinkPad T14 running LMDE 7 / Debian Trixie) needs a con
 2. Test multi-service compositions (detector + database + dashboard) via `docker compose`.
 3. Optionally test **Swarm stack deployments** (`docker stack deploy`) as a lightweight
    simulation of multi-node orchestration without full Kubernetes overhead.
-4. Eventually hand off reproducible container procedures to collaborators (IDENTIDADE_COLABORADOR_A, IDENTIDADE_COLABORADOR_B).
+4. Eventually hand off reproducible container procedures to collaborators (team members).
 
 Three options were evaluated:
 
