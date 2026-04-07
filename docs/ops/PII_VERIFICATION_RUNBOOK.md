@@ -17,6 +17,7 @@ If any item is unchecked, **do not** mark SAFE.
 - This runbook covers tracked files and Git history in a **fresh clone**.
 - It complements guardrails (`new-b2-verify`, `pii_history_guard.py`, `test_pii_guard.py`).
 - It does not replace manual classification for contextual terms.
+- `new-b2-verify.ps1` is PowerShell-only (best on L14/Windows). On Linux hosts, use the manual equivalent below.
 
 ## 0) Preconditions
 
@@ -34,6 +35,20 @@ git status
 
 Expected: clean tree on `main`.
 
+### Linux (lab-op hosts)
+
+```bash
+cd /tmp
+rm -rf teste_operator_fresh
+mkdir -p teste_operator_fresh
+cd teste_operator_fresh
+git clone git@github.com:FabioLeitao/data-boar.git
+cd data-boar
+git status
+```
+
+Expected: clean tree on `main`.
+
 ## 1) Short run (weekly / before sensitive PRs)
 
 ```powershell
@@ -46,6 +61,24 @@ git grep -n -E "\b[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}\b" -- scripts docs tests
 ```
 
 Pass condition: no relevant matches + tests pass.
+
+### Linux (`new-b2-verify.ps1` equivalent)
+
+```bash
+TARGET_SEGMENT="fabio"
+TARGET_PATH_UPPER="C:\\Users\\${TARGET_SEGMENT}"
+TARGET_PATH_LOWER="c:\\users\\${TARGET_SEGMENT}"
+
+git log --all -S "${TARGET_PATH_UPPER}" --oneline
+git log --all -S "${TARGET_PATH_LOWER}" --oneline
+git grep -n -i -F "${TARGET_PATH_UPPER}" $(git rev-list --all)
+
+uv run python ./scripts/pii_history_guard.py
+uv run pytest tests/test_pii_guard.py -q
+# Run the UC-pattern grep from your local/private criteria bundle.
+git grep -n -E "\b(192\.168\.[0-9]{1,3}\.[0-9]{1,3}|10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|172\.(1[6-9]|2[0-9]|3[0-1])\.[0-9]{1,3}\.[0-9]{1,3})\b" -- scripts docs tests .cursor
+git grep -n -E "\b[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}\b" -- scripts docs tests .cursor
+```
 
 ## 2) Mid run (monthly)
 
