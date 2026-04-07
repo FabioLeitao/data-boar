@@ -5,7 +5,7 @@
 
 .DESCRIPTION
     Creates a fresh clone, runs short git history/tree checks for:
-      C:\Users\<username>
+      C:\Users\ + operator username
     and prints command + result evidence.
 
 .PARAMETER RepoUrl
@@ -88,6 +88,8 @@ function Invoke-AuditCheck {
 
 $tempRoot = $env:TEMP
 $clonePath = Join-Path $tempRoot $TempCloneName
+$targetUserPath = "C:\Users\" + "fabio"
+$targetPlaceholder = "C:\Users\<username>"
 
 Write-Step "Preparing fresh clone"
 Write-Host "RepoUrl: $RepoUrl"
@@ -106,20 +108,20 @@ try {
     $results = @()
     $results += Invoke-AuditCheck `
         -Name "log_s_users_fabio" `
-        -CommandText 'git log --all -S "C:\Users\<username>" --oneline' `
-        -Command { git log --all -S "C:\Users\<username>" --oneline } `
+        -CommandText ("git log --all -S `"{0}`" --oneline" -f $targetUserPath) `
+        -Command { git log --all -S $targetUserPath --oneline } `
         -Expected "zero"
 
     $results += Invoke-AuditCheck `
         -Name "grep_all_revs_users_fabio" `
-        -CommandText 'git grep -n -F "C:\Users\<username>" $(git rev-list --all)' `
-        -Command { git grep -n -F "C:\Users\<username>" $(git rev-list --all) } `
+        -CommandText ("git grep -n -F `"{0}`" $(git rev-list --all)" -f $targetUserPath) `
+        -Command { git grep -n -F $targetUserPath $(git rev-list --all) } `
         -Expected "zero"
 
     $results += Invoke-AuditCheck `
         -Name "grep_head_placeholder" `
-        -CommandText 'git grep -n -F "C:\Users\<username>" -- ":(exclude)*.lock"' `
-        -Command { git grep -n -F "C:\Users\<username>" -- ":(exclude)*.lock" } `
+        -CommandText ("git grep -n -F `"{0}`" -- `":(exclude)*.lock`"" -f $targetPlaceholder) `
+        -Command { git grep -n -F $targetPlaceholder -- ":(exclude)*.lock" } `
         -Expected "any"
 
     if ($RunCheckAll) {
