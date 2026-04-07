@@ -33,7 +33,7 @@ switch ($Mode) {
         Write-Info "Geracao solar: coletar via growatt-session-collect.ps1 -Mode month"
         Write-Host "`n--- SAUDE ---" -ForegroundColor White
         Write-Info "Plano Sulamerica (employer plan, until 2025) | InComm Payments (2026+, confirmar)"
-        Write-Info "Suplemento medico: ver docs/private/"
+        Write-Info "Suplementos: ver docs/private/"
         Write-Host "`n--- PARA PREENCHER OS ? ---" -ForegroundColor White
         Write-Info ".\scripts\household-finance.ps1 -Mode update"
     }
@@ -75,20 +75,20 @@ switch ($Mode) {
     "health" {
         Write-Header "Saude -- Medicacoes e Historico"
         Write-Host "`n--- CONFIRMADAS (fotos iCloud) ---" -ForegroundColor Green
-        Write-Info "Vitamina D3 1.000 UI (DPrev, Myralis) -- ago-set/2025"
+        Write-Info "Suplementos: ver docs/private/"
         Write-Info "  Comum em burnout + home office. ~R$ 30-80/mes."
         Write-Host "`n--- A CONFIRMAR (Signal photos jun/2025 bloqueados) ---" -ForegroundColor Yellow
-        Write-Info "signal-2025-06-16-13*.jpg: provaveis prescricoes pos-atestado"
+        Write-Info "Fotos com prescricoes: ver docs/private/"
         Write-Info "  Para acessar: abrir iCloud for Windows, entao:"
         Write-Info "  .\scripts\icloud-photos-fetch-range.ps1 -Start 2025-06-01 -End 2025-06-30"
-        Write-Info "Suspeitas clinicas (CID-REDACTED): Complexo B, Magnesio, Melatonina, ISRS?"
+        Write-Info "Suplementos e medicacoes: ver docs/private/"
         Write-Host "`n--- HISTORICO DE COMPRAS FARMACIA ---" -ForegroundColor White
-        Write-Info "Pague Menos: parcelamentos out/nov 2024 (Itau Personnalite Mc Black)"
-        Write-Info "  Verificar extrato do cartao para valor exato"
+        Write-Info "Historico de farmacia: ver docs/private/"
+        Write-Info "  Verificar docs/private/ para detalhes"
         Write-Host "`n--- CONSULTAS DOCUMENTADAS ---" -ForegroundColor White
         Write-Info "05/jun/2025: Medico assistente (ver docs/private/)"
         Write-Info "  CID e periodo de afastamento: ver docs/private/"
-        Write-Info "22/set/2025: medical facility -- consulta oftalmologica"
+        Write-Info "22/set/2025: Consulta medica: ver docs/private/"
         Write-Host "`n--- PLANO DE SAUDE ---" -ForegroundColor White
         Write-Info "2022-2025: Sulamerica Especial 100 (employer plan)"
         Write-Info "2026+:     Confirmar InComm Payments"
