@@ -450,6 +450,15 @@ def test_build_final_round_bucket_concat_py_compiles():
     py_compile.compile(str(script), doraise=True)
 
 
+def test_pii_history_guard_py_compiles():
+    """scripts/pii_history_guard.py compiles (history anti-regression guard)."""
+    root = _project_root()
+    script = root / "scripts" / "pii_history_guard.py"
+    if not script.exists():
+        return
+    py_compile.compile(str(script), doraise=True)
+
+
 def test_recovery_doc_bundle_sanity_ps1_syntax():
     """scripts/recovery-doc-bundle-sanity.ps1 has valid PowerShell syntax (parse-only)."""
     root = _project_root()
