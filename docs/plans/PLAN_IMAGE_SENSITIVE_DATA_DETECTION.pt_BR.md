@@ -201,4 +201,4 @@ Posicao na fila: H2 (high value, not blocking current release).
 - Decidir se EasyOCR vai no Dockerfile default ou apenas em `data_boar:image` (nova tag).
 - Avaliar se deteccao de rosto (biometrico, Fase 5) entra no escopo v2.0 ou fica como plugin.
 - Definir quais extensoes de arquivo disparam a varredura de imagem por default (tudo vs lista curada).
-- Confirmar com Talita/Felipe se clientes alvos (EAD/Sul, escritorio de advocacia) armazenam imagens em banco ou apenas no filesystem.
+- Confirmar com colaboradores se clientes alvos (EAD/Sul, escritorio de advocacia) armazenam imagens em banco ou apenas no filesystem.

@@ -15,6 +15,13 @@ config.local.yaml
 .env.local
 .env.*.local
 
+# Cryptographic material (never track)
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+
 # Local-only security reviews / feedback (confidential; keep out of git)
 docs/feedbacks, reviews, comments and criticism/
 

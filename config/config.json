@@ -20,7 +20,7 @@
     "file_scan": {
         "directories": [
             "/home/user/Documents/LGPD/",
-            "/home/user/Documents/Concursos/"
+            "/home/user/Documents/sample_data/"
         ],
         "extensions": ["*.pdf", "*.csv", "*.xls", "*.xlsx", "*.doc", "*.txt", "*.docx"]
     }

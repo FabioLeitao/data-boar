@@ -171,34 +171,34 @@ scripts/
 
 ## Apelidos do Pool (para usar no wrapper)
 
-| Apelido | Nome Real |
+| Apelido | Nome (placeholder) |
 |---|---|
-| ivan | Collaborator-A |
-| pedro | Collaborator-D |
-| andre_eudes | Collaborator-C S. dos Santos |
-| andre_lucas | Collaborator-H |
-| aca | Collaborator-L |
-| braga | Collaborator-M |
-| caterine | Collaborator-N |
-| clebinho | Collaborator-E |
-| ebo | Collaborator-O |
-| ferrao | Collaborator-F |
-| freire | Collaborator-P |
-| freitas | Collaborator-Q |
-| gondim | Collaborator-R |
-| irlan | Collaborator-S |
-| madruga | Collaborator-T |
-| marcos | Collaborator-U |
-| marluce | Collaborator-J |
-| murillo | Collaborator-I |
-| pim | Collaborator-K |
-| rafael_gomez | Collaborator-V |
-| rafael_silva | Collaborator-W |
-| ramon | Collaborator-X |
-| talita | Collaborator-B |
-| wagner | Collaborator-G |
-| felipe | Collaborator-Y (planozero.com.br) -- advisor-remote |
-| dudu | Rodrigo Baptista (Dudu) -- CNseg infra |
+| candidate-1 | Candidate One |
+| candidate-2 | Candidate Two |
+| candidate-3 | Candidate Three |
+| candidate-4 | Candidate Four |
+| candidate-5 | Candidate Five |
+| candidate-6 | Candidate Six |
+| candidate-7 | Candidate Seven |
+| candidate-8 | Candidate Eight |
+| candidate-9 | Candidate Nine |
+| candidate-10 | Candidate Ten |
+| candidate-11 | Candidate Eleven |
+| candidate-12 | Candidate Twelve |
+| candidate-13 | Candidate Thirteen |
+| candidate-14 | Candidate Fourteen |
+| candidate-15 | Candidate Fifteen |
+| candidate-16 | Candidate Sixteen |
+| candidate-17 | Candidate Seventeen |
+| candidate-18 | Candidate Eighteen |
+| candidate-19 | Candidate Nineteen |
+| candidate-20 | Candidate Twenty |
+| candidate-21 | Candidate Twenty-One |
+| candidate-22 | Candidate Twenty-Two |
+| candidate-23 | Candidate Twenty-Three |
+| candidate-24 | Candidate Twenty-Four |
+| candidate-25 | Candidate Twenty-Five |
+| candidate-26 | Candidate Twenty-Six |
 
 ---
 
