@@ -1,16 +1,16 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Revoga uma chave GPG local e publica a revogação nos keyservers.
+    Revoga uma chave GPG local e publica a revogacao nos keyservers.
 
 .PARAMETER KeyId
     ID da chave GPG a revogar (8 ou 40 hex chars).
 
 .PARAMETER Reason
-    Razão: 0=nenhuma, 1=comprometida, 2=substituida, 3=nao_usada (default: 3)
+    Razao: 0=nenhuma, 1=comprometida, 2=substituida, 3=nao_usada (default: 3)
 
 .PARAMETER Description
-    Texto descritivo da revogação.
+    Texto descritivo da revogacao.
 
 .PARAMETER NoPublish
     Se informado, nao publica nos keyservers (apenas importa localmente).

@@ -30,7 +30,7 @@ tracked by the **public Git** (`origin` / GitHub). They belong **exclusively** i
 - Full name of current or past **employer** (replace with "the operator employer", "a port logistics company", etc. in public docs)
 - Specific job title + company combination that uniquely identifies the operator
 - Salary, compensation, or benefit details
-- Details of employment disputes (dossier content -- docs/private/legal_dossier/)
+- Details of employment disputes (dossier content -- keep in docs/private/ only)
 - Reference letters, demission interviews, HR correspondence
 
 ### 3. Financial information
@@ -42,9 +42,9 @@ tracked by the **public Git** (`origin` / GitHub). They belong **exclusively** i
 
 ### 4. Health and medical
 - Diagnoses, medications, psychiatrist/psychologist notes
-- Medical letters or correspondence (carta da dra / medico assistente)
+- Medical letters or correspondence
 - Burnout, CID, INSS/CAT documents
-- Weight, surgical history (bariatric or other)
+- Weight, surgical history, or other medical details
 
 ### 5. Lab-op infrastructure
 - Real hostnames (use lab-pb, lab-op or <hostname> placeholders in public docs)
@@ -66,7 +66,7 @@ tracked by the **public Git** (`origin` / GitHub). They belong **exclusively** i
 - Academic transcripts, grades, thesis drafts -- docs/private/author_info/
 
 ### 8. Personal legal matters
-- Labor dispute dossier (ICTSI or any employer) -- docs/private/legal_dossier/
+- Labor dispute dossier (any employer) -- keep in docs/private/ only
 - Any document that is "privileged" (attorney-client, court filing, settlement)
 - Third-party names in legal context (except genericized references)
 
@@ -114,4 +114,4 @@ tracked by the **public Git** (`origin` / GitHub). They belong **exclusively** i
 - Push to lab-latitude/main regularly (pCloud P:/ is additional backup, not sole copy)
 - feedbacks_and_reviews/ must be committed -- never gitignored from the private repo
 
-See docs/private/OPERATOR_LAB_STUDY_AND_PRIVATE_GIT.pt_BR.md for full private git workflow.
+See docs/private/ for full private git workflow.
