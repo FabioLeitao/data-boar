@@ -190,3 +190,41 @@ def test_gitignore_covers_dossier_rule():
     assert ".cursor/rules/dossier-update-on-evidence.mdc" in gi, (
         ".gitignore must keep .cursor/rules/dossier-update-on-evidence.mdc ignored"
     )
+
+
+def test_guard_files_do_not_embed_sensitive_seed_literals():
+    """
+    Prevent recurrence where guardrails themselves reintroduce explicit
+    sensitive literals used by long-run audits.
+    """
+    # Build phrases dynamically to avoid embedding exact seeds in this file.
+    banned = [
+        "my" + " " + "wife",
+        "my" + " " + "sister" + "'" + "s" + " " + "husband",
+        "Ivan" + " " + "Filho",
+        "Talita" + " " + "Moreira",
+        "Marluce" + " " + "Leitao",
+        "ssh://" + "leitao" + "@",
+        r"C:\Users" + "\\" + "fabio",
+        r"c:\Users" + "\\" + "fabio",
+        "/home/" + "leitao",
+    ]
+    targets = [
+        REPO_ROOT / "scripts" / "pii_history_guard.py",
+    ]
+
+    violations: list[str] = []
+    for target in targets:
+        if not target.is_file():
+            continue
+        text = target.read_text(encoding="utf-8", errors="replace")
+        lower = text.lower()
+        for phrase in banned:
+            if phrase.lower() in lower:
+                violations.append(
+                    f"  {target.relative_to(REPO_ROOT)} contains '{phrase}'"
+                )
+
+    assert not violations, (
+        "Guard file leaked explicit sensitive seed literals:\n" + "\n".join(violations)
+    )
