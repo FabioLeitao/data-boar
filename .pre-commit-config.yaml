@@ -46,3 +46,8 @@ repos:
         entry: uv run pytest tests/test_pii_guard.py -q -W error
         language: system
         pass_filenames: false
+      - id: pii-history-guard
+        name: PII history guard (forbidden literals must stay purged)
+        entry: uv run python scripts/pii_history_guard.py
+        language: system
+        pass_filenames: false

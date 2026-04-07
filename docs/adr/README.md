@@ -31,6 +31,12 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0010  | [IP Declaration as prior-art protection for Data Boar at CLT employment](0010-ip-declaration-prior-art-protection-at-employment.md)                     | Accepted |
 | 0011  | [Layered observability stack for lab-op (Munin + Wazuh + Prometheus + Monit + rsyslog/GELF)](0011-lab-op-observability-stack-layered.md)                | Accepted |
 | 0012  | [OCR and image-based sensitive data detection (Tesseract primary, EasyOCR opt-in, BLOB/base64)](0012-ocr-image-sensitive-data-detection.md)             | Proposed |
+| 0013  | [Browser artifact scanning — SQLite (default) + LevelDB (opt-in) strategy](0013-browser-artifact-sqlite-leveldb-scan-strategy.md)                        | Accepted |
+| 0014  | [Rename repository and package from python3-lgpd-crawler to data-boar](0014-rename-repo-and-package-python3-lgpd-crawler-to-data-boar.md)               | Accepted |
+| 0015  | [PoC test infrastructure with synthetic corpus and API testing](0015-poc-test-infrastructure-synthetic-corpus-and-api-testing.md)                         | Accepted |
+| 0016  | [OpenTofu corporate IaC path alongside existing Ansible operations](0016-opentofu-corporate-iac-path-alongside-ansible.md)                                | Accepted |
+| 0017  | [Quasi-identification risk/confidence contract and LGPD guardrails](0017-quasi-identification-risk-confidence-contract-and-lgpd-guardrails.md)             | Accepted |
+| 0018  | [PII anti-recurrence guardrails for tracked files and branch history](0018-pii-anti-recurrence-guardrails-for-tracked-files-and-branch-history.md)         | Accepted |
 
 ## Related docs
 
@@ -44,3 +50,4 @@ Short, durable notes that capture **why** the project chose an approach—not on
 ## Documentation index
 
 See [docs/README.md](../README.md) for the full documentation map.
+
