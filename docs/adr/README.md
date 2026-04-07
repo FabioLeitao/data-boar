@@ -37,6 +37,7 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0016  | [OpenTofu corporate IaC path alongside existing Ansible operations](0016-opentofu-corporate-iac-path-alongside-ansible.md)                                | Accepted |
 | 0017  | [Quasi-identification risk/confidence contract and LGPD guardrails](0017-quasi-identification-risk-confidence-contract-and-lgpd-guardrails.md)             | Accepted |
 | 0018  | [PII anti-recurrence guardrails for tracked files and branch history](0018-pii-anti-recurrence-guardrails-for-tracked-files-and-branch-history.md)         | Accepted |
+| 0019  | [PII verification cadence and manual review gate](0019-pii-verification-cadence-and-manual-review-gate.md)                                                   | Accepted |
 
 ## Related docs
 
