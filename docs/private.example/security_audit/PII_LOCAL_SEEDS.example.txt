@@ -1,0 +1,5 @@
+# Copy to docs/private/security_audit/PII_LOCAL_SEEDS.txt and replace with maintainer-approved literals.
+# One non-empty, non-comment line per seed for: git log -S "<line>" and git grep -F "<line>".
+#
+# PLACEHOLDER_WINDOWS_USER_SEGMENT
+# PLACEHOLDER_LINUX_HOME_SEGMENT
