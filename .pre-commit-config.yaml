@@ -41,3 +41,8 @@ repos:
         entry: uv run pytest tests/test_docs_external_no_plan_links.py -q -W error
         language: system
         pass_filenames: false
+      - id: pii-guard
+        name: PII guard (tracked files must not contain sensitive patterns)
+        entry: uv run pytest tests/test_pii_guard.py -q -W error
+        language: system
+        pass_filenames: false
