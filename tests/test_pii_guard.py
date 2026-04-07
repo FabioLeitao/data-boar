@@ -62,8 +62,12 @@ _BUILTIN_REGEXES: list[tuple[str, re.Pattern[str]]] = [
     (
         "Family relationship phrase (sensitive context)",
         re.compile(
-            r"(?i)\b(my\s+wif[e]|my\s+sister(?:'s|s)\s+husband|esposa|cunhad[oa])\b"
+            r"(?i)\b(my\s+wife|my\s+sister(?:'s|s)\s+husband|esposa|cunhad[oa])\b"
         ),
+    ),
+    (
+        "Utility account identifier (UC with many digits)",
+        re.compile(r"(?i)\bUC\s*\d{6,}\b"),
     ),
 ]
 

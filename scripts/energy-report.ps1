@@ -78,7 +78,7 @@ $report += "---"
 $report += ""
 
 # --- ENEL ---
-$report += "## Grid / Concessionaria (Enel RJ -- UC 8092489)"
+$report += "## Grid / Concessionaria (Enel RJ -- UC <UC_NUMBER>)"
 if (Test-Path $enelFile) {
     $enelContent = Get-Content $enelFile -Raw
     Write-Ok "Arquivo Enel: $enelFile"
