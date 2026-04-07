@@ -3,7 +3,7 @@
 **Status:** ⬜ Pending
 **Prioridade:** H1 — pré-requisito para testes controlados antes de dados reais
 **Dependências:** Data Boar detector pipeline (`core/detector.py`), matriz de conectores (`docs/TECH_GUIDE.pt_BR.md`)
-**Colaboradores:** operador, IDENTIDADE_COLABORADOR_A (future), IDENTIDADE_COLABORADOR_B (future — fornecedor de dados sintéticos e ambiente de test)
+**Colaboradores:** operador, colaboradores futuros (fornecedor de dados sintéticos e ambiente de test)
 **Criado em:** 2026-04-03
 
 ---
@@ -278,7 +278,7 @@ d4e5f6,30-35,M,24020,engenheiro,diabetes
 - [ ] Relatório de risco de re-identificação gerado pelo Data Boar.
 - [ ] Ajuste de thresholds e whitelist baseado em resultados.
 
-### Fase 4 — Dados reais (com IDENTIDADE_COLABORADOR_A / IDENTIDADE_COLABORADOR_B — futuro)
+### Fase 4 — Dados reais (com colaboradores — futuro)
 
 - [ ] Receber dataset parcial / anonimizado de produção.
 - [ ] Confirmar comportamento vs corpus sintético.
