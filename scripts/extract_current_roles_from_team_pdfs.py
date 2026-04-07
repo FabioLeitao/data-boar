@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -134,27 +135,17 @@ def main() -> None:
         / "TALENT_POOL_CV_CURRENT_ROLES.pt_BR.md"
     )
 
-    # Profiles we can confirm from existing PDFs in `team_info`.
-    # If a profile doesn't have a dedicated PDF, it will appear as MISSING.
-    wanted = {
-        "Colleague-K": "Linked in Profile - Colleague-K 2026 (team member).pdf",
-        "<SSID_NAME>": "Linked in Profile - <SSID_NAME> (team member).pdf",
-        "Ana Paula (Tavares) Leitão Colleague-L": None,  # no PDF currently in team_info
-        "Colleague-Q Tavares Leitão": None,  # no PDF currently in team_info
-        "Collaborator-N": "Linked in Profile - Caterine 2026.pdf",
-        "Colleague-P": "Linked in Profile - Colleague-P 2026.pdf",
-        "Freitas": "Linked in Profile - Freitas 2026.pdf",
-        "Collaborator-M": "Linked in Profile - Braga 2026.pdf",
-        "Ramon": "Linked in Profile - Ramon 2026.pdf",
-        "Colleague-U C. Colleague-V": "Linked in Profile - Collaborator-W.pdf",
-        "Colleague-T": "Linked in Profile - Colleague-T.pdf",
-        "Irlan": "Linked in Profile - Irlan 2026.pdf",
-        "ACA": "Linked in Profile - ACA 2026.pdf",
-        "André Colleague-I": "Linked in Profile - Andr\u00e9 Colleague-I.pdf",
-        "Marcos": "Linked in Profile - Marcos 2026.pdf",
-        "Colleague-S (Colleague-R)": "Linked in Profile - Colleague-S 2026.pdf",
-        "Contributor-A": "Head de TI_Collaborator-A_2026.pdf",
-    }
+    mapping_path = (
+        repo_root / "docs" / "private" / "commercial" / "team_pdf_mappings.json"
+    )
+    wanted: dict[str, str | None] = {}
+    if mapping_path.exists():
+        try:
+            loaded = json.loads(mapping_path.read_text(encoding="utf-8"))
+            if isinstance(loaded, dict):
+                wanted = loaded
+        except json.JSONDecodeError:
+            print(f"WARN: invalid JSON in {mapping_path}; using empty mapping.")
 
     rows = build_rows(wanted, team_dir)
 

@@ -30,32 +30,22 @@ param(
     [int]$Top = 0
 )
 
-# Mapa completo de slugs LinkedIn por apelido
+# Mapa minimo tracked + carga opcional do pool privado
 $pool = [ordered]@{
-    "contributor-a"         = "contributor-a"
-    "pedro"        = "pedro-Colleague-F-alto%C3%A9-0a360a227"
-    "colleague-h"   = "colleague-h"
-    "andreColleague-I"   = "colleague-i"
-    "aca"          = "antonio-carlos-azevedo-08328b9"
-    "braga"        = "Colleague-Q--braga-"
-    "caterine"     = "caterine-pastorino-017538350"
-    "Colleague-J"     = "rebeloc"
-    "Colleague-S"          = "Colleague-R"
-    "Colleague-C"       = "felippe-ferr%C3%A3o-343b0328"
-    "freire"       = "Colleague-Q-freire-66875242"
-    "freitas"      = "luis-freitas-5ab2702a"
-    "Colleague-P"       = "Colleague-OColleague-P"
-    "irlan"        = "irlan-sales-3871b076"
-    "madruga"      = "marcelo-madruga"
-    "marcos"       = "marcos-rocha-dba"
-    "Colleague-D"      = "Colleague-D-leit%C3%A3o-53600089"
-    "Colleague-T"      = "Colleague-Trestier"
-    "Colleague-K"          = "pColleague-L"
-    "Colleague-Ugomez"  = "ravigomez"
-    "Colleague-UColleague-V"  = "Colleague-U-c-Colleague-V"
-    "ramon"        = "ramon-oliveira-bb2317a3"
-    "colleague-a"       = "colleague-a-mmoreira"
-    "wagner"       = "waferreira"
+    "example"      = "example"
+}
+
+$repoRoot = Split-Path $PSScriptRoot -Parent
+$privatePoolPath = Join-Path $repoRoot "docs\private\commercial\linkedin_review_pool.json"
+if (Test-Path -LiteralPath $privatePoolPath) {
+    try {
+        $privatePool = Get-Content -Raw -LiteralPath $privatePoolPath | ConvertFrom-Json -AsHashtable
+        foreach ($k in $privatePool.Keys) {
+            $pool[$k] = [string]$privatePool[$k]
+        }
+    } catch {
+        Write-Warning "Falha ao carregar pool privado em '$privatePoolPath': $($_.Exception.Message)"
+    }
 }
 
 # Filtrar candidatos

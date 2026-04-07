@@ -14,7 +14,7 @@ Three risks make it unacceptable to start validation with real production data i
 1. **Legal/privacy exposure:** accepting real client data before a controlled test baseline exists
    creates unnecessary LGPD/GDPR surface. A bug that causes data exfiltration or incorrect
    classification would be harder to detect and explain.
-2. **NDA and confidentiality:** collaborators (IDENTIDADE_COLABORADOR_A, IDENTIDADE_COLABORADOR_B) who provide real or near-production
+2. **NDA and confidentiality:** collaborators (team members) who provide real or near-production
    samples are volunteers at this stage. Their employers data must not be implicitly used as a
    test corpus without explicit data-processing agreements.
 3. **FP/FN blindness:** without a ground-truth corpus where expected detections are known in
