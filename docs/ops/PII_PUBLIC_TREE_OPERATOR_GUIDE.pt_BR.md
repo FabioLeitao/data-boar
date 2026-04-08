@@ -4,7 +4,7 @@
 
 **Fonte unica de verdade:** Este arquivo consolida os documentos antigos **`PII_VERIFICATION_RUNBOOK`**, **`PII_DEFINITIVE_REMEDIATION`** e **`GITHUB_FORK_CLONE_VISIBILITY_AND_OPERATOR_AUDIT`**. Esses caminhos permanecem como **redirecionamentos permanentes** para que links e ADRs continuem validos; **edite o procedimento apenas aqui** para evitar drift.
 
-**Publico:** Mantenedor / operador com permissao de push em `FabioLeitao/data-boar`.
+**Público:** Mantenedor / operador com permissão de push no repositório canónico no GitHub (substitui **`OWNER`** pelo utilizador ou organização dono do repo — ex.: `OWNER/data-boar`).
 
 ---
 
@@ -52,7 +52,7 @@ cd C:\temp
 if (Test-Path .\teste_operator_fresh) { Remove-Item -Recurse -Force .\teste_operator_fresh }
 mkdir teste_operator_fresh | Out-Null
 cd .\teste_operator_fresh
-git clone git@github.com:FabioLeitao/data-boar.git
+git clone git@github.com:OWNER/data-boar.git
 cd .\data-boar
 git status
 ```
@@ -66,7 +66,7 @@ cd /tmp
 rm -rf teste_operator_fresh
 mkdir -p teste_operator_fresh
 cd teste_operator_fresh
-git clone git@github.com:FabioLeitao/data-boar.git
+git clone git@github.com:OWNER/data-boar.git
 cd data-boar
 git status
 ```
@@ -291,7 +291,7 @@ Se falhar, corrige ou abre PR com âmbito fechado antes de declarar higiene de r
 
 ### H.2 Confirmar CI no GitHub
 
-1. Abrir `https://github.com/FabioLeitao/data-boar/actions`
+1. Abrir `https://github.com/OWNER/data-boar/actions`
 2. Confirmar que o último workflow no **`main`** está **verde** (todos os jobs).
 
 ### H.3 Lab e clones secundários (máquinas que você controla)
@@ -318,7 +318,7 @@ Instalar `uv` nesses hosts quando fizer sentido para igualar ao Windows.
 1. Listar forks:
 
 ```bash
-gh api repos/FabioLeitao/data-boar/forks --paginate --jq '.[] | {owner: .owner.login, full_name, pushed_at, updated_at}'
+gh api repos/OWNER/data-boar/forks --paginate --jq '.[] | {owner: .owner.login, full_name, pushed_at, updated_at}'
 ```
 
 2. **Você** contacta o dono do fork: histórico upstream / guards mudaram; ele deve **apagar o fork** ou **voltar a sincronizar** com o `main` atual (ver **Parte III** e [COLLABORATION_TEAM.pt_BR.md](../COLLABORATION_TEAM.pt_BR.md)).
@@ -373,7 +373,7 @@ O GitHub expõe **forks públicos** de um repositório público. Dá para listar
 **GitHub CLI** (autenticado):
 
 ```bash
-gh api repos/FabioLeitao/data-boar/forks --paginate --jq '.[] | {owner: .owner.login, full_name, pushed_at, updated_at}'
+gh api repos/OWNER/data-boar/forks --paginate --jq '.[] | {owner: .owner.login, full_name, pushed_at, updated_at}'
 ```
 
 **Browser:** repositório → **Insights** → **Network** (grafo de forks), ou o contador de **Forks** na página inicial do repo.
