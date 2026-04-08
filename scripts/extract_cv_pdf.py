@@ -89,9 +89,11 @@ def extract_fields(raw_text: str, pdf_path: Path) -> dict:
         "email": email_matches[0] if email_matches else None,
         "phone": phone_matches[0].strip() if phone_matches else None,
         "linkedin_slug": linkedin_match.group(1) if linkedin_match else None,
-        "linkedin_url": f"https://www.linkedin.com/in/redacted)}"
-        if linkedin_match
-        else None,
+        "linkedin_url": (
+            f"https://www.linkedin.com/in/redacted)}"
+            if linkedin_match
+            else None
+        ),
         "headline": _extract_headline(lines),
         "location": _extract_location(lines),
         "certifications_detected": _extract_certifications(text_block),
