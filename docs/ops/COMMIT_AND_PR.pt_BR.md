@@ -93,7 +93,7 @@ O GitHub guarda títulos e descrições por muito tempo. Para alinhar com **LGPD
 
 - Use assuntos e descrições **curtos e técnicos** (Conventional Commits). **Não** coloque **nomes de candidatos**, **identificadores de cliente**, contexto **jurídico/denúncia** ou **migalhas do pool de talento** em mensagens de commit ou texto de PR público.
 - Detalhe operacional fica em notas **gitignored** em `docs/private/` (ou outros canais acordados com a equipe).
-- Os guardrails da CI analisam arquivos **rastreados** (`tests/test_pii_guard.py`, testes de talento); **não** reescrevem commits antigos. Para rever ou remediar **histórico**, veja [PII_VERIFICATION_RUNBOOK.pt_BR.md](PII_VERIFICATION_RUNBOOK.pt_BR.md) ([EN](PII_VERIFICATION_RUNBOOK.md)). Índice de política: [CONTRIBUTING.pt_BR.md](../../CONTRIBUTING.pt_BR.md) → *Repositório público: identificadores de terceiros e histórico Git*.
+- Os guardrails da CI analisam arquivos **rastreados** (`tests/test_pii_guard.py`, testes de talento); **não** reescrevem commits antigos. Para rever ou remediar **histórico**, veja [PII_PUBLIC_TREE_OPERATOR_GUIDE.pt_BR.md](PII_PUBLIC_TREE_OPERATOR_GUIDE.pt_BR.md) ([EN](PII_PUBLIC_TREE_OPERATOR_GUIDE.md)). Índice de política: [CONTRIBUTING.pt_BR.md](../../CONTRIBUTING.pt_BR.md) → *Repositório público: identificadores de terceiros e histórico Git*.
 
 ## Qual repositório usar (apenas data-boar)
 
