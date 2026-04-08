@@ -20,11 +20,23 @@ Copy-Item docs/private.example/security_audit/PII_LOCAL_SEEDS.example.txt docs/p
 
 Optional: maintain **`PII_CONTEXT_DECISIONS_LOG.pt_BR.md`** (or another private log) next to the seeds file for `ACEITAVEL` vs `VAZAMENTO` notes.
 
+## Batch pickaxe (save time and tokens)
+
+After you maintain **`PII_LOCAL_SEEDS.txt`**, run from repo root (PowerShell):
+
+```powershell
+.\scripts\run-pii-local-seeds-pickaxe.ps1
+```
+
+Flags: **`-Quiet`** (only print seeds with hits), **`-Limit N`** (smoke test first N seeds). Same file format: one literal per line; `#` comments and blank lines ignored.
+
+**Constraint split (do not duplicate work):** regex guards and `pii_history_guard.py` cover **pattern classes** (LinkedIn shape, `/home/`, `C:\Users\`, etc.). The seeds file is for **literals** (names, emails, org tokens) that automation cannot infer. Use the public guide greps for IP/CPF-style patterns instead of bloating seeds.
+
 ## Why Linux looked “broken”
 
 Commands such as `grep docs/private/security_audit/PII_LOCAL_SEEDS.txt` fail with **No such file or directory** until you **copy** the example (or receive the real file from the maintainer’s private channel). This is expected on a fresh clone.
 
 ## References
 
-- Public cadence and gates: **[docs/ops/PII_VERIFICATION_RUNBOOK.md](../../ops/PII_VERIFICATION_RUNBOOK.md)** ([pt-BR](../../ops/PII_VERIFICATION_RUNBOOK.pt_BR.md))
+- Public cadence and gates: **[docs/ops/PII_PUBLIC_TREE_OPERATOR_GUIDE.md](../../ops/PII_PUBLIC_TREE_OPERATOR_GUIDE.md)** ([pt-BR](../../ops/PII_PUBLIC_TREE_OPERATOR_GUIDE.pt_BR.md))
 - Policy: **[docs/PRIVATE_OPERATOR_NOTES.md](../../PRIVATE_OPERATOR_NOTES.md)**
