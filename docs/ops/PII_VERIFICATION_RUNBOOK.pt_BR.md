@@ -2,6 +2,8 @@
 
 Runbook operacional para verificar PII/dados sensiveis em repositório publico com cadencia curta, media e longa.
 
+**Após incidente ou antes de um cleanup com force-push:** use **[PII_DEFINITIVE_REMEDIATION.pt_BR.md](PII_DEFINITIVE_REMEDIATION.pt_BR.md)** para o checklist completo de reescrita, `git filter-repo` e matriz de reset de clones.
+
 ## Gate de revisao manual (obrigatorio)
 
 Antes de marcar qualquer execucao como SAFE, revise os criterios locais/privados que nao ficam em docs versionados.
