@@ -8,12 +8,12 @@
 
 .EXAMPLE
     .\scripts\talent.ps1 list
-    .\scripts\talent.ps1 import "Ivan.pdf"
+    .\scripts\talent.ps1 import "Sample_Candidate.pdf"
     .\scripts\talent.ps1 scan
-    .\scripts\talent.ps1 review ivan
-    .\scripts\talent.ps1 linkedin pedro
-    .\scripts\talent.ps1 social andre_eudes
-    .\scripts\talent.ps1 extract "Ivan.pdf"
+    .\scripts\talent.ps1 review candidate_a
+    .\scripts\talent.ps1 linkedin candidate_b
+    .\scripts\talent.ps1 social candidate_c
+    .\scripts\talent.ps1 extract "Sample_Candidate.pdf"
     .\scripts\talent.ps1 search "LGPD"
 #>
 [CmdletBinding()]
@@ -127,7 +127,7 @@ switch ($Action) {
 
     "import" {
         if ([string]::IsNullOrWhiteSpace($Arg1)) {
-            Write-Err "Informe o PDF. Ex: talent import `"Ivan.pdf`""
+            Write-Err "Informe o PDF. Ex: talent import `"Sample_Candidate.pdf`""
             exit 1
         }
         $pdfPath = $Arg1

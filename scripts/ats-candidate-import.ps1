@@ -20,7 +20,7 @@
 
 .EXAMPLE
     # Processar um PDF novo:
-    .\scripts\ats-candidate-import.ps1 -PdfPath "docs\private\team_info\Ivan 2026.pdf"
+    .\scripts\ats-candidate-import.ps1 -PdfPath "docs\private\team_info\Sample_Candidate_2026.pdf"
 
     # Escanear todos e gerar skeletons faltantes:
     .\scripts\ats-candidate-import.ps1

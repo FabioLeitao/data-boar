@@ -106,8 +106,8 @@ switch ($Command.ToLower()) {
         Write-Host ""
         Write-Host "Exemplos:" -ForegroundColor Yellow
         Write-Host "  .\scripts\ats.ps1 import-all"
-        Write-Host "  .\scripts\ats.ps1 show ivan"
-        Write-Host "  .\scripts\ats.ps1 linkedin ivanfilho"
+        Write-Host "  .\scripts\ats.ps1 show candidate_a"
+        Write-Host "  .\scripts\ats.ps1 linkedin example_slug"
         Write-Host "  .\scripts\ats.ps1 udm-scan"
     }
 

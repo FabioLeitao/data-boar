@@ -67,6 +67,12 @@ Quem usa **Cursor** pode digitar **tokens em inglês** no chat (`deps`, `feature
 - **Homelab / notas do operador:** Evite **hostnames reais**, **IPs RFC1918**, **usuários Linux** ou caminhos de **`$HOME`** em Markdown versionado; use placeholders e guarde detalhes em **`docs/private/homelab/`** (gitignored) ou wiki externa. **Não** coloque links Markdown em docs públicos para caminhos dentro de `docs/private/`. Política: [docs/PRIVATE_OPERATOR_NOTES.pt_BR.md](docs/PRIVATE_OPERATOR_NOTES.pt_BR.md). Playbook genérico: [docs/ops/HOMELAB_VALIDATION.pt_BR.md](docs/ops/HOMELAB_VALIDATION.pt_BR.md) / §9 EN.
 - **Gestor de senhas (ex. Bitwarden):** Guardar senhas de BD, chaves de API e tokens do lab no **Bitwarden** (plano grátis costuma bastar para uso solo) é um bom **cofre do operador**; em runtime prefira **`pass_from_env`** / `*_from_env`. Veja [docs/ops/OPERATOR_SECRETS_BITWARDEN.pt_BR.md](docs/ops/OPERATOR_SECRETS_BITWARDEN.pt_BR.md).
 
+### Repositório público: identificadores de terceiros e histórico Git (alinhamento LGPD/GDPR)
+
+- **Talent pool / ATS / LinkedIn:** Nomes reais, slugs e URLs de perfil ficam em caminhos **gitignored** em `docs/private/commercial/` (por exemplo `talent_pool.json`). O `scripts/talent.ps1` rastreado deve manter só o placeholder `example` e mesclar o JSON privado em runtime — **não** recolocar mapas inline de candidatos nem apelidos reais em scripts, skills ou exemplos públicos.
+- **Mensagens de commit e corpos de PR:** São **permanentes** no branch padrão e em notificações. Não as use para narrativas sobre **terceiros**, **operações do pool de talento**, **contexto jurídico/denúncia** ou outros assuntos sensíveis. Prefira assuntos e textos técnicos neutros (Conventional Commits); contexto sensível fica em `docs/private/` ou canais privados acordados com o mantenedor.
+- **Guardrails:** A CI roda `tests/test_pii_guard.py`, `tests/test_talent_ps1_tracked_no_inline_pool.py` e `tests/test_talent_public_script_placeholders.py` nos arquivos **rastreados**. Elas **não** reescrevem histórico antigo. Para auditar ou remediar **commits antigos**, veja [docs/ops/PII_VERIFICATION_RUNBOOK.pt_BR.md](docs/ops/PII_VERIFICATION_RUNBOOK.pt_BR.md) ([EN](docs/ops/PII_VERIFICATION_RUNBOOK.md)).
+
 ### Estado do PR e conselhos ao assistente (sincronizar antes de citar número)
 
 Assistentes de IA e humanos **não** devem assumir que um PR ainda está aberto ou que o `main` local bate com o GitHub **sem verificar** — o contexto do chat pode citar um PR **já mergeado** (ex.: #80) enquanto o seguinte (#81) também já foi mergeado.

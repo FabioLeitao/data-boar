@@ -184,10 +184,10 @@ if ($Service -in @("all","linkedin")) {
     if (Should-Collect "linkedin" $state $interval) {
         Write-Header "LinkedIn -- Verificar colaboradores"
         Write-Info "Uso do browser warm para verificar progresso ATS dos colaboradores:"
-        Write-Info "  talent.ps1 linkedin ivan"
-        Write-Info "  talent.ps1 linkedin talita"
-        Write-Info "  talent.ps1 linkedin felipe"
-        Write-Info "  talent.ps1 linkedin dudu"
+        Write-Info "  talent.ps1 linkedin candidate_a"
+        Write-Info "  talent.ps1 linkedin candidate_b"
+        Write-Info "  talent.ps1 linkedin candidate_c"
+        Write-Info "  talent.ps1 linkedin candidate_d"
         Write-Info ""
         Write-Info "Checklist ATS: ver headlines, Open to Work, certificacoes novas"
         Write-Info "Skill: .cursor/skills/candidate-ats-evaluation/SKILL.md (Passo 4)"
@@ -212,7 +212,7 @@ if ($Service -in @("all","social")) {
         Write-Info "  Gravatar                : https://gravatar.com/fabioleitao"
         Write-Info ""
         Write-Info "Para colaboradores -- verificar atividade recente:"
-        foreach ($candidato in @("ivan","talita","felipe","dudu")) {
+        foreach ($candidato in @("candidate_a","candidate_b","candidate_c","candidate_d")) {
             Write-Info "  talent.ps1 linkedin $candidato"
         }
         $state.social = (Get-Date -Format "o")

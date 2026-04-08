@@ -204,7 +204,7 @@ def format_as_text(fields: dict, raw_text: str) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Extrai dados estruturados de PDFs de perfil LinkedIn / CV.",
-        epilog="Exemplo: uv run python scripts/extract_cv_pdf.py docs/private/team_info/Ivan.pdf --json",
+        epilog="Exemplo: uv run python scripts/extract_cv_pdf.py docs/private/team_info/Sample_Candidate.pdf --json",
     )
     parser.add_argument("pdf", help="Caminho para o arquivo PDF")
     parser.add_argument("--json", action="store_true", help="Saida em formato JSON")
