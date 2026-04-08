@@ -28,6 +28,7 @@ Notas curtas e duradouras que registram **por que** o projeto escolheu um caminh
 
 ## Docs relacionados
 
+- [ADR 0020](0020-ci-full-git-history-pii-gate.md) (EN) — a CI executa `pii_history_guard.py --full-history` com checkout completo (`fetch-depth: 0`).
 - [CONTRIBUTING.pt_BR.md](../../CONTRIBUTING.pt_BR.md) — fluxo do contribuidor; menciona MD029 e o script de correção.
 - [SECURITY.pt_BR.md](../../SECURITY.pt_BR.md) · [TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md) — entradas para operadores ([ADR 0002](0002-operator-facing-security-and-technical-docs.md), EN).
 - [QUALITY_WORKFLOW_RECOMMENDATIONS.md](../QUALITY_WORKFLOW_RECOMMENDATIONS.md) — §6 (MD029), §7 (ADRs), SBOM. *(EN.)*
