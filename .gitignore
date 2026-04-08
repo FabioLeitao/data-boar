@@ -255,5 +255,5 @@ tests/synthetic_corpus/
 # acrescenta ao .gitignore se ainda não estiver:
 _audit_data-boar/
 /data-boar/
-# uv.lock.gpg
+/uv.lock.gpg
 
