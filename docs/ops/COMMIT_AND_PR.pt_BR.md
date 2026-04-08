@@ -87,6 +87,14 @@ Na raiz do repositório (PowerShell):
 - **Push** usa seu remote e chaves SSH normais do Git. O PR **sempre envia o branch atual para origin** para que o repositório central (data-boar) tenha o progresso e histórico completos.
 - **Navegador:** Com `gh` instalado e autenticado, o formulário de PR abre com título e descrição preenchidos; basta confirmar e clicar em “Create pull request”.
 
+## Texto de commit e PR: sem narrativas sensíveis sobre terceiros
+
+O GitHub guarda títulos e descrições por muito tempo. Para alinhar com **LGPD/GDPR** e confiança comercial num produto focado em privacidade:
+
+- Use assuntos e descrições **curtos e técnicos** (Conventional Commits). **Não** coloque **nomes de candidatos**, **identificadores de cliente**, contexto **jurídico/denúncia** ou **migalhas do pool de talento** em mensagens de commit ou texto de PR público.
+- Detalhe operacional fica em notas **gitignored** em `docs/private/` (ou outros canais acordados com a equipe).
+- Os guardrails da CI analisam arquivos **rastreados** (`tests/test_pii_guard.py`, testes de talento); **não** reescrevem commits antigos. Para rever ou remediar **histórico**, veja [PII_VERIFICATION_RUNBOOK.pt_BR.md](PII_VERIFICATION_RUNBOOK.pt_BR.md) ([EN](PII_VERIFICATION_RUNBOOK.md)). Índice de política: [CONTRIBUTING.pt_BR.md](../../CONTRIBUTING.pt_BR.md) → *Repositório público: identificadores de terceiros e histórico Git*.
+
 ## Qual repositório usar (apenas data-boar)
 
 - **`origin`** aponta para **FabioLeitao/data-boar** — é o **único** repositório para onde você faz push e abre PRs. Todo o trabalho novo e a identidade do projeto ficam aqui.

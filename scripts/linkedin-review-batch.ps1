@@ -14,8 +14,8 @@
     Abrir apenas os N primeiros da lista.
 
 .EXAMPLE
-    # Abrir perfil de Contributor-A:
-    .\scripts\linkedin-review-batch.ps1 -Names "contributor-a"
+    # Abrir um apelido do pool (exemplo):
+    .\scripts\linkedin-review-batch.ps1 -Names "candidate_a"
 
     # Abrir top 5 candidatos prioritarios:
     .\scripts\linkedin-review-batch.ps1 -Top 5
