@@ -15,7 +15,11 @@ git check-ignore -v docs/private/anything.md
 # expect: .gitignore:...    docs/private/anything.md
 ```
 
-**Cursor / agents:** **`docs/private/`** is **workspace-local context** shared with the assistant on this machine: it is **excluded from Git / GitHub only**, not “hidden until `@`.” Agents should **`read_file`** paths under **`docs/private/`** when homelab, operator layout, or **`AGENT_LAB_ACCESS`** topics apply—**no** requirement to **`@`-mention** or keep files open (unless you add **`docs/private/`** to **`.cursorignore`**). Still **disclosure to Cursor’s product** per their terms; avoid plaintext production secrets in files.
+**Cursor / agents:** **`docs/private/`** is **workspace-local context** shared with the assistant on this machine: it is **excluded from Git / GitHub only**, not “hidden until `@`.” Agents **must** **`read_file`** paths under **`docs/private/`** whenever the task touches **any** private subtree—including **`security_audit/`**, **`commercial/`**, **`legal_dossier/`**, **`git_hygiene_audit`**, feedback bundles, etc.—not only homelab. There is **no** policy that revokes agent access to private files; **no** requirement to **`@`-mention**, open tabs, or use **`/`** commands so the agent “can see” private content. Agents **must not self-block** (refuse to read private context, or claim gitignore blocks access). If a tool fails, that is a **path/worktree/technical** issue—retry, then escalate. Still **disclosure to Cursor’s product** per their terms; avoid plaintext production secrets in files. **Do not** add **`docs/private/`** to **`.cursorignore`** unless you intentionally want to block agent reads (not the default for this repo).
+
+**Audience alignment:** **Public** docs (tracked, GitHub) = no PII/secrets per **audience-segmentation-docs**; **collaborators** see the public repo only; **operator + assistant** use **`docs/private/`** for full context. Anything destined for GitHub or external tiers stays redacted.
+
+**Stacked private repo (versionado, não no `origin`):** Optional **nested Git** under **`docs/private/`** keeps private history **off** the product remote while still **versioned and synced**—see the **nested VCS** row in §2 below and **`docs/ops/PRIVATE_LOCAL_VERSIONING.md`**. Never **`git push`** private content to **GitHub**.
 
 ### Partner / collaborator / client feedback (separate from `docs/private/`)
 

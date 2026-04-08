@@ -4,6 +4,8 @@
 
 When you ask the agent to **preview**, **commit locally**, or **create a PR** with a short description and bullet points, it uses the same flow as the old Cursor “Agent Review Panel”: review changes, optionally select files, then choose commit or open PR in the browser with the form pre-filled. Before pushing, it **fetches** and **rebase-pulls** if the branch is behind the remote so your preferred workflow (linear history, no accidental overwrites) is preserved.
 
+**Optional — noisy IDE or two Git roots:** Run **`.\scripts\safe-workspace-snapshot.ps1`** before Preview when you want a read-only transcript of **`git status`** (repo root and, if present, nested **`docs/private/.git`**) and an optional quick guard-test pass. Use **`-SkipTests`** for status only. This **does not** replace **`check-all`** before merge. Session keyword **`safe-commit`** is defined in **`.cursor/rules/session-mode-keywords.mdc`**.
+
 ## What the agent does when you ask
 
 - **“Preview”** or **“Show me what would be committed”**:
