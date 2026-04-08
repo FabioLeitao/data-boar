@@ -24,7 +24,7 @@ def test_session_collect_linkedin_examples_use_candidate_placeholders_only() -> 
     text = SESSION_COLLECT.read_text(encoding="utf-8", errors="replace")
     # Allow candidate_* tokens only in talent.ps1 hint lines / foreach arrays.
     bad = re.findall(
-        r'talent\.ps1\s+linkedin\s+([a-z0-9_]+)',
+        r"talent\.ps1\s+linkedin\s+([a-z0-9_]+)",
         text,
         flags=re.IGNORECASE,
     )
@@ -39,7 +39,7 @@ def test_session_collect_foreach_array_only_candidate_placeholders() -> None:
         pytest.skip("scripts/session-collect.ps1 not present")
     text = SESSION_COLLECT.read_text(encoding="utf-8", errors="replace")
     m = re.search(
-        r'foreach\s*\(\s*\$candidato\s+in\s+@\(\s*([^)]+)\s*\)\s*\)',
+        r"foreach\s*\(\s*\$candidato\s+in\s+@\(\s*([^)]+)\s*\)\s*\)",
         text,
         flags=re.IGNORECASE | re.DOTALL,
     )
