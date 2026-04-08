@@ -142,7 +142,7 @@ GitHub stores titles and bodies for the long term. To stay aligned with **LGPD/G
 
 - Use **short, technical** Conventional Commit subjects and PR descriptions. Do **not** put **candidate names**, **client identifiers**, **legal/whistleblowing** context, or **talent-pool** breadcrumbs in public commit or PR text.
 - Keep operational detail in **gitignored** notes under `docs/private/` (or other channels your team agrees on).
-- CI guards scan **tracked** files (`tests/test_pii_guard.py`, talent-related tests); they do **not** edit old commits. For history review or remediation, see [PII_VERIFICATION_RUNBOOK.md](PII_VERIFICATION_RUNBOOK.md) ([pt-BR](PII_VERIFICATION_RUNBOOK.pt_BR.md)). Policy index: [CONTRIBUTING.md](../../CONTRIBUTING.md) → *Public repo: third-party identifiers and Git history*.
+- CI guards scan **tracked** files (`tests/test_pii_guard.py`, talent-related tests); they do **not** edit old commits. For history review or remediation, see [PII_PUBLIC_TREE_OPERATOR_GUIDE.md](PII_PUBLIC_TREE_OPERATOR_GUIDE.md) ([pt-BR](PII_PUBLIC_TREE_OPERATOR_GUIDE.pt_BR.md)). Policy index: [CONTRIBUTING.md](../../CONTRIBUTING.md) → *Public repo: third-party identifiers and Git history*.
 
 ## Complete workflow: check, pre-commit, commit, describe, and safe synced PR
 
