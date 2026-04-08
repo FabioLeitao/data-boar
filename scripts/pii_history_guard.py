@@ -39,7 +39,7 @@ FORBIDDEN_LINE_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
         "LinkedIn profile URL (explicit personal slug)",
         re.compile(
             r"(?i)https?://(?:www\.)?linkedin\.com/in/"
-            r"(?!example(?:[\"'\s]|$)|<|\.{3}|replaced|redacted|\$|\{)"
+            r"(?!example(?:[\"'\s`]|$)|<|\.{3}|replaced|redacted|\$|\{)"
             r"[^\s\"')]+"
         ),
     ),
@@ -57,6 +57,7 @@ FORBIDDEN_LINE_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
         "SSH URL with embedded user",
         re.compile(
             r"(?i)\bssh://(?!USER_REDACTED\b)([a-z0-9._-]+)@"
+            r"(?!myserver\.example\.com\b|example\.com\b)"
         ),
     ),
 )
@@ -66,6 +67,14 @@ _HISTORY_GUARD_EXEMPT_PATHS = {
     "scripts/filter_repo_pii_replacements.txt",
     "tests/test_pii_guard.py",
 }
+
+# Template tree: may document sensitive *topics* with redacted wording; do not treat as new leaks.
+_HISTORY_PATH_PREFIX_EXEMPT = ("docs/private.example/",)
+
+
+def _path_exempt_from_history_scan(path: str) -> bool:
+    norm = path.replace("\\", "/")
+    return any(norm.startswith(pfx) for pfx in _HISTORY_PATH_PREFIX_EXEMPT)
 
 
 def _git(args: list[str]) -> subprocess.CompletedProcess[str]:
@@ -103,6 +112,8 @@ def _extract_added_lines(patch_text: str) -> list[str]:
             continue
         if raw.startswith("+"):
             if current_path in _HISTORY_GUARD_EXEMPT_PATHS:
+                continue
+            if _path_exempt_from_history_scan(current_path):
                 continue
             lines.append(raw[1:])
     return lines
