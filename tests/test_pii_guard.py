@@ -62,9 +62,7 @@ _BUILTIN_REGEXES: list[tuple[str, re.Pattern[str]]] = [
     ),
     (
         "Family relationship phrase (sensitive context)",
-        re.compile(
-            r"(?i)\b(my\s+wife|my\s+sister(?:'s|s)\s+husband|cunhad[oa])\b"
-        ),
+        re.compile(r"(?i)\b(my\s+wife|my\s+sister(?:'s|s)\s+husband|cunhad[oa])\b"),
     ),
     (
         "Family phrase (Portuguese, high-signal)",

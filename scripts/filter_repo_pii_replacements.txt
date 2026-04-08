@@ -1,4 +1,4 @@
-# git filter-repo --replace-text / --replace-message (see docs/ops/PII_DEFINITIVE_REMEDIATION.md)
+# git filter-repo --replace-text / --replace-message (see docs/ops/PII_PUBLIC_TREE_OPERATOR_GUIDE.md Part II)
 # Blob replacements. Patterns apply to file contents; overlapping rules: order matters.
 
 # Commit-message no-op literal (some workflows reference this token pair)
