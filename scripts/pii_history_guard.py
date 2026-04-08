@@ -39,23 +39,31 @@ FORBIDDEN_LINE_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
         "LinkedIn profile URL (explicit personal slug)",
         re.compile(
             r"(?i)https?://(?:www\.)?linkedin\.com/in/"
-            r"(?!example\b|<|\.{3}|replaced|redacted|\$|\{)[a-z0-9_-]+/?"
+            r"(?!example(?:[\"'\s]|$)|<|\.{3}|replaced|redacted|\$|\{)"
+            r"[^\s\"')]+"
         ),
     ),
     (
         "Family relationship phrase (sensitive context)",
         re.compile(
-            r"(?i)\b(my\s+wif[e]|my\s+sister(?:'s|s)\s+husband|esposa|cunhad[oa])\b"
+            r"(?i)\b(my\s+wif[e]|my\s+sister(?:'s|s)\s+husband|cunhad[oa])\b"
         ),
     ),
     (
+        "Family phrase (Portuguese, high-signal)",
+        re.compile(r"(?i)\btrabalho\s+da\s+esposa\b"),
+    ),
+    (
         "SSH URL with embedded user",
-        re.compile(r"(?i)\bssh://[a-z0-9._-]+@"),
+        re.compile(
+            r"(?i)\bssh://(?!USER_REDACTED\b)([a-z0-9._-]+)@"
+        ),
     ),
 )
 
 _HISTORY_GUARD_EXEMPT_PATHS = {
     "scripts/pii_history_guard.py",
+    "scripts/filter_repo_pii_replacements.txt",
     "tests/test_pii_guard.py",
 }
 

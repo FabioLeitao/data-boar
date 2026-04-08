@@ -130,7 +130,7 @@ directory. Examples:
 
 ```hcl
 provider "docker" {
-  host     = "ssh://USER_REDACTED@myserver.example.com"
+  host     = "ssh://<ssh-user>@myserver.example.com"
   ssh_opts = ["-i", "~/.ssh/id_ed25519"]
 }
 ```
