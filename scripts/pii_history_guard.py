@@ -66,6 +66,8 @@ def _git(args: list[str]) -> subprocess.CompletedProcess[str]:
         cwd=REPO_ROOT,
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         check=False,
     )
     return proc
@@ -81,6 +83,8 @@ def _resolve_scan_range(full_history: bool) -> str:
 
 
 def _extract_added_lines(patch_text: str) -> list[str]:
+    if not patch_text:
+        return []
     lines: list[str] = []
     current_path = ""
     for raw in patch_text.splitlines():
