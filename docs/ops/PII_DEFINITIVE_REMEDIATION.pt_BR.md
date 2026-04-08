@@ -91,3 +91,110 @@ git fetch --prune
 - [PII_VERIFICATION_RUNBOOK.pt_BR.md](PII_VERIFICATION_RUNBOOK.pt_BR.md) — cadência e grep manual.
 - [COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md) — sem narrativas sensíveis em PR/commit.
 - [ADR 0020](../adr/0020-ci-full-git-history-pii-gate.md) — gate de histórico completo na CI.
+- [COLLABORATION_TEAM.pt_BR.md](../COLLABORATION_TEAM.pt_BR.md) — fluxo fork / PR do colaborador.
+
+---
+
+## G. O que já está neste repositório (fecho de engenharia)
+
+Isto **já está no `main`** no arco de higiene PII (não refazer salvo mudança de política):
+
+| Item | Onde / comportamento |
+| ---- | ---------------------- |
+| Scan do índice + caminhos | `tests/test_pii_guard.py` — arquivos rastreados; prefixos permitidos incluem `docs/private.example/` etc. |
+| Scan de histórico completo | `scripts/pii_history_guard.py` — ignora linhas `+` sob `docs/private.example/`; placeholder LinkedIn com crase em Markdown; regex SSH ignora estilo `user@myserver.example.com` |
+| Placeholders talent | `tests/test_talent_public_script_placeholders.py`, `tests/test_talent_ps1_tracked_no_inline_pool.py` |
+| Arquivo de regras `filter-repo` | `scripts/filter_repo_pii_replacements.txt` — válido para `--replace-text` / `--replace-message` |
+| Automação de reescrita | `scripts/run-pii-history-rewrite.ps1` — nova reescrita só se mudar regras |
+| CI | Workflows correm `pii_history_guard --full-history` após testes (ver ADR 0020) |
+| Docs de ops | Este arquivo, [GITHUB_FORK_CLONE_VISIBILITY_AND_OPERATOR_AUDIT.pt_BR.md](GITHUB_FORK_CLONE_VISIBILITY_AND_OPERATOR_AUDIT.pt_BR.md), ligações a partir de [PII_VERIFICATION_RUNBOOK.pt_BR.md](PII_VERIFICATION_RUNBOOK.pt_BR.md) |
+
+**Não substitui:** backups privados teus, revisão externa (ex.: WRB), nem apagar o fork do colaborador.
+
+---
+
+## H. Checklist do operador — executar (assumido obrigatório até estar feito)
+
+Ordem sugerida. **Nenhum passo é opcional** se quiseres fecho organizacional, não só “testes verdes num portátil.”
+
+### H.1 Gate completo no PC Windows (clone canónico)
+
+```powershell
+cd C:\caminho\para\data-boar
+git fetch origin
+git pull origin main
+.\scripts\check-all.ps1
+```
+
+Se falhar, corrige ou abre PR com âmbito fechado antes de declarar higiene de release completa.
+
+### H.2 Confirmar CI no GitHub
+
+1. Abrir `https://github.com/FabioLeitao/data-boar/actions`
+2. Confirmar que o último workflow no **`main`** está **verde** (todos os jobs).
+
+### H.3 Lab e clones secundários (máquinas que você controla)
+
+Em **cada** host onde `data-boar` está clonado (ex.: LAB-NODE-02, LAB-NODE-04, LAB-NODE-01, LAB-NODE-03 quando acessível):
+
+```bash
+cd ~/Projects/dev/data-boar   # ou o teu caminho real
+git fetch origin
+git reset --hard origin/main
+git fetch --prune
+```
+
+Depois correr os mesmos guards da **seção D** com `python3` se não houver `uv`:
+
+```bash
+python3 scripts/pii_history_guard.py --full-history
+```
+
+Instalar `uv` nesses hosts quando fizer sentido para igualar ao Windows.
+
+### H.4 Fork do colaborador (fork público conhecido)
+
+1. Listar forks:
+
+```bash
+gh api repos/FabioLeitao/data-boar/forks --paginate --jq '.[] | {owner: .owner.login, full_name, pushed_at, updated_at}'
+```
+
+2. **Você** contacta o dono do fork: histórico upstream / guards mudaram; ele deve **apagar o fork** ou **voltar a sincronizar** com o `main` atual (ver [GITHUB_FORK_CLONE_VISIBILITY_AND_OPERATOR_AUDIT.pt_BR.md](GITHUB_FORK_CLONE_VISIBILITY_AND_OPERATOR_AUDIT.pt_BR.md) e [COLLABORATION_TEAM.pt_BR.md](../COLLABORATION_TEAM.pt_BR.md)).
+
+3. **Você não pode** apagar o fork da conta dele pelo seu login.
+
+### H.5 Varredura na UI do GitHub (issues, PRs, discussions)
+
+A automação **não** reescreve corpos de issue/PR. **Manualmente** pesquisa no repositório no GitHub por padrões que te importem (nomes, caminhos, palavras-chave de caso) e edita ou abre follow-up. **Não** colocar narrativa sensível em issues públicas daqui para a frente ([COMMIT_AND_PR.pt_BR.md](COMMIT_AND_PR.pt_BR.md)).
+
+### H.6 Revisão externa (WRB ou equivalente)
+
+- Usar runbooks e docs de produto **rastreados** como evidência.
+- **Não** colar conteúdo do dossier, seeds privados ou detalhes de LAN em issues públicas ou formulários de revisão.
+
+### H.7 Backups privados e estado da aplicação
+
+- Comparar **offline** os seus backups ao comportamento atual **fora** deste repositório; nenhum assistente ou CI audita discos que não estejam no seu fluxo de trabalho.
+
+### H.8 Directórios temporários de clone (higiene)
+
+- Apagar clones temporários criados para inspecionar forks (ex.: `%TEMP%`, `/tmp`) quando o espaço ou a disciplina o exigirem.
+
+### H.9 Opcional: `clean-slate.sh` no lab (LAB-NODE-02)
+
+Se usares `~/clean-slate.sh`: é **destrutivo** (remove o `data-boar` local e volta a clonar). Só corre quando aceitares re-download completo e o custo de `git grep` com seeds. Garante `~/.config/PII/PII_LOCAL_SEEDS.txt` antes de depender desse script.
+
+---
+
+## I. Impossível sem ti (limites duros)
+
+| Limite | Porquê |
+| ------ | ------ |
+| Apagar ou repor o **fork de outra pessoa** | Permissões GitHub |
+| **Lista de todos os usuários** que fizeram `git clone` | O GitHub não expõe isso em repos públicos |
+| Provar que **Wayback** / cache / mirror de terceiros está limpo | Fora do âmbito do repo |
+| **Resultado da WRB** | Processo humano |
+| Verificar **bytes de backup privado** | Acesso físico / cofre |
+| **LAB-NODE-03** (ou outro host) offline | Rede / energia |
+| Narrativa **jurídica / RH** | Fora deste runbook |
