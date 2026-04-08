@@ -87,6 +87,7 @@ git fetch --prune
 
 ## F. Related documents
 
+- [GITHUB_FORK_CLONE_VISIBILITY_AND_OPERATOR_AUDIT.md](GITHUB_FORK_CLONE_VISIBILITY_AND_OPERATOR_AUDIT.md) — what GitHub can list (forks) vs what it **cannot** (per-user `git clone`); minimal operator checklist.
 - [PII_VERIFICATION_RUNBOOK.md](PII_VERIFICATION_RUNBOOK.md) — cadence and manual grep.
 - [COMMIT_AND_PR.md](COMMIT_AND_PR.md) — no sensitive narratives in PR/commit text.
 - [ADR 0020](../adr/0020-ci-full-git-history-pii-gate.md) — CI full-history gate.
