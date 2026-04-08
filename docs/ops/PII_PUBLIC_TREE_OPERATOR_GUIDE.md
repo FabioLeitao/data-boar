@@ -4,7 +4,7 @@
 
 **Single source of truth:** This file consolidates the former **`PII_VERIFICATION_RUNBOOK`**, **`PII_DEFINITIVE_REMEDIATION`**, and **`GITHUB_FORK_CLONE_VISIBILITY_AND_OPERATOR_AUDIT`** documents. Those paths remain as **permanent redirects** so links and ADRs stay valid; **edit procedural content only here** to avoid drift.
 
-**Audience:** Maintainer / operator with push access to `FabioLeitao/data-boar`.
+**Audience:** Maintainer / operator with push access to the canonical repo on GitHub (replace **`OWNER`** below with the org or user that owns the repository — e.g. `OWNER/data-boar`).
 
 ---
 
@@ -52,7 +52,7 @@ cd C:\temp
 if (Test-Path .\teste_operator_fresh) { Remove-Item -Recurse -Force .\teste_operator_fresh }
 mkdir teste_operator_fresh | Out-Null
 cd .\teste_operator_fresh
-git clone git@github.com:FabioLeitao/data-boar.git
+git clone git@github.com:OWNER/data-boar.git
 cd .\data-boar
 git status
 ```
@@ -66,7 +66,7 @@ cd /tmp
 rm -rf teste_operator_fresh
 mkdir -p teste_operator_fresh
 cd teste_operator_fresh
-git clone git@github.com:FabioLeitao/data-boar.git
+git clone git@github.com:OWNER/data-boar.git
 cd data-boar
 git status
 ```
@@ -215,7 +215,7 @@ Run **only** after merging guard + replacement rules in `main` (this repo ships 
 
 4. **Immediately after any public force-push:**
    - **Delete stale remote branches** on GitHub that still point at **pre-rewrite** SHAs (or CI / `pii_history_guard --full-history` may still see old blobs).
-   - **Every clone** (yours, lab, Ivan):
+   - **Every clone** (yours, lab, other collaborators’):
 
 ```bash
 git fetch origin
@@ -291,7 +291,7 @@ If anything fails, fix or open a scoped PR before declaring release hygiene comp
 
 ### H.2 Confirm CI on GitHub
 
-1. Open `https://github.com/FabioLeitao/data-boar/actions`
+1. Open `https://github.com/OWNER/data-boar/actions`
 2. Confirm the latest workflow run on **`main`** is **green** (all jobs).
 
 ### H.3 Lab and secondary clones (machines you control)
@@ -318,7 +318,7 @@ Install `uv` on those hosts when practical so `check-all` or equivalent matches 
 1. List forks:
 
 ```bash
-gh api repos/FabioLeitao/data-boar/forks --paginate --jq '.[] | {owner: .owner.login, full_name, pushed_at, updated_at}'
+gh api repos/OWNER/data-boar/forks --paginate --jq '.[] | {owner: .owner.login, full_name, pushed_at, updated_at}'
 ```
 
 2. **You** message the fork owner: upstream history was rewritten / guards updated; they must **delete the fork** or **re-sync** from current `main` (see **Part III** and [COLLABORATION_TEAM.md](../COLLABORATION_TEAM.md)).
@@ -373,7 +373,7 @@ GitHub exposes **public forks** of a public repository. You can list them.
 **GitHub CLI** (authenticated):
 
 ```bash
-gh api repos/FabioLeitao/data-boar/forks --paginate --jq '.[] | {owner: .owner.login, full_name, pushed_at, updated_at}'
+gh api repos/OWNER/data-boar/forks --paginate --jq '.[] | {owner: .owner.login, full_name, pushed_at, updated_at}'
 ```
 
 **Browser:** open the repo → **Insights** → **Network** (fork graph), or the **Forks** count on the repo home page.

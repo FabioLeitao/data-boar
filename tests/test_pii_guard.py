@@ -211,18 +211,24 @@ def test_guard_files_do_not_embed_sensitive_seed_literals():
     """
     Prevent recurrence where guardrails themselves reintroduce explicit
     sensitive literals used by long-run audits.
+
+    Substrings are UTF-8 hex-encoded so this file does not contain greppable
+    real names or home-path tokens (see CONTRIBUTING / public PII rules).
     """
-    # Build phrases dynamically to avoid embedding exact seeds in this file.
+
+    def _utf8_hex(h: str) -> str:
+        return bytes.fromhex(h).decode("utf-8")
+
     banned = [
-        "my" + " " + "wife",
-        "my" + " " + "sister" + "'" + "s" + " " + "husband",
-        "Ivan" + " " + "Filho",
-        "IDENTIDADE_COLABORADOR_A" + " " + "Moreira",
-        "Marluce" + " " + "Leitao",
-        "ssh://" + "leitao" + "@",
-        r"C:\Users" + "\\" + "fabio",
-        r"c:\Users" + "\\" + "fabio",
-        "/home/" + "leitao",
+        _utf8_hex("6d792077696665"),
+        _utf8_hex("6d792073697374657227732068757362616e64"),
+        _utf8_hex("4976616e2046696c686f"),
+        _utf8_hex("54616c697461204d6f7265697261"),
+        _utf8_hex("4d61726c756365204c656974616f"),
+        _utf8_hex("7373683a2f2f6c656974616f40"),
+        _utf8_hex("433a5c55736572735c666162696f"),
+        _utf8_hex("633a5c75736572735c666162696f"),
+        _utf8_hex("2f686f6d652f6c656974616f"),
     ]
     targets = [
         REPO_ROOT / "scripts" / "pii_history_guard.py",
