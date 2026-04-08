@@ -181,7 +181,16 @@ def test_config_loader_no_bare_except():
 def test_ssl_create_default_context_uses_minimum_tls_version():
     """Any Python file that uses ssl.create_default_context() must set minimum_version (S4423)."""
     root = _project_root()
-    exclude_dirs = {".cursor", ".git", ".venv", "venv", "__pycache__", "node_modules"}
+    exclude_dirs = {
+        ".cursor",
+        ".git",
+        ".venv",
+        "venv",
+        "__pycache__",
+        "node_modules",
+        "data-boar",
+        "_audit_data-boar",
+    }
     violations: list[Path] = []
     for path in root.rglob("*.py"):
         try:
@@ -212,6 +221,9 @@ _S3981_EXCLUDE_DIRS = {
     "venv",
     "__pycache__",
     "node_modules",
+    # Nested duplicate worktree (see .gitignore /data-boar/); not part of the product tree.
+    "data-boar",
+    "_audit_data-boar",
 }
 _S3981_PATTERN = re.compile(r"len\s*\([^)]*\)\s*>=\s*0")
 
