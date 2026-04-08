@@ -28,6 +28,9 @@ jobs:
         python-version: ["3.12", "3.13"]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          # Full history required for scripts/pii_history_guard.py --full-history (PII in old commits).
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
@@ -46,11 +49,16 @@ jobs:
         run: uv run pytest -v -W error
         # addopts in pyproject.toml also set -W error; explicit in CI so tests pass without warnings.
 
+      - name: PII history guard (full git history)
+        run: uv run python scripts/pii_history_guard.py --full-history
+
   lint:
     name: Lint (pre-commit)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
