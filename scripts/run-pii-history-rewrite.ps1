@@ -87,6 +87,10 @@ try {
 Write-Host "[5/5] OK - rewritten repo at: $workPath" -ForegroundColor Green
 Write-Host "Mirror backup: $mirrorPath"
 
+# After a public rewrite, any remote branch that still pointed at pre-rewrite SHAs will
+# keep old blobs reachable for git log --all (and pii_history_guard --full-history).
+# Prune or delete those branches on GitHub, then git fetch --prune locally.
+
 if ($Push) {
     $originUrl = "https://github.com/FabioLeitao/data-boar.git"
     Write-Host "Pushing to $originUrl (force)..." -ForegroundColor Yellow
