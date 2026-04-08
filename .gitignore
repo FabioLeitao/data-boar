@@ -1,4 +1,4 @@
-﻿# SBOM local outputs (ADR 0003; CI generates inside the workflow)
+# SBOM local outputs (ADR 0003; CI generates inside the workflow)
 sbom-python.cdx.json
 sbom-docker-image.cdx.json
 requirements-sbom.txt
@@ -251,3 +251,9 @@ __marimo__/
 # Generated POC test corpus (on-demand, not tracked)
 tests/synthetic_corpus/
 .cursor/rules/dossier-update-on-evidence.mdc
+
+# acrescenta ao .gitignore se ainda não estiver:
+_audit_data-boar/
+/data-boar/
+# uv.lock.gpg
+
