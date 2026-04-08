@@ -2,6 +2,8 @@
 
 Operational runbook for public-repo PII/sensitive-data verification with a short, mid, and long cadence.
 
+**After an incident or before a force-push cleanup:** use **[PII_DEFINITIVE_REMEDIATION.md](PII_DEFINITIVE_REMEDIATION.md)** ([pt-BR](PII_DEFINITIVE_REMEDIATION.pt_BR.md)) for the full rewrite checklist, `git filter-repo`, and clone reset matrix.
+
 ## Manual review gate (required)
 
 Before marking any run as SAFE, review the local/private criteria that are intentionally not stored in tracked docs.

@@ -56,7 +56,7 @@ _BUILTIN_REGEXES: list[tuple[str, re.Pattern[str]]] = [
         "LinkedIn profile URL (explicit personal slug)",
         re.compile(
             r"(?i)https?://(?:www\.)?linkedin\.com/in/"
-            r"(?!example(?:[\"'\s]|$)|<|\.{3}|replaced|redacted|\$|\{)"
+            r"(?!example(?:[\"'\s`]|$)|<|\.{3}|replaced|redacted|\$|\{)"
             r"[^\s\"')]+"
         ),
     ),
@@ -72,7 +72,10 @@ _BUILTIN_REGEXES: list[tuple[str, re.Pattern[str]]] = [
     ),
     (
         "SSH URL with embedded user",
-        re.compile(r"(?i)\bssh://(?!USER_REDACTED\b)([a-z0-9._-]+)@"),
+        re.compile(
+            r"(?i)\bssh://(?!USER_REDACTED\b)([a-z0-9._-]+)@"
+            r"(?!myserver\.example\.com\b|example\.com\b)"
+        ),
     ),
     (
         "Utility account identifier (UC with many digits)",
