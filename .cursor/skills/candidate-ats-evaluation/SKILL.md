@@ -21,17 +21,17 @@ gerar ou atualizar arquivo ATS individual, e (quando autenticado) visitar perfis
 .\scripts\talent.ps1 scan
 
 # IMPORTA PDF novo (aceita nome parcial - busca em docs/private/team_info/)
-.\scripts\talent.ps1 import "Contributor-A.pdf"
-.\scripts\talent.ps1 import "Linked in Profile - Pedro 2026.pdf"
+.\scripts\talent.ps1 import "Sample_Candidate.pdf"
+.\scripts\talent.ps1 import "Linked in Profile - Candidate 2026.pdf"
 
 # ABRE ATS de um candidato no editor (aceita apelido do pool)
-.\scripts\talent.ps1 review contributor-a
-.\scripts\talent.ps1 review pedro
-.\scripts\talent.ps1 review andre_Colleague-H
+.\scripts\talent.ps1 review candidate_a
+.\scripts\talent.ps1 review candidate_b
+.\scripts\talent.ps1 review candidate_c
 
 # ABRE LinkedIn no browser
-.\scripts\talent.ps1 linkedin contributor-a
-.\scripts\talent.ps1 linkedin colleague-a
+.\scripts\talent.ps1 linkedin candidate_a
+.\scripts\talent.ps1 linkedin candidate_b
 
 # BUSCA keyword em todos os ATS
 .\scripts\talent.ps1 search "LGPD"
@@ -39,7 +39,7 @@ gerar ou atualizar arquivo ATS individual, e (quando autenticado) visitar perfis
 .\scripts\talent.ps1 search "Open to Work"
 
 # EXTRAI JSON estruturado do PDF
-.\scripts\talent.ps1 extract "Contributor-A.pdf"
+.\scripts\talent.ps1 extract "Sample_Candidate.pdf"
 ```
 
 ---
@@ -133,9 +133,8 @@ docs/private/team_info/                              # PDFs fonte (gitignored)
 docs/private/commercial/candidates/linkedin_peer_review/
   POOL_INDEX.pt_BR.md                               # Indice central com emails e URLs
   individual/
-    Contributor-A_Contributor-A_ATS.pt_BR.md                         # Por candidato
-    PEDRO_Colleague-F_Colleague-G_ATS.pt_BR.md
-    ANDRE_Colleague-H_SANTOS_ATS.pt_BR.md
+    CANDIDATE_A_ATS.pt_BR.md                        # Um arquivo por candidato (nomes reais so no private)
+    CANDIDATE_B_ATS.pt_BR.md
     ...
 
 scripts/
@@ -237,5 +236,5 @@ docs/private/homelab/.env.LAB-ROUTER-01.cursor        # senha auto.cursor (criar
 
 ---
 
-*Skill versao 2.1 - 2026-04-03 | Adicionados IDENTIDADE_COLABORADOR_B (advisor-remote) e Dudu ao pool*
+*Skill versao 2.2 - 2026-04-08 | Exemplos publicos genericos; apelidos reais apenas em docs/private/*
 

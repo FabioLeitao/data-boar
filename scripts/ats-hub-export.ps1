@@ -195,7 +195,7 @@ Write-Host "=== Concluido ===" -ForegroundColor Green
 Write-Host "Pasta de saida: $exports"
 Write-Host ""
 Write-Host "Proximos passos:"
-Write-Host "  - DOCX: enviar para IDENTIDADE_COLABORADOR_A/IDENTIDADE_COLABORADOR_B diretamente"
+Write-Host "  - DOCX: enviar para os destinatarios acordados (fora do repo)"
 Write-Host "  - PDF:  se gerado por HTML, abrir no Edge/Chrome -> Ctrl+P -> Salvar como PDF"
 Write-Host "  - TXT:  colar em e-mail, WhatsApp, Notion, etc."
 

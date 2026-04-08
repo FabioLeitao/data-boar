@@ -68,6 +68,12 @@ Maintainers may type **English session tokens** in Cursor chat (`deps`, `feature
 - **`docs(private-layout):` commits:** Use for **`docs/PRIVATE_OPERATOR_NOTES.md`**, **`docs/private.example/`** (templates/policy). **Never** put real inventory there—**`docs/private/`** only (see [AGENTS.md](AGENTS.md) scope table).
 - **Password manager (e.g. Bitwarden):** Storing DB passwords, API keys, and homelab tokens in **Bitwarden** (free tier is fine for solo use) is a good **operator vault**; at runtime still prefer **`pass_from_env`** / `*_from_env` so `config.yaml` stays lean. See [docs/ops/OPERATOR_SECRETS_BITWARDEN.md](docs/ops/OPERATOR_SECRETS_BITWARDEN.md).
 
+### Public repo: third-party identifiers and Git history (LGPD/GDPR alignment)
+
+- **Talent pool / ATS / LinkedIn:** Real names, slugs, and profile URLs belong in **gitignored** paths under `docs/private/commercial/` (for example `talent_pool.json`). Tracked `scripts/talent.ps1` must keep only the `example` placeholder and merge the private JSON at runtime—**do not** reintroduce inline candidate maps or real aliases in public scripts, skills, or examples.
+- **Commit messages and PR bodies:** They are **permanent** on the default branch and in notifications. Do not use them for stories about **third parties**, **talent-pool operations**, **legal/whistleblowing** context, or other sensitive narratives. Prefer neutral, technical Conventional Commit subjects and PR text; keep sensitive context in `docs/private/` or in maintainer-agreed private channels.
+- **Guards:** CI runs `tests/test_pii_guard.py`, `tests/test_talent_ps1_tracked_no_inline_pool.py`, and `tests/test_talent_public_script_placeholders.py` on **tracked** files. They do **not** rewrite existing history. To audit or remediate **old** commits, see [docs/ops/PII_VERIFICATION_RUNBOOK.md](docs/ops/PII_VERIFICATION_RUNBOOK.md) ([pt-BR](docs/ops/PII_VERIFICATION_RUNBOOK.pt_BR.md)).
+
 ### PR state and agent advice (sync before citing PR numbers)
 
 AI assistants and humans should **not** assume a PR is still open or that local `main` matches GitHub **without a fresh check** — chat context can reference an **already merged** PR (e.g. #80) while the next one (#81) is already merged.

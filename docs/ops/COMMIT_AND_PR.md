@@ -136,6 +136,14 @@ $body = @"
 - The script **respects `.gitignore`**: it uses `git check-ignore` so only non-ignored paths are ever staged or committed (e.g. `audit_results.db`, `*.db-journal`, `.env.local`, reports/heatmaps, `__pycache__`, etc. are never included).
 - The agent does **not** have access to your credentials; it runs `git` and `gh` in your environment, so your SSH and `gh auth` are used.
 
+## Commit and PR text: no sensitive third-party narratives
+
+GitHub stores titles and bodies for the long term. To stay aligned with **LGPD/GDPR** expectations and commercial trust in a privacy-oriented product:
+
+- Use **short, technical** Conventional Commit subjects and PR descriptions. Do **not** put **candidate names**, **client identifiers**, **legal/whistleblowing** context, or **talent-pool** breadcrumbs in public commit or PR text.
+- Keep operational detail in **gitignored** notes under `docs/private/` (or other channels your team agrees on).
+- CI guards scan **tracked** files (`tests/test_pii_guard.py`, talent-related tests); they do **not** edit old commits. For history review or remediation, see [PII_VERIFICATION_RUNBOOK.md](PII_VERIFICATION_RUNBOOK.md) ([pt-BR](PII_VERIFICATION_RUNBOOK.pt_BR.md)). Policy index: [CONTRIBUTING.md](../../CONTRIBUTING.md) → *Public repo: third-party identifiers and Git history*.
+
 ## Complete workflow: check, pre-commit, commit, describe, and safe synced PR
 
 When you want to **check**, run **pre-commit**, **commit**, **describe**, and create a **safe, synced PR** using repo scripts (best for saving tokens and one source of truth), use these **concrete actions in order** from the repo root (PowerShell):
