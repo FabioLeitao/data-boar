@@ -1,6 +1,6 @@
 # Operator Today Mode — 2026-04-08 (continuação tarde/noite)
 
-> Sessão anterior (madrugada): contexto no chat + atualizações em `docs/private/` (mapa mental, goals, sync carreira ICTSI→InComm).
+> Sessão anterior (madrugada): contexto no chat + atualizações em `docs/private/` (mapa mental, goals — **detalhe de empregador/carreira só em notas privadas**, não repetir aqui).
 > Se atravessar meia-noite antes de concluir, usa também **`OPERATOR_TODAY_MODE_2026-04-09.md`**.
 
 ---
@@ -29,8 +29,8 @@ Ver tabela completa em **`OPERATOR_TODAY_MODE_2026-04-06.md`**. Resumo:
 ## CARRYOVER — sessão privada desta madrugada (só `docs/private/`)
 
 - [ ] **`private-git-sync`:** muitas linhas em estado pendente no nested git — commit + push conforme política
-- [ ] LinkedIn: typo **Securiy** → **Security**; About alinhado (InComm atual; ICTSI passado) — checklist em `FABIO_GOALS_MASTER.pt_BR.md`
-- [ ] Opcional: re-fetch LinkedIn para `raw_pastes/.../PROFILE_*` depois de editares o perfil
+- [ ] LinkedIn / About / typo de perfil — checklist e nomes de empregador **só** em `docs/private/` (ex.: goals master em `docs/private/author_info/`), não neste ficheiro público
+- [ ] Opcional: re-fetch de perfil para pasta de pastes privados depois de editares o perfil
 
 ---
 
@@ -46,7 +46,7 @@ Ver tabela completa em **`OPERATOR_TODAY_MODE_2026-04-06.md`**. Resumo:
 ## TIMINGS / LEMBRETES
 
 - **Cadência de estudos:** `docs/plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md` §3.0–§3.2; token **`study-check`** no chat para recap.
-- **InComm:** política de LinkedIn até kit físico — mantém-se conforme notas anteriores.
+- **Empregador / política de rede social:** detalhes só em `docs/private/` — não duplicar neste runbook público.
 - **Sono:** boas noites; ao acordar, abre este ficheiro ou o de **2026-04-09** conforme o relógio.
 
 ---
