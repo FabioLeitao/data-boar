@@ -53,7 +53,7 @@ dependencies = [
     "pycparser>=3.0 ; implementation_name != 'PyPy' and platform_python_implementation != 'PyPy'",
     "pydantic>=2.12.5",
     "pydantic-core>=2.41.5",
-    "pygments>=2.19.2",
+    "pygments>=2.20.0",
     "pymysql>=1.1.2",
     "pyodbc>=5.3.0",
     "pyparsing>=3.3.2",
