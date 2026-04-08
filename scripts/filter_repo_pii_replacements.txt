@@ -2,11 +2,14 @@
 ***REMOVED***
 REPLACEMENT==>REPLACEMENT
 
-# LinkedIn public profile URLs (keep linkedin.com/in/example as teaching placeholder)
-regex:(?i)https?://(?:www\.)?linkedin\.com/in/(?!example\b)([a-z0-9_-]+)/?==>https://www.linkedin.com/in/redacted
+***REMOVED***
+regex:(?i)https?://(?:www\.)?linkedin\.com/in/(?!example(?:["'\s]|$))[^"'\s)]+==>https://www.linkedin.com/in/redacted
 
-# SSH clone URLs with embedded username
+***REMOVED***
 regex:(?i)\bssh://[a-z0-9._-]+@==>ssh://USER_REDACTED@
+
+***REMOVED***
+regex:(?i)\btrabalho\s+da\s+esposa\b==>trabalho [redacted]
 
 ***REMOVED***
 regex:(?i)C:[/\\]+Users[/\\]+(?!(?:Public|Default|All Users|desktop\.ini)\b)([a-z0-9._-]+)[/\\]==>C:/Users/<redacted>/

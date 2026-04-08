@@ -56,14 +56,23 @@ _BUILTIN_REGEXES: list[tuple[str, re.Pattern[str]]] = [
         "LinkedIn profile URL (explicit personal slug)",
         re.compile(
             r"(?i)https?://(?:www\.)?linkedin\.com/in/"
-            r"(?!example\b|<|\.{3}|replaced|redacted|\$|\{)[a-z0-9_-]+/?"
+            r"(?!example(?:[\"'\s]|$)|<|\.{3}|replaced|redacted|\$|\{)"
+            r"[^\s\"')]+"
         ),
     ),
     (
         "Family relationship phrase (sensitive context)",
         re.compile(
-            r"(?i)\b(my\s+wife|my\s+sister(?:'s|s)\s+husband|esposa|cunhad[oa])\b"
+            r"(?i)\b(my\s+wife|my\s+sister(?:'s|s)\s+husband|cunhad[oa])\b"
         ),
+    ),
+    (
+        "Family phrase (Portuguese, high-signal)",
+        re.compile(r"(?i)\btrabalho\s+da\s+esposa\b"),
+    ),
+    (
+        "SSH URL with embedded user",
+        re.compile(r"(?i)\bssh://(?!USER_REDACTED\b)([a-z0-9._-]+)@"),
     ),
     (
         "Utility account identifier (UC with many digits)",
@@ -79,6 +88,7 @@ _ALLOWED_PATHS_PREFIXES = (
     ".cursor/private/",
     "tests/test_pii_guard.py",
     "scripts/pii_history_guard.py",
+    "scripts/filter_repo_pii_replacements.txt",
 )
 
 _BINARY_EXTENSIONS = frozenset(
