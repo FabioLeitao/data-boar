@@ -33,7 +33,7 @@ if (-not $SkipPrivateGitStatus -and (Test-Path -LiteralPath $privateGit)) {
     git -C (Join-Path $RepoRoot "docs\private") status
     Write-Host ""
 } elseif (-not $SkipPrivateGitStatus) {
-    Write-Host "(no docs/private/.git — skipped nested status)" -ForegroundColor DarkGray
+    Write-Host "(no docs/private/.git - skipped nested status)" -ForegroundColor DarkGray
     Write-Host ""
 }
 
@@ -45,7 +45,7 @@ if (-not $SkipTests) {
     )
     $missing = $guardTests | Where-Object { -not (Test-Path -LiteralPath (Join-Path $RepoRoot $_)) }
     if ($missing) {
-        Write-Warning "Missing test file(s): $($missing -join ', ') — skipping pytest."
+        Write-Warning "Missing test file(s): $($missing -join ', ') - skipping pytest."
     } else {
         uv run pytest @guardTests -q --tb=short
         $exitCode = $LASTEXITCODE
