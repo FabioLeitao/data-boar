@@ -2,7 +2,7 @@
 
 ## Quick index (find the policy first)
 
-Use this table to jump to the **canonical bullet** or **rule** for each theme. Details stay in the bullets below and in linked files — this section is a **map only** (consolidation phase A).
+Use this table to jump to the **canonical bullet** or **rule** for each theme. Details stay in the bullets below and in linked files — this section is a **map only** (consolidation phase A). The same map with **clickable paths** is in **[`docs/ops/CURSOR_AGENT_POLICY_HUB.md`](docs/ops/CURSOR_AGENT_POLICY_HUB.md)** ([pt-BR](docs/ops/CURSOR_AGENT_POLICY_HUB.pt_BR.md)) (consolidation phase B).
 
 | Theme | Where to look first |
 | ----- | ------------------- |
