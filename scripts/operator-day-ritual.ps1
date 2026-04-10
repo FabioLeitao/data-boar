@@ -67,6 +67,14 @@ if ($Mode -eq "Morning") {
         Select-Object -First 6 |
         ForEach-Object { Write-Host "  $($_.FullName)" }
     Write-Host ""
+    if ($env:DATA_BOAR_VERACRYPT_REMIND -eq "1" -and $env:DATA_BOAR_VERACRYPT_DRIVE) {
+        $vl = $env:DATA_BOAR_VERACRYPT_DRIVE.TrimEnd(":").Substring(0, 1).ToUpperInvariant()
+        $mountPath = "${vl}:\"
+        if (-not (Test-Path -LiteralPath $mountPath)) {
+            Write-Host "VeraCrypt: ${vl}: nao montado. Opcional: .\scripts\mount-secure-vault.ps1 -VaultPath `$env:DATA_BOAR_VERACRYPT_CONTAINER -DriveLetter $vl" -ForegroundColor DarkYellow
+        }
+    }
+    Write-Host ""
     Write-Host "Optional: uv run pytest tests/test_operator_help_sync.py -v" -ForegroundColor Gray
     exit 0
 }
@@ -119,7 +127,7 @@ Write-Host "Next: merge open PRs when green (.\scripts\pr-merge-when-green.ps1);
 Write-Host ""
 Write-Host "Private repo sync (stacked private git):" -ForegroundColor Yellow
 Write-Host "  .\scripts\private-git-sync.ps1          # sync feedbacks + commit pending private files"
-Write-Host "  .\scripts\private-git-sync.ps1 -Push    # + push to lab-latitude remote"
+Write-Host "  .\scripts\private-git-sync.ps1 -Push    # + push stacked private repo remote"
 $privateStatus = git -C (Join-Path $repoRoot "docs/private") status --short 2>$null
 if ($privateStatus) {
     Write-Host "  AVISO: Private repo tem arquivos pendentes ($($privateStatus.Count) linhas de status)." -ForegroundColor Yellow
