@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import pathlib
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -33,14 +34,27 @@ CSS = (
 )
 
 
+def _wkhtmltopdf_exe() -> str:
+    wk = shutil.which("wkhtmltopdf")
+    if wk:
+        return wk
+    if sys.platform == "win32":
+        wk_pf = Path(r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe")
+        if wk_pf.is_file():
+            return str(wk_pf)
+    return "wkhtmltopdf"
+
+
 def _export(md: Path, base: Path) -> None:
     stem = md.stem
     css = base / "style.css"
     if not css.exists():
         css.parent.mkdir(parents=True, exist_ok=True)
         css.write_text(CSS, encoding="utf-8")
+    # --self-contained embeds CSS so wkhtmltopdf does not choke on Windows
+    # absolute paths like href="C:\..." (ProtocolUnknownError).
     for fmt, ext, extra in [
-        ("html5", "html", ["--css", str(css), "--standalone"]),
+        ("html5", "html", ["--css", str(css), "--standalone", "--self-contained"]),
         ("docx", "docx", []),
     ]:
         out = base / ext / f"{stem}.{ext}"
@@ -59,15 +73,19 @@ def _export(md: Path, base: Path) -> None:
     pdf_out = base / "pdf" / f"{stem}.pdf"
     pdf_out.parent.mkdir(parents=True, exist_ok=True)
     if html_src.exists():
+        wk_exe = _wkhtmltopdf_exe()
         try:
             r = subprocess.run(
-                ["wkhtmltopdf", "--quiet", str(html_src), str(pdf_out)],
+                [wk_exe, "--quiet", str(html_src), str(pdf_out)],
                 capture_output=True,
-                timeout=60,
+                timeout=120,
+                text=True,
             )
-            print(
-                f"    PDF: {'ok' if r.returncode == 0 else 'skipped (wkhtmltopdf err)'}"
-            )
+            if r.returncode == 0:
+                print("    PDF: ok")
+            else:
+                err = (r.stderr or r.stdout or "").strip()[:200]
+                print(f"    PDF: skipped (wkhtmltopdf err: {err})")
         except FileNotFoundError:
             print("    PDF: skipped (wkhtmltopdf not installed)")
 
