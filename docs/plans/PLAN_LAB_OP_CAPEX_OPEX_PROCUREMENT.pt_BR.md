@@ -34,20 +34,20 @@
 | Host | Classe | Papel principal | Hardware relevante (do host report) | Gap / oportunidade |
 | ---- | ------ | --------------- | ------------------------------------ | ------------------- |
 | **LAB-NODE-01** | ThinkPad LAB-NODE-01 Gen 3 | workstation dev + LMDE 7 | i7-1365U, 16 GiB DDR5 (1 slot livre), NVMe 1 TB WD SN740 | RAM limitada para observabilidade pesada; sem swap (intencional) |
-| **WORKSTATION** | ThinkPad WORKSTATION | dev secondary / roaming | (dados incompletos; preencher com host report) | RAM/disco a confirmar; WORKSTATION tem DDR4 SODIMM tipicamente |
-| **lab-node-02** | LAB-NODE-02 E6430 | Zorin OS 18; Docker Swarm mgr | i5 (gen3), 16 GiB, SATA SSD | CPU antiga (2012); não suporta VT-d moderno; candidato a aposentadoria |
+| **L-series** | ThinkPad L-series (14-inch class) | dev secondary / roaming | (dados incompletos; preencher com host report) | RAM/disco a confirmar; PC Windows principal de desenvolvimento tem DDR4 SODIMM tipicamente |
+| **lab-op** | Servidor x86 de lab (classe legada) | Docker Swarm mgr | Ver inventário privado | CPU antiga; candidato a substituição quando VT-d / RAM forem requisito |
 | **<lab-host-2>** | Mini PC Void Linux | utility / proxy / gateway | 8 GiB RAM, SATA SSD, zram 2 GB | uv + Python 3.14 — bem equipado para tarefas leves |
-| **LAB-NODE-04** | Raspberry Pi 3B | probe / SNMP / alertas | 1 GiB RAM, microSD 30 GB | Lynis 91/100; limitado por RAM e SD; não é candidato a Wazuh |
+| **lab-sbc** | ARM SBC (classe Pi) | probe / SNMP / alertas | Ver inventário privado | RAM/SD limitados; não é candidato a Wazuh |
 
 ### 1.2 Upgrades de hosts (P0/P1/P2)
 
 | Item | Prioridade | Justificativa |
 | ---- | ---------- | ------------- |
 | **RAM LAB-NODE-01: 16 → 32 GiB** (DDR5 SODIMM 1×16 GiB) | P0 | Observabilidade, VMs locais, builds maiores. Slot livre confirmado. |
-| **RAM WORKSTATION** (confirmar slot + tipo) | P1 | Completar com host report do WORKSTATION antes de comprar. |
-| **Servidor x86 "torre" / Proxmox** | P1 | Hospedar Grafana + Loki + Wazuh sem afetar workstations. LAB-NODE-02 muito limitado. |
-| **Aposentar LAB-NODE-02 E6430** | P1 | Substituir por host com VT-d, IOMMU, RAM expandível para Swarm/Proxmox. |
-| **Pi 3B → Pi 4/5 ou similar** | P2 | Pi 3B funciona como probe; Pi 4/5 abriria containerização leve. |
+| **RAM (PC principal de dev)** (confirmar slot + tipo) | P1 | Completar com host report do PC Windows principal de desenvolvimento antes de comprar. |
+| **Servidor x86 "torre" / Proxmox** | P1 | Hospedar Grafana + Loki + Wazuh sem afetar workstations. Host **lab-op** legado muito limitado. |
+| **Substituir host lab-op legado** | P1 | Substituir por máquina com VT-d, IOMMU, RAM expandível para Swarm/Proxmox. |
+| **SBC ARM → geração mais nova** | P2 | Probe atual funciona; upgrade abriria containerização leve. |
 | **SSD NVMe externo (backup criptografado)** | P0 | Cópia offline de evidências, config, snapshots BTRFS. |
 
 ### 1.3 Em storage (equipamentos que temos mas aguardam)
@@ -162,7 +162,7 @@
 | Item | Prioridade | Justificativa |
 | ---- | ---------- | ------------- |
 | Cabos Ethernet cat6 (rezerva) | P0 | Custo mínimo, elimina atraso em reconfiguração. |
-| Kit de manutenção (chaves Torx/Phillips, spudger, ESD) | P0 | Para LAB-NODE-01/WORKSTATION e outros notColleague-Soks; sem isso, manutenção é inviável. |
+| Kit de manutenção (chaves Torx/Phillips, spudger, ESD) | P0 | Para T-series and L-series ThinkPads e outros notColleague-Soks; sem isso, manutenção é inviável. |
 | Carregadores/fontes reserva para notColleague-Soks | P1 | Fora de linha podem demorar semanas para repor. |
 | KVM 2 portas para manutenção sem monitor extra | P1 | Reduz toil em manutenção de hosts headless. |
 | Estoque mínimo de peças (SSD 2.5", M.2, fans) | P2 | Reduz downtime de hosts legacy. |

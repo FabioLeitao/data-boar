@@ -1,6 +1,6 @@
 # Lab-op shopping list + power planning — private note
 
-**The full document** (priorities, indicative BRL prices with timestamps, store hints, RAM WORKSTATION, Pi/Mac/UPS/power wall, sequencing) lives **only** in the operator workspace:
+**The full document** (priorities, indicative BRL prices with timestamps, store hints, RAM (primary dev PC), Pi/Mac/UPS/power wall, sequencing) lives **only** in the operator workspace:
 
 - **`docs/private/homelab/LAB_OP_SHOPPING_LIST_AND_POWER.md`** (gitignored — **never** commit)
 

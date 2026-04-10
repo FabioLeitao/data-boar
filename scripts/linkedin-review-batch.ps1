@@ -69,7 +69,8 @@ Write-Host ""
 $i = 0
 foreach ($entry in $selected) {
     $i++
-    $url = "https://www.example.com/profile/redacted)"
+    $slug = [string]$entry.Value
+    $url = "https://www.example.com/profile/redacted"
     Write-Host "[$i/$(@($selected).Count)] Abrindo: $($entry.Key) -> $url"
     Start-Process $url
     if ($i -lt @($selected).Count) { Start-Sleep -Seconds $Delay }

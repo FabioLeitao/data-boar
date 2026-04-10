@@ -4,8 +4,8 @@
 
 ## What we learned from LAB-OP hosts
 
-- `lab-node-02` runs **Docker Engine (CE)** and has **Swarm active** (single-node manager).
-- `LAB-NODE-04` has **AIDE** configured under `/etc/aide/` and **auditd rules** under `/etc/audit/rules.d/`.
+- The **primary lab-op x86_64 host** runs **Docker Engine (CE)** with **Swarm active** (single-node manager).
+- A **secondary ARM SBC lab host** has **AIDE** configured under `/etc/aide/` and **auditd rules** under `/etc/audit/rules.d/`. (Host-specific names belong in **`docs/private/homelab/`** only.)
 
 ## Automation
 

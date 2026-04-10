@@ -41,7 +41,7 @@
 
 - **Do not buy around wishful assumptions.** Confirm what is already in service, what is already stored, and what is only “known to exist but not yet repaired”.
 - **Storage already owned** (including items waiting for repair) should be logged in the private master list before buying new disks/NAS gear.
-- **WSL2 on WORKSTATION** is a valid interim “cheap capacity” option for extra Docker / pytest / smoke work if the machine is already available and Windows must stay on it.
+- **WSL2 on the primary Windows dev PC** is a valid interim “cheap capacity” option for extra Docker / pytest / smoke work if the machine is already available and Windows must stay on it.
 
 ---
 

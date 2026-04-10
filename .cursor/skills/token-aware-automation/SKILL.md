@@ -5,6 +5,8 @@ description: Use when deciding how to run lint, tests, commit/PR, or Docker home
 
 # Token-aware automation (scripts first)
 
+**Full script map (skills, rules, keywords, ops links):** **`docs/ops/TOKEN_AWARE_SCRIPTS_HUB.md`** · **pt-BR:** **`docs/ops/TOKEN_AWARE_SCRIPTS_HUB.pt_BR.md`**. Use it when the task is not only lint/PR/Docker (e.g. homelab, PII, talent, release) to avoid orphaned one-off rediscovery.
+
 When you need to **verify lint or tests**, or when the user asks to **commit, create a description, push, or create a PR**, use the repo scripts from the project root so behaviour is consistent and token use stays low.
 
 ## Always consider adding automation after fixes
@@ -25,6 +27,8 @@ If not added, state a short reason (for example runtime too high, flaky signal, 
 | Tests only (no pre-commit) | `.\scripts\check-all.ps1 -SkipPreCommit`                                        | Skips Ruff/markdown when you only care about tests        |
 | Lint/format only           | `.\scripts\lint-only.ps1`                                                       | No pytest when you only changed docs, templates, or style |
 | One test file or keyword   | `.\scripts\quick-test.ps1 -Path tests/test_foo.py` or `-Keyword "content_type"` | Fewer tests = faster feedback and fewer tokens            |
+| PII fresh-clone self-audit (Windows; not full `check-all`) | `.\scripts\pii-fresh-clone-audit.ps1` (optional `-IncludeTalentGuards`) | Temp **full** clone + `pii_history_guard --full-history` + `test_pii_guard` (**primary-dev-workstation-safe**). See **`docs/ops/PII_FRESH_CLONE_AUDIT.md`**, **`docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**; session **`pii-fresh-audit`**. |
+| Windows: find files by **name/path** (not content) | `.\scripts\es-find.ps1 -Query "*.md" -MaxCount 40` (or `-Help`; if **`es.exe`** missing: **`-FallbackPowerShell`**) | **Everything** / **`es.exe`** first (**read-only**, **primary-dev-workstation-safe**). Default scope = repo root; `-Global` for full index. **Not** on **Linux lab-op**. Fallback ladder: **`everything-es-cli.mdc`**. **`docs/ops/EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md`**; session **`es-find`**. Rule **`.cursor/rules/everything-es-cli.mdc`**, skill **`everything-es-search`**. |
 
 ## Docker homelab (Windows, optional — token-efficient)
 
