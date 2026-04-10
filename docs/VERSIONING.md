@@ -94,7 +94,18 @@ When you bump the version, update **all** of the following so the number is cons
 | **`docs/plans/PLANS_TODO.md`** | If there is a “current version” or “app version” note in a plan’s “Current state” or publish step, update it when you release.                   |
 | **Other docs**                 | Search the repo for the old version string (e.g. `1.3.0`) and update any remaining references in SECURITY.md, CONTRIBUTING.md, or release notes. |
 
-### 6. UI and reports (no edit needed if 1–2 are done)
+### 6. Distribution, Docker Hub, and customer-facing copy
+
+Keep **published** semver story consistent for anyone pulling images or reading marketing text (not only `pyproject.toml`):
+
+| Location | What to change |
+| --- | --- |
+| **`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`** | **Short** + **Full** blocks for the Docker Hub UI: **Current release**, example semver tags, **copyright/maintainer** lines, and CLI examples (`python main.py`). Paste into Hub after each image push. |
+| **`docs/ops/today-mode/PUBLISHED_SYNC.md`** (+ **`.pt_BR.md`**) | Table row: **GitHub Latest**, **Docker Hub** tags, and “next” patch — must match what customers can actually install. |
+| **`docs/TECH_GUIDE.md`** (+ **`.pt_BR.md`**) | Example Hub tag in the Docker subsection (if it pins a semver). |
+| **Operator social / milestones** (e.g. **`docs/private/social_drafts/`**, gitignored) | If a post cites “current release”, “latest on Docker Hub”, or a version number, align with **`README.md`** **Current release** line and **`PUBLISHED_SYNC`** — never celebrate a version that is not yet on GitHub + Hub unless you label it as **upcoming**. |
+
+### 7. UI and reports (no edit needed if 1–2 are done)
 
 These show the version **dynamically** from package metadata (via `core/about.py`), so they do **not** need manual edits when you bump:
 
@@ -116,6 +127,6 @@ After updating `pyproject.toml` (and optionally `core/about.py`), reinstall the 
 - **Bump minor:** `X.Y.Z` → `X.(Y+1).0`
 - **Bump build:** `X.Y.Z` → `X.Y.(Z+1)`
 - **Promote flow:** `X.Y.Z-beta` → `X.Y.Z-rc` → `X.Y.Z` (final publish)
-- **Checklist:** pyproject.toml → core/about.py → docs/data_boar.1, data_boar.5 → docs/deploy/DEPLOY.md → README (EN/PT-BR), USAGE (EN/PT-BR), PLANS_TODO → search repo for old version string.
+- **Checklist:** pyproject.toml → core/about.py → docs/data_boar.1, data_boar.5 → docs/deploy/DEPLOY.md → README (EN/PT-BR), USAGE (EN/PT-BR), PLANS_TODO → **DOCKER_HUB_REPOSITORY_DESCRIPTION** + **PUBLISHED_SYNC** → TECH_GUIDE Docker example → optional social drafts → search repo for old version string.
 
 **Português (Brasil):** [VERSIONING.pt_BR.md](VERSIONING.pt_BR.md)

@@ -201,6 +201,19 @@ scripts/
 
 ---
 
+## Locale, jurisdição e preços (obrigatório desde 2026-04)
+
+Ao redigir recomendações **ATS / LinkedIn** para um candidato:
+
+1. **Mercado-alvo:** usar o par de idioma certo (ex.: **en_CA** para Canadá — não `en` genérico nem **en_UK**/**en_US** se o alvo for Canadá).
+2. **Compliance:** para **Canadá**, liderar com **PIPEDA** / leis provinciais relevantes e, quando aplicável, trajetória do **Bill C-27**; **GDPR** só como complemento para papéis multinacionais/dados UE — **não** como quadro padrão do mercado canadiano.
+3. **Certificações:** preços em **USD** de emissores **americanos** não são orçamento canadiano; pedir verificação no site oficial por **CAD**, centros no Canadá, impostos e descontos de capítulo. Separar cenário **USD** (ex.: prova nos EUA) do cenário **CAD**.
+4. **Fonte:** em dúvida, mandar verificar página oficial do emissor ou regulador — não inventar valores.
+
+Referência pública: **`docs/ops/LINKEDIN_ATS_PLAYBOOK.md`** secção **8** (e **`.pt_BR.md`**).
+
+Regra: **`.cursor/rules/ats-locale-aware-recommendations.mdc`**.
+
 ## Guardrails
 
 - **Nunca commitar** dados de candidatos (gitignored em `docs/private/`)
@@ -236,5 +249,5 @@ docs/private/homelab/.env.udm.cursor        # senha auto.cursor (criar quando ne
 
 ---
 
-*Skill versao 2.2 - 2026-04-08 | Exemplos publicos genericos; apelidos reais apenas em docs/private/*
+*Skill versao 2.3 - 2026-04-08 | Locale/jurisdição ATS; exemplos publicos genericos; apelidos reais apenas em docs/private/*
 

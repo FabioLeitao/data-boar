@@ -172,6 +172,8 @@ An **incoming webhook** only **posts to a channel**. That is not the same as a *
 
 ## 6. Optional KPI snapshot + notify
 
+**X editorial pace (Slack, workstation):** [scripts/social-x-pace-remind.ps1](../../scripts/social-x-pace-remind.ps1) reads the gitignored hub file `docs/private/social_drafts/SOCIAL_HUB.md` (present on the maintainer workspace only) and lists **X** inventory rows that are still **`draft`** with **Alvo editorial** on or before today. With **`SLACK_WEBHOOK_URL`** set in the **local environment** (same Incoming Webhook URL as GitHub Actions—see §4.1) and **`-Slack`**, it POSTs one short message to the webhook’s channel (e.g. **`#data-boar-ops`**). Optional **`SLACK_MENTION_USER_ID`** for a leading `<@U…>`. Schedule a **daily** Task Scheduler job on the dev PC if you want pings without opening Cursor. **GitHub-hosted cron cannot** read private `docs/private/` on your machine—this path is **local-first**. Cursor session keyword **`x-pace-check`** reminds from chat; **`x-posted`** validates after you publish—see gitignored `docs/private/social_drafts/OPERATOR_X_PACE_AND_VALIDATION.pt_BR.md`.
+
 Baseline script: [scripts/kpi-export.py](../../scripts/kpi-export.py) (needs `gh auth`). **Optional extension (backlog):**
 
 - **Weekly** `workflow_dispatch` or cron workflow: run `python scripts/kpi-export.py --out kpi_snapshot.md`, upload as **artifact**, or post excerpt to **Slack** and/or **Signal** (never Telegram for this maintainer policy).

@@ -16,7 +16,7 @@
 | -  | --------                                                                                                                                                          | ----------------                                                        |
 | M1 | **Band A (–1):** GitHub → **Security → Dependabot** — triage or close **one** item (PR / `pyproject` + `uv lock` + `requirements.txt` + `check-all`)              | One alert handled **or** note “nothing critical today” in private notes |
 | M2 | **Band A (–1b):** if you pushed an image recently — `docker scout quickview` on your tag                                                                          | Screenshot or private note if follow-up needed                          |
-| M3 | **LAB-OP — `<lab-host-2>` / `pi3b`:** fix `git status` on `homelab-host-report.sh` **or** run `lab-op-sync-and-collect.ps1 -SkipGitPull`                               | New report under `docs/private/homelab/reports/` **or** clean pull      |
+| M3 | **LAB-OP — `<lab-host-2>` / secondary SBC:** fix `git status` on `homelab-host-report.sh` **or** run `lab-op-sync-and-collect.ps1 -SkipGitPull`                         | New report under `docs/private/homelab/reports/` **or** clean pull      |
 | M4 | **ThinkPad T14 + LMDE 7:** continue [LMDE7_T14_DEVELOPER_SETUP.pt_BR.md](LMDE7_T14_DEVELOPER_SETUP.pt_BR.md) through §8 checklist **or** record where you stopped | One line in private notes                                               |
 
 ---

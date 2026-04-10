@@ -53,7 +53,7 @@ committing to a full stack before the infrastructure is ready.
 - **Negative:** `ctop` is not in the Debian apt repository — installed as a binary from GitHub
   releases. This requires version pinning and manual updates (tracked in `t14_obs_ctop_version`
   Ansible variable).
-- **Watch:** As the lab adds more hosts (L14, servers), the Ansible role should extend to push
+- **Watch:** As the lab adds more hosts (primary Windows dev PC, servers), the Ansible role should extend to push
   the same observability stack to all managed hosts via group_vars rather than host-specific playbooks.
 
 ## References

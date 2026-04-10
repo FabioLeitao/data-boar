@@ -1,6 +1,5 @@
 ---
-# Banner model learned from existing LAB-OP hosts (pi3b/<lab-host-2>/latitude).
-# Keep it generic and non-sensitive; override per-host in inventory if desired.
+# Banner model aligned with generic LAB-OP practice; keep generic and non-sensitive; override per-host in inventory if desired.
 t14_banner_plain_header: "{{ ansible_distribution | default('Linux') }} {{ ansible_distribution_version | default('') }} - {{ inventory_hostname }}"
 t14_banner_figlet_text: "{{ t14_banner_plain_header }}"
 

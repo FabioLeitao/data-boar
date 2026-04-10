@@ -120,7 +120,7 @@ ollama list
 
 **Lab note:** pulled models live under Ollama’s store (often **`~/.ollama`** or distro package path) and can consume **many GiB** — include them in disk planning next to Docker layers and ISOs. Default API port is **11434**; bind to **localhost** or **LAN** only; do **not** expose to the public Internet without a deliberate reverse proxy + auth.
 
-**WSL2 vs another Linux host:** each distro’s **ext4 VHD** has its **own** **`~/.ollama`** (and **`ollama list`**). Same **semver** (**`ollama --version`**) on **WSL** and **latitude** does **not** imply shared weights — **`ollama pull`** must be run where you want the model to run.
+**WSL2 vs another Linux host:** each distro’s **ext4 VHD** has its **own** **`~/.ollama`** (and **`ollama list`**). Same **semver** (**`ollama --version`**) on **WSL** and a **lab-op** host does **not** imply shared weights — **`ollama pull`** must be run where you want the model to run.
 
 ## Debian/Ubuntu: installed packages (filtered)
 
@@ -158,7 +158,7 @@ sudo xbps-install -S mariadb-devel
 
 Then **`uv sync`** again from the repo root. **`uv`** may use its own **CPython 3.13.x** even when **`python3` on PATH** is **3.14** — that is normal unless you pin **`UV_PYTHON`** / **`.python-version`**.
 
-**No Docker/Podman on host:** use **`uv sync`** on the metal (with the packages above) or run tests in a **Linux/glibc** environment (e.g. **latitude** or the published **Docker** image) when **musl** builds are too painful.
+**No Docker/Podman on host:** use **`uv sync`** on the metal (with the packages above) or run tests in a **Linux/glibc** environment (e.g. a **lab-op** host or the published **Docker** image) when **musl** builds are too painful.
 
 ## Alpine
 

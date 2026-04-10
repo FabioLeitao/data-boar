@@ -167,7 +167,7 @@ Reserved for advanced use: use **`aa-genprof`** / **`aa-logprof`** (see Ubuntu S
 
 ## 7. Cross-links
 
-- Operator homelab context (e.g. **latitude** / Zorin): private **`docs/private/homelab/LAB_SECURITY_POSTURE.md`** §2 (UFW, Lynis, AppArmor mentions)—**not** a substitute for this runbook.
+- Operator homelab context (e.g. **`lab-op`** / Ubuntu-family desktop): private **`docs/private/homelab/LAB_SECURITY_POSTURE.md`** §2 (UFW, Lynis, AppArmor mentions)—**not** a substitute for this runbook.
 - **Cursor + secrets / `docs/private/`:** **[PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)**.
 - **Windows / WSL** Cursor path split: **[WINDOWS_WSL_MULTI_DISTRO_LAB.md](WINDOWS_WSL_MULTI_DISTRO_LAB.md)**.
 

@@ -53,7 +53,7 @@ Nada disso substitui o `.env` gitignored aqui — o NMS passa a ser a **fonte op
 
 ---
 
-## Linux (lab-op: latitude, <lab-host-2>, Pi, etc.)
+## Linux (lab-op, <lab-host-2>, SBC, etc.)
 
 **Pré-requisito:** `sudo apt install -y snmp` (ou equivalente na distro).
 

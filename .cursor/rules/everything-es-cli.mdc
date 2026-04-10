@@ -1,0 +1,61 @@
+---
+description: Windows primary dev PC — voidtools Everything (es.exe) via scripts/es-find.ps1 for token-aware filename/path search; not on Linux lab-op (use find/fd over SSH)
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Everything CLI (`es.exe`) — token-aware filename search (primary Windows dev PC)
+
+## Platform
+
+- **`es.exe`** exists on **Windows** only (Voidtools Everything). The operator’s **L-series** workstation is the normal place to run **`.\scripts\es-find.ps1`**.
+- **`lab-op`** in docs means **Linux over SSH** — there is **no** Everything/`es` there. For filename search on the server, use **`find`**, **`fd`**, or **`locate`**, or rely on **`lab-op.ps1`** / host reports. Do **not** tell the operator to run `es.exe` **on** lab-op.
+
+## When to use
+
+- **Use `.\scripts\es-find.ps1`** when the task is **find files by name or path** across a **large tree**, **outside the repo**, or when **Cursor `Glob` would be huge or slow**, and you need **fast** results from the **Everything index**.
+- **On Windows primary dev PC, `es.exe` is the default tool** for **filename/path** discovery (via the wrapper). **Always invoke `es-find.ps1` first** when the task is “where is this file named like X” — not **`SemanticSearch`** and not broad content **Grep** as a stand-in for filename search.
+- **Prefer repo tools first** for normal work **inside `data-boar/`**: **`Glob`**, **`Grep`**, **`SemanticSearch`** — they respect workspace scope and avoid leaking unrelated paths into the transcript — **unless** the operator or task clearly needs **Everything** (huge tree, path outside workspace, index speed).
+
+## Fallback (if `es.exe` unavailable, timeout, or catastrophic failure)
+
+1. Re-run **`.\scripts\es-find.ps1 -Query "..." -FallbackPowerShell`** (same scope; **no** `-Regex`/`-Global` with fallback).
+2. **`Glob`** in the workspace for **in-repo** filename patterns.
+3. **`Get-ChildItem -Recurse`** only under a **narrow** root the user specified (high token/IO cost — last resort).
+4. **Never** use **`SemanticSearch`** as the primary way to locate a file **by name**.
+5. **lab-op (Linux):** **`find`**, **`fd`**, **`locate`** — **not** `es.exe`.
+
+## When not to use
+
+- **Content search** inside files: use **`Grep`** / **`SemanticSearch`**, not `es` (Everything is **not** full-text by default).
+- **Default** project navigation: **`Glob`** for known patterns under the repo root.
+
+## How (wrapper)
+
+From the repo root:
+
+| Goal | Example |
+| --- | --- |
+| Names under this repo (default scope), capped | `.\scripts\es-find.ps1 -Query "*.md" -MaxCount 40` |
+| Full index (still capped) | `.\scripts\es-find.ps1 -Query "foo" -Global -MaxCount 30` |
+| Custom root | `.\scripts\es-find.ps1 -Query "bar" -SearchRoot "D:\work"` |
+| Count only | `.\scripts\es-find.ps1 -Query "*.py" -GetResultCount` |
+| Show resolved invocation (copy/paste to extend raw `es`) | `.\scripts\es-find.ps1 -Query "*.py" -ShowCommand` |
+| Built-in usage | `.\scripts\es-find.ps1 -Help` |
+
+**Prerequisites:** [Everything](https://www.voidtools.com/) running; `es.exe` on `PATH` or WinGet shim under `%LOCALAPPDATA%\Microsoft\WinGet\Links\es.exe`.
+
+**Operator guide (primary Windows dev PC + lab context):** **`docs/ops/EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md`**.
+
+## Session keyword
+
+- **`es-find`** in **`.cursor/rules/session-mode-keywords.mdc`** — run the wrapper with a **low** `-MaxCount` unless the operator asked for an exhaustive list.
+
+## Token hygiene
+
+- **Always** pass a **sensible `-MaxCount`** (script default is **50**). Raise only when the operator asked for exhaustive lists.
+- **Do not** paste **long** result lists into chat; summarize or take **top N** paths.
+- **PII / paths:** treat `es` output like any filesystem listing — **no** real home paths or third-party identifiers in **commits, PRs, or tracked docs** (see **`private-pii-never-public.mdc`**).
+- **primary Windows dev PC:** `es-find.ps1` is **read-only** (filename index) — safe on the primary dev workstation; it is **not** a destructive repo op (**`primary-windows-workstation-protected-no-destructive-repo-ops.mdc`**).
+
+Skill: **`.cursor/skills/everything-es-search/SKILL.md`**.

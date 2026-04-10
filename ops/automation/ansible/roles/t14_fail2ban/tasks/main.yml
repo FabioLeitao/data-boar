@@ -21,7 +21,7 @@
     mode: "0644"
     content: |
       [DEFAULT]
-      # Learned from LAB-OP (pi3b): keep LAN trusted by ignoreip if you confirm.
+      # LAB-OP pattern: keep LAN trusted by ignoreip if you confirm.
       # To adopt, set `t14_fail2ban_ignoreip` in inventory (e.g. ["127.0.0.1/8","::1","192.0.2.0/24"]).
       {% if t14_fail2ban_ignoreip | length > 0 %}
       ignoreip = {{ t14_fail2ban_ignoreip | join(' ') }}
