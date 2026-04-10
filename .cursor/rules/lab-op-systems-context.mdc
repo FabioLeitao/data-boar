@@ -11,7 +11,8 @@ alwaysApply: false
 Any prompt that mentions: solar / growatt / inversor / painel solar / energia gerada /
 enel / fatura / consumo / conta de luz / UDM / UniFi / VLAN / rede / WiFi /
 HVAC / ar condicionado / LG / Springer / BTU / R-22 / R-410A /
-T14 / latitude / <lab-host-2> / pi3b / Attiv / UPS / homelab / lab-op /
+lab-op / <lab-host-2> / SBC / dev laptop class / Attiv / UPS / homelab /
+(legacy chat nicknames may still appear — facts live in `docs/private/homelab/` only) /
 hardware inventory / coleta de dados / relatorio de energia.
 
 ## 1. Required private-file read chain
@@ -31,7 +32,7 @@ Read in this order -- stop when you have enough context for the task:
 | **Solar x Grid** | gerado vs consumido, saldo solar, balanco energetico | Both above | `.\scripts\energy-report.ps1` |
 | **UDM / Rede** | udm, unifi, VLAN, wifi, switch, clientes, alertas, rede | `OPERATOR_RETEACH.md` B3 + `LAB_SECURITY_POSTURE.md` | `.\scripts\udm.ps1` |
 | **HVAC** | hvac, ar condicionado, LG, Springer, BTU, R-22, R-410A | `OPERATOR_RETEACH.md` B2 | -- |
-| **Hardware / hosts** | L14, latitude, <lab-host-2>, pi3b, T14, hardware, specs | `OPERATOR_SYSTEM_MAP.md` sections 2-4 + `LAB_SOFTWARE_INVENTORY.md` | `.\scripts\lab-op.ps1` |
+| **Hardware / hosts** | lab-op, <lab-host-2>, SBC, workstation-class laptop, hardware, specs | `OPERATOR_SYSTEM_MAP.md` sections 2-4 + `LAB_SOFTWARE_INVENTORY.md` | `.\scripts\lab-op.ps1` |
 | **UPS** | attiv, ups, bateria, autonomia, nobreak | `OPERATOR_RETEACH.md` B2 | -- |
 | **Lab host reports** | homelab-report, collect, inventory, matrix | `docs/private/homelab/lab-op-hosts.manifest.json` | `.\scripts\lab-op.ps1 -Action report-all` |
 | **Gravatar / perfil** | gravatar, social links, handles | `docs/private/homelab/OPERATOR_GRAVATAR_PROFILE.md` | -- |
@@ -48,6 +49,7 @@ Read in this order -- stop when you have enough context for the task:
 | `.\scripts\energy-report.ps1` | Solar vs grid: correlacao gerado vs consumido | `.\scripts\energy-report.ps1` |
 | `.\scripts\lab-op.ps1 -Action report-all` | Todos os hosts via SSH + manifest | -- |
 | `.\scripts\lab-op.ps1 -Action sync-collect` | git pull + collect all hosts | -- |
+| `.\scripts\es-find.ps1` | **So Windows (primary Windows dev PC):** busca por nome via Voidtools Everything — **nao** usar em Linux SSH | `.\scripts\es-find.ps1 -Help`; **`docs/ops/EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md`** |
 | `.\scripts\talent.ps1 scan` | Varredura de CVs no pool ATS | -- |
 | `. .\scripts\lab-env-load.ps1` | Carrega vars LAB-OP na sessao (UDM, Growatt, Enel, SSH) -- dot-source! | `. .\scripts\lab-env-load.ps1 -Systems udm` |
 

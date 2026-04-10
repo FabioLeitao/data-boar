@@ -8,8 +8,8 @@ alwaysApply: true
 
 ## Roles
 
-- **Maintainer** (e.g. Fabio): owns release discipline, sensitive operator context under **gitignored** `docs/private/`, and merge/release policy per `AGENTS.md` / `CONTRIBUTING.md`.
-- **Contributor** (e.g. Ivan): follows the same `AGENTS.md` and tracked docs; uses **feature branches** and **PRs** to the canonical repo (or PR from fork → upstream).
+- **Maintainer**: owns release discipline, sensitive operator context under **gitignored** `docs/private/`, and merge/release policy per `AGENTS.md` / `CONTRIBUTING.md`.
+- **Contributor**: follows the same `AGENTS.md` and tracked docs; uses **feature branches** and **PRs** to the canonical repo (or PR from fork → upstream).
 
 ## Identity
 

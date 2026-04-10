@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Pitch and roadmap sync with plans
 
-The **pitch** is the "For decision-makers and compliance leads" section in **README.md** (and **README.pt_BR.md**). It includes **current capabilities** ("What we surface", "Why it holds up") and a **Roadmap** sentence listing future goals. These must stay in sync with what we have **accomplished** and what we are **actually working on**, so the pitch accurately reflects the product and future development.
+The **pitch** is the "For decision-makers and compliance leads" section in **README.md** (and **README.pt_BR.md**). It includes **current capabilities** ("What we surface", "Why it holds up") and a **Roadmap** block (usually one short paragraph plus links to **releases** and **COMPLIANCE_AND_LEGAL** for depth). These must stay in sync with what we have **accomplished** and what we are **actually working on**, so the pitch accurately reflects the product and future development. Prefer **outcome language** for executives; keep API names, ADRs, and long regional lists out of the pitch unless a buyer-facing milestone requires a single named anchor.
 
 ## When you create a new plan
 
