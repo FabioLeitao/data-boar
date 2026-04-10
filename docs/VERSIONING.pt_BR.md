@@ -94,7 +94,18 @@ Ao dar bump na versão, atualize **todos** os itens abaixo para manter o número
 | **`docs/plans/PLANS_TODO.md`** | Se houver nota de “versão atual” ou “app version” no “Current state” ou passo de publish de um plano, atualize ao lançar.                              |
 | **Outros docs**                | Pesquise no repositório pela string da versão antiga (ex.: `1.3.0`) e atualize referências restantes em SECURITY.md, CONTRIBUTING.md ou release notes. |
 
-### 6. Interface e relatórios (não é preciso editar se 1–2 forem feitos)
+### 6. Distribuição, Docker Hub e texto voltado ao cliente
+
+Mantenha a história do **semver publicado** alinhada para quem faz pull da imagem ou lê material de marketing (não só o `pyproject.toml`):
+
+| Local | O que alterar |
+| --- | --- |
+| **`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`** | Blocos **Short** + **Full** para a UI do Docker Hub: **Current release**, exemplo de tags semver, linhas de **copyright/mantenedor** e exemplos de CLI (`python main.py`). Colar no Hub após cada push de imagem. |
+| **`docs/ops/today-mode/PUBLISHED_SYNC.md`** (+ **`.pt_BR.md`**) | Linhas da tabela: **GitHub Latest**, **Docker Hub** e “próxima” patch — devem refletir o que o cliente consegue instalar. |
+| **`docs/TECH_GUIDE.md`** (+ **`.pt_BR.md`**) | Tag de exemplo do Hub na subsecção Docker (se fixar semver). |
+| **Social / marcos (operador)** (ex.: **`docs/private/social_drafts/`**, gitignored) | Se o texto citar “release atual”, “último no Docker Hub” ou número de versão, alinhar ao **`README.md`** (**Release atual**) e ao **`PUBLISHED_SYNC`** — não celebrar versão que ainda não está no GitHub + Hub sem marcar como **em breve**. |
+
+### 7. Interface e relatórios (não é preciso editar se 1–2 forem feitos)
 
 Estes exibem a versão **dinamicamente** a partir dos metadados do pacote (via `core/about.py`), portanto **não** precisam de edição manual ao dar bump:
 
@@ -116,6 +127,6 @@ Depois de atualizar o `pyproject.toml` (e opcionalmente `core/about.py`), reinst
 - **Bump minor:** `X.Y.Z` → `X.(Y+1).0`
 - **Bump build:** `X.Y.Z` → `X.Y.(Z+1)`
 - **Fluxo de promoção:** `X.Y.Z-beta` → `X.Y.Z-rc` → `X.Y.Z` (publish final)
-- **Checklist:** pyproject.toml → core/about.py → docs/data_boar.1, data_boar.5 → docs/deploy/DEPLOY.md → README (EN/PT-BR), USAGE (EN/PT-BR), PLANS_TODO → buscar no repositório pela string da versão antiga.
+- **Checklist:** pyproject.toml → core/about.py → docs/data_boar.1, data_boar.5 → docs/deploy/DEPLOY.md → README (EN/PT-BR), USAGE (EN/PT-BR), PLANS_TODO → **DOCKER_HUB_REPOSITORY_DESCRIPTION** + **PUBLISHED_SYNC** → exemplo Docker no TECH_GUIDE → rascunhos sociais opcionais → buscar no repositório pela string da versão antiga.
 
 **English:** [VERSIONING.md](VERSIONING.md)
