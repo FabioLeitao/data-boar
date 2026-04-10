@@ -1,6 +1,6 @@
 # Talent dossier shorthand helper (PowerShell)
 #
-# Goal: make `talent-dossier next --advisor-remote --caution` available without
+# Goal: make `talent-dossier next --advisor-remote --caution` (alias: `--remote`) available without
 # needing to search in docs/scripts every time.
 #
 # Repo root: defaults to parent of this script's folder; override with
@@ -206,6 +206,7 @@ function Invoke-TalentDossier {
 
         switch ($t) {
             "--advisor-remote" { $AdvisorRemote = $true }
+            "--remote" { $AdvisorRemote = $true }
             "--caution" { $Caution = $true }
             "--low-priority-caution" { $Caution = $true }
             "--no-loop" { $Loop = $false }
