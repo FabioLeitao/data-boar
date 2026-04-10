@@ -3,6 +3,8 @@
     Backup, clone, rewrite Git history with scripts/filter_repo_pii_replacements.txt, run tests.
 
 .DESCRIPTION
+    BLOCKED unless environment variable DATA_BOAR_ALLOW_DESTRUCTIVE_REPO_OPS is set to 1.
+    Never enable on primary Windows dev PC (primary dev workstation); use only on a designated lab host with operator intent.
     Does NOT push by default. Use -Push after reviewing test output.
     Requires git-filter-repo on PATH and a clean working tree (commit or stash first).
 
@@ -20,6 +22,13 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+if ($env:DATA_BOAR_ALLOW_DESTRUCTIVE_REPO_OPS -ne "1") {
+    throw (
+        "Refusing: set DATA_BOAR_ALLOW_DESTRUCTIVE_REPO_OPS=1 only on a non-primary-workstation lab host when you intend history rewrite. " +
+        "See docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md"
+    )
+}
 
 if (-not $RepoRoot) {
     $RepoRoot = Split-Path $PSScriptRoot -Parent

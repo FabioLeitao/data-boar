@@ -14,7 +14,7 @@
   - deep probes are opt-in
 
 .EXAMPLE
-  .\scripts\lab-op.ps1 -Action report -SshHost lab-node-02
+  .\scripts\lab-op.ps1 -Action report -SshHost lab-op
 
 .EXAMPLE
   .\scripts\lab-op.ps1 -Action report-all -Privileged -Deep

@@ -10,11 +10,11 @@
 
 | Campo | Valor |
 | ----- | ----- |
-| **Verificado** | **2026-03-31** |
-| **`pyproject.toml` em `main`** | **1.6.7** |
-| **GitHub Release Latest** | [**v1.6.7**](https://github.com/FabioLeitao/data-boar/releases/tag/v1.6.7) (publicada **2026-03-26**) |
-| **Docker Hub** | **`fabioleitao/data_boar:1.6.7`** + **`latest`** (push **2026-03-26**) |
-| **Próxima versão pública** (quando `main` tiver bundle novo) | **1.6.8** — seguir **`docs/VERSIONING.md`** + **`docs/releases/`** |
+| **Verificado** | **2026-04-08** |
+| **`pyproject.toml` em `main`** | **1.6.8** |
+| **GitHub Release Latest** | [**v1.6.8**](https://github.com/FabioLeitao/data-boar/releases/tag/v1.6.8) (publicada **2026-04-02** conforme **`docs/releases/1.6.8.md`**) |
+| **Docker Hub** | **`fabioleitao/data_boar:1.6.8`** + **`latest`** — reconfirma tags e **descrição do repositório** após push; cola a partir de **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** |
+| **Próxima versão pública** (quando `main` tiver bundle novo) | **1.6.9** — seguir **`docs/VERSIONING.md`** + **`docs/releases/`** |
 
 ---
 
@@ -29,7 +29,7 @@ grep -n '^version' pyproject.toml
 gh release list --repo FabioLeitao/data-boar --limit 5
 ```
 
-Docker Hub: confirma **`1.6.7`** e **`latest`** em [hub.docker.com/r/fabioleitao/data_boar/tags](https://hub.docker.com/r/fabioleitao/data_boar/tags) ou na API do registry.
+Docker Hub: confirma **`1.6.8`** e **`latest`** em [hub.docker.com/r/fabioleitao/data_boar/tags](https://hub.docker.com/r/fabioleitao/data_boar/tags) ou na API do registry; **descrição longa** alinhada a **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)**.
 
 ---
 

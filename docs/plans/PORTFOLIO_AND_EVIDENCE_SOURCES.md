@@ -10,6 +10,8 @@
 
 **Canonical copy** for decision-makers lives in the root **[README.md](../../README.md)** and **[README.pt_BR.md](../../README.pt_BR.md)** (*For decision-makers / Para gestores*). When you refresh decks, CV blurbs, or thesis “product” paragraphs, start there.
 
+**Roadmap tone (keep aligned):** The README **Roadmap** paragraph includes one **executive-readable** line (boards / audits: direction and evidence on visibility and compliance posture—without an engineering-only story). Deeper roadmap bullets below are for **plans and evidence**; they are **not** meant to be pasted verbatim into external decks—summarise in the same tone as the README.
+
 ## Differentiators to cite (hireability / commercial story):
 
 - **Filesystem judgment:** Configurable plain-text depth plus **calmer ML triage** on entertainment-shaped and common OSS-doc content—**review band** vs **priority** violations—so legal and DPO time goes to real risk.

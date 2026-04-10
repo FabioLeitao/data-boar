@@ -136,6 +136,26 @@ def test_preview_commit_ps1_syntax():
     assert _parse_powershell_script(script, root), "preview-commit.ps1 parse failed"
 
 
+def test_evidence_hash_manifest_ps1_syntax():
+    """scripts/evidence-hash-manifest.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "evidence-hash-manifest.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), (
+        "evidence-hash-manifest.ps1 parse failed"
+    )
+
+
+def test_mount_secure_vault_ps1_syntax():
+    """scripts/mount-secure-vault.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "mount-secure-vault.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), "mount-secure-vault.ps1 parse failed"
+
+
 def test_pr_hygiene_remind_ps1_syntax():
     """scripts/pr-hygiene-remind.ps1 has valid PowerShell syntax (parse-only)."""
     root = _project_root()
@@ -512,6 +532,26 @@ def test_lab_op_ps1_syntax():
     assert _parse_powershell_script(script, root), "lab-op.ps1 parse failed"
 
 
+def test_es_find_ps1_syntax():
+    """scripts/es-find.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "es-find.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), "es-find.ps1 parse failed"
+
+
+def test_social_x_pace_remind_ps1_syntax():
+    """scripts/social-x-pace-remind.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "social-x-pace-remind.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), (
+        "social-x-pace-remind.ps1 parse failed"
+    )
+
+
 def test_run_pii_local_seeds_pickaxe_ps1_syntax():
     """scripts/run-pii-local-seeds-pickaxe.ps1 has valid PowerShell syntax (parse-only)."""
     root = _project_root()
@@ -520,6 +560,17 @@ def test_run_pii_local_seeds_pickaxe_ps1_syntax():
         return
     assert _parse_powershell_script(script, root), (
         "run-pii-local-seeds-pickaxe.ps1 parse failed"
+    )
+
+
+def test_pii_fresh_clone_audit_ps1_syntax():
+    """scripts/pii-fresh-clone-audit.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "pii-fresh-clone-audit.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), (
+        "pii-fresh-clone-audit.ps1 parse failed"
     )
 
 

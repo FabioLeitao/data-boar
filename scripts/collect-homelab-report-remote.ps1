@@ -8,7 +8,7 @@
   Requires: OpenSSH client (ssh), a working SSH Host entry (see docs/private.example/homelab/README.md).
 
 .EXAMPLE
-  .\scripts\collect-homelab-report-remote.ps1 -SshHost lab-node-02
+  .\scripts\collect-homelab-report-remote.ps1 -SshHost lab-op
 
 .EXAMPLE
   .\scripts\collect-homelab-report-remote.ps1 -SshHost <lab-host-2> -ExtraSshArgs @("-o","BatchMode=yes")
