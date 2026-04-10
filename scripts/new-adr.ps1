@@ -49,13 +49,14 @@ $safeTitle = $Title.ToLower() `
     -replace '-+', '-' `
     -replace '^-|-$', ''
 
-# Auto-detect next number
-$existing = Get-ChildItem $adrDir -Filter "[0-9][0-9][0-9][0-9]-*.md" |
-            ForEach-Object { [int]($_.Name.Substring(0,4)) } |
-            Sort-Object -Descending |
-            Select-Object -First 1
+# Auto-detect next number (regex: PowerShell -Filter does not treat [0-9] as digit class)
+$existing = Get-ChildItem -Path $adrDir -File |
+    Where-Object { $_.Name -match '^\d{4}-.+\.md$' } |
+    ForEach-Object { [int]($_.Name.Substring(0, 4)) } |
+    Sort-Object -Descending |
+    Select-Object -First 1
 
-$nextNum  = if ($existing) { $existing + 1 } else { 0 }
+$nextNum  = if ($null -ne $existing) { $existing + 1 } else { 1 }
 $numStr   = $nextNum.ToString("D4")
 $filename = "$numStr-$safeTitle.md"
 $filepath = Join-Path $adrDir $filename

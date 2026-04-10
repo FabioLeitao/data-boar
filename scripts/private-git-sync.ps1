@@ -7,14 +7,14 @@
     Workflow obrigatorio apos qualquer sessao que modifique docs/private/:
     1. Copia feedbacks do inbox gitignored para docs/private/feedbacks_and_reviews/
     2. Faz git add -A e commit no private repo
-    3. Opcionalmente faz push para lab-lab-node-02/main
+    3. Opcionalmente faz push para o remote privado configurado (ex.: backup)
     4. Relata status e contagem de arquivos committed
 
 .PARAMETER Message
     Mensagem de commit (default: auto-gerada com timestamp).
 
 .PARAMETER Push
-    Se informado, faz push para o remote configurado (lab-lab-node-02).
+    Se informado, faz push para o remote privado configurado em docs/private/.git.
 
 .PARAMETER FeedbacksOnly
     Apenas sincroniza feedbacks (nao faz commit geral).
