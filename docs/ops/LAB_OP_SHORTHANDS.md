@@ -17,11 +17,16 @@ Give operators and collaborators stable “muscle memory” commands for LAB-OP 
 Use `scripts/lab-op.ps1` as the stable entry point:
 
 ```powershell
-.\scripts\lab-op.ps1 -Action report -SshHost latitude
+.\scripts\lab-op.ps1 -Action report -SshHost lab-op
 .\scripts\lab-op.ps1 -Action report-all
 .\scripts\lab-op.ps1 -Action report-all -Privileged -Deep
 .\scripts\lab-op.ps1 -Action sync-collect -SkipFping
 ```
+
+## Windows primary dev PC vs lab-op (file search)
+
+- **`lab-op`** here means **Linux over SSH** (`lab-op.ps1`, host reports). Filename search on the server uses **`find`** / **`fd`**, not Voidtools.
+- On the **Windows** dev PC (**L-series**), fast filename/path search uses **`.\scripts\es-find.ps1`** (**Everything** / **`es.exe`**). See **[EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md](EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md)** and session keyword **`es-find`**.
 
 ## Guardrails
 

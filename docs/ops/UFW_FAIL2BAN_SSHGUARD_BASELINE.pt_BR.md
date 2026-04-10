@@ -8,7 +8,7 @@ Proteger o acesso remoto mantendo a operação segura no LAB-OP.
 
 ## O que aprendemos com hosts existentes do LAB-OP
 
-- `pi3b` usa `fail2ban` com uma lista explícita de LAN em `ignoreip` (ex.: `192.0.2.0/24`).
+- Um **host secundário de lab** usa `fail2ban` com uma lista explícita de LAN em `ignoreip` (ex.: `192.0.2.0/24` — só documentação; CIDRs reais em notas privadas).
 - `sshguard` está habilitado e usa `/etc/sshguard/whitelist`.
 - Alguns hosts não são Debian-family; podem usar `nftables` diretamente (sem `ufw`).
 

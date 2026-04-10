@@ -1,0 +1,34 @@
+---
+description: Cursor IDE browser — prefer Google SSO on social sites; close tabs after task; no passwords in chat
+alwaysApply: true
+---
+
+# Cursor browser (redes, Patreon, pesquisa)
+
+## Autenticação em sites de terceiros
+
+1. Se a página de login oferecer **Continuar com Google** / **Sign in with Google** (ou SSO equivalente) e a conta do operador for a mesma stack, **preferir** esse fluxo — **não** pedir password em chat nem pedir para colar credenciais.
+2. Se SSO não existir ou falhar, **parar** e pedir ao operador para concluir o login manualmente no browser integrado; **não** inventar credenciais.
+3. **Nunca** gravar passwords ou tokens em ficheiros rastreados nem em narrativa de chat além do que o operador já partilhou por vontade própria.
+
+## Depois da tarefa (pesquisa, validação, perfil, revisão de post)
+
+1. **Fechar** separadores que já não sejam necessários — usar a ferramenta de browser **`browser_tabs`** com `action: "close"` (opcional `index`) depois de snapshots/notas, salvo o operador pedir para manter sessão aberta.
+2. Objetivo: menos ruído visual, menos risco de contexto exposto na UI; o operador pode manter **um** separador “warm” se quiser continuar sozinho.
+
+## Sessão “warm” entre turnos
+
+- O assistente **não controla** a persistência de cookies entre sessões do Cursor — depende do perfil do browser embutido e do login do operador. **Tentar SSO primeiro** e **fechar o que sobrou** deixa o próximo uso mais previsível.
+
+## LinkedIn e redes profissionais (operador Data Boar)
+
+1. O operador **autoriza** o assistente a abrir **LinkedIn** (e outras redes acordadas) no **browser integrado** para revisão de perfil, ATS/SLI, cópia de posts, etc. **Não** usar API pública não significa “sem acesso”: uso é **UI + sessão** (tipicamente **sessão quente** ou **Continuar com Google** / SSO no próprio site).
+2. O assistente **não** deve dizer que “não consegue aceder ao LinkedIn” **só** porque não há API JSON para automação. Se a sessão estiver **fria**: tentar SSO; se ainda bloquear, **pedir ao operador** para voltar a autenticar ou manter um separador com sessão ativa — **não** desistir com desculpa de API.
+3. Documento privado de alinhamento: **`docs/private/commercial/ats_sli_hub/LIVE_LINKEDIN_REFRESH_POLICY.pt_BR.md`**.
+
+## Ferramentas
+
+- Navegação / snapshot: fluxo normal do MCP **cursor-ide-browser** (ver instruções do servidor).
+- Fechar separador: **`browser_tabs`** → `action: "close"`.
+
+Skill: **`.cursor/skills/cursor-browser-social-session/SKILL.md`**.

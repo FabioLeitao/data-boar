@@ -8,7 +8,7 @@ Keep remote access protected while staying operational for LAB-OP.
 
 ## What we learned from existing LAB-OP hosts
 
-- `pi3b` uses `fail2ban` with an explicit LAN ignore list (example: `192.0.2.0/24`).
+- A **secondary lab host** uses `fail2ban` with an explicit LAN ignore list (example: `192.0.2.0/24` — documentation only; real CIDRs belong in private notes).
 - `sshguard` is enabled and uses `/etc/sshguard/whitelist`.
 - Some hosts are not Debian-family; they may use `nftables` directly (not `ufw`).
 

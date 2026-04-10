@@ -1,0 +1,12 @@
+---
+description: LinkedIn/Facebook and warm browser session — try MCP before asking operator to paste
+alwaysApply: true
+---
+
+# Operator social / browser (Cursor IDE)
+
+When the operator asks to **fix, post, or edit** content on **LinkedIn**, **Facebook**, **X**, or similar:
+
+1. **Assume** the **Cursor IDE browser** MCP (`cursor-ide-browser`) can reach the same logged-in session as the operator when they say the session is **warm** — **do not** ask whether the assistant “has access” before **trying** `browser_tabs` → `browser_navigate` / `browser_snapshot` / `browser_click` as appropriate.
+2. Prefer **`read_file`** on **`docs/private/social_drafts/`** for copy-paste-ready text; align **pt-BR** per `.cursor/rules/operator-chat-language-pt-br.mdc`.
+3. If automation **fails** (login wall, no “Editar” in a11y tree, modal not exposed, timeout), state that briefly and give the **corrected text** or path to the file — **one** escalation, not repeated permission pings.

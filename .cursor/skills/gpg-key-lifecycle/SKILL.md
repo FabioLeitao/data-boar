@@ -8,7 +8,7 @@ Apply when: managing GPG keys (create, revoke, publish, configure git signing, G
 $gpg = "C:\Program Files\GnuPG\bin\gpg.exe"
 ```
 
-## Key inventory (L14 keystore)
+## Key inventory (primary Windows dev PC keystore)
 
 | Key ID | Algorithm | Emails | Status | Notes |
 |---|---|---|---|---|

@@ -111,7 +111,7 @@ tracked by the **public Git** (`origin` / GitHub). They belong **exclusively** i
 
 - Commit after every meaningful session that changes private files
 - Use chore(private): prefix in commit messages
-- Push to lab-latitude/main regularly (pCloud P:/ is additional backup, not sole copy)
+- Push the stacked private repo to your configured backup remote regularly (pCloud `P:/` is additional backup, not sole copy)
 - feedbacks_and_reviews/ must be committed -- never gitignored from the private repo
 
 See docs/private/ for full private git workflow.
