@@ -57,6 +57,14 @@ MARKDOWN_LINT_EXCLUDE_DIRS = frozenset(
     }
 )
 
+# Paths (relative to repo root) skipped by MD009–MD060: nested ``` inside ````markdown` breaks the
+# naive fence toggle in _check_md031; content is a Docker Hub paste template, not normal docs flow.
+MARKDOWN_LINT_EXCLUDE_FILES = frozenset(
+    {
+        "docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md",
+    }
+)
+
 
 def _markdown_lint_exclude_dirs(*, include_private: bool) -> frozenset[str]:
     """Effective exclude set; omit ``private`` when operator opts in."""
@@ -315,6 +323,7 @@ def test_markdown_lint_no_violations(include_private_lint: bool):
     root = _project_root()
     exclude = _markdown_lint_exclude_dirs(include_private=include_private_lint)
     md_files = _collect_md_files(root, exclude)
+    md_files = [p for p in md_files if p.relative_to(root).as_posix() not in MARKDOWN_LINT_EXCLUDE_FILES]
     all_violations: list[tuple[Path, int, str]] = []
     for path in md_files:
         for line_no, msg in _lint_one(path):
