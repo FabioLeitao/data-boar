@@ -126,8 +126,36 @@ When you need **final copy** (headline variants, full About, featured list) for 
 
 ---
 
+## 8. Locale, jurisdiction, and certification pricing (assistants + operators)
+
+When you produce **ATS / LinkedIn recommendations** for a candidate, **anchor the narrative to the candidate’s target market** — not a generic English or a default you are used to from another region.
+
+### 8.1 Pick a locale and compliance frame
+
+| Target market | Suggested LinkedIn / CV language | Primary privacy / data-protection frame for local employers |
+| ------------- | -------------------------------- | ------------------------------------------------------------- |
+| Canada | **en_CA** (or **fr_CA** for Quebec-facing roles) | **PIPEDA** (federal); provincial laws (e.g. **Alberta PIPA**, **BC PIPA**, **Quebec Law 25**); **Bill C-27** trajectory (CPPA / AIDA — verify current status when advising). |
+| European Union / UK job posts | **en_GB** or local EU language | **UK GDPR** / **EU GDPR** as appropriate to the role. |
+| Brazil | **pt-BR** | **LGPD**. |
+| United States | **en_US** | Sectoral US privacy (FTC, HIPAA where relevant); **state** laws (e.g. CPRA) when the role is state-specific. |
+
+**Do not** present **GDPR** as the default “must-have” compliance vocabulary for **Canadian-only** roles — recruiters in Canada expect **PIPEDA** / Canadian provincial context first; mention **GDPR** when the role is **multinational / EU data** or the employer asks for it.
+
+### 8.2 Certifications: issuer location vs candidate location
+
+- Many programs (e.g. compliance/ethics certs from **US-based** bodies) quote **USD** list prices and US exam sites. **Before** recommending a budget line, **check** the issuer’s official site for **Canada** pricing in **CAD**, **Canadian test centres**, **taxes**, and **chapter / member** discounts.
+- If the candidate might sit the exam in the **US**, note **USD** as a scenario — clearly **separate** from **Canada CAD** totals.
+- Apply the same discipline for other countries (local chapter, VAT/GST, exam delivery mode).
+
+### 8.3 Assistant guardrail (one sentence)
+
+**Match locale + jurisdiction + currency to the candidate’s target geography** in every talent-ATS export; when unsure, **say so** and point to **primary sources** (issuer pricing page, regulator text) instead of guessing.
+
+---
+
 ## Revision
 
 | Date | Note |
 | ---- | ---- |
 | 2026-04-02 | Initial full playbook; SSI context; ATS + LinkedIn sections; archetype keywords. |
+| 2026-04-08 | Section 8: locale-aware compliance and certification pricing (en_CA / PIPEDA / Bill C-27; GDPR not default for Canada). |
