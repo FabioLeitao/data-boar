@@ -86,9 +86,7 @@ def _is_pt_br(path: str) -> bool:
 
 def apply(text: str, pt_br: bool) -> str:
     generic = (
-        "PC Windows principal de desenvolvimento"
-        if pt_br
-        else "primary Windows dev PC"
+        "PC Windows principal de desenvolvimento" if pt_br else "primary Windows dev PC"
     )
     c = re.escape(_C)
     text = re.sub(

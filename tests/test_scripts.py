@@ -142,7 +142,9 @@ def test_evidence_hash_manifest_ps1_syntax():
     script = root / "scripts" / "evidence-hash-manifest.ps1"
     if not script.exists():
         return
-    assert _parse_powershell_script(script, root), "evidence-hash-manifest.ps1 parse failed"
+    assert _parse_powershell_script(script, root), (
+        "evidence-hash-manifest.ps1 parse failed"
+    )
 
 
 def test_mount_secure_vault_ps1_syntax():
@@ -545,7 +547,9 @@ def test_social_x_pace_remind_ps1_syntax():
     script = root / "scripts" / "social-x-pace-remind.ps1"
     if not script.exists():
         return
-    assert _parse_powershell_script(script, root), "social-x-pace-remind.ps1 parse failed"
+    assert _parse_powershell_script(script, root), (
+        "social-x-pace-remind.ps1 parse failed"
+    )
 
 
 def test_run_pii_local_seeds_pickaxe_ps1_syntax():
