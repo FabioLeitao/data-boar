@@ -23,7 +23,7 @@ uv run python scripts/generate_talent_playbooks_v2.py
 
 ## Maintainer ritual (full v2 regeneration)
 
-In the **private** workspace, the operator keeps a step-by-step checklist (Portuguese):  
+In the **private** workspace, the operator keeps a step-by-step checklist (Portuguese) in
 **`docs/private/commercial/ats_sli_hub/README_RITUAL_EXPORTS.pt_BR.md`** — run **`generate_talent_playbooks_v2.py`**, then **`ats-hub-export.ps1`** via **`pwsh`**, then optional **wkhtmltopdf** batch for hub `exports/pdf/*.html`. That file is not on GitHub `origin`.
 
 ## Finding export files quickly (Windows primary dev PC)
