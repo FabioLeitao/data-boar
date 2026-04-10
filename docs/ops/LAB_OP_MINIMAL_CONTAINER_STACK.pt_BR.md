@@ -1,8 +1,8 @@
-# Lab-op (Latitude): stack mínimo de contêiner — linha oficial única
+# Lab-op: stack mínimo de contêiner — linha oficial única
 
 **English:** [LAB_OP_MINIMAL_CONTAINER_STACK.md](LAB_OP_MINIMAL_CONTAINER_STACK.md)
 
-**Finalidade:** Evitar **retrabalho** e **proliferação de stacks** no host **lab-op** (ex.: Latitude) fixando **uma** combinação mínima primeiro. **Outros** orquestradores (Nomad, outra distro Kubernetes, caminhos Compose duplicados) ficam **fora do escopo** até esta baseline estar **estável** e documentada em **`docs/private/homelab/`** (gitignored).
+**Finalidade:** Evitar **retrabalho** e **proliferação de stacks** no host **lab-op** fixando **uma** combinação mínima primeiro. **Outros** orquestradores (Nomad, outra distro Kubernetes, caminhos Compose duplicados) ficam **fora do escopo** até esta baseline estar **estável** e documentada em **`docs/private/homelab/`** (gitignored).
 
 **Âmbito:** servidor / workstation Linux usado como **lab de integração** (SSH do operador). **Docker Desktop + Kubernetes** num **laptop Windows** de desenvolvimento é conveniência **à parte** — ver §4.
 

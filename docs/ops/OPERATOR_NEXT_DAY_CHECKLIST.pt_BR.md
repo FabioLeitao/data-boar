@@ -16,7 +16,7 @@
 | -  | ---------                                                                                                                                                                    | ----------------                                                      |
 | M1 | **Band A (–1):** abrir GitHub → **Security → Dependabot** — contar alertas ou fechar **um** com PR/`pyproject` + `uv lock` + `requirements.txt` + `check-all`                | Um alerta tratado **ou** registro “nada crítico hoje” em nota privada |
 | M2 | **Band A (–1b):** se fizeste push de imagem recente — `docker scout quickview` na tag que usas                                                                               | Screenshot ou nota em `docs/private/` se houver CVE a seguir          |
-| M3 | **LAB-OP — `<lab-host-2>` / `pi3b`:** resolver `git status` no script `homelab-host-report.sh` **ou** correr `lab-op-sync-and-collect.ps1 -SkipGitPull` só para relatório         | Log novo em `docs/private/homelab/reports/` **ou** pull limpo         |
+| M3 | **LAB-OP — `<lab-host-2>` / SBC secundário:** resolver `git status` no script `homelab-host-report.sh` **ou** correr `lab-op-sync-and-collect.ps1 -SkipGitPull` só para relatório | Log novo em `docs/private/homelab/reports/` **ou** pull limpo         |
 | M4 | **ThinkPad T14 + LMDE 7:** continuar [LMDE7_T14_DEVELOPER_SETUP.pt_BR.md](LMDE7_T14_DEVELOPER_SETUP.pt_BR.md) (mapa §0–§8) até checklist §8 verde **ou** marcar onde paraste | Seção atual documentada numa linha em nota privada                    |
 
 Nota: se não tiveres T14 à mão, troca M4 por mais uma linha de Band A ou M3.

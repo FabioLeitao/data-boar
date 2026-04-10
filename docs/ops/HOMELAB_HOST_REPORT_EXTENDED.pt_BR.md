@@ -57,13 +57,13 @@ Isto são **recomendações** baseadas nos últimos host reports do LAB-OP, boas
 - **Queueing**: considere defaults modernos (`net.core.default_qdisc=fq`) se a distro ainda estiver em `pfifo_fast`.
 - **Sysctls de hardening** (baseline seguro): garantir `fs.protected_fifos=1` e `fs.protected_regular=2` (se o kernel suportar).
 
-### Classe: Latitude (Ubuntu-family desktop/server, SATA SSD, Docker Swarm manager)
+### Classe: Lab x86_64 principal (Ubuntu-family desktop/server, SATA SSD, Docker Swarm manager)
 
 - **I/O scheduler**: `mq-deadline` é um padrão seguro para SATA SSD.
 - **Rede**: `fq_codel` como qdisc padrão é um bom baseline; evite mudanças agressivas de TCP sem medir.
 - **Host Docker**: evite limites `nofile` baixos para serviços; prefira overrides por unit do systemd (em vez de mexer global em `limits.conf`).
 
-### Classe: T14 (LMDE, NVMe, workstation com BTRFS criptografado)
+### Classe: Estação de desenvolvimento (LMDE, NVMe, BTRFS criptografado)
 
 - **I/O scheduler**: prefira `none` para NVMe (padrão do kernel).
 - **Memória**: zram é opcional (você tem 16 GiB); habilite só se tiver motivo (hibernação não é atendida por zram).
@@ -77,7 +77,7 @@ Isto é só ilustrativo (não é imposto automaticamente). Use host/group vars p
 ```yaml
 # ops/automation/ansible/inventory.ini (ou group_vars/ / host_vars/)
 #
-# pi3b:
+# lab-sbc (exemplo ARM):
 #   t14_zram_enable: true
 #   t14_zram_max_mb: 512
 #
@@ -85,11 +85,11 @@ Isto é só ilustrativo (não é imposto automaticamente). Use host/group vars p
 #   t14_zram_enable: true
 #   t14_zram_size_percent: 25
 #
-# latitude:
+# lab-op (lab x86 principal):
 #   t14_install_docker_ce: true
 #   t14_docker_swarm_init: true
 #
-# t14:
+# lab-workstation (exemplo portátil dev):
 #   t14_zram_enable: false
 ```
 

@@ -20,7 +20,7 @@ Paste the **paragraph below** into your Wabbix email **after** the master prompt
 ```text
 Supplementary context (2026-04-03):
 
-Since the prior WRB delta snapshot (2026-03-31), we advanced the working tree toward 1.6.8 alignment and tightened operator-facing flows: session keyword / LAB-OP SSH naming consistency (canonical host alias `latitude` in examples), operator session shorthands index, token-aware docs cross-links, and Markdown table hygiene in session-mode rules. Homelab automation scripts and private-example manifests were updated to match the same SSH alias. A verified public bundle for optional external LLM triage (Gemini) is generated with `export_public_gemini_bundle.py --verify` (not a substitute for git/CI/pytest).
+Since the prior WRB delta snapshot (2026-03-31), we advanced the working tree toward 1.6.8 alignment and tightened operator-facing flows: session keyword / LAB-OP SSH naming consistency (canonical host alias `lab-op` in examples), operator session shorthands index, token-aware docs cross-links, and Markdown table hygiene in session-mode rules. Homelab automation scripts and private-example manifests were updated to match the same SSH alias. A verified public bundle for optional external LLM triage (Gemini) is generated with `export_public_gemini_bundle.py --verify` (not a substitute for git/CI/pytest).
 
 Please keep the three time lenses separate. For “since last tagged release”, use v1.6.8 as baseline if that remains the latest published release at send time, and separate any unshipped `main` work. (Refer to the latest `main` commit hash at send time if needed.)
 ```

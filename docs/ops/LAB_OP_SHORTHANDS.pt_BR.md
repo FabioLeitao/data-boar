@@ -17,11 +17,16 @@ Dar comandos “memória muscular” para fluxos do LAB-OP, sem incentivar atalh
 Use `scripts/lab-op.ps1` como entry point estável:
 
 ```powershell
-.\scripts\lab-op.ps1 -Action report -SshHost latitude
+.\scripts\lab-op.ps1 -Action report -SshHost lab-op
 .\scripts\lab-op.ps1 -Action report-all
 .\scripts\lab-op.ps1 -Action report-all -Privileged -Deep
 .\scripts\lab-op.ps1 -Action sync-collect -SkipFping
 ```
+
+## Windows (PC principal de desenvolvimento) vs lab-op (busca de arquivos)
+
+- **`lab-op`** aqui significa **Linux via SSH** (`lab-op.ps1`, reports no host). Busca por nome no servidor usa **`find`** / **`fd`**, não Voidtools.
+- No **Windows** (**L-series**), busca rapida por nome/caminho: **`.\scripts\es-find.ps1`** (**Everything** / **`es.exe`**). Ver **[EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.pt_BR.md](EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.pt_BR.md)** e palavra-chave **`es-find`**.
 
 ## Guardrails
 

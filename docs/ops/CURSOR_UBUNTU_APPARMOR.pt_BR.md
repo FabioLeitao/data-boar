@@ -167,7 +167,7 @@ Uso avançado: **`aa-genprof`** / **`aa-logprof`** (ver guia Ubuntu Server — *
 
 ## 7. Ligações cruzadas
 
-- Contexto homelab (ex. **latitude** / Zorin): **`docs/private/homelab/LAB_SECURITY_POSTURE.md`** §2 (UFW, Lynis, menções AppArmor)—**não** substitui este runbook.
+- Contexto homelab (ex. **`lab-op`** / desktop Ubuntu-family): **`docs/private/homelab/LAB_SECURITY_POSTURE.md`** §2 (UFW, Lynis, menções AppArmor)—**não** substitui este runbook.
 - **Cursor + segredos / `docs/private/`:** **[PRIVATE_OPERATOR_NOTES.pt_BR.md](../PRIVATE_OPERATOR_NOTES.pt_BR.md)**.
 - **Windows / WSL** e separação de caminhos: **[WINDOWS_WSL_MULTI_DISTRO_LAB.pt_BR.md](WINDOWS_WSL_MULTI_DISTRO_LAB.pt_BR.md)**.
 
