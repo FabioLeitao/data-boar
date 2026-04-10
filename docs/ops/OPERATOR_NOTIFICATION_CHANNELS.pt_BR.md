@@ -169,6 +169,8 @@ Um **incoming webhook** só **publica no canal**. Isso **não** é o mesmo que *
 
 ## 6. KPI snapshot + notificar (opcional)
 
+**Ritmo editorial X (Slack, estação de trabalho):** o script [scripts/social-x-pace-remind.ps1](../../scripts/social-x-pace-remind.ps1) lê o arquivo gitignored `docs/private/social_drafts/SOCIAL_HUB.md` (só na árvore do operador) e lista linhas **X** ainda **`draft`** com **Alvo editorial** em ou antes de hoje. Com **`SLACK_WEBHOOK_URL`** no **ambiente local** (mesma URL do Incoming Webhook do GitHub Actions — ver §4.1) e **`-Slack`**, envia um POST ao canal do webhook (ex.: **`#data-boar-ops`**). Opcional **`SLACK_MENTION_USER_ID`**. Agende uma tarefa **diária** no Windows se quiser avisos sem abrir o Cursor. **Cron no GitHub** não lê o seu `docs/private/` — fluxo **local-first**. No chat: token **`x-pace-check`** (lembrar) e **`x-posted`** (validar depois de publicar); ver `docs/private/social_drafts/OPERATOR_X_PACE_AND_VALIDATION.pt_BR.md`.
+
 Script base: [scripts/kpi-export.py](../../scripts/kpi-export.py) (requer `gh auth`). **Extensão em backlog:**
 
 - Workflow **semanal** ou `workflow_dispatch`: gerar `kpi_snapshot.md`, **artefato**, ou enviar trecho ao **Slack** e/ou **Signal** (nunca Telegram nesta política de mantenedor).
