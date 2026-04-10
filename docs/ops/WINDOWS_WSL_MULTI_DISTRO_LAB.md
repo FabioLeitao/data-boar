@@ -104,7 +104,7 @@ Captures **`wsl -l -v`**, **Go/Rust/uv/Docker/zig/odin`** when on **`PATH`**, **
 ## 6. Relationship to Data Boar
 
 - **Production runtime** of the app remains **Python 3.12+** in **Linux containers** or **Linux/Windows** venv—**not** Go/Rust unless we add a **native** component later.
-- **Extra WSL distros** = **compatibility confidence** and **practice** for [§9](HOMELAB_VALIDATION.md#9-multi-host-linux-optional-matrix-dns-ssh-different-distros); they **do not** replace **real** second hardware (Latitude, Pi, Proxmox guest) for **NIC/firewall/Swarm** behaviour.
+- **Extra WSL distros** = **compatibility confidence** and **practice** for [§9](HOMELAB_VALIDATION.md#9-multi-host-linux-optional-matrix-dns-ssh-different-distros); they **do not** replace **real** second hardware (lab-op host, ARM SBC, Proxmox guest) for **NIC/firewall/Swarm** behaviour.
 
 ---
 

@@ -78,6 +78,18 @@ A **freeze or OOM** in Cursor is usually **local memory pressure** (large chat, 
 
 ---
 
+## 7.1 Git commits, PRs, and merges vs office hours (maintainer discretion)
+
+**Not a rule for contributors** — this paragraph points to an **operator-only** note under gitignored `docs/private/` for maintainers who want to **reduce** public GitHub activity during local business hours (home office) without banning local work.
+
+- **Canonical detail (private):** `docs/private/OPERATOR_GIT_PR_RHYTHM_OFFICE_HOURS.pt_BR.md` — when to batch vs ship immediately; **critical-first** and **security** exceptions; commit message hygiene as “digital breadcrumbs.”
+- **Summary:** Prefer fewer pushes/merges during weekday **office hours** in **America/Sao_Paulo** when the work is **not** urgent; **do** commit/push/merge **immediately** for **priority-band critical** items, **security/CVE**, broken **CI on `main`**, or similar — with a **clear Conventional Commit** subject/body explaining urgency.
+- **Assistants:** Read the **private** file for the current **mode**. When it indicates **sabbatical / between jobs**, **do not** apply batch/defer for office hours by default. When **employed** mode is active there, **apply** this by default when suggesting **push / PR / merge** timing — batch or defer non-critical work to **off-hours**; **do not** nudge for noisy public Git activity during business hours unless the **§7.1** exceptions apply or the operator asks otherwise in-session.
+
+**Tracked stub:** `docs/private.example/OPERATOR_GIT_PR_RHYTHM_OFFICE_HOURS.example.md`.
+
+---
+
 ## 8. Recent progress recap (`git`, token-aware)
 
 When you want a **compact** sense of **pace** (what landed on **`origin/main`**) without rereading entire plan tables:

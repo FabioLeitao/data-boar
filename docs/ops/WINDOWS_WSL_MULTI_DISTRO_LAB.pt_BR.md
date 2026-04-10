@@ -2,7 +2,7 @@
 
 **Objetivo:** Usar **um** PC com **Windows** como **vários** ambientes tipo Linux (**WSL2**) para repetir [HOMELAB_VALIDATION.md §9](HOMELAB_VALIDATION.md#9-multi-host-linux-optional-matrix-dns-ssh-different-distros) **sem** hardware extra — se **disco**, **RAM** e **CPU** aguentarem.
 
-**Três portáteis (visão do operador):** (1) **Windows + WSL** (dev), (2) **Linux nativo** (ex. Zorin no Latitude), (3) **opcional** (ex. Lenovo guardado).
+**Três portáteis (visão do operador):** (1) **Windows + WSL** (dev), (2) **Linux nativo** (ex. Ubuntu-family no hardware de lab), (3) **opcional** (ex. segundo portátil guardado).
 
 **Documento completo (EN):** [WINDOWS_WSL_MULTI_DISTRO_LAB.md](WINDOWS_WSL_MULTI_DISTRO_LAB.md)
 
