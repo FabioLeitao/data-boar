@@ -65,7 +65,7 @@ configuration — not just hardening — within the same Ansible role model.
   (Ansible install is the first automation step).
 - **Negative:** Role YAML is more verbose than a shell one-liner. Mitigated by keeping roles
   small and single-purpose.
-- **Watch:** As the lab grows to multiple hosts (WORKSTATION, servers), the same roles should be extended
+- **Watch:** As the lab grows to multiple hosts (primary Windows dev PC, servers), the same roles should be extended
   or parameterised rather than duplicated. An `inventory.ini` with multiple hosts and group_vars
   is the expected next step.
 
