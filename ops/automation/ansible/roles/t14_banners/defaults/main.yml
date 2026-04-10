@@ -1,6 +1,5 @@
 ---
-# Banner model learned from existing LAB-OP hosts (LAB-NODE-04/<lab-host-2>/lab-node-02).
-# Keep it generic and non-sensitive; override per-host in inventory if desired.
+# Banner model aligned with generic LAB-OP practice; keep generic and non-sensitive; override per-host in inventory if desired.
 lab-node-01_banner_plain_header: "{{ ansible_distribution | default('Linux') }} {{ ansible_distribution_version | default('') }} - {{ inventory_hostname }}"
 lab-node-01_banner_figlet_text: "{{ lab-node-01_banner_plain_header }}"
 
