@@ -62,8 +62,9 @@ def test_tracked_text_files_exclude_l14_codename_word():
             continue
         if WORD_FORBIDDEN.search(text):
             hits.append(str(p.relative_to(REPO_ROOT)))
-    assert not hits, "Remove retired workstation codename token from public tree: " + ", ".join(
-        sorted(hits)[:40]
+    assert not hits, (
+        "Remove retired workstation codename token from public tree: "
+        + ", ".join(sorted(hits)[:40])
     )
 
 
@@ -77,4 +78,6 @@ def test_tracked_paths_exclude_l14_codename_in_filename():
         ["git", "ls-files"], cwd=REPO_ROOT, text=True, encoding="utf-8"
     )
     bad = [line for line in out.splitlines() if _C in line.replace("\\", "/")]
-    assert not bad, "Rename paths that embed the retired codename: " + ", ".join(sorted(bad)[:40])
+    assert not bad, "Rename paths that embed the retired codename: " + ", ".join(
+        sorted(bad)[:40]
+    )
