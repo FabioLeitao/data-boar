@@ -9,21 +9,21 @@ The AI **cannot** open your LAN by itself. **Default:** it runs **`ssh`** from *
 1. Add a **`Host`** block on the machine where Cursor’s terminal runs (usually **not** in the repo):
 
    ```sshconfig
-   Host latitude
-     HostName latitude
+   Host lab-op
+     HostName <lan-hostname-or-ip>
      User <your-linux-user>
      IdentityFile ~/.ssh/id_ed25519
    ```
 
-   Use **`latitude`** as the SSH hostname/alias when that name **resolves on your LAN** (DNS or mDNS) to the Linux host; **`HostName`** can match **`Host`** or be an explicit IP. **ed25519** key-based auth is preferred.
+   Tracked runbooks use the generic alias **`lab-op`**. **`HostName`** is whatever resolves on your LAN (DNS, mDNS, or RFC1918 IP — **document IPs only under this private tree**, not in public docs). **ed25519** key-based auth is preferred.
 
 1. In **this** private README, record **only** the alias name and role (no secrets):
 
 | Role        | SSH `Host` alias (local to dev PC) | Notes                          |
 | ----------- | ---------------------------------- | ------------------------------ |
-| Lab server  | `latitude`                         | Zorin; reports / Docker / ISOs |
+| Lab server  | `lab-op`                           | OS / role (e.g. Docker, reports) — no vendor serials |
 
-1. Agents **`read_file`** this README and **`AGENT_LAB_ACCESS.md`** when homelab work applies (**`@` optional**). Then use **`ssh latitude 'command'`** from the integrated terminal.
+1. Agents **`read_file`** this README and **`AGENT_LAB_ACCESS.md`** when homelab work applies (**`@` optional**). Then use **`ssh lab-op 'command'`** from the integrated terminal.
 
 **Do not** copy **private keys** or **passwords** into `docs/private/`. Use **key-based** login; keep passphrases in your OS keychain / agent.
 
