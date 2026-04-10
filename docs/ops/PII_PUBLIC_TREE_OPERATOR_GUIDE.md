@@ -41,7 +41,7 @@ If any item is unchecked, **do not** mark SAFE.
 - This runbook covers tracked files and Git history in a **fresh clone**.
 - It complements guardrails (`new-b2-verify`, `pii_history_guard.py`, `test_pii_guard.py`).
 - It does not replace manual classification for contextual terms.
-- `new-b2-verify.ps1` is PowerShell-only (best on L14/Windows). On Linux hosts, use the manual equivalent below.
+- `new-b2-verify.ps1` is PowerShell-only (best on primary Windows dev PC/Windows). On Linux hosts, use the manual equivalent below.
 
 ## 0) Preconditions
 
@@ -200,16 +200,20 @@ uv run python scripts/pii_history_guard.py
 
 Run **only** after merging guard + replacement rules in `main` (this repo ships `scripts/filter_repo_pii_replacements.txt`).
 
+**Host policy:** Do **not** run this flow on the **L-series** primary dev workstation — use a **designated lab machine** (see **[PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md](PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md)**). The script **refuses** to start unless you set **`DATA_BOAR_ALLOW_DESTRUCTIVE_REPO_OPS=1`** for that shell session (never routine on primary Windows dev PC).
+
 1. **Commit** all intended tracked changes (guards, replacements, docs).
-2. From repo root:
+2. On the agreed **non-primary-workstation** host, from PowerShell:
 
 ```powershell
+$env:DATA_BOAR_ALLOW_DESTRUCTIVE_REPO_OPS = "1"
 .\scripts\run-pii-history-rewrite.ps1
 ```
 
-3. Inspect the reported **`data-boar-history-rewrite-*`** path. If `pytest` and `pii_history_guard --full-history` are green there, you may push:
+3. Inspect the reported **`data-boar-history-rewrite-*`** path. If `pytest` and `pii_history_guard --full-history` are green there, you may push (same env var):
 
 ```powershell
+$env:DATA_BOAR_ALLOW_DESTRUCTIVE_REPO_OPS = "1"
 .\scripts\run-pii-history-rewrite.ps1 -Push
 ```
 
@@ -296,7 +300,7 @@ If anything fails, fix or open a scoped PR before declaring release hygiene comp
 
 ### H.3 Lab and secondary clones (machines you control)
 
-On **each** host where `data-boar` is cloned (e.g. Latitude, pi3b, T14, mini-bt when reachable):
+On **each** host where `data-boar` is cloned (secondary **lab-op** machines, workstations, or SBCs you control — **real names only** in **`docs/private/homelab/`**, not in public runbooks):
 
 ```bash
 cd ~/Projects/dev/data-boar   # or your actual path
@@ -342,9 +346,38 @@ Automation does **not** rewrite issue/PR bodies. **Manually** search the repo on
 
 - Remove any **temporary** clone dirs you created for fork inspection (e.g. under `%TEMP%` / `/tmp`) when disk hygiene matters.
 
-### H.9 Optional: `clean-slate.sh` on lab (Latitude)
+### H.9 Optional: `clean-slate.sh` on lab (repeat rounds until guards match intent)
 
-If you use `~/clean-slate.sh`: it is **destructive** (removes local `data-boar` then re-clones). Run only when you accept full re-download and seed-driven `git grep` cost. Ensure `~/.config/PII/PII_LOCAL_SEEDS.txt` exists before relying on that script.
+**Canonical script (operator private tree):** `docs/private/scripts/clean-slate.sh` with **`docs/private/scripts/README.pt_BR.md`** — install to **`~/clean-slate.sh`** on each Linux lab machine you control. **Tracked template (no secrets):** `docs/private.example/scripts/clean-slate.sh.example` and **`docs/private.example/scripts/README.md`**.
+
+**Naming:** Public GitHub docs use the SSH example alias **`lab-op`**. **Real** machine names on your LAN belong **only** in **`docs/private/`** (see **`PRIVATE_OPERATOR_NOTES.md`** and **`docs/private/homelab/`**), not in tracked product runbooks.
+
+Do **not** use this destructive flow on the **L-series** primary dev workstation — only on **lab hosts** you control for that purpose (**[PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md](PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md)**).
+
+If you use `~/clean-slate.sh` on a Linux lab host:
+
+1. **Before:** ensure **`docs/private/security_audit/PII_LOCAL_SEEDS.txt`** in your workspace is current (or set **`PII_SEEDS_FROM_SCP`** in the environment so the template can **`scp`** canonical seeds from another lab host after clone when the stacked private tree is missing). The script refreshes **`~/.config/PII/PII_LOCAL_SEEDS.txt`** from the workspace path when present.
+2. **Run** `~/clean-slate.sh` — it is **destructive** (removes the local `data-boar` tree and re-clones). Only when you accept full re-download and full-history guard cost.
+3. **After each run**, from the fresh clone: `python3 scripts/pii_history_guard.py --full-history` (and your usual **`git grep`** / seed checks per **Section D**).
+4. **Repeat** on **every** lab host that keeps a clone, and **re-run** whenever **`PII_LOCAL_SEEDS`** or public **`main`** changes, until guards stop failing — one green pass is not always enough.
+
+**Remediation:** Leaks in **public** history require **redaction / filter-repo** and collaborator follow-up (other sections); `clean-slate.sh` validates **fresh** clones, not third-party mirrors.
+
+### H.10 `clean-slate` and assistants: memory hook (self-audit, not simulation)
+
+**Why this subsection exists:** Operators and assistants should **not** confuse (a) **chat narration** (“I ran clean-slate N times”) with (b) a **real** destructive reset + re-clone on disk. The **audit** value of `clean-slate` is: a **known-clean working tree** that matches `origin/main` after a full download — then guards tell you if policy matches reality.
+
+| Question | Answer |
+| -------- | ------ |
+| **Where is the script?** | **Tracked template:** [`docs/private.example/scripts/clean-slate.sh.example`](../private.example/scripts/clean-slate.sh.example). **Operator copy (private git, not on GitHub):** `docs/private/scripts/clean-slate.sh`. **Narrative:** [`docs/private.example/scripts/README.md`](../private.example/scripts/README.md). |
+| **Linux lab usage** | Install to `~/clean-slate.sh` per **H.9**. Ensures `docs/private/security_audit/PII_LOCAL_SEEDS.txt` (or `PII_SEEDS_FROM_SCP`) before run. |
+| **Windows equivalent** | **`scripts/pii-fresh-clone-audit.ps1`** — full clone under `%TEMP%`, then **`uv sync`**, **`pii_history_guard.py --full-history`**, **`pytest tests/test_pii_guard.py`** (see **[PII_FRESH_CLONE_AUDIT.md](PII_FRESH_CLONE_AUDIT.md)**). Manual path: empty dir + `git clone` + same commands as **Section D**. Session keyword: **`pii-fresh-audit`**. |
+| **What it validates** | **Fresh clone + guards** — good signal that **current** `main` and history (as fetched) pass automation. |
+| **What it does *not* do** | Does **not** remove sensitive blobs already pushed (use **Part II** / `run-pii-history-rewrite.ps1`). Does **not** replace CI — CI already runs full-history guard on push. |
+
+**How many times to run:** Repeat on each controlled host after **guard rules**, **seeds**, or **replacement tables** change, until outcomes match **intent** (same spirit as H.9 step 4). That loop is **legitimate**; “simulating” clean-slate in chat without running commands is **not**.
+
+**Assistant default:** When asked whether PII work is “enough,” run **`uv run python scripts/pii_history_guard.py --full-history`** and **`uv run pytest tests/test_pii_guard.py`** on the **actual** workspace when possible; **then** remind the operator that a **fresh clone** (Windows: **`pii-fresh-clone-audit.ps1`** or manual clone; Linux: **`clean-slate.sh`**) is the stronger periodic check for long-lived trees.
 
 ---
 
@@ -357,7 +390,7 @@ If you use `~/clean-slate.sh`: it is **destructive** (removes local `data-boar` 
 | Prove **Wayback** / search cache / third-party mirror is clean | Out of repo scope |
 | **WRB** outcome | Human process |
 | Verify **private backup** bytes | Physical / vault access |
-| **mini-bt** (or any host) when offline | Network / power |
+| **Any lab host** when offline | Network / power |
 | **Legal / HR** narrative | Not in this runbook |
 
 ---

@@ -4,8 +4,8 @@
 
 ## O que aprendemos com hosts do LAB-OP
 
-- `latitude` roda **Docker Engine (CE)** e tem **Swarm ativo** (manager single-node).
-- `pi3b` tem **AIDE** em `/etc/aide/` e regras de **auditd** em `/etc/audit/rules.d/`.
+- O **host x86_64 principal lab-op** roda **Docker Engine (CE)** com **Swarm ativo** (manager single-node).
+- Um **SBC ARM secundário** no lab tem **AIDE** em `/etc/aide/` e regras de **auditd** em `/etc/audit/rules.d/`. (Nomes de máquina ficam só em **`docs/private/homelab/`**.)
 
 ## Automação
 

@@ -26,7 +26,7 @@ We keep that master plan in a private file (gitignored) so it can contain real p
 
 ### Identify your target
 
-- **Laptop model**: ThinkPad *L14* / *T14* (exact generation matters)
+- **Laptop model**: ThinkPad *L-series (14-inch class)* / *T14* (exact generation matters)
 - **Goal**: e.g. 16→32 GiB, 16→64 GiB, dual-channel, low-power idle, stability
 
 ### Checklist to collect before buying

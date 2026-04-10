@@ -2,24 +2,25 @@
 
 **Context:** After **PR #99**, the repo uses **`python:3.13-slim`** in the Dockerfile. Operators still need a **repeatable order** so Hub tags, app version, and Scout stay aligned. You prefer **small PRs**; this doc gives a default sequence and trade-offs.
 
-**Related:** [scripts/docker/README.md](../../scripts/docker/README.md), [VERSIONING.md](../VERSIONING.md), [PLANS_TODO.md](../plans/PLANS_TODO.md) (orders **–1**, **–1b**), [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md) (order **–1L** when the second environment is ready).
+**Related:** [scripts/docker/README.md](../../scripts/docker/README.md), [VERSIONING.md](../VERSIONING.md), [PLANS_TODO.md](../plans/PLANS_TODO.md) (orders **–1**, **–1b**), [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md) (order **–1L** when the second environment is ready), [DOCKER_HUB_REPOSITORY_DESCRIPTION.md](DOCKER_HUB_REPOSITORY_DESCRIPTION.md) (Hub UI text — copy/paste after publish).
 
 ---
 
 ## Recommended default (PR-friendly, least confusion)
 
-Use this when you want **one published image** to match **one released app version** (About page, report footer, `fabioleitao/data_boar:1.6.x`).
+Use this when you want **one published image** to match **one released app version** (About page, report footer, `fabioleitao/data_boar:1.6.x`). After push, paste **Short** + **Full** repository text from **[DOCKER_HUB_REPOSITORY_DESCRIPTION.md](DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** into Docker Hub so the **description** matches **`python main.py`** and the current semver (anti-stale).
 
 | Step         | Action                                                                                                                                                                                 |
 | ----         | ------                                                                                                                                                                                 |
 | 1. **Merge** | All **code** PRs on `main` (Dockerfile, fixes, etc.) — e.g. **#99** ✅                                                                                                                  |
-| 2. **Merge** | **Version bump PR** (build → **`1.6.7`** per [VERSIONING.md](../VERSIONING.md)) so `pyproject.toml` on `main` is the version you are releasing                                         |
+| 2. **Merge** | **Version bump PR** (build → **`1.6.8`** per [VERSIONING.md](../VERSIONING.md)) so `pyproject.toml` on `main` is the version you are releasing                                         |
 | 3. **Pull**  | `git checkout main && git pull origin main`                                                                                                                                            |
 | 4. **Build** | `.\scripts\docker-lab-build.ps1` (from repo root)                                                                                                                                      |
 | 5. **Smoke** | Short `docker run` (see [DOCKER_SETUP.md](../DOCKER_SETUP.md) §7 / [DEPLOY.md](../deploy/DEPLOY.md))                                                                                   |
 | 6. **Push**  | `.\scripts\docker-hub-publish.ps1 -SkipBuild` (after `docker login`) — tags **`:latest`** and **`:<semver from pyproject>`**, runs **`scout quickview`** + **`scout recommendations`** |
 | 7. **Gate**  | `.\scripts\docker-scout-critical-gate.ps1 -Image fabioleitao/data_boar:latest` (fails only for **actionable** CRITICALs with a fixed version)                                          |
 | 8. **Prune** | `.\scripts\docker-prune-local.ps1 -WhatIf` then without `-WhatIf` on the homelab                                                                                                       |
+| 9. **Hub UI** | **Docker Hub → Repository → Edit:** paste **Short** + **Full** description from [DOCKER_HUB_REPOSITORY_DESCRIPTION.md](DOCKER_HUB_REPOSITORY_DESCRIPTION.md); refresh [today-mode/PUBLISHED_SYNC.md](today-mode/PUBLISHED_SYNC.md) |
 
 **Why version before build/push:** The image **`COPY . .`** includes `pyproject.toml`. Building **after** the bump PR means the running app **inside the container** reports the same version as the **Hub semver tag** you push.
 
@@ -29,7 +30,7 @@ Use this when you want **one published image** to match **one released app versi
 
 ### A — Version bump **before** push (recommended above)
 
-- **Pros:** Hub **`fabioleitao/data_boar:1.6.7`** (example) matches **About / reports**; operators can trust tag = app version; one story for support.
+- **Pros:** Hub **`fabioleitao/data_boar:1.6.8`** (example) matches **About / reports**; operators can trust tag = app version; one story for support.
 - **Cons:** Two PRs (or two merges) before publish if Dockerfile and version ship separately; slightly more ceremony.
 
 ### B — Push image **first**, version bump **after**

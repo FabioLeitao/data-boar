@@ -672,7 +672,7 @@ Reinicie se o `fwupd` pedir. Isto ajuda **Wi‑Fi, TPM, BIOS/UEFI** quando há p
 - **Secure Boot/TPM interferindo**: normalmente não impede update, mas pode disparar proteções (especialmente com BitLocker).
   - Ação: manter Secure Boot **ON** (padrão), mas garantir BitLocker suspenso no Windows durante a janela.
 
-**Se o seu caso é ainda mais “duro” (como você descreveu no L14):** *Vantage*, *Lenovo System Update* e o instalador baixado do site **nem chegam a mostrar progresso**, só reiniciam e voltam igual.
+**Se o seu caso é ainda mais “duro” (como você descreveu no PC Windows principal de desenvolvimento):** *Vantage*, *Lenovo System Update* e o instalador baixado do site **nem chegam a mostrar progresso**, só reiniciam e voltam igual.
 
 Neste caso, além dos itens acima, capture e valide estes pontos:
 
@@ -705,7 +705,7 @@ Se falhar, salve o output completo (em nota privada) e rode:
 journalctl -u fwupd --no-pager -n 200
 ```
 
-**Nota importante (para “não esquecermos”):** você mencionou que isso está acontecendo também no **ThinkPad L14**. Este checklist é o ponto de partida; quando você trouxer as fotos do L14, a gente compara as telas equivalentes (Main / Update Option / Secure Boot / TPM / Boot) e decide se há alguma configuração específica que está impedindo a aplicação do update.
+**Nota importante (para “não esquecermos”):** você mencionou que isso está acontecendo também no **ThinkPad L-series (14-inch class)**. Este checklist é o ponto de partida; quando você trouxer as fotos do PC Windows principal de desenvolvimento, a gente compara as telas equivalentes (Main / Update Option / Secure Boot / TPM / Boot) e decide se há alguma configuração específica que está impedindo a aplicação do update.
 
 ### 3.4 SSH servidor (só se precisares)
 

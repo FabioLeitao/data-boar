@@ -27,6 +27,7 @@ docs/feedbacks, reviews, comments and criticism/
 
 # Local-only private artifacts (CV, TCC, LinkedIn exports, personal notes, real homelab inventory)
 # Layout policy: docs/PRIVATE_OPERATOR_NOTES.md — use docs/private/homelab/ for hostnames, IPs, measured power, etc.
+# Operator-only social posting schedule / home-office window policy: keep under docs/private/ (e.g. social_drafts/OPERATOR_SOCIAL_POSTING_WINDOWS.pt_BR.md) — never copy full tables to public tracked docs.
 docs/private/
 .cursor/private/
 

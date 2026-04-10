@@ -39,6 +39,9 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0018  | [PII anti-recurrence guardrails for tracked files and branch history](0018-pii-anti-recurrence-guardrails-for-tracked-files-and-branch-history.md)         | Accepted |
 | 0019  | [PII verification cadence and manual review gate](0019-pii-verification-cadence-and-manual-review-gate.md)                                                   | Accepted |
 | 0020  | [CI must scan full Git history for PII anti-recurrence patterns](0020-ci-full-git-history-pii-gate.md)                                                         | Accepted |
+| 0021  | [Public web presence — DNS alias (CNAME), canonical host, TLS, hosting shape](0021-public-web-presence-dns-alias-and-hosting.md)                              | Accepted |
+| 0022  | [Public glossary — compliance laws, roles, and platform terms](0022-public-glossary-compliance-and-platform-terms.md)                                         | Accepted |
+| 0023  | [Windows primary dev PC filename search — Everything (`es.exe`) first, capped PowerShell fallback](0023-windows-primary-dev-filename-search-everything-es-first-with-fallback.md) | Accepted |
 
 ## Related docs
 

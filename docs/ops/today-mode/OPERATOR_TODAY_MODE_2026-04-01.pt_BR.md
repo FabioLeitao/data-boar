@@ -9,15 +9,15 @@
 ## Bloco 0 — Verdade + carryover (≈ 15–25 min)
 
 1) Percorre **[CARRYOVER.pt_BR.md](CARRYOVER.pt_BR.md)** — fecha, adia com data ou promove para PLANS/issue cada ⬜.
-1) Confirma a verdade de versão:
-   - **Publicado**: a última tag/release deve continuar `v1.6.7` a menos que você tenha publicado de novo.
-   - **Trabalho**: o repo agora foi bumpado para **`1.6.8`** (rastreamento pré-publish).
+1) Confirma a verdade de versão (vê **[PUBLISHED_SYNC.pt_BR.md](PUBLISHED_SYNC.pt_BR.md)**):
+   - **Publicado**: **`v1.6.8`** no GitHub + Docker Hub quando o pipeline de release estiver completo; se o Hub atrasar, regista isso ali — não prometas ao mercado uma versão que ainda não dá para puxar.
+   - **Trabalho**: `main` deve bater com **`pyproject.toml`**; sufixos `-beta`/`-rc` são só de trabalho.
 
 ---
 
 ## Bloco A — Fechar a fatia Cursor/MCP + tracking de versão (≈ 30–60 min)
 
-- Abrir PR para o commit local que bumpou a versão de trabalho para **1.6.8** e documentou troubleshooting do `MCP_DOCKER`.
+- Se ainda houver PR separando **trabalho** de **publicado** (ex.: fatia de docs **1.6.8**), fechar; senão, ignorar.
 - Manter o PR **focado em workflow/docs**; não misturar feature/fix aqui.
 
 **Gate token-aware:** `.\scripts\lint-only.ps1` é suficiente para esta fatia (já está verde localmente).
@@ -27,7 +27,7 @@
 ## Bloco B — WRB (Wabbix) e evidência mínima (≈ 20–40 min)
 
 - Usar o bloco para colar: **`docs/ops/WRB_DELTA_SNAPSHOT_2026-03-31.pt_BR.md`**
-- Atualizar os bullets de “verdade de versão” se você for referenciar **working 1.6.8** no `main` (e confirmar que o publicado ainda é `v1.6.7`).
+- Atualizar os bullets de “verdade de versão” se a linha de base tiver mudado (publicado **`v1.6.8`** conforme **PUBLISHED_SYNC**).
 - Enviar o e-mail (ou adiar explicitamente com data no **CARRYOVER**).
 
 ---
@@ -43,6 +43,6 @@
 Fatia do dia **fechada** quando:
 
 - **CARRYOVER** atualizado (sem pendência silenciosa).
-- PR da fatia `1.6.8` está **aberto** (ou mergeado).
+- Qualquer PR de **versão/docs** necessário para verdade de publicação **1.6.8** está **fechado** ou **N/A** (vê **PUBLISHED_SYNC**).
 - WRB foi **enviado** (ou adiado com data).
 - Ping Slack foi **confirmado** (ou adiado com data).

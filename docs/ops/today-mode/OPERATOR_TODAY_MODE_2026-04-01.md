@@ -9,15 +9,15 @@
 ## Block 0 — Truth + carryover (≈ 15–25 min)
 
 1) Walk **[CARRYOVER.md](CARRYOVER.md)** — close, defer with date, or promote to PLANS/issue for each ⬜.
-1) Confirm version truth:
-   - **Published**: last tag/release should still be `v1.6.7` unless you published again.
-   - **Working**: repo now bumped to **`1.6.8`** (pre-publish tracking).
+1) Confirm version truth (see **[PUBLISHED_SYNC.md](PUBLISHED_SYNC.md)**):
+   - **Published**: **`v1.6.8`** on GitHub + Docker Hub when the release pipeline is complete; if Hub lags, track it there — do not tell customers a version they cannot pull yet.
+   - **Working**: `main` should match **`pyproject.toml`**; pre-release suffixes (`-beta`/`-rc`) are working only.
 
 ---
 
 ## Block A — Ship the Cursor/MCP + version tracking slice (≈ 30–60 min)
 
-- Create PR for the local commit that bumps working version to **1.6.8** and documents `MCP_DOCKER` troubleshooting.
+- If anything still separates **working** from **published** (e.g. open PR for **1.6.8** docs slice), close it; otherwise skip.
 - Keep it **workflow/docs focused**; no feature work mixed in this PR.
 
 **Token-aware gate:** `.\scripts\lint-only.ps1` is enough for this slice (already green locally).
@@ -27,7 +27,7 @@
 ## Block B — WRB (Wabbix) and minimal evidence (≈ 20–40 min)
 
 - Use the paste block: **`docs/ops/WRB_DELTA_SNAPSHOT_2026-03-31.md`**
-- Update its “Version truth” bullets if you are now referencing **working 1.6.8** on `main` (and confirm published still `v1.6.7`).
+- Update its “Version truth” bullets if the baseline moved (published **`v1.6.8`** per **PUBLISHED_SYNC**).
 - Send the email (or explicitly defer with a date in **CARRYOVER**).
 
 ---
@@ -43,6 +43,6 @@
 Day slice is **done** when:
 
 - **CARRYOVER** updated (no silent pending).
-- PR for the `1.6.8` working bump slice is **open** (or merged).
+- Any **version/docs** PR needed for **1.6.8** publish truth is **closed** or **N/A** (see **PUBLISHED_SYNC**).
 - WRB is **sent** (or deferred with a date).
 - Slack ping is **confirmed** (or deferred with a date).

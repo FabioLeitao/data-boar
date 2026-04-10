@@ -78,6 +78,18 @@ A tabela em **`.cursor/rules/session-mode-keywords.mdc`** é **pequena e só em 
 
 ---
 
+## 7.1 Git, PR e merge vs horário comercial (discricionário do mantenedor)
+
+**Não** é regra para contribuidores — este parágrafo aponta para nota **só do operador** em `docs/private/` (gitignored do `origin`) para quem quiser **reduzir** atividade visível no GitHub no expediente (home office), **sem** proibir trabalho local.
+
+- **Detalhe canónico (privado):** `docs/private/OPERATOR_GIT_PR_RHYTHM_OFFICE_HOURS.pt_BR.md` — quando empacotar vs enviar já; excepções **crítico primeiro** e **segurança**; assuntos de commit como “rastos digitais”.
+- **Resumo:** Preferir **menos** pushes/merges em dias úteis no **horário comercial** de referência (**America/Sao_Paulo**) quando o assunto **pode esperar**; **fazer** commit/push/merge **na hora** para itens **críticos** na matriz de prioridade, **segurança/CVE**, **CI em `main` partido**, ou equivalente — com **Conventional Commit** claro no assunto/corpo.
+- **Assistentes:** Ler o arquivo **privado** para o **modo** actual. Se indicar **sabático / entre empregos**, **não** aplicar por defeito o empacotar/deslocar para fora do expediente. Com modo **empregado** activo, **aplicar** isto por defeito ao sugerir **push / PR / merge** — empacotar ou deslocar trabalho **não crítico** para **fora do expediente**; **não** pressionar por actividade pública ruidosa no GitHub em horário comercial salvo as excepções da §7.1 ou pedido explícito do operador na sessão.
+
+**Modelo rastreado:** `docs/private.example/OPERATOR_GIT_PR_RHYTHM_OFFICE_HOURS.example.md`.
+
+---
+
 ## 8. Recap de progresso recente (`git`, token-aware)
 
 Quando quiseres um **resumo curto** do **ritmo** (o que entrou em **`origin/main`**) sem reler tabelas inteiras de planos:

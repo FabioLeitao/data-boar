@@ -41,7 +41,7 @@ Se algum item estiver desmarcado, **nao** marque SAFE.
 - Este runbook cobre arquivos tracked e historico Git em **clone fresco**.
 - Ele complementa os guardrails (`new-b2-verify`, `pii_history_guard.py`, `test_pii_guard.py`).
 - Ele nao substitui classificacao manual para termos contextuais.
-- `new-b2-verify.ps1` e somente PowerShell (ideal no L14/Windows). Em Linux, use o equivalente manual abaixo.
+- `new-b2-verify.ps1` e somente PowerShell (ideal no PC Windows principal de desenvolvimento/Windows). Em Linux, use o equivalente manual abaixo.
 
 ## 0) Pre-condicoes
 
@@ -200,16 +200,20 @@ uv run python scripts/pii_history_guard.py
 
 Correr **só** depois de integrar guards + regras de substituição no `main` (este repo inclui `scripts/filter_repo_pii_replacements.txt`).
 
+**Política de host:** **Não** correr este fluxo na estação de trabalho principal **L-series** — usar uma **máquina de lab** acordada (ver **[PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md](PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md)**). O script **recusa** iniciar sem **`DATA_BOAR_ALLOW_DESTRUCTIVE_REPO_OPS=1`** na sessão PowerShell (nunca como rotina no PC Windows principal de desenvolvimento).
+
 1. **Commit** de todas as alterações rastreadas pretendidas (guards, substituições, docs).
-2. Na raiz do repo:
+2. No host **que não seja o PC Windows principal de desenvolvimento**, na raiz do repo:
 
 ```powershell
+$env:DATA_BOAR_ALLOW_DESTRUCTIVE_REPO_OPS = "1"
 .\scripts\run-pii-history-rewrite.ps1
 ```
 
-3. Inspecione o caminho **`data-boar-history-rewrite-*`** reportado. Se `pytest` e `pii_history_guard --full-history` estiverem verdes, você pode fazer push:
+3. Inspecione o caminho **`data-boar-history-rewrite-*`** reportado. Se `pytest` e `pii_history_guard --full-history` estiverem verdes, você pode fazer push (mesma variável de ambiente):
 
 ```powershell
+$env:DATA_BOAR_ALLOW_DESTRUCTIVE_REPO_OPS = "1"
 .\scripts\run-pii-history-rewrite.ps1 -Push
 ```
 
@@ -296,7 +300,7 @@ Se falhar, corrige ou abre PR com âmbito fechado antes de declarar higiene de r
 
 ### H.3 Lab e clones secundários (máquinas que você controla)
 
-Em **cada** host onde `data-boar` está clonado (ex.: Latitude, pi3b, T14, mini-bt quando acessível):
+Em **cada** host onde `data-boar` está clonado (outros **lab-op**, estações de trabalho ou SBCs sob o teu controlo — **nomes reais só** em **`docs/private/homelab/`**, não em runbooks públicos):
 
 ```bash
 cd ~/Projects/dev/data-boar   # ou o teu caminho real
@@ -342,9 +346,38 @@ A automação **não** reescreve corpos de issue/PR. **Manualmente** pesquisa no
 
 - Apagar clones temporários criados para inspecionar forks (ex.: `%TEMP%`, `/tmp`) quando o espaço ou a disciplina o exigirem.
 
-### H.9 Opcional: `clean-slate.sh` no lab (Latitude)
+### H.9 Opcional: `clean-slate.sh` no lab (várias rodadas até os guards baterem com a intenção)
 
-Se usares `~/clean-slate.sh`: é **destrutivo** (remove o `data-boar` local e volta a clonar). Só corre quando aceitares re-download completo e o custo de `git grep` com seeds. Garante `~/.config/PII/PII_LOCAL_SEEDS.txt` antes de depender desse script.
+**Script canônico (árvore privada do operador):** `docs/private/scripts/clean-slate.sh` com **`docs/private/scripts/README.pt_BR.md`** — instalar em **`~/clean-slate.sh`** em cada máquina Linux de lab que controles. **Modelo rastreado (sem segredos):** `docs/private.example/scripts/clean-slate.sh.example` e **`docs/private.example/scripts/README.md`**.
+
+**Nomes:** nos docs públicos do GitHub o exemplo SSH é **`lab-op`**. **Nomes reais de máquinas** na tua LAN ficam **só** em **`docs/private/`** (ver **`PRIVATE_OPERATOR_NOTES.md`** e **`docs/private/homelab/`**), não em runbooks rastreados do produto.
+
+**Não** uses este fluxo destrutivo na estação principal **L-series** — só em **hosts de lab** que controles para esse fim (**[PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md](PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md)**).
+
+Se usares `~/clean-slate.sh` num host Linux de lab:
+
+1. **Antes:** garante que **`docs/private/security_audit/PII_LOCAL_SEEDS.txt`** no teu workspace está atualizado (ou define **`PII_SEEDS_FROM_SCP`** no ambiente para o modelo fazer **`scp`** de seeds canónicos de outro host de lab após o clone quando a árvore privada empilhada ainda não existir). O script atualiza **`~/.config/PII/PII_LOCAL_SEEDS.txt`** a partir do caminho no workspace quando existir.
+2. **Corre** `~/clean-slate.sh` — é **destrutivo** (remove a árvore local `data-boar` e volta a clonar). Só quando aceitares re-download completo e o custo do guard de histórico completo.
+3. **Depois de cada execução**, no clone novo: `python3 scripts/pii_history_guard.py --full-history` (e o teu **`git grep`** / checks de seeds habituais conforme a **seção D**).
+4. **Repete** em **cada** host de lab com clone, e **volta a correr** quando **`PII_LOCAL_SEEDS`** ou o **`main`** público mudar, até os guards deixarem de falhar — uma passagem verde não basta.
+
+**Remediação:** fugas no histórico **público** exigem **redação / filter-repo** e follow-up com contribuidores (outras seções); o `clean-slate.sh` valida clones **novos**, não espelhos de terceiros.
+
+### H.10 `clean-slate` e assistentes: gancho de memória (autoauditoria, não simulação)
+
+**Porquê esta subseção:** Operador e assistente **não** devem confundir (a) **narrativa no chat** (“corri clean-slate N vezes”) com (b) um reset **real** + reclone no disco. O valor de auditoria do `clean-slate` é: uma **árvore de trabalho limpa** alinhada ao `origin/main` após download completo — e os guards dizem se a política bate com a realidade.
+
+| Pergunta | Resposta |
+| -------- | -------- |
+| **Onde está o script?** | **Modelo rastreado:** [`docs/private.example/scripts/clean-slate.sh.example`](../private.example/scripts/clean-slate.sh.example). **Cópia do operador (git privado, não no GitHub):** `docs/private/scripts/clean-slate.sh`. **Texto:** [`docs/private.example/scripts/README.md`](../private.example/scripts/README.md). |
+| **Uso em lab Linux** | Instalar em `~/clean-slate.sh` conforme **H.9**. Garantir `docs/private/security_audit/PII_LOCAL_SEEDS.txt` (ou `PII_SEEDS_FROM_SCP`) antes da execução. |
+| **Equivalente Windows** | **`scripts/pii-fresh-clone-audit.ps1`** — clone completo sob `%TEMP%`, depois **`uv sync`**, **`pii_history_guard.py --full-history`**, **`pytest tests/test_pii_guard.py`** (ver **[PII_FRESH_CLONE_AUDIT.pt_BR.md](PII_FRESH_CLONE_AUDIT.pt_BR.md)**). Caminho manual: pasta vazia + `git clone` + mesmos comandos da **seção D**. Palavra-chave de sessão: **`pii-fresh-audit`**. |
+| **O que valida** | **Clone fresco + guards** — bom sinal de que o **`main` atual** e o histórico (como obtido por fetch) passam a automação. |
+| **O que *não* faz** | **Não** remove blobs sensíveis já enviados (usar **Parte II** / `run-pii-history-rewrite.ps1`). **Não** substitui o CI — o CI já corre o guard de histórico completo no push. |
+
+**Quantas vezes correr:** Repetir em cada host controlado quando mudarem **regras dos guards**, **seeds** ou **tabelas de substituição**, até o resultado bater com a **intenção** (mesmo espírito do passo 4 do H.9). Esse ciclo é **legítimo**; “simular” clean-slate no chat sem comandos **não** o é.
+
+**Comportamento por defeito do assistente:** Quando perguntarem se o trabalho de PII “chega”, correr **`uv run python scripts/pii_history_guard.py --full-history`** e **`uv run pytest tests/test_pii_guard.py`** no **workspace real** sempre que possível; **depois** lembrar que um **clone fresco** (Windows: **`pii-fresh-clone-audit.ps1`** ou clone manual; Linux: **`clean-slate.sh`**) é o check periódico mais forte para árvores antigas.
 
 ---
 
@@ -357,7 +390,7 @@ Se usares `~/clean-slate.sh`: é **destrutivo** (remove o `data-boar` local e vo
 | Provar que **Wayback** / cache / mirror de terceiros está limpo | Fora do âmbito do repo |
 | **Resultado da WRB** | Processo humano |
 | Verificar **bytes de backup privado** | Acesso físico / cofre |
-| **mini-bt** (ou outro host) offline | Rede / energia |
+| **Qualquer host de lab** offline | Rede / energia |
 | Narrativa **jurídica / RH** | Fora deste runbook |
 
 ---

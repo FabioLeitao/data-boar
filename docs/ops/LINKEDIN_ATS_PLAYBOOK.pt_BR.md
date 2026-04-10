@@ -126,8 +126,36 @@ Quando precisar de **texto final** (variantes de headline, Sobre completo, lista
 
 ---
 
+## 8. Localidade, jurisdição e preço de certificação (assistentes + operador)
+
+Ao produzir **recomendações ATS / LinkedIn** para um candidato, **ancorar a narrativa no mercado-alvo** da pessoa — não um inglês genérico nem o padrão de outra região.
+
+### 8.1 Escolher localidade e quadro de compliance
+
+| Mercado-alvo | Idioma sugerido (LinkedIn / CV) | Quadro principal de privacidade/dados para empregadores locais |
+| ------------- | -------------------------------- | ---------------------------------------------------------------- |
+| Canadá | **en_CA** (ou **fr_CA** para papéis voltados a Quebec) | **PIPEDA** (federal); leis provinciais (ex.: **Alberta PIPA**, **BC PIPA**, **Lei 25** em Quebec); trajetória do **Bill C-27** (CPPA / AIDA — confirmar estado atual ao aconselhar). |
+| União Europeia / Reino Unido | **en_GB** ou língua local da UE | **UK GDPR** / **GDPR** UE conforme o papel. |
+| Brasil | **pt-BR** | **LGPD**. |
+| Estados Unidos | **en_US** | Privacidade setorial EUA (FTC, HIPAA quando aplicável); leis **estaduais** quando o papel for específico de estado. |
+
+**Não** apresentar **GDPR** como vocabulário “padrão” para **papéis só no Canadá** — recrutadores locais esperam **PIPEDA** / contexto provincial primeiro; citar **GDPR** quando o papel for **multinacional / dados UE** ou quando o empregador pedir.
+
+### 8.2 Certificações: sede da emissora vs local do candidato
+
+- Muitos programas (ex. certificações de compliance/ética de entidades **nos EUA**) publicam preços em **USD** e centros de prova nos EUA. **Antes** de recomendar um valor de orçamento, **verificar** no site oficial do emissor preços para o **Canadá** em **CAD**, centros de prova, **impostos** e descontos de **capítulo / membro**.
+- Se o candidato puder fazer a prova nos **EUA**, indicar **USD** como cenário — **separado** dos totais em **CAD** para o Canadá.
+- Aplicar a mesma disciplina noutros países (capítulo local, IVA/GST, modalidade de prova).
+
+### 8.3 Guardrail do assistente (uma frase)
+
+**Alinhar localidade + jurisdição + moeda à geografia-alvo do candidato** em cada export talent-ATS; em dúvida, **declarar** e apontar **fontes primárias** (página de preços do emissor, texto do regulador) em vez de inventar.
+
+---
+
 ## Revisão
 
 | Data | Nota |
 | ---- | ---- |
 | 2026-04-02 | Playbook completo inicial; contexto de SSI; ATS + seções do LinkedIn; keywords por arquétipo. |
+| 2026-04-08 | Seção 8: compliance e preços de certificação conscientes de localidade (en_CA / PIPEDA / Bill C-27; GDPR não é padrão para o Canadá). |

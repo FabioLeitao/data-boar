@@ -1,8 +1,8 @@
-# Lab-op (Latitude): minimal container stack — single official line
+# Lab-op: minimal container stack — single official line
 
 **Português (Brasil):** [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md)
 
-**Purpose:** Avoid **rework** and **stack sprawl** on the **lab-op** host (e.g. Latitude) by locking **one** minimal combination first. **Other** orchestrators (Nomad, additional Kubernetes distros, duplicate compose paths) stay **out of scope** until this baseline is **stable** and documented in **`docs/private/homelab/`** (gitignored).
+**Purpose:** Avoid **rework** and **stack sprawl** on the **lab-op** host by locking **one** minimal combination first. **Other** orchestrators (Nomad, additional Kubernetes distros, duplicate compose paths) stay **out of scope** until this baseline is **stable** and documented in **`docs/private/homelab/`** (gitignored).
 
 **Scope:** Linux server / workstation used as **integration lab** (SSH from operator). **Docker Desktop + Kubernetes** on a **Windows dev laptop** is a **separate** dev convenience — see §4.
 
