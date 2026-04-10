@@ -9,12 +9,36 @@ REPO = Path(__file__).resolve().parents[1]
 OUT_DIR = REPO / "docs/private/legal_dossier/exports_advogado_ptBR_2026-04-08"
 
 PAIRS: list[tuple[str, Path]] = [
-    ("01-CISO", REPO / "docs/private/legal_dossier/CARTA_CISO_ICTSI_CONSOLIDADA_2026-04-10.pt_BR.md"),
-    ("02-HR-Global", REPO / "docs/private/legal_dossier/CARTA_HR_GLOBAL_CONSOLIDADA_2026-04-10.pt_BR.md"),
-    ("03-Juridico-RBT-local", REPO / "docs/private/legal_dossier/CARTA_JURIDICO_RBT_LOCAL_CONSOLIDADA_2026-04-08.pt_BR.md"),
-    ("04-Lideranca-Exec", REPO / "docs/private/legal_dossier/CARTA_LIDERANCA_ICTSI_GLOBAL_EXEC_CONSOLIDADA_2026-04-08.pt_BR.md"),
-    ("05-Risk-ERM", REPO / "docs/private/legal_dossier/CARTA_RISK_ER_ICTSI_GLOBAL_CONSOLIDADA_2026-04-08.pt_BR.md"),
-    ("06-IR-Board-opcional", REPO / "docs/private/legal_dossier/CARTA_ESCALACAO_IR_BOARD_OPCIONAL_2026-04-08.pt_BR.md"),
+    (
+        "01-CISO",
+        REPO
+        / "docs/private/legal_dossier/CARTA_CISO_ICTSI_CONSOLIDADA_2026-04-10.pt_BR.md",
+    ),
+    (
+        "02-HR-Global",
+        REPO
+        / "docs/private/legal_dossier/CARTA_HR_GLOBAL_CONSOLIDADA_2026-04-10.pt_BR.md",
+    ),
+    (
+        "03-Juridico-RBT-local",
+        REPO
+        / "docs/private/legal_dossier/CARTA_JURIDICO_RBT_LOCAL_CONSOLIDADA_2026-04-08.pt_BR.md",
+    ),
+    (
+        "04-Lideranca-Exec",
+        REPO
+        / "docs/private/legal_dossier/CARTA_LIDERANCA_ICTSI_GLOBAL_EXEC_CONSOLIDADA_2026-04-08.pt_BR.md",
+    ),
+    (
+        "05-Risk-ERM",
+        REPO
+        / "docs/private/legal_dossier/CARTA_RISK_ER_ICTSI_GLOBAL_CONSOLIDADA_2026-04-08.pt_BR.md",
+    ),
+    (
+        "06-IR-Board-opcional",
+        REPO
+        / "docs/private/legal_dossier/CARTA_ESCALACAO_IR_BOARD_OPCIONAL_2026-04-08.pt_BR.md",
+    ),
 ]
 
 

@@ -323,7 +323,11 @@ def test_markdown_lint_no_violations(include_private_lint: bool):
     root = _project_root()
     exclude = _markdown_lint_exclude_dirs(include_private=include_private_lint)
     md_files = _collect_md_files(root, exclude)
-    md_files = [p for p in md_files if p.relative_to(root).as_posix() not in MARKDOWN_LINT_EXCLUDE_FILES]
+    md_files = [
+        p
+        for p in md_files
+        if p.relative_to(root).as_posix() not in MARKDOWN_LINT_EXCLUDE_FILES
+    ]
     all_violations: list[tuple[Path, int, str]] = []
     for path in md_files:
         for line_no, msg in _lint_one(path):

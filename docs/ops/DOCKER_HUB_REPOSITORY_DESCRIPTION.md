@@ -34,7 +34,7 @@ Copy from the block below into **Repository → Edit** on Docker Hub.
 ### Copyright and maintainer
 
 - **Author / copyright:** **Fabio Leitao** — [LICENSE](https://github.com/FabioLeitao/data-boar/blob/main/LICENSE) (BSD-3-Clause).
-- **Professional profile:** [LinkedIn](https://www.linkedin.com/in/redacted) (optional — for procurement / background checks; technical docs remain on GitHub).
+- **Professional profile:** Add your LinkedIn URL in the Hub **Full description** editor when publishing (do not embed personal profile URLs in this tracked file).
 - **Security:** Vulnerability reporting — [SECURITY.md](https://github.com/FabioLeitao/data-boar/blob/main/SECURITY.md).
 
 ### Supported tags
