@@ -82,7 +82,7 @@
 1. **`git status`** — se a árvore for grande, **`preview-commit`** / partir commits por **`.cursor/rules/execution-priority-and-pr-batching.mdc`**.
 1. **Inspirações:** abrir **[INSPIRATIONS_HUB.pt_BR.md](../inspirations/INSPIRATIONS_HUB.pt_BR.md)** — confirmar que **tiddlytools.com** abre; ajustar link se precisar.
 1. **Recuperação Supere:** próximo paste ou **`burst-showcase`** quando tiveres energia — **SiteMap** / backlog Nerd conforme **`RESUME_TOPICS_JOURNAL`**.
-1. **Deps:** triagem dos PRs **Dependabot** quando quiseres uma sessão **`deps`** — não é obrigação moral hoje.
+1. **Deps:** triagem dos PRs **Dependabot** quando quiser uma sessão **`deps`** — não é obrigação moral hoje.
 1. **SRE em calma:** um **`check-all`** ou **`lint-only`** só se fores **commitar** — não como castigo.
 
 ---

@@ -2,9 +2,9 @@
 
 **English:** [CURSOR_UBUNTU_APPARMOR.md](CURSOR_UBUNTU_APPARMOR.md)
 
-**Público:** Operadores que usam o **Cursor** em desktops baseados em **Ubuntu** (**Zorin OS 18** ≈ base **Ubuntu 24.04 noble**) com **AppArmor** activo (padrão nas variantes suportadas).
+**Público:** Operadores que usam o **Cursor** em desktops baseados em **Ubuntu** (**Zorin OS 18** ≈ base **Ubuntu 24.04 noble**) com **AppArmor** ativo (padrão nas variantes suportadas).
 
-**Objectivo:** Instalar o Cursor, verificar se o AppArmor o afecta e aplicar correcções **incrementais e seguras** quando o kernel **nega** operações.
+**Objetivo:** Instalar o Cursor, verificar se o AppArmor o afeta e aplicar correções **incrementais e seguras** quando o kernel **nega** operações.
 
 **Fora de âmbito:** editores em **Snap** (confinamento diferente), **Cursor** em **Flatpak** (Bubblewrap), **Firejail** ou outros empacotadores **por cima** do AppArmor—trate como camadas separadas.
 
@@ -12,7 +12,7 @@
 
 ## 1. Pré-condições
 
-1. **AppArmor** activo (típico no Ubuntu/Zorin):
+1. **AppArmor** ativo (típico no Ubuntu/Zorin):
 
    ```bash
    systemctl is-active apparmor && sudo aa-status --enabled
@@ -29,7 +29,7 @@
 
 ## 2. Instalar o Cursor (`.deb` oficial Linux)
 
-1. Descarregar o **Linux** `.deb` em [cursor.com](https://cursor.com) (ou o canal licenciado que usar).
+1. Baixar o **Linux** `.deb` em [cursor.com](https://cursor.com) (ou o canal licenciado que usar).
 1. Instalar:
 
    ```bash
@@ -53,7 +53,7 @@
 
 ## 3. Caso padrão: sem trabalho extra no AppArmor
 
-Em muitas instalações **.deb**, o Cursor corre **sem perfil AppArmor dedicado** (processo **unconfined** no `aa-status`). Aí o **AppArmor não bloqueia** o Cursor; foque problemas de permissões, Wayland/X11 ou GPU—not MAC.
+Em muitas instalações **.deb**, o Cursor corre **sem perfil AppArmor dedicado** (processo **unconfined** no `aa-status`). Aí o **AppArmor não bloqueia** o Cursor; concentre-se em problemas de permissões, Wayland/X11 ou GPU—not MAC.
 
 Verificar:
 
@@ -62,7 +62,7 @@ sudo aa-status 2>/dev/null | grep -i cursor || true
 # Se vazio: normalmente não há perfil → unconfined para efeitos de AppArmor
 ```
 
-Arranque o Cursor a partir de um terminal para ver erros:
+Inicie o Cursor a partir de um terminal para ver erros:
 
 ```bash
 cursor --verbose 2>&1 | tee /tmp/cursor-launch.log
@@ -101,7 +101,7 @@ Instale o `.deb` mais recente; o *layout* ou compatibilidade pode mudar.
 
 ### 5.2 Modo *complain* (diagnóstico temporário)
 
-**Só se** existir um perfil que afecte o Cursor. Coloca o perfil em modo que **regista** sem bloquear (Ubuntu: `aa-complain`):
+**Só se** existir um perfil que afete o Cursor. Coloca o perfil em modo que **registra** sem bloquear (Ubuntu: `aa-complain`):
 
 ```bash
 sudo aa-complain /etc/apparmor.d/<nome-do-perfil>
@@ -148,12 +148,12 @@ Pacotes estilo Ubuntu incluem frequentemente **`#include <local/...>`** no perfi
 
 ### 5.4 Perfil personalizado do zero
 
-Uso avançado: **`aa-genprof`** / **`aa-logprof`** (ver guia Ubuntu Server — *Security — AppArmor*) a partir de registos de auditoria. Aplicações **Electron** geram muitos filhos—espere várias iterações.
+Uso avançado: **`aa-genprof`** / **`aa-logprof`** (ver guia Ubuntu Server — *Security — AppArmor*) a partir de registros de auditoria. Aplicações **Electron** geram muitos filhos—espere várias iterações.
 
 ### 5.5 O que não fazer
 
 - **Não** desligue o AppArmor em todo o sistema (`systemctl disable apparmor` ou `apparmor=0` no kernel) numa máquina que queira manter endurecida—perde MAC para **todas** as aplicações.
-- **Não** ponha perfis em **unconfined** por conveniência sem registar o risco.
+- **Não** ponha perfis em **unconfined** por conveniência sem registrar o risco.
 
 ---
 

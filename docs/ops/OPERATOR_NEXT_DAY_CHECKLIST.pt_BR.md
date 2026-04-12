@@ -19,7 +19,7 @@
 | M3 | **LAB-OP — `<lab-host-2>` / SBC secundário:** resolver `git status` no script `homelab-host-report.sh` **ou** correr `lab-op-sync-and-collect.ps1 -SkipGitPull` só para relatório | Log novo em `docs/private/homelab/reports/` **ou** pull limpo         |
 | M4 | **ThinkPad T14 + LMDE 7:** continuar [LMDE7_T14_DEVELOPER_SETUP.pt_BR.md](LMDE7_T14_DEVELOPER_SETUP.pt_BR.md) (mapa §0–§8) até checklist §8 verde **ou** marcar onde paraste | Seção atual documentada numa linha em nota privada                    |
 
-Nota: se não tiveres T14 à mão, troca M4 por mais uma linha de Band A ou M3.
+Nota: se não tiver T14 à mão, troca M4 por mais uma linha de Band A ou M3.
 
 ---
 
@@ -27,8 +27,8 @@ Nota: se não tiveres T14 à mão, troca M4 por mais uma linha de Band A ou M3.
 
 | #  | Atividade                                                                                                                                                                                             | Critério “feito”                                                                     |
 | -  | ---------                                                                                                                                                                                             | ----------------                                                                     |
-| T1 | **Ordem –1L:** em **um** host lab, [HOMELAB_VALIDATION.pt_BR.md](HOMELAB_VALIDATION.pt_BR.md) §1.1–1.2 (mínimo) **+** §2 sintético **ou** §1.3–1.5 Docker se já tiveres contentores a funcionar       | Nota datada com pass/fail; saídas em `docs/private/` se quiseres revisão pelo agente |
-| T2 | **Wabbix (opcional):** se quiseres fechar o loop com revisores — enviar e-mail com caminhos de [WABBIX_IN_REPO_BASELINE.md](WABBIX_IN_REPO_BASELINE.md) e referência a `WABBIX_ANALISE_2026-03-18.md` | Mensagem enviada **ou** rascunho guardado + data para enviar                         |
+| T1 | **Ordem –1L:** em **um** host lab, [HOMELAB_VALIDATION.pt_BR.md](HOMELAB_VALIDATION.pt_BR.md) §1.1–1.2 (mínimo) **+** §2 sintético **ou** §1.3–1.5 Docker se já tiver contentores a funcionar       | Nota datada com pass/fail; saídas em `docs/private/` se quiser revisão pelo agente |
+| T2 | **Wabbix (opcional):** se quiser fechar o loop com revisores — enviar e-mail com caminhos de [WABBIX_IN_REPO_BASELINE.md](WABBIX_IN_REPO_BASELINE.md) e referência a `WABBIX_ANALISE_2026-03-18.md` | Mensagem enviada **ou** rascunho guardado + data para enviar                         |
 | T3 | **Leitura só (sem instalar):** percorrer [PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md) §1 e decidir **A ou B** + **C ou D** para o futuro             | Uma frase no teu runbook privado                                                     |
 
 ---
@@ -38,7 +38,7 @@ Nota: se não tiveres T14 à mão, troca M4 por mais uma linha de Band A ou M3.
 | #  | Atividade                                                                                                                                                             | Critério “feito”                                |
 | -  | ---------                                                                                                                                                             | ----------------                                |
 | N1 | Atualizar **`docs/private/WHAT_TO_SHARE_WITH_AGENT.md`** (estado homelab, bloqueios, próximo alvo)                                                                    | Arquivo salvo                                   |
-| N2 | Se o **Task Scheduler SNMP** estiver activo — abrir última linha do `snmp_udm_probe_*.log` em `reports/`                                                              | Olhar “OK”/erros; nada a fazer se estiver verde |
+| N2 | Se o **Task Scheduler SNMP** estiver ativo — abrir última linha do `snmp_udm_probe_*.log` em `reports/`                                                              | Olhar “OK”/erros; nada a fazer se estiver verde |
 | N3 | **Uma** fatia produto **só** se sobrar energia: ver tabela “What to start next” em [PLANS_TODO.md](../plans/PLANS_TODO.md) (ex.: FN reduction, strong crypto Phase 1) | Issue/branch nomeados para a manhã seguinte     |
 
 ---
