@@ -23,7 +23,7 @@
 
 ---
 
-## Permitido no PC Windows principal de desenvolvimento (seguro para a árvore canónica)
+## Permitido no PC Windows principal de desenvolvimento (seguro para a árvore canônica)
 
 | Ação | Notas |
 | ------ | ----- |
@@ -36,7 +36,7 @@
 ## Onde correr fluxos classe destrutiva
 
 1. **Host de lab designado** (ex.: sessão SSH **lab-op**): o operador corre **`clean-slate`** / ensaios de rewrite aí, ou usa **diretório vazio** + clone nessa máquina.
-2. **Env opt-in** (só script de rewrite): **`DATA_BOAR_ALLOW_DESTRUCTIVE_REPO_OPS=1`** — documentar em notas **privadas** que **nunca** está activo no PC Windows principal de desenvolvimento para uso rotineiro; só numa máquina à parte, explícita, para remediação.
+2. **Env opt-in** (só script de rewrite): **`DATA_BOAR_ALLOW_DESTRUCTIVE_REPO_OPS=1`** — documentar em notas **privadas** que **nunca** está ativo no PC Windows principal de desenvolvimento para uso rotineiro; só numa máquina à parte, explícita, para remediação.
 
 ---
 

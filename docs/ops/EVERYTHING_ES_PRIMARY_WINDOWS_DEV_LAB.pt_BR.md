@@ -77,7 +77,7 @@ Quando o wrapper não expuser a flag necessária, rodar **`es.exe -h`** ou a mes
 ## Guardrails
 
 - **Só leitura** em relação ao Git e aos arquivos: **lista** caminhos no índice; **não** altera o repo.
-- **Seguro para PC Windows principal de desenvolvimento** na árvore canónica: não é operação destrutiva — ver **[PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md](PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md)**.
+- **Seguro para PC Windows principal de desenvolvimento** na árvore canônica: não é operação destrutiva — ver **[PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md](PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md)**.
 
 ---
 
