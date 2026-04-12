@@ -20,7 +20,7 @@ Este documento ajuda **estudantes, orientadores e bancas** a usar a documentaç�
 - **Licença do open core (árvore pública):** [LICENSE](../LICENSE) — **BSD 3-Clause** (permissiva; em redistribuições, manter aviso de copyright e texto da licença — veja o arquivo para condições exatas).
 - **Enforcement comercial opcional** (tokens em runtime) está em [LICENSING_SPEC.md](LICENSING_SPEC.md) *(EN)*; em desenvolvimento e replicação acadêmica costuma usar-se o modo **`open`** (sem token pago). Veja também [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md) *(EN)* para o desenho pretendido do produto.
 - **Como citar o software** na tese (adapta ao estilo da instituição):
-- **Repositório:** URL Git canónica (ex.: GitHub `FabioLeitao/data-boar` ou sucessor), **hash de commit** ou **tag de release**, e **data de acesso**.
+- **Repositório:** URL Git canônica (ex.: GitHub `FabioLeitao/data-boar` ou sucessor), **hash de commit** ou **tag de release**, e **data de acesso**.
 - **Versão:** alinha com [VERSIONING.pt_BR.md](VERSIONING.pt_BR.md) / `pyproject.toml` quando congelares uma linha de reprodução.
 - **Licença:** indica **BSD 3-Clause** e aponta para o arquivo **`LICENSE`** na raiz (alguns programas pedem anexo de licenças).
 
@@ -62,7 +62,7 @@ Este documento ajuda **estudantes, orientadores e bancas** a usar a documentaç�
 
 ## 7. Documentos relacionados
 
-- **Portfólio, suplementos PUCRS, extensões PUC-Rio Digital, cadência de estudo:** Usa a entrada **Interno e referência** em [docs/README.pt_BR.md](README.pt_BR.md) para abrir `docs/plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md` (este guia **não** usa link direto para `docs/plans/` por política do repositório). Lá, ver **seção 3.3** (suplementos PUCRS), a subsecção **PUC-Rio Digital extension courses** (recomendações alinhadas a benefício; confirmar com o **contrato privado** em `docs/private/academic/`) e **seção 3.0** (cadência semanal) — tabelas de plano em inglês.
+- **Portfólio, suplementos PUCRS, extensões PUC-Rio Digital, cadência de estudo:** Use a entrada **Interno e referência** em [docs/README.pt_BR.md](README.pt_BR.md) para abrir `docs/plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md` (este guia **não** usa link direto para `docs/plans/` por política do repositório). Lá, ver **seção 3.3** (suplementos PUCRS), a subseção **PUC-Rio Digital extension courses** (recomendações alinhadas a benefício; confirmar com o **contrato privado** em `docs/private/academic/`) e **seção 3.0** (cadência semanal) — tabelas de plano em inglês.
 - [CONTRIBUTING.pt_BR.md](../CONTRIBUTING.pt_BR.md) — higiene do contribuidor (sem segredos no repo público).
 - [SECURITY.pt_BR.md](../SECURITY.pt_BR.md) — versões suportadas e reporte de vulnerabilidades.
 - [TESTING.pt_BR.md](TESTING.pt_BR.md) — que verificações automáticas existem (útil para capítulos de “validação”).

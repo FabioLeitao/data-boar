@@ -10,7 +10,7 @@
 
 | Situação                                                                                     | Vale?                                                                                                     |
 | --------                                                                                     | -----                                                                                                     |
-| Durante **testes** de carga/scan e queres ver **tráfego por interface** no core vs no switch | Sim — poll **periódico** leve (IF-MIB) ou logs agendados.                                                 |
+| Durante **testes** de carga/scan e se quiser ver **tráfego por interface** no core vs no switch | Sim — poll **periódico** leve (IF-MIB) ou logs agendados.                                                 |
 | **Produção** com alertas, retenção longa, gráficos                                           | Melhor **Prometheus + snmp_exporter** / Zabbix / UniFi UI — este repo só dá **probes manuais/agendados**. |
 | Equipamento só com **SNMPv2c** (community)                                                   | O script atual é **v3 SHA/AES**; para v2c use **`snmpwalk` manual** (comandos abaixo).                    |
 

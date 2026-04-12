@@ -12,7 +12,7 @@ Configurações de homelab e UniFi acumulam-se rápido. Sem notas, é fácil esq
 
 - **Segurança operacional** (o que rever e com que frequência).
 - **Acesso ao assistente (Cursor)** (o que ele pode usar *a partir do teu PC* — nunca uma identidade cloud separada).
-- **Maturidade blue team** (visibilidade, deteção, resposta), de forma incremental e realista para lab.
+- **Maturidade blue team** (visibilidade, detecção, resposta), de forma incremental e realista para lab.
 
 ---
 
@@ -28,8 +28,8 @@ Regista **valores reais** só na cópia em `docs/private/homelab/`.
 | **Nomes de políticas de filtro**  | Nomes como “Off” com filtros ativos confundem o teu “eu futuro”.                                                                 | Renomear para refletir a realidade (ex.: `Trusted-filtered`).                                                                                                                                       |
 | **Typos em honeypot / subnet**    | Prefixo errado (ex.: `182.x` vs `192.x`) quebra cobertura.                                                                       | Confirmar que o IP do honeypot está **dentro** da VLAN pretendida; com zoom baixo na UI, **0** e **8** num octeto confundem — validar na tabela privada.                                            |
 | **DHCP gateway + DNS por VLAN**   | Os clientes devem receber o **UDM `.1` (ou GW escolhido)** **dessa** subnet, não o gateway de outra VLAN.                        | UniFi **Redes → DHCP** + **Wi‑Fi → VLAN correta**; preencher tabela privada em [LAB_NETWORK_L3_DHCP_AND_CYBERSEC.pt_BR.md](LAB_NETWORK_L3_DHCP_AND_CYBERSEC.pt_BR.md); renovar lease após mudanças. |
-| **Double NAT no WAN**             | CPE da operadora à frente do UDM; aceitável mas afeta **port forward**, **VPN**, alguns jogos.                                   | Documentar “double NAT aceite” ou planear bridge/IP público.                                                                                                                                        |
-| **Isolamento IoT + exceções**     | **Negar** por defeito IoT → interno; **permitir** só caminhos documentados.                                                      | Rever após qualquer mudança de VLAN ou dispositivo IoT.                                                                                                                                             |
+| **Double NAT no WAN**             | CPE da operadora à frente do UDM; aceitável mas afeta **port forward**, **VPN**, alguns jogos.                                   | Documentar “double NAT aceite” ou planejar bridge/IP público.                                                                                                                                        |
+| **Isolamento IoT + exceções**     | **Negar** por padrão IoT → interno; **permitir** só caminhos documentados.                                                      | Rever após qualquer mudança de VLAN ou dispositivo IoT.                                                                                                                                             |
 
 ---
 

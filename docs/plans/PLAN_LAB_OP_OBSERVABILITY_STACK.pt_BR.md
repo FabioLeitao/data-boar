@@ -12,7 +12,7 @@
 | Stack mínima de contentores (Podman + k3s opcional) | [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](../ops/LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md) §1–§3                                    |
 | Probes SNMP / firewall (opcional)                   | [SNMP_LAB_TARGETS.pt_BR.md](../private.example/homelab/SNMP_LAB_TARGETS.pt_BR.md)                                                  |
 
-**Realidade de hardware:** T14 com **≤16 GB RAM** não deve correr Prometheus + Loki + Graylog + OpenSearch + Wazuh + k3s **em simultâneo**. Escolhe **um** caminho de métricas e **um** de logs; stacks pesados no **torre/VM Proxmox** quando existir.
+**Realidade de hardware:** T14 com **≤16 GB RAM** não deve correr Prometheus + Loki + Graylog + OpenSearch + Wazuh + k3s **em simultâneo**. Escolha **um** caminho de métricas e **um** de logs; stacks pesados no **torre/VM Proxmox** quando existir.
 
 ---
 
@@ -21,20 +21,20 @@
 | Fase  | Stack                                                              | Função                                          | Notas                                                                                                                                                                                                                |
 | ----  | -----                                                              | ------                                          | -----                                                                                                                                                                                                                |
 | **A** | **Grafana** + **Prometheus** (+ `node_exporter` / `snmp_exporter`) | Métricas, dashboards, alertas (PromQL)          | **Recomendação predefinida** para homelab. Alinha com a narrativa de monitorização em [SNMP_LAB_TARGETS.pt_BR.md](../private.example/homelab/SNMP_LAB_TARGETS.pt_BR.md).                                             |
-| **B** | **Grafana** + **InfluxDB** (+ **Telegraf**)                        | Métricas se preferires InfluxQL/Flux            | Alternativa válida ao TSDB do Prometheus; escolhe **um** pilar TSDB (Prometheus **ou** Influx), salvo divisão explícita (ex.: SNMP no Prometheus, métricas de app no Influx).                                        |
+| **B** | **Grafana** + **InfluxDB** (+ **Telegraf**)                        | Métricas se preferir InfluxQL/Flux            | Alternativa válida ao TSDB do Prometheus; escolha **um** pilar TSDB (Prometheus **ou** Influx), salvo divisão explícita (ex.: SNMP no Prometheus, métricas de app no Influx).                                        |
 | **C** | **Promtail** + **Loki** + **Grafana**                              | Agregação de logs, pegada menor que ELK/Graylog | Família “LGTM”; bom para envio de **JSON/syslog** e Explore no Grafana.                                                                                                                                              |
-| **D** | **Graylog** + **OpenSearch**                                       | Busca full-text, streams, pipelines             | **Graylog 5+** usa **OpenSearch** por defeito — ver documentação atual; **Elasticsearch** já não é o default universal. **Pesado:** reserva **≥8 GB** só para OpenSearch em labs pequenos; preferir **VM dedicada**. |
+| **D** | **Graylog** + **OpenSearch**                                       | Busca full-text, streams, pipelines             | **Graylog 5+** usa **OpenSearch** por padrão — ver documentação atual; **Elasticsearch** já não é o default universal. **Pesado:** reserva **≥8 GB** só para OpenSearch em labs pequenos; preferir **VM dedicada**. |
 | **E** | **Wazuh**                                                          | Postura de segurança, vulns, hardening          | [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](../ops/LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md) §6 — complementa métricas/logs; não os substitui. **NIST/CIS:** [WAZUH_NIST_CIS_LABOP_ALIGNMENT.pt_BR.md](../ops/inspirations/WAZUH_NIST_CIS_LABOP_ALIGNMENT.pt_BR.md). |
-| **F** | **Traces / estilo APM** (escolher **um** de início)                | Fluxos de pedido, latência, dependências        | Profundidade estilo **Dynatrace** sem SaaS por defeito: **SigNoz**, **Grafana Tempo** + **OpenTelemetry**, **Jaeger** ou **Netdata** leve; **Dynatrace** = trial/enterprise — ver **§3**. VM depois de **A** + **C** estáveis. |
+| **F** | **Traces / estilo APM** (escolher **um** de início)                | Fluxos de pedido, latência, dependências        | Profundidade estilo **Dynatrace** sem SaaS por padrão: **SigNoz**, **Grafana Tempo** + **OpenTelemetry**, **Jaeger** ou **Netdata** leve; **Dynatrace** = trial/enterprise — ver **§3**. VM depois de **A** + **C** estáveis. |
 
-**Evitar no mesmo T14 em simultâneo:** Graylog + OpenSearch + Prometheus completo + Loki + Wazuh + k3s + backend de traces. Escolhe **A ou B**, **C ou D**, **E** quando houver recursos, **F** quando traces justificarem a RAM (muitas vezes **VM** à parte).
+**Evitar no mesmo T14 em simultâneo:** Graylog + OpenSearch + Prometheus completo + Loki + Wazuh + k3s + backend de traces. Escolha **A ou B**, **C ou D**, **E** quando houver recursos, **F** quando traces justificarem a RAM (muitas vezes **VM** à parte).
 
 ---
 
 ## 2. Notas de escolha de produto
 
 - **Grafana** costuma ser o hub de **visualização**; liga a Prometheus, InfluxDB, Loki e muitos outros.
-- **Elasticsearch** vs **OpenSearch:** para **Graylog**, segue o backend suportado pela versão; não assumes tutoriais “ELK” genéricos sem verificar versão.
+- **Elasticsearch** vs **OpenSearch:** para **Graylog**, siga o backend suportado pela versão; não assuma tutoriais “ELK” genéricos sem verificar versão.
 - **InfluxDB** 3.x vs 2.x: confirma imagem/docs ao copiar Compose — há mudanças entre majors.
 
 ---
