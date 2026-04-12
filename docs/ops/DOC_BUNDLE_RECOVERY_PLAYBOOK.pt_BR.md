@@ -2,7 +2,7 @@
 
 **English:** [DOC_BUNDLE_RECOVERY_PLAYBOOK.md](DOC_BUNDLE_RECOVERY_PLAYBOOK.md)
 
-**Âmbito:** Concatenaste, moveste ou duplicaste Markdown/YAML por engano (Explorador, `cat`, etc.) e queres **confirmar que nada rastreado se perdeu** e **voltar a um fluxo seguro**. Texto **procedural** para operador / maintainer — não é documentação de utilizador do produto.
+**Âmbito:** Concatenaste, moveste ou duplicaste Markdown/YAML por engano (Explorador, `cat`, etc.) e queres **confirmar que nada rastreado se perdeu** e **voltar a um fluxo seguro**. Texto **procedural** para operador / maintainer — não é documentação do usuário do produto.
 
 **Não substitui** os gates normais de entrega (**`.\scripts\check-all.ps1`**, pre-commit, pytest completo). Usa este playbook **após** incidentes com **árvore local** ou **bundles ad hoc**, não para a qualidade habitual de PR.
 

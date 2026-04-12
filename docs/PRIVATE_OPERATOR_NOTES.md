@@ -98,7 +98,7 @@ This replaces any older wording that implied “the model cannot touch the lab�
 
 ### 5.1 Chat language (pt-BR default, EN for technical tokens)
 
-**Preference (this operator):** Assistants should answer in **concise Brazilian Portuguese (pt-BR)** for narrative—not **Portuguese of Portugal (pt-PT)** (e.g. use **arquivo**, **compartilhar**, **seção**, **padrão** for software defaults). Keep **English** where it is standard in engineering: file paths, commit types, symbol names, flags, and citations of English-only plan rows.
+**Preference (this operator):** Assistants should answer in **concise Brazilian Portuguese (pt-BR)** for narrative—not **Portuguese of Portugal (pt-PT)** (e.g. use **arquivo**, **compartilhar**, **seção**, **padrão** for software defaults). The same **pt-BR** bar applies to **drafts and private docs** under **`docs/private/`** (including **`social_drafts/`**) whenever the prose is Portuguese. **Explicitly English** copy (whole doc or section): prefer **`en-US`** for narrative prose. Keep **English** where it is standard in engineering: file paths, commit types, symbol names, flags, and citations of English-only plan rows.
 
 **Code-switching:** You may mix **pt-BR and English in the same message** (even mid-thought); the assistant should follow without forcing a single language for the whole reply.
 

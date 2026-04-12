@@ -1,6 +1,6 @@
 # Operator Today Mode — 2026-04-09 (carryovers + foco dia 9)
 
-> Preparado no fecho da sessão que prepara **2026-04-09**. Se o relógio local já for **10/04**, trata este ficheiro como arquivo do dia 9 e abre **`OPERATOR_TODAY_MODE_2026-04-10.md`** quando existir.
+> Preparado no fecho da sessão que prepara **2026-04-09**. Se o relógio local já for **10/04**, trate este arquivo como registro do dia 9 e abre **`OPERATOR_TODAY_MODE_2026-04-10.md`** quando existir.
 
 ---
 
@@ -8,7 +8,7 @@
 
 - **`git fetch origin`:** ok.
 - **`origin/main` desde meia-noite local:** nenhum commit novo reportado pelo `git log` neste clone (ou janela vazia).
-- **`git status`:** working tree com **muitas** alterações locais e ficheiros novos (incl. ADRs, ops, scripts, regras Cursor) — **decidir** antes de amanhã: commit por temas, stash, ou continuar em branch; não assumir `main` limpo.
+- **`git status`:** working tree com **muitas** alterações locais e arquivos novos (incl. ADRs, ops, scripts, regras Cursor) — **decidir** antes de amanhã: commit por temas, stash, ou continuar em branch; não assumir `main` limpo.
 - **PRs abertos (`gh pr list`):** **#177** — Dependabot `cryptography` 46.0.6 → 46.0.7 (`dependabot/uv/uv-3344959f9f`). Quando verde: `.\scripts\pr-merge-when-green.ps1 -PrNumber 177` ou revisão manual.
 - **Git privado empilhado (`docs/private/`):** ritual reportou **pendências** — correr `.\scripts\private-git-sync.ps1` (e `-Push` se aplicável) quando fizer sentido.
 
@@ -17,7 +17,7 @@
 ## Onde estão rascunhos de **outras** redes (não só LinkedIn)
 
 - **Hub com inventário (X, WordPress, estado, URLs):** `docs/private/social_drafts/SOCIAL_HUB.md`
-- **Ficheiros:** mesma pasta `docs/private/social_drafts/` — padrões `2026-*_x_*.md` (X), `*_wordpress_*.md` (WordPress); tabela **Inventário** no hub lista **X1–X4**, **W1–W2**.
+- **Arquivos:** mesma pasta `docs/private/social_drafts/` — padrões `2026-*_x_*.md` (X), `*_wordpress_*.md` (WordPress); tabela **Inventário** no hub lista **X1–X4**, **W1–W2**.
 - **Filas:** `EDITORIAL_X_ROTACAO_2026-04.md` (X) · `EDITORIAL_LINKEDIN_SERIE_2026-04.md` (LinkedIn)
 
 ---

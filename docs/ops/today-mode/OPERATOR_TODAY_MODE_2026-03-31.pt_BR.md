@@ -27,13 +27,13 @@
 
 - Triagem dos PRs Dependabot (ver [CARRYOVER.pt_BR.md](CARRYOVER.pt_BR.md)); sessão **`deps`** conforme **`SECURITY.md`**.
 - **Status 2026-03-31:** PRs Dependabot relevantes foram mergeados (ver `CARRYOVER`); se surgirem novos, repetir “checks verdes + mergeable” antes de merge.
-- Leitura fina: [SPRINTS_AND_MILESTONES.pt_BR.md](../../plans/SPRINTS_AND_MILESTONES.pt_BR.md) S0 se quiseres higiene Scout/Hub na mesma semana.
+- Leitura fina: [SPRINTS_AND_MILESTONES.pt_BR.md](../../plans/SPRINTS_AND_MILESTONES.pt_BR.md) S0 se quiser higiene Scout/Hub na mesma semana.
 
 ---
 
 ## Bloco C — Fatia doc opcional (token-aware)
 
-- Um PR **`docs`**: primeiras linhas **Gemini Cold** no `PLANS_TODO.md` (ex. **G-26-04**, **G-26-13**) se quiseres progresso de baixo risco.
+- Um PR **`docs`**: primeiras linhas **Gemini Cold** no `PLANS_TODO.md` (ex. **G-26-04**, **G-26-13**) se quiser progresso de baixo risco.
 
 ---
 

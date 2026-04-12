@@ -8,7 +8,7 @@
 
 **Política do mantenedor (este repositório):** **Telegram não é usado** para notificações do Data Boar nem para comunicação de projeto com esse ângulo — postura de confiança e escolha do operador. A **única** alternativa de chat ao **Slack** para pings operacionais é o **Signal** (API HTTP via **`signal-cli`** / **signald** em Docker na LAN ou homelab — ver §3 e **[private.example/notify/README.md](../private.example/notify/README.md)**). Não acrescentar workflows baseados em Telegram nem recomendar Telegram para alcance ao operador do Data Boar em docs rastreados.
 
-**Sequenciamento (mantenedor):** Por ora, **só o canal A** — app **GitHub** no celular + watch/e-mail nas configurações — **basta** para PRs, reviews, Dependabot, Security e **Actions com falha**. Quando quiser **redundância** ou alertas no estilo “chat”, use **B** (Slack — já integrado no Actions) e/ou **C** (ponte Signal); o Slack é o fornecedor de menor atrito a partir do GitHub Actions; o Signal é o **segundo chat preferido** se quiseres depender menos da UX do Slack. **Este doc é o lembrete de integração** para esses próximos passos.
+**Sequenciamento (mantenedor):** Por ora, **só o canal A** — app **GitHub** no celular + watch/e-mail nas configurações — **basta** para PRs, reviews, Dependabot, Security e **Actions com falha**. Quando quiser **redundância** ou alertas no estilo “chat”, use **B** (Slack — já integrado no Actions) e/ou **C** (ponte Signal); o Slack é o fornecedor de menor atrito a partir do GitHub Actions; o Signal é o **segundo chat preferido** se quiser depender menos da UX do Slack. **Este doc é o lembrete de integração** para esses próximos passos.
 
 ## Prova rápida “CHAN-OK” (Slack) — 10 minutos, sem mistério
 
