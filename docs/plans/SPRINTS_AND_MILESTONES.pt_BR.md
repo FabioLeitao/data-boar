@@ -128,7 +128,7 @@ Escolher **só um** item—token-aware; operador valida num deploy real.
 
 | Escolha uma | Onde implementar | Pronto quando |
 | ----------- | ---------------- | ------------- |
-| **One-liner de runbook** | Estender [OBSERVABILITY_SRE.md](../OBSERVABILITY_SRE.pt_BR.md) ou [DEPLOY.pt_BR.md](../deploy/DEPLOY.pt_BR.md): se o app cair → checar **`GET /health`**, logs, `CONFIG_PATH`, disco/caminho SQLite, reinício; se o scan travar → … | Uma subsecção curta; link no PLANS_TODO se útil. |
+| **One-liner de runbook** | Estender [OBSERVABILITY_SRE.md](../OBSERVABILITY_SRE.pt_BR.md) ou [DEPLOY.pt_BR.md](../deploy/DEPLOY.pt_BR.md): se o app cair → checar **`GET /health`**, logs, `CONFIG_PATH`, disco/caminho SQLite, reinício; se o scan travar → … | Uma subseção curta; link no PLANS_TODO se útil. |
 | **Nota backup / restore** | [USAGE.pt_BR.md](../USAGE.pt_BR.md) e/ou [DEPLOY.pt_BR.md](../deploy/DEPLOY.pt_BR.md): o que guardar (config, SQLite, dir de relatórios); como restaurar. | EN + pt-BR conforme política de docs. |
 | **Gancho de KPI** | Rodar **`python scripts/kpi-export.py --limit-prs 10`**; colar ou arquivo em `docs/releases/` (ex. `kpi_snapshot.md`) ou linha na próxima release note. | Baseline do [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) §4.7 refletida no texto. |
 

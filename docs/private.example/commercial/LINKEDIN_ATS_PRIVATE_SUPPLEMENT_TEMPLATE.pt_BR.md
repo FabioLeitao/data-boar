@@ -54,7 +54,7 @@ Instrução: copiar da descrição de vagas-alvo e validar contra projetos reais
 
 ---
 
-## Pedidos de recomendação (quem contactar e ângulo)
+## Pedidos de recomendação (quem contatar e ângulo)
 
 | Pessoa / papel | Ângulo solicitado |
 | ---------------- | ----------------- |
