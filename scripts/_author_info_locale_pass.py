@@ -2,6 +2,7 @@
 
 Skips aggressive partilh* / repost wording — fix those files manually if needed.
 """
+
 from __future__ import annotations
 
 import pathlib
