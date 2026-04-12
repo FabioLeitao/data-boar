@@ -147,7 +147,7 @@ Detalhes (NodePort, LoadBalancer, Ingress, persistência) em `deploy/kubernetes/
 
 Em `deploy/docker-compose.yml` defina `image: fabioleitao/data_boar:latest` e remova ou comente o bloco `build:`. Prepare `/data/config.yaml` como na seção 2 e use docker run, Compose, Swarm ou Kubernetes como acima.
 
-## 8. Docker Hub: tags suportadas e descontinuar imagens antigas
+## 8. Docker Hub: tags suportadas e descontinuação de imagens antigas
 
 **Por que importa:** Tags públicas continuam **puxáveis** até você removê-las no Docker Hub. Limpar tags **obsoletas** reduz o reuso casual de builds antigos (CVEs, padrões errados) e alinha a documentação ao que você realmente suporta.
 

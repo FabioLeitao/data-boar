@@ -1,8 +1,8 @@
-# Lab-op — syslog + deteção (checklist mínimo)
+# Lab-op — syslog + detecção (checklist mínimo)
 
 **Copie para `docs/private/homelab/`** ao implementar; IP do colector, portas e retenção só em notas privadas. **Nunca** faça commit de detalhes reais de LAN no repositório público.
 
-**Trilha canónica:** [PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md](../../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md) — fases **A/B** (métricas), **C** (logs), **E** (Wazuh).
+**Trilha canônica:** [PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md](../../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md) — fases **A/B** (métricas), **C** (logs), **E** (Wazuh).
 
 ---
 
@@ -28,7 +28,7 @@
 
 ---
 
-## Checklist mínimo — deteção (“meu”)
+## Checklist mínimo — detecção (“meu”)
 
 - [ ] **Linha de base:** logs centralizados (acima) antes de caçar alertas estilo SIEM.
 - [ ] **Wazuh (quando der):** VM **manager** dedicada; **agentes** nos Linux do lab que importam; **excluir** caminhos ruidosos no `ossec.conf`; começar com políticas de **vulnerability + rootcheck + syscheck** sustentáveis.
