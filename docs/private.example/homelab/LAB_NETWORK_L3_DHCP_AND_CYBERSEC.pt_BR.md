@@ -25,7 +25,7 @@ Repetir para **cada** rede/VLAN (ex.: Default, IoT, Oficial, convidados):
 1. Em **DHCP**:
    - Intervalo **dentro** da subnet.
    - **Router / gateway padrão** no DHCP = igual ao passo 3.
-   - **Servidores DNS** = o que queres **nessa** VLAN (muitas vezes o UDM `.1`; ajusta se usares outro resolvedor).
+   - **Servidores DNS** = o que você quer **nessa** VLAN (muitas vezes o UDM `.1`; ajuste se usar outro resolvedor).
 1. **Definições → Wi‑Fi** → cada SSID → **rede / VLAN** aponta para a rede **pretendida** (ex.: SSID IoT → rede IoT apenas).
 
 **Depois de mudar:** renovar DHCP num cliente de teste (desligar/ligar Wi‑Fi ou `ipconfig /release` + `/renew` no Windows).
@@ -39,7 +39,7 @@ Funcionalidades **no controlador** ou **por rede**; rótulos de menu mudam um po
 | Área                            | O que anotar nas notas privadas                                           | Por que importa                                                              |                        |                                                                                                                      |
 | ----                            | --------------------------------                                          | ---------------                                                              |                        |                                                                                                                      |
 | **DNS encriptado**              | **Predefined** e quais fornecedores (ex.: Quad9, variantes Cloudflare)    | Clientes podem contornar política local se DNS não estiver alinhado ao DHCP. |                        |                                                                                                                      |
-| **Prevenção de intrusão (IPS)** | Ligado/desligado; **redes** no âmbito; data de atualização de assinaturas | Superfície de deteção; supressões com **ID + motivo** noutro documento.      |                        |                                                                                                                      |
+| **Prevenção de intrusão (IPS)** | Ligado/desligado; **redes** no âmbito; data de atualização de assinaturas | Superfície de detecção; supressões com **ID + motivo** em outro documento.      |                        |                                                                                                                      |
 | **Honeypot**                    | Tabela **Rede                                                             | Subnet                                                                       | Endereço do honeypot** | O IP do honeypot **precisa estar** **dentro** da subnet listada; muitos desenhos usam **`.2`** com gateway **`.1`**. |
 
 **Dica de UI:** com zoom baixo no browser, **0** e **8** no **terceiro octeto** (ex.: `…40…` vs `…48…`) confundem — **aumenta o zoom** ou copia os valores para a tabela privada.

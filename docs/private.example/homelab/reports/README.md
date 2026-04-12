@@ -30,10 +30,10 @@ bash scripts/homelab-host-report.sh | tee "docs/private/homelab/reports/$(hostna
 
 Para gravar a saída do probe SNMP em **arquivo local** (pasta gitignored), sem colocar segredos na tarefa agendada:
 
-1. Crie **`docs/private/homelab/.env.snmp.local`** (nome exato, com o ponto no início), **ou** um ficheiro dedicado por equipamento (ex.: **`.env.snmp.udm-se.local`** para UDM SE — mesmo conteúdo que o exemplo). Copie do modelo rastreado: **`docs/private.example/homelab/env.snmp.local.example`** →
+1. Crie **`docs/private/homelab/.env.snmp.local`** (nome exato, com o ponto no início), **ou** um arquivo dedicado por equipamento (ex.: **`.env.snmp.udm-se.local`** para UDM SE — mesmo conteúdo que o exemplo). Copie do modelo rastreado: **`docs/private.example/homelab/env.snmp.local.example`** →
 
    `Copy-Item docs\private.example\homelab\env.snmp.local.example docs\private\homelab\.env.snmp.local`
-   Depois edite com os valores reais (ver [CREDENTIALS_AND_LAB_SECRETS.md](../CREDENTIALS_AND_LAB_SECRETS.md)). Se usares ficheiro **não** default, nos testes e no Agendador passa **`-EnvFile "docs\private\homelab\.env.snmp.udm-se.local"`** (ajusta o nome).
+   Depois edite com os valores reais (ver [CREDENTIALS_AND_LAB_SECRETS.md](../CREDENTIALS_AND_LAB_SECRETS.md)). Se usar um arquivo **não** default, nos testes e no Agendador passe **`-EnvFile "docs\private\homelab\.env.snmp.udm-se.local"`** (ajuste o nome).
 
 1. Teste manualmente na raiz do repo:
 

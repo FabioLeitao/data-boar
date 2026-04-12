@@ -8,22 +8,22 @@
 
 ## Relação com outros planos e docs
 
-| Tema                                           | Referência canónica                                                                                                                       |
+| Tema                                           | Referência canônica                                                                                                                       |
 | ----                                           | -------------------                                                                                                                       |
 | **Fases** de métricas/logs/SIEM (A–E)          | [PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md](PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md)                                                      |
 | Checklist DHCP, DNS, honeypot CyberSecure      | [LAB_NETWORK_L3_DHCP_AND_CYBERSEC.pt_BR.md](../private.example/homelab/LAB_NETWORK_L3_DHCP_AND_CYBERSEC.pt_BR.md)                         |
 | Capacidades do assistente + cadência blue team | [OPERATOR_AI_LAB_ACCESS_AND_BLUE_TEAM_RUNBOOK.pt_BR.md](../private.example/homelab/OPERATOR_AI_LAB_ACCESS_AND_BLUE_TEAM_RUNBOOK.pt_BR.md) |
-| Checklist syslog e deteção                     | [OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.pt_BR.md](../private.example/homelab/OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.pt_BR.md)         |
+| Checklist syslog e detecção                     | [OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.pt_BR.md](../private.example/homelab/OBSERVABILITY_SYSLOG_DETECTION_CHECKLIST.pt_BR.md)         |
 | Stack mínima de contentores antes do pesado    | [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](../ops/LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md) §1–§7                                           |
 | UniFi + SNMP                                   | [HOMELAB_UNIFI_UDM_LAB_NETWORK.pt_BR.md](../ops/HOMELAB_UNIFI_UDM_LAB_NETWORK.pt_BR.md)                                                   |
 
-**Regra de hardware (inalterada):** Não planear correr **Prometheus + Loki + Graylog/OpenSearch + Wazuh + k3s completo** em simultâneo num portátil **≤16 GB RAM**. Preferir **um** caminho de métricas, **um** de logs, **Wazuh** numa **VM/torre** quando estiver pronto.
+**Regra de hardware (inalterada):** Não planejar correr **Prometheus + Loki + Graylog/OpenSearch + Wazuh + k3s completo** em simultâneo num portátil **≤16 GB RAM**. Preferir **um** caminho de métricas, **um** de logs, **Wazuh** numa **VM/torre** quando estiver pronto.
 
 ---
 
 ## Sequência recomendada (fases 0–5)
 
-Ordem **obrigatória** salvo hardware já existente para uma fase posterior (ex.: saltar métricas leves se só quiseres logs — mantém sempre a **fase 0** primeiro).
+Ordem **obrigatória** salvo hardware já existente para uma fase posterior (ex.: saltar métricas leves se só quiser logs — mantém sempre a **fase 0** primeiro).
 
 | Fase  | Nome                               | Objetivo                                                                                                                                        | Entregas principais                                                                                                                                                                            |
 | ----  | ----                               | --------                                                                                                                                        | -------------------                                                                                                                                                                            |
@@ -68,7 +68,7 @@ Ordem **obrigatória** salvo hardware já existente para uma fase posterior (ex.
 
 ## Acompanhamento
 
-- **Lista central:** [PLANS_TODO.md](PLANS_TODO.md) — subsecção *LAB-OP — firewall, acesso, observabilidade*.
+- **Lista central:** [PLANS_TODO.md](PLANS_TODO.md) — subseção *LAB-OP — firewall, acesso, observabilidade*.
 - **Detalhe de observabilidade:** [PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md](PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md).
 - **Estado:** 🔄 Plano de sequenciamento ativo — progresso nas notas privadas e opcionalmente marcas na checklist deste arquivo.
 

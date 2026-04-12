@@ -4,7 +4,7 @@
 
 **Público:** Mantenedor e colaboradores de confiança que planejam **como ajudar pessoas a crescer** enquanto contribuem com o Data Boar. Este arquivo usa **somente arquétipos de papel** — sem nomes de candidatos, notas ou URLs do LinkedIn (isso fica em **`docs/private/`**).
 
-**Veja também:** [COLLABORATION_TEAM.pt_BR.md](COLLABORATION_TEAM.pt_BR.md), [CONTRIBUTING.pt_BR.md](../CONTRIBUTING.pt_BR.md); entradas de planeamento (sem link direto desta camada, ver ADR 0004): `docs/plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md` (cadência de estudo, sequência CWL, suplementos PUCRS), `docs/plans/PLANS_HUB.md`.
+**Veja também:** [COLLABORATION_TEAM.pt_BR.md](COLLABORATION_TEAM.pt_BR.md), [CONTRIBUTING.pt_BR.md](../CONTRIBUTING.pt_BR.md); entradas de planejamento (sem link direto desta camada, ver ADR 0004): `docs/plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md` (cadência de estudo, sequência CWL, suplementos PUCRS), `docs/plans/PLANS_HUB.md`.
 
 ---
 

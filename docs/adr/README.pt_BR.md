@@ -28,8 +28,8 @@ Notas curtas e duradouras que registram **por que** o projeto escolheu um caminh
 
 ## Docs relacionados
 
-- [ADR 0022](0022-public-glossary-compliance-and-platform-terms.md) (EN) — glossário público: leis de conformidade, papéis (ex.: DPO), termos de plataforma (SRE, TLS, OAuth2); definições curtas; detalhe nos docs canónicos.
-- [ADR 0021](0021-public-web-presence-dns-alias-and-hosting.md) (EN) — presença web pública: alias DNS (CNAME), host canónico, TLS, forma de hospedagem (marketing vs produto).
+- [ADR 0022](0022-public-glossary-compliance-and-platform-terms.md) (EN) — glossário público: leis de conformidade, papéis (ex.: DPO), termos de plataforma (SRE, TLS, OAuth2); definições curtas; detalhe nos docs canônicos.
+- [ADR 0021](0021-public-web-presence-dns-alias-and-hosting.md) (EN) — presença web pública: alias DNS (CNAME), host canônico, TLS, forma de hospedagem (marketing vs produto).
 - [ADR 0020](0020-ci-full-git-history-pii-gate.md) (EN) — a CI executa `pii_history_guard.py --full-history` com checkout completo (`fetch-depth: 0`).
 - [CONTRIBUTING.pt_BR.md](../../CONTRIBUTING.pt_BR.md) — fluxo do contribuidor; menciona MD029 e o script de correção.
 - [SECURITY.pt_BR.md](../../SECURITY.pt_BR.md) · [TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md) — entradas para operadores ([ADR 0002](0002-operator-facing-security-and-technical-docs.md), EN).
