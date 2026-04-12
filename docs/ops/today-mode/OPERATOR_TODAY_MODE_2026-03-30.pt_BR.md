@@ -4,7 +4,7 @@
 
 **Objetivo:** Um dia **focado** **sem** **Bloco 0 de carryover** — pediste para omitir carryon. Começa direto em **higiene do repositório + disciplina de merge**. Usa **`today-mode 2026-03-30`** no chat. Limites do dia: **`carryover-sweep`** (manhã, opcional) · **`eod-sync`** (fim do dia) — **`scripts/operator-day-ritual.ps1`**, **`.cursor/rules/session-mode-keywords.mdc`**.
 
-**Nota:** Se mais tarde quiseres varredura de carryover, corre **`carryover-sweep`** à parte ou abre **[OPERATOR_TODAY_MODE_2026-03-29.pt_BR.md](OPERATOR_TODAY_MODE_2026-03-29.pt_BR.md)** — **não** faz parte desta checklist.
+**Nota:** Se mais tarde quiser varredura de carryover, corre **`carryover-sweep`** à parte ou abre **[OPERATOR_TODAY_MODE_2026-03-29.pt_BR.md](OPERATOR_TODAY_MODE_2026-03-29.pt_BR.md)** — **não** faz parte desta checklist.
 
 **Estado de publicação (verificado 2026-03-30):** **`pyproject.toml`** em `main` está em **1.6.7**, alinhado com **GitHub Release Latest [`v1.6.7`](https://github.com/FabioLeitao/data-boar/releases/tag/v1.6.7)** (publicada **2026-03-26**) e **Docker Hub** **`fabioleitao/data_boar:1.6.7`** + **`latest`**. A próxima versão **pública** depois de commits novos relevantes → **`1.6.8`** (bump + notas), não **republicar** **1.6.7**.
 
@@ -27,7 +27,7 @@
 
 ## Bloco C — Follow-ups finos opcionais (≈ 30 min, escolhe um)
 
-- **Supply chain:** confirma que **`uv.lock`** continua **sem `litellm`** depois de qualquer refresh de deps; nota de uma linha em **`SECURITY.md`** / diário privado sobre o incidente PyPI **`litellm`** (mar/2026) se quiseres lembrete durável (opcional).
+- **Supply chain:** confirma que **`uv.lock`** continua **sem `litellm`** depois de qualquer refresh de deps; nota de uma linha em **`SECURITY.md`** / diário privado sobre o incidente PyPI **`litellm`** (mar/2026) se quiser lembrete durável (opcional).
 - **Inspirações:** espreita **[ENGINEERING_CRAFT_INSPIRATION_ANALYSIS.pt_BR.md](../ENGINEERING_CRAFT_INSPIRATION_ANALYSIS.pt_BR.md)** — acrescenta **um** bullet de cluster só se surgiu padrão novo.
 
 ---

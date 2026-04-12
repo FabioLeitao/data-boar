@@ -82,9 +82,9 @@ A tabela em **`.cursor/rules/session-mode-keywords.mdc`** é **pequena e só em 
 
 **Não** é regra para contribuidores — este parágrafo aponta para nota **só do operador** em `docs/private/` (gitignored do `origin`) para quem quiser **reduzir** atividade visível no GitHub no expediente (home office), **sem** proibir trabalho local.
 
-- **Detalhe canónico (privado):** `docs/private/OPERATOR_GIT_PR_RHYTHM_OFFICE_HOURS.pt_BR.md` — quando empacotar vs enviar já; excepções **crítico primeiro** e **segurança**; assuntos de commit como “rastos digitais”.
+- **Detalhe canônico (privado):** `docs/private/OPERATOR_GIT_PR_RHYTHM_OFFICE_HOURS.pt_BR.md` — quando empacotar vs enviar já; exceções **crítico primeiro** e **segurança**; assuntos de commit como “rastos digitais”.
 - **Resumo:** Preferir **menos** pushes/merges em dias úteis no **horário comercial** de referência (**America/Sao_Paulo**) quando o assunto **pode esperar**; **fazer** commit/push/merge **na hora** para itens **críticos** na matriz de prioridade, **segurança/CVE**, **CI em `main` partido**, ou equivalente — com **Conventional Commit** claro no assunto/corpo.
-- **Assistentes:** Ler o arquivo **privado** para o **modo** actual. Se indicar **sabático / entre empregos**, **não** aplicar por defeito o empacotar/deslocar para fora do expediente. Com modo **empregado** activo, **aplicar** isto por defeito ao sugerir **push / PR / merge** — empacotar ou deslocar trabalho **não crítico** para **fora do expediente**; **não** pressionar por actividade pública ruidosa no GitHub em horário comercial salvo as excepções da §7.1 ou pedido explícito do operador na sessão.
+- **Assistentes:** Ler o arquivo **privado** para o **modo** atual. Se indicar **sabático / entre empregos**, **não** aplicar por padrão o empacotar/deslocar para fora do expediente. Com modo **empregado** ativo, **aplicar** isto por padrão ao sugerir **push / PR / merge** — empacotar ou deslocar trabalho **não crítico** para **fora do expediente**; **não** pressionar por atividade pública ruidosa no GitHub em horário comercial salvo as exceções da §7.1 ou pedido explícito do operador na sessão.
 
 **Modelo rastreado:** `docs/private.example/OPERATOR_GIT_PR_RHYTHM_OFFICE_HOURS.example.md`.
 
@@ -92,11 +92,11 @@ A tabela em **`.cursor/rules/session-mode-keywords.mdc`** é **pequena e só em 
 
 ## 8. Recap de progresso recente (`git`, token-aware)
 
-Quando quiseres um **resumo curto** do **ritmo** (o que entrou em **`origin/main`**) sem reler tabelas inteiras de planos:
+Quando quiser um **resumo curto** do **ritmo** (o que entrou em **`origin/main`**) sem reler tabelas inteiras de planos:
 
-1. Na raiz do repo: **`.\scripts\git-progress-recap.ps1`** — por padrão **últimos 3 dias** em **`origin/main`**; **`-Days 7`** ou **`-Days 14`** alargam a janela; **`-MaxPerDay`** limita linhas se houve rajada de merges; **`-NoFetch`** se estiveres offline.
-1. A saída agrupa por **data** com **uma linha por commit** (`hash` + assunto) para veres dias **cheios vs calmos** e **temas** pelos prefixos Conventional Commit (`feat`, `docs`, `chore`, …).
-1. **Não** substitui **`PLANS_TODO.md`**, **`today-mode`** nem **`carryover-sweep` / `eod-sync`** — serve como **narrativa barata** antes de planear o dia ou fazer retro.
+1. Na raiz do repo: **`.\scripts\git-progress-recap.ps1`** — por padrão **últimos 3 dias** em **`origin/main`**; **`-Days 7`** ou **`-Days 14`** alargam a janela; **`-MaxPerDay`** limita linhas se houve rajada de merges; **`-NoFetch`** se estiver offline.
+1. A saída agrupa por **data** com **uma linha por commit** (`hash` + assunto) para ver dias **cheios vs calmos** e **temas** pelos prefixos Conventional Commit (`feat`, `docs`, `chore`, …).
+1. **Não** substitui **`PLANS_TODO.md`**, **`today-mode`** nem **`carryover-sweep` / `eod-sync`** — serve como **narrativa barata** antes de planejar o dia ou fazer retro.
 
 **Hábito no chat (opcional):** colar a saída do script no Cursor ao alinhar “o que aconteceu esta semana” — menos tokens que um `git log` bruto. **Não** é preciso novo token em inglês; basta linguagem natural (“**progress recap 7 days**”).
 
@@ -104,7 +104,7 @@ Quando quiseres um **resumo curto** do **ritmo** (o que entrou em **`origin/main
 
 ## 9. Slack AFK + falha de CI (canal B)
 
-Quando estiver **longe do teclado**, **GitHub mobile (canal A)** + **Slack (canal B)** dão redundância: falhas de CI e pings manuais chegam sem precisares ficar no Cursor.
+Quando estiver **longe do teclado**, **GitHub mobile (canal A)** + **Slack (canal B)** dão redundância: falhas de CI e pings manuais chegam sem precisar ficar no Cursor.
 
 - **Setup:** [OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md](OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md) §4.1 — `SLACK_WEBHOOK_URL` nos secrets; **Actions → Slack operator ping (manual)** para smoke; **Slack CI failure notify** quando o workflow **CI** termina com **failure** (mesmo secret).
 - **Produto / scan-complete:** reutilização opcional do webhook na app (USAGE) — separado dos Actions.

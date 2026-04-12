@@ -10,7 +10,7 @@
 - **Branch:** `main` — alinhado com `origin/main` (working tree limpo no repo público).
 - **Commits em `origin/main` desde meia-noite local (8 abr):** ver `git log origin/main --since=midnight --oneline` — inclui deps pygments (Dependabot), fixes scripts/guard, housekeeping.
 - **PRs abertos (`gh pr list`):** nenhum no momento do ritual EOD.
-- **Git privado empilhado (`docs/private/`):** o ritual reportou **alterações pendentes** no private repo — correr `.\scripts\private-git-sync.ps1` (e `-Push` se quiseres enviar para o remote de lab) **antes** de dormir se quiseres histórico seguro das notas desta sessão.
+- **Git privado empilhado (`docs/private/`):** o ritual reportou **alterações pendentes** no private repo — correr `.\scripts\private-git-sync.ps1` (e `-Push` se quiser enviar para o remote de lab) **antes** de dormir se quiser histórico seguro das notas desta sessão.
 
 ---
 
@@ -19,9 +19,9 @@
 Ver tabela completa em **`OPERATOR_TODAY_MODE_2026-04-06.md`**. Resumo:
 
 - [ ] Commit/push **Ansible + USAGE** se ainda houver diff local noutra máquina ou branch
-- [ ] `USAGE.pt_BR.md` — secção Ansible (sync EN)
+- [ ] `USAGE.pt_BR.md` — seção Ansible (sync EN)
 - [ ] `ansible-playbook … --check` no T14/lab quando disponível
-- [ ] **T14 / `uv`:** playbook actual não instala toolchain dev — se quiseres testar Data Boar **a partir do código** no T14, ou instalas `uv` à mão ou abrimos issue/PR para role opcional `uv` (discutido no chat)
+- [ ] **T14 / `uv`:** playbook atual não instala toolchain dev — se quiser testar Data Boar **a partir do código** no T14, ou instalas `uv` à mão ou abrimos issue/PR para role opcional `uv` (discutido no chat)
 - [ ] Homelab: NVMe USB-C; VeraCrypt (private doc)
 
 ---
@@ -29,8 +29,8 @@ Ver tabela completa em **`OPERATOR_TODAY_MODE_2026-04-06.md`**. Resumo:
 ## CARRYOVER — sessão privada desta madrugada (só `docs/private/`)
 
 - [ ] **`private-git-sync`:** muitas linhas em estado pendente no nested git — commit + push conforme política
-- [ ] LinkedIn / About / typo de perfil — checklist e nomes de empregador **só** em `docs/private/` (ex.: goals master em `docs/private/author_info/`), não neste ficheiro público
-- [ ] Opcional: re-fetch de perfil para pasta de pastes privados depois de editares o perfil
+- [ ] LinkedIn / About / typo de perfil — checklist e nomes de empregador **só** em `docs/private/` (ex.: goals master em `docs/private/author_info/`), não neste arquivo público
+- [ ] Opcional: re-fetch de perfil para pasta de pastes privados depois de editar o perfil
 
 ---
 
@@ -47,7 +47,7 @@ Ver tabela completa em **`OPERATOR_TODAY_MODE_2026-04-06.md`**. Resumo:
 
 - **Cadência de estudos:** `docs/plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md` §3.0–§3.2; token **`study-check`** no chat para recap.
 - **Empregador / política de rede social:** detalhes só em `docs/private/` — não duplicar neste runbook público.
-- **Sono:** boas noites; ao acordar, abre este ficheiro ou o de **2026-04-09** conforme o relógio.
+- **Sono:** boas noites; ao acordar, abre este arquivo ou o de **2026-04-09** conforme o relógio.
 
 ---
 

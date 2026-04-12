@@ -69,10 +69,10 @@ Anexe **só** o pacote; não misture notas privadas. Mantenha o **texto do promp
 
 ### Prompt completo (predefinição)
 
-**Linha de papel:** usamos **uma frase** (revisor técnico + domínio) em vez de um parágrafo longo “és um especialista…”. Para este uso, **âmbito + formato de saída + FILE:** costumam valer mais que um título pomposo. Se quiseres zero “roleplay”, apaga a primeira frase e mantém só “Você revisa…”.
+**Linha de papel:** usamos **uma frase** (revisor técnico + domínio) em vez de um parágrafo longo “és um especialista…”. Para este uso, **âmbito + formato de saída + FILE:** costumam valer mais que um título pomposo. Se quiser zero “roleplay”, apaga a primeira frase e mantém só “Você revisa…”.
 
 ```text
-Você é revisor de documentação técnica de um produto open source sensível a segurança e conformidade (Data Boar — deteção de sensibilidade estilo LGPD). Revise apenas o anexo; cada arquivo vem assim:
+Você é revisor de documentação técnica de um produto open source sensível a segurança e conformidade (Data Boar — detecção de sensibilidade estilo LGPD). Revise apenas o anexo; cada arquivo vem assim:
 --- FILE: <caminho> ---
 <corpo>
 
@@ -126,7 +126,7 @@ Sem prosa longa. Não repetir o conteúdo dos arquivos.
 
   ```
 
-  Opcional: `--rstrip-lines` se houver diferença só de espaços no fim da linha; `--include-private-corpus` só se quiseres incluir `docs/private/**` no corpus. `--fail-if-uncovered-pct-above 0` sai com código ≠ 0 se restar **alguma** linha sem cobertura (gate rígido; em blobs reais costuma ser barulhento demais).
+  Opcional: `--rstrip-lines` se houver diferença só de espaços no fim da linha; `--include-private-corpus` só se quiser incluir `docs/private/**` no corpus. `--fail-if-uncovered-pct-above 0` sai com código ≠ 0 se restar **alguma** linha sem cobertura (gate rígido; em blobs reais costuma ser barulhento demais).
   **Várias janelas:** `--sweep-windows 12,15,18,22,25,30` imprime uma tabela comparativa (repetir com `--rstrip-lines` para comparar barreiras de whitespace). Ver **[DOC_BUNDLE_RECOVERY_PLAYBOOK.pt_BR.md](DOC_BUNDLE_RECOVERY_PLAYBOOK.pt_BR.md)** § Várias passagens.
 - Política de notificação: [OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md](OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md).
 

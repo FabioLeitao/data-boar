@@ -8,7 +8,7 @@
 
 ---
 
-## Companheiros canónicos (ler com frequência)
+## Companheiros canônicos (ler com frequência)
 
 | Doc | Função |
 | --- | ------ |

@@ -10,6 +10,10 @@ alwaysApply: false
 
 **Operator chat:** When the operator writes in Portuguese, replies follow the **same** vocabulary and style bar — see **`.cursor/rules/operator-chat-language-pt-br.mdc`** (always applied) and **`.cursor/skills/operator-dialogue-pt-br/SKILL.md`**.
 
+**Scope beyond `*.pt_BR.md`:** Portuguese text in **gitignored** operator paths (e.g. **`docs/private/social_drafts/*.md`**, private runbooks) should still read **Brazilian**, not European Portuguese—same table below. Automated tests may not scan those paths; assistants **enforce by habit**.
+
+**English-only prose:** When a document or section is **explicitly EN** (not a pt-BR mirror), **`en-US`** is the preferred register for narrative copy unless the repo already standardizes otherwise.
+
 ## Prefer (pt-BR) vs avoid (typical pt-PT)
 
 | Prefer                                | Avoid                                                  |

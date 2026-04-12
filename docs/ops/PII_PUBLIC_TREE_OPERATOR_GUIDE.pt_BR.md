@@ -4,7 +4,7 @@
 
 **Fonte unica de verdade:** Este arquivo consolida os documentos antigos **`PII_VERIFICATION_RUNBOOK`**, **`PII_DEFINITIVE_REMEDIATION`** e **`GITHUB_FORK_CLONE_VISIBILITY_AND_OPERATOR_AUDIT`**. Esses caminhos permanecem como **redirecionamentos permanentes** para que links e ADRs continuem validos; **edite o procedimento apenas aqui** para evitar drift.
 
-**Público:** Mantenedor / operador com permissão de push no repositório canónico no GitHub (substitui **`OWNER`** pelo utilizador ou organização dono do repo — ex.: `OWNER/data-boar`).
+**Público:** Mantenedor / operador com permissão de push no repositório canônico no GitHub (substitui **`OWNER`** pelo usuário ou organização dono do repo — ex.: `OWNER/data-boar`).
 
 ---
 
@@ -280,9 +280,9 @@ Isto **já está no `main`** no arco de higiene PII (não refazer salvo mudança
 
 ## H. Checklist do operador — executar (assumido obrigatório até estar feito)
 
-Ordem sugerida. **Nenhum passo é opcional** se quiseres fecho organizacional, não só “testes verdes num portátil.”
+Ordem sugerida. **Nenhum passo é opcional** se quiser fecho organizacional, não só “testes verdes num portátil.”
 
-### H.1 Gate completo no PC Windows (clone canónico)
+### H.1 Gate completo no PC Windows (clone canônico)
 
 ```powershell
 cd C:\caminho\para\data-boar
@@ -356,7 +356,7 @@ A automação **não** reescreve corpos de issue/PR. **Manualmente** pesquisa no
 
 Se usares `~/clean-slate.sh` num host Linux de lab:
 
-1. **Antes:** garante que **`docs/private/security_audit/PII_LOCAL_SEEDS.txt`** no teu workspace está atualizado (ou define **`PII_SEEDS_FROM_SCP`** no ambiente para o modelo fazer **`scp`** de seeds canónicos de outro host de lab após o clone quando a árvore privada empilhada ainda não existir). O script atualiza **`~/.config/PII/PII_LOCAL_SEEDS.txt`** a partir do caminho no workspace quando existir.
+1. **Antes:** garanta que **`docs/private/security_audit/PII_LOCAL_SEEDS.txt`** no seu workspace está atualizado (ou define **`PII_SEEDS_FROM_SCP`** no ambiente para o modelo fazer **`scp`** de seeds canônicos de outro host de lab após o clone quando a árvore privada empilhada ainda não existir). O script atualiza **`~/.config/PII/PII_LOCAL_SEEDS.txt`** a partir do caminho no workspace quando existir.
 2. **Corre** `~/clean-slate.sh` — é **destrutivo** (remove a árvore local `data-boar` e volta a clonar). Só quando aceitares re-download completo e o custo do guard de histórico completo.
 3. **Depois de cada execução**, no clone novo: `python3 scripts/pii_history_guard.py --full-history` (e o teu **`git grep`** / checks de seeds habituais conforme a **seção D**).
 4. **Repete** em **cada** host de lab com clone, e **volta a correr** quando **`PII_LOCAL_SEEDS`** ou o **`main`** público mudar, até os guards deixarem de falhar — uma passagem verde não basta.

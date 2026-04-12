@@ -558,7 +558,7 @@ sudo cryptsetup close cryptroot
 | USB com **Ventoy** atualizado | §0.1–0.2; confirmar versão no site oficial no dia |
 | **Secure Boot** ligado na instalação | §0.2–0.5 |
 | **Secure Boot** ligado na operação diária | §0.6 + §3 |
-| **Device Guard** (Windows) ligado *enquanto preparas* o USB | Nota no início do §0 — no LMDE não há homónimo directo |
+| **Device Guard** (Windows) ligado *enquanto preparas* o USB | Nota no início do §0 — no LMDE não há homônimo direto |
 
 ---
 
