@@ -61,6 +61,20 @@ Organisations rarely have a single, tidy inventory of every **ingredient** in th
 
 ---
 
+## Extended sensitive categories (configuration and services)
+
+Beyond the **built-in** framings (e.g. LGPD, GDPR, HIPAA, PCI-oriented card data), organisations sometimes need **discovery and mapping** for:
+
+- **Health and clinical-adjacent data** (longitudinal records, form types, diagnosis coding—beyond a single HIPAA label on the report);
+- **Intellectual property**–related indicators (names of columns or content that suggest marks, filings, or proprietary assets—**not** a determination of legal ownership);
+- **Security artifacts** in stored data (credentials, tokens, key material—**distinct from** the product’s **log redaction** helpers, which only protect operational logs).
+
+**How this is delivered:** the same **engine** already supports **regex overrides**, **ML/DL training terms**, and **recommendation text** overrides (see [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) and [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md)). Tuning for **noise**, **locale**, and **sector lexicon** often benefits from **consulting** so targets and pattern sets match your **data soup** and risk appetite. The product **does not** certify legal categories by acronym; it produces **metadata-only findings** for **governance and remediation**.
+
+**Internal roadmap:** optional sample profiles and deeper positioning may be tracked in the repository’s **plans** tree (maintainers: see **docs/README** — *Internal and reference*).
+
+---
+
 ## Where to go next
 
 | Need                                                | Document                                                                                                                  |
