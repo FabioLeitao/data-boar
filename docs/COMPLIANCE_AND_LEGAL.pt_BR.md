@@ -65,9 +65,9 @@ Há **serviços contratados** (consultoria e ajustes finos) para apoiar: escopo 
 
 Além dos **enquadramentos já embutidos** (ex.: LGPD, GDPR, HIPAA, dados de cartão no sentido PCI), organizações podem precisar de **descoberta e mapeamento** para:
 
-- **Dados de saúde / registos clínicos** (prontuário longitudinal, tipos de formulário, codificação de diagnóstico—além de um único rótulo HIPAA no relatório);
-- **Indicadores ligados a propriedade intelectual** (nomes de colunas ou conteúdo que sugiram marcas, registos ou ativos proprietários—**sem** determinar titularidade jurídica);
-- **Artefatos de segurança** em dados armazenados (credenciais, tokens, material criptográfico—**distinto da** **redação em logs** do produto, que só protege logs operacionais).
+- **Dados de saúde / registros clínicos** (prontuário longitudinal, tipos de formulário, codificação de diagnóstico—além de um único rótulo HIPAA no relatório);
+- **Indicadores ligados a propriedade intelectual** (nomes de colunas ou conteúdo que sugiram marcas, registros ou ativos proprietários—**sem** determinar titularidade jurídica);
+- **Artefatos de segurança** em dados armazenados (credenciais, tokens, material criptográfico—**diferente da** **redação em logs** do produto, que só protege logs operacionais).
 
 **Como isso é atendido:** o mesmo **motor** já suporta **regex overrides**, **termos de treinamento ML/DL** e **overrides de texto de recomendação** (veja [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md) e [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md)). Afinar **ruído**, **locale** e **léxico setorial** costuma beneficiar de **consultoria** para alinhar alvos e padrões à **sopa de dados** e ao apetite a risco. O produto **não** certifica categorias legais por sigla; produz **achados só com metadados** para **governança e remediação**.
 
