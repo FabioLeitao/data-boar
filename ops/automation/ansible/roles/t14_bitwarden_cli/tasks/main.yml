@@ -26,6 +26,39 @@
     - t14_install_bitwarden_cli | bool
     - t14_bw_cmd_v.rc != 0
 
+# npm -g as root can leave /usr/local/lib/node_modules/@bitwarden only root-accessible;
+# normal users then get "Permission denied" on /usr/local/bin/bw (symlink to bw.js).
+- name: Ensure @bitwarden global tree is traversable by non-root
+  ansible.builtin.command:
+    argv:
+      - chmod
+      - -R
+      - go+rX
+      - /usr/local/lib/node_modules/@bitwarden
+  changed_when: true
+  failed_when: false
+  when: t14_install_bitwarden_cli | bool
+
+- name: Ensure bw.js entrypoint is executable
+  ansible.builtin.file:
+    path: /usr/local/lib/node_modules/@bitwarden/cli/build/bw.js
+    mode: "0755"
+    follow: true
+  failed_when: false
+  when: t14_install_bitwarden_cli | bool
+
+- name: Ensure login shells see /usr/local/bin (bw symlink)
+  ansible.builtin.copy:
+    dest: /etc/profile.d/zz-local-bin.sh
+    mode: "0644"
+    content: |
+      # Managed by Ansible (t14_bitwarden_cli) — Bitwarden CLI and other /usr/local/bin tools
+      case ":${PATH}:" in
+        *:/usr/local/bin:*) ;;
+        *) export PATH="/usr/local/bin:${PATH}" ;;
+      esac
+  when: t14_install_bitwarden_cli | bool
+
 - name: Verify bw
   ansible.builtin.command: bw --version
   register: t14_bw_ver
