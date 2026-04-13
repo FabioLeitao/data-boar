@@ -67,10 +67,26 @@
         enabled: true
       failed_when: false
 
-    - name: Optionally initialize Docker Swarm (manager)
+    - name: Query Swarm local node state (idempotent init)
+      ansible.builtin.command:
+        argv:
+          - docker
+          - info
+          - --format
+          - "{{ '{{' }}.Swarm.LocalNodeState{{ '}}' }}"
+      register: lab-node-01_swarm_node_state
+      changed_when: false
+      failed_when: false
       when: lab-node-01_docker_swarm_init | bool
+
+    - name: Initialize Docker Swarm (single-node manager)
       ansible.builtin.command: docker swarm init
       register: lab-node-01_swarm_init
       changed_when: "'Swarm initialized' in (lab-node-01_swarm_init.stdout | default(''))"
       failed_when: false
+      when:
+        - lab-node-01_docker_swarm_init | bool
+        - >
+            (lab-node-01_swarm_node_state.stdout | default('') | trim) == 'inactive'
+            or (lab-node-01_swarm_node_state.rc | default(1)) != 0
 
