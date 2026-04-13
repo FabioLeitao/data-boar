@@ -1,0 +1,33 @@
+---
+- name: Skip operator supplementary groups
+  when: not (t14_operator_groups_enabled | bool)
+  ansible.builtin.debug:
+    msg: "Operator supplementary groups disabled (t14_operator_groups_enabled=false)."
+
+- name: Apply operator supplementary groups
+  when: t14_operator_groups_enabled | bool
+  block:
+    - name: Install tshark (Wireshark CLI; enables wireshark group for non-root capture)
+      when: t14_operator_install_tshark | bool
+      ansible.builtin.apt:
+        name: tshark
+        state: present
+        update_cache: true
+
+    - name: Build effective supplementary group list
+      ansible.builtin.set_fact:
+        t14_operator_groups_effective: "{{ ((['docker'] if (t14_install_docker_ce | default(false) | bool) else []) + (['wireshark'] if (t14_operator_install_tshark | default(true) | bool) else []) + (t14_operator_supplementary_group_names | default([])) + (t14_operator_supplementary_group_names_extra | default([]))) | unique | list }}"
+
+    - name: Add operator user(s) to supplementary groups
+      ansible.builtin.user:
+        name: "{{ item }}"
+        groups: "{{ t14_operator_groups_effective }}"
+        append: true
+      loop: >-
+        {{
+          (
+            [ansible_user | default(ansible_user_id)]
+            + (t14_operator_group_users_extra | default([]))
+            + (t14_docker_socket_group_users_extra | default([]))
+          ) | unique | list
+        }}
