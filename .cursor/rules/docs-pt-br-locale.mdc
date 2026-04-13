@@ -25,6 +25,7 @@ alwaysApply: false
 | usuário                               | utilizador                                             |
 | atualizar                             | actualizar                                             |
 | artefato(s)                           | artefacto(s)                                           |
+| registro(s) (documento, prontuário)   | registo(s) (mesmo sentido)                             |
 | assinatura (SaaS / licença)           | subscrição                                             |
 | acessa / acessam                      | acede / acedem                                         |
 | console (DevTools, UI)                | consola                                                |
