@@ -17,7 +17,7 @@
 - name: Install ctop binary (container top)
   when: t14_obs_install_ctop | bool
   ansible.builtin.get_url:
-    url: "https://github.com/bcicen/ctop/releases/download/v{{ t14_obs_ctop_version }}/ctop-linux-amd64"
+    url: "https://github.com/bcicen/ctop/releases/download/v{{ t14_obs_ctop_version }}/ctop-{{ t14_obs_ctop_version }}-linux-{{ t14_obs_ctop_linux_arch }}"
     dest: /usr/local/bin/ctop
     mode: "0755"
     force: false
