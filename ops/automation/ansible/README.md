@@ -7,6 +7,14 @@ This folder provides **generic**, reviewable Ansible automation for workstation 
 - Keep **hostnames, IPs, usernames, SSH fingerprints, and secrets** out of tracked files.
 - Put real inventory in **gitignored** `docs/private/homelab/` (see repo policy).
 
+## New playbooks (contributors)
+
+Debian/Ubuntu installs can be blocked by **`apt-listbugs`** during unattended runs. Every play with `hosts:` must set:
+
+`environment: "{{ labop_debian_unattended_apt_environment }}"`
+
+(or `combine` with play-specific extras, as in `playbooks/t14-baseline.yml`). Defaults are in **`group_vars/all.yml`**. Repo CI fails if a tracked playbook under `playbooks/*.yml` omits `environment` on any play — see **`tests/test_ansible_playbooks_unattended_apt.py`** and **[CONTRIBUTING.md](../../CONTRIBUTING.md)**.
+
 ## Quick start
 
 ### Prerequisites on the T14 (target)
@@ -98,7 +106,7 @@ After a `CHECK` + `APPLY`, run the quick validation checklist:
 
 ## Troubleshooting
 
-- **`apt-listbugs` / exit code 10 / `Failure running script /usr/bin/apt-listbugs`:** Debian’s `apt-listbugs` runs before installs and **aborts** when it finds bugs (e.g. a transitive package like `openipmi`). This is not an Ansible or hardware failure. The baseline playbook sets **`APT_LISTBUGS_FRONTEND=none`** for the run (see `man apt-listbugs`) so unattended installs can finish. Interactive `apt` on the machine still uses your normal listbugs behavior.
+- **`apt-listbugs` / exit code 10 / `Failure running script /usr/bin/apt-listbugs`:** Debian’s `apt-listbugs` runs before installs and **aborts** when it finds bugs (e.g. a transitive package like `openipmi`). This is not an Ansible or hardware failure. Baseline plays use **`labop_debian_unattended_apt_environment`** from **`group_vars/all.yml`** (`APT_LISTBUGS_FRONTEND=none`; see `man apt-listbugs`) so unattended installs can finish. Interactive `apt` on the machine still uses your normal listbugs behavior.
 
 ## Important
 
