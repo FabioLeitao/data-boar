@@ -9,8 +9,9 @@ This runbook ties together **repeatable host hardening** (Ansible in this repo) 
 1. **Sync the repo:** `git pull` in your clone of `data-boar`.
 2. **Inventory:** `ops/automation/ansible/inventory.local.ini` must include **`localhost ansible_connection=local`** under `[t14]` when you run the playbook **on the laptop itself** (not from another PC over SSH).
 3. **Preflight:** from the repo root, run **`bash scripts/t14-ansible-preflight.sh`** — checks Ansible, inventory, sudo, `docker.list` permissions, and `bw` presence.
-4. **Sudo:** `sudo -v` so the password prompt succeeds before a long run.
-5. **Apply:** from `ops/automation/ansible/`, run **`ansible-playbook -i inventory.local.ini --ask-become-pass playbooks/t14-baseline.yml --diff`** (see **[ops/automation/ansible/README.md](../../ops/automation/ansible/README.md)** for troubleshooting).
+4. **Only `bw` missing / `docker.list` noise:** from the repo root, **`bash scripts/t14-bitwarden-cli-bootstrap.sh`** (installs **`@bitwarden/cli`**, fixes permissions and **`PATH`** for tmux). Then **`source /etc/bash.bashrc`** or open a **new tmux pane**.
+5. **Sudo:** `sudo -v` so the password prompt succeeds before a long run.
+6. **Apply:** from `ops/automation/ansible/`, run **`ansible-playbook -i inventory.local.ini --ask-become-pass playbooks/t14-baseline.yml --diff`** (see **[ops/automation/ansible/README.md](../../ops/automation/ansible/README.md)** for troubleshooting).
 
 After a successful run, **`bw`** should be at **`/usr/local/bin/bw`**. Role **`t14_bitwarden_cli`** installs **`/etc/profile.d/zz-local-bin.sh`** and a block in **`/etc/bash.bashrc`** so **tmux** / non-login interactive bash gets **`PATH`**. If `bw` is still missing, open a **new tmux pane** or run **`source /etc/bash.bashrc`**, or call **`/usr/local/bin/bw`** directly.
 

@@ -59,9 +59,9 @@ if [[ -x /usr/local/bin/bw ]]; then
 elif command -v bw >/dev/null 2>&1; then
   echo "OK: bw on PATH ($(command -v bw))"
 else
-  echo "MISSING: bw (Bitwarden CLI) — install via baseline role t14_bitwarden_cli, or:"
-  echo "  sudo apt install -y nodejs npm && sudo npm install -g @bitwarden/cli"
-  echo "  Then: source /etc/profile.d/zz-local-bin.sh 2>/dev/null || export PATH=\"/usr/local/bin:\${PATH}\""
+  echo "MISSING: bw (Bitwarden CLI) — quickest fix from repo root:"
+  echo "  bash scripts/t14-bitwarden-cli-bootstrap.sh"
+  echo "  (or full baseline: role t14_bitwarden_cli in playbooks/t14-baseline.yml)"
 fi
 
 echo
