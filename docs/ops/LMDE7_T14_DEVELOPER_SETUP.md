@@ -49,7 +49,7 @@ Key guardrails match the rest of the repo:
 
 See **§7.1** in the pt-BR file for a minimal skeleton (inventory/playbook/tofu layout) and a post-run validation checklist.
 
-**Canonical baseline in this repo:** [ops/automation/ansible/README.md](../../ops/automation/ansible/README.md) and [playbooks/lab-node-01-baseline.yml](../../ops/automation/ansible/playbooks/lab-node-01-baseline.yml) (includes `tmux` and Bitwarden CLI via npm). **tmux dotfiles** for lab hosts: [OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.md](OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.md) §5.
+**Canonical baseline in this repo:** [ops/automation/ansible/README.md](../../ops/automation/ansible/README.md) and [playbooks/lab-node-01-baseline.yml](../../ops/automation/ansible/playbooks/lab-node-01-baseline.yml) (includes `tmux` and Bitwarden CLI via npm). **End-to-end workflow** (close baseline, sudo warm, `bw`, VeraCrypt pointers): [LAB-NODE-01_BASELINE_COMPLETION.md](LAB-NODE-01_BASELINE_COMPLETION.md). **tmux dotfiles** for lab hosts: [OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.md](OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.md) §5.
 
 Role and baseline changes (for example `apt-listbugs` during unattended apt, D-Bus or `systemctl` behavior under Ansible, Snapper on btrfs, keeping the laptop repo in sync with `main`) are documented in the Ansible README **Troubleshooting** section and in `ops/automation/ansible/` — they are **not** duplicated step-by-step in this guide. The minimal `lab-automation` skeleton in pt-BR §7.1 is illustrative only; **`lab-node-01-baseline.yml`** is the source of truth.
 
