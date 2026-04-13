@@ -28,8 +28,9 @@ Write-Host "Repo: $RepoPath"
 Write-Host "Mode: $(if ($Apply) { 'APPLY' } else { 'CHECK' })"
 
 # 1) Preflight: ensure repo exists and git/ansible are present.
+# Use POSIX "set -eu" only: ssh runs /bin/sh (dash on Debian/LMDE), which does not support "pipefail".
 Invoke-LAB-NODE-01Ssh @"
-set -euo pipefail
+set -eu
 cd "$RepoPath"
 command -v git >/dev/null
 command -v ansible-playbook >/dev/null
@@ -59,7 +60,7 @@ ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini playbooks/lab
 }
 
 Invoke-LAB-NODE-01Ssh @"
-set -euo pipefail
+set -eu
 cd "$RepoPath/ops/automation/ansible"
 cp -f inventory.example.ini inventory.local.ini
 perl -0777 -pe 's/^\[lab-node-01\]\n.*?\n\n/[lab-node-01]\nlocalhost ansible_connection=local\n\n/ms' -i inventory.local.ini
