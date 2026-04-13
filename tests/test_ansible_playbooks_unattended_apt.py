@@ -46,7 +46,7 @@ def test_each_play_sets_environment_for_unattended_apt(path: Path) -> None:
     for play in plays:
         assert "environment" in play, (
             f"{path}: play {play.get('name', '?')!r} must set "
-            f"environment: \"{{{{ labop_debian_unattended_apt_environment }}}}\" "
+            f'environment: "{{{{ labop_debian_unattended_apt_environment }}}}" '
             f"(or combine with extras) so apt-listbugs does not abort unattended apt. "
             f"See ops/automation/ansible/group_vars/all.yml and README Troubleshooting."
         )

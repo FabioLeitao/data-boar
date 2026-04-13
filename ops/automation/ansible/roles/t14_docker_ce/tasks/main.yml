@@ -65,6 +65,7 @@
         name: docker
         state: started
         enabled: true
+      failed_when: false
 
     - name: Optionally initialize Docker Swarm (manager)
       when: t14_docker_swarm_init | bool
