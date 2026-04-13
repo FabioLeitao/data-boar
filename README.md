@@ -35,6 +35,8 @@ Multilingual and legacy encodings are supported; **configurable timeouts** and *
 > **Current release:** 1.6.8. Summary: [CHANGELOG.md](CHANGELOG.md). Full notes: [docs/releases/](docs/releases/) and the [GitHub Releases page](https://github.com/FabioLeitao/data-boar/releases).
 > **Documentation note:** This README and `docs/USAGE.md` are the canonical English references. When features or options change, update **both** languages to keep them in sync.
 
+**Product blog (narrative updates, shorter posts):** [databoar.wordpress.com](https://databoar.wordpress.com) — canonical technical documentation remains in this repository (`docs/`).
+
 ---
 
 ## Technical overview
@@ -59,4 +61,4 @@ Data Boar runs as a **one-shot CLI** audit or as a **REST API** (default port 80
 
 **License and copyright:** [LICENSE](LICENSE) · [NOTICE](NOTICE) · [docs/COPYRIGHT_AND_TRADEMARK.md](docs/COPYRIGHT_AND_TRADEMARK.md) ([pt-BR](docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md)).
 
-**Maintainer:** [Fabio Leitao on GitHub](https://github.com/FabioLeitao) — Docker Hub namespace `fabioleitao`. Professional social links are not embedded in this public README; see the GitHub profile for pointers (policy: **`tests/test_pii_guard.py`**, **`docs/ops/COMMIT_AND_PR.md`**).
+**Maintainer:** [Fabio Leitao on GitHub](https://github.com/FabioLeitao) — Docker Hub namespace `fabioleitao`. The **product blog** link is above; other personal professional social links are not embedded in this README — see the GitHub profile (policy: **`tests/test_pii_guard.py`**, **`docs/ops/COMMIT_AND_PR.md`**). Set the GitHub profile **Website** field to `https://databoar.wordpress.com` if you want a one-click entry point to the blog.
