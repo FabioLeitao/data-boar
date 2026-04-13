@@ -21,6 +21,15 @@ function ConvertTo-UnixLf {
   return ($Text -replace "`r`n", "`n" -replace "`r", "`n").TrimEnd()
 }
 
+# Bash does not expand ~ inside double quotes. Remote `cd "~/foo"` fails; use $HOME instead.
+function Get-BashCdPath {
+  param([string]$RepoOrPath)
+  if ($RepoOrPath -match '^\~/(.*)$') {
+    return "`$HOME/$($Matches[1])"
+  }
+  return $RepoOrPath
+}
+
 function Invoke-LAB-NODE-01Ssh {
   param([string]$Cmd)
   $Cmd = ConvertTo-UnixLf $Cmd
@@ -35,10 +44,13 @@ Write-Host "Host: $SshHost"
 Write-Host "Repo: $RepoPath"
 Write-Host "Mode: $(if ($Apply) { 'APPLY' } else { 'CHECK' })"
 
+$bashRepoRoot = Get-BashCdPath $RepoPath
+$bashAnsibleDir = Get-BashCdPath "$RepoPath/ops/automation/ansible"
+
 # Remote scripts must use LF only: PowerShell here-strings are CRLF on Windows and break bash (cd $'path\r', set, perl, ansible).
 $preflightLines = @(
   'set -eu',
-  "cd `"$RepoPath`"",
+  "cd `"$bashRepoRoot`"",
   'command -v git >/dev/null',
   'command -v ansible-playbook >/dev/null'
 )
@@ -58,10 +70,9 @@ if ($LASTEXITCODE -ne 0) {
 # 3) Generate a local inventory pinned to localhost/local connection, then run check/apply.
 $runModeArgs = if ($Apply) { "--diff" } else { "--check --diff" }
 
-$ansibleDir = "$RepoPath/ops/automation/ansible"
 $runLines = @(
   'set -eu',
-  "cd `"$ansibleDir`"",
+  "cd `"$bashAnsibleDir`"",
   'cp -f inventory.example.ini inventory.local.ini',
   "perl -0777 -pe 's/^\[lab-node-01\]\n.*?\n\n/[lab-node-01]\nlocalhost ansible_connection=local\n\n/ms' -i inventory.local.ini"
 )
