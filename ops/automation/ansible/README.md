@@ -67,7 +67,14 @@ cd ~/Projects/dev/data-boar/ops/automation/ansible
 ansible-playbook -i inventory.local.ini --ask-become-pass playbooks/t14-baseline.yml --diff
 ```
 
+**Running ON the T14 (not from Windows/SSH):** `inventory.local.ini` must use **`localhost ansible_connection=local`** under `[t14]` (see **`inventory.example.ini`** pattern **A**). If `[t14]` points at SSH while you are already on the laptop, or connection is ambiguous, become/sudo prompts can misbehave.
+
 **Check mode (dry-run):** add `--check` before `--diff`.
+
+#### BECOME password: `Duplicate become password prompt` / `Sorry, try again`
+
+- **Wrong sudo password:** `sudo` prints **`Sorry, try again.`**; on some Ansible versions the next prompt then fails with **`Duplicate become password prompt encountered`**. Fix: run **`sudo -v`** and confirm the password **outside** Ansible, then re-run the playbook (type the BECOME password carefully once).
+- **Non-interactive alternative (same shell only):** `ANSIBLE_BECOME_PASS='yourpassword' ansible-playbook ...` **without** `--ask-become-pass` — avoids the interactive prompt bug; **risk:** shell history and process list — prefer **`read -s`** + export in a throwaway shell, or **NOPASSWD** sudo for your user (see **`t14-ansible-baseline.ps1 -NoAskBecomePass`** when applicable).
 
 ### What the baseline installs (operator-facing)
 
@@ -117,6 +124,8 @@ After a `CHECK` + `APPLY`, run the quick validation checklist:
 - `POST_AUTOMATION_VALIDATION.pt_BR.md`
 
 ## Troubleshooting
+
+- **`Duplicate become password prompt` / `Sorry, try again` (Gathering Facts):** Usually **wrong sudo password** on the first prompt, then Ansible gets stuck. Confirm with **`sudo -v`**, use **`inventory.local.ini`** pattern **`localhost ansible_connection=local`** when running **on** the T14, and see **BECOME password** above.
 
 - **`apt-listbugs` / exit code 10 / `Failure running script /usr/bin/apt-listbugs`:** Debian’s `apt-listbugs` runs before installs and **aborts** when it finds bugs (e.g. a transitive package like `openipmi`). This is not an Ansible or hardware failure. Baseline plays use **`labop_debian_unattended_apt_environment`** from **`group_vars/all.yml`** (`APT_LISTBUGS_FRONTEND=none`; see `man apt-listbugs`) so unattended installs can finish. Interactive `apt` on the machine still uses your normal listbugs behavior.
 
