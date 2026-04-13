@@ -16,3 +16,8 @@ t14_operator_supplementary_group_names_extra: []
 
 # Extra usernames besides ansible_user.
 t14_operator_group_users_extra: []
+
+# After group membership changes: sync gshadow and verify (shadow-utils).
+t14_operator_run_grpconv_grpck: true
+# If grpck reports pre-existing issues on the host, set false to warn only (not recommended).
+t14_operator_grpck_strict: true

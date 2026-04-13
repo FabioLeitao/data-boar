@@ -67,7 +67,7 @@ ansible-playbook -i inventory.local.ini --ask-become-pass playbooks/t14-baseline
 
 - **`tmux`**: in `t14_baseline_packages` (terminal multiplexer; pairs with “sudo warm + tmux send-keys” workflows from the dev PC).
 - **Bitwarden CLI (`bw`)**: **not** in Debian main — role `t14_bitwarden_cli` installs **`nodejs`** + **`npm`** from apt, then **`npm install -g @bitwarden/cli`**. Disable with `t14_install_bitwarden_cli: false` in playbook vars if you prefer another install method.
-- **Operator groups + `tshark`**: role **`t14_operator_supplementary_groups`** (after Docker CE) installs **`tshark`** and adds **`ansible_user`** to **`docker`**, **`wireshark`**, **`dialout`**, **`plugdev`**, **`systemd-journal`** by default.
+- **Operator groups + `tshark`**: role **`t14_operator_supplementary_groups`** (after Docker CE) installs **`tshark`**, adds **`ansible_user`** to **`docker`**, **`wireshark`**, **`dialout`**, **`plugdev`**, **`systemd-journal`**, then runs **`grpconv`** and **`grpck -r`** (set **`t14_operator_grpck_strict: false`** if **`grpck`** fails on a host with pre-existing group-file issues).
 
 ## Token-aware wrapper (Windows → SSH → Ansible on T14)
 
@@ -131,6 +131,8 @@ After a `CHECK` + `APPLY`, run the quick validation checklist:
 - **`docker swarm init` / advertise address on multi-NIC hosts:** The role runs plain **`docker swarm init`** when Swarm state is **`inactive`**. If initialization fails because Docker cannot pick an address, set **`t14_docker_swarm_init: false`** and initialize once with **`docker swarm init --advertise-addr <stable-ip>`**, or extend the role privately with **`--advertise-addr`** (not in baseline).
 
 - **`gigi Release` / Docker apt on **LMDE**:** **`ansible_distribution_release`** is a **Mint** codename (**`gigi`**, **`faye`**) while **`download.docker.com/linux/debian`** only publishes **Debian** suites. The **`t14_docker_ce`** role maps **`gigi` → `trixie`** and **`faye` → `bookworm`**. Override with **`t14_docker_apt_dist_override`** (e.g. **`trixie`**) if your base Debian drifts. If **`apt update`** also warns about **`packages.linuxmint.com`** InRelease, that is separate from Docker — check network, mirrors, or Mint updates.
+
+- **`grpck` fails:** The **`t14_operator_supplementary_groups`** role runs **`grpconv`** then **`grpck -r`**. Fix **`/etc/group`** / **`/etc/gshadow`** inconsistencies on the host, or set **`t14_operator_grpck_strict: false`** to skip failing the play (not recommended). Disable both with **`t14_operator_run_grpconv_grpck: false`**.
 
 ## Important
 

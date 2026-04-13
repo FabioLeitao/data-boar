@@ -31,3 +31,15 @@
             + (t14_docker_socket_group_users_extra | default([]))
           ) | unique | list
         }}
+
+    - name: Synchronize /etc/gshadow with /etc/group (grpconv)
+      when: t14_operator_run_grpconv_grpck | bool
+      ansible.builtin.command: grpconv
+      changed_when: false
+
+    - name: Verify group database integrity (grpck -r)
+      when: t14_operator_run_grpconv_grpck | bool
+      ansible.builtin.command: grpck -r
+      changed_when: false
+      register: t14_grpck
+      failed_when: (t14_operator_grpck_strict | bool) and ((t14_grpck.rc | default(0)) != 0)
