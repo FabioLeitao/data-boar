@@ -28,9 +28,23 @@
         dest: /etc/apt/keyrings/docker.asc
         mode: "0644"
 
+    - name: Choose Debian suite codename for Docker apt (LMDE uses gigi/faye, not trixie/bookworm)
+      ansible.builtin.set_fact:
+        t14_docker_apt_dist: >-
+          {{
+            ((t14_docker_apt_dist_override | default('') | trim | length) > 0)
+            | ternary(
+                t14_docker_apt_dist_override | trim,
+                t14_docker_debian_codename_map.get(
+                  ansible_distribution_release | lower,
+                  ansible_distribution_release,
+                ),
+              )
+          }}
+
     - name: Add Docker apt repository (Debian)
       ansible.builtin.apt_repository:
-        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ t14_docker_apt_dist }} stable"
         filename: docker
         state: present
 
