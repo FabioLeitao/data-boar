@@ -1,0 +1,38 @@
+---
+- name: Install Node.js and npm (for Bitwarden CLI)
+  ansible.builtin.apt:
+    name:
+      - nodejs
+      - npm
+    state: present
+    update_cache: true
+  when: t14_install_bitwarden_cli | bool
+
+- name: Check if bw is already on PATH
+  ansible.builtin.shell: command -v bw
+  register: t14_bw_cmd_v
+  changed_when: false
+  failed_when: false
+  when: t14_install_bitwarden_cli | bool
+
+- name: Install Bitwarden CLI globally via npm
+  ansible.builtin.command:
+    argv:
+      - npm
+      - install
+      - -g
+      - "{{ t14_bitwarden_cli_npm_package }}"
+  when:
+    - t14_install_bitwarden_cli | bool
+    - t14_bw_cmd_v.rc != 0
+
+- name: Verify bw
+  ansible.builtin.command: bw --version
+  register: t14_bw_ver
+  changed_when: false
+  when: t14_install_bitwarden_cli | bool
+
+- name: Show bw version
+  ansible.builtin.debug:
+    msg: "{{ t14_bw_ver.stdout_lines | default([]) }}"
+  when: t14_install_bitwarden_cli | bool

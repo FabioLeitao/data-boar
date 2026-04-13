@@ -44,6 +44,18 @@
   command -v bw && bw --version
   ```
 
+### 1.2.1 Void Linux (`xbps`) — Bitwarden CLI (`bw`)
+
+**Nao** existe pacote `bitwarden-cli` nos repositorios padrao do Void. Instale **Node** + **npm** com `xbps` e depois o pacote npm oficial (mesma ideia do role Ansible **`t14_bitwarden_cli`** no Debian):
+
+```bash
+sudo xbps-install -S nodejs npm
+sudo npm install -g @bitwarden/cli
+command -v bw && bw --version
+```
+
+Se o nome do pacote mudar no teu canal/arquitetura Void, use `xbps-query -Rs nodejs` / `npm` e ajuste. **`bw login`** / **`bw unlock`** continuam manuais (sessao quente); **nao** colar segredos em arquivos rastreados.
+
 ### 1.3 Um gestor por ferramenta (evitar duplicados)
 
 - **Evite** instalar o mesmo binário (`bw`, `git`, `python`, …) via **winget**, **Chocolatey**, **Scoop** e **cópia manual** no **mesmo** perfil Windows. Escolha **uma** fonte principal por ferramenta e **grave uma nota privada** (por exemplo em `docs/private/`) do tipo “`bw` = winget” para upgrades previsíveis.
@@ -139,7 +151,7 @@ Placas **single-board** (por exemplo classe **Raspberry Pi** com **Debian** ou *
 
 ## 3. Topgrade no Windows
 
-- O Windows usa **configuração** Topgrade **à parte** (vê **`topgrade --config-reference`** no Windows para caminhos e chaves).
+- O Windows usa **configuração** Topgrade **à parte** (consulte **`topgrade --config-reference`** no Windows para caminhos e chaves).
 - Podem existir passos **winget**, **Chocolatey**, **Scoop** — **prefira um** gestor principal por pacote (**item 1.3**).
 
 ---
@@ -151,10 +163,30 @@ Placas **single-board** (por exemplo classe **Raspberry Pi** com **Debian** ou *
 
 ---
 
+## 5. tmux no lab-op (repositório **tmux-configs**)
+
+Use **um** repositorio GitHub como fonte de verdade para layout e atalhos do terminal; aplique em **cada** Linux do laboratorio (Zorin/latitude, Raspberry Pi, Void/mini-bt, LMDE/T14, etc.):
+
+- **Repositorio:** [github.com/FabioLeitao/tmux-configs](https://github.com/FabioLeitao/tmux-configs) — clone: `https://github.com/FabioLeitao/tmux-configs.git`.
+- **Primeiro** instale o binario **`tmux`** com o gestor da distro (`apt` / `xbps-install` / baseline Ansible no T14 ja inclui).
+- **Depois** clone e siga o **README** daquele repo (em geral symlink `~/.tmux.conf`, TPM/plugins, tecla prefixo). Esqueleto:
+
+  ```bash
+  mkdir -p ~/Projects/dev && cd ~/Projects/dev
+  git clone https://github.com/FabioLeitao/tmux-configs.git
+  cd tmux-configs
+  # README: aplicar config (symlink ou copia), instalar gestor de plugins se precisar, abrir nova sessao tmux e validar.
+  ```
+
+- Mantenha **um** fluxo por maquina (mesmo caminho de clone em todos os hosts, ou excecoes em notas privadas).
+
+---
+
 ## Ver também
 
 - [OPERATOR_SECRETS_BITWARDEN.pt_BR.md](OPERATOR_SECRETS_BITWARDEN.pt_BR.md) — contrato `bw`, CI, testes.
 - [LMDE7_T14_DEVELOPER_SETUP.pt_BR.md](LMDE7_T14_DEVELOPER_SETUP.pt_BR.md) — baseline ThinkPad T14 + LMDE.
 - [HOMELAB_HOST_PACKAGE_INVENTORY.md](HOMELAB_HOST_PACKAGE_INVENTORY.md) — captura de inventário.
+- [tmux-configs](https://github.com/FabioLeitao/tmux-configs) — dotfiles tmux (secao **5** acima).
 
-**Última revisão:** 2026-03 — fluxos do operador (winget, WAU, Topgrade, `gta`, Void **xbps**, Topgrade em **`venv`** em ARM); **confirme** IDs do Bitwarden CLI no site / **winget** na altura da instalação.
+**Última revisão:** 2026-04 — fluxos do operador (winget, WAU, Topgrade, `gta`, Void **xbps**, Topgrade em **`venv`** em ARM); secao **1.2.1** (Void + `bw`) e secao **5** (**tmux-configs**); **confirme** IDs do Bitwarden CLI no site / **winget** no momento da instalação.

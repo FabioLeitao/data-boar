@@ -49,6 +49,8 @@ Key guardrails match the rest of the repo:
 
 See **§7.1** in the pt-BR file for a minimal skeleton (inventory/playbook/tofu layout) and a post-run validation checklist.
 
+**Canonical baseline in this repo:** [ops/automation/ansible/README.md](../../ops/automation/ansible/README.md) and [playbooks/t14-baseline.yml](../../ops/automation/ansible/playbooks/t14-baseline.yml) (includes `tmux` and Bitwarden CLI via npm). **tmux dotfiles** for lab hosts: [OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.md](OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.md) §5.
+
 ---
 
 ## Related plans and links

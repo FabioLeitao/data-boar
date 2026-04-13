@@ -35,7 +35,12 @@
     t14_obs_node_exporter_enabled: true
     # Wazuh SIEM agent (requires manager IP; off by default until lab is ready)
     t14_obs_wazuh_agent_enabled: false
-    t14_obs_wazuh_manager_ip: ""    # --- Opt-in knobs (snapshots / btrfs) ---
+    t14_obs_wazuh_manager_ip: ""
+
+    # Bitwarden CLI: not in Debian main; role installs nodejs/npm then npm -g @bitwarden/cli
+    t14_install_bitwarden_cli: true
+
+    # --- Opt-in knobs (snapshots / btrfs) ---
     # Snapper: automatic BTRFS snapshots (skips gracefully if root is not btrfs)
     t14_snapper_enabled: true
     t14_snapper_timeline_limit_hourly: "5"
@@ -46,6 +51,7 @@
   roles:
     # --- System baseline ---
     - role: t14_baseline_packages
+    - role: t14_bitwarden_cli
     - role: t14_banners
     - role: t14_editor_defaults
     - role: t14_lynis
