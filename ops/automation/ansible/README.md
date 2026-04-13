@@ -120,6 +120,8 @@ After a `CHECK` + `APPLY`, run the quick validation checklist:
 
 - **`Already up to date` but the T14 still runs old Ansible YAML:** The fix lives in **`git`** on **`main`** — confirm with **`git log -1 --oneline`** after **`git pull`**. If your dev machine had the change but **`git push`** did not run, the laptop will not see it.
 
+- **`bw` / Bitwarden CLI: command not found or Permission denied:** Global **`npm install -g @bitwarden/cli`** puts **`bw`** under **`/usr/local/bin`**. If **`bw`** is missing from **`PATH`**, open a new login shell or add **`/usr/local/bin`** (role installs **`/etc/profile.d/zz-local-bin.sh`**). If **`Permission denied`** on **`/usr/local/bin/bw`**, the **`@bitwarden`** tree under **`/usr/local/lib/node_modules`** was not traversable as your user — re-run the baseline after updating **`t14_bitwarden_cli`**, or run **`sudo chmod -R go+rX /usr/local/lib/node_modules/@bitwarden`** and **`sudo chmod 755 /usr/local/lib/node_modules/@bitwarden/cli/build/bw.js`**.
+
 ## Important
 
 Hardening is **contextual**. Before enabling any network-facing service, ensure the host is on the intended VLAN/segment and you understand the access model.
