@@ -48,6 +48,20 @@
         filename: docker
         state: present
 
+    - name: Stat Docker apt list (may be created by apt_repository)
+      ansible.builtin.stat:
+        path: /etc/apt/sources.list.d/docker.list
+      register: t14_docker_list_stat
+
+    # Non-root tools (Python apt helpers, command-not-found) read this file; root-only mode causes Errno 13 noise.
+    - name: Ensure Docker apt sources list is world-readable
+      when: t14_docker_list_stat.stat.exists | bool
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/docker.list
+        owner: root
+        group: root
+        mode: "0644"
+
     - name: Install docker-ce base
       ansible.builtin.apt:
         name:

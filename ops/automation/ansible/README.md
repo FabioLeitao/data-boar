@@ -54,13 +54,20 @@ Run these **once** on the laptop (as `leitao`, with sudo):
 
 1) Create `inventory.local.ini` (see above).
 
-2) **Warm sudo** on the target (one interactive password if needed):
+2) **Preflight (recommended):** from the **repo root**, run **`scripts/t14-ansible-preflight.sh`** — checks Ansible, inventory, sudo, **`/etc/apt/sources.list.d/docker.list`** mode, and **`bw`**. Fixes many “walking in circles” issues before a long playbook run.
+
+```bash
+cd ~/Projects/dev/data-boar
+bash scripts/t14-ansible-preflight.sh
+```
+
+3) **Warm sudo** on the target (one interactive password if needed):
 
 ```bash
 sudo -v
 ```
 
-3) Run the baseline playbook **from** `ops/automation/ansible` (this directory has `ansible.cfg` with `roles_path = roles`, same as `ANSIBLE_ROLES_PATH=./roles` in `t14-ansible-baseline.ps1`):
+4) Run the baseline playbook **from** `ops/automation/ansible` (this directory has `ansible.cfg` with `roles_path = roles`, same as `ANSIBLE_ROLES_PATH=./roles` in `t14-ansible-baseline.ps1`):
 
 ```bash
 cd ~/Projects/dev/data-boar/ops/automation/ansible
@@ -79,7 +86,7 @@ ansible-playbook -i inventory.local.ini --ask-become-pass playbooks/t14-baseline
 ### What the baseline installs (operator-facing)
 
 - **`tmux`**: in `t14_baseline_packages` (terminal multiplexer; pairs with “sudo warm + tmux send-keys” workflows from the dev PC).
-- **Bitwarden CLI (`bw`)**: **not** in Debian main — role `t14_bitwarden_cli` installs **`nodejs`** + **`npm`** from apt, then **`npm install -g @bitwarden/cli`**. Disable with `t14_install_bitwarden_cli: false` in playbook vars if you prefer another install method.
+- **Bitwarden CLI (`bw`)**: **not** in Debian main — role `t14_bitwarden_cli` installs **`nodejs`** + **`npm`** from apt, then **`npm install -g @bitwarden/cli`**. After install, **`bw`** lives under **`/usr/local/bin`** (also **`/etc/profile.d/zz-local-bin.sh`**). Debian’s **`command-not-found`** may wrongly suggest **`bundlewrap`** for `bw` — ignore; use the full path or open a new login shell. Disable the role with `t14_install_bitwarden_cli: false` if you use another install method.
 - **Operator groups + `tshark`**: role **`t14_operator_supplementary_groups`** (after Docker CE) installs **`tshark`**, adds the **resolved operator login** (see **`t14_operator_target_user`** in **`group_vars/all.yml`**) to **`docker`**, **`wireshark`**, **`dialout`**, **`plugdev`**, **`systemd-journal`**, then runs **`grpconv`** and **`grpck -r`** (set **`t14_operator_grpck_strict: false`** if **`grpck`** fails on a host with pre-existing group-file issues). On **`localhost`** or when running **`sudo ansible-playbook`**, set **`t14_operator_target_user=yourlogin`** in **`[t14:vars]`** so groups are not applied to **`root`** by mistake.
 - **Toolchain restriction (`comp`)**: role **`t14_toolchain_restrict`** is **off by default**. When **`t14_toolchain_restrict_enabled=true`**, it ensures group **`comp`** (configurable), finds matching **`/usr/bin/x86_64-linux-gnu-*`** compiler/tool binaries, and applies **`ansible.builtin.file`** (`root` + group, mode **`0754`**, **`follow: true`**). Optional **`t14_toolchain_acl_extra_groups`** adds extra **POSIX ACL** group lines (**`rx`**) via **`ansible.posix.acl`** — install **`collections/requirements.yml`** first. **`apt`** upgrades can restore vendor modes; re-run the playbook after compiler package updates. Add human users to **`comp`** separately (e.g. **`usermod -aG comp`**), or extend automation in private inventory.
 
@@ -126,6 +133,8 @@ After a `CHECK` + `APPLY`, run the quick validation checklist:
 ## Troubleshooting
 
 - **`Duplicate become password prompt` / `Sorry, try again` (Gathering Facts):** Usually **wrong sudo password** on the first prompt, then Ansible gets stuck. Confirm with **`sudo -v`**, use **`inventory.local.ini`** pattern **`localhost ansible_connection=local`** when running **on** the T14, and see **BECOME password** above.
+
+- **`Permission denied: '/etc/apt/sources.list.d/docker.list'`** (often Python **`WARNING:root:`**): The list file should be **`0644`** **`root:root`**. The **`t14_docker_ce`** role enforces that after adding the repo; if the file was created elsewhere, run **`sudo chmod 644 /etc/apt/sources.list.d/docker.list`** or re-run the playbook.
 
 - **`apt-listbugs` / exit code 10 / `Failure running script /usr/bin/apt-listbugs`:** Debian’s `apt-listbugs` runs before installs and **aborts** when it finds bugs (e.g. a transitive package like `openipmi`). This is not an Ansible or hardware failure. Baseline plays use **`labop_debian_unattended_apt_environment`** from **`group_vars/all.yml`** (`APT_LISTBUGS_FRONTEND=none`; see `man apt-listbugs`) so unattended installs can finish. Interactive `apt` on the machine still uses your normal listbugs behavior.
 
