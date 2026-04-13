@@ -31,9 +31,17 @@ function Get-BashCdPath {
 }
 
 function Invoke-LAB-NODE-01Ssh {
-  param([string]$Cmd)
+  param(
+    [string]$Cmd,
+    # Remote sudo/become often needs a TTY (e.g. Defaults requiretty). Plain ssh has none.
+    [switch]$AllocateTTY
+  )
   $Cmd = ConvertTo-UnixLf $Cmd
-  ssh $SshHost $Cmd
+  if ($AllocateTTY) {
+    ssh -tt $SshHost $Cmd
+  } else {
+    ssh $SshHost $Cmd
+  }
   if ($LASTEXITCODE -ne 0) {
     throw "SSH command failed with exit code $LASTEXITCODE"
   }
@@ -56,7 +64,7 @@ $preflightLines = @(
 )
 Invoke-LAB-NODE-01Ssh ($preflightLines -join "`n")
 
-# 2) One interactive step: warm up sudo so Ansible can run non-interactively afterwards.
+# 2) Optional: warm sudo timestamp (separate SSH session still needs -tt for Ansible become if requiretty).
 Write-Host "Check sudo cache on $SshHost." -ForegroundColor Yellow
 ssh $SshHost "sudo -n true" | Out-Null
 if ($LASTEXITCODE -ne 0) {
@@ -82,6 +90,6 @@ if ($Apply -and -not $SkipCheck) {
 } else {
   $runLines += "ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini playbooks/lab-node-01-baseline.yml $runModeArgs"
 }
-Invoke-LAB-NODE-01Ssh ($runLines -join "`n")
+Invoke-LAB-NODE-01Ssh ($runLines -join "`n") -AllocateTTY
 
 Write-Host "Done." -ForegroundColor Green
