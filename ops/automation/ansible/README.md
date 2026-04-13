@@ -97,6 +97,7 @@ To apply changes after a check pass:
 - Installs `aide` and `auditd` with a reviewable baseline (host-specific exceptions should stay private)
 - Optional: enables zram-based swap (host-dependent sizing; opt-in)
 - Ensures SSH hardening defaults (no root login; password auth off) **only if you opt-in**
+- **Docker CE**, **Podman**, and **k3s** are **opt-in** (variables in **`playbooks/t14-baseline.yml`**). The **`ctop`** binary is installed by default for observability, but **`docker`** is **not** present unless you enable **`t14_install_docker_ce: true`** (or install **`docker.io`** from Debian separately).
 
 ## Post-automation validation (checklist)
 
@@ -121,6 +122,8 @@ After a `CHECK` + `APPLY`, run the quick validation checklist:
 - **`Already up to date` but the T14 still runs old Ansible YAML:** The fix lives in **`git`** on **`main`** — confirm with **`git log -1 --oneline`** after **`git pull`**. If your dev machine had the change but **`git push`** did not run, the laptop will not see it.
 
 - **`bw` / Bitwarden CLI: command not found or Permission denied:** Global **`npm install -g @bitwarden/cli`** puts **`bw`** under **`/usr/local/bin`**. If **`bw`** is missing from **`PATH`**, open a new login shell or add **`/usr/local/bin`** (role installs **`/etc/profile.d/zz-local-bin.sh`**). If **`Permission denied`** on **`/usr/local/bin/bw`**, the **`@bitwarden`** tree under **`/usr/local/lib/node_modules`** was not traversable as your user — re-run the baseline after updating **`t14_bitwarden_cli`**, or run **`sudo chmod -R go+rX /usr/local/lib/node_modules/@bitwarden`** and **`sudo chmod 755 /usr/local/lib/node_modules/@bitwarden/cli/build/bw.js`**.
+
+- **`ctop` / `docker: command not found`:** The baseline installs **`ctop`** but **does not** install **Docker CE** unless you opt in. Set **`t14_install_docker_ce: true`** in **`inventory.local.ini`** under **`[t14:vars]`** (see **`inventory.example.ini`**) or re-run **`ansible-playbook … -e t14_install_docker_ce=true`**. The **`t14_docker_ce`** role uses Docker’s **official** **`.deb`** repository (not **`docker.io`** from Debian main). For a minimal engine only, **`sudo apt install docker.io`** is an alternative outside this playbook.
 
 ## Important
 
