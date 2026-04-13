@@ -31,8 +31,9 @@ The project team (small, mostly Linux + Docker background) already has existing 
 1. **Primary runtime:** install `docker-ce` from the **official Docker apt repository** (`download.docker.com/linux/debian`)
    with `docker-compose-plugin` and `docker-buildx-plugin` — not `docker.io` from Debian repositories.
 2. **Compose:** use `docker compose` (plugin) as the canonical compose interface; `docker-compose` (v1 Python) is not used.
-3. **Swarm:** opt-in (`lab-node-01_docker_swarm_init: false` by default in Ansible). Enable only on hosts
-   intended for multi-service stack testing.
+3. **Swarm:** **on by default** in **`lab-node-01-baseline.yml`** and **`lab-node-01_docker_ce`** defaults (`lab-node-01_docker_swarm_init: true`)
+   so **`docker service`** / **`docker stack deploy`** work on a single-node manager without manual **`docker swarm init`**.
+   Set **`lab-node-01_docker_swarm_init: false`** in inventory on hosts that must stay in non-Swarm mode only.
 4. **Podman:** installed alongside Docker as a secondary, rootless alternative via the `lab-node-01_podman` Ansible role,
    but not aliased to `docker` by default — `lab-node-01_podman_docker_alias: false`.
 5. **k3s:** opt-in only via `lab-node-01_k3s` Ansible role (`lab-node-01_install_k3s: false`). Not recommended on the LAB-NODE-01
@@ -43,7 +44,7 @@ The project team (small, mostly Linux + Docker background) already has existing 
 ## Consequences
 
 - **Positive:** Consistent `docker compose` interface for all team members; latest engine features; compose-plugin
-  replaces the deprecated Python `docker-compose` without a separate install step; Swarm available on demand.
+  replaces the deprecated Python `docker-compose` without a separate install step; Swarm initialized by default for service/stack workflows (opt-out per host).
 - **Positive:** Podman provides an escape hatch for rootless scenarios (CI, restricted environments) without
   losing Docker compatibility for the main development loop.
 - **Negative:** Requires adding the Docker GPG key and apt source — one extra step in fresh installs (automated
