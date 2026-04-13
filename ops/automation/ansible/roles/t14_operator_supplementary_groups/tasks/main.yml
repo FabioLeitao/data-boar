@@ -18,6 +18,23 @@
       ansible.builtin.set_fact:
         t14_operator_groups_effective: "{{ ((['docker'] if (t14_install_docker_ce | default(false) | bool) else []) + (['wireshark'] if (t14_operator_install_tshark | default(true) | bool) else []) + (t14_operator_supplementary_group_names | default([])) + (t14_operator_supplementary_group_names_extra | default([]))) | unique | list }}"
 
+    - name: Resolve login for supplementary groups (not root when playbook runs under sudo)
+      ansible.builtin.set_fact:
+        t14_operator_effective_login: "{{ _op_login }}"
+      vars:
+        _override: "{{ t14_operator_target_user | default('') | trim }}"
+        _sudo_u: "{{ ansible_env.SUDO_USER | default('') | trim }}"
+        _fallback: "{{ ansible_user | default(ansible_user_id) }}"
+        _op_login: "{{ _override if (_override | length > 0) else (_sudo_u if (_sudo_u | length > 0) else _fallback) }}"
+
+    - name: Hint when groups would target root (usually wrong for docker/wireshark)
+      ansible.builtin.debug:
+        msg: >-
+          t14_operator_effective_login is root — set t14_operator_target_user in inventory
+          (e.g. leitao) or run ansible-playbook as your normal user with --ask-become-pass
+          (do not use sudo ansible-playbook unless you set the override).
+      when: t14_operator_effective_login == 'root'
+
     - name: Add operator user(s) to supplementary groups
       ansible.builtin.user:
         name: "{{ item }}"
@@ -26,7 +43,7 @@
       loop: >-
         {{
           (
-            [ansible_user | default(ansible_user_id)]
+            [t14_operator_effective_login]
             + (t14_operator_group_users_extra | default([]))
             + (t14_docker_socket_group_users_extra | default([]))
           ) | unique | list

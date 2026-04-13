@@ -1,5 +1,6 @@
 ---
-# Add ansible_user (+ extras) to standard supplementary groups for workstation/lab operation.
+# Add operator login (+ extras) to standard supplementary groups for workstation/lab operation.
+# t14_operator_target_user: see ../../group_vars/all.yml
 t14_operator_groups_enabled: true
 
 # tshark pulls wireshark-common — creates group `wireshark` so capture works without root (with group membership + re-login).
@@ -14,7 +15,7 @@ t14_operator_supplementary_group_names:
 # Extra group names (kvm, libvirt, …) — only if those groups already exist on the host (install qemu/libvirt first).
 t14_operator_supplementary_group_names_extra: []
 
-# Extra usernames besides ansible_user.
+# Extra usernames besides the resolved operator login.
 t14_operator_group_users_extra: []
 
 # After group membership changes: sync gshadow and verify (shadow-utils).
