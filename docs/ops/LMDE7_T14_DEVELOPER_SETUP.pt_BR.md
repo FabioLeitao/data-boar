@@ -1021,6 +1021,8 @@ ansible-playbook -i inventory.ini bootstrap-lab-node-01.yml
 
 **Padrao oficial neste repo (baseline LAB-OP no LAB-NODE-01):** usar **`ops/automation/ansible/README.md`** e o playbook **`ops/automation/ansible/playbooks/lab-node-01-baseline.yml`** (roles em `ops/automation/ansible/roles/`, inclui **`tmux`** no pacote base e **`lab-node-01_bitwarden_cli`** — `bw` via `npm`, porque **nao** existe pacote `bitwarden-cli` no Debian principal). No Windows, o atalho **`scripts/lab-node-01-ansible-baseline.ps1`** gera `inventory.local.ini` com `localhost` + `ansible_connection=local` e executa o playbook **no LAB-NODE-01** por SSH. **Dotfiles tmux** para todos os Linux do lab: secao **5** em [OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md](OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md).
 
+**Alterações nos roles e no baseline** (por exemplo `apt-listbugs` em installs, D-Bus ou `systemctl` com Ansible, Snapper em btrfs, sincronizar o repo no LAB-NODE-01 antes de rodar o playbook) **não** são copiadas para este guia — ficam na secão **Troubleshooting** de **`ops/automation/ansible/README.md`** e no próprio código em **`ops/automation/ansible/`**. O exemplo `lab-automation/bootstrap-lab-node-01.yml` acima é só **ilustrativo**; o alvo de verdade é **`lab-node-01-baseline.yml`**.
+
 ### 7.1.2 OpenTofu (infra declarativa)
 
 **Nota honesta:** OpenTofu vale quando você tem um provider real para o alvo (ex.: DNS/Cloud, GitHub, algum appliance com API). Para “só configurar o Linux”, Ansible costuma bastar.
