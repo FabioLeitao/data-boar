@@ -15,6 +15,10 @@ t14_docker_install_compose_plugin: true
 # Set false in inventory if you only want plain `docker run` without Swarm.
 t14_docker_swarm_init: true
 
+# Add ansible_user (inventory SSH user) + optional extras to group `docker` so `docker`/`ctop` work without sudo.
+t14_docker_grant_socket_group: true
+t14_docker_socket_group_users_extra: []
+
 # Optional: daemon.json baseline (kept minimal; can be extended privately).
 t14_docker_manage_daemon_json: true
 t14_docker_daemon_json_path: /etc/docker/daemon.json
