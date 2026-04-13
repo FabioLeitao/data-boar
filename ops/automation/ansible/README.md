@@ -97,7 +97,7 @@ To apply changes after a check pass:
 - Installs `aide` and `auditd` with a reviewable baseline (host-specific exceptions should stay private)
 - Optional: enables zram-based swap (host-dependent sizing; opt-in)
 - Ensures SSH hardening defaults (no root login; password auth off) **only if you opt-in**
-- **Docker CE** (official repo) **+ Compose plugin** are **on by default** in **`t14-baseline.yml`** so **`docker`** and **`ctop`** work after one playbook run. Set **`t14_install_docker_ce: false`** in inventory to skip. **Podman** and **k3s** stay **opt-in**.
+- **Docker CE** (official repo) **+ Compose plugin** are **on by default** in **`t14-baseline.yml`** so **`docker`** and **`ctop`** work after one playbook run. **Swarm** is **initialized by default** (**single-node manager**) so **`docker service`** and **`docker stack deploy`** work; set **`t14_docker_swarm_init: false`** to skip. Set **`t14_install_docker_ce: false`** in inventory to skip Docker entirely. **Podman** and **k3s** stay **opt-in**.
 
 ## Post-automation validation (checklist)
 
@@ -124,6 +124,8 @@ After a `CHECK` + `APPLY`, run the quick validation checklist:
 - **`bw` / Bitwarden CLI: command not found or Permission denied:** Global **`npm install -g @bitwarden/cli`** puts **`bw`** under **`/usr/local/bin`**. If **`bw`** is missing from **`PATH`**, open a new login shell (role installs **`/etc/profile.d/zz-local-bin.sh`**). **`t14_bitwarden_cli`** also fixes **`@bitwarden`** permissions under **`/usr/local/lib/node_modules`** so your user can execute **`bw`** — **re-run the baseline** after pulling this repo; do not rely on one-off **`chmod`**.
 
 - **`ctop` / `docker: command not found`:** If you disabled Docker in inventory, re-enable **`t14_install_docker_ce: true`** or run the **`t14_docker_ce`** role. The default **`t14-baseline.yml`** enables Docker CE; **`docker.io`** from Debian main is **not** used by this role.
+
+- **`docker swarm init` / advertise address on multi-NIC hosts:** The role runs plain **`docker swarm init`** when Swarm state is **`inactive`**. If initialization fails because Docker cannot pick an address, set **`t14_docker_swarm_init: false`** and initialize once with **`docker swarm init --advertise-addr <stable-ip>`**, or extend the role privately with **`--advertise-addr`** (not in baseline).
 
 ## Important
 
