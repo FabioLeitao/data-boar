@@ -9,7 +9,11 @@ param(
   [switch]$Apply,
 
   [Parameter(Mandatory = $false)]
-  [switch]$SkipCheck
+  [switch]$SkipCheck,
+
+  # Omit when sudo is NOPASSWD for this user (no BECOME password prompt).
+  [Parameter(Mandatory = $false)]
+  [switch]$NoAskBecomePass
 )
 
 Set-StrictMode -Version Latest
@@ -64,18 +68,13 @@ $preflightLines = @(
 )
 Invoke-T14Ssh ($preflightLines -join "`n")
 
-# 2) Optional: warm sudo timestamp (separate SSH session still needs -tt for Ansible become if requiretty).
-Write-Host "Check sudo cache on $SshHost." -ForegroundColor Yellow
-ssh $SshHost "sudo -n true" | Out-Null
-if ($LASTEXITCODE -ne 0) {
-  Write-Host "sudo cache not warm; prompting once (interactive TTY)." -ForegroundColor Yellow
-  ssh -tt $SshHost "sudo -v"
-  if ($LASTEXITCODE -ne 0) {
-    throw "sudo -v failed with exit code $LASTEXITCODE"
-  }
+# Ansible calls sudo non-interactively unless you pass --ask-become-pass (-K). A prior `sudo -v` does not satisfy that.
+$becomePart = if ($NoAskBecomePass) { "" } else { "--ask-become-pass" }
+if (-not $NoAskBecomePass) {
+  Write-Host "Ansible will prompt once per playbook run for BECOME (sudo) password on $SshHost (use -NoAskBecomePass if NOPASSWD)." -ForegroundColor Yellow
 }
 
-# 3) Generate a local inventory pinned to localhost/local connection, then run check/apply.
+# Generate a local inventory pinned to localhost/local connection, then run check/apply.
 $runModeArgs = if ($Apply) { "--diff" } else { "--check --diff" }
 
 $runLines = @(
@@ -85,10 +84,10 @@ $runLines = @(
   "perl -0777 -pe 's/^\[t14\]\n.*?\n\n/[t14]\nlocalhost ansible_connection=local\n\n/ms' -i inventory.local.ini"
 )
 if ($Apply -and -not $SkipCheck) {
-  $runLines += 'ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini playbooks/t14-baseline.yml --check --diff'
-  $runLines += 'ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini playbooks/t14-baseline.yml --diff'
+  $runLines += "ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini $becomePart playbooks/t14-baseline.yml --check --diff"
+  $runLines += "ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini $becomePart playbooks/t14-baseline.yml --diff"
 } else {
-  $runLines += "ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini playbooks/t14-baseline.yml $runModeArgs"
+  $runLines += "ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini $becomePart playbooks/t14-baseline.yml $runModeArgs"
 }
 Invoke-T14Ssh ($runLines -join "`n") -AllocateTTY
 

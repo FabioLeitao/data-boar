@@ -62,7 +62,7 @@ ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini playbooks/t14
 
 ## Token-aware wrapper (Windows → SSH → Ansible on T14)
 
-If you want minimal toil from Windows (one password prompt, then automation), use:
+From Windows, the script runs Ansible **on the T14 over SSH** (`ssh -tt` so privilege escalation can use a TTY when needed). Ansible is invoked with **`--ask-become-pass`** (`-K`): you get a **BECOME password** prompt once **per `ansible-playbook` run** (so `-Apply` without `-SkipCheck` runs check then apply and may prompt twice). If your user has **passwordless sudo** for these tasks, pass **`-NoAskBecomePass`**.
 
 ```powershell
 .\scripts\t14-ansible-baseline.ps1 -SshHost t14
@@ -74,10 +74,10 @@ To apply changes after a check pass:
 .\scripts\t14-ansible-baseline.ps1 -SshHost t14 -Apply
 ```
 
-### Note (toil reduction, zero prompts)
+### Note (fewer prompts)
 
-- **Current workaround**: keep `sudo` warm on the target with `sudo -v` (extends the timeout for a few minutes).
-- **Preferred end state**: a **restricted sudoers rule** (guardrailed, command-scoped) to allow the baseline automation to run **without prompts** when explicitly requested, aligned with the LAB-OP privileged-collection approach.
+- **`-SkipCheck`** with **`-Apply`** skips the dry-run playbook and runs only the apply pass (one BECOME prompt).
+- **Preferred end state** for unattended runs: a **restricted sudoers** rule (command-scoped) or **NOPASSWD** for the automation user, aligned with LAB-OP policy — then use **`-NoAskBecomePass`**.
 
 ## What this does (safe-default)
 
