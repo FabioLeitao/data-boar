@@ -67,6 +67,7 @@ ansible-playbook -i inventory.local.ini --ask-become-pass playbooks/t14-baseline
 
 - **`tmux`**: in `t14_baseline_packages` (terminal multiplexer; pairs with “sudo warm + tmux send-keys” workflows from the dev PC).
 - **Bitwarden CLI (`bw`)**: **not** in Debian main — role `t14_bitwarden_cli` installs **`nodejs`** + **`npm`** from apt, then **`npm install -g @bitwarden/cli`**. Disable with `t14_install_bitwarden_cli: false` in playbook vars if you prefer another install method.
+- **Operator groups + `tshark`**: role **`t14_operator_supplementary_groups`** (after Docker CE) installs **`tshark`** and adds **`ansible_user`** to **`docker`**, **`wireshark`**, **`dialout`**, **`plugdev`**, **`systemd-journal`** by default.
 
 ## Token-aware wrapper (Windows → SSH → Ansible on T14)
 
@@ -97,7 +98,7 @@ To apply changes after a check pass:
 - Installs `aide` and `auditd` with a reviewable baseline (host-specific exceptions should stay private)
 - Optional: enables zram-based swap (host-dependent sizing; opt-in)
 - Ensures SSH hardening defaults (no root login; password auth off) **only if you opt-in**
-- **Docker CE** (official repo) **+ Compose plugin** are **on by default** in **`t14-baseline.yml`** so **`docker`** and **`ctop`** work after one playbook run. **`ansible_user`** is added to the **`docker`** group for **`/var/run/docker.sock`** access without **`sudo`** (new login or **`newgrp docker`** to apply). **Swarm** is **initialized by default** (**single-node manager**) so **`docker service`** and **`docker stack deploy`** work; set **`t14_docker_swarm_init: false`** to skip. Set **`t14_install_docker_ce: false`** in inventory to skip Docker entirely. **Podman** and **k3s** stay **opt-in**.
+- **Docker CE** (official repo) **+ Compose plugin** are **on by default** in **`t14-baseline.yml`** so **`docker`** and **`ctop`** work after one playbook run. **`t14_operator_supplementary_groups`** runs after **`t14_docker_ce`**: installs **`tshark`**, adds **`ansible_user`** to **`docker`** (when Docker CE is enabled), **`wireshark`**, **`dialout`**, **`plugdev`**, **`systemd-journal`**, and merges **`t14_operator_group_users_extra`** plus legacy **`t14_docker_socket_group_users_extra`**. **Log out and back in** (or **`newgrp`** with the new group name in the current shell) so new groups apply. Disable the whole block with **`t14_operator_groups_enabled: false`**. **Swarm** is **initialized by default**; set **`t14_docker_swarm_init: false`** to skip. Set **`t14_install_docker_ce: false`** to skip Docker entirely. **Podman** and **k3s** stay **opt-in**.
 
 ## Post-automation validation (checklist)
 
@@ -125,7 +126,7 @@ After a `CHECK` + `APPLY`, run the quick validation checklist:
 
 - **`ctop` / `docker: command not found`:** If you disabled Docker in inventory, re-enable **`t14_install_docker_ce: true`** or run the **`t14_docker_ce`** role. The default **`t14-baseline.yml`** enables Docker CE; **`docker.io`** from Debian main is **not** used by this role.
 
-- **`permission denied` on **`docker.sock`** / **`ctop`:** The **`t14_docker_ce`** role adds **`ansible_user`** to the **`docker`** group. **Log out and back in** (or run **`newgrp docker`** in the current shell) so the new group is visible; then **`docker ps`** and **`ctop`** should work without **`sudo`**. Add more users with **`t14_docker_socket_group_users_extra`**; disable with **`t14_docker_grant_socket_group: false`** (not recommended on dev workstations).
+- **`permission denied` on **`docker.sock`**, **`ctop`**, **`tshark` / capture:** Role **`t14_operator_supplementary_groups`** adds **`ansible_user`** to **`docker`**, **`wireshark`**, and other standard groups (see defaults). **Log out and back in** after the play. Extra users: **`t14_operator_group_users_extra`** (or legacy **`t14_docker_socket_group_users_extra`**). Disable all supplementary group membership with **`t14_operator_groups_enabled: false`**. Skip **`tshark`** install with **`t14_operator_install_tshark: false`**. Add **`kvm`**, **`libvirt`**, etc. via **`t14_operator_supplementary_group_names_extra`** only after those groups exist (install **`qemu-system-x86`** / **`libvirt-clients`** first).
 
 - **`docker swarm init` / advertise address on multi-NIC hosts:** The role runs plain **`docker swarm init`** when Swarm state is **`inactive`**. If initialization fails because Docker cannot pick an address, set **`t14_docker_swarm_init: false`** and initialize once with **`docker swarm init --advertise-addr <stable-ip>`**, or extend the role privately with **`--advertise-addr`** (not in baseline).
 

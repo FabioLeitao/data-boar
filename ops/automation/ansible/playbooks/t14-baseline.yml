@@ -75,6 +75,7 @@
     - role: t14_ssh_hardening
     # --- Containers (Docker CE default; Podman / k3s opt-in) ---
     - role: t14_docker_ce
+    - role: t14_operator_supplementary_groups
     - role: t14_podman
     - role: t14_k3s
     # --- Observability (progressive opt-in) ---
