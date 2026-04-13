@@ -6,19 +6,25 @@
 # Use findmnt (not `stat -f`) for FSTYPE: GNU stat's fs-type field can be empty/wrong on
 # some btrfs layouts (e.g. LMDE/LMDE with subvol=@), which incorrectly skipped this role.
 
+# findmnt can print multiple FSTYPE lines on some btrfs/bind layouts — keep first line only.
 - name: Detect root filesystem type (Linux)
-  ansible.builtin.command: findmnt -n -o FSTYPE /
+  ansible.builtin.shell: |
+    set -euo pipefail
+    findmnt -n -o FSTYPE / | head -n1
+  args:
+    executable: /bin/bash
   register: rootfs_type_cmd
   changed_when: false
 
 - name: Set fact — is root btrfs?
   ansible.builtin.set_fact:
+    rootfs_fstype_normalized: "{{ rootfs_type_cmd.stdout | default('') | trim | lower }}"
     rootfs_is_btrfs: "{{ (rootfs_type_cmd.stdout | default('') | trim | lower) == 'btrfs' }}"
 
 - name: Abort gracefully if root is not btrfs
   ansible.builtin.debug:
     msg: >
-      Snapper skipped: root (/) fstype is "{{ rootfs_type_cmd.stdout | default('') | trim }}", not btrfs.
+      Snapper skipped: root (/) fstype is "{{ rootfs_fstype_normalized | default('') }}", not btrfs.
       Snapper cannot manage snapshots on non-btrfs; /.snapshots appears after snapper create-config on btrfs.
       Reinstall with btrfs on / or migrate, then re-run.
   when: not (rootfs_is_btrfs | bool)
