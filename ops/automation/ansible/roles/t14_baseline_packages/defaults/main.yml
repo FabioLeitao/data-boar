@@ -22,6 +22,8 @@ lab-node-01_baseline_packages:
   - lsof
   - strace
   - sysstat
+  # Login/session evidence (wtmp/utmp DB; last(1) / observability)
+  - wtmpdb
   # Hardware monitoring
   - lm-sensors
   - smartmontools
