@@ -63,7 +63,12 @@
 - name: Verify bw for account that runs Ansible (must work without manual chmod)
   ansible.builtin.command: /usr/local/bin/bw --version
   become: true
-  become_user: "{{ ansible_user | default('root') }}"
+  become_user: "{{ _bw_verify_login }}"
+  vars:
+    _override: "{{ t14_operator_target_user | default('') | trim }}"
+    _sudo_u: "{{ ansible_env.SUDO_USER | default('') | trim }}"
+    _fallback: "{{ ansible_user | default(ansible_user_id) }}"
+    _bw_verify_login: "{{ _override if (_override | length > 0) else (_sudo_u if (_sudo_u | length > 0) else _fallback) }}"
   register: t14_bw_ver
   changed_when: false
   when: t14_install_bitwarden_cli | bool
