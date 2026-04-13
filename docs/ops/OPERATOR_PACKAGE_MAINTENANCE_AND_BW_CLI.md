@@ -46,15 +46,15 @@
 
 ### 1.2.1 Void Linux (`xbps`) — Bitwarden CLI
 
-There is **no** `bitwarden-cli` package in Void’s default `xbps` repos. Use **Node + npm** from Void, then the official npm package (same idea as [Ansible role `t14_bitwarden_cli`](../../ops/automation/ansible/roles/t14_bitwarden_cli/tasks/main.yml) on Debian):
+There is **no** `bitwarden-cli` package in Void’s default `xbps` repos. Use **Node.js** from Void (`npm` ships **inside** the `nodejs` package — there is **no** separate `npm` package on Void):
 
 ```bash
-sudo xbps-install -S nodejs npm
-sudo npm install -g @bitwarden/cli
+sudo xbps-install -S nodejs
+npm install -g @bitwarden/cli
 command -v bw && bw --version
 ```
 
-If a package name differs on your Void arch/channel, run `xbps-query -Rs nodejs` / `npm` and adjust. **`bw login` / `bw unlock`** stay manual (warm session); do not paste secrets into tracked docs.
+Use **`npm install -g`** as a normal user (or fix npm global permissions if you insist on `sudo npm`; avoid `sudo npm` when possible). For other Node major versions, search `xbps-query -Rs nodejs` (e.g. `nodejs-lts`). **`bw login` / `bw unlock`** stay manual (warm session); do not paste secrets into tracked docs.
 
 ### 1.3 One package manager per tool (avoid duplicates)
 
