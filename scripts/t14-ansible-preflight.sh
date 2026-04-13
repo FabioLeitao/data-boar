@@ -47,8 +47,8 @@ if [[ -f "${DOCKER_LIST}" ]]; then
   echo "INFO: ${DOCKER_LIST} mode=${dmode}"
   if [[ "${dmode}" != "644" ]]; then
     echo "WARN: docker.list should be 0644 (avoids Permission denied for user-space apt readers)"
-    echo "      Fix: sudo chmod 644 ${DOCKER_LIST} && sudo chown root:root ${DOCKER_LIST}"
-    echo "      Or re-run the baseline (lab-node-01_docker_ce sets 0644)."
+    echo "      Quick fix: bash scripts/lab-node-01-fix-docker-list.sh"
+    echo "      Or: sudo chmod 644 ${DOCKER_LIST} && sudo chown root:root ${DOCKER_LIST}"
   fi
 else
   echo "INFO: ${DOCKER_LIST} not present yet (Docker role not applied or Docker disabled)"
