@@ -1,0 +1,25 @@
+---
+# sshd hardening via /etc/ssh/sshd_config.d/ (Include is default on modern OpenSSH packages).
+t14_sshd_labop_enable: true
+t14_sshd_labop_dropin_path: /etc/ssh/sshd_config.d/90-labop-hardening.conf
+
+# dev: AllowTcpForwarding + AllowAgentForwarding on (daily Git/SSH dev).
+# strict: match locked-down workstation (no forwarding); closer to minimal exposure.
+t14_sshd_profile: dev
+
+# prohibit-password: root only with pubkey; "no" disables root SSH entirely.
+t14_sshd_permit_root_login: "prohibit-password"
+
+# Empty = do not emit PasswordAuthentication (leave distro/admin effective setting).
+# Set to "no" only after confirming pubkey access.
+t14_sshd_password_authentication: ""
+
+# Log extra auth lines (audit-friendly).
+t14_sshd_log_level: VERBOSE
+
+# Reduce slow/fingerprinting DNS lookups on server.
+t14_sshd_usedns: "no"
+
+# Point Banner at file created by role t14_banners (runs earlier in playbook).
+t14_sshd_use_banner: true
+t14_sshd_banner_path: /etc/banner.net
