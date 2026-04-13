@@ -64,19 +64,20 @@
     - rootfs_is_btrfs | bool
     - snapper_config_check.rc != 0
 
+# snapper-configs(5): TIMELINE_CREATE / TIMELINE_CLEANUP must be "yes" or "no" (not TRUE/FALSE).
 - name: Configure snapper timeline limits
   ansible.builtin.lineinfile:
     path: "/etc/snapper/configs/{{ lab-node-01_snapper_config_name }}"
     regexp: "^{{ item.key }}="
-    line: "{{ item.key }}={{ item.value }}"
+    line: '{{ item.key }}="{{ item.value }}"'
   loop:
-    - { key: "TIMELINE_CREATE",        value: "\"{{ lab-node-01_snapper_timeline_create | string | upper }}\"" }
-    - { key: "TIMELINE_CLEANUP",       value: "\"{{ lab-node-01_snapper_timeline_cleanup | string | upper }}\"" }
-    - { key: "NUMBER_LIMIT_HOURLY",    value: "\"{{ lab-node-01_snapper_timeline_limit_hourly }}\"" }
-    - { key: "NUMBER_LIMIT_DAILY",     value: "\"{{ lab-node-01_snapper_timeline_limit_daily }}\"" }
-    - { key: "NUMBER_LIMIT_WEEKLY",    value: "\"{{ lab-node-01_snapper_timeline_limit_weekly }}\"" }
-    - { key: "NUMBER_LIMIT_MONTHLY",   value: "\"{{ lab-node-01_snapper_timeline_limit_monthly }}\"" }
-    - { key: "NUMBER_LIMIT_YEARLY",    value: "\"{{ lab-node-01_snapper_timeline_limit_yearly }}\"" }
+    - { key: "TIMELINE_CREATE",      value: "{{ 'yes' if (lab-node-01_snapper_timeline_create | bool) else 'no' }}" }
+    - { key: "TIMELINE_CLEANUP",     value: "{{ 'yes' if (lab-node-01_snapper_timeline_cleanup | bool) else 'no' }}" }
+    - { key: "NUMBER_LIMIT_HOURLY",  value: "{{ lab-node-01_snapper_timeline_limit_hourly }}" }
+    - { key: "NUMBER_LIMIT_DAILY",   value: "{{ lab-node-01_snapper_timeline_limit_daily }}" }
+    - { key: "NUMBER_LIMIT_WEEKLY",  value: "{{ lab-node-01_snapper_timeline_limit_weekly }}" }
+    - { key: "NUMBER_LIMIT_MONTHLY", value: "{{ lab-node-01_snapper_timeline_limit_monthly }}" }
+    - { key: "NUMBER_LIMIT_YEARLY",  value: "{{ lab-node-01_snapper_timeline_limit_yearly }}" }
   when:
     - lab-node-01_snapper_enabled | bool
     - rootfs_is_btrfs | bool
