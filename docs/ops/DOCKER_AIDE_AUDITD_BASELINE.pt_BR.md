@@ -10,7 +10,7 @@
 ## Automação
 
 - Docker CE: `ops/automation/ansible/roles/lab-node-01_docker_ce`
-  - `lab-node-01_install_docker_ce=false` por padrão
+  - `playbooks/lab-node-01-baseline.yml` define `lab-node-01_install_docker_ce: true` por padrão (use `false` no inventory para pular)
   - opcional: escrever `/etc/docker/daemon.json`
   - opcional: `docker swarm init`
 - AIDE: `ops/automation/ansible/roles/lab-node-01_aide`
