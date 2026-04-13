@@ -1,16 +1,13 @@
 ---
+# Apply UFW rules via the ufw CLI first (no D-Bus). Then best-effort systemd enable/start.
+# If "Failed to connect to system scope bus" appears, D-Bus/systemd socket was unavailable in
+# that Ansible task context — the firewall is still enabled via `ufw --force enable`.
+
 - name: Ensure ufw package is installed
   ansible.builtin.apt:
     name: ufw
     state: present
     update_cache: false
-
-- name: Enable UFW service
-  when: t14_ufw_enable | bool
-  ansible.builtin.service:
-    name: ufw
-    state: started
-    enabled: true
 
 - name: Set UFW defaults (deny incoming; allow outgoing)
   when: t14_ufw_enable | bool
@@ -22,3 +19,20 @@
     - "ufw default {{ t14_ufw_default_outgoing }} outgoing"
     - "ufw --force enable"
 
+- name: Enable UFW systemd unit (best-effort; requires working system D-Bus)
+  when: t14_ufw_enable | bool
+  ansible.builtin.service:
+    name: ufw
+    state: started
+    enabled: true
+  register: t14_ufw_systemd
+  ignore_errors: true
+
+- name: Report if systemd could not manage ufw (check dbus and re-run later)
+  when:
+    - t14_ufw_enable | bool
+    - t14_ufw_systemd is failed
+  ansible.builtin.debug:
+    msg: >
+      UFW rules were applied via ufw CLI, but systemctl could not reach D-Bus ({{ t14_ufw_systemd.msg | default('unknown') }}).
+      Check: systemctl is-system-running; ls -l /run/dbus/system_bus_socket; sudo systemctl status dbus.
