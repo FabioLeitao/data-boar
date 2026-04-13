@@ -36,6 +36,12 @@ Run these **once** on the laptop (as `leitao`, with sudo):
    ansible-playbook --version
    ```
 
+   **Optional collections** (only if you set **`t14_toolchain_acl_extra_groups`** for role **`t14_toolchain_restrict`** — POSIX ACLs via **`ansible.posix.acl`**):
+
+   ```bash
+   ansible-galaxy collection install -r collections/requirements.yml
+   ```
+
 3. **Inventory:** from `ops/automation/ansible/`, copy the example and point `[t14]` at this host. The Windows helper script **rewrites** `[t14]` to `localhost` + `ansible_connection=local` when you run Ansible **on the T14 over SSH** (same pattern as `t14-ansible-baseline.ps1`).
 
    ```bash
@@ -68,6 +74,7 @@ ansible-playbook -i inventory.local.ini --ask-become-pass playbooks/t14-baseline
 - **`tmux`**: in `t14_baseline_packages` (terminal multiplexer; pairs with “sudo warm + tmux send-keys” workflows from the dev PC).
 - **Bitwarden CLI (`bw`)**: **not** in Debian main — role `t14_bitwarden_cli` installs **`nodejs`** + **`npm`** from apt, then **`npm install -g @bitwarden/cli`**. Disable with `t14_install_bitwarden_cli: false` in playbook vars if you prefer another install method.
 - **Operator groups + `tshark`**: role **`t14_operator_supplementary_groups`** (after Docker CE) installs **`tshark`**, adds the **resolved operator login** (see **`t14_operator_target_user`** in **`group_vars/all.yml`**) to **`docker`**, **`wireshark`**, **`dialout`**, **`plugdev`**, **`systemd-journal`**, then runs **`grpconv`** and **`grpck -r`** (set **`t14_operator_grpck_strict: false`** if **`grpck`** fails on a host with pre-existing group-file issues). On **`localhost`** or when running **`sudo ansible-playbook`**, set **`t14_operator_target_user=yourlogin`** in **`[t14:vars]`** so groups are not applied to **`root`** by mistake.
+- **Toolchain restriction (`comp`)**: role **`t14_toolchain_restrict`** is **off by default**. When **`t14_toolchain_restrict_enabled=true`**, it ensures group **`comp`** (configurable), finds matching **`/usr/bin/x86_64-linux-gnu-*`** compiler/tool binaries, and applies **`ansible.builtin.file`** (`root` + group, mode **`0754`**, **`follow: true`**). Optional **`t14_toolchain_acl_extra_groups`** adds extra **POSIX ACL** group lines (**`rx`**) via **`ansible.posix.acl`** — install **`collections/requirements.yml`** first. **`apt`** upgrades can restore vendor modes; re-run the playbook after compiler package updates. Add human users to **`comp`** separately (e.g. **`usermod -aG comp`**), or extend automation in private inventory.
 
 ## Token-aware wrapper (Windows → SSH → Ansible on T14)
 
