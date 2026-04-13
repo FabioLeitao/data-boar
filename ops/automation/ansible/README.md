@@ -9,25 +9,56 @@ This folder provides **generic**, reviewable Ansible automation for workstation 
 
 ## Quick start
 
-1) Create a local inventory (example):
+### Prerequisites on the T14 (target)
 
-```bash
-cp inventory.example.ini inventory.local.ini
-```
+Run these **once** on the laptop (as `leitao`, with sudo):
 
-1) One interactive step (sudo warm-up):
+1. **Clone** this repo (path expected by `scripts/t14-ansible-baseline.ps1`):
 
-On the target host (or in an SSH session), run:
+   ```bash
+   mkdir -p ~/Projects/dev && cd ~/Projects/dev
+   git clone <your-upstream-or-fork-url> data-boar
+   ```
+
+2. **Install Ansible** (Debian/LMDE package is enough for this playbook):
+
+   ```bash
+   sudo apt update
+   sudo apt install -y ansible
+   ansible-playbook --version
+   ```
+
+3. **Inventory:** from `ops/automation/ansible/`, copy the example and point `[t14]` at this host. The Windows helper script **rewrites** `[t14]` to `localhost` + `ansible_connection=local` when you run Ansible **on the T14 over SSH** (same pattern as `t14-ansible-baseline.ps1`).
+
+   ```bash
+   cd ~/Projects/dev/data-boar/ops/automation/ansible
+   cp -f inventory.example.ini inventory.local.ini
+   # Edit [t14] if you run from a different machine than localhost; for local runs use localhost as in the script.
+   ```
+
+### Run order
+
+1) Create `inventory.local.ini` (see above).
+
+2) **Warm sudo** on the target (one interactive password if needed):
 
 ```bash
 sudo -v
 ```
 
-1) Run the baseline playbook (example):
+3) Run the baseline playbook **from** `ops/automation/ansible` with roles on the path:
 
 ```bash
+cd ~/Projects/dev/data-boar/ops/automation/ansible
 ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini playbooks/t14-baseline.yml --diff
 ```
+
+**Check mode (dry-run):** add `--check` before `--diff`.
+
+### What the baseline installs (operator-facing)
+
+- **`tmux`**: in `t14_baseline_packages` (terminal multiplexer; pairs with “sudo warm + tmux send-keys” workflows from the dev PC).
+- **Bitwarden CLI (`bw`)**: **not** in Debian main — role `t14_bitwarden_cli` installs **`nodejs`** + **`npm`** from apt, then **`npm install -g @bitwarden/cli`**. Disable with `t14_install_bitwarden_cli: false` in playbook vars if you prefer another install method.
 
 ## Token-aware wrapper (Windows → SSH → Ansible on T14)
 

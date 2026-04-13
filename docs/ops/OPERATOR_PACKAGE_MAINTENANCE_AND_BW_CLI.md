@@ -44,6 +44,18 @@
   command -v bw && bw --version
   ```
 
+### 1.2.1 Void Linux (`xbps`) — Bitwarden CLI
+
+There is **no** `bitwarden-cli` package in Void’s default `xbps` repos. Use **Node + npm** from Void, then the official npm package (same idea as [Ansible role `t14_bitwarden_cli`](../../ops/automation/ansible/roles/t14_bitwarden_cli/tasks/main.yml) on Debian):
+
+```bash
+sudo xbps-install -S nodejs npm
+sudo npm install -g @bitwarden/cli
+command -v bw && bw --version
+```
+
+If a package name differs on your Void arch/channel, run `xbps-query -Rs nodejs` / `npm` and adjust. **`bw login` / `bw unlock`** stay manual (warm session); do not paste secrets into tracked docs.
+
 ### 1.3 One package manager per tool (avoid duplicates)
 
 - **Do not** install the same binary (`bw`, `git`, `python`, …) via **winget**, **Chocolatey**, **Scoop**, and **manual** copies on the **same** Windows profile. Pick **one** primary source per tool and **keep a private note** (for example under `docs/private/`) of “`bw` = winget” so upgrades stay predictable.
@@ -151,10 +163,30 @@ A **commented-out Debian `apt` block** in the same script can be a **portable te
 
 ---
 
+## 5. tmux dotfiles on LAB-OP Linux (`tmux-configs`)
+
+Use one GitHub repo as the **source of truth** for terminal layout and key bindings, then apply it on **each** lab Linux host (Zorin/latitude, Raspberry Pi, Void/mini-bt, LMDE/T14, etc.):
+
+- **Repository:** [github.com/FabioLeitao/tmux-configs](https://github.com/FabioLeitao/tmux-configs) (clone URL: `https://github.com/FabioLeitao/tmux-configs.git`).
+- **Install `tmux` first** via the host’s packager (`apt` / `xbps-install` / Ansible baseline on T14 already includes it).
+- **Then** clone and follow that repo’s **README** (typically symlink `~/.tmux.conf`, TPM/plugins, prefix key). Example skeleton:
+
+  ```bash
+  mkdir -p ~/Projects/dev && cd ~/Projects/dev
+  git clone https://github.com/FabioLeitao/tmux-configs.git
+  cd tmux-configs
+  # README: apply config (symlink or copy), install plugin manager if required, open new tmux session and validate.
+  ```
+
+- Keep **one** layout per machine (same clone path on every host, or document exceptions in private notes).
+
+---
+
 ## See also
 
 - [OPERATOR_SECRETS_BITWARDEN.md](OPERATOR_SECRETS_BITWARDEN.md) — `bw` contract, CI, tests.
 - [LMDE7_T14_DEVELOPER_SETUP.md](LMDE7_T14_DEVELOPER_SETUP.md) — ThinkPad T14 + LMDE baseline.
 - [HOMELAB_HOST_PACKAGE_INVENTORY.md](HOMELAB_HOST_PACKAGE_INVENTORY.md) — inventory capture.
+- [tmux-configs](https://github.com/FabioLeitao/tmux-configs) — tmux dotfiles (section **5** above).
 
-**Last review:** 2026-03 — operator workflows (winget, WAU, Topgrade, `gta`, Void **xbps**, ARM **`venv`** Topgrade); **verify** Bitwarden CLI package IDs on [bitwarden.com](https://bitwarden.com/) / **winget** when installing.
+**Last review:** 2026-04 — added Void `bw` (§1.2.1), tmux-configs §5, Bitwarden CLI IDs on [bitwarden.com](https://bitwarden.com/) / **winget** — confirm at install time.
