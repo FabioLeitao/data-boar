@@ -9,8 +9,9 @@ Este runbook junta **hardening repetível no host** (Ansible neste repositório)
 1. **Sincronizar o repo:** `git pull` no teu clone do `data-boar`.
 2. **Inventário:** `ops/automation/ansible/inventory.local.ini` **precisa incluir** **`localhost ansible_connection=local`** em **`[lab-node-01]`** quando corres o playbook **no próprio portátil** (não a partir de outro PC por SSH).
 3. **Preflight:** na raiz do repo, **`bash scripts/lab-node-01-ansible-preflight.sh`** — verifica Ansible, inventário, sudo, permissões de `docker.list` e presença de `bw`.
-4. **Sudo:** `sudo -v` para o prompt de senha funcionar antes de uma execução longa.
-5. **Aplicar:** em `ops/automation/ansible/`, **`ansible-playbook -i inventory.local.ini --ask-become-pass playbooks/lab-node-01-baseline.yml --diff`** (troubleshooting em **[ops/automation/ansible/README.md](../../ops/automation/ansible/README.md)**).
+4. **Só falta o `bw` / erro em `docker.list`:** na raiz do repo, **`bash scripts/lab-node-01-bitwarden-cli-bootstrap.sh`** (instala **`@bitwarden/cli`**, corrige permissões e **`PATH`** para tmux). Depois **`source /etc/bash.bashrc`** ou novo painel tmux.
+5. **Sudo:** `sudo -v` para o prompt de senha funcionar antes de uma execução longa.
+6. **Aplicar:** em `ops/automation/ansible/`, **`ansible-playbook -i inventory.local.ini --ask-become-pass playbooks/lab-node-01-baseline.yml --diff`** (troubleshooting em **[ops/automation/ansible/README.md](../../ops/automation/ansible/README.md)**).
 
 Depois de um run bem-sucedido, o **`bw`** deve estar em **`/usr/local/bin/bw`**. O role **`lab-node-01_bitwarden_cli`** atualiza **`/etc/profile.d/zz-local-bin.sh`** e **`/etc/bash.bashrc`** (para **tmux** / bash não-login). Se ainda não vês `bw`, abre um **novo painel tmux** ou corre **`source /etc/bash.bashrc`**, ou usa **`/usr/local/bin/bw`** direto.
 

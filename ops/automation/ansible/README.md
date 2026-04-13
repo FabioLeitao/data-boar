@@ -61,6 +61,8 @@ cd ~/Projects/dev/data-boar
 bash scripts/lab-node-01-ansible-preflight.sh
 ```
 
+**`bw` missing / `command-not-found` suggests `bundlewrap`:** run **`bash scripts/lab-node-01-bitwarden-cli-bootstrap.sh`** from the repo root (fixes **`docker.list`** perms if needed, installs **Node/npm**, **`npm install -g @bitwarden/cli`**, fixes **`@bitwarden`** permissions, writes **`/etc/profile.d/zz-local-bin.sh`** and the **tmux** **`PATH`** block in **`/etc/bash.bashrc`**). Then **`source /etc/bash.bashrc`** or open a **new tmux pane** and run **`bw login`**.
+
 3) **Warm sudo** on the target (one interactive password if needed):
 
 ```bash
