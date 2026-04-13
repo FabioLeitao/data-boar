@@ -1,0 +1,3 @@
+http://gitlab.ictsirio.com/fabio.leitao/localiza_danfe_por_id_de_upload.git==>https://github.com/FabioLeitao/bash_localiza_danfe_por_id_de_upload.git
+fabio.leitao@rio.ictsi.com==>https://github.com/FabioLeitao
+/tospprodsharedfiles/tospsharedfiles/athenas/jboss/repositorio_aft/bkp/checkin==>/var/lib/danfe-checkin-backup/bkp/checkin
