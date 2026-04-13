@@ -110,6 +110,8 @@ After a `CHECK` + `APPLY`, run the quick validation checklist:
 
 - **Snapper missing / `Unit snapper.service could not be found` / no `/.snapshots`:** The **`lab-node-01_snapper`** role only installs Snapper and runs **`snapper create-config`** when **root (`/`) is btrfs** (detected with **`findmnt -n -o FSTYPE /`**). On **ext4**, Ansible cannot create btrfs snapshots — reinstall or migrate `/` to btrfs first. **LMDE with `subvol=@` on `/` is still btrfs**; if the role skipped before, older detection used **`stat`** and could mis-detect — re-run the baseline after updating this repo. Snapper uses **`snapper-timeline.timer`** / **`snapper-cleanup.timer`**, not `snapper.service`. Set **`lab-node-01_snapper_enabled: false`** to silence the role on non-btrfs hosts.
 
+- **UFW / `Failed to connect to system scope bus`:** The **`lab-node-01_ufw`** role applies **`ufw --force enable`** before touching **systemctl**, so the firewall should still activate. The follow-up **systemd** task is best-effort (`ignore_errors`). If D-Bus was down or unreachable in that moment, check **`systemctl status dbus`** and **`/run/dbus/system_bus_socket`**, then re-run the play or run **`sudo systemctl enable --now ufw`** manually.
+
 ## Important
 
 Hardening is **contextual**. Before enabling any network-facing service, ensure the host is on the intended VLAN/segment and you understand the access model.
