@@ -47,7 +47,7 @@ dependencies = [
     "oracledb>=3.4.1",
     "packaging>=26.0",
     "pandas>=3.0.1",
-    "pillow>=12.1.1",
+    "pillow>=12.2.0",
     "pluggy>=1.6.0",
     "psycopg2-binary>=2.9.11",
     "pycparser>=3.0 ; implementation_name != 'PyPy' and platform_python_implementation != 'PyPy'",
