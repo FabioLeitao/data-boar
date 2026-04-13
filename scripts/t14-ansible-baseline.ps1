@@ -15,7 +15,15 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-function Invoke-LAB-NODE-01Ssh([string]$Cmd) {
+function ConvertTo-UnixLf {
+  param([string]$Text)
+  if ([string]::IsNullOrEmpty($Text)) { return $Text }
+  return ($Text -replace "`r`n", "`n" -replace "`r", "`n").TrimEnd()
+}
+
+function Invoke-LAB-NODE-01Ssh {
+  param([string]$Cmd)
+  $Cmd = ConvertTo-UnixLf $Cmd
   ssh $SshHost $Cmd
   if ($LASTEXITCODE -ne 0) {
     throw "SSH command failed with exit code $LASTEXITCODE"
@@ -27,14 +35,14 @@ Write-Host "Host: $SshHost"
 Write-Host "Repo: $RepoPath"
 Write-Host "Mode: $(if ($Apply) { 'APPLY' } else { 'CHECK' })"
 
-# 1) Preflight: ensure repo exists and git/ansible are present.
-# Use POSIX "set -eu" only: ssh runs /bin/sh (dash on Debian/LMDE), which does not support "pipefail".
-Invoke-LAB-NODE-01Ssh @"
-set -eu
-cd "$RepoPath"
-command -v git >/dev/null
-command -v ansible-playbook >/dev/null
-"@
+# Remote scripts must use LF only: PowerShell here-strings are CRLF on Windows and break bash (cd $'path\r', set, perl, ansible).
+$preflightLines = @(
+  'set -eu',
+  "cd `"$RepoPath`"",
+  'command -v git >/dev/null',
+  'command -v ansible-playbook >/dev/null'
+)
+Invoke-LAB-NODE-01Ssh ($preflightLines -join "`n")
 
 # 2) One interactive step: warm up sudo so Ansible can run non-interactively afterwards.
 Write-Host "Check sudo cache on $SshHost." -ForegroundColor Yellow
@@ -50,22 +58,19 @@ if ($LASTEXITCODE -ne 0) {
 # 3) Generate a local inventory pinned to localhost/local connection, then run check/apply.
 $runModeArgs = if ($Apply) { "--diff" } else { "--check --diff" }
 
-$checkThenApply = if ($Apply -and -not $SkipCheck) {
-  @"
-ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini playbooks/lab-node-01-baseline.yml --check --diff
-ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini playbooks/lab-node-01-baseline.yml --diff
-"@
+$ansibleDir = "$RepoPath/ops/automation/ansible"
+$runLines = @(
+  'set -eu',
+  "cd `"$ansibleDir`"",
+  'cp -f inventory.example.ini inventory.local.ini',
+  "perl -0777 -pe 's/^\[lab-node-01\]\n.*?\n\n/[lab-node-01]\nlocalhost ansible_connection=local\n\n/ms' -i inventory.local.ini"
+)
+if ($Apply -and -not $SkipCheck) {
+  $runLines += 'ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini playbooks/lab-node-01-baseline.yml --check --diff'
+  $runLines += 'ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini playbooks/lab-node-01-baseline.yml --diff'
 } else {
-  "ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini playbooks/lab-node-01-baseline.yml $runModeArgs"
+  $runLines += "ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini playbooks/lab-node-01-baseline.yml $runModeArgs"
 }
-
-Invoke-LAB-NODE-01Ssh @"
-set -eu
-cd "$RepoPath/ops/automation/ansible"
-cp -f inventory.example.ini inventory.local.ini
-perl -0777 -pe 's/^\[lab-node-01\]\n.*?\n\n/[lab-node-01]\nlocalhost ansible_connection=local\n\n/ms' -i inventory.local.ini
-$checkThenApply
-"@
+Invoke-LAB-NODE-01Ssh ($runLines -join "`n")
 
 Write-Host "Done." -ForegroundColor Green
-
