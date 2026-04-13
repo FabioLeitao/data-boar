@@ -10,7 +10,7 @@
 ## Automação
 
 - Docker CE: `ops/automation/ansible/roles/t14_docker_ce`
-  - `t14_install_docker_ce=false` por padrão
+  - `playbooks/t14-baseline.yml` define `t14_install_docker_ce: true` por padrão (use `false` no inventory para pular)
   - opcional: escrever `/etc/docker/daemon.json`
   - opcional: `docker swarm init`
 - AIDE: `ops/automation/ansible/roles/t14_aide`

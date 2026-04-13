@@ -12,9 +12,9 @@
     # The playbook stays safe-default: do not change remote access posture unless you opt-in.
     host_profile: lab_op_fixed
 
-    # --- Opt-in knobs (containers) ---
-    # Docker CE (from official Docker repo) with Compose plugin
-    t14_install_docker_ce: false
+    # --- Containers (defaults tuned for dev workstation + ctop; override in inventory to disable) ---
+    # Docker CE (official Docker repo) + Compose plugin — so `docker`/`ctop` work without manual apt
+    t14_install_docker_ce: true
     t14_docker_install_compose_plugin: true
     # Initialize Docker Swarm (single-node manager) after install
     t14_docker_swarm_init: false
@@ -73,7 +73,7 @@
     - role: t14_auditd
     - role: t14_zram
     - role: t14_ssh_hardening
-    # --- Containers (opt-in) ---
+    # --- Containers (Docker CE default; Podman / k3s opt-in) ---
     - role: t14_docker_ce
     - role: t14_podman
     - role: t14_k3s
