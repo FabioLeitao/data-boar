@@ -50,8 +50,15 @@
     - rootfs_is_btrfs | bool
 
 - name: Create snapper root config
-  ansible.builtin.command: >
-    snapper -c {{ t14_snapper_config_name }} create-config {{ t14_snapper_subvolume }}
+  ansible.builtin.command:
+    argv:
+      - snapper
+      - "-c"
+      - "{{ t14_snapper_config_name }}"
+      - create-config
+      - "-f"
+      - "{{ t14_snapper_create_config_fstype }}"
+      - "{{ t14_snapper_subvolume }}"
   when:
     - t14_snapper_enabled | bool
     - rootfs_is_btrfs | bool
@@ -95,9 +102,10 @@
   failed_when: false
 
 - name: Create a baseline snapshot now
-  ansible.builtin.command: >
-    snapper -c {{ t14_snapper_config_name }} create
-    --description "ansible-baseline-$(date +%Y%m%d)"
+  ansible.builtin.shell: |
+    snapper -c {{ t14_snapper_config_name }} create --description "ansible-baseline-$(date +%Y%m%d)"
+  args:
+    executable: /bin/bash
   when:
     - t14_snapper_enabled | bool
     - rootfs_is_btrfs | bool
