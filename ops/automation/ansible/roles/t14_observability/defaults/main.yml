@@ -2,8 +2,11 @@
 # --- CLI tools ---
 lab-node-01_obs_install_cli_tools: true
 # ctop is not in apt; install via binary download.
+# Upstream assets are named ctop-<version>-linux-<arch> (see https://github.com/bcicen/ctop/releases).
 lab-node-01_obs_install_ctop: true
 lab-node-01_obs_ctop_version: "0.7.7"
+# Match release filename suffix: linux-amd64, linux-arm64, linux-arm, etc.
+lab-node-01_obs_ctop_linux_arch: "amd64"
 
 # --- Syslog forwarding ---
 lab-node-01_obs_syslog_forward_enabled: false
