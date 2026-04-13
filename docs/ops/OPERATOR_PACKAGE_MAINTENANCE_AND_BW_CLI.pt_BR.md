@@ -46,15 +46,35 @@
 
 ### 1.2.1 Void Linux (`xbps`) — Bitwarden CLI (`bw`)
 
-**Nao** existe pacote `bitwarden-cli` nos repositorios padrao do Void. Instale apenas **`nodejs`** com `xbps` — o **`npm`** vem **junto** no pacote Void (**nao** existe pacote separado `npm`; por isso `xbps-install -S npm` falha). Depois instale o CLI global (preferir **sem** `sudo npm`; use usuario normal ou ajuste prefixo global do npm):
+**Nao** existe pacote `bitwarden-cli` nos repositorios padrao do Void. Instale apenas **`nodejs`** com `xbps` — o **`npm`** vem **junto** no pacote Void (**nao** existe pacote separado `npm`).
 
 ```bash
 sudo xbps-install -S nodejs
+```
+
+Por padrao, **`npm install -g`** tenta escrever em **`/usr/lib/node_modules`**, entao usuario normal recebe **`EACCES`**. Escolha **uma** opcao:
+
+**A — Instalacao global com sudo (mais simples num host pessoal de lab):**
+
+```bash
+sudo npm install -g @bitwarden/cli
+command -v bw && bw --version
+```
+
+**B — Prefixo no teu `$HOME` (sem `sudo npm`):**
+
+```bash
+mkdir -p ~/.local
+npm config set prefix ~/.local
+grep -q '\.local/bin' ~/.bashrc 2>/dev/null || echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+export PATH="$HOME/.local/bin:$PATH"
 npm install -g @bitwarden/cli
 command -v bw && bw --version
 ```
 
 Para outra versao do Node, `xbps-query -Rs nodejs` (ex.: `nodejs-lts`). **`bw login`** / **`bw unlock`** continuam manuais (sessao quente); **nao** colar segredos em arquivos rastreados.
+
+**Git:** se `git pull` disser **divergent branches** depois de um **force push** no `main`, ou fazes `git pull --rebase origin main` (ou merge), ou — se **nao** precisares dos commits locais — alinhas ao remoto: `git fetch origin && git reset --hard origin/main`.
 
 ### 1.3 Um gestor por ferramenta (evitar duplicados)
 
