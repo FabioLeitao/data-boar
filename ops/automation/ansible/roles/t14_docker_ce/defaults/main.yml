@@ -1,6 +1,13 @@
 ---
 t14_install_docker_ce: false
 
+# Docker's Debian apt repo uses Debian codenames (bookworm, trixie). LMDE reports Mint codenames
+# (gigi, faye) in ansible_distribution_release — map them here. Override manually if needed.
+t14_docker_apt_dist_override: ""
+t14_docker_debian_codename_map:
+  gigi: trixie # LMDE 7
+  faye: bookworm # LMDE 6
+
 # Install docker-compose-plugin and docker-buildx-plugin alongside docker-ce.
 t14_docker_install_compose_plugin: true
 

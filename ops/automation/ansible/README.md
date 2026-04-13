@@ -127,6 +127,8 @@ After a `CHECK` + `APPLY`, run the quick validation checklist:
 
 - **`docker swarm init` / advertise address on multi-NIC hosts:** The role runs plain **`docker swarm init`** when Swarm state is **`inactive`**. If initialization fails because Docker cannot pick an address, set **`t14_docker_swarm_init: false`** and initialize once with **`docker swarm init --advertise-addr <stable-ip>`**, or extend the role privately with **`--advertise-addr`** (not in baseline).
 
+- **`gigi Release` / Docker apt on **LMDE**:** **`ansible_distribution_release`** is a **Mint** codename (**`gigi`**, **`faye`**) while **`download.docker.com/linux/debian`** only publishes **Debian** suites. The **`t14_docker_ce`** role maps **`gigi` → `trixie`** and **`faye` → `bookworm`**. Override with **`t14_docker_apt_dist_override`** (e.g. **`trixie`**) if your base Debian drifts. If **`apt update`** also warns about **`packages.linuxmint.com`** InRelease, that is separate from Docker — check network, mirrors, or Mint updates.
+
 ## Important
 
 Hardening is **contextual**. Before enabling any network-facing service, ensure the host is on the intended VLAN/segment and you understand the access model.
