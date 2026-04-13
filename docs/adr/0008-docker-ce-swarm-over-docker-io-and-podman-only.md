@@ -53,6 +53,7 @@ The project team (small, mostly Linux + Docker background) already has existing 
   runs `podman` commands and then inspects with `docker ps`. Mitigated by not setting the `docker` alias.
 - **Watch:** `docker.io` vs `docker-ce` package conflicts — if both are installed, the Ansible role should
   detect and prefer `docker-ce`. A future task may add an explicit conflict guard.
+- **LMDE:** Mint/LMDE **release codenames** (**`gigi`**, **`faye`**) differ from **Debian** codenames; the **`lab-node-01_docker_ce`** role maps them when adding **`download.docker.com/linux/debian`** (see **`lab-node-01_docker_debian_codename_map`**).
 
 ## References
 
