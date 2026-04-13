@@ -25,12 +25,12 @@ Use these tags in headings to keep priorities explicit and machine-countable:
 
 Do not edit this block manually; refresh with `python scripts/plans-stats.py --write`.
 
-- **Status rows counted:** 141  (Done: 76 | Incomplete: 65)
+- **Status rows counted:** 145  (Done: 80 | Incomplete: 65)
 - **Incomplete breakdown:** Pending `⬜`=61, Tracked `🔄` / `Tracked (partially done)`=4, Under consideration=0, Backlog-marked rows=0
 
 | Horizon | Total rows | Done | Incomplete |
 | ------- | ----------: | ----: | ----------: |
-| `H0` | 34 | 27 | 7 |
+| `H0` | 38 | 31 | 7 |
 | `H1` | 0 | 0 | 0 |
 | `H2` | 0 | 0 | 0 |
 | `H3` | 106 | 48 | 58 |
@@ -252,6 +252,17 @@ Config samples + product docs; **not** legal advice. **Phase 1** documents optio
 | 4 | COMPLIANCE_AND_LEGAL (EN + pt-BR): paragraph without `docs/plans/` links. | ✅ Done |
 | 5 | README pitch line (EN + pt-BR).                                           | ✅ Done |
 | 6 | PLANS_TODO: status line, dependency row, order **0a**, this block.        | ✅ Done |
+
+### Extended sensitive discovery positioning (clinical adjacency, IP, security artifacts) – [PLAN_EXTENDED_SENSITIVE_DISCOVERY_POSITIONING.md](PLAN_EXTENDED_SENSITIVE_DISCOVERY_POSITIONING.md)
+
+Doc-first: buyer/DPO positioning in COMPLIANCE_AND_LEGAL + COMPLIANCE_FRAMEWORKS; optional future compliance-sample packs for secrets/IP lexicon (no code required for wave 1).
+
+| # | To-do                                                                                         | Status |
+| - | -----                                                                                         | ------ |
+| 1 | COMPLIANCE_AND_LEGAL.md: new section (EN) + pointer to docs/README for internal plans.        | ✅ Done |
+| 2 | COMPLIANCE_AND_LEGAL.pt_BR.md: equivalent section (pt-BR).                                     | ✅ Done |
+| 3 | COMPLIANCE_FRAMEWORKS.md + pt_BR: short cross-link to COMPLIANCE_AND_LEGAL (no `docs/plans/`). | ✅ Done |
+| 4 | Add this plan file; run `plans_hub_sync.py --write` and `plans-stats.py --write`.             | ✅ Done |
 
 ### Corporate-Entity-C 2026-03-18 — evolution review (9.1/10) and follow-ups
 
