@@ -9,6 +9,9 @@ t14_snapper_enabled: true
 # Subvolume to protect (default: root — requires root on btrfs).
 t14_snapper_config_name: "root"
 t14_snapper_subvolume: "/"
+# create-config autodetection uses setmntent(3) and can fail under Ansible ("setmntent failed").
+# Forcing btrfs avoids that path on btrfs roots.
+t14_snapper_create_config_fstype: "btrfs"
 
 # Snapshot schedule (systemd timer — snapper ships timeline timers).
 t14_snapper_timeline_create: true
