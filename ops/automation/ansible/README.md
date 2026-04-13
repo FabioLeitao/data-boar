@@ -46,11 +46,11 @@ Run these **once** on the laptop (as `leitao`, with sudo):
 sudo -v
 ```
 
-3) Run the baseline playbook **from** `ops/automation/ansible` with roles on the path:
+3) Run the baseline playbook **from** `ops/automation/ansible` (this directory has `ansible.cfg` with `roles_path = roles`, same as `ANSIBLE_ROLES_PATH=./roles` in `lab-node-01-ansible-baseline.ps1`):
 
 ```bash
 cd ~/Projects/dev/data-boar/ops/automation/ansible
-ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini playbooks/lab-node-01-baseline.yml --diff
+ansible-playbook -i inventory.local.ini --ask-become-pass playbooks/lab-node-01-baseline.yml --diff
 ```
 
 **Check mode (dry-run):** add `--check` before `--diff`.
@@ -95,6 +95,10 @@ To apply changes after a check pass:
 After a `CHECK` + `APPLY`, run the quick validation checklist:
 
 - `POST_AUTOMATION_VALIDATION.pt_BR.md`
+
+## Troubleshooting
+
+- **`apt-listbugs` / exit code 10 / `Failure running script /usr/bin/apt-listbugs`:** Debian’s `apt-listbugs` runs before installs and **aborts** when it finds bugs (e.g. a transitive package like `openipmi`). This is not an Ansible or hardware failure. The baseline playbook sets **`APT_LISTBUGS_FRONTEND=none`** for the run (see `man apt-listbugs`) so unattended installs can finish. Interactive `apt` on the machine still uses your normal listbugs behavior.
 
 ## Important
 
