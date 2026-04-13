@@ -2,8 +2,11 @@
 # --- CLI tools ---
 t14_obs_install_cli_tools: true
 # ctop is not in apt; install via binary download.
+# Upstream assets are named ctop-<version>-linux-<arch> (see https://github.com/bcicen/ctop/releases).
 t14_obs_install_ctop: true
 t14_obs_ctop_version: "0.7.7"
+# Match release filename suffix: linux-amd64, linux-arm64, linux-arm, etc.
+t14_obs_ctop_linux_arch: "amd64"
 
 # --- Syslog forwarding ---
 t14_obs_syslog_forward_enabled: false
