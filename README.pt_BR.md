@@ -35,6 +35,8 @@ Idiomas e encodings legados são suportados; **timeouts configuráveis** e **end
 > **Release atual:** 1.6.8. Resumo: [CHANGELOG.md](CHANGELOG.md). Notas completas: [docs/releases/](docs/releases/) e a [página de Releases no GitHub](https://github.com/FabioLeitao/data-boar/releases).
 > **Documentação:** Este README e o `docs/USAGE.pt_BR.md` são as referências em português. Quando funcionalidades ou opções mudarem, atualize **ambos** os idiomas para mantê-los sincronizados.
 
+**Blog do produto** (atualizações em formato narrativo, posts mais curtos): [databoar.wordpress.com](https://databoar.wordpress.com) — a documentação técnica canônica continua neste repositório (`docs/`).
+
 ---
 
 ## Visão técnica
@@ -59,4 +61,4 @@ Se você precisa de:
 
 **Licença e direitos autorais:** [LICENSE](LICENSE) · [NOTICE](NOTICE) · [docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md](docs/COPYRIGHT_AND_TRADEMARK.pt_BR.md) ([EN](docs/COPYRIGHT_AND_TRADEMARK.md)).
 
-**Mantenedor:** [Fabio Leitao no GitHub](https://github.com/FabioLeitao) — namespace `fabioleitao` no Docker Hub. Links de redes sociais profissionais não ficam embutidos neste README público; ver o perfil no GitHub (política: **`tests/test_pii_guard.py`**, **`docs/ops/COMMIT_AND_PR.md`**).
+**Mantenedor:** [Fabio Leitao no GitHub](https://github.com/FabioLeitao) — namespace `fabioleitao` no Docker Hub. O link do **blog do produto** está acima; outras redes sociais profissionais pessoais não ficam embutidas neste README — ver o perfil no GitHub (política: **`tests/test_pii_guard.py`**, **`docs/ops/COMMIT_AND_PR.md`**). No GitHub, use o campo **Website** do perfil com `https://databoar.wordpress.com` se quiser um atalho ao blog.

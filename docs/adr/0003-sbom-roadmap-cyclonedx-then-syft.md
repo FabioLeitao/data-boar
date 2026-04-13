@@ -31,6 +31,10 @@ Two common outputs matter for this codebase:
 - **Docs:** [SECURITY.md](../../SECURITY.md), [RELEASE_INTEGRITY.md](../RELEASE_INTEGRITY.md) — where to download and what each file contains.
 - **Dev dependency:** `cyclonedx-bom` in [`pyproject.toml`](../../pyproject.toml) `[dependency-groups].dev` (same tooling as CI).
 
+### POC / procurement evidence (2026-04)
+
+The **same two CycloneDX JSON files** are the usual answer when a POC or enterprise security review asks for an **SBOM**: they inventory **Python dependencies** (lockfile-aligned) and the **built container image** layers. No second format or tool was chosen—**reviewers are pointed to [SECURITY.md](../../SECURITY.md) (SBOM section) and to the workflow run or GitHub Release for the **tag under evaluation**. Operational checklist for handing artifacts to a partner lives in **gitignored** `docs/private/plans/POC_SBOM_ENTREGA.pt_BR.md` (operator copy-me). This is an **evidence packaging** note, not a change to the Phase A/B decision above.
+
 ## References
 
 - [docs/COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md) — ISO 31000 framing vs SBOM role
