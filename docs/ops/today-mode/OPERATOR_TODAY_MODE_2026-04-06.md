@@ -18,11 +18,10 @@ Branch: main — sincronizado com origin.
 - [ ] Pendencias juridicas: ver docs/private/ para checklist detalhado
 
 ### DATA BOAR / PRODUTO
-- [ ] **Commit e push das alterações desta sessão** (ansible/, USAGE.md)
-      → `git add deploy/ansible docs/USAGE.md && git commit --trailer "Made-with: Cursor" -m "feat(deploy): add Ansible automation paths A and B"`
+- [x] **Commit e push** (ansible/, USAGE.md) — **feito** (2026-04-09): `origin/main` inclui deploy Ansible e doc; `USAGE.pt_BR` com seção Ansible em commit `docs(usage): …`.
 - [ ] **Testar playbooks Ansible localmente** (se T14 lab-op disponível)
       → `ansible-playbook site-full.yml --check -i inventory/hosts.ini`
-- [ ] **Adicionar seção Ansible ao USAGE.pt_BR.md** (sync EN→pt-BR)
+- [x] **Adicionar seção Ansible ao USAGE.pt_BR.md** (sync EN→pt-BR) — **feito** (2026-04-09).
 - [ ] **PLANS_TODO.md**: marcar Ansible como adicionado (H3/houseclean ou feature)
 - [ ] **Branding rename**: execução do ADR 0014 (renomear python3-lgpd-crawler → data-boar)
       → Cheklist completo em `docs/adr/0014-rename-repo-and-package-python3-lgpd-crawler-to-data-boar.md`
@@ -39,11 +38,10 @@ Branch: main — sincronizado com origin.
 
 ## PRIORIDADES RECOMENDADAS PARA HOJE
 
-1. **COMMIT Ansible + USAGE.md** — tudo pronto, só falta commitar
-2. **pt-BR sync do USAGE.md** — adicionar seção Ansible em USAGE.pt_BR.md
-3. **Verificar open PRs**: `gh pr list --state open`
-4. **check-all**: `.\scripts\check-all.ps1` — confirmar que tudo verde
-5. Se tiver energia: atualizar PLANS_TODO.md com status atual
+1. ~~**COMMIT Ansible + USAGE.md**~~ / ~~**pt-BR sync do USAGE.md**~~ — concluído 2026-04-09.
+2. **Verificar open PRs**: `gh pr list --state open`
+3. **check-all**: `.\scripts\check-all.ps1` — confirmar que tudo verde
+4. Se tiver energia: atualizar PLANS_TODO.md com status atual
 
 ---
 

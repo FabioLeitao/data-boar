@@ -27,7 +27,8 @@
 - [ ] **Private repo:** `private-git-sync` até ficar confortável com o estado pendente.
 - [ ] **Working tree público:** fechar ou partir em PRs/commits os diffs locais (grande volume).
 - [ ] **PR #177** Dependabot quando CI verde.
-- [ ] **Ansible / USAGE / T14 / `uv`:** itens de 2026-04-06 ainda válidos — ver `OPERATOR_TODAY_MODE_2026-04-06.md` se precisar da tabela completa.
+- [x] **Ansible / USAGE (docs + `main`):** seção em `USAGE.pt_BR.md` + push — **feito** (2026-04-09).
+- [ ] **T14 / `uv` / ansible `--check`:** ainda em aberto — ver `OPERATOR_TODAY_MODE_2026-04-06.md`.
 - [ ] **Homelab / hardware** (NVMe, VeraCrypt): só em notas privadas; não duplicar aqui.
 
 ---
