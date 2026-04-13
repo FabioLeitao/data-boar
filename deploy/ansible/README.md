@@ -3,6 +3,8 @@
 Two automation paths for deploying Data Boar on any Debian/Ubuntu host.
 Pick the path that matches your infrastructure.
 
+All plays set **`environment: "{{ labop_debian_unattended_apt_environment }}"`** (from **`group_vars/all.yml`**) so **`apt-listbugs`** does not abort unattended `apt` installs on Debian/Ubuntu. New playbooks must keep this pattern; CI enforces it — see **`tests/test_ansible_playbooks_unattended_apt.py`** and **[ops/automation/ansible/README.md](../../ops/automation/ansible/README.md)**.
+
 ---
 
 ## Prerequisites (both paths)

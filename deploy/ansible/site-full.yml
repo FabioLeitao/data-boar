@@ -7,6 +7,7 @@
 - name: Install Docker CE and initialise Swarm
   hosts: data_boar
   become: true
+  environment: "{{ labop_debian_unattended_apt_environment }}"
   vars:
     swarm_enabled: true
   roles:
@@ -15,6 +16,7 @@
 - name: Deploy Data Boar as Swarm service
   hosts: data_boar
   become: true
+  environment: "{{ labop_debian_unattended_apt_environment }}"
   vars:
     swarm_enabled: true
   roles:
