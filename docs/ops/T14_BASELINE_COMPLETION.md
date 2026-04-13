@@ -12,7 +12,7 @@ This runbook ties together **repeatable host hardening** (Ansible in this repo) 
 4. **Sudo:** `sudo -v` so the password prompt succeeds before a long run.
 5. **Apply:** from `ops/automation/ansible/`, run **`ansible-playbook -i inventory.local.ini --ask-become-pass playbooks/t14-baseline.yml --diff`** (see **[ops/automation/ansible/README.md](../../ops/automation/ansible/README.md)** for troubleshooting).
 
-After a successful run, **`bw`** should be available as **`/usr/local/bin/bw`** (and **`/etc/profile.d/zz-local-bin.sh`** adds `/usr/local/bin` to `PATH` in login shells). Open a **new login shell** or `source /etc/profile.d/zz-local-bin.sh` if `bw` is still not found.
+After a successful run, **`bw`** should be at **`/usr/local/bin/bw`**. Role **`t14_bitwarden_cli`** installs **`/etc/profile.d/zz-local-bin.sh`** and a block in **`/etc/bash.bashrc`** so **tmux** / non-login interactive bash gets **`PATH`**. If `bw` is still missing, open a **new tmux pane** or run **`source /etc/bash.bashrc`**, or call **`/usr/local/bin/bw`** directly.
 
 ## 2. Session warm-up: sudo + Bitwarden CLI (no VeraCrypt)
 

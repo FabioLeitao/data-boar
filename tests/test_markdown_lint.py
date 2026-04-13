@@ -60,6 +60,7 @@ MARKDOWN_LINT_EXCLUDE_DIRS = frozenset(
         "_upstream_go_sgat",
         "_upstream_wf_t1r",
         "_upstream_batch_reload_ap",
+        "_upstream_bash_localiza_danfe_por_id_de_upload",
     }
 )
 

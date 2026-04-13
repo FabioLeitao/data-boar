@@ -10,6 +10,7 @@ fi
 export PATH="/usr/local/bin:${PATH}"
 
 echo "== T14 session warm (PATH + sudo) =="
+echo "NOTE: tmux uses non-login bash — after baseline, /etc/bash.bashrc should include PATH for /usr/local/bin (role t14_bitwarden_cli). Open a new pane or: source /etc/bash.bashrc"
 if command -v bw >/dev/null 2>&1; then
   echo "OK: bw -> $(command -v bw)"
 else
