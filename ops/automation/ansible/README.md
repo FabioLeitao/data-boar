@@ -114,6 +114,8 @@ After a `CHECK` + `APPLY`, run the quick validation checklist:
 
 - **UFW / `Failed to connect to system scope bus`:** The **`t14_ufw`** role applies **`ufw --force enable`** before touching **systemctl**, so the firewall should still activate. The follow-up **systemd** task is best-effort (`ignore_errors`). **`t14_fail2ban`** tries **`ansible.builtin.service`** first; if that fails (no D-Bus), it falls back to **`/etc/init.d/fail2ban`** or **`fail2ban-client`** so the play does not stop. Other roles use **`failed_when: false`** on **`service`** / **`systemd`** where appropriate. Fix the bus when you can, then re-run or run **`sudo systemctl enable --now …`** for native units. Check **`systemctl is-system-running`**, **`systemctl status dbus`**, and **`ls -l /run/dbus/system_bus_socket`**.
 
+- **`org.freedesktop.systemd1` / `DBus.Error.TimedOut` / GUI cannot reboot / `snapper` D-Bus errors:** Often the system bus is up but **activation of systemd-backed services times out**. Journal may show **`Unknown group "power" in message bus configuration file`** — **`thermald`** ships **`/usr/share/dbus-1/system.d/org.freedesktop.thermald.conf`** with **`<policy group="power">`**; if **`/etc/group`** has no **`power`** line, fix with **`sudo groupadd -r power`** (then **`sudo systemctl reload dbus`** or reboot). After **`systemctl is-system-running`** is **`running`**, **`snapper create-config`** and normal **`systemctl`** should work again.
+
 - **`Already up to date` but the T14 still runs old Ansible YAML:** The fix lives in **`git`** on **`main`** — confirm with **`git log -1 --oneline`** after **`git pull`**. If your dev machine had the change but **`git push`** did not run, the laptop will not see it.
 
 ## Important
