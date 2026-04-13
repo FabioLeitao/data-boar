@@ -54,6 +54,12 @@ MARKDOWN_LINT_EXCLUDE_DIRS = frozenset(
         "private",
         # External review copies (e.g. Wabbix); not maintained to markdownlint bar.
         "feedbacks, reviews, comments and criticism",
+        # Shallow clones of external GitHub repos (local polish; not part of Data Boar CI docs bar).
+        "_upstream_rust_sgad",
+        "_upstream_python_sgad",
+        "_upstream_go_sgat",
+        "_upstream_wf_t1r",
+        "_upstream_batch_reload_ap",
     }
 )
 

@@ -2,6 +2,8 @@
 
 > **Audience:** collaborators (team members, lab-op team) running validation passes on the scanner.
 > **Version:** 2026-04-05 | **Related:** `scripts/generate_synthetic_poc_corpus.py`
+>
+> **Português (Brasil):** [TESTING_POC_GUIDE.pt_BR.md](TESTING_POC_GUIDE.pt_BR.md) (SBOM section + link to full EN guide)
 
 This guide walks through the full test coverage plan for Data Boar POC validation:
 how to generate the synthetic test corpus, what each scenario tests, and how to
@@ -360,4 +362,17 @@ Import `tests/postman/Data_Boar_POC_ErrorScenarios.postman_collection.json` via
 **File → Import → Upload Files**.
 
 > The Data Boar API must be running (Step C above via WSL) before sending requests.
+
+---
+
+## Supply chain evidence (SBOM) for POC / security reviewers
+
+For **procurement** and **incident-response** inventory (not organizational ISO 31000 risk management), the project publishes **two CycloneDX 1.6 JSON files** per release workflow:
+
+| File | Contents |
+| --- | --- |
+| `sbom-python.cdx.json` | Python dependencies aligned with `uv.lock` |
+| `sbom-docker-image.cdx.json` | Packages observed in the built Docker image (Syft) |
+
+**Where to get them:** GitHub Actions workflow **SBOM** (`.github/workflows/sbom.yml`) — artifacts on the run, and attached to the **GitHub Release** when a release exists for the tag. **Documentation:** [SECURITY.md](SECURITY.md) (SBOM section), [ADR 0003](adr/0003-sbom-roadmap-cyclonedx-then-syft.md). **Local regeneration:** `scripts/generate-sbom.ps1` (outputs are gitignored).
 
