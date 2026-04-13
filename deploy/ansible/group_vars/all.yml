@@ -1,5 +1,10 @@
 # Global defaults — override in host_vars/ or via -e on the command line.
 
+# Debian/Ubuntu: set on every play as `environment: "{{ labop_debian_unattended_apt_environment }}"`
+# so apt-listbugs does not abort unattended installs (see repo ansible README / tests).
+labop_debian_unattended_apt_environment:
+  APT_LISTBUGS_FRONTEND: "none"
+
 # Docker Hub image (or private registry path)
 data_boar_image: "fabioleitao/data_boar:latest"
 
