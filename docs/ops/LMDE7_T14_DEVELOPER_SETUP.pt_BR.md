@@ -1021,6 +1021,8 @@ ansible-playbook -i inventory.ini bootstrap-t14.yml
 
 **Padrao oficial neste repo (baseline LAB-OP no T14):** usar **`ops/automation/ansible/README.md`** e o playbook **`ops/automation/ansible/playbooks/t14-baseline.yml`** (roles em `ops/automation/ansible/roles/`, inclui **`tmux`** no pacote base e **`t14_bitwarden_cli`** — `bw` via `npm`, porque **nao** existe pacote `bitwarden-cli` no Debian principal). No Windows, o atalho **`scripts/t14-ansible-baseline.ps1`** gera `inventory.local.ini` com `localhost` + `ansible_connection=local` e executa o playbook **no T14** por SSH. **Dotfiles tmux** para todos os Linux do lab: secao **5** em [OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md](OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md).
 
+**Alterações nos roles e no baseline** (por exemplo `apt-listbugs` em installs, D-Bus ou `systemctl` com Ansible, Snapper em btrfs, sincronizar o repo no T14 antes de rodar o playbook) **não** são copiadas para este guia — ficam na secão **Troubleshooting** de **`ops/automation/ansible/README.md`** e no próprio código em **`ops/automation/ansible/`**. O exemplo `lab-automation/bootstrap-t14.yml` acima é só **ilustrativo**; o alvo de verdade é **`t14-baseline.yml`**.
+
 ### 7.1.2 OpenTofu (infra declarativa)
 
 **Nota honesta:** OpenTofu vale quando você tem um provider real para o alvo (ex.: DNS/Cloud, GitHub, algum appliance com API). Para “só configurar o Linux”, Ansible costuma bastar.
