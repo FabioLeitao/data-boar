@@ -108,6 +108,8 @@ After a `CHECK` + `APPLY`, run the quick validation checklist:
 
 - **`apt-listbugs` / exit code 10 / `Failure running script /usr/bin/apt-listbugs`:** Debian’s `apt-listbugs` runs before installs and **aborts** when it finds bugs (e.g. a transitive package like `openipmi`). This is not an Ansible or hardware failure. Baseline plays use **`labop_debian_unattended_apt_environment`** from **`group_vars/all.yml`** (`APT_LISTBUGS_FRONTEND=none`; see `man apt-listbugs`) so unattended installs can finish. Interactive `apt` on the machine still uses your normal listbugs behavior.
 
+- **Snapper missing / `Unit snapper.service could not be found`:** The **`t14_snapper`** role only installs Snapper when **root (`/`) is btrfs** (`roles/t14_snapper/tasks/main.yml`). A default **ext4** install skips the role (by design). Snapper also does not expose a generic `snapper.service` on Debian — use **`snapper-timeline.timer`** / **`snapper-cleanup.timer`** after install. To use Snapper you need a btrfs root (reinstall/partition) or disable expectations with **`t14_snapper_enabled: false`** in playbook vars.
+
 ## Important
 
 Hardening is **contextual**. Before enabling any network-facing service, ensure the host is on the intended VLAN/segment and you understand the access model.
