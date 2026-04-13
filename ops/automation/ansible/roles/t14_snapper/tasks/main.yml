@@ -11,8 +11,9 @@
 - name: Abort gracefully if root is not btrfs
   ansible.builtin.debug:
     msg: >
-      Snapper skipped: root filesystem is {{ rootfs_type.stdout }}, not btrfs.
-      To use snapper, reinstall with a btrfs root partition and re-run this role.
+      Snapper skipped: root (/) is {{ rootfs_type.stdout }}, not btrfs.
+      Snapper cannot manage snapshots on ext4/etc.; /.snapshots is only created after
+      "snapper create-config" on a btrfs root. Reinstall or migrate to btrfs for /, then re-run.
   when: rootfs_type.stdout != "btrfs"
 
 - name: Install snapper and btrfs-progs
