@@ -61,6 +61,10 @@ Obrigado por considerar contribuir. Este documento cobre a configuração local,
 
 Quem usa **Cursor** pode digitar **tokens em inglês** no chat (`deps`, `feature`, `docs`, …) para definir o **escopo** do assistente. Esses tokens **não** são flags do **`main.py`**. A CLI do Data Boar está em **[docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md)** ([EN](docs/USAGE.md)). Tabela **canônica**: **`.cursor/rules/session-mode-keywords.mdc`**; resumo: **[AGENTS.md](AGENTS.md)**.
 
+### Playbooks Ansible (Debian/Ubuntu)
+
+Cada play que instala pacotes em Debian/Ubuntu deve definir `environment: "{{ labop_debian_unattended_apt_environment }}"` (ou combinar com extras do play) para o **`apt-listbugs`** não abortar instalações `apt` não interativas. Os defaults compartilhados estão em **`group_vars/all.yml`** em cada árvore Ansible (`ops/automation/ansible/`, `deploy/ansible/`). A CI valida com **`tests/test_ansible_playbooks_unattended_apt.py`**. Contexto: **[ops/automation/ansible/README.md](ops/automation/ansible/README.md)** (Troubleshooting).
+
 ### Higiene do repositório público (LAN, credenciais)
 
 - **`config.yaml` na raiz:** Está no `.gitignore`—costuma ter **caminhos**, hosts de BD e senhas. **Não** use `git add -f config.yaml`. Copie de `deploy/config.example.yaml` e mantenha segredos só localmente. Se o arquivo já foi commitado por engano, use `git rm --cached config.yaml` para parar de rastreá-lo; o **histórico do Git** ainda pode ter blobs antigos—use `git filter-repo` / BFG e **troque** credenciais expostas se o repositório foi público.

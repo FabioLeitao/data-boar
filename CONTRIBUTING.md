@@ -61,6 +61,10 @@ Thank you for considering contributing. This document covers local setup, workfl
 
 Maintainers may type **English session tokens** in Cursor chat (`deps`, `feature`, `docs`, …) to scope the assistant’s work. Those tokens are **not** flags for **`main.py`**. The Data Boar CLI is documented in **[docs/USAGE.md](docs/USAGE.md)**. Canonical token table: **`.cursor/rules/session-mode-keywords.mdc`**; summary: **[AGENTS.md](AGENTS.md)**.
 
+### Ansible playbooks (Debian/Ubuntu)
+
+Every play that installs packages on Debian/Ubuntu must set `environment: "{{ labop_debian_unattended_apt_environment }}"` (or merge with play-specific extras) so **`apt-listbugs`** does not abort unattended `apt` installs. Shared defaults live in **`group_vars/all.yml`** inside each Ansible tree (`ops/automation/ansible/`, `deploy/ansible/`). CI enforces this with **`tests/test_ansible_playbooks_unattended_apt.py`**. Operator context: **[ops/automation/ansible/README.md](ops/automation/ansible/README.md)** (Troubleshooting).
+
 ### Public repo hygiene (LAN, credentials)
 
 - **Root `config.yaml`:** Listed in `.gitignore`—it often holds **filesystem paths**, DB hosts, and passwords. **Do not** `git add -f config.yaml`. Copy from `deploy/config.example.yaml` and keep secrets local. If the file was ever committed by mistake, run `git rm --cached config.yaml` so it stops tracking; **Git history** may still contain old blobs—use `git filter-repo` / BFG and **rotate** any exposed credentials if the repo was public.
