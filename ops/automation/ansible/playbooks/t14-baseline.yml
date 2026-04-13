@@ -42,7 +42,8 @@
     t14_obs_wazuh_agent_enabled: false
     t14_obs_wazuh_manager_ip: ""
 
-    # Bitwarden CLI: not in Debian main; role installs nodejs/npm then npm -g @bitwarden/cli
+    # Bitwarden CLI: not in Debian main. Role t14_bitwarden_cli installs npm -g @bitwarden/cli, PATH for tmux,
+    # fixes docker.list perms if present, and asserts /usr/local/bin/bw exists before the play continues.
     t14_install_bitwarden_cli: true
 
     # --- Opt-in knobs (snapshots / btrfs) ---
@@ -57,6 +58,7 @@
   roles:
     # --- System baseline ---
     - role: t14_baseline_packages
+    # Bitwarden CLI early: fail fast if bw cannot be installed (rest of baseline assumes optional secret workflow).
     - role: t14_bitwarden_cli
     - role: t14_banners
     - role: t14_sshd_labop
