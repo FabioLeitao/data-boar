@@ -18,8 +18,8 @@
 
 Ver tabela completa em **`OPERATOR_TODAY_MODE_2026-04-06.md`**. Resumo:
 
-- [ ] Commit/push **Ansible + USAGE** se ainda houver diff local noutra máquina ou branch
-- [ ] `USAGE.pt_BR.md` — seção Ansible (sync EN)
+- [x] Commit/push **Ansible + USAGE** — **feito** em `origin/main` (2026-04-09); outro clone só precisa `git pull`.
+- [x] `USAGE.pt_BR.md` — seção Ansible (sync EN) — **feito** (2026-04-09).
 - [ ] `ansible-playbook … --check` no T14/lab quando disponível
 - [ ] **T14 / `uv`:** playbook atual não instala toolchain dev — se quiser testar Data Boar **a partir do código** no T14, ou instalas `uv` à mão ou abrimos issue/PR para role opcional `uv` (discutido no chat)
 - [ ] Homelab: NVMe USB-C; VeraCrypt (private doc)
@@ -37,7 +37,7 @@ Ver tabela completa em **`OPERATOR_TODAY_MODE_2026-04-06.md`**. Resumo:
 ## PRIORIDADES RECOMENDADAS — quando voltares **ainda em 8/4**
 
 1. **Private repo:** `.\scripts\private-git-sync.ps1` (revisar diff; commit; `-Push` se aplicável).
-2. **Repo público:** se houver trabalho local noutro clone (Ansible/USAGE), integrar e `check-all` antes de PR.
+2. **Repo público:** Ansible/USAGE já em `main` (2026-04-09); outro clone: `git pull` + `check-all` se estiveres a integrar trabalho local extra.
 3. **Leve:** `gh pr list` + `git pull` em `main` após voltar (refresh rápido).
 4. **Energia baixa:** só private sync + uma tarefa única (ex. typo LinkedIn offline).
 

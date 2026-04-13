@@ -24,7 +24,8 @@ Run **`carryover-sweep`** or **`.\scripts\operator-day-ritual.ps1 -Mode Morning`
 - [ ] **Private repo:** `private-git-sync` until the pending queue feels honest (ritual still flagged volume).
 - [ ] **Public working tree:** close or split into PRs/commits (high volume).
 - [x] **PR #177** Dependabot `cryptography` — **merged** post-2026-04-09 eod-sync; keep watching new Dependabot rows per **`SECURITY.md`**.
-- [ ] **Ansible / USAGE / T14 / `uv`:** items from **2026-04-06** still valid — see **`OPERATOR_TODAY_MODE_2026-04-06.md`** for the full table.
+- [x] **Ansible / USAGE (docs + `main`):** done **2026-04-09** (`USAGE.pt_BR.md` Ansible section, pushed to `main`).
+- [ ] **T14 / `uv` / ansible `--check`:** still open — see **`OPERATOR_TODAY_MODE_2026-04-06.md`**.
 - [ ] **Homelab / hardware** (NVMe, VeraCrypt): private notes only — not duplicated here.
 
 ---

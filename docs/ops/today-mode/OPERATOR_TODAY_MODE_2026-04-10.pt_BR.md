@@ -24,7 +24,8 @@ Rode **`carryover-sweep`** ou **`.\scripts\operator-day-ritual.ps1 -Mode Morning
 - [ ] **Private repo:** `private-git-sync` até o estado pendente ficar confortável.
 - [ ] **Working tree público:** fechar ou partir em PRs/commits (volume grande).
 - [x] **PR #177** Dependabot `cryptography` — **mergeado** após eod 09/04; continue de olho em novos Dependabot por **`SECURITY.md`**.
-- [ ] **Ansible / USAGE / T14 / `uv`:** itens de **2026-04-06** ainda válidos — ver **`OPERATOR_TODAY_MODE_2026-04-06.md`**.
+- [x] **Ansible / USAGE (docs + `main`):** feito em **2026-04-09** (seção Ansible em `USAGE.pt_BR.md`, push em `main`).
+- [ ] **T14 / `uv` / ansible `--check`:** ainda em aberto — ver **`OPERATOR_TODAY_MODE_2026-04-06.md`**.
 - [ ] **Homelab / hardware** (NVMe, VeraCrypt): só notas privadas — não repetir aqui.
 
 ---
