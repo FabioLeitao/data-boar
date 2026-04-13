@@ -38,6 +38,10 @@ _upstream_go_sgat/
 _upstream_wf_t1r/
 _upstream_batch_reload_ap/
 
+# git filter-repo mirror + work clones (local only; scripts/run-upstream-tools-history-rewrite.ps1)
+*-history-rewrite-*/
+*-mirror-backup-*.git/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
