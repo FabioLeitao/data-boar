@@ -25,6 +25,8 @@ lab-node-01_baseline_packages:
   # Hardware monitoring
   - lm-sensors
   - smartmontools
+  # Terminal multiplexer (operator sessions, sudo-warm + tmux send-keys from dev PC)
+  - tmux
   # Interactive process monitors
   - htop
   - btop
