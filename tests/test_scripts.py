@@ -264,6 +264,27 @@ def test_homelab_host_report_sh_syntax():
     assert proc.returncode == 0, f"bash -n failed: {proc.stderr or proc.stdout}"
 
 
+def test_t14_ansible_preflight_sh_syntax():
+    """scripts/t14-ansible-preflight.sh has valid bash syntax (bash -n). Skipped on Windows."""
+    if sys.platform == "win32":
+        return
+    root = _project_root()
+    script = root / "scripts" / "t14-ansible-preflight.sh"
+    if not script.exists():
+        return
+    try:
+        proc = subprocess.run(
+            ["bash", "-n", str(script)],
+            cwd=str(root),
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except FileNotFoundError:
+        return
+    assert proc.returncode == 0, f"bash -n failed: {proc.stderr or proc.stdout}"
+
+
 def test_docker_common_ps1_syntax():
     """scripts/docker/DataBoarDockerCommon.ps1 has valid PowerShell syntax (parse-only)."""
     root = _project_root()
