@@ -78,6 +78,45 @@ python main.py --config config.yaml --web --allow-insecure-http --host 0.0.0.0 -
 
 ## 2. API web e dashboard
 
+### Implantar o servidor
+
+### Implantação automatizada com Ansible (dois caminhos)
+
+Para implantações reproduzíveis com um único comando em servidores Debian/Ubuntu, o Data Boar inclui playbooks Ansible em `deploy/ansible/`. Há dois caminhos:
+
+**Caminho A — Simples (Docker Compose, Docker já instalado):**
+
+```bash
+# 1. Instale o Ansible na máquina de controle
+sudo apt install ansible
+ansible-galaxy collection install community.docker
+
+# 2. Clone o repositório
+git clone https://github.com/FabioLeitao/data-boar.git
+cd data-boar/deploy/ansible
+
+# 3. Configure o inventário
+cp inventory/hosts.ini.example inventory/hosts.ini
+# Edite hosts.ini: IP do servidor e usuário SSH
+
+# 4. Simulação (--check) e depois aplicação
+ansible-playbook site.yml --check
+ansible-playbook site.yml
+```
+
+**Caminho B — Pilha completa (Docker CE + Swarm + ctop + serviço Data Boar, servidor novo):**
+
+```bash
+# Passos 1–3 iguais ao Caminho A, depois:
+ansible-playbook site-full.yml --check
+ansible-playbook site-full.yml
+```
+
+Isso instala o Docker CE a partir do repositório oficial, inicializa um Swarm de nó único, instala `ctop` para monitoramento de containers e implanta o Data Boar como serviço Swarm.
+
+Após qualquer caminho, o Data Boar fica acessível em `http://<servidor>:8088`.
+Veja `deploy/ansible/README.md` para variáveis, Swarm multi-nó e solução de problemas.
+
 ## Opção: executar via Docker (sem clonar o Git)
 
 Imagens pré-construídas estão no Docker Hub: `fabioleitao/data_boar:latest` ([hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar)). Faça pull e execute com um config montado em `/data/config.yaml` (veja o README “Deploy com Docker” e [docs/deploy/DEPLOY.pt_BR.md](deploy/DEPLOY.pt_BR.md) ([EN](deploy/DEPLOY.md))). Você pode usar esse container em vez de instalar a partir do código.
