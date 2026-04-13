@@ -31,3 +31,15 @@
             + (lab-node-01_docker_socket_group_users_extra | default([]))
           ) | unique | list
         }}
+
+    - name: Synchronize /etc/gshadow with /etc/group (grpconv)
+      when: lab-node-01_operator_run_grpconv_grpck | bool
+      ansible.builtin.command: grpconv
+      changed_when: false
+
+    - name: Verify group database integrity (grpck -r)
+      when: lab-node-01_operator_run_grpconv_grpck | bool
+      ansible.builtin.command: grpck -r
+      changed_when: false
+      register: lab-node-01_grpck
+      failed_when: (lab-node-01_operator_grpck_strict | bool) and ((lab-node-01_grpck.rc | default(0)) != 0)
