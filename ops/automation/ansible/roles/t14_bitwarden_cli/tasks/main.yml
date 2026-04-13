@@ -1,4 +1,21 @@
 ---
+# If Docker CE was partially configured, docker.list can be root-only and trigger Errno 13 for user-space apt readers.
+- name: Stat Docker CE apt list file (if present)
+  ansible.builtin.stat:
+    path: /etc/apt/sources.list.d/docker.list
+  register: t14_docker_list_stat
+  when: t14_install_bitwarden_cli | bool
+
+- name: Ensure docker.list is root-owned and world-readable (avoids Permission denied noise)
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/docker.list
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - t14_install_bitwarden_cli | bool
+    - t14_docker_list_stat.stat.exists | default(false)
+
 - name: Install Node.js and npm (for Bitwarden CLI)
   ansible.builtin.apt:
     name:
@@ -71,6 +88,23 @@
         *) export PATH="/usr/local/bin:${PATH}" ;;
       esac
     create: false
+  when: t14_install_bitwarden_cli | bool
+
+- name: Stat Bitwarden CLI binary (enforce install contract)
+  ansible.builtin.stat:
+    path: /usr/local/bin/bw
+    follow: true
+  register: t14_bw_bin_stat
+  when: t14_install_bitwarden_cli | bool
+
+- name: Assert Bitwarden CLI is available at /usr/local/bin/bw
+  ansible.builtin.assert:
+    that:
+      - t14_bw_bin_stat.stat.exists | default(false)
+      - t14_bw_bin_stat.stat.isreg | default(false) or t14_bw_bin_stat.stat.islnk | default(false)
+    fail_msg: >-
+      Expected /usr/local/bin/bw after role t14_bitwarden_cli. Install failed or PATH bootstrap missing;
+      see ops/automation/ansible/README.md (Bitwarden CLI) or scripts/t14-bitwarden-cli-bootstrap.sh.
   when: t14_install_bitwarden_cli | bool
 
 # Full path: non-root shells may not have /usr/local/bin until profile.d is sourced in a new login.
