@@ -2,7 +2,14 @@
 - name: T14 baseline (LMDE 7) - safe defaults
   hosts: t14
   become: true
+  # apt-listbugs hooks apt and exits 10 on serious bugs, aborting unattended installs (e.g. openipmi).
+  # See `man apt-listbugs` / APT_LISTBUGS_FRONTEND. Set t14_apt_listbugs_frontend to empty in extra-vars to restore default hook.
+  environment:
+    APT_LISTBUGS_FRONTEND: "{{ t14_apt_listbugs_frontend }}"
   vars:
+    # "none" disables the hook for this playbook run (required for automation).
+    t14_apt_listbugs_frontend: "none"
+
     # Profile presets: "lab_op_fixed" (desk-bound) vs "roaming" (untrusted networks)
     # The playbook stays safe-default: do not change remote access posture unless you opt-in.
     host_profile: lab_op_fixed
