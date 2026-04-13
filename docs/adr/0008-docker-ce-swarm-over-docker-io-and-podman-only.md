@@ -54,7 +54,7 @@ The project team (small, mostly Linux + Docker background) already has existing 
 - **Watch:** `docker.io` vs `docker-ce` package conflicts — if both are installed, the Ansible role should
   detect and prefer `docker-ce`. A future task may add an explicit conflict guard.
 - **LMDE:** Mint/LMDE **release codenames** (**`gigi`**, **`faye`**) differ from **Debian** codenames; the **`lab-node-01_docker_ce`** role maps them when adding **`download.docker.com/linux/debian`** (see **`lab-node-01_docker_debian_codename_map`**).
-- **Socket access:** **`ansible_user`** is added to the **`docker`** group so **`docker`** / **`ctop`** do not require **`sudo`** (operator must refresh the session for the group to apply).
+- **Socket access:** Role **`lab-node-01_operator_supplementary_groups`** adds **`ansible_user`** to **`docker`** and other workstation groups (**`wireshark`**, **`dialout`**, **`plugdev`**, **`systemd-journal`**) after **`lab-node-01_docker_ce`**; install **`tshark`** for non-root capture (operator must refresh the session for groups to apply).
 
 ## References
 
