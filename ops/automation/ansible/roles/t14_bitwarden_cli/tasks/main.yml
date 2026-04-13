@@ -59,6 +59,20 @@
       esac
   when: lab-node-01_install_bitwarden_cli | bool
 
+# tmux / non-login bash often skips /etc/profile.d; interactive bash always reads bash.bashrc.
+- name: Ensure interactive bash (tmux panes) prepends /usr/local/bin to PATH
+  ansible.builtin.blockinfile:
+    path: /etc/bash.bashrc
+    marker: "# {mark} ANSIBLE MANAGED BLOCK lab-node-01_bitwarden_cli_path"
+    block: |
+      # Bitwarden CLI (npm -g) and other /usr/local/bin tools
+      case ":${PATH}:" in
+        *:/usr/local/bin:*) ;;
+        *) export PATH="/usr/local/bin:${PATH}" ;;
+      esac
+    create: false
+  when: lab-node-01_install_bitwarden_cli | bool
+
 # Full path: non-root shells may not have /usr/local/bin until profile.d is sourced in a new login.
 - name: Verify bw for account that runs Ansible (must work without manual chmod)
   ansible.builtin.command: /usr/local/bin/bw --version
