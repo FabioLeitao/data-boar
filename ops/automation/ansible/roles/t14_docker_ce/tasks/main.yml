@@ -81,6 +81,14 @@
         enabled: true
       failed_when: false
 
+    - name: Grant user(s) docker group membership (API socket without sudo)
+      when: t14_docker_grant_socket_group | bool
+      ansible.builtin.user:
+        name: "{{ item }}"
+        groups: docker
+        append: true
+      loop: "{{ ([ansible_user | default(ansible_user_id)] + (t14_docker_socket_group_users_extra | default([]))) | unique }}"
+
     - name: Query Swarm local node state (idempotent init)
       ansible.builtin.command:
         argv:
