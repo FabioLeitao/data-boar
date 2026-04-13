@@ -1,0 +1,7 @@
+---
+# PAM limits.d — session limits for interactive logins (not systemd services).
+t14_limits_labop_enable: true
+t14_limits_labop_path: /etc/security/limits.d/50-labop.conf
+
+# Disable core dumps for all users (hard + soft 0).
+t14_limits_core_zero: true

@@ -1,0 +1,17 @@
+---
+- name: Skip shell umask snippets
+  when: not (t14_shell_umask_enable | bool)
+  ansible.builtin.debug:
+    msg: "Shell umask snippets disabled (t14_shell_umask_enable=false)."
+
+- name: Ensure system-wide umask in /etc/profile and bash.bashrc
+  when: t14_shell_umask_enable | bool
+  ansible.builtin.blockinfile:
+    path: "{{ item }}"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK t14_shell_umask"
+    block: |
+      umask {{ t14_shell_umask }}
+    create: false
+  loop:
+    - /etc/profile
+    - /etc/bash.bashrc
