@@ -51,20 +51,24 @@
     lab-node-01_snapper_timeline_limit_hourly: "5"
     lab-node-01_snapper_timeline_limit_daily: "7"
 
-
+    # sshd LAB-OP drop-in: dev = TCP/agent forwarding on; strict = no forwarding (closer to locked laptop).
+    lab-node-01_sshd_profile: dev
 
   roles:
     # --- System baseline ---
     - role: lab-node-01_baseline_packages
     - role: lab-node-01_bitwarden_cli
     - role: lab-node-01_banners
+    - role: lab-node-01_sshd_labop
     - role: lab-node-01_editor_defaults
     - role: lab-node-01_lynis
     - role: lab-node-01_ufw
     - role: lab-node-01_fail2ban
     - role: lab-node-01_unattended_upgrades
     - role: lab-node-01_etckeeper
-    - role: lab-node-01_login_umask
+    - role: lab-node-01_login_defs
+    - role: lab-node-01_shell_umask
+    - role: lab-node-01_limits_labop
     - role: lab-node-01_sshguard
     - role: lab-node-01_usbguard
     - role: lab-node-01_labop_sudoers
@@ -72,7 +76,6 @@
     - role: lab-node-01_aide
     - role: lab-node-01_auditd
     - role: lab-node-01_zram
-    - role: lab-node-01_ssh_hardening
     # --- Containers (Docker CE default; Podman / k3s opt-in) ---
     - role: lab-node-01_docker_ce
     - role: lab-node-01_operator_supplementary_groups

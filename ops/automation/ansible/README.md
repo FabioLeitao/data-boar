@@ -98,13 +98,16 @@ To apply changes after a check pass:
 ## What this does (safe-default)
 
 - Installs baseline packages (auditing, diagnostics, operator utilities; includes **`tmux`**, GUI terminal **`tilix`**, and common CLI tools)
-- Sets host banners (`/etc/issue`, `/etc/issue.net`, `/etc/banner.net`) via `figlet`/`toilet` (SSHD banner is opt-in)
+- Sets host banners (`/etc/issue`, `/etc/issue.net`, `/etc/banner.net`) via `figlet`/`toilet`; **`lab-node-01_sshd_labop`** adds **`Banner /etc/banner.net`** in **`sshd_config.d`** when that file exists (after **`lab-node-01_banners`**)
 - Installs `lynis` and writes a baseline `/etc/lynis/default.prf` with **comment-only** skip suggestions (opt-in by uncommenting)
 - Enables firewall defaults (UFW) where appropriate
 - Enables and configures `fail2ban` (SSH only) with conservative settings (optional `ignoreip` via inventory)
 - Installs `aide` and `auditd` with a reviewable baseline (host-specific exceptions should stay private)
 - Optional: enables zram-based swap (host-dependent sizing; opt-in)
-- Ensures SSH hardening defaults (no root login; password auth off) **only if you opt-in**
+- **`lab-node-01_sshd_labop`**: sshd hardening via **`/etc/ssh/sshd_config.d/90-labop-hardening.conf`** (validated with **`sshd -t`** before reload). Default **`lab-node-01_sshd_profile=dev`** keeps **TCP + agent forwarding** for daily work; set **`strict`** for a LAB-NODE-02-style lockdown (no forwarding). **`PasswordAuthentication`** is **not** forced by default — set **`lab-node-01_sshd_password_authentication=no`** in inventory only after pubkey access is confirmed.
+- **`lab-node-01_login_defs`**: **`/etc/login.defs`** — **`UMASK`**, **`HOME_MODE`**, **`PASS_*`**, **`LOGIN_RETRIES`**, **`ENCRYPT_METHOD SHA512`**, **`SHA_CRYPT_*` rounds** (override in inventory if policy differs).
+- **`lab-node-01_shell_umask`**: **`umask 027`** in **`/etc/profile`** and **`/etc/bash.bashrc`** (marked block).
+- **`lab-node-01_limits_labop`**: **`/etc/security/limits.d/50-labop.conf`** — core dumps off (**`* soft/hard core 0`**).
 - **Docker CE** (official repo) **+ Compose plugin** are **on by default** in **`lab-node-01-baseline.yml`** so **`docker`** and **`ctop`** work after one playbook run. **`lab-node-01_operator_supplementary_groups`** runs after **`lab-node-01_docker_ce`**: installs **`tshark`**, adds the **resolved operator login** to **`docker`** (when Docker CE is enabled), **`wireshark`**, **`dialout`**, **`plugdev`**, **`systemd-journal`**, and merges **`lab-node-01_operator_group_users_extra`** plus legacy **`lab-node-01_docker_socket_group_users_extra`**. Resolution order: non-empty **`lab-node-01_operator_target_user`**, else **`SUDO_USER`**, else **`ansible_user`** / **`ansible_user_id`**. **Log out and back in** (or **`newgrp`** with the new group name in the current shell) so new groups apply. Disable the whole block with **`lab-node-01_operator_groups_enabled: false`**. **Swarm** is **initialized by default**; set **`lab-node-01_docker_swarm_init: false`** to skip. Set **`lab-node-01_install_docker_ce: false`** to skip Docker entirely. **Podman** and **k3s** stay **opt-in**.
 
 ## Post-automation validation (checklist)
@@ -136,6 +139,8 @@ After a `CHECK` + `APPLY`, run the quick validation checklist:
 - **`permission denied` on **`docker.sock`**, **`ctop`**, **`tshark` / capture:** Role **`lab-node-01_operator_supplementary_groups`** adds the **resolved operator login** (override with **`lab-node-01_operator_target_user`**) to **`docker`**, **`wireshark`**, and other standard groups (see defaults). **Log out and back in** after the play. Extra users: **`lab-node-01_operator_group_users_extra`** (or legacy **`lab-node-01_docker_socket_group_users_extra`**). Disable all supplementary group membership with **`lab-node-01_operator_groups_enabled: false`**. Skip **`tshark`** install with **`lab-node-01_operator_install_tshark: false`**. Add **`kvm`**, **`libvirt`**, etc. via **`lab-node-01_operator_supplementary_group_names_extra`** only after those groups exist (install **`qemu-system-x86`** / **`libvirt-clients`** first).
 
 - **`docker swarm init` / advertise address on multi-NIC hosts:** The role runs plain **`docker swarm init`** when Swarm state is **`inactive`**. If initialization fails because Docker cannot pick an address, set **`lab-node-01_docker_swarm_init: false`** and initialize once with **`docker swarm init --advertise-addr <stable-ip>`**, or extend the role privately with **`--advertise-addr`** (not in baseline).
+
+- **`sshd -t` fails after updating `lab-node-01_sshd_labop`:** The merged config is invalid (conflicting directives, bad path in **`Banner`**, etc.). Fix the drop-in or main **`sshd_config`**, then re-run. Temporarily set **`lab-node-01_sshd_labop_enable=false`** only to unblock, then restore.
 
 - **`gigi Release` / Docker apt on **LMDE**:** **`ansible_distribution_release`** is a **Mint** codename (**`gigi`**, **`faye`**) while **`download.docker.com/linux/debian`** only publishes **Debian** suites. The **`lab-node-01_docker_ce`** role maps **`gigi` → `trixie`** and **`faye` → `bookworm`**. Override with **`lab-node-01_docker_apt_dist_override`** (e.g. **`trixie`**) if your base Debian drifts. If **`apt update`** also warns about **`packages.linuxmint.com`** InRelease, that is separate from Docker — check network, mirrors, or Mint updates.
 
