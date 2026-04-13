@@ -50,11 +50,31 @@ There is **no** `bitwarden-cli` package in Void’s default `xbps` repos. Use **
 
 ```bash
 sudo xbps-install -S nodejs
+```
+
+By default, **`npm install -g`** writes under **`/usr/lib/node_modules`**, so a normal user gets **`EACCES`**. Pick **one**:
+
+**A — System-wide (simplest on a personal lab host):**
+
+```bash
+sudo npm install -g @bitwarden/cli
+command -v bw && bw --version
+```
+
+**B — User prefix (no `sudo npm`):**
+
+```bash
+mkdir -p ~/.local
+npm config set prefix ~/.local
+grep -q '\.local/bin' ~/.bashrc 2>/dev/null || echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+export PATH="$HOME/.local/bin:$PATH"
 npm install -g @bitwarden/cli
 command -v bw && bw --version
 ```
 
-Use **`npm install -g`** as a normal user (or fix npm global permissions if you insist on `sudo npm`; avoid `sudo npm` when possible). For other Node major versions, search `xbps-query -Rs nodejs` (e.g. `nodejs-lts`). **`bw login` / `bw unlock`** stay manual (warm session); do not paste secrets into tracked docs.
+For other Node major versions, search `xbps-query -Rs nodejs` (e.g. `nodejs-lts`). **`bw login` / `bw unlock`** stay manual (warm session); do not paste secrets into tracked docs.
+
+**Git `pull` after a force-pushed `main`:** if Git reports **divergent branches**, either reconcile with `git pull --rebase origin main` (or merge), or — if the clone has **no local commits** you need — align to the server: `git fetch origin && git reset --hard origin/main`.
 
 ### 1.3 One package manager per tool (avoid duplicates)
 
