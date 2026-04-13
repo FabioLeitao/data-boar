@@ -16,8 +16,8 @@
     # Docker CE (official Docker repo) + Compose plugin — so `docker`/`ctop` work without manual apt
     t14_install_docker_ce: true
     t14_docker_install_compose_plugin: true
-    # Initialize Docker Swarm (single-node manager) after install
-    t14_docker_swarm_init: false
+    # Docker Swarm (single-node manager) — enables `docker service` / `docker stack deploy`
+    t14_docker_swarm_init: true
     # Podman (rootless containers, OCI-compatible)
     t14_install_podman: false
     # k3s (lightweight Kubernetes — installs from get.k3s.io; opt-in deliberately)
