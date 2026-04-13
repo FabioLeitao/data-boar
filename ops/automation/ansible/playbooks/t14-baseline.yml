@@ -35,7 +35,12 @@
     lab-node-01_obs_node_exporter_enabled: true
     # Wazuh SIEM agent (requires manager IP; off by default until lab is ready)
     lab-node-01_obs_wazuh_agent_enabled: false
-    lab-node-01_obs_wazuh_manager_ip: ""    # --- Opt-in knobs (snapshots / btrfs) ---
+    lab-node-01_obs_wazuh_manager_ip: ""
+
+    # Bitwarden CLI: not in Debian main; role installs nodejs/npm then npm -g @bitwarden/cli
+    lab-node-01_install_bitwarden_cli: true
+
+    # --- Opt-in knobs (snapshots / btrfs) ---
     # Snapper: automatic BTRFS snapshots (skips gracefully if root is not btrfs)
     lab-node-01_snapper_enabled: true
     lab-node-01_snapper_timeline_limit_hourly: "5"
@@ -46,6 +51,7 @@
   roles:
     # --- System baseline ---
     - role: lab-node-01_baseline_packages
+    - role: lab-node-01_bitwarden_cli
     - role: lab-node-01_banners
     - role: lab-node-01_editor_defaults
     - role: lab-node-01_lynis
