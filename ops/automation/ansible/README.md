@@ -36,6 +36,12 @@ Run these **once** on the laptop (as `leitao`, with sudo):
    ansible-playbook --version
    ```
 
+   **Optional collections** (only if you set **`lab-node-01_toolColleague-Nn_acl_extra_groups`** for role **`lab-node-01_toolColleague-Nn_restrict`** — POSIX ACLs via **`ansible.posix.acl`**):
+
+   ```bash
+   ansible-galaxy collection install -r collections/requirements.yml
+   ```
+
 3. **Inventory:** from `ops/automation/ansible/`, copy the example and point `[lab-node-01]` at this host. The Windows helper script **rewrites** `[lab-node-01]` to `localhost` + `ansible_connection=local` when you run Ansible **on the LAB-NODE-01 over SSH** (same pattern as `lab-node-01-ansible-baseline.ps1`).
 
    ```bash
@@ -68,6 +74,7 @@ ansible-playbook -i inventory.local.ini --ask-become-pass playbooks/lab-node-01-
 - **`tmux`**: in `lab-node-01_baseline_packages` (terminal multiplexer; pairs with “sudo warm + tmux send-keys” workflows from the dev PC).
 - **Bitwarden CLI (`bw`)**: **not** in Debian main — role `lab-node-01_bitwarden_cli` installs **`nodejs`** + **`npm`** from apt, then **`npm install -g @bitwarden/cli`**. Disable with `lab-node-01_install_bitwarden_cli: false` in playbook vars if you prefer another install method.
 - **Operator groups + `tshark`**: role **`lab-node-01_operator_supplementary_groups`** (after Docker CE) installs **`tshark`**, adds the **resolved operator login** (see **`lab-node-01_operator_target_user`** in **`group_vars/all.yml`**) to **`docker`**, **`wireshark`**, **`dialout`**, **`plugdev`**, **`systemd-journal`**, then runs **`grpconv`** and **`grpck -r`** (set **`lab-node-01_operator_grpck_strict: false`** if **`grpck`** fails on a host with pre-existing group-file issues). On **`localhost`** or when running **`sudo ansible-playbook`**, set **`lab-node-01_operator_target_user=yourlogin`** in **`[lab-node-01:vars]`** so groups are not applied to **`root`** by mistake.
+- **ToolColleague-Nn restriction (`comp`)**: role **`lab-node-01_toolColleague-Nn_restrict`** is **off by default**. When **`lab-node-01_toolColleague-Nn_restrict_enabled=true`**, it ensures group **`comp`** (configurable), finds matching **`/usr/bin/x86_64-linux-gnu-*`** compiler/tool binaries, and applies **`ansible.builtin.file`** (`root` + group, mode **`0754`**, **`follow: true`**). Optional **`lab-node-01_toolColleague-Nn_acl_extra_groups`** adds extra **POSIX ACL** group lines (**`rx`**) via **`ansible.posix.acl`** — install **`collections/requirements.yml`** first. **`apt`** upgrades can restore vendor modes; re-run the playbook after compiler package updates. Add human users to **`comp`** separately (e.g. **`usermod -aG comp`**), or extend automation in private inventory.
 
 ## Token-aware wrapper (Windows → SSH → Ansible on LAB-NODE-01)
 
