@@ -2,19 +2,26 @@
 # Role: t14_snapper
 # Installs and configures snapper for automatic btrfs snapshots.
 # Skips without error if root filesystem is not btrfs.
+#
+# Use findmnt (not `stat -f`) for FSTYPE: GNU stat's fs-type field can be empty/wrong on
+# some btrfs layouts (e.g. LMDE/LMDE with subvol=@), which incorrectly skipped this role.
 
-- name: Detect root filesystem type
-  ansible.builtin.command: stat -f --format="%T" /
-  register: rootfs_type
+- name: Detect root filesystem type (Linux)
+  ansible.builtin.command: findmnt -n -o FSTYPE /
+  register: rootfs_type_cmd
   changed_when: false
+
+- name: Set fact — is root btrfs?
+  ansible.builtin.set_fact:
+    rootfs_is_btrfs: "{{ (rootfs_type_cmd.stdout | default('') | trim | lower) == 'btrfs' }}"
 
 - name: Abort gracefully if root is not btrfs
   ansible.builtin.debug:
     msg: >
-      Snapper skipped: root (/) is {{ rootfs_type.stdout }}, not btrfs.
-      Snapper cannot manage snapshots on ext4/etc.; /.snapshots is only created after
-      "snapper create-config" on a btrfs root. Reinstall or migrate to btrfs for /, then re-run.
-  when: rootfs_type.stdout != "btrfs"
+      Snapper skipped: root (/) fstype is "{{ rootfs_type_cmd.stdout | default('') | trim }}", not btrfs.
+      Snapper cannot manage snapshots on non-btrfs; /.snapshots appears after snapper create-config on btrfs.
+      Reinstall with btrfs on / or migrate, then re-run.
+  when: not (rootfs_is_btrfs | bool)
 
 - name: Install snapper and btrfs-progs
   ansible.builtin.apt:
@@ -25,7 +32,7 @@
     update_cache: true
   when:
     - t14_snapper_enabled | bool
-    - rootfs_type.stdout == "btrfs"
+    - rootfs_is_btrfs | bool
 
 - name: Check if snapper config already exists
   ansible.builtin.command: snapper -c {{ t14_snapper_config_name }} list
@@ -34,14 +41,14 @@
   changed_when: false
   when:
     - t14_snapper_enabled | bool
-    - rootfs_type.stdout == "btrfs"
+    - rootfs_is_btrfs | bool
 
 - name: Create snapper root config
   ansible.builtin.command: >
     snapper -c {{ t14_snapper_config_name }} create-config {{ t14_snapper_subvolume }}
   when:
     - t14_snapper_enabled | bool
-    - rootfs_type.stdout == "btrfs"
+    - rootfs_is_btrfs | bool
     - snapper_config_check.rc != 0
 
 - name: Configure snapper timeline limits
@@ -59,7 +66,7 @@
     - { key: "NUMBER_LIMIT_YEARLY",    value: "\"{{ t14_snapper_timeline_limit_yearly }}\"" }
   when:
     - t14_snapper_enabled | bool
-    - rootfs_type.stdout == "btrfs"
+    - rootfs_is_btrfs | bool
 
 - name: Enable and start snapper timeline timer
   ansible.builtin.systemd:
@@ -68,7 +75,7 @@
     state: started
   when:
     - t14_snapper_enabled | bool
-    - rootfs_type.stdout == "btrfs"
+    - rootfs_is_btrfs | bool
 
 - name: Enable and start snapper cleanup timer
   ansible.builtin.systemd:
@@ -77,7 +84,7 @@
     state: started
   when:
     - t14_snapper_enabled | bool
-    - rootfs_type.stdout == "btrfs"
+    - rootfs_is_btrfs | bool
 
 - name: Create a baseline snapshot now
   ansible.builtin.command: >
@@ -85,5 +92,5 @@
     --description "ansible-baseline-$(date +%Y%m%d)"
   when:
     - t14_snapper_enabled | bool
-    - rootfs_type.stdout == "btrfs"
+    - rootfs_is_btrfs | bool
   changed_when: true
