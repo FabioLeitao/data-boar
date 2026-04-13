@@ -97,7 +97,7 @@ To apply changes after a check pass:
 - Installs `aide` and `auditd` with a reviewable baseline (host-specific exceptions should stay private)
 - Optional: enables zram-based swap (host-dependent sizing; opt-in)
 - Ensures SSH hardening defaults (no root login; password auth off) **only if you opt-in**
-- **Docker CE** (official repo) **+ Compose plugin** are **on by default** in **`lab-node-01-baseline.yml`** so **`docker`** and **`ctop`** work after one playbook run. **Swarm** is **initialized by default** (**single-node manager**) so **`docker service`** and **`docker stack deploy`** work; set **`lab-node-01_docker_swarm_init: false`** to skip. Set **`lab-node-01_install_docker_ce: false`** in inventory to skip Docker entirely. **Podman** and **k3s** stay **opt-in**.
+- **Docker CE** (official repo) **+ Compose plugin** are **on by default** in **`lab-node-01-baseline.yml`** so **`docker`** and **`ctop`** work after one playbook run. **`ansible_user`** is added to the **`docker`** group for **`/var/run/docker.sock`** access without **`sudo`** (new login or **`newgrp docker`** to apply). **Swarm** is **initialized by default** (**single-node manager**) so **`docker service`** and **`docker stack deploy`** work; set **`lab-node-01_docker_swarm_init: false`** to skip. Set **`lab-node-01_install_docker_ce: false`** in inventory to skip Docker entirely. **Podman** and **k3s** stay **opt-in**.
 
 ## Post-automation validation (checklist)
 
@@ -124,6 +124,8 @@ After a `CHECK` + `APPLY`, run the quick validation checklist:
 - **`bw` / Bitwarden CLI: command not found or Permission denied:** Global **`npm install -g @bitwarden/cli`** puts **`bw`** under **`/usr/local/bin`**. If **`bw`** is missing from **`PATH`**, open a new login shell (role installs **`/etc/profile.d/zz-local-bin.sh`**). **`lab-node-01_bitwarden_cli`** also fixes **`@bitwarden`** permissions under **`/usr/local/lib/node_modules`** so your user can execute **`bw`** — **re-run the baseline** after pulling this repo; do not rely on one-off **`chmod`**.
 
 - **`ctop` / `docker: command not found`:** If you disabled Docker in inventory, re-enable **`lab-node-01_install_docker_ce: true`** or run the **`lab-node-01_docker_ce`** role. The default **`lab-node-01-baseline.yml`** enables Docker CE; **`docker.io`** from Debian main is **not** used by this role.
+
+- **`permission denied` on **`docker.sock`** / **`ctop`:** The **`lab-node-01_docker_ce`** role adds **`ansible_user`** to the **`docker`** group. **Log out and back in** (or run **`newgrp docker`** in the current shell) so the new group is visible; then **`docker ps`** and **`ctop`** should work without **`sudo`**. Add more users with **`lab-node-01_docker_socket_group_users_extra`**; disable with **`lab-node-01_docker_grant_socket_group: false`** (not recommended on dev workstations).
 
 - **`docker swarm init` / advertise address on multi-NIC hosts:** The role runs plain **`docker swarm init`** when Swarm state is **`inactive`**. If initialization fails because Docker cannot pick an address, set **`lab-node-01_docker_swarm_init: false`** and initialize once with **`docker swarm init --advertise-addr <stable-ip>`**, or extend the role privately with **`--advertise-addr`** (not in baseline).
 

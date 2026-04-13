@@ -15,6 +15,10 @@ lab-node-01_docker_install_compose_plugin: true
 # Set false in inventory if you only want plain `docker run` without Swarm.
 lab-node-01_docker_swarm_init: true
 
+# Add ansible_user (inventory SSH user) + optional extras to group `docker` so `docker`/`ctop` work without sudo.
+lab-node-01_docker_grant_socket_group: true
+lab-node-01_docker_socket_group_users_extra: []
+
 # Optional: daemon.json baseline (kept minimal; can be extended privately).
 lab-node-01_docker_manage_daemon_json: true
 lab-node-01_docker_daemon_json_path: /etc/docker/daemon.json
