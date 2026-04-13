@@ -5,12 +5,40 @@
     state: present
     update_cache: false
 
-- name: Ensure fail2ban is enabled
+# When D-Bus is unreachable, ansible.builtin.service still shells out to systemctl and fails.
+# Try the module first; on failure, enable/start without systemctl (SysV script or fail2ban-client).
+- name: Ensure fail2ban is enabled and running
   when: t14_fail2ban_enable | bool
-  ansible.builtin.service:
-    name: fail2ban
-    state: started
-    enabled: true
+  block:
+    - name: Try Ansible service module (needs working system D-Bus for systemd backend)
+      ansible.builtin.service:
+        name: fail2ban
+        state: started
+        enabled: true
+      register: t14_fail2ban_service
+      ignore_errors: true
+
+    - name: Enable and start fail2ban without systemctl (when D-Bus is unavailable)
+      ansible.builtin.shell: |
+        set -euo pipefail
+        if [ -x /etc/init.d/fail2ban ]; then
+          update-rc.d fail2ban defaults 2>/dev/null || true
+          /etc/init.d/fail2ban start
+        else
+          fail2ban-client start || true
+        fi
+      args:
+        executable: /bin/bash
+      when: t14_fail2ban_service is failed
+      changed_when: true
+      failed_when: false
+
+    - name: Note when fail2ban fell back past systemctl
+      ansible.builtin.debug:
+        msg: >-
+          fail2ban: systemd/D-Bus was unavailable for Ansible; started via SysV or fail2ban-client.
+          When D-Bus is healthy, re-run or run: sudo systemctl enable --now fail2ban
+      when: t14_fail2ban_service is failed
 
 - name: Configure fail2ban jail (SSH only, conservative)
   when: t14_fail2ban_enable | bool
@@ -34,4 +62,3 @@
       bantime = {{ t14_fail2ban_bantime }}
       banaction = {{ t14_fail2ban_banaction }}
   notify: Restart fail2ban
-

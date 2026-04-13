@@ -76,6 +76,7 @@
   when:
     - t14_snapper_enabled | bool
     - rootfs_is_btrfs | bool
+  failed_when: false
 
 - name: Enable and start snapper cleanup timer
   ansible.builtin.systemd:
@@ -85,6 +86,7 @@
   when:
     - t14_snapper_enabled | bool
     - rootfs_is_btrfs | bool
+  failed_when: false
 
 - name: Create a baseline snapshot now
   ansible.builtin.command: >
