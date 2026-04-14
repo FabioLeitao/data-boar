@@ -33,6 +33,8 @@ Ordem típica:
 
 Caminhos, keyfiles e localização do container **não** estão aqui (ficam em notas **gitignored**). Depois do baseline e do `bw`, segue o guia VeraCrypt + Git privado em **`docs/private/homelab/`** (por exemplo **`VERACRYPT_PRIVATE_REPO_SETUP.pt_BR.md`**, seção **6.6** — fluxo LAB-NODE-01: baseline → sudo warm → `bw` → montar).
 
+**Scripts rastreados (sem segredos):** **`scripts/lab-node-01-install-veracrypt-console-debian13.sh`** (download/verify GPG, `apt install` do `.deb` console Debian 13 amd64) e **`scripts/lab-node-01-veracrypt-mount-private-repo.sh`** (montar **`~/.kb-cache/private_repo.vc`** com Colleague-K + keyfile por padrão; só prompt de senha). O hash do volume (ex. SHA-512) fica definido na **criação** do volume, não na linha de montagem.
+
 ## 4. Documentos relacionados
 
 - **[LMDE7_LAB-NODE-01_DEVELOPER_SETUP.pt_BR.md](LMDE7_LAB-NODE-01_DEVELOPER_SETUP.pt_BR.md)** — preparação completa LAB-NODE-01 + LMDE (dual boot, pacotes, uv, etc.).
