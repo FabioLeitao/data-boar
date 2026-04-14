@@ -34,4 +34,4 @@ Caminhos, keyfiles e localização do container **não** estão aqui (ficam em n
 - **[LMDE7_T14_DEVELOPER_SETUP.pt_BR.md](LMDE7_T14_DEVELOPER_SETUP.pt_BR.md)** — preparação completa T14 + LMDE (dual boot, pacotes, uv, etc.).
 - **[ops/automation/ansible/README.md](../../ops/automation/ansible/README.md)** — playbook baseline, inventário, problemas de BECOME.
 - **`scripts/t14-ansible-preflight.sh`** — verificações antes do playbook.
-- **`scripts/t14-session-warm.sh`** — opcional: PATH + `sudo -v` + lembrete para `bw` (sem segredos; pode ir no Git).
+- **`scripts/t14-session-warm.sh`** — opcional: PATH (`/usr/local/bin`, exports Flatpak), `sudo -v`, verificação de `bw` (npm **ou** Flatpak), dicas tmux (sem segredos; pode ir no Git).
