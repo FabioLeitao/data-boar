@@ -78,6 +78,20 @@ For other Node major versions, search `xbps-query -Rs nodejs` (e.g. `nodejs-lts`
 
 **Git `pull` after a force-pushed `main`:** if Git reports **divergent branches**, either reconcile with `git pull --rebase origin main` (or merge), or — if the clone has **no local commits** you need — align to the server: `git fetch origin && git reset --hard origin/main`.
 
+### 1.2.2 Linux (Flatpak + alias) — Bitwarden CLI
+
+If you prefer **not** to use **`npm`** on the host, Bitwarden documents installing the **desktop** Flatpak and invoking the CLI through it ([CLI help — Flatpak](https://bitwarden.com/help/cli/)):
+
+```bash
+flatpak install flathub com.bitwarden.desktop
+# one-off:
+flatpak run --command=bw com.bitwarden.desktop --version
+# shell alias (e.g. in ~/.bashrc):
+alias bw='flatpak run --command=bw com.bitwarden.desktop'
+```
+
+After defining the alias, **`command -v bw`** may show `alias` (that is expected). For **T14 baseline**, set **`t14_install_bitwarden_cli: false`** in inventory if you standardize on Flatpak-only **`bw`**, so Ansible does not also install **`@bitwarden/cli`** via **`npm`**.
+
 ### 1.3 One package manager per tool (avoid duplicates)
 
 - **Do not** install the same binary (`bw`, `git`, `python`, …) via **winget**, **Chocolatey**, **Scoop**, and **manual** copies on the **same** Windows profile. Pick **one** primary source per tool and **keep a private note** (for example under `docs/private/`) of “`bw` = winget” so upgrades stay predictable.

@@ -78,6 +78,20 @@ Para outra versao do Node, `xbps-query -Rs nodejs` (ex.: `nodejs-lts`). **`bw lo
 
 **Git:** se `git pull` disser **divergent branches** depois de um **force push** no `main`, ou fazes `git pull --rebase origin main` (ou merge), ou — se **nao** precisares dos commits locais — alinhas ao remoto: `git fetch origin && git reset --hard origin/main`.
 
+### 1.2.2 Linux (Flatpak + alias) — Bitwarden CLI (`bw`)
+
+Se você preferir **não** usar **`npm`** na máquina, a Bitwarden documenta instalar o **desktop** via Flatpak e chamar o CLI por dentro ([ajuda do CLI — Flatpak](https://bitwarden.com/help/cli/)):
+
+```bash
+flatpak install flathub com.bitwarden.desktop
+# teste pontual:
+flatpak run --command=bw com.bitwarden.desktop --version
+# alias no shell (ex.: ~/.bashrc):
+alias bw='flatpak run --command=bw com.bitwarden.desktop'
+```
+
+Com alias, **`command -v bw`** pode mostrar `alias` — é esperado. No **baseline T14**, defina **`t14_install_bitwarden_cli: false`** no inventário se o seu padrão for **só** Flatpak para o **`bw`**, para o Ansible **não** instalar também **`@bitwarden/cli`** via **`npm`**.
+
 ### 1.3 Um gestor por ferramenta (evitar duplicados)
 
 - **Evite** instalar o mesmo binário (`bw`, `git`, `python`, …) via **winget**, **Chocolatey**, **Scoop** e **cópia manual** no **mesmo** perfil Windows. Escolha **uma** fonte principal por ferramenta e **grave uma nota privada** (por exemplo em `docs/private/`) do tipo “`bw` = winget” para upgrades previsíveis.
