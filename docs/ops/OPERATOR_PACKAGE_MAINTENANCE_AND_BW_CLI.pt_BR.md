@@ -38,6 +38,8 @@
 
 - Escolha **um** método por ambiente (exemplos — o que você já usa como padrão): **Homebrew** (`brew install bitwarden-cli`), **npm** `@bitwarden/cli`, ou pacote da **distribuição** se for mantido e confiável.
 
+- **Debian/Ubuntu + npm:** a [documentação do CLI](https://bitwarden.com/help/cli/) avisa que, no Linux, o `npm` pode exigir o metapacote **`build-essential`** (ou equivalente da distro) antes — por exemplo `sudo apt install build-essential`. O role Ansible **`t14_bitwarden_cli`** e o script **`scripts/t14-bitwarden-cli-bootstrap.sh`** já instalam isso junto com **`nodejs`** / **`npm`**.
+
 - Verificação:
 
   ```bash
