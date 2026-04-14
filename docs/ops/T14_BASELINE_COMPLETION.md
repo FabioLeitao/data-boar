@@ -34,4 +34,4 @@ Paths, keyfiles, and container locations are **not** duplicated here (they belon
 - **[LMDE7_T14_DEVELOPER_SETUP.md](LMDE7_T14_DEVELOPER_SETUP.md)** — full T14 + LMDE preparation (dual boot, packages, uv, etc.).
 - **[ops/automation/ansible/README.md](../../ops/automation/ansible/README.md)** — baseline playbook, inventory, BECOME issues.
 - **`scripts/t14-ansible-preflight.sh`** — preflight checks.
-- **`scripts/t14-session-warm.sh`** — optional: PATH + `sudo -v` + reminder for `bw` (safe to commit; no secrets).
+- **`scripts/t14-session-warm.sh`** — optional: PATH (`/usr/local/bin`, Flatpak exports), `sudo -v`, `bw` check (npm **or** Flatpak), tmux hints (safe to commit; no secrets).
