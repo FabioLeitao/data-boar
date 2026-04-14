@@ -34,4 +34,4 @@ Caminhos, keyfiles e localização do container **não** estão aqui (ficam em n
 - **[LMDE7_LAB-NODE-01_DEVELOPER_SETUP.pt_BR.md](LMDE7_LAB-NODE-01_DEVELOPER_SETUP.pt_BR.md)** — preparação completa LAB-NODE-01 + LMDE (dual boot, pacotes, uv, etc.).
 - **[ops/automation/ansible/README.md](../../ops/automation/ansible/README.md)** — playbook baseline, inventário, problemas de BECOME.
 - **`scripts/lab-node-01-ansible-preflight.sh`** — verificações antes do playbook.
-- **`scripts/lab-node-01-session-warm.sh`** — opcional: PATH + `sudo -v` + lembrete para `bw` (sem segredos; pode ir no Git).
+- **`scripts/lab-node-01-session-warm.sh`** — opcional: PATH (`/usr/local/bin`, exports Flatpak), `sudo -v`, verificação de `bw` (npm **ou** Flatpak), dicas tmux (sem segredos; pode ir no Git).
