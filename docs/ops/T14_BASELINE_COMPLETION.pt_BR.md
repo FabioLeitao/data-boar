@@ -33,6 +33,8 @@ Ordem típica:
 
 Caminhos, keyfiles e localização do container **não** estão aqui (ficam em notas **gitignored**). Depois do baseline e do `bw`, segue o guia VeraCrypt + Git privado em **`docs/private/homelab/`** (por exemplo **`VERACRYPT_PRIVATE_REPO_SETUP.pt_BR.md`**, seção **6.6** — fluxo T14: baseline → sudo warm → `bw` → montar).
 
+**Scripts rastreados (sem segredos):** **`scripts/t14-install-veracrypt-console-debian13.sh`** (download/verify GPG, `apt install` do `.deb` console Debian 13 amd64) e **`scripts/t14-veracrypt-mount-private-repo.sh`** (montar **`~/.kb-cache/private_repo.vc`** com PIM + keyfile por padrão; só prompt de senha). O hash do volume (ex. SHA-512) fica definido na **criação** do volume, não na linha de montagem.
+
 ## 4. Documentos relacionados
 
 - **[LMDE7_T14_DEVELOPER_SETUP.pt_BR.md](LMDE7_T14_DEVELOPER_SETUP.pt_BR.md)** — preparação completa T14 + LMDE (dual boot, pacotes, uv, etc.).

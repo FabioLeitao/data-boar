@@ -348,6 +348,48 @@ def test_t14_bitwarden_cli_bootstrap_sh_syntax():
     assert proc.returncode == 0, f"bash -n failed: {proc.stderr or proc.stdout}"
 
 
+def test_t14_install_veracrypt_console_debian13_sh_syntax():
+    """scripts/t14-install-veracrypt-console-debian13.sh has valid bash syntax. Skipped on Windows."""
+    if sys.platform == "win32":
+        return
+    root = _project_root()
+    script = root / "scripts" / "t14-install-veracrypt-console-debian13.sh"
+    if not script.exists():
+        return
+    try:
+        proc = subprocess.run(
+            ["bash", "-n", str(script)],
+            cwd=str(root),
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except FileNotFoundError:
+        return
+    assert proc.returncode == 0, f"bash -n failed: {proc.stderr or proc.stdout}"
+
+
+def test_t14_veracrypt_mount_private_repo_sh_syntax():
+    """scripts/t14-veracrypt-mount-private-repo.sh has valid bash syntax. Skipped on Windows."""
+    if sys.platform == "win32":
+        return
+    root = _project_root()
+    script = root / "scripts" / "t14-veracrypt-mount-private-repo.sh"
+    if not script.exists():
+        return
+    try:
+        proc = subprocess.run(
+            ["bash", "-n", str(script)],
+            cwd=str(root),
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except FileNotFoundError:
+        return
+    assert proc.returncode == 0, f"bash -n failed: {proc.stderr or proc.stdout}"
+
+
 def test_docker_common_ps1_syntax():
     """scripts/docker/DataBoarDockerCommon.ps1 has valid PowerShell syntax (parse-only)."""
     root = _project_root()
