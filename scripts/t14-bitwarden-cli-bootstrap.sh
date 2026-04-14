@@ -14,9 +14,9 @@ if [[ -f "${FIX_DOCKER}" ]]; then
   bash "${FIX_DOCKER}"
 fi
 
-echo "==> apt: nodejs, npm"
+echo "==> apt: build-essential, nodejs, npm (Bitwarden CLI help: Linux npm may need build-essential)"
 sudo apt-get update -qq
-sudo apt-get install -y nodejs npm
+sudo apt-get install -y build-essential nodejs npm
 
 echo "==> npm: global @bitwarden/cli"
 sudo npm install -g @bitwarden/cli

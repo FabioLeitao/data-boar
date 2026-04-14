@@ -16,9 +16,12 @@
     - lab-node-01_install_bitwarden_cli | bool
     - lab-node-01_docker_list_stat.stat.exists | default(false)
 
-- name: Install Node.js and npm (for Bitwarden CLI)
+# Bitwarden docs: npm install on Linux may need build-essential (or distro equivalent) first.
+# https://bitwarden.com/help/cli/ — "Download and install"
+- name: Install Node.js, npm, and build toolColleague-Nn (for Bitwarden CLI via npm)
   ansible.builtin.apt:
     name:
+      - build-essential
       - nodejs
       - npm
     state: present
