@@ -25,6 +25,10 @@ Ordem típica:
 
 **Nota:** o **`command-not-found`** do Debian pode sugerir **`bundlewrap`** quando escreves **`bw`** — ignora; usa o caminho completo **`/usr/local/bin/bw`** se precisar.
 
+**Flatpak + alias:** Se usares **`alias bw='flatpak run --command=bw …'`** no **`~/.bashrc`**, **`command -v bw`** pode mostrar **`alias`** — é normal (ver [OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md](OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md), seção **1.2.2**).
+
+**Higiene de sessão:** Trata **`BW_SESSION`** como segredo. Ao terminar, corre **`bw lock`** (ou **`bw logout`**). Antes de capturas de tela ou de compartilhar o terminal, faz **`bw lock`** por precaução ou censura a saída; para exemplos, usa só texto fictício.
+
 ## 3. VeraCrypt + repo privado empilhado (só operador)
 
 Caminhos, keyfiles e localização do container **não** estão aqui (ficam em notas **gitignored**). Depois do baseline e do `bw`, segue o guia VeraCrypt + Git privado em **`docs/private/homelab/`** (por exemplo **`VERACRYPT_PRIVATE_REPO_SETUP.pt_BR.md`**, seção **6.6** — fluxo T14: baseline → sudo warm → `bw` → montar).
