@@ -18,7 +18,7 @@
 
 Abrimos o **Patreon** para quem quiser **financiar engenharia** e infraestrutura de testes (CI, releases, documentação). Licença **BSD 3-Clause**; código no GitHub: `FabioLeitao/data-boar`.
 
-Página **no ar:** **https://www.patreon.com/c/DataBoar** (também na bio Threads/IG quando atualizar os links). Repo: **https://github.com/FabioLeitao/data-boar**
+Página **no ar:** **<https://www.patreon.com/c/DataBoar>** (também na bio Threads/IG quando atualizar os links). Repo: **<https://github.com/FabioLeitao/data-boar>**
 
 #DataBoar #OpenSource #LGPD #Compliance #InfoSec
 

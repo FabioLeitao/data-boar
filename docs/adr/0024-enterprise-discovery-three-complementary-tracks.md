@@ -1,6 +1,6 @@
 # ADR 0024: Enterprise discovery — three complementary tracks (planning posture)
 
-**Status:** Accepted  
+**Status:** Accepted
 **Date:** 2026-04-16
 
 ## Context
