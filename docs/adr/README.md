@@ -42,6 +42,7 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0021  | [Public web presence — DNS alias (CNAME), canonical host, TLS, hosting shape](0021-public-web-presence-dns-alias-and-hosting.md)                              | Accepted |
 | 0022  | [Public glossary — compliance laws, roles, and platform terms](0022-public-glossary-compliance-and-platform-terms.md)                                         | Accepted |
 | 0023  | [Windows primary dev PC filename search — Everything (`es.exe`) first, capped PowerShell fallback](0023-windows-primary-dev-filename-search-everything-es-first-with-fallback.md) | Accepted |
+| 0024  | [Enterprise discovery — three complementary tracks (planning posture)](0024-enterprise-discovery-three-complementary-tracks.md) | Accepted |
 
 ## Related docs
 
