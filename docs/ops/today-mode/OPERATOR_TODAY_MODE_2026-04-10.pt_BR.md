@@ -14,6 +14,7 @@ Rode **`carryover-sweep`** ou **`.\scripts\operator-day-ritual.ps1 -Mode Morning
 2. **`origin/main`:** após o **eod-sync** de **2026-04-09**, o **PR #177** (Dependabot `cryptography`) foi **mergeado** e deu **`git pull`** em `main` (fast-forward em `requirements.txt` / `uv.lock`). Volta a fazer **`git pull`** se outra máquina mergeou à noite.
 3. **Working tree (repo público):** provavelmente **ainda** há **muito** diff local (modificados + untracked) — **decide hoje:** commits por tema, branch, stash ou continuar — **não** assume `main` limpo sem olhar.
 4. **Git privado empilhado (`docs/private/`):** se ainda houver fila, agenda **`.\scripts\private-git-sync.ps1`** (e **`-Push`** conforme política).
+5. `- [ ] **Block close (lab / VC):** ao pausar ou sair do lab mais tarde, escreva **`block-close`** no chat e siga a política de sessão VeraCrypt em **privado** **`docs/private/homelab/OPERATOR_VERACRYPT_SESSION_POLICY*.md`** — checklist de **fronteira**, **não** o ritual completo **`eod-sync`** (git/gh).
 
 **Fila viva:** [CARRYOVER.pt_BR.md](CARRYOVER.pt_BR.md) · **Publicado:** [PUBLISHED_SYNC.pt_BR.md](PUBLISHED_SYNC.pt_BR.md)
 
@@ -63,6 +64,7 @@ Escolhe **uma ou duas** linhas para trabalho profundo; o resto **defer** com dat
 
 ## Fim do dia
 
+- **`block-close`** + VeraCrypt (política privada acima) ao terminar um **bloco** de trabalho ou sair do lab; **`eod-sync`** para **`operator-day-ritual -Mode Eod`** + git/gh/PR + apontar o today-mode de amanhã.
 - **`eod-sync`** no chat **ou** **`.\scripts\operator-day-ritual.ps1 -Mode Eod`**
 - Prepara ou relê **`OPERATOR_TODAY_MODE_2026-04-11.md`** para a seguir
 

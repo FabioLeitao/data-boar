@@ -4,7 +4,7 @@
 
 **Objetivo:** Este diretório reúne **planos de dia com data** (`OPERATOR_TODAY_MODE_YYYY-MM-DD.md`), a **fila de carryover** e **como manter o “publicado” alinhado ao `pyproject.toml`** — para os checklists não ficarem defasados.
 
-**Atalhos no chat:** escreve **`today-mode YYYY-MM-DD`** (token **só em inglês**); ver **`.cursor/rules/session-mode-keywords.mdc`**. Ritual manhã/fim de dia: **`scripts/operator-day-ritual.ps1`** (lista arquivos recentes nesta pasta).
+**Atalhos no chat:** escreve **`today-mode YYYY-MM-DD`** (token **só em inglês**); ver **`.cursor/rules/session-mode-keywords.mdc`**. Para **fim de bloco de trabalho ou saída do lab** (VeraCrypt / carryover / private stack opcional — não necessariamente fim do dia no calendário), usa **`block-close`**. Ritual manhã/fim de dia: **`scripts/operator-day-ritual.ps1`** (lista arquivos recentes nesta pasta).
 
 ---
 
@@ -15,6 +15,7 @@
 | [CARRYOVER.pt_BR.md](CARRYOVER.pt_BR.md) | **Fila viva** — promover, deferir ou fechar (sem backlog silencioso). |
 | [PUBLISHED_SYNC.pt_BR.md](PUBLISHED_SYNC.pt_BR.md) | **GitHub Release + Docker Hub vs versão no repo** — atualizar após cada publish. |
 | [PRIVATE_OPERATOR_NOTES.pt_BR.md](../../PRIVATE_OPERATOR_NOTES.pt_BR.md) | Notas privadas de ritmo (`docs/private/…`) quando aplicável. |
+| [OPERATOR_TODAY_MODE_TEMPLATE.pt_BR.md](OPERATOR_TODAY_MODE_TEMPLATE.pt_BR.md) | **Casca para copiar** dias novos (Bloco 0 + Fim do dia: **`block-close`** + VeraCrypt vs **`eod-sync`**). EN: [OPERATOR_TODAY_MODE_TEMPLATE.md](OPERATOR_TODAY_MODE_TEMPLATE.md). |
 
 ---
 
@@ -40,7 +41,7 @@ Os blocos **WRB** para colar no e-mail ficam em **`docs/ops/WRB_DELTA_SNAPSHOT_*
 
 ## Criar um dia novo
 
-1. Copia a estrutura do **`OPERATOR_TODAY_MODE_*.md` mais recente** (ou **2026-03-31**).
+1. Copie **[OPERATOR_TODAY_MODE_TEMPLATE.pt_BR.md](OPERATOR_TODAY_MODE_TEMPLATE.pt_BR.md)** (ou a estrutura do **`OPERATOR_TODAY_MODE_*.md` mais recente**) e renomeie para **`OPERATOR_TODAY_MODE_YYYY-MM-DD.md`**. Mantenha o **item 5 do Bloco 0** e a linha de **Fim do dia** que emparelham **`block-close`** com VeraCrypt (**privado** **`docs/private/homelab/OPERATOR_VERACRYPT_SESSION_POLICY*.md`**) vs **`eod-sync`**.
 1. Liga **`CARRYOVER.pt_BR.md`** e **`PUBLISHED_SYNC.pt_BR.md`** no Bloco 0 quando o dia mexer em release ou carryover.
 1. Depois de um **publish real** (tag + GitHub Release + Docker Hub), atualiza **`PUBLISHED_SYNC.*`**, as linhas de release em **`docs/plans/PLANS_TODO.md`** se preciso, e **`python scripts/plans-stats.py --write`**.
 

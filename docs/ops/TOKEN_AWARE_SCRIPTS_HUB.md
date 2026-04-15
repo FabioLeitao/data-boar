@@ -75,7 +75,7 @@
 | `recovery-doc-bundle-sanity.ps1` | Doc bundle recovery | **`check-all-gate.mdc`**, **`DOC_BUNDLE_RECOVERY_PLAYBOOK.md`** |
 | `new-adr.ps1` | ADR scaffold | **`AGENTS.md`** ADR habit, **`docs/adr/README.md`** |
 | `pre-commit-and-tests.ps1` | Thin wrapper | Prefer **`check-all.ps1`** unless you need the subset |
-| `private-git-sync.ps1` | Nested private repo | **`docs/ops/PRIVATE_LOCAL_VERSIONING.md`**, **`PRIVATE_OPERATOR_NOTES.md`** |
+| `private-git-sync.ps1` | Nested private repo | **`docs/ops/PRIVATE_LOCAL_VERSIONING.md`**, **`PRIVATE_STACK_SYNC_RITUAL.md`**, session **`private-stack-sync`**, **`PRIVATE_OPERATOR_NOTES.md`** |
 | `license-smoke.ps1`, `version-readiness-smoke.ps1`, `release-integrity-check.ps1` | Release checks | **`docs/releases/`**, **`VERSIONING.md`** |
 | `generate-sbom.ps1` | SBOM | **`WORKFLOW_DEFERRED_FOLLOWUPS.md`**, security docs |
 | `gitlab-mirror-health-check.ps1` | Mirror health | **`GITLAB_GITHUB_MIRROR.md`** |
