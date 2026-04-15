@@ -45,6 +45,10 @@ The AI **cannot** open your LAN by itself. **Default:** it runs **`ssh`** from *
 
 If you sync the same tree to **Linux** (`~/pCloudDrive`) and **Windows** (**`P:`**), note that here (e.g. “reports copy also under `P:\Backups\…`”). The assistant can use **`P:\…`** from the **Cursor terminal on Windows** when pCloud is mounted—still **gitignore** any paths you write in this file.
 
+### Encrypted stacked private repo — container sync (example only)
+
+- [lab-op-vc-container-rsync.example.sh](lab-op-vc-container-rsync.example.sh) — `rsync` template with **`REPLACE_`** placeholders; run only with volumes **unmounted**. Full rollout notes belong under **`docs/private/homelab/`** (e.g. private runbook filename pattern `LAB_OP_VERACRYPT_BW_ROLLOUT*.md`).
+
 ## Hosts
 
 | Role | Hostname (LAN)   | OS | Notes |
