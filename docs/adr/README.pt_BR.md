@@ -28,6 +28,7 @@ Notas curtas e duradouras que registram **por que** o projeto escolheu um caminh
 
 ## Docs relacionados
 
+- [ADR 0024](0024-enterprise-discovery-three-complementary-tracks.md) (EN) — descoberta enterprise em **três trilhos complementares** (planos + narrativa; sem promessa legal); ver `docs/plans/PLAN_*` citados no ADR.
 - [ADR 0022](0022-public-glossary-compliance-and-platform-terms.md) (EN) — glossário público: leis de conformidade, papéis (ex.: DPO), termos de plataforma (SRE, TLS, OAuth2); definições curtas; detalhe nos docs canônicos.
 - [ADR 0021](0021-public-web-presence-dns-alias-and-hosting.md) (EN) — presença web pública: alias DNS (CNAME), host canônico, TLS, forma de hospedagem (marketing vs produto).
 - [ADR 0020](0020-ci-full-git-history-pii-gate.md) (EN) — a CI executa `pii_history_guard.py --full-history` com checkout completo (`fetch-depth: 0`).
