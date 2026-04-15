@@ -4,7 +4,7 @@
 
 **Purpose:** One place for **dated day plans** (`OPERATOR_TODAY_MODE_YYYY-MM-DD.md`), the **active carryover queue**, and **how to keep “published” aligned with `pyproject.toml`** so checklists do not drift.
 
-**Session keywords:** Type **`today-mode YYYY-MM-DD`** (English-only token) in chat; see **`.cursor/rules/session-mode-keywords.mdc`**. Morning/evening shell helper: **`scripts/operator-day-ritual.ps1`** (lists recent files under this folder).
+**Session keywords:** Type **`today-mode YYYY-MM-DD`** (English-only token) in chat; see **`.cursor/rules/session-mode-keywords.mdc`**. For **end of a work block or lab exit** (VeraCrypt / carryover / optional private stack — not necessarily calendar EOD), use **`block-close`**. Morning/evening shell helper: **`scripts/operator-day-ritual.ps1`** (lists recent files under this folder).
 
 ---
 
@@ -15,6 +15,7 @@
 | [CARRYOVER.md](CARRYOVER.md) | **Rolling queue** — promote, defer, or close items (no silent backlog). |
 | [PUBLISHED_SYNC.md](PUBLISHED_SYNC.md) | **GitHub Release + Docker Hub vs repo version** — refresh after each publish. |
 | [PRIVATE_OPERATOR_NOTES.md](../../PRIVATE_OPERATOR_NOTES.md) | Private rhythm note path (`docs/private/…`) when relevant. |
+| [OPERATOR_TODAY_MODE_TEMPLATE.md](OPERATOR_TODAY_MODE_TEMPLATE.md) | **Copy-me shell** for new days (Block 0 + End of day: **`block-close`** + VeraCrypt vs **`eod-sync`**). pt-BR: [OPERATOR_TODAY_MODE_TEMPLATE.pt_BR.md](OPERATOR_TODAY_MODE_TEMPLATE.pt_BR.md). |
 
 ---
 
@@ -40,7 +41,7 @@
 
 ## Adding a new day
 
-1. Copy the structure from the **most recent** `OPERATOR_TODAY_MODE_*.md` (or **2026-03-31**).
+1. Copy **[OPERATOR_TODAY_MODE_TEMPLATE.md](OPERATOR_TODAY_MODE_TEMPLATE.md)** (or the structure from the **most recent** dated `OPERATOR_TODAY_MODE_*.md`) and rename to **`OPERATOR_TODAY_MODE_YYYY-MM-DD.md`**. Keep **Block 0 item 5** and the **End of day** line that pair **`block-close`** with VeraCrypt (**private** **`docs/private/homelab/OPERATOR_VERACRYPT_SESSION_POLICY*.md`**) vs **`eod-sync`**.
 1. Link **`CARRYOVER.md`** and **`PUBLISHED_SYNC.md`** from Block 0 when the day touches release or carryover.
 1. After a **real publish** (tag + GitHub Release + Docker Hub), update **`PUBLISHED_SYNC.md`**, **`docs/plans/PLANS_TODO.md`** release rows if needed, and **`python scripts/plans-stats.py --write`**.
 
