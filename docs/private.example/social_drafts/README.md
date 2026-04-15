@@ -15,3 +15,5 @@
 **Social character limits (all networks):** private **`docs/private/social_drafts/SOCIAL_NETWORK_LIMITS_AND_POLICIES.pt_BR.md`** — inventory from Gravatar + Instagram/Threads/LinkedIn/X/TikTok/etc.
 
 **X (Twitter) only:** private **`docs/private/social_drafts/X_PLATFORM_LIMITS_AND_PREMIUM.pt_BR.md`** (free 280 vs Premium “longer posts”); local check: **`scripts/social_x_thread_lengths.py`** (gitignored `*_x_*.md` drafts).
+
+**pt-BR locale (CI):** tracked mirror **[2026-04-09_instagram_databoar_patreon_apoio_oss.example.md](2026-04-09_instagram_databoar_patreon_apoio_oss.example.md)** — Portuguese body must stay aligned with the private draft **`docs/private/social_drafts/2026-04-09_instagram_databoar_patreon_apoio_oss.md`**; `tests/test_docs_pt_br_locale.py` scans the `.example.md` path on every CI run.
