@@ -22,7 +22,7 @@
 
 4. **Warm sessions**
    - You cannot promise the next chat will still be logged in. Document outcomes in private notes if needed; operator may leave one tab logged in on purpose.
-   - **Operator policy (Data Boar):** The operator **authorizes** LinkedIn/social review via this browser when asked—**do not** refuse because “there is no LinkedIn API” (no public API ≠ no UI access). If login fails, ask the operator to re-warm SSO; private: **`docs/private/commercial/ats_sli_hub/LIVE_LINKEDIN_REFRESH_POLICY.pt_BR.md`**.
+   - **Operator policy (Data Boar):** The operator **affirms** the assistant **has and will have** access to **social networks** via **cursor-ide-browser** when the session is **warm**. If **cold**, try **Google / SSO** on the site first; if that fails, ask the operator to log in once or leave a tab warm—**do not** refuse because “there is no API” (no public API ≠ no UI access). Applies to **LinkedIn, FacColleague-Sok, X, Threads, Instagram**, Patreon, etc. Private: **`docs/private/commercial/ats_sli_hub/LIVE_LINKEDIN_REFRESH_POLICY.pt_BR.md`** (LinkedIn focus).
 
 ## References
 
