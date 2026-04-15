@@ -14,6 +14,7 @@ Run **`carryover-sweep`** or **`.\scripts\operator-day-ritual.ps1 -Mode Morning`
 2. **`origin/main`:** after **2026-04-09** eod-sync, **PR #177** (Dependabot `cryptography`) was **merged** and **`main` pulled** (fast-forward `requirements.txt` / `uv.lock`). Re-pull if another machine merged overnight.
 3. **Working tree (public repo):** still likely **large local diff** (many modified + untracked files) — **decide today:** themed commits, branch, stash, or continue — do **not** assume a clean `main` without looking.
 4. **Stacked private git (`docs/private/`):** if still pending, schedule **`.\scripts\private-git-sync.ps1`** (and **`-Push`** if policy says so).
+5. `- [ ] **Block close (lab / VC):** when pausing or leaving lab later, type **`block-close`** in chat and follow VeraCrypt session policy in **private** **`docs/private/homelab/OPERATOR_VERACRYPT_SESSION_POLICY*.md`** — optional **boundary** checklist, **not** the full **`eod-sync`** git/gh ritual.
 
 **Canonical rolling queue:** [CARRYOVER.md](CARRYOVER.md) · **Published truth:** [PUBLISHED_SYNC.md](PUBLISHED_SYNC.md)
 
@@ -63,6 +64,7 @@ Pick **one or two** rows for deep work; defer the rest with a date or PLANS row:
 
 ## End of day
 
+- **`block-close`** + VeraCrypt (private homelab policy above) when ending a **work block** or leaving lab; **`eod-sync`** for **`operator-day-ritual -Mode Eod`** + git/gh/PR + tomorrow’s today-mode pointer.
 - **`eod-sync`** in chat **or** **`.\scripts\operator-day-ritual.ps1 -Mode Eod`**
 - Prepare or skim **`OPERATOR_TODAY_MODE_2026-04-11.md`** next
 
