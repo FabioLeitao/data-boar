@@ -74,6 +74,10 @@ if (Test-Path $lockFile) {
 Write-Header "Passo 2: Commit no private repo"
 Set-Location $privateDir
 
+# Git may write CRLF/LF warnings to stderr; with $ErrorActionPreference = Stop, PowerShell 5.1 treats that as terminating.
+$prevEap = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+
 $status = git status --short 2>&1
 $pendingCount = ($status | Measure-Object).Count
 Write-Info "Arquivos pendentes (M/A/?): $pendingCount"
@@ -82,13 +86,14 @@ if ($pendingCount -eq 0) {
     Write-Ok "Private repo ja esta em dia. Nenhum arquivo pendente."
 } else {
     # Staged explicito por pasta (git add -A pode falhar silenciosamente)
-    $folders = @("feedbacks_and_reviews", "homelab", "author_info", "commercial", "operator_economics", "legal_dossier", "raw_pastes", "plans", "pitch", "security_audit", "social_drafts")
+    $folders = @("feedbacks_and_reviews", "homelab", "author_info", "commercial", "operator_economics", "legal_dossier", "raw_pastes", "plans", "pitch", "security_audit", "social_drafts", "employers", "evidence_catalog", "scripts")
     foreach ($f in $folders) {
         $fp = Join-Path $privateDir $f
         if (Test-Path $fp) { git add $f 2>&1 | Out-Null }
     }
-    # Root-level files
+    # Root-level files (explicit globs can miss renames; catch rest with -A on repo root only)
     git add *.md *.ps1 *.py *.yml *.json *.txt 2>&1 | Out-Null
+    git add --all -- . 2>&1 | Out-Null
 
     $stagedCount = (git diff --cached --name-only 2>&1 | Measure-Object).Count
     Write-Info "Staged: $stagedCount arquivos"
@@ -105,9 +110,13 @@ if ($pendingCount -eq 0) {
     }
 }
 
+$ErrorActionPreference = $prevEap
+
 # --- 4. Push para todos os remotes configurados (opcional) ---
 if ($Push) {
     Write-Header "Passo 3: Push para todos os lab remotes"
+    $prevEapPush = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
     $remotes = git remote 2>&1
     $labRemotes = $remotes | Where-Object { $_ -match "^lab-" }
     if (-not $labRemotes) {
@@ -118,7 +127,7 @@ if ($Push) {
     } else {
         foreach ($r in $labRemotes) {
             Write-Info "Pushing para $r ..."
-            $out = git push $r main 2>&1 | Select-Object -First 5
+            $out = git push $r main 2>&1 | Select-Object -First 8
             if ($LASTEXITCODE -eq 0) { Write-Ok "Push OK: $r" }
             else { Write-Warn "Push FALHOU: $r -- $out" }
         }
@@ -132,6 +141,7 @@ if ($Push) {
     } else {
         Write-Info "pCloud (P:) nao montado -- pulando backup pCloud"
     }
+    $ErrorActionPreference = $prevEapPush
 }
 
 Write-Header "private-git-sync: Concluido"
