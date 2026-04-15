@@ -12,6 +12,10 @@ When adding copy for the private pitch (``docs/private/pitch/slides.yaml``) or f
 English-only until reviewed or run the same vocabulary checks by hand; if those files become tracked, extend
 ``_extra_locale_scan_paths`` below.
 
+**Gitignored Portuguese drafts:** ``docs/private/social_drafts/*.md`` is not on GitHub CI. For locale guard on
+Instagram copy, a **tracked mirror** lives under ``docs/private.example/social_drafts/`` — keep it in sync with
+the private draft (see file header there).
+
 Run: ``uv run pytest tests/test_docs_pt_br_locale.py -v``
 """
 
@@ -25,7 +29,9 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 # Optional extra roots/files (relative to repo). Pitch deck source is often gitignored — add when tracked.
-_extra_locale_scan_paths: tuple[str, ...] = ()
+_extra_locale_scan_paths: tuple[str, ...] = (
+    "docs/private.example/social_drafts/2026-04-09_instagram_databoar_patreon_apoio_oss.example.md",
+)
 
 
 def _iter_pt_br_markdown_files(*, include_private: bool) -> list[Path]:
