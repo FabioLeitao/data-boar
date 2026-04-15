@@ -128,6 +128,7 @@ Write-Host ""
 Write-Host "Private repo sync (stacked private git):" -ForegroundColor Yellow
 Write-Host "  .\scripts\private-git-sync.ps1          # sync feedbacks + commit pending private files"
 Write-Host "  .\scripts\private-git-sync.ps1 -Push    # + push stacked private repo remote"
+Write-Host "  Chat keyword: private-stack-sync        # see docs/ops/PRIVATE_STACK_SYNC_RITUAL.md"
 $privateStatus = git -C (Join-Path $repoRoot "docs/private") status --short 2>$null
 if ($privateStatus) {
     Write-Host "  AVISO: Private repo tem arquivos pendentes ($($privateStatus.Count) linhas de status)." -ForegroundColor Yellow
