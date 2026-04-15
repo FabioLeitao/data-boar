@@ -11,7 +11,16 @@ Offer an **optional**, **explicitly authorized** capability to probe **already-i
 
 - **On brand:** Fits the **data soup** narrative—expand **known ingredients** without claiming omniscience. Output is **hints and inventory classifiers**, not legal verdicts.
 - **Different from core Boar:** Today the product **ingests configured targets** (DBs, paths, APIs). This plan adds a **bounded network reconnaissance adjunct** that only runs when the operator enables it and constrains scope.
+- **See also (passive seed vs active probe):** [PLAN_SCOPE_IMPORT_FROM_EXPORTS.md](PLAN_SCOPE_IMPORT_FROM_EXPORTS.md) — **offline exports** (ITSM, monitoring, assessment) mapped to config **breadcrumbs**; no TCP probes unless this plan is enabled.
 - **Not a replacement for nmap / ASV / pentest:** Scope is **narrow** (allowed hosts + allowlisted ports + rate limits + timeouts). **No** default internet-wide discovery, **no** exploitation, **no** credential stuffing.
+
+## Worst case: customer has no inventory (servers, services, network map)
+
+Some engagements start with **no reliable CMDB, no exports, and no owner map**. [PLAN_SCOPE_IMPORT_FROM_EXPORTS.md](PLAN_SCOPE_IMPORT_FROM_EXPORTS.md) helps when **any** breadcrumbs exist; when there are **none**, this plan is the **optional, last-resort adjunct**: **technician-enabled** TCP connect + short read on **allowlisted** hosts/ports only—**never** on by default and **never** without written scope (ticket/SOW).
+
+**Operational bias (product, not legal advice):** Hints are intentionally **inclusive of candidates** (expect **false positives**): banner/substring matches on well-known ports should be labeled **“candidate — verify”** so humans can **discard noise** rather than assuming silence means “nothing to see.” That supports **discovery completeness** workflows; it does **not** substitute for **legal/regulatory** advice, **DPIA**, or **authority-specific** breach/notification rules—**do not** market this feature as guaranteeing avoidance of **false-negative** regulatory outcomes.
+
+**Guardrails:** Same as the rest of this plan—**allowlists**, caps, audit logs, coordination with SOC/IDS. “Brute force” in the **colloquial** sense (trying many **declared** host:port pairs within caps) is **not** credential brute force or exploitation.
 
 ## Zero-trust / min-privilege design principles
 
@@ -37,7 +46,7 @@ Offer an **optional**, **explicitly authorized** capability to probe **already-i
 
 | Phase | Deliverable                                                                                                                                                                                                                                                                           | Status    |
 | ----- | -----------                                                                                                                                                                                                                                                                           | ------    |
-| 1     | **Config schema + guardrails:** `discovery.network_port_hints` (or under `targets`-adjacent block): `enabled`, `hosts[]`, `cidrs[]` (optional), `ports[]` (allowlist), `connect_timeout_ms`, `read_max_bytes`, `max_probes_per_run`, `concurrency`. Reject ambiguous “wide” defaults. | ⬜ Pending |
+| 1     | **Config schema + guardrails:** `discovery.network_port_hints` (or under `targets`-adjacent block): `enabled`, `hosts[]`, `cidrs[]` (optional), `ports[]` (allowlist), `connect_timeout_ms`, `read_max_bytes`, `max_probes_per_run`, `concurrency`. Reject ambiguous “wide” defaults. Optional: **`candidate_label`** / severity defaulting to “verify” (FP-tolerant copy). | ⬜ Pending |
 | 2     | **Engine module:** Async or threaded TCP connect with timeout; optional single **read** for banner; map (port, prefix) → **hint label** (e.g. “likely HTTP”, “likely PostgreSQL”, “unknown TCP”). No protocol full parses in v1.                                                      | ⬜ Pending |
 | 3     | **Outputs:** New report section or sheet row “**Network service hints**” (host, port, hint, evidence excerpt redacted); link to **Data source inventory** where applicable.                                                                                                           | ⬜ Pending |
 | 4     | **CLI / dashboard:** Toggle mirroring other heavy features (`--network-port-hints` or dashboard checkbox) with **WARNING** in stdout/stderr when enabled.                                                                                                                             | ⬜ Pending |
@@ -49,6 +58,7 @@ Offer an **optional**, **explicitly authorized** capability to probe **already-i
 - **Misuse:** Operators run wide scans without permission → **mitigate** with allowlist-only schema and loud UI warnings.
 - **Noise:** Many ports open in prod → **mitigate** with small default port sets and “suggest targets” UX rather than auto-adding credentials.
 - **Liability perception:** “Like nmap” → **position** as **inventory helper** with explicit scope; defer aggressive techniques indefinitely.
+- **Regulatory copy:** Avoid claims that port hints **prevent** fines or **eliminate** false-negative regulatory risk; emphasize **human review**, **scope**, and **audit trail**.
 
 ## YAML schema sketch (draft — not validated by `config.loader` yet)
 

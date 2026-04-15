@@ -9,6 +9,20 @@ This plan catalogues **additional file formats** that are often present in produ
 
 ---
 
+## Narrative: hidden, cloaked, legacy, long-forgotten ingredients
+
+Production “soup” is not only obvious `.csv` and `.pdf` trees. It includes **misleading extensions** (cloaking), **legacy** stacks and one-off exports, **shares and paths nobody owns on paper**, and ingredients that were **never documented** at all. **Sniffing harder** means stacking **bounded** techniques—each with its own cost and opt-in—rather than one magic toggle:
+
+| Signal | Direction in this repo |
+| ------ | ------------------------ |
+| **Files on disk / in shares** | Magic-byte cloaking, compressed innards, rich media metadata, optional **stego**, **Tier 3b** telemetry strings, **Tier 4** document tricks—see sections below. |
+| **Breadcrumbs from other tools** | Offline exports → canonical scope hints — [PLAN_SCOPE_IMPORT_FROM_EXPORTS.md](PLAN_SCOPE_IMPORT_FROM_EXPORTS.md). |
+| **Listeners not in any inventory** | Allowlisted TCP connect + short read (technician-flagged) — [PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md](PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md) (incl. worst-case zero-inventory). |
+
+**Guardrail:** “Sniff harder” is **not** covert or boundary-less; it is **explicitly enabled**, rate-limited, and auditable where the plan says so.
+
+---
+
 ## How formats can show up in production
 
 1. **On disk or share (by extension):** We already support many text and document formats; see `SUPPORTED_EXTENSIONS` in the filesystem connector. Gaps below.
@@ -117,7 +131,7 @@ In production, **images**, **audio**, and **video** files are common. We do **no
 
 **Dependencies:** Builds on existing **Tier 3 rich media** metadata/subtitle paths; does not require full video decode for a **first slice** (string/metadata heuristics first). Link: [SECURITY_INSPIRATION_GRC_SECURITY_NOW.md](../ops/SECURITY_INSPIRATION_GRC_SECURITY_NOW.md).
 
-**Program umbrella:** Treat **Tier 3b** as the **network/telemetry string** slice of a larger **“sniffing for hidden ingredients”** track—together with **Tier 4** (document tricks) and **stego** (payload hiding). One phased roadmap avoids promising a single “magic toggle” that does everything.
+**Program umbrella:** Treat **Tier 3b** as the **network/telemetry string** slice of a larger **“sniffing for hidden ingredients”** track—together with **Tier 4** (document tricks) and **stego** (payload hiding), plus **imports** ([PLAN_SCOPE_IMPORT_FROM_EXPORTS.md](PLAN_SCOPE_IMPORT_FROM_EXPORTS.md)) and **allowlisted port hints** ([PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md](PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md)) for **legacy / shadow / never-documented** scope. One phased roadmap avoids promising a single “magic toggle” that does everything.
 
 **Live host / port hints (optional, allowlisted):** For **operator-declared** hosts and well-known ports—**bounded** TCP connect + short banner read, not a stealth scanner—see [PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md](PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md). Complements Tier 3b (strings **inside** files) by surfacing **possibly relevant listeners** the customer did not add as formal targets.
 
@@ -389,4 +403,4 @@ directories, append to `paths` before scan.
 
 ## Last updated
 
-Plan created. Updated with default vs opt-in section, ORC/Feather in Tier 1, corporate relevance column, pyarrow dependency note, and stego opt-in (CLI + web). **2026-03:** Rich media Tier 3 (metadata OCR, subtitles, magic bytes with `use_content_type`) implemented in code; stego remains explicitly future opt-in. **2026-03-25:** Added **Tier 3b** (optional embedded tracker / tracking-pixel-style heuristics for rich media; Security Now–inspired backlog; opt-in CLI/dashboard; report + log warnings; future licensing note). **2026-03-25:** Added **Tier 4** taxonomy (document-layer hidden ingredients, Unicode cloaking, embedded objects, encoded graphics) and reporting design notes. **2026-04-03:** Added **Tier 5** browser/device artifact section: Chrome/Firefox SQLite databases already reachable via scan_sqlite_as_db (ADR 0013 for WAL lock + encrypted values + extension-less routing); HAR, LevelDB, vCard, iCalendar, plist, mbox as new candidates; to-dos 12-17 added. **2026-04-04:** Added §5E (Firefox/Safari derivative browsers + Linux browser landscape); added to-dos 18-22 for .eml/.emlx, Jupyter notebooks (.ipynb), MHTML, and NDJSON/JSONL.
+Plan created. Updated with default vs opt-in section, ORC/Feather in Tier 1, corporate relevance column, pyarrow dependency note, and stego opt-in (CLI + web). **2026-03:** Rich media Tier 3 (metadata OCR, subtitles, magic bytes with `use_content_type`) implemented in code; stego remains explicitly future opt-in. **2026-03-25:** Added **Tier 3b** (optional embedded tracker / tracking-pixel-style heuristics for rich media; Security Now–inspired backlog; opt-in CLI/dashboard; report + log warnings; future licensing note). **2026-03-25:** Added **Tier 4** taxonomy (document-layer hidden ingredients, Unicode cloaking, embedded objects, encoded graphics) and reporting design notes. **2026-04-03:** Added **Tier 5** browser/device artifact section: Chrome/Firefox SQLite databases already reachable via scan_sqlite_as_db (ADR 0013 for WAL lock + encrypted values + extension-less routing); HAR, LevelDB, vCard, iCalendar, plist, mbox as new candidates; to-dos 12-17 added. **2026-04-04:** Added §5E (Firefox/Safari derivative browsers + Linux browser landscape); added to-dos 18-22 for .eml/.emlx, Jupyter notebooks (.ipynb), MHTML, and NDJSON/JSONL. **2026-04-16:** Added **Narrative: hidden, cloaked, legacy, long-forgotten ingredients** (sniffing harder = stacked opt-in paths: files, exports, port hints); expanded **Program umbrella** to link scope-import and opt-in port plans.

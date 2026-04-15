@@ -33,6 +33,8 @@ Then commit the updated hub. **CI / pre-commit** runs `python scripts/plans_hub_
 | [PYTHON_UPGRADE_PLAYBOOK.md](PYTHON_UPGRADE_PLAYBOOK.md)               | Runtime upgrade sequencing (EN; pt-BR companion available).                                                              |
 | [completed/NEXT_STEPS.md](completed/NEXT_STEPS.md)                     | Archived implementation checklist pointer (not a `PLAN_` file).                                                          |
 
+**WIP narrative (non-binding):** The **data soup** metaphor includes a doc-only **Narrative** on *hidden / cloaked / legacy / forgotten* ingredients and **stacked, opt-in** discovery paths in [PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md](PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md). For execution status and the same caveat (**not** a legal promise), see [PLANS_TODO.md](PLANS_TODO.md) → **Integration / WIP**.
+
 ---
 
 ## All `PLAN_*.md` files (auto-generated)
@@ -83,6 +85,7 @@ Do **not** edit the table manually; refresh with `python scripts/plans_hub_sync.
 | **Open** | [PLAN_PRODUCT_TIERS_AND_OPEN_CORE.md](PLAN_PRODUCT_TIERS_AND_OPEN_CORE.md) | PLAN: Product Tiers and Open-Core Boundary Definition | **Status:** Draft — not yet legal-reviewed **Priority:** [H2][U1] — near-term before partner onboarding **Related:** `docs/LICENSING_OPEN_CORE_AND_COMMERCIAL.md`, `docs/LICENSING_SPEC.md`, `docs/plans/PLANS_TODO.md` | — |
 | **Open** | [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) | Plan: Readiness and operations (meta / “see the forest”) | Capture aspects that are easy to miss when focused on feature plans—so you can decide what to formalise, automate, or document next. No obligation to implement everything; use as a prioritised checklist. | — |
 | **Open** | [PLAN_SAP_CONNECTOR.md](PLAN_SAP_CONNECTOR.md) | Plan: SAP connector – add SAP to the "data soup" | **Status:** Not started | — |
+| **Open** | [PLAN_SCOPE_IMPORT_FROM_EXPORTS.md](PLAN_SCOPE_IMPORT_FROM_EXPORTS.md) | Plan: Scope import from exports (inventory bootstrap → YAML config) | Offline exports (monitoring, ITSM, assessment) → canonical format → Data Boar config targets; seed early scan rounds for consultants and enterprise teams. | [PLAN_NEXT_WAVE_PLATFORM_AND_GTM.md](PLAN_NEXT_WAVE_PLATFORM_AND_GTM.md) [PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md](PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md) [PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md](PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md) |
 | **Open** | [PLAN_SECRETS_VAULT.md](PLAN_SECRETS_VAULT.md) | Plan: Secrets and password protection (vault and alternatives) | **Status:** Phase A done; Phase B and C pending | — |
 | **Open** | [PLAN_SELENIUM_QA_TEST_SUITE.md](PLAN_SELENIUM_QA_TEST_SUITE.md) | Plan: Selenium-based QA test suite (on-demand, report and recommendations) | **Status:** Not started | — |
 | **Open** | [PLAN_SELF_UPGRADE_AND_VERSION_CHECK.md](PLAN_SELF_UPGRADE_AND_VERSION_CHECK.md) | Plan: Version check and self-upgrade (with container-aware behaviour) | **Related:** [PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md](PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md) — **local** build string (`release` vs `dev`, optional manifest) shown at startup and in the dashboard; this plan focuses  | — |
