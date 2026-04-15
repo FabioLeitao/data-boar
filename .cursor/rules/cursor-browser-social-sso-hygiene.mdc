@@ -1,9 +1,16 @@
 ---
-description: Cursor IDE browser — prefer Google SSO on social sites; close tabs after task; no passwords in chat
+description: Cursor IDE browser — operator always grants social access when warm; SSO if cold; never self-block on API absence
 alwaysApply: true
 ---
 
 # Cursor browser (redes, Patreon, pesquisa)
+
+## Acesso do assistente (política do operador)
+
+1. O operador **confirma** que o assistente **tem e terá** acesso às redes sociais relevantes via **MCP `cursor-ide-browser`** quando a **sessão estiver warm** (cookies / login já ativos no perfil embutido). **Não** dizer que "não há acesso" por falta de API JSON — **UI com sessão quente = acesso**.
+2. Se a sessão estiver **fria**: **tentar primeiro** autenticação com **Google / SSO** no próprio site (ex.: "Continuar com Google"), alinhado à conta do operador.
+3. Se SSO falhar, houver captcha, ou o site bloquear automação: **pedir ao operador** para fazer login manual **uma vez** ou deixar um separador **warm** para o próximo turno — **não** desistir na primeira sem tentar SSO.
+4. **Nunca** pedir password em chat; **nunca** assumir que gitignore de `docs/private/` impede browser (são caminhos diferentes).
 
 ## Autenticação em sites de terceiros
 
@@ -20,11 +27,11 @@ alwaysApply: true
 
 - O assistente **não controla** a persistência de cookies entre sessões do Cursor — depende do perfil do browser embutido e do login do operador. **Tentar SSO primeiro** e **fechar o que sobrou** deixa o próximo uso mais previsível.
 
-## LinkedIn e redes profissionais (operador Data Boar)
+## LinkedIn, Facebook, X, Threads, Instagram e outras redes (operador Data Boar)
 
-1. O operador **autoriza** o assistente a abrir **LinkedIn** (e outras redes acordadas) no **browser integrado** para revisão de perfil, ATS/SLI, cópia de posts, etc. **Não** usar API pública não significa “sem acesso”: uso é **UI + sessão** (tipicamente **sessão quente** ou **Continuar com Google** / SSO no próprio site).
-2. O assistente **não** deve dizer que “não consegue aceder ao LinkedIn” **só** porque não há API JSON para automação. Se a sessão estiver **fria**: tentar SSO; se ainda bloquear, **pedir ao operador** para voltar a autenticar ou manter um separador com sessão ativa — **não** desistir com desculpa de API.
-3. Documento privado de alinhamento: **`docs/private/commercial/ats_sli_hub/LIVE_LINKEDIN_REFRESH_POLICY.pt_BR.md`**.
+1. O operador **autoriza** o assistente a abrir estas redes no **browser integrado** (revisão de perfil, privacidade, posts, ATS/SLI, etc.). **Não** usar API pública não significa "sem acesso": uso é **UI + sessão** (**warm** ou **Continuar com Google** / SSO).
+2. O assistente **não** deve dizer que "não consegue aceder" **só** porque não há API JSON. Sessão **fria** → tentar **SSO**; se bloquear, **pedir warm session** ao operador — **não** desistir com desculpa de API.
+3. Documento privado (LinkedIn): **`docs/private/commercial/ats_sli_hub/LIVE_LINKEDIN_REFRESH_POLICY.pt_BR.md`**.
 
 ## Ferramentas
 
