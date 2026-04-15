@@ -86,5 +86,6 @@ Planos **rastreados** do produto continuam em **`docs/plans/`**; use arquivos pr
 ## 8. Documentação relacionada
 
 - [PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md) — layout de `docs/private/`.
+- [PRIVATE_STACK_SYNC_RITUAL.pt_BR.md](PRIVATE_STACK_SYNC_RITUAL.pt_BR.md) — **stub** da palavra-chave **`private-stack-sync`** (fecho do Git empilhado em `docs/private/`; sem segredos).
 - [OPERATOR_SESSION_CAPTURE_GUIDE.pt_BR.md](OPERATOR_SESSION_CAPTURE_GUIDE.pt_BR.md) — chat → notas duráveis.
 - [private.example/README.md](../private.example/README.md) — bootstrap copiável.

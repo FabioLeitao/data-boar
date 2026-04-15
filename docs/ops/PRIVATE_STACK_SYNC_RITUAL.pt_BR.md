@@ -1,0 +1,35 @@
+# Repo privado empilhado — ritual de fim de sessão (operador)
+
+**English:** [PRIVATE_STACK_SYNC_RITUAL.md](PRIVATE_STACK_SYNC_RITUAL.md)
+
+**Objetivo:** Fecho **calmo e repetível** para o **Git aninhado** em **`docs/private/`** (nunca no `origin` público do GitHub), no **espírito** do ritual **`eod-sync`** do repositório público — mas **só** para histórico privado e backups.
+
+**Palavra-chave de sessão (só em inglês):** **`private-stack-sync`** — ver **`.cursor/rules/session-mode-keywords.mdc`**.
+
+---
+
+## O que não é
+
+- **Não** substitui **`check-all`**, **`preview-commit`** ou higiene do **`main`** público.
+- **Não** é lugar para **passwords**, **passphrases de volume**, **keyfiles** ou **caminhos de LAN** em arquivos tracked — ficam em notas **gitignored** ou no cofre.
+
+---
+
+## Fluxo típico (alto nível)
+
+1. Quando a árvore privada tiver alterações que queiras registar, garante um estado **honesto** para commit (mesma ideia que “commit limpo” no `main`).
+2. Na **raiz do repo do produto**, corre **`scripts/private-git-sync.ps1`** (opcional **`-Push`** se a política enviar o repo empilhado para remotes **fora do GitHub**).
+3. Se usares **armazenamento local cifrado** para essa árvore, segue a disciplina **montar → trabalhar → desmontar** descrita em **`docs/ops/PRIVATE_LOCAL_VERSIONING.md`** e nos teus runbooks **privados** de homelab (não duplicados aqui).
+
+### Expectativa do operador (genérico — sem letras de unidade nem caminhos)
+
+Durante o trabalho na árvore privada, **espera-se** uma **unidade montada pelo VeraCrypt** para manter o fluxo de escrita e de **sync/backup** coerente. Se essa montagem **faltar quando era esperada**, trate como **anomalia** e recupere com runbooks **privados** e segredos no **cofre** — **nunca** cole credenciais de volume no chat nem em arquivos **tracked**.
+
+---
+
+## Referências
+
+- **`docs/ops/PRIVATE_LOCAL_VERSIONING.md`**
+- **`scripts/private-git-sync.ps1`**
+- **`docs/PRIVATE_OPERATOR_NOTES.md`**
+- **Skill:** **`.cursor/skills/stacked-private-sync/SKILL.md`**

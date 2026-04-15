@@ -87,5 +87,6 @@ Keep **numbers, comparisons, and narrative** that would be awkward on GitHub und
 ## 8. Related docs
 
 - [PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md) — layout of `docs/private/`.
+- [PRIVATE_STACK_SYNC_RITUAL.md](PRIVATE_STACK_SYNC_RITUAL.md) — **stub** for the **`private-stack-sync`** session keyword (stacked private Git close; no secrets).
 - [OPERATOR_SESSION_CAPTURE_GUIDE.md](OPERATOR_SESSION_CAPTURE_GUIDE.md) — chat → durable notes.
 - [private.example/README.md](../private.example/README.md) — copy-me bootstrap.

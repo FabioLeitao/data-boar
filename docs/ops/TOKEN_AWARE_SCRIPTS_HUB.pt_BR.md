@@ -75,7 +75,7 @@
 | `recovery-doc-bundle-sanity.ps1` | Recuperação de bundle de docs | **`check-all-gate.mdc`**, **`DOC_BUNDLE_RECOVERY_PLAYBOOK.md`** |
 | `new-adr.ps1` | Scaffold de ADR | **`AGENTS.md`**, **`docs/adr/README.md`** |
 | `pre-commit-and-tests.ps1` | Wrapper fino | Preferir **`check-all.ps1`** salvo subset necessario |
-| `private-git-sync.ps1` | Repo privado empilhado | **`docs/ops/PRIVATE_LOCAL_VERSIONING.md`**, **`PRIVATE_OPERATOR_NOTES.md`** |
+| `private-git-sync.ps1` | Repo privado empilhado | **`docs/ops/PRIVATE_LOCAL_VERSIONING.md`**, **`PRIVATE_STACK_SYNC_RITUAL.md`**, sessao **`private-stack-sync`**, **`PRIVATE_OPERATOR_NOTES.md`** |
 | `license-smoke.ps1`, `version-readiness-smoke.ps1`, `release-integrity-check.ps1` | Checks de release | **`docs/releases/`**, **`VERSIONING.md`** |
 | `generate-sbom.ps1` | SBOM | **`WORKFLOW_DEFERRED_FOLLOWUPS.md`**, docs de seguranca |
 | `gitlab-mirror-health-check.ps1` | Saúde do mirror | **`GITLAB_GITHUB_MIRROR.md`** |
