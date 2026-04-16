@@ -130,6 +130,11 @@ https://www.gravatar.com/<md5-do-email>
 docs/private/team_info/                              # PDFs fonte (gitignored)
   Linked in Profile - <Nome> 2026.pdf
 
+docs/private/commercial/ats_sli_hub/                 # Fonte canonica ATS/SLI v2 (trilho B)
+  ATS_SLI_RECOMMENDATIONS_*_2026_v2*.md
+  EXPORT_LAYOUT.pt_BR.md                             # Onde ficam exports e by_candidate/
+  exports/by_candidate/<slug>/{docx,html,md,pdf,txt}/
+
 docs/private/commercial/candidates/linkedin_peer_review/
   POOL_INDEX.pt_BR.md                               # Indice central com emails e URLs
   individual/
@@ -140,6 +145,8 @@ docs/private/commercial/candidates/linkedin_peer_review/
 scripts/
   talent.ps1                                        # WRAPPER CLI (use este!)
   ats-candidate-import.ps1                          # Pipeline completo de importacao
+  ats-hub-export.ps1                                # Export MD -> docx/txt/pdf (hub)
+  ats-hub-mirror-by-candidate.ps1                  # Espelha exports -> by_candidate/<slug>/
   extract_cv_pdf.py                                 # Extracao JSON do PDF
 ```
 
