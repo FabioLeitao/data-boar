@@ -16,7 +16,7 @@
 
 ## Onde estão rascunhos de **outras** redes (não só LinkedIn)
 
-- **Hub com inventário (X, WordPress, estado, URLs):** `docs/private/social_drafts/SOCIAL_HUB.md`
+- **Hub com inventário (X, WordPress, estado, URLs):** `docs/private/social_drafts/editorial/SOCIAL_HUB.md` (atalho: `docs/private/social_drafts/SOCIAL_HUB.md`)
 - **Arquivos:** mesma pasta `docs/private/social_drafts/` — padrões `2026-*_x_*.md` (X), `*_wordpress_*.md` (WordPress); tabela **Inventário** no hub lista **X1–X4**, **W1–W2**.
 - **Filas:** `EDITORIAL_X_ROTACAO_2026-04.md` (X) · `EDITORIAL_LINKEDIN_SERIE_2026-04.md` (LinkedIn)
 
@@ -51,6 +51,6 @@
 
 ## Referências rápidas
 
-- Social hub: `docs/private/social_drafts/SOCIAL_HUB.md`
+- Social hub: `docs/private/social_drafts/editorial/SOCIAL_HUB.md` (atalho: `docs/private/social_drafts/SOCIAL_HUB.md`)
 - Token-aware scripts: `docs/ops/TOKEN_AWARE_SCRIPTS_HUB.md` (se estiver no teu tree)
 - EOD: `.\scripts\operator-day-ritual.ps1 -Mode Eod`

@@ -18,6 +18,12 @@ Run **`carryover-sweep`** or **`.\scripts\operator-day-ritual.ps1 -Mode Morning`
 
 **Canonical rolling queue:** [CARRYOVER.md](CARRYOVER.md) · **Published truth:** [PUBLISHED_SYNC.md](PUBLISHED_SYNC.md)
 
+### Social / editorial (private hub) — ~2 min
+
+- [ ] Skim **`docs/private/social_drafts/editorial/SOCIAL_HUB.md`** for **Alvo editorial** matching **today** / **tomorrow** and rows still **`draft`** / **`scheduled`** / **`deferred`** — process: [SOCIAL_PUBLISH_AND_TODAY_MODE.md](SOCIAL_PUBLISH_AND_TODAY_MODE.md).
+- [ ] **Deferred post:** update hub + **rename** draft file prefix **`YYYY-MM-DD`**; optional line in **[CARRYOVER.md](CARRYOVER.md)** only for a **real** cross-day commitment.
+- [ ] **Ad-hoc manual publish** (blog / Data Boar / any network): update **inventory**; optional evidence file under **`docs/private/social_drafts/drafts/evidence/`** — see **SOCIAL_PUBLISH_AND_TODAY_MODE.md** § ad-hoc.
+
 ---
 
 ## Carryover — (edit)

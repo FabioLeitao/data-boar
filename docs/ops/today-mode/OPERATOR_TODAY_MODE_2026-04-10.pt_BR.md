@@ -47,7 +47,7 @@ Escolhe **uma ou duas** linhas para trabalho profundo; o resto **defer** com dat
 
 ## Social + editorial (hub privado)
 
-- **Inventário:** `docs/private/social_drafts/SOCIAL_HUB.md`
+- **Inventário:** `docs/private/social_drafts/editorial/SOCIAL_HUB.md` (atalho: `docs/private/social_drafts/SOCIAL_HUB.md`)
 - **Filas:** `EDITORIAL_INSTAGRAM_THREADS_2026-04.md` · `EDITORIAL_X_ROTACAO_2026-04.md` · série LinkedIn se existir
 - **Meta do dia:** abre **SOCIAL_HUB** — **uma** publicação ou **um** avanço de rascunho (X / WordPress / linha LinkedIn **L2** se bater com calendário)
 
