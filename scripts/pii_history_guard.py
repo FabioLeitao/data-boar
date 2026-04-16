@@ -39,7 +39,7 @@ FORBIDDEN_LINE_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
         "LinkedIn profile URL (explicit personal slug)",
         re.compile(
             r"(?i)https?://(?:www\.)?linkedin\.com/in/"
-            r"(?!example(?:[\"'\s`]|$)|<|\.{3}|replaced|redacted|\$|\{)"
+            r"(?!example(?:[\"'\s`]|\Z)|<|\.{3}|replaced|redacted|\$|\{)"
             r"[^\s\"')]+"
         ),
     ),
