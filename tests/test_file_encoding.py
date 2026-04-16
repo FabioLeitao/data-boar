@@ -1,5 +1,5 @@
 """
-Tests for utils.file_encoding: multi-encoding config and pattern file support.
+Tests for utils.file_encoding: multiple text encodings for config and pattern files.
 
 Ensures config and compliance samples can be read as UTF-8, UTF-8 with BOM,
 Windows ANSI (cp1252), and Latin-1 without regressing in production.

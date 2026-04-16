@@ -4,7 +4,7 @@ import pandas as pd
 from pathlib import Path
 
 from core.database import LocalDBManager
-from report.generator import generate_report
+from report.generator import _heatmap_path_under_output_dir, generate_report
 
 
 def test_report_includes_trends_sheet(tmp_path):
@@ -100,6 +100,18 @@ def test_report_includes_report_info_tenant_and_technician(tmp_path):
         assert row_tech["Value"] == "Maria Silva"
     finally:
         mgr.dispose()
+
+
+def test_heatmap_embed_only_accepts_path_under_output_dir(tmp_path):
+    """Paths outside output_dir are rejected (CodeQL path-injection guard for Excel embed)."""
+    out = tmp_path / "report_out"
+    out.mkdir()
+    good = out / "heatmap_sess123456.png"
+    good.write_bytes(b"\x89PNG\r\n\x1a\n")
+    assert _heatmap_path_under_output_dir(str(good), str(out)) == good.resolve()
+    bad = tmp_path / "outside.png"
+    bad.write_bytes(b"x")
+    assert _heatmap_path_under_output_dir(str(bad), str(out)) is None
 
 
 def test_report_excel_and_heatmap_data_sheet_no_regression(tmp_path):
