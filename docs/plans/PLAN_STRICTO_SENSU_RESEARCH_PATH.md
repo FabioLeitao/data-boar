@@ -1,5 +1,7 @@
 # Plan: Stricto sensu research path (M.Sc. and PhD) on top of Data Boar
 
+<!-- plans-hub-summary: M.Sc./PhD research lines using Data Boar as experimental platform—detection, evidence, methodology; revisit when programs/advisors near. -->
+
 **Status:** Not started (structure only)
 **Synced with:** `long-term-product-and-academic-roadmap` and [PLAN_LATO_SENSU_THESIS.md](PLAN_LATO_SENSU_THESIS.md)
 
@@ -86,7 +88,23 @@ For research proposals and advisor outreach:
 
 ---
 
-## 7. Sync notes
+## 7. Long-term alignment: product roadmap and academic work
+
+**Goal:** Keep an explicit bridge so ongoing Data Boar development remains **usable as research infrastructure** (not only as a CV line).
+
+**Still aligned (horizon):** The product’s core threads—**multi-layer detection** (rules vs ML/DL), **compliance/evidence-oriented reporting**, **inventory and scope** from heterogeneous “data soup,” optional **organizational maturity** instruments ([PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md](PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md), commercial)—map naturally to stricto sensu themes: **comparative evaluation of models**, **governance/technical evidence**, **repeatable benchmarks**, and **human-in-the-loop** maturity vs automated findings. Next-wave **N3** (“academic-to-market evidence stream”) in [PLAN_NEXT_WAVE_PLATFORM_AND_GTM.md](PLAN_NEXT_WAVE_PLATFORM_AND_GTM.md) is the product-side counterpart.
+
+**When to revisit with deeper sessions (e.g. higher-context or post–Priority band A):** Literature pass on detection/evaluation in regulated contexts; narrowing 1–2 thesis questions; designing **public-safe** synthetic corpora or ablation protocols; advisor-facing one-pager. Token-aware batching: [TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md). Private career sequencing stays in [PLAN_FOUNDER_SRE_CAREER_AND_PRODUCT_ALIGNMENT.md](PLAN_FOUNDER_SRE_CAREER_AND_PRODUCT_ALIGNMENT.md) (full text under `docs/private/`).
+
+### To-dos (Alignment checkpoint — optional)
+
+| #   | To-do                                                                                                                                      | Status    |
+| --- | -----                                                                                                                                      | --------- |
+| 7.1 | Once per year (or when enrollment/advisor timeline firms up): re-read this section + **N3** + [PORTFOLIO_AND_EVIDENCE_SOURCES.md](PORTFOLIO_AND_EVIDENCE_SOURCES.md) §3; adjust priority questions in §1 if the shipped product shifted capabilities. | ⬜ Pending |
+
+---
+
+## 8. Sync notes
 
 - This plan is **exploratory** and academic; it does not impose product work on the current roadmap.
 - Use it as a living document when you move closer to applying for M.Sc./PhD programs or start pilots with advisors.
