@@ -1788,9 +1788,9 @@ pyparsing==3.3.2 \
     #   oletools
     #   pip-requirements-parser
     #   python3-lgpd-crawler
-pypdf==6.10.1 \
-    --hash=sha256:62e6ca7f65aaa28b3d192addb44f97296e4be1748f57ed0f4efb2d4915841880 \
-    --hash=sha256:6331940d3bfe75b7e6601d35db7adabab5fc1d716efaeb384e3c0c3957d033de
+pypdf==6.10.2 \
+    --hash=sha256:7d09ce108eff6bf67465d461b6ef352dcb8d84f7a91befc02f904455c6eea11d \
+    --hash=sha256:aa53be9826655b51c96741e5d7983ca224d898ac0a77896e64636810517624aa
     # via python3-lgpd-crawler
 pytest==9.0.3 \
     --hash=sha256:2c5efc453d45394fdd706ade797c0a81091eccd1d6e4bccfcd476e2b8e0ab5d9 \
