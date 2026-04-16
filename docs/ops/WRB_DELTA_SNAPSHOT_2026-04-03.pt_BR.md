@@ -15,6 +15,18 @@ Cole o **parágrafo** (bloco EN no arquivo EN) no e-mail à Wabbix **depois** do
 
 ---
 
+## Nota de re-envio (se o pedido WRB anterior se perdeu)
+
+Cola **depois** do bloco suplementar em inglês (ou logo após *Olá, equipe Wabbix* no prompt longo) para quem não tenha fio de e-mail nem memória do pedido anterior.
+
+```text
+Short note — re-send: We are sending this WRB request again; an earlier message may not have reached you. Please treat this e-mail (and the linked in-repo briefing paths below) as the single source of truth — we do not assume you retain context from a prior thread. Our last report from you remains the 2026-03-18 delivery; tracking: docs/plans/WABBIX_ANALISE_2026-03-18.md. At send time, please confirm the latest GitHub tag (expected v1.6.8 unless superseded) and use `main` at commit: REPLACE_WITH_SHORT_HASH (run `git rev-parse --short HEAD` before send).
+```
+
+*(Você pode traduzir este parágrafo para português no corpo do e-mail se preferir um único idioma na mensagem; o bloco EN acima é o espelho do arquivo `WRB_DELTA_SNAPSHOT_2026-04-03.md`.)*
+
+---
+
 ## Relacionado
 
 - [WABBIX_IN_REPO_BASELINE.md](WABBIX_IN_REPO_BASELINE.md) — caminhos para revisores.
