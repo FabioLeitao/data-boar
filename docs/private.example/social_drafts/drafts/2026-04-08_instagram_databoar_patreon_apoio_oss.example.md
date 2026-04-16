@@ -1,8 +1,8 @@
 # Instagram — Data Boar + Patreon (apoio ao OSS)
 
-**CI (pt-BR):** este arquivo espelha `docs/private/social_drafts/2026-04-09_instagram_databoar_patreon_apoio_oss.md` para o guard em `tests/test_docs_pt_br_locale.py` (`_extra_locale_scan_paths`). Ao editar a legenda em português no workspace privado, **atualize este espelho** para o CI continuar a validar o mesmo texto.
+**CI (pt-BR):** este arquivo espelha `docs/private/social_drafts/drafts/2026-04-08_instagram_databoar_patreon_apoio_oss.md` para o guard em `tests/test_docs_pt_br_locale.py` (`_extra_locale_scan_paths`). Ao editar a legenda em português no workspace privado, **atualize este espelho** para o CI continuar a validar o mesmo texto.
 
-**Estado / URL:** `SOCIAL_HUB.md` · **Alvo editorial:** 2026-04-10 · **Par:** mesmo eixo que `2026-04-09_threads_databoar_patreon_apoio_oss.md` (OSS/Data Boar primeiro; Patreon = financiamento na bio).
+**Estado / URL:** `editorial/SOCIAL_HUB.md` · **Alvo editorial:** 2026-04-10 · **Par:** mesmo eixo que `2026-04-12_threads_databoar_patreon_apoio_oss.md` (OSS/Data Boar primeiro; Patreon = financiamento na bio).
 
 ---
 
