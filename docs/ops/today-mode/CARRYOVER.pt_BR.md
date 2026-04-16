@@ -12,6 +12,7 @@
 
 | Item | Origem | Estado | Próximo passo / defer |
 | ---- | ------ | ------ | ----- |
+| **Preparação 1.6.9 + portões Corporate-Entity-C (Dependabot → CodeQL → Sonar? → Scout → check-all)** | [OPERATOR_TODAY_MODE_2026-04-16.pt_BR.md](OPERATOR_TODAY_MODE_2026-04-16.pt_BR.md) | ⬜ Pendente | **`maintenance-check.ps1`**; **#188** mergeado (sessão 2026-04-16); **CodeQL** em error; **SonarQube** se o lab estiver no ar; **Scout** + **`docker-scout-critical-gate`**; **`check-all`**; features + WRB — [Corporate-Entity-C_REVIEW_REQUEST_GUIDELINE.md](../Corporate-Entity-C_REVIEW_REQUEST_GUIDELINE.md); [PUBLISHED_SYNC.pt_BR.md](PUBLISHED_SYNC.pt_BR.md) |
 | Fechar gate de release **1.6.8** (nota + testes + decisão publish/defer) | 2026-04-02 | ⬜ Pendente | Seguir `OPERATOR_TODAY_MODE_2026-04-02.pt_BR.md` Bloco C; se adiar, registrar data-alvo explícita |
 | Rodada externa **WRB + Gemini** com framing "código é verdade" | 2026-04-02 | ⬜ Pendente | Enviar WRB com 3 lentes temporais e gerar bundle Gemini com `--verify`; triar em `PLAN_GEMINI_FEEDBACK_TRIAGE.md` |
 | Snapshot quantitativo (hoje / 3 dias / 7 dias) com split por frente | 2026-04-02 | ⬜ Pendente | Rodar `.\scripts\progress-snapshot.ps1 -OutputMarkdown docs/private/progress/progress_snapshot_2026-04-02.md` |

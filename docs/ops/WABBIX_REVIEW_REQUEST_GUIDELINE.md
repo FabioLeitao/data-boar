@@ -31,13 +31,11 @@ Minimum reminder block:
 
 Ask Corporate-Entity-C to **not conflate** these baselines. They answer **different questions** and produce **different viewpoints**:
 
-
 | Baseline                                                                          | Question it answers                                                                                                                                           |
 | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Cumulative / historical** (“todo acumulado”)                                    | Overall maturity and risk trajectory over the long run.                                                                                                       |
 | **Last Corporate-Entity-C report** (e.g. PDF 2026-03-18)                                      | What changed **since their last recommendations** — what we **treated**, **planned**, or **left pending** in dialogue with them.                              |
 | **Last public release** (GitHub `vX.Y.Z`, Docker Hub `:X.Y.Z` / `:latest` digest) | What changed **since we last delivered** to testers, partners, or the market — the last **identifiable** cut (often **not** the same date as the Corporate-Entity-C PDF). |
-
 
 **Typical case:** last report ≈ mid-March 2026; latest shipped release in repo today is often `**v1.6.7`** (confirm from `README`, `docs/releases/1.6.7.md`, GitHub Releases, Docker Hub). `**main` may be ahead of the tag** — call that out explicitly.
 
@@ -197,6 +195,8 @@ Hi Corporate-Entity-C team,
 
 We’re grateful for the depth of your 2026-03-18 and 2026-03-23 reviews — they’ve been a constructive compass for Data Boar (detection, tests, compliance narrative, release discipline). If earlier context was lost on your side, no problem: this message plus docs/ops/Corporate-Entity-C_IN_REPO_BASELINE.md and docs/plans/Corporate-Entity-C_ANALISE_2026-03-18.md are the single source of truth for what we captured from your work. We’re asking for a forward-looking pass on today’s tree, not re-litigating past threads.
 
+We are sending this WRB request again; an earlier message may not have reached you. Please treat this message (and the linked in-repo briefing paths below) as the single source of truth — we do not assume you retain context from a prior thread. Our last report from you remains the 2026-03-18 delivery; tracking: docs/plans/Corporate-Entity-C_ANALISE_2026-03-18.md.
+
 Please run a new review cycle with your usual overall progress/maturity/security view, plus focused analysis on trust/integrity/evidence hardening.
 
 Please separate your review by artifact type:
@@ -219,6 +219,7 @@ Please separate your review by artifact type:
 - Tinted/draft session/report behavior and optional limited-report mode.
 - Session trust seal/hash and pre-report integrity verification.
 - Off-band trust-event alerts and monitoring bridge patterns.
+- Completeness of backlog and possible sequencing priority of the documented future tasks and actions and slices (docs/plans/PLANS_TODO.md and docs/plans/SPRINTS_AND_MILESTONES.md for overview, any other /docs/plans/*.md for further details if necessary and drill down analysis)
 
 Besides your standard checks, please focus on:
 A) Consistency between code, docs, and plans for integrity/evidence claims.
@@ -231,14 +232,17 @@ F) Linguistic category model:
    - Is each artifact at the right abstraction level for its audience?
    - Where are we too abstract, too concrete, or ambiguous?
    - Suggest rewrites that improve traceability (claim -> evidence) and audience clarity.
+   - Suggest rewrites to address proper translations in different locales (where code is the "source of truth", from that we get EN documentation and help reflecting actual capabilities or functionalities, and from EN we get pt_BR documentation).
+   - Suggest rewrites for better adherence to pt_BR instead of drifting accidentally into pt_PT style, wording and phraseology.
+   - Suggest Glossary entries.
 
 G) Time-scope analysis (three lenses — do not merge):
 
    - Cumulative history (long horizon).
    - Since last Corporate-Entity-C report (recommendations addressed vs pending vs planned).
    - Since last GitHub/Docker tagged release (last market-facing delivery → now, including unshipped `main` if applicable).
-   - State explicitly: latest **published Git tag** (verify in the repo; `main` may already show a **pre-release** suffix or a **next patch/minor** while the published tag still reflects the last delivery) vs current branch tip (git rev-parse --short HEAD shows 35096a2 right now).
-   - We don’t have your internal clone SHA; as a reference point on our public main, the tip at the end of 2026-03-18 was approximately 3a7b59d (see our git history for that date).
+   - State explicitly: latest **published Git tag** (verify in the repo; `main` may already show a **pre-release** suffix or a **next patch/minor** while the published tag still reflects the last delivery, but it looks like "since last release” means tag v1.6.8, unless confirmed by a newer tag indicating stable release at GitHub, not alpha, beta or release-candidate) vs current branch tip (git rev-parse --short HEAD shows be0afe1 right now).
+   - We don’t have your internal clone SHA; as a reference point on our public main, the tip at the end of 2026-03-18 was approximately 3a7b59d (see our git history for that date if you do not have the full context of the last report).
    - Highlight interval regressions, newly introduced risks, and trend direction.
    - Classify interval work by effort taxonomy (security/integrity/features/docs/ops/refactor/ci).
 
