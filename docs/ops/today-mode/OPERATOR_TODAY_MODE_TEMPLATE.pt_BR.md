@@ -18,6 +18,12 @@ Rode **`carryover-sweep`** ou **`.\scripts\operator-day-ritual.ps1 -Mode Morning
 
 **Fila viva:** [CARRYOVER.pt_BR.md](CARRYOVER.pt_BR.md) · **Publicado:** [PUBLISHED_SYNC.pt_BR.md](PUBLISHED_SYNC.pt_BR.md)
 
+### Social / editorial (hub privado) — ~2 min
+
+- [ ] Olhar **`docs/private/social_drafts/editorial/SOCIAL_HUB.md`** por **Alvo editorial** em **hoje** / **amanhã** e linhas **`draft`** / **`scheduled`** / **`deferred`** — fluxo: [SOCIAL_PUBLISH_AND_TODAY_MODE.pt_BR.md](SOCIAL_PUBLISH_AND_TODAY_MODE.pt_BR.md).
+- [ ] **Adiar post:** atualizar hub + **renomear** prefixo **`YYYY-MM-DD`** do rascunho; linha opcional em **[CARRYOVER.pt_BR.md](CARRYOVER.pt_BR.md)** só se for compromisso **real** entre dias.
+- [ ] **Publicação manual ad-hoc** (blog / Data Boar / rede): atualizar **inventário**; opcional evidência em **`docs/private/social_drafts/drafts/evidence/`** — ver **SOCIAL_PUBLISH_AND_TODAY_MODE.pt_BR.md** (seção ad-hoc).
+
 ---
 
 ## Carryover — (editar)

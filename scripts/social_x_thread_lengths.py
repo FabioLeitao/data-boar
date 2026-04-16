@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """Validate fenced blocks under '## Thread pronta' in X draft markdown files.
 
-Reads docs/private/social_drafts/2026*_x_*.md (local operator tree). Exit 1 if any
-block exceeds max_len (default 279). Skips silently if the drafts folder is missing.
+Reads ``docs/private/social_drafts/drafts/2026*_x_*.md`` (local operator tree).
+Falls back to ``social_drafts/2026*_x_*.md`` if ``drafts/`` is absent. Exit 1 if any
+block exceeds max_len (default 279). Skips silently if no matching files.
+
+Draft filenames use prefix ``YYYY-MM-DD`` (publication or planned date); see
+private ``editorial/SOCIAL_HUB.md``.
 
 Usage (repo root):
   uv run python scripts/social_x_thread_lengths.py
@@ -41,7 +45,7 @@ def main() -> int:
         "--drafts-dir",
         type=Path,
         default=None,
-        help="Override path to social_drafts (default: docs/private/social_drafts).",
+        help="Override path to social_drafts root (default: docs/private/social_drafts). X files are read from social_drafts/drafts/ when present.",
     )
     args = parser.parse_args()
     repo_root = Path(__file__).resolve().parent.parent
@@ -50,9 +54,11 @@ def main() -> int:
         print(f"SKIP: drafts dir not found: {drafts_dir}")
         return 0
 
-    files = sorted(drafts_dir.glob("2026*_x_*.md"))
+    nested = drafts_dir / "drafts"
+    x_dir = nested if nested.is_dir() else drafts_dir
+    files = sorted(x_dir.glob("2026*_x_*.md"))
     if not files:
-        print(f"SKIP: no 2026*_x_*.md under {drafts_dir}")
+        print(f"SKIP: no 2026*_x_*.md under {x_dir}")
         return 0
 
     failed = False
