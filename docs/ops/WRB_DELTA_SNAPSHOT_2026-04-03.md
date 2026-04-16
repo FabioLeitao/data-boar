@@ -27,6 +27,16 @@ Please keep the three time lenses separate. For “since last tagged release”,
 
 ---
 
+## Re-send note (if a previous WRB e-mail was lost)
+
+Paste **after** the supplementary block above (or right after *Olá, equipe Wabbix* in the long PT prompt) so reviewers without thread memory still have a clear anchor.
+
+```text
+Short note — re-send: We are sending this WRB request again; an earlier message may not have reached you. Please treat this e-mail (and the linked in-repo briefing paths below) as the single source of truth — we do not assume you retain context from a prior thread. Our last report from you remains the 2026-03-18 delivery; tracking: docs/plans/WABBIX_ANALISE_2026-03-18.md. At send time, please confirm the latest GitHub tag (expected v1.6.8 unless superseded) and use `main` at commit: REPLACE_WITH_SHORT_HASH (run `git rev-parse --short HEAD` before send).
+```
+
+---
+
 ## Related
 
 - [WABBIX_IN_REPO_BASELINE.md](WABBIX_IN_REPO_BASELINE.md) — paths for reviewers.
