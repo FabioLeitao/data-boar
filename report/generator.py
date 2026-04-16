@@ -23,6 +23,9 @@ from openpyxl.drawing.image import Image as OpenpyxlImage
 from openpyxl.worksheet.properties import PageSetupProperties
 
 from core.about import get_about_info
+from core.aggregated_identification import run_aggregation
+from core.database import failure_hint
+from core.suggested_review import SUGGESTED_REVIEW_PATTERN
 
 
 def _heatmap_path_under_output_dir(heatmap_path: str, output_dir: str) -> Path | None:
@@ -37,9 +40,7 @@ def _heatmap_path_under_output_dir(heatmap_path: str, output_dir: str) -> Path |
     except (ValueError, OSError):
         return None
     return candidate if candidate.is_file() else None
-from core.aggregated_identification import run_aggregation
-from core.database import failure_hint
-from core.suggested_review import SUGGESTED_REVIEW_PATTERN
+
 
 # Cross-ref aggregated sheet: first row explains sampling limits (FN-first; incomplete-data transparency).
 _AGGREGATED_CROSSREF_SAMPLE_NOTE_ROW: dict[str, str] = {
