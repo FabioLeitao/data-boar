@@ -15,7 +15,7 @@ This plan keeps a **structured mapping** between regulations/standards (LGPD, GD
 
 | #   | To-do                                                                                                                                                          | Status    |
 | -   | -----                                                                                                                                                          | ------    |
-| 1.1 | List the primary norms to track in this mapping (LGPD, GDPR, FELCA, ISO/IEC 27701, ISO/IEC 27001/27002/27005, SOC 2; optionally sector norms like HIPAA/GLBA). | ⬜ Pending |
+| 1.1 | List the primary norms to track in this mapping (LGPD, GDPR, FELCA, ISO/IEC 27701, ISO/IEC 27001/27002/27005, SOC 2; sector norms like HIPAA/GLBA; **backlog** of BR sector regulators and programme types in section 8). | ⬜ Pending |
 | 1.2 | Choose a simple representation: e.g. one table per norm (control/requirement → app feature/report/plan), plus short explanatory notes.                         | ⬜ Pending |
 
 ---
@@ -101,3 +101,30 @@ When extending the mapping or writing evidence-focused docs:
 
 - Use this plan as your **single source of truth** for detailed mappings; product docs should only expose what is needed for operators and decision-makers.
 - Keep the tone careful: always “supports” or “provides evidence for”, never “fully complies” or “certifies”.
+
+---
+
+## 8. Candidate sectors, regulators, and programme types (backlog — not product promises)
+
+**Purpose:** Remember **where** the product can **honestly** help (inventory, metadata-only findings, config-led labels) versus **what** requires **specialist tools**, **certified cryptography**, or **legal/sector counsel**. This section is **internal** scoping for future doc rows, optional `compliance-samples` YAML, and **consulting** scoping—not a public compliance claim.
+
+**Brazil — health data and HIPAA analogy:** There is **no** statute that copies **HIPAA/HITECH/ePHI** as a single package. **LGPD** (e.g. sensitive personal data including **health**, **Art. 11**) applies broadly; **sector** layers include **ANS** (health plans), **CFM** (medical practice / records norms), **ANVISA** (products and regulated activities), and other **RDCs** and norms. **Alignment for clients:** same engine as elsewhere—**discovery and mapping** of health-related and identifier patterns with **LGPD** (and **HIPAA** where data crosses US contexts); **not** a substitute for **clinical system** validation or **ANS/CFM**-specific controls. **Samples today:** **`compliance-sample-lgpd.yaml`**; built-in **HIPAA** tags in the app for US-facing wording; **no** separate “BR HIPAA” YAML unless we later add an optional **health-sector lexicon** sample (doc-only / low-code).
+
+**Brazil — financial / capital markets / public sector (examples, not exhaustive):** **BACEN** (including resolutions on cybersecurity and data), **CVM**, **SUSEP**, **B3** rules, **RFB** (tax/secrecy and ancillary obligations), **Dataprev**-related and other **public-sector** processing—all sit **on top of LGPD** and sector law. The product **does not** implement **PLD/Fiscal** transaction monitoring or **regulatory reporting**; it **can** support **data inventory** and **PII/sensitive-data visibility** for **governance** and **risk** programmes. **Samples today:** **`compliance-sample-pci_dss.yaml`** (card data patterns); **no** dedicated BACEN/SUSEP YAML yet—feasible later as **`recommendation_overrides`** + terms (with **counsel** review).
+
+**PEP / KYC / CDD / EDD / AML adjacency:** Already positioned in [COMPLIANCE_AND_LEGAL.md](../COMPLIANCE_AND_LEGAL.md) (inventory vs list screening). Future work here is **lexicon** and **samples**, not **screening engines**.
+
+**PCI DSS 4.x:** Existing sample targets **cardholder data** patterns; **version** evolution (3.x → 4.x) is a **periodic review** item for the sample file header and overrides—see [compliance-samples/README.md](../compliance-samples/README.md) *Sample maintenance*.
+
+**FIPS 140-2 / 140-3:** Relevant to **deployment** (OS, OpenSSL, HSM, Python crypto stacks)—**not** something the scanner “certifies”. Mapping, if any, belongs under **operator deployment** and **environment** evidence, not detector features.
+
+**Large enterprises and mixed programmes (e.g. energy, critical infrastructure):** Organisations often publish **internal** baselines (sometimes aligned to **NIST CSF**, **ISO 27001**, **CIS**). The product supports **technical inventory** and **policy-tagged** findings; it **does not** replace **vendor-specific** or **sector-specific** compliance programmes.
+
+**Named companies (e.g. state-owned enterprises):** **Petrobras** and similar are **not** regulators; alignment is via **their** policies and **LGPD** plus sector safety/environment rules where applicable—same **inventory** story, **no** endorsement.
+
+### To-dos (Sector and programme backlog)
+
+| #   | To-do                                                                                                                                                       | Status    |
+| --- | -----                                                                                                                                                       | --------- |
+| 8.1 | Prioritise **one** BR-sector slice for a future optional sample or doc table (e.g. financial lexicon vs health lexicon)—token-aware; no scope creep.        | ⬜ Pending |
+| 8.2 | Keep [COMPLIANCE_AND_LEGAL.md](../COMPLIANCE_AND_LEGAL.md) and [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md) as the **public** ceiling; deep regulator tables stay **here** or in **consulting** artefacts. | ⬜ Pending |
