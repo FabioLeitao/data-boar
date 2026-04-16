@@ -29,7 +29,7 @@
 
 ## References
 
-- [GLOSSARY.md](../GLOSSARY.md) · [GLOSSARY.pt_BR.md](../GLOSSARY.pt_BR.md)
+- [GLOSSARY.md](../GLOSSARY.md) · [GLOSSARY.pt_BR.md](../GLOSSARY.pt_BR.md) — **§9** (*Compliance positioning & artefacts*) extends the umbrella with **metadata-only finding**, **counsel**, **DPIA**/**RoPA**/**TIA**/**SCC**, **PEP**/**KYC**, **compliance sample**; positioning record: [ADR 0025](0025-compliance-positioning-evidence-inventory-not-legal-conclusion-engine.md).
 - [ADR 0002](0002-operator-facing-security-and-technical-docs.md) (operator-facing docs)
 - [ADR 0004](0004-external-docs-no-markdown-links-to-plans.md) (external-tier IA)
 - [.cursor/skills/documentation-en-pt-br/SKILL.md](../../.cursor/skills/documentation-en-pt-br/SKILL.md)
