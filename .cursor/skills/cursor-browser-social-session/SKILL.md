@@ -2,8 +2,9 @@
 
 ## When to use
 
-- Tasks that open **Patreon, LinkedIn, X, YouTube, Threads**, or other third-party UIs in the **Cursor embedded browser** (MCP `cursor-ide-browser`).
+- Tasks that open **Patreon, LinkedIn, X, YouTube, Threads**, **Instagram**, or other third-party UIs in the **Cursor embedded browser** (MCP `cursor-ide-browser`).
 - After **research, validation, profile copy-paste review, or post visibility checks** — before ending the assistant turn.
+- **SOCIAL_HUB reconciliation:** Operator says a post is already published (e.g. IG1 / Patreon+OSS) — **open the profile or post URL with a warm session**, snapshot, compare to `SOCIAL_HUB.md` row + draft `.md`. **Do not** say the assistant cannot see the feed without trying `browser_navigate` + `browser_snapshot` first (rule: **`.cursor/rules/cursor-browser-social-sso-hygiene.mdc`** § SOCIAL_HUB).
 
 ## Workflow
 
@@ -15,9 +16,11 @@
 2. **Do the task**
    - Follow existing rules (e.g. `x-posted`, `operator-sli-check`, Patreon copy in `docs/private/author_info/`).
 
-3. **Cleanup (default)**
+3. **Cleanup (default — operator agreement: save RAM, keep warm logins)**
+   - If **`browser_lock`** was used: **`unlock`** when all browser actions for this turn are done (per MCP server instructions).
    - Call **`browser_tabs`** with `action: "list"` if unsure how many tabs are open.
-   - Close tabs that are **done** for this task: **`browser_tabs`** with `action: "close"` (and `index` if closing a non-current tab).
+   - Close tabs that are **done** for this task: **`browser_tabs`** with `action: "close"` (and `index` if closing a non-current tab). **Goal:** free **RAM** from idle embedded-browser tabs — do **not** skip this at end of task unless the operator asked to keep tabs open.
+   - **Do not** end “warm sessions” on the networks: **no** navigating to logout, **no** clearing site data/cookies to “clean up”. Closing a tab is not logging out; the embedded profile keeps login state for the next session.
    - **Exception:** operator explicitly says to keep a site open for their next manual step — skip closing that tab or ask once.
 
 4. **Warm sessions**

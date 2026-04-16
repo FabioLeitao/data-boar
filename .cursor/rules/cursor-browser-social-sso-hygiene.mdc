@@ -18,10 +18,13 @@ alwaysApply: true
 2. Se SSO não existir ou falhar, **parar** e pedir ao operador para concluir o login manualmente no browser integrado; **não** inventar credenciais.
 3. **Nunca** gravar passwords ou tokens em ficheiros rastreados nem em narrativa de chat além do que o operador já partilhou por vontade própria.
 
-## Depois da tarefa (pesquisa, validação, perfil, revisão de post)
+## Depois da tarefa — RAM e sessões warm (combinado com o operador)
 
-1. **Fechar** separadores que já não sejam necessários — usar a ferramenta de browser **`browser_tabs`** com `action: "close"` (opcional `index`) depois de snapshots/notas, salvo o operador pedir para manter sessão aberta.
-2. Objetivo: menos ruído visual, menos risco de contexto exposto na UI; o operador pode manter **um** separador “warm” se quiser continuar sozinho.
+1. Ao **terminar** o uso do MCP **`cursor-ide-browser`** nesta tarefa (validação, snapshots, cliques): se **`browser_lock`** foi usado, **`unlock`** primeiro; depois **`browser_tabs`** com `action: "list"` e **`close`** nos separadores que já **não** forem necessários (incluindo abas de redes abertas só para esta tarefa).
+2. **Objetivo principal:** poupar **RAM** do processo do browser embutido do Cursor — não deixar abas ociosas abertas ao fim do turno.
+3. **Não** encerrar **sessões warm** nas redes: **não** navegar para logout, **não** limpar cookies/dados do site, **não** “sair da conta” só para “limpar”. **Fechar aba** no IDE **não** é o mesmo que terminar login — o perfil do browser embutido mantém cookies conforme o Cursor; o operador volta a abrir quando precisar.
+4. **Exceção:** o operador pediu para **manter** um separador aberto para o próximo passo manual — respeitar; caso contrário, fechar o que sobrou da tarefa.
+5. Menos ruído visual e menos superfície na UI; alinhado ao skill **`.cursor/skills/cursor-browser-social-session/SKILL.md`** (cleanup).
 
 ## Sessão “warm” entre turnos
 
@@ -33,9 +36,16 @@ alwaysApply: true
 2. O assistente **não** deve dizer que "não consegue aceder" **só** porque não há API JSON. Sessão **fria** → tentar **SSO**; se bloquear, **pedir warm session** ao operador — **não** desistir com desculpa de API.
 3. Documento privado (LinkedIn): **`docs/private/commercial/ats_sli_hub/LIVE_LINKEDIN_REFRESH_POLICY.pt_BR.md`**.
 
+## SOCIAL_HUB — validar post publicado (Instagram, Threads, X, etc.)
+
+1. Quando o operador pedir para **confirmar** se um post **já publicado** cumpre uma linha do inventário (**`docs/private/social_drafts/editorial/SOCIAL_HUB.md`**, ex. **IG1**, **T1**), o assistente **não** deve responder "não vejo o teu feed" **sem** tentar primeiro o MCP **`cursor-ide-browser`** com sessão **warm** (perfil, grid, permalink aberto, ou pesquisa no site).
+2. Fluxo: **`browser_tabs`** (list) → **`browser_navigate`** para o URL público do post **ou** ao perfil → **`browser_snapshot`** (e screenshot se precisar) → comparar gancho/legenda/tema ao rascunho `.md` e à linha do hub. Se login falhar ou a UI não expuser o conteúdo, aí sim pedir permalink ou warm — **uma** escalação clara.
+3. Isto alinha-se aos tokens **`x-posted`**, reconciliação de **IG1/T1**, e à política: **UI + warm = acesso** para arquivo operacional, não substituto de API de métricas.
+
 ## Ferramentas
 
 - Navegação / snapshot: fluxo normal do MCP **cursor-ide-browser** (ver instruções do servidor).
+- Sequência de fim de uso: **`browser_lock`** → `unlock` (se houve `lock`) → **`browser_tabs`** → `close` nas abas concluídas (RAM).
 - Fechar separador: **`browser_tabs`** → `action: "close"`.
 
 Skill: **`.cursor/skills/cursor-browser-social-session/SKILL.md`**.
