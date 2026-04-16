@@ -47,7 +47,7 @@ Pick **one or two** rows for deep work; defer the rest with a date or PLANS row:
 
 ## Social + editorial (private hub)
 
-- **Inventory:** `docs/private/social_drafts/SOCIAL_HUB.md`
+- **Inventory:** `docs/private/social_drafts/editorial/SOCIAL_HUB.md` (shortcut: `docs/private/social_drafts/SOCIAL_HUB.md`)
 - **Queues:** `EDITORIAL_INSTAGRAM_THREADS_2026-04.md` · `EDITORIAL_X_ROTACAO_2026-04.md` · LinkedIn series file if present
 - **Goal for today:** open **SOCIAL_HUB** — pick **one** publish or **one** draft advance (X / WordPress / LinkedIn line **L2** if calendar fits)
 
