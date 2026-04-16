@@ -78,7 +78,19 @@ Beyond the **built-in** framings (e.g. LGPD, GDPR, HIPAA, PCI-oriented card data
 
 **How this is delivered:** the same **engine** already supports **regex overrides**, **ML/DL training terms**, and **recommendation text** overrides (see [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) and [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md)). Tuning for **noise**, **locale**, and **sector lexicon** often benefits from **consulting** so targets and pattern sets match your **data soup** and risk appetite. The product **does not** certify legal categories by acronym; it produces **metadata-only findings** for **governance and remediation**.
 
-**Internal roadmap:** optional sample profiles and deeper positioning may be tracked in the repository’s **plans** tree (maintainers: see **docs/README** — *Internal and reference*).
+**Internal roadmap:** optional sample profiles and deeper positioning may be tracked in the repository’s **plans** tree (maintainers: see **docs/README** — *Internal and reference*). **Positioning decision (architecture):** [ADR 0025 — Compliance positioning: evidence and inventory, not a legal-conclusion engine](adr/0025-compliance-positioning-evidence-inventory-not-legal-conclusion-engine.md).
+
+---
+
+## Flexible positioning: joint delivery without claiming to eliminate legal risk
+
+The product is **designed to adapt**: **configuration profiles**, **regex and recommendation overrides**, **[compliance-samples/](compliance-samples/)**, and **professional services** can tune discovery and report wording to your **regulatory mix** and **data soup**—without forking the core engine.
+
+**Support role (how we help):** Data Boar **surfaces technical indicators** (pattern hits, sensitivity, framework-oriented tags, locations) so **legal**, **DPO**, **compliance analysts**, and **consulting** can **prioritise review**. It does **not** substitute for **legal conclusions** such as “this is a violation” or “notification is required”; those depend on **human judgment** about **facts**, **purpose**, **legal basis**, and **organisational process**. In documentation and commercial conversations, prefer **possible exposure**, **indicators for specialist review**, and **evidence for governance**—not **determinations** of **unlawfulness**.
+
+**Value together:** Organisations gain **repeatable inventory artefacts**, **metadata-only** reporting, and **remediation-oriented** recommendations; **counsel** and **specialists** apply **law** and **policy**; **consulting** bridges **scope** and **configuration**. That **joint** delivery model is intentional—see [ADR 0025](adr/0025-compliance-positioning-evidence-inventory-not-legal-conclusion-engine.md).
+
+**Where this is recorded:** This page, [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md), and **ADR 0025**. Maintainer orientation and sector backlog: internal plan **`PLAN_COMPLIANCE_EVIDENCE_MAPPING.md`** (see [docs/README.md](README.md) — *Internal and reference* — for navigation; no buyer-facing deep link into `docs/plans/` per [ADR 0004](adr/0004-external-docs-no-markdown-links-to-plans.md)). There is **no** separate **QA journal** document for compliance positioning in this repository; optional **operator-only** nuance may still live under **gitignored** `docs/private/` per [PRIVATE_OPERATOR_NOTES.md](PRIVATE_OPERATOR_NOTES.md).
 
 ---
 
