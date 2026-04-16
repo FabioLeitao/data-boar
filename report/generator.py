@@ -23,6 +23,20 @@ from openpyxl.drawing.image import Image as OpenpyxlImage
 from openpyxl.worksheet.properties import PageSetupProperties
 
 from core.about import get_about_info
+
+
+def _heatmap_path_under_output_dir(heatmap_path: str, output_dir: str) -> Path | None:
+    """
+    Return resolved heatmap path only if it lies under output_dir (guards path injection
+    for embedded images). Caller must pass the same output_dir used to build the heatmap.
+    """
+    try:
+        base = Path(output_dir).resolve()
+        candidate = Path(heatmap_path).resolve()
+        candidate.relative_to(base)
+    except (ValueError, OSError):
+        return None
+    return candidate if candidate.is_file() else None
 from core.aggregated_identification import run_aggregation
 from core.database import failure_hint
 from core.suggested_review import SUGGESTED_REVIEW_PATTERN
@@ -906,6 +920,7 @@ def _write_excel_sheets(
     current_fail: int,
     current_started_at: str | None,
     report_info: list[dict],
+    output_dir: str,
     heatmap_path: str | None = None,
     suggested_review_rows: list[dict] | None = None,
 ) -> None:
@@ -1021,12 +1036,17 @@ def _write_excel_sheets(
         )
         summary.to_excel(writer, sheet_name=_SHEET_HEATMAP_DATA)
         # Embed heatmap image below the table (no overlap); scale to fit letter/A4 when printed
-        if heatmap_path and Path(heatmap_path).exists():
+        safe_heatmap = (
+            _heatmap_path_under_output_dir(heatmap_path, output_dir)
+            if heatmap_path
+            else None
+        )
+        if safe_heatmap:
             try:
                 ws = writer.sheets[_SHEET_HEATMAP_DATA]
                 n_data_rows = len(summary) + 1  # header + data
                 image_anchor_row = n_data_rows + 2  # gap of 2 rows below table
-                img = OpenpyxlImage(str(heatmap_path))
+                img = OpenpyxlImage(str(safe_heatmap))
                 # Size for ~5"×3" at 96dpi so sheet (table + image) fits one page
                 img.width = 480
                 img.height = 288
@@ -1267,6 +1287,7 @@ def generate_report(
             current_fail,
             current_started_at,
             report_info,
+            output_dir,
             heatmap_path=heatmap_path,
             suggested_review_rows=suggested_review_rows,
         )
