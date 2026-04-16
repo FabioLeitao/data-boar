@@ -9,8 +9,8 @@ Use this template when asking Wabbix for a new report after meaningful project c
 ## Workflow when drafting a new WRB request (review + persist)
 
 1. **Show for review:** surface the full message in the chat/UI so you can proofread before sending to Wabbix.
-1. **Persist in-repo:** save the same text in `docs/ops/WABBIX_REVIEW_REQUEST_GUIDELINE.md` (the “Prompt mestre completo” ` ```text ` block) and mirror it in `docs/ops/WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md` when you use that package; **commit** so drafts are not lost to session history or clipboard issues.
-1. **Validate (pt-BR + lint):** run `uv run pytest tests/test_markdown_lint.py::test_markdown_lint_no_violations tests/test_docs_pt_br_locale.py -q`. Portuguese prose must follow **Brazilian Portuguese** (`.cursor/rules/docs-pt-br-locale.mdc`, `docs-policy.mdc`, `operator-chat-language-pt-br.mdc`); English for paths, APIs, and established technical terms is fine.
+2. **Persist in-repo:** save the same text in `docs/ops/WABBIX_REVIEW_REQUEST_GUIDELINE.md` (the “Prompt mestre completo” ````text`block) and mirror it in`docs/ops/WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md` when you use that package; **commit** so drafts are not lost to session history or clipboard issues.
+3. **Validate (pt-BR + lint):** run `uv run pytest tests/test_markdown_lint.py::test_markdown_lint_no_violations tests/test_docs_pt_br_locale.py -q`. Portuguese prose must follow **Brazilian Portuguese** (`.cursor/rules/docs-pt-br-locale.mdc`, `docs-policy.mdc`, `operator-chat-language-pt-br.mdc`); English for paths, APIs, and established technical terms is fine.
 
 *(PT-BR: ao criar um pedido, mostrar o texto na tela para revisão **e** gravar no repositório + commit + validar lint e locale pt-BR.)*
 
@@ -31,13 +31,15 @@ Minimum reminder block:
 
 Ask Wabbix to **not conflate** these baselines. They answer **different questions** and produce **different viewpoints**:
 
+
 | Baseline                                                                          | Question it answers                                                                                                                                           |
-| --------                                                                          | -------------------                                                                                                                                           |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Cumulative / historical** (“todo acumulado”)                                    | Overall maturity and risk trajectory over the long run.                                                                                                       |
 | **Last Wabbix report** (e.g. PDF 2026-03-18)                                      | What changed **since their last recommendations** — what we **treated**, **planned**, or **left pending** in dialogue with them.                              |
 | **Last public release** (GitHub `vX.Y.Z`, Docker Hub `:X.Y.Z` / `:latest` digest) | What changed **since we last delivered** to testers, partners, or the market — the last **identifiable** cut (often **not** the same date as the Wabbix PDF). |
 
-**Typical case:** last report ≈ mid-March 2026; latest shipped release in repo today is often **`v1.6.7`** (confirm from `README`, `docs/releases/1.6.7.md`, GitHub Releases, Docker Hub). **`main` may be ahead of the tag** — call that out explicitly.
+
+**Typical case:** last report ≈ mid-March 2026; latest shipped release in repo today is often `**v1.6.7`** (confirm from `README`, `docs/releases/1.6.7.md`, GitHub Releases, Docker Hub). `**main` may be ahead of the tag** — call that out explicitly.
 
 ## How they can discover the release baseline (artifacts in repo — no need to guess):
 
@@ -48,10 +50,10 @@ Ask Wabbix to **not conflate** these baselines. They answer **different question
 ## What to ask them to produce:
 
 1. **At last Wabbix report:** infer **which release** the repo likely reflected (or state “unclear” and use tag history).
-1. **Latest tagged release today** (GitHub + Docker Hub as applicable) vs **current `main` / default branch** (unshipped commits, open PR themes).
-1. **Since last delivery to market/testers/partners** (delta from last tag → now): what landed in repo **after** that tag — distinct from “since last Wabbix PDF” alone.
-1. **Since last Wabbix recommendations:** what we **addressed**, **partially addressed**, or **planned** vs **net-new gaps** in this review.
-1. Keep **roadmap** and **optional annex** separate from these baselines so readers do not mix “shipped” vs “planned”.
+2. **Latest tagged release today** (GitHub + Docker Hub as applicable) vs **current `main` / default branch** (unshipped commits, open PR themes).
+3. **Since last delivery to market/testers/partners** (delta from last tag → now): what landed in repo **after** that tag — distinct from “since last Wabbix PDF” alone.
+4. **Since last Wabbix recommendations:** what we **addressed**, **partially addressed**, or **planned** vs **net-new gaps** in this review.
+5. Keep **roadmap** and **optional annex** separate from these baselines so readers do not mix “shipped” vs “planned”.
 
 ## When to request a new Wabbix report
 
@@ -75,8 +77,8 @@ Fallback cadence:
 
 Version-signal heuristic (to avoid timing confusion):
 
-- If working version is **`X.Y.Z-beta`**, treat as “promising but still early”; request now only if you need external feedback before feature stabilization.
-- If working version reaches **`X.Y.Z-rc`**, treat as a **clear checkpoint** where requesting Wabbix review is usually worth considering before final publish.
+- If working version is `**X.Y.Z-beta`**, treat as “promising but still early”; request now only if you need external feedback before feature stabilization.
+- If working version reaches `**X.Y.Z-rc`**, treat as a **clear checkpoint** where requesting Wabbix review is usually worth considering before final publish.
 - Keep report text explicit about **working version** vs **latest published tag/image** so reviewers do not conflate branch tip with market release.
 
 ## What to ask Wabbix to focus on (beyond usual checks)
@@ -96,8 +98,8 @@ Version-signal heuristic (to avoid timing confusion):
 Always ask Wabbix to analyze in **at least these lenses** (they complement each other):
 
 1. **Cumulative trajectory** — long-horizon maturity and risk (“visão acumulada”).
-1. **Delta since last Wabbix report** — what we did with their prior recommendations + new findings (“desde o último relatório deles”).
-1. **Delta since last public release** — what changed **after** the last GitHub/Docker deliverable to testers/partners/market, including **unshipped** work on `main` if ahead of tag (“para onde já fomos desde a última entrega”).
+2. **Delta since last Wabbix report** — what we did with their prior recommendations + new findings (“desde o último relatório deles”).
+3. **Delta since last public release** — what changed **after** the last GitHub/Docker deliverable to testers/partners/market, including **unshipped** work on `main` if ahead of tag (“para onde já fomos desde a última entrega”).
 
 This helps catch interval regressions, separates **market-facing delivery** from **review-cycle progress**, and avoids confusing **tagged release** with **current branch tip**.
 
@@ -107,17 +109,14 @@ This helps catch interval regressions, separates **market-facing delivery** from
 - What was shipped in code/docs/plans.
 - What improved vs what regressed.
 - New risks introduced unintentionally.
-
 - **Cumulative progress (historical):**
 - Maturity trend across reports.
 - Security/quality trend (improving, flat, degrading).
 - Recurrent weak spots still unresolved.
-
 - **Since last tagged release (market/testers/partners):**
 - Name the tag (e.g. `v1.6.7`) and date from repo/GitHub/Docker artifacts.
 - Summarize commits/themes **after** that tag until current branch tip (even if not re-released).
 - Note whether “current product” for a buyer is still **1.6.7** or already **ahead** on `main`.
-
 - **Taxonomy of effort in the interval:**
 - Security hardening
 - Integrity/evidence
@@ -125,12 +124,10 @@ This helps catch interval regressions, separates **market-facing delivery** from
 - Documentation/governance
 - Ops/observability
 - Refactoring/quality debt
-
 - **Regression and drift checks:**
 - Potential behavioral regressions.
 - Code-doc-plan drift.
 - Increased ambiguity in operator/legal narrative.
-
 - **Prior recommendation verification:**
 - Which recommendations from the previous report were fully addressed.
 - Which were partially addressed or still pending.
@@ -142,22 +139,20 @@ This helps catch interval regressions, separates **market-facing delivery** from
 Ask Wabbix to return a **single PDF** (or a small bundle) with at least these 3 sections:
 
 1. **Executive / managerial view** (max 2 pages)
-   - Audience: IT director, legal/compliance leadership, partner stakeholders.
-   - Low-technical summary: progress, key risks, confidence level, business impact.
-   - Top recommendations prioritized by urgency and expected risk reduction.
-   - Avoid deep technical detail; focus on decisions and governance.
-
-1. **Technical detailed view** (full analysis)
-   - Delta since last report + cumulative trajectory.
-   - Code/docs/plans consistency, regressions, new risks, trend lines.
-   - Linguistic category model analysis (abstraction vs concreteness by artifact/audience).
-   - Clear evidence and rationale for each recommendation.
-
-1. **DevSecOps hardening view** (security-focused)
-   - Vulnerabilities, hardening gaps, dependency/package update guidance.
-   - Security posture trend and practical remediation sequence.
-   - Prioritized action plan intended for sprint/task segmentation.
-   - Should be explicit enough for direct use by engineering/devsecops workflows.
+  - Audience: IT director, legal/compliance leadership, partner stakeholders.
+  - Low-technical summary: progress, key risks, confidence level, business impact.
+  - Top recommendations prioritized by urgency and expected risk reduction.
+  - Avoid deep technical detail; focus on decisions and governance.
+2. **Technical detailed view** (full analysis)
+  - Delta since last report + cumulative trajectory.
+  - Code/docs/plans consistency, regressions, new risks, trend lines.
+  - Linguistic category model analysis (abstraction vs concreteness by artifact/audience).
+  - Clear evidence and rationale for each recommendation.
+3. **DevSecOps hardening view** (security-focused)
+  - Vulnerabilities, hardening gaps, dependency/package update guidance.
+  - Security posture trend and practical remediation sequence.
+  - Prioritized action plan intended for sprint/task segmentation.
+  - Should be explicit enough for direct use by engineering/devsecops workflows.
 
 Prefer that all recommendations (especially chapter 3) are tagged by:
 
@@ -192,13 +187,15 @@ Ask Wabbix to explicitly evaluate abstraction vs concreteness:
 Ask them to flag where text is:
 
 1. Too abstract (not verifiable),
-1. Too concrete in the wrong artifact (implementation detail in executive/legal text),
-1. Ambiguous about current state vs roadmap.
+2. Too concrete in the wrong artifact (implementation detail in executive/legal text),
+3. Ambiguous about current state vs roadmap.
 
 ## Reusable request message (long form)
 
 ```text
 Hi Wabbix team,
+
+We’re grateful for the depth of your 2026-03-18 and 2026-03-23 reviews — they’ve been a constructive compass for Data Boar (detection, tests, compliance narrative, release discipline). If earlier context was lost on your side, no problem: this message plus docs/ops/WABBIX_IN_REPO_BASELINE.md and docs/plans/WABBIX_ANALISE_2026-03-18.md are the single source of truth for what we captured from your work. We’re asking for a forward-looking pass on today’s tree, not re-litigating past threads.
 
 Please run a new review cycle with your usual overall progress/maturity/security view, plus focused analysis on trust/integrity/evidence hardening.
 
@@ -240,9 +237,10 @@ G) Time-scope analysis (three lenses — do not merge):
    - Cumulative history (long horizon).
    - Since last Wabbix report (recommendations addressed vs pending vs planned).
    - Since last GitHub/Docker tagged release (last market-facing delivery → now, including unshipped `main` if applicable).
-   - State explicitly: latest **published Git tag** (verify in the repo; `main` may already show a **pre-release** suffix or a **next patch/minor** while the published tag still reflects the last delivery) vs current branch tip.
+   - State explicitly: latest **published Git tag** (verify in the repo; `main` may already show a **pre-release** suffix or a **next patch/minor** while the published tag still reflects the last delivery) vs current branch tip (git rev-parse --short HEAD shows 35096a2 right now).
+   - We don’t have your internal clone SHA; as a reference point on our public main, the tip at the end of 2026-03-18 was approximately 3a7b59d (see our git history for that date).
    - Highlight interval regressions, newly introduced risks, and trend direction.
-   - Classify interval work by effort taxonomy (security/integrity/features/docs/ops/refactor).
+   - Classify interval work by effort taxonomy (security/integrity/features/docs/ops/refactor/ci).
 
 H) Prior recommendation verification:
 
@@ -262,13 +260,14 @@ I) Optional annex — "Wabbix roadmap tips" (separate from analysis of what we a
    - Forward-looking ideas for capability gaps, production-readiness, and market competitiveness.
    - Clearly labeled as optional/speculative; not confused with evidence-based findings from chapters 1–3.
    - Prioritized for triage (impact vs effort).
+   - Recommend what should be prioritized for high cognitive AI agent assistence in Cursor (via API, only after token refil, due to high cost of token, but high value reward, such as Premium, Opus 4.6, GPT 5.3 Codex, MAX Mode, etc.) vs normal pace using auto AI agent in cursor (token aware behaviour)
 
 Thanks.
 ```
 
 ## Prompt mestre completo (PT-BR) — copiar para e-mail ou colar em IA
 
-**Pacote para envio:** matriz de conformidade (guideline × *long form*), texto pronto para colar e modelo WhatsApp em [`WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md`](WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md).
+**Pacote para envio:** matriz de conformidade (guideline × *long form*), texto pronto para colar e modelo WhatsApp em `[WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md](WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md)`.
 
 Use este bloco como **pedido único, completo e em prosa**. Pode ser colado em e-mail, ticket ou como **prompt de IA** para um assistente que prepara o relatório: o texto abaixo articula intervalos temporais, capítulos, focos e formato de saída, em tom profissional e cordial.
 
@@ -439,3 +438,4 @@ Olá, Wabbix. Pedimos gentilmente um novo relatório Data Boar; o briefing compl
 ```text
 Can you run a new review with your normal maturity/security overview, but focus on trust/evidence hardening across code+docs+plans? Please assess chain-of-custody gaps, compromised-state signaling (INFO/WARN/ERROR), tinted/draft policy, session seals, and monitoring alerts. Also evaluate our linguistic category model (abstraction vs concreteness by audience) and suggest rewrites where text is too abstract, too concrete, or ambiguous.
 ```
+

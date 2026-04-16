@@ -2,7 +2,9 @@
 
 **English:** [WRB_DELTA_SNAPSHOT_2026-04-16.md](WRB_DELTA_SNAPSHOT_2026-04-16.md)
 
-Cole o **parágrafo** (bloco EN no arquivo EN) no e-mail à Wabbix **depois** do prompt mestre em [WABBIX_REVIEW_REQUEST_GUIDELINE.md](WABBIX_REVIEW_REQUEST_GUIDELINE.md) (seções *Report format requested…*, *Reusable request message* e sobretudo **Prompt mestre completo (PT-BR)** — é o briefing longo: visão executiva + técnica + DevSecOps, modelo linguístico, drift, três ângulos temporais, verificação de recomendações anteriores). Ou integre na §2 de [WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md](WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md) antes de enviar.
+Cole os blocos EN do arquivo [WRB_DELTA_SNAPSHOT_2026-04-16.md](WRB_DELTA_SNAPSHOT_2026-04-16.md) no e-mail à Wabbix **depois** do prompt mestre em [WABBIX_REVIEW_REQUEST_GUIDELINE.md](WABBIX_REVIEW_REQUEST_GUIDELINE.md) (seções *Report format requested…*, *Reusable request message* e sobretudo **Prompt mestre completo (PT-BR)**). Ou integre na §2 de [WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md](WABBIX_WRB_REVIEW_AND_SEND.pt_BR.md) antes de enviar.
+
+**Ordem sugerida:** (1) *Appreciation lead-in* (opcional, tom de agradecimento) → (2) *English paste block* (âmbito + hash) → (3) *Re-send note* só se um pedido anterior se perdeu.
 
 **Antes de enviar:** rode `git rev-parse --short HEAD` e substitua cada **`REPLACE_WITH_SHORT_HASH`** nos blocos para colar abaixo.
 
@@ -18,15 +20,15 @@ Cole o **parágrafo** (bloco EN no arquivo EN) no e-mail à Wabbix **depois** do
 
 ---
 
-## Bloco EN para colar (anexo opcional ao pedido longo)
+## Blocos EN para colar (anexo opcional ao pedido longo)
 
-*(Copie do arquivo EN `WRB_DELTA_SNAPSHOT_2026-04-16.md` — seção *English paste block* — e substitua **`REPLACE_WITH_SHORT_HASH`** antes do envio.)*
+*(No arquivo EN: seção **Appreciation lead-in** — opcional; depois **English paste block**; em último lugar **Re-send note** se aplicável. Substitua **`REPLACE_WITH_SHORT_HASH`** antes do envio.)*
 
 ---
 
 ## Nota de re-envio (se o pedido WRB anterior se perdeu)
 
-Cole **depois** do bloco suplementar em inglês (ou logo após *Olá, equipe Wabbix* no prompt longo) para quem não tenha fio de e-mail nem memória do pedido anterior.
+Cole **depois** do bloco de apreciação (se usar) e do bloco suplementar em inglês — ou logo após *Olá, equipe Wabbix* no prompt longo — para quem não tenha fio de e-mail nem memória do pedido anterior.
 
 ```text
 Short note — re-send: We are sending this WRB request again; an earlier message may not have reached you. Please treat this e-mail (and the linked in-repo briefing paths below) as the single source of truth — we do not assume you retain context from a prior thread. Our last report from you remains the 2026-03-18 delivery; tracking: docs/plans/WABBIX_ANALISE_2026-03-18.md. At send time, please confirm the latest GitHub tag (expected v1.6.8 unless superseded) and use `main` at commit: REPLACE_WITH_SHORT_HASH (run `git rev-parse --short HEAD` before send).
