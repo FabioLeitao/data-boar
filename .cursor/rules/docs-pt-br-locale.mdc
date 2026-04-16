@@ -10,7 +10,7 @@ alwaysApply: false
 
 **Operator chat:** When the operator writes in Portuguese, replies follow the **same** vocabulary and style bar — see **`.cursor/rules/operator-chat-language-pt-br.mdc`** (always applied) and **`.cursor/skills/operator-dialogue-pt-br/SKILL.md`**.
 
-**Scope beyond `*.pt_BR.md`:** Portuguese text in **gitignored** operator paths (e.g. **`docs/private/social_drafts/*.md`**, private runbooks) should still read **Brazilian**, not European Portuguese—same table below. Automated tests may not scan those paths; assistants **enforce by habit**.
+**Scope beyond `*.pt_BR.md`:** Portuguese text in **gitignored** operator paths (e.g. **`docs/private/social_drafts/drafts/*.md`** and **`editorial/*.md`**, private runbooks) should still read **Brazilian**, not European Portuguese—same table below. Automated tests may not scan those paths; assistants **enforce by habit**. Draft filenames use **`YYYY-MM-DD`** prefix per private **`editorial/SOCIAL_HUB.md`** (publication vs planned date).
 
 **English-only prose:** When a document or section is **explicitly EN** (not a pt-BR mirror), **`en-US`** is the preferred register for narrative copy unless the repo already standardizes otherwise.
 
@@ -43,7 +43,7 @@ Keep **English** for commands, product names, and jargon where the repo already 
 - **`uv run pytest tests/test_markdown_lint.py::test_markdown_lint_no_violations tests/test_docs_pt_br_locale.py -q`**
 - Run **`uv run pytest tests/test_docs_pt_br_locale.py -v`** after large doc edits. The scan includes all **`*.pt_BR.md`** under the repo; extend **`tests/test_docs_pt_br_locale.py`** (`_extra_locale_scan_paths`) if a mixed-language file should be guarded the same way.
 - Extend **`_extra_locale_scan_paths`** if **`docs/private/pitch/slides.yaml`** or website copy becomes tracked and includes pt-BR strings.
-- **Gitignored** Portuguese in **`docs/private/social_drafts/`** is not scanned on CI; a **tracked mirror** under **`docs/private.example/social_drafts/*.example.md`** (kept in sync by hand) is listed in **`_extra_locale_scan_paths`** — see **`2026-04-09_instagram_databoar_patreon_apoio_oss.example.md`**.
+- **Gitignored** Portuguese in **`docs/private/social_drafts/`** is not scanned on CI; a **tracked mirror** under **`docs/private.example/social_drafts/*.example.md`** (kept in sync by hand) is listed in **`_extra_locale_scan_paths`** — see **`drafts/2026-04-08_instagram_databoar_patreon_apoio_oss.example.md`**.
 - **Skills / rules to keep aligned:** **`.cursor/rules/docs-policy.mdc`**, **`.cursor/skills/documentation-en-pt-br/SKILL.md`**, **`.cursor/rules/operator-chat-language-pt-br.mdc`** (dialogue + same lexical bar as docs). **Termos técnicos, jargão e nomes próprios em inglês** são aceitáveis quando o repositório já usa assim — código-switch EN/pt-BR não é problema.
 
 ## Related
