@@ -6,7 +6,7 @@
 
 **Contexto mais largo:** [OPERATOR_MANUAL_ACTIONS.pt_BR.md](OPERATOR_MANUAL_ACTIONS.pt_BR.md) · [PLANS_TODO.md](../plans/PLANS_TODO.md) § “Resume next session”.
 
-**Foco de um dia (datado):** ver **[today-mode/README.pt_BR.md](today-mode/README.pt_BR.md)** (checklists indexados). Exemplo atual: [OPERATOR_TODAY_MODE_2026-04-02.pt_BR.md](today-mode/OPERATOR_TODAY_MODE_2026-04-02.pt_BR.md) ([EN](today-mode/OPERATOR_TODAY_MODE_2026-04-02.md)). **Delta WRB (exemplo):** [WRB_DELTA_SNAPSHOT_2026-04-08.pt_BR.md](WRB_DELTA_SNAPSHOT_2026-04-08.pt_BR.md). **Versão de trabalho atual `1.6.8`** vs publish em [today-mode/PUBLISHED_SYNC.pt_BR.md](today-mode/PUBLISHED_SYNC.pt_BR.md).
+**Foco de um dia (datado):** ver **[today-mode/README.pt_BR.md](today-mode/README.pt_BR.md)** (checklists indexados). Exemplo atual: [OPERATOR_TODAY_MODE_2026-04-02.pt_BR.md](today-mode/OPERATOR_TODAY_MODE_2026-04-02.pt_BR.md) ([EN](today-mode/OPERATOR_TODAY_MODE_2026-04-02.md)). **Delta WRB (exemplo):** [WRB_DELTA_SNAPSHOT_2026-04-16.pt_BR.md](WRB_DELTA_SNAPSHOT_2026-04-16.pt_BR.md). **Versão de trabalho atual `1.6.8`** vs publish em [today-mode/PUBLISHED_SYNC.pt_BR.md](today-mode/PUBLISHED_SYNC.pt_BR.md).
 
 ---
 
