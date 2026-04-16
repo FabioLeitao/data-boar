@@ -203,23 +203,23 @@ Please separate your review by artifact type:
 
 1) CODE (already implemented)
 
-- Runtime trust signaling in CLI and audit export baseline.
-- Explicit unexpected-runtime warning surface.
-- Related tests for baseline behavior.
+* Runtime trust signaling in CLI and audit export baseline.
+* Explicit unexpected-runtime warning surface.
+* Related tests for baseline behavior.
 
 2) DOCUMENTATION (roadmap/narrative)
 
-- Compliance/legal and operator-facing wording updated for trust/evidence roadmap.
-- Pitch/private narrative updated for enterprise audit value.
-- Usage and planning docs synchronized with recent trust/integrity direction.
+* Compliance/legal and operator-facing wording updated for trust/evidence roadmap.
+* Pitch/private narrative updated for enterprise audit value.
+* Usage and planning docs synchronized with recent trust/integrity direction.
 
 3) PLANS (not fully implemented yet)
 
-- Escalation policy for compromised state messaging (WARN / non-blocking ERROR).
-- Tinted/draft session/report behavior and optional limited-report mode.
-- Session trust seal/hash and pre-report integrity verification.
-- Off-band trust-event alerts and monitoring bridge patterns.
-- Completeness of backlog and possible sequencing priority of the documented future tasks and actions and slices (docs/plans/PLANS_TODO.md and docs/plans/SPRINTS_AND_MILESTONES.md for overview, any other /docs/plans/*.md for further details if necessary and drill down analysis)
+* Escalation policy for compromised state messaging (WARN / non-blocking ERROR).
+* Tinted/draft session/report behavior and optional limited-report mode.
+* Session trust seal/hash and pre-report integrity verification.
+* Off-band trust-event alerts and monitoring bridge patterns.
+* Completeness of backlog and possible sequencing priority of the documented future tasks and actions and slices (docs/plans/PLANS_TODO.md and docs/plans/SPRINTS_AND_MILESTONES.md for overview, any other /docs/plans/*.md for further details if necessary and drill down analysis)
 
 Besides your standard checks, please focus on:
 A) Consistency between code, docs, and plans for integrity/evidence claims.
@@ -241,7 +241,7 @@ G) Time-scope analysis (three lenses — do not merge):
    - Cumulative history (long horizon).
    - Since last Corporate-Entity-C report (recommendations addressed vs pending vs planned).
    - Since last GitHub/Docker tagged release (last market-facing delivery → now, including unshipped `main` if applicable).
-   - State explicitly: latest **published Git tag** (verify in the repo; `main` may already show a **pre-release** suffix or a **next patch/minor** while the published tag still reflects the last delivery, but it looks like "since last release” means tag v1.6.8, unless confirmed by a newer tag indicating stable release at GitHub, not alpha, beta or release-candidate) vs current branch tip (git rev-parse --short HEAD shows be0afe1 right now).
+   - State explicitly: latest **published Git tag** (verify in the repo; `main` may already show a **pre-release** suffix or a **next patch/minor** while the published tag still reflects the last delivery, but it looks like "since last release” means tag v1.6.8, unless confirmed by a newer tag indicating stable release at GitHub, not alpha, beta or release-candidate) vs current branch tip (git rev-parse --short HEAD shows ca41774 right now).
    - We don’t have your internal clone SHA; as a reference point on our public main, the tip at the end of 2026-03-18 was approximately 3a7b59d (see our git history for that date if you do not have the full context of the last report).
    - Highlight interval regressions, newly introduced risks, and trend direction.
    - Classify interval work by effort taxonomy (security/integrity/features/docs/ops/refactor/ci).
@@ -254,17 +254,17 @@ H) Prior recommendation verification:
 
 Please return findings grouped as:
 
-- Critical / Important / Improvement
-- Short term (next PR) / Mid term (2-4 PRs)
-- Code / Docs / Plans
-- Keep a 3-part report format: executive (<=2 pages), technical detailed, and DevSecOps hardening.
+* Critical / Important / Improvement
+* Short term (next PR) / Mid term (2-4 PRs)
+* Code / Docs / Plans
+* Keep a 3-part report format: executive (<=2 pages), technical detailed, and DevSecOps hardening.
 
 I) Optional annex — "Corporate-Entity-C roadmap tips" (separate from analysis of what we already shipped):
 
    - Forward-looking ideas for capability gaps, production-readiness, and market competitiveness.
    - Clearly labeled as optional/speculative; not confused with evidence-based findings from chapters 1–3.
    - Prioritized for triage (impact vs effort).
-   - Recommend what should be prioritized for high cognitive AI agent assistence in Cursor (via API, only after token refil, due to high cost of token, but high value reward, such as Premium, Opus 4.6, GPT 5.3 Codex, MAX Mode, etc.) vs normal pace using auto AI agent in cursor (token aware behaviour)
+   - Recommend what should be prioritized for high cognitive AI agent assistence in Cursor (via API, only after token refil, due to high cost of token, but high value reward, such as Premium, Opus 4.6, GPT 5.3 Codex, MAX Mode, etc.) vs normal pace using auto AI agent in cursor (token aware behavior)
 
 Thanks.
 ```
