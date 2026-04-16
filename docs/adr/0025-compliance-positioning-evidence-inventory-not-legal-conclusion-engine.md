@@ -1,6 +1,6 @@
 # ADR 0025 — Compliance positioning: evidence and inventory, not a legal-conclusion engine
 
-**Status:** Accepted  
+**Status:** Accepted
 **Date:** 2026-04-08
 
 ## Context
