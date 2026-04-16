@@ -4,7 +4,7 @@
   Optionally posts a short reminder to Slack (same incoming webhook pattern as GitHub Actions).
 
 .DESCRIPTION
-  Reads docs/private/social_drafts/SOCIAL_HUB.md (not on public GitHub). For inventory lines where
+  Reads docs/private/social_drafts/editorial/SOCIAL_HUB.md (not on public GitHub). For inventory lines where
   the # column matches X1, X2, ... and Rede is X and Estado is draft, compares "Alvo editorial"
   (first YYYY-MM-DD in the cell) to today's date. If due, prints a line and may notify Slack.
 
@@ -12,7 +12,7 @@
   Optional SLACK_MENTION_USER_ID (U...) for a leading mention.
 
 .PARAMETER SocialHubPath
-  Override path to SOCIAL_HUB.md (default: repo docs/private/social_drafts/SOCIAL_HUB.md).
+  Override path to SOCIAL_HUB.md (default: repo docs/private/social_drafts/editorial/SOCIAL_HUB.md).
 
 .PARAMETER Slack
   POST a single combined message when at least one row is due and SLACK_WEBHOOK_URL is set.
@@ -38,7 +38,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 if (-not $SocialHubPath) {
-    $SocialHubPath = Join-Path $repoRoot "docs\private\social_drafts\SOCIAL_HUB.md"
+    $SocialHubPath = Join-Path $repoRoot "docs\private\social_drafts\editorial\SOCIAL_HUB.md"
 }
 $hubFile = [System.IO.Path]::GetFullPath($SocialHubPath)
 
@@ -108,7 +108,7 @@ $bodyLines.Add("${mention}Data Boar -- X social pace: draft row(s) on or past ed
 foreach ($r in $dueRows) {
     $bodyLines.Add("$($r.Id): alvo $($r.Alvo) -- $($r.Tema) (see $($r.DraftFile))")
 }
-$bodyLines.Add("Hub: docs/private/social_drafts/SOCIAL_HUB.md")
+$bodyLines.Add("Hub: docs/private/social_drafts/editorial/SOCIAL_HUB.md")
 $text = $bodyLines -join "`n"
 
 $payloadObj = @{ text = $text }

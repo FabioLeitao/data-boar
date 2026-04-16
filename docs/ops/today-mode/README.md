@@ -14,6 +14,7 @@
 | --- | ---- |
 | [CARRYOVER.md](CARRYOVER.md) | **Rolling queue** — promote, defer, or close items (no silent backlog). |
 | [PUBLISHED_SYNC.md](PUBLISHED_SYNC.md) | **GitHub Release + Docker Hub vs repo version** — refresh after each publish. |
+| [SOCIAL_PUBLISH_AND_TODAY_MODE.md](SOCIAL_PUBLISH_AND_TODAY_MODE.md) | **Private social hub + today-mode** — planned posts, deferrals, ad-hoc evidence; pairs with gitignored **`docs/private/social_drafts/`**. pt-BR: [SOCIAL_PUBLISH_AND_TODAY_MODE.pt_BR.md](SOCIAL_PUBLISH_AND_TODAY_MODE.pt_BR.md). |
 | [PRIVATE_OPERATOR_NOTES.md](../../PRIVATE_OPERATOR_NOTES.md) | Private rhythm note path (`docs/private/…`) when relevant. |
 | [OPERATOR_TODAY_MODE_TEMPLATE.md](OPERATOR_TODAY_MODE_TEMPLATE.md) | **Copy-me shell** for new days (Block 0 + End of day: **`block-close`** + VeraCrypt vs **`eod-sync`**). pt-BR: [OPERATOR_TODAY_MODE_TEMPLATE.pt_BR.md](OPERATOR_TODAY_MODE_TEMPLATE.pt_BR.md). |
 

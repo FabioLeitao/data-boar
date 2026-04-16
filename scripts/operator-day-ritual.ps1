@@ -67,6 +67,21 @@ if ($Mode -eq "Morning") {
         Select-Object -First 6 |
         ForEach-Object { Write-Host "  $($_.FullName)" }
     Write-Host ""
+    Write-Host "Social (private gitignored) - planned posts / hub:" -ForegroundColor Yellow
+    $hubSocial = Join-Path $repoRoot "docs\private\social_drafts\editorial\SOCIAL_HUB.md"
+    $edSocial = Join-Path $repoRoot "docs\private\social_drafts\editorial"
+    if (Test-Path -LiteralPath $hubSocial) {
+        Write-Host "  Hub: $hubSocial"
+    } else {
+        Write-Host "  (no hub file yet) $hubSocial"
+    }
+    if (Test-Path -LiteralPath $edSocial) {
+        Get-ChildItem -Path $edSocial -Filter "EDITORIAL_MASTER_CALENDAR_*.pt_BR.md" -File -ErrorAction SilentlyContinue |
+            ForEach-Object { Write-Host "  Calendar: $($_.FullName)" }
+    }
+    $tomorrowAm = [DateTime]::Today.AddDays(1).ToString("yyyy-MM-dd")
+    Write-Host "  Skim Alvo for today ($today) / tomorrow ($tomorrowAm) + draft rows. Doc: docs/ops/today-mode/SOCIAL_PUBLISH_AND_TODAY_MODE.md"
+    Write-Host ""
     if ($env:DATA_BOAR_VERACRYPT_REMIND -eq "1" -and $env:DATA_BOAR_VERACRYPT_DRIVE) {
         $vl = $env:DATA_BOAR_VERACRYPT_DRIVE.TrimEnd(":").Substring(0, 1).ToUpperInvariant()
         $mountPath = "${vl}:\"
@@ -122,6 +137,8 @@ Write-Host ""
 Write-Host "Tomorrow today-mode paths (create if missing):" -ForegroundColor Yellow
 Write-Host "  $modeEn"
 Write-Host "  $modePt"
+Write-Host ""
+Write-Host "Social (private) - before closing: update SOCIAL_HUB if you published today; skim tomorrow Alvo in editorial/SOCIAL_HUB.md. See docs/ops/today-mode/SOCIAL_PUBLISH_AND_TODAY_MODE.md" -ForegroundColor DarkGray
 Write-Host ""
 Write-Host "Next: merge open PRs when green (.\scripts\pr-merge-when-green.ps1); then git checkout main, git pull, rest." -ForegroundColor Gray
 Write-Host ""

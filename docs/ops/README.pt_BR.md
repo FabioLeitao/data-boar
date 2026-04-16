@@ -25,7 +25,7 @@ Definido em `**.cursor/rules/session-mode-keywords.mdc`**.
 
 ## Modo “hoje” (foco de um dia)
 
-Checklists **datados** (`OPERATOR_TODAY_MODE_YYYY-MM-DD.md`), **fila de carryover** e **sincronização do publicado com `pyproject.toml`** estão em `**[today-mode/](today-mode/README.pt_BR.md)**` — comece por ali em vez de procurar arquivos soltos em `docs/ops/`. Token no chat: `**today-mode YYYY-MM-DD**` (só em inglês).
+Checklists **datados** (`OPERATOR_TODAY_MODE_YYYY-MM-DD.md`), **fila de carryover** e **sincronização do publicado com `pyproject.toml`** estão em `**[today-mode/](today-mode/README.pt_BR.md)**` — comece por ali em vez de procurar arquivos soltos em `docs/ops/`. Token no chat: `**today-mode YYYY-MM-DD**` (só em inglês). **Redes sociais + hub (privado):** [today-mode/SOCIAL_PUBLISH_AND_TODAY_MODE.pt_BR.md](today-mode/SOCIAL_PUBLISH_AND_TODAY_MODE.pt_BR.md) ([EN](today-mode/SOCIAL_PUBLISH_AND_TODAY_MODE.md)); token **`social-today-check`**.
 
 ---
 
