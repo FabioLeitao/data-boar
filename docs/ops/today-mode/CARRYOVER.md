@@ -12,6 +12,7 @@
 
 | Item | Source | Status | Next step / defer |
 | ---- | ------ | ------ | ----- |
+| **1.6.9 prep + Wabbix-ready gates (Dependabot → CodeQL → Sonar? → Scout → check-all)** | [OPERATOR_TODAY_MODE_2026-04-16.md](OPERATOR_TODAY_MODE_2026-04-16.md) | ⬜ Pending | **`maintenance-check.ps1`**; **#188** merged (session 2026-04-16); **CodeQL** errors; **SonarQube** if lab up; **Scout** + **`docker-scout-critical-gate`**; **`check-all`**; features + WRB per [WABBIX_REVIEW_REQUEST_GUIDELINE.md](../WABBIX_REVIEW_REQUEST_GUIDELINE.md) — [PUBLISHED_SYNC.md](PUBLISHED_SYNC.md) |
 | Close **1.6.8 release gate** (notes + tests + publish/defer decision) | 2026-04-02 | ⬜ Pending | Follow `OPERATOR_TODAY_MODE_2026-04-02.md` Block C; if deferred, write explicit target date |
 | New external round **WRB + Gemini** with "code is truth" framing | 2026-04-02 | ⬜ Pending | Send WRB with 3 time lenses and build Gemini bundle with `--verify`; triage in `PLAN_GEMINI_FEEDBACK_TRIAGE.md` |
 | Quantified snapshot (today / 3 days / 7 days) with front split | 2026-04-02 | ⬜ Pending | Run `.\scripts\progress-snapshot.ps1 -OutputMarkdown docs/private/progress/progress_snapshot_2026-04-02.md` |
