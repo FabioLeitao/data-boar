@@ -78,7 +78,19 @@ Além dos **enquadramentos já embutidos** (ex.: LGPD, GDPR, HIPAA, dados de car
 
 **Como isso é atendido:** o mesmo **motor** já suporta **regex overrides**, **termos de treinamento ML/DL** e **overrides de texto de recomendação** (veja [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md) e [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md)). Afinar **ruído**, **locale** e **léxico setorial** costuma beneficiar de **consultoria** para alinhar alvos e padrões à **sopa de dados** e ao apetite a risco. O produto **não** certifica categorias legais por sigla; produz **achados só com metadados** para **governança e remediação**.
 
-**Roadmap interno:** amostras de perfil opcionais e posicionamento mais detalhado podem constar na árvore de **planos** do repositório (mantenedores: **docs/README** — *Internal and reference*).
+**Roadmap interno:** amostras de perfil opcionais e posicionamento mais detalhado podem constar na árvore de **planos** do repositório (mantenedores: **docs/README** — *Internal and reference*). **Decisão de posicionamento (arquitetura):** [ADR 0025 — Compliance positioning: evidence and inventory, not a legal-conclusion engine](adr/0025-compliance-positioning-evidence-inventory-not-legal-conclusion-engine.md) (texto canônico em inglês).
+
+---
+
+## Posicionamento flexível: entrega conjunta sem eliminar risco jurídico
+
+O produto é **feito para se adaptar**: **perfis de configuração**, **overrides** de **regex** e de **recomendação**, **[compliance-samples/](compliance-samples/)** e **serviços profissionais** podem afinar a descoberta e a redação dos relatórios ao **mix regulatório** e à **sopa de dados** — **sem** fork do motor principal.
+
+**Papel de apoio (como ajudamos):** o Data Boar **levanta indicadores técnicos** (correspondências de padrão, sensibilidade, etiquetas orientadas a normas, localizações) para **jurídico**, **DPO**, **analistas de compliance** e **consultoria** **priorizarem análise**. **Não** substitui **conclusões jurídicas** do tipo “isto é ilícito” ou “há obrigação de notificar”; isso depende de **julgamento humano** sobre **factos**, **finalidade**, **base legal** e **processo** interno. Em documentação e conversas comerciais, prefira **exposição possível**, **indicadores para revisão especializada** e **evidência para governança** — **não** **determinações** de **ilicitude**.
+
+**Valor em conjunto:** as organizações ganham **artefatos repetíveis de inventário**, relatórios **só com metadados** e recomendações voltadas à **remediação**; **consultoria jurídica** e **especialistas** aplicam **direito** e **política**; a **consultoria** do projeto faz a ponte entre **escopo** e **configuração**. Esse modelo de **entrega conjunta** é **intencional** — veja [ADR 0025](adr/0025-compliance-positioning-evidence-inventory-not-legal-conclusion-engine.md).
+
+**Onde isto fica registrado:** esta página, [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) e **ADR 0025**. Orientação de mantenedores e *backlog* setorial: plano interno **`PLAN_COMPLIANCE_EVIDENCE_MAPPING.md`** (navegação via [docs/README.pt_BR.md](README.pt_BR.md) — *Interno e referência*; sem link direto para `docs/plans/` em docs de audiência externa, conforme [ADR 0004](adr/0004-external-docs-no-markdown-links-to-plans.md)). **Não** há documento de **“journal QA”** separado para este posicionamento no repositório; detalhes **só do operador** podem continuar em **`docs/private/`** (gitignored), conforme [PRIVATE_OPERATOR_NOTES.md](PRIVATE_OPERATOR_NOTES.md).
 
 ---
 
