@@ -34,6 +34,13 @@ Ver tabela completa em **`OPERATOR_TODAY_MODE_2026-04-06.md`**. Resumo:
 
 ---
 
+## Registro — glossário e triagem Gemini (sessão agente)
+
+- [x] **GLOSSARY.md** / **GLOSSARY.pt_BR.md:** nota de **audiência** e **locale** (pt-BR claro para clientes/integradores); entradas **HHS** (não confundir com **HSS**); **minor** (dados de crianças e adolescentes — risco e salvaguardas); **Corporate-Entity-C / WRB** na secção 9.
+- [x] **PLAN_GEMINI_FEEDBACK_TRIAGE.md** — item **G-26-13** (Corporate-Entity-C) marcado **Mitigado** com ponteiro ao glossário.
+
+---
+
 ## PRIORIDADES RECOMENDADAS — quando voltares **ainda em 8/4**
 
 1. **Private repo:** `.\scripts\private-git-sync.ps1` (revisar diff; commit; `-Push` se aplicável).
