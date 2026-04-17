@@ -139,7 +139,7 @@ file_scan:
   # max_inner_size: faixa válida 1 MB–500 MB (padrão 10 MB); membros maiores são ignorados.
   # max_inner_size: 50_000_000   # limite opcional de bytes internos por arquivo compactado
   # compressed_extensions: [".zip", ".tar", ".gz", ".tgz", ".bz2", ".xz", ".7z"]
-  # use_content_type: false   # magic bytes: PDF + imagem/áudio/vídeo disfarçados
+  # use_content_type: false   # magic bytes: recorte PDF + remapeamento rich media quando a extensão engana
   # scan_rich_media_metadata: false   # EXIF, mutagen, ffprobe (binários opcionais)
   # scan_image_ocr: false   # Tesseract via pytesseract + tesseract-ocr no sistema
   # ocr_lang: eng
@@ -480,7 +480,7 @@ targets:
 
 Todos os tipos de share usam as mesmas configurações **file_scan** (extensions, recursive, scan_sqlite_as_db, sample_limit) da config. Os achados aparecem na planilha **Filesystem findings**.
 
-Com `file_scan.use_content_type: true`, os conectores de **compartilhamento** usam o mesmo helper de magic bytes: PDFs renomeados para `.txt` com `%PDF-...` são tratados como PDF, e **imagem/áudio/vídeo** com extensão enganosa são remapeados como no filesystem. `scan_rich_media_metadata` / `scan_image_ocr` valem para SMB, WebDAV e SharePoint (e dentro de arquivos compactados quando o membro interno for elegível). Continua **opt-in**; com o flag desligado, a escolha de tipo segue a extensão (salvo inclusão explícita de extensões rich media quando esses flags ampliam o conjunto).
+Com `file_scan.use_content_type: true`, os conectores de **compartilhamento** usam o mesmo helper que o filesystem. **Disfarce simples** aqui é quando a **extensão do nome** não bate com o **formato real** (ex.: bytes de PDF atrás de `.txt` ou de extensão **não textual** como `.mp3`). Quem só segue a extensão erra; os *magic bytes* ainda mostram `%PDF-...` ou assinatura de mídia rica — daí PDFs seguem o fluxo de PDF na extração e **imagem/áudio/vídeo** com extensão enganosa são remapeados pela mesma tabela. `scan_rich_media_metadata` / `scan_image_ocr` valem para SMB, WebDAV e SharePoint (e dentro de arquivos compactados quando o membro interno for elegível). Continua **opt-in**; com o flag desligado, a escolha de tipo segue a extensão (salvo inclusão explícita de extensões rich media quando esses flags ampliam o conjunto).
 
 Para **uma única execução** sem alterar o config gravado: CLI **`--content-type-check`**, ou **`POST /scan`** / **`POST /start`** com **`content_type_check: true`**, ou a caixa no dashboard (mesma ideia que **`--scan-compressed`** / **`scan_compressed`** para arquivos compactados).
 
