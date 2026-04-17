@@ -13,7 +13,7 @@ Pipeline:
 5. Optional connector format hint: when sensitivity_detection.connector_format_id_hint and
    connectors pass declared SQL types/lengths, may elevate LOW to MEDIUM
    (FORMAT_LENGTH_HINT_ID including CPF/CNPJ/SSN lengths and UUID-like 32/36 with uuid/guid name tokens,
-   FORMAT_TYPE_HINT_ID_INT, FORMAT_LENGTH_HINT_EMAIL); default off (Plan §4).
+   FORMAT_TYPE_HINT_ID_INT, FORMAT_LENGTH_HINT_EMAIL for common email VARCHAR lengths); default off (Plan §4).
 6. Optional embedding prototype semantic hint: when enabled and DL backend is available,
    borderline low-confidence columns may elevate to MEDIUM (EMBEDDING_PROTOTYPE_HINT); default off (Plan §5).
 
@@ -964,10 +964,11 @@ def _declared_type_is_integer_like(data_type: str | None) -> bool:
 def _declared_type_email_length_hint(data_type: str | None) -> int | None:
     """
     Return declared character length when it strongly suggests an email-storage column.
-    Conservative values commonly used for email fields: 254, 255, 320.
+    Conservative lengths seen in schemas: 128/191/254/255/256/320 (RFC-ish max, MySQL utf8mb4
+    index-friendly 191, common VARCHAR buckets); still gated by email-like column name tokens.
     """
     char_len = _parse_declared_char_length(data_type)
-    if char_len in (254, 255, 320):
+    if char_len in (128, 191, 254, 255, 256, 320):
         return char_len
     return None
 
