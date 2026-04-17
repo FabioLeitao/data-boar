@@ -24,7 +24,7 @@ Textual description of modules, classes, and main functions and how they connect
 ## Core
 
 - **core/session.py**
-- `new_session_id()` — Return UUID4 hex (12 chars) + timestamp string for scan session.
+- `new_session_id()` — Return UUID4 hex (12 chars) + timestamp string for scan session. **Future:** consider RFC 9562 UUID v7 for time-ordered session ids (see module docstring and `PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md`); does not replace hash/signing integrity.
 
 - **core/database.py**
 - **ScanSession** — SQLAlchemy model: id, session_id, started_at, finished_at, status, tenant_name (optional customer/tenant), technician_name (optional operator).
