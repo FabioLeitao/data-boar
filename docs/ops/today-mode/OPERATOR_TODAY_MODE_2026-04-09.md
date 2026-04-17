@@ -26,7 +26,7 @@
 
 - [ ] **Private repo:** `private-git-sync` até ficar confortável com o estado pendente.
 - [ ] **Working tree público:** fechar ou partir em PRs/commits os diffs locais (grande volume).
-- [ ] **PR #177** Dependabot quando CI verde.
+- [x] **PR #177** Dependabot (`cryptography` 46.0.6 → 46.0.7) — **merged** no GitHub; `git pull` em clones antigos.
 - [x] **Ansible / USAGE (docs + `main`):** seção em `USAGE.pt_BR.md` + push — **feito** (2026-04-09).
 - [ ] **LAB-NODE-01 / `uv` / ansible `--check`:** ainda em aberto — ver `OPERATOR_TODAY_MODE_2026-04-06.md`.
 - [ ] **Homelab / hardware** (NVMe, VeraCrypt): só em notas privadas; não duplicar aqui.
@@ -37,7 +37,7 @@
 
 1. Abrir **`SOCIAL_HUB.md`** — marcar próximo rascunho **X** ou **WordPress** se for dia de publicar; **L2** LinkedIn se alinhar com calendário.
 2. `git status` + decisão sobre commit/stash do trabalho local em curso.
-3. `gh pr view 177` + merge quando verde, depois `git pull` em `main`.
+3. **PR #177:** já **merged** no GitHub; antes de novo trabalho, `git pull origin main` nos clones.
 4. `private-git-sync` se houver tempo (bloqueio cognitivo: fila grande no private).
 
 ---
