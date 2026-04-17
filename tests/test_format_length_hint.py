@@ -35,6 +35,16 @@ class TestFormatLengthSuggestsId(unittest.TestCase):
         self.assertTrue(_format_length_suggests_id_column("employee_ssn", 9))
         self.assertFalse(_format_length_suggests_id_column("status_code", 9))
 
+    def test_uuid_lengths(self):
+        self.assertTrue(_format_length_suggests_id_column("request_uuid", 36))
+        self.assertTrue(_format_length_suggests_id_column("correlation_guid", 36))
+        self.assertTrue(
+            _format_length_suggests_id_column("external_uniqueidentifier", 36)
+        )
+        self.assertTrue(_format_length_suggests_id_column("row_guid", 32))
+        self.assertFalse(_format_length_suggests_id_column("description", 36))
+        self.assertFalse(_format_length_suggests_id_column("notes", 32))
+
 
 class TestDeclaredTypeHelpers(unittest.TestCase):
     def test_integer_like(self):
@@ -105,6 +115,16 @@ class TestDetectorFormatHintIntegration(unittest.TestCase):
         self.assertEqual(pat, "FORMAT_LENGTH_HINT_EMAIL")
         self.assertIn("email", norm.lower())
         self.assertGreaterEqual(conf, 40)
+
+    def test_enabled_uuid_varchar_36(self):
+        d = SensitivityDetector(detection_config={"connector_format_id_hint": True})
+        level, pat, _, _ = d.analyze(
+            "entity_uuid",
+            _neutral_sample_text(),
+            connector_data_type="VARCHAR(36)",
+        )
+        self.assertEqual(level, "MEDIUM")
+        self.assertEqual(pat, "FORMAT_LENGTH_HINT_ID")
 
 
 if __name__ == "__main__":
