@@ -48,7 +48,7 @@ def test_about_fallback_string_matches_pyproject() -> None:
     ],
 )
 def test_man_th_line_contains_project_version(path: str, label: str) -> None:
-    """`.TH` fourth argument includes the marketing version (e.g. Data Boar 1.6.8)."""
+    """`.TH` fourth argument includes the marketing version (e.g. Data Boar 1.7.0)."""
     root = Path(__file__).resolve().parent.parent
     ver = _project_version_from_pyproject()
     text = (root / path).read_text(encoding="utf-8")

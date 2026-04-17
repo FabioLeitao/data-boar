@@ -10,11 +10,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Verified** | **2026-04-08** |
-| **`pyproject.toml` on `main`** | **1.6.8** |
-| **GitHub Release Latest** | [**v1.6.8**](https://github.com/FabioLeitao/data-boar/releases/tag/v1.6.8) (published **2026-04-02** per **`docs/releases/1.6.8.md`**) |
-| **Docker Hub** | **`fabioleitao/data_boar:1.6.8`** + **`latest`** — re-confirm tags and **repository description** after push; paste from **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** |
-| **Next public version** (when `main` has a new bundle) | **1.6.9** — follow **`docs/VERSIONING.md`** + **`docs/releases/`** |
+| **Verified** | **2026-04-17** |
+| **`pyproject.toml` on `main`** | **1.7.0** |
+| **GitHub Release Latest** | [**v1.7.0**](https://github.com/FabioLeitao/data-boar/releases/tag/v1.7.0) (publish with **`gh release create`** after tag push; notes: **`docs/releases/1.7.0.md`**) |
+| **Docker Hub** | **`fabioleitao/data_boar:1.7.0`** + **`latest`** — re-confirm tags and **repository description** after push; paste from **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** |
+| **Next public version** (when `main` has a new bundle) | **1.7.1** — follow **`docs/VERSIONING.md`** + **`docs/releases/`** |
 
 ---
 
@@ -29,7 +29,7 @@ grep -n '^version' pyproject.toml
 gh release list --repo FabioLeitao/data-boar --limit 5
 ```
 
-Docker Hub: confirm **`1.6.8`** and **`latest`** on [hub.docker.com/r/fabioleitao/data_boar/tags](https://hub.docker.com/r/fabioleitao/data_boar/tags) or the Registry API; **Full description** matches **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)**.
+Docker Hub: confirm **`1.7.0`** and **`latest`** on [hub.docker.com/r/fabioleitao/data_boar/tags](https://hub.docker.com/r/fabioleitao/data_boar/tags) or the Registry API; **Full description** matches **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)**.
 
 ---
 
