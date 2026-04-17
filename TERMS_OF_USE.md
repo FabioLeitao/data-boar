@@ -1,5 +1,7 @@
 # Terms of Use & Acceptable Use Policy — Data Boar
 
+**Português (Brasil):** [TERMS_OF_USE.pt_BR.md](TERMS_OF_USE.pt_BR.md)
+
 _Last updated: 2026-04-05_
 
 ## 1. Open-source licence
@@ -69,7 +71,7 @@ Check the `Last updated` date and the git history of this file.
 
 ## 9. Contact
 
-Open a [GitHub Issue](https://github.com/FabioLeitao/python3-lgpd-crawler/issues) for
+Open a [GitHub Issue](https://github.com/FabioLeitao/data-boar/issues) for
 general questions. For commercial licensing enquiries, contact the maintainer via GitHub.
 
 ---
