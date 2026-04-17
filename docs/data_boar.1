@@ -226,6 +226,13 @@ Stored as
 .I technician_name
 on the session and written to the "Report info" sheet and dashboard.
 .
+.TP
+.B \-\-jurisdiction\-hint
+Opt\-in for this run: add heuristic jurisdiction notes (e.g.\& US\-CA CCPA/CPRA, Colorado, Japan APPI) to the Excel Report info sheet when metadata signals suggest possible relevance.
+Not a legal conclusion; also configurable under
+.BR report.jurisdiction_hints .
+Stored on the session when set via CLI or API.
+.
 .SH CONFIGURATION
 The main config file (YAML or JSON) defines:
 .IP \(bu 2

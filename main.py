@@ -218,6 +218,17 @@ def main() -> None:
             "helps find renamed or cloaked files. Adds extra I/O and CPU per file."
         ),
     )
+    parser.add_argument(
+        "--jurisdiction-hint",
+        action="store_true",
+        dest="jurisdiction_hint",
+        help=(
+            "Opt-in for this run: add heuristic jurisdiction notes (e.g. CCPA/CPRA, Colorado, Japan APPI) "
+            "to the Excel Report info sheet when metadata signals suggest possible relevance. "
+            "Not a legal conclusion; high false-positive rate. Same as report.jurisdiction_hints.enabled "
+            "for this process and stores the opt-in on the session."
+        ),
+    )
     args = parser.parse_args()
 
     try:
@@ -241,6 +252,9 @@ def main() -> None:
         config.setdefault("file_scan", {})["scan_compressed"] = True
     if args.content_type_check:
         config.setdefault("file_scan", {})["use_content_type"] = True
+    if args.jurisdiction_hint:
+        config.setdefault("report", {}).setdefault("jurisdiction_hints", {})
+        config["report"]["jurisdiction_hints"]["enabled"] = True
 
     runtime_trust = get_runtime_trust_snapshot(config)
 
@@ -470,7 +484,11 @@ def main() -> None:
     # scan_compressed / use_content_type already merged above when CLI flags were passed
     try:
         _emit_runtime_trust_info(runtime_trust, to_stdout=True, to_stderr=True)
-        session_id = engine.start_audit(tenant_name=tenant, technician_name=technician)
+        session_id = engine.start_audit(
+            tenant_name=tenant,
+            technician_name=technician,
+            jurisdiction_hint=bool(args.jurisdiction_hint),
+        )
         print(f"Scan session: {session_id}")
         report_path = engine.generate_final_reports(session_id)
         if report_path:

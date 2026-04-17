@@ -42,6 +42,7 @@ _MAN_RESET = r"\-\-reset\-data"
 _MAN_EXPORT_AUDIT = r"\-\-export\-audit\-trail"
 _MAN_TENANT = r"\-\-tenant"
 _MAN_TECH = r"\-\-technician"
+_MAN_JURISDICTION_HINT = r"\-\-jurisdiction\-hint"
 _MAN_HTTPS_CERT = r"\-\-https\-cert\-file"
 _MAN_HTTPS_KEY = r"\-\-https\-key\-file"
 _MAN_ALLOW_INSECURE_HTTP = r"\-\-allow\-insecure\-http"
@@ -94,6 +95,12 @@ OPERATOR_HELP_MARKERS: tuple[OperatorHelpMarker, ...] = (
         "--technician",
         '--technician "Alice Colleague-V"',
         _MAN_TECH,
+    ),
+    OperatorHelpMarker(
+        "jurisdiction_hint",
+        "--jurisdiction-hint",
+        "--jurisdiction-hint",
+        _MAN_JURISDICTION_HINT,
     ),
     # Web /help recommends uv; full docs in README — not duplicated in argparse.
     OperatorHelpMarker("uv_run", None, "uv run", None),
