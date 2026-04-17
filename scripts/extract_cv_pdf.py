@@ -90,7 +90,7 @@ def extract_fields(raw_text: str, pdf_path: Path) -> dict:
         "phone": phone_matches[0].strip() if phone_matches else None,
         "linkedin_slug": linkedin_match.group(1) if linkedin_match else None,
         "linkedin_url": (
-            f"https://www.linkedin.com/in/redacted)}"
+            f"https://www.linkedin.com/in/{linkedin_match.group(1)}"
             if linkedin_match
             else None
         ),
