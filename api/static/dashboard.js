@@ -138,6 +138,8 @@
         var scanCompressed = scanCompressedEl && scanCompressedEl.checked;
         var contentTypeEl = document.getElementById('scan-content-type');
         var contentTypeCheck = contentTypeEl && contentTypeEl.checked;
+        var jurisdictionHintEl = document.getElementById('scan-jurisdiction-hint');
+        var jurisdictionHint = jurisdictionHintEl && jurisdictionHintEl.checked;
 
         if (feedback) feedback.textContent = 'Starting…';
         if (feedbackGuide) { feedbackGuide.textContent = ''; feedbackGuide.style.display = 'none'; }
@@ -147,6 +149,7 @@
         if (technician != null) body.technician = technician;
         if (scanCompressed) body.scan_compressed = true;
         if (contentTypeCheck) body.content_type_check = true;
+        if (jurisdictionHint) body.jurisdiction_hint = true;
 
         var opts = {
           method: 'POST',

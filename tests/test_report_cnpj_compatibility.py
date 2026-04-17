@@ -9,6 +9,7 @@ def test_report_info_includes_cnpj_format_compatibility_note():
         "tenant_name": "TestTenant",
         "technician_name": "Tester",
         "config_scope_hash": None,
+        "jurisdiction_hint": False,
     }
     about = {
         "name": "Data Boar",

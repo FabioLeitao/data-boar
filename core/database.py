@@ -50,6 +50,9 @@ class ScanSession(Base):
     config_scope_hash = Column(
         String(64), nullable=True
     )  # optional SHA-256 of scan scope (targets, types, extensions) for audit evidence
+    jurisdiction_hint = Column(
+        Integer, default=0
+    )  # 1 = operator opted in to heuristic jurisdiction Report info rows for this session
 
 
 class DatabaseFinding(Base):
@@ -218,6 +221,7 @@ class LocalDBManager:
         self._ensure_tenant_column()
         self._ensure_technician_column()
         self._ensure_config_scope_hash_column()
+        self._ensure_jurisdiction_hint_column()
         self._ensure_data_source_inventory_table()
         self._ensure_notification_send_log_table()
         self._session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
@@ -267,6 +271,22 @@ class LocalDBManager:
                 conn.execute(
                     text(
                         "ALTER TABLE scan_sessions ADD COLUMN config_scope_hash VARCHAR(64)"
+                    )
+                )
+                conn.commit()
+
+    def _ensure_jurisdiction_hint_column(self) -> None:
+        """Add jurisdiction_hint column to scan_sessions if missing (migration)."""
+        with self.engine.connect() as conn:
+            r = conn.execute(
+                text(
+                    "SELECT 1 FROM pragma_table_info('scan_sessions') WHERE name='jurisdiction_hint'"
+                )
+            )
+            if r.fetchone() is None:
+                conn.execute(
+                    text(
+                        "ALTER TABLE scan_sessions ADD COLUMN jurisdiction_hint INTEGER DEFAULT 0"
                     )
                 )
                 conn.commit()
@@ -689,6 +709,7 @@ class LocalDBManager:
                         "tenant_name": getattr(s, "tenant_name", None),
                         "technician_name": getattr(s, "technician_name", None),
                         "config_scope_hash": getattr(s, "config_scope_hash", None),
+                        "jurisdiction_hint": bool(getattr(s, "jurisdiction_hint", 0)),
                         "database_findings": db_count,
                         "filesystem_findings": fs_count,
                         "scan_failures": fail_count,
@@ -724,8 +745,9 @@ class LocalDBManager:
         tenant_name: str | None = None,
         technician_name: str | None = None,
         config_scope_hash: str | None = None,
+        jurisdiction_hint: bool = False,
     ) -> None:
-        """Create a scan_sessions row. Optional tenant_name, technician_name, and config_scope_hash metadata."""
+        """Create a scan_sessions row. Optional tenant_name, technician_name, config_scope_hash, jurisdiction_hint."""
         session = self._session_factory()
         try:
             session.add(
@@ -735,6 +757,7 @@ class LocalDBManager:
                     tenant_name=(tenant_name or None),
                     technician_name=(technician_name or None),
                     config_scope_hash=(config_scope_hash or None),
+                    jurisdiction_hint=1 if jurisdiction_hint else 0,
                 )
             )
             session.commit()

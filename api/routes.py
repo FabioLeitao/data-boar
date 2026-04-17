@@ -236,6 +236,9 @@ class DatabaseConfig(BaseModel):
     driver: str = "postgresql+psycopg2"
     tenant: str | None = None  # optional customer/tenant name for this scan
     technician: str | None = None  # optional technician/operator name for this scan
+    jurisdiction_hint: bool | None = (
+        None  # when True, heuristic jurisdiction Report info rows for this session
+    )
 
 
 class ScanStartBody(BaseModel):
@@ -248,6 +251,9 @@ class ScanStartBody(BaseModel):
     )
     content_type_check: bool | None = (
         None  # when True, set file_scan.use_content_type for this run only (magic-byte format sniffing)
+    )
+    jurisdiction_hint: bool | None = (
+        None  # when True, opt-in to heuristic jurisdiction notes on Report info for this session
     )
 
 
@@ -825,7 +831,7 @@ _SESSION_RESPONSES = {
 async def start_scan(
     background_tasks: BackgroundTasks, body: ScanStartBody | None = None
 ):
-    """Start audit in background. Optional body: tenant, technician, scan_compressed, content_type_check. Returns session_id."""
+    """Start audit in background. Optional body: tenant, technician, scan_compressed, content_type_check, jurisdiction_hint. Returns session_id."""
     _raise_if_license_blocks_scan()
     engine = _get_engine()
     if engine.is_running:
@@ -838,22 +844,32 @@ async def start_scan(
     session_id = new_session_id()
     tenant = sanitize_tenant_technician((body.tenant if body else None) or None)
     technician = sanitize_tenant_technician((body.technician if body else None) or None)
+    jh = bool(body and body.jurisdiction_hint)
     engine.db_manager.set_current_session_id(session_id)
     engine.db_manager.create_session_record(
         session_id,
         tenant_name=tenant,
         technician_name=technician,
+        jurisdiction_hint=jh,
     )
 
     # Run-local overrides: merge into file_scan for this run only; restore after (same pattern as scan_compressed).
     fs = engine.config.get("file_scan") or {}
     prev_scan_compressed = fs.get("scan_compressed")
     prev_use_content_type = fs.get("use_content_type")
+    _rep_prev = engine.config.get("report") or {}
+    _jh_prev = _rep_prev.get("jurisdiction_hints")
+    prev_jurisdiction_hints_enabled = (
+        bool(_jh_prev.get("enabled")) if isinstance(_jh_prev, dict) else False
+    )
 
     if body and getattr(body, "scan_compressed", None) is True:
         engine.config.setdefault("file_scan", {})["scan_compressed"] = True
     if body and getattr(body, "content_type_check", None) is True:
         engine.config.setdefault("file_scan", {})["use_content_type"] = True
+    if jh:
+        engine.config.setdefault("report", {}).setdefault("jurisdiction_hints", {})
+        engine.config["report"]["jurisdiction_hints"]["enabled"] = True
 
     def run_targets():
         try:
@@ -870,6 +886,10 @@ async def start_scan(
                     engine.config["file_scan"]["use_content_type"] = (
                         prev_use_content_type
                     )
+            if jh:
+                engine.config.setdefault("report", {}).setdefault(
+                    "jurisdiction_hints", {}
+                )["enabled"] = prev_jurisdiction_hints_enabled
         from utils.notify import notify_scan_complete_background
 
         notify_scan_complete_background(engine.config, engine.db_manager, session_id)
@@ -1115,11 +1135,21 @@ async def scan_database(config: DatabaseConfig, background_tasks: BackgroundTask
     session_id = new_session_id()
     tenant = sanitize_tenant_technician(config.tenant)
     technician = sanitize_tenant_technician(config.technician)
+    jh_db = bool(config.jurisdiction_hint)
+    _rep_prev = engine.config.get("report") or {}
+    _jh_prev = _rep_prev.get("jurisdiction_hints")
+    prev_jurisdiction_hints_enabled_db = (
+        bool(_jh_prev.get("enabled")) if isinstance(_jh_prev, dict) else False
+    )
+    if jh_db:
+        engine.config.setdefault("report", {}).setdefault("jurisdiction_hints", {})
+        engine.config["report"]["jurisdiction_hints"]["enabled"] = True
     engine.db_manager.set_current_session_id(session_id)
     engine.db_manager.create_session_record(
         session_id,
         tenant_name=tenant,
         technician_name=technician,
+        jurisdiction_hint=jh_db,
     )
 
     def run_one_target():
@@ -1129,6 +1159,10 @@ async def scan_database(config: DatabaseConfig, background_tasks: BackgroundTask
         finally:
             engine._is_running = False
             engine.db_manager.finish_session(session_id, "completed")
+            if jh_db:
+                engine.config.setdefault("report", {}).setdefault(
+                    "jurisdiction_hints", {}
+                )["enabled"] = prev_jurisdiction_hints_enabled_db
         from utils.notify import notify_scan_complete_background
 
         notify_scan_complete_background(engine.config, engine.db_manager, session_id)

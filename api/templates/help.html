@@ -33,7 +33,7 @@
   <pre><code>uv run python main.py --config config.yaml
 uv run python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Colleague-V"
 # Same optional toggles as the dashboard checkboxes (this run only):
-uv run python main.py --config config.yaml --scan-compressed --content-type-check</code></pre>
+uv run python main.py --config config.yaml --scan-compressed --content-type-check --jurisdiction-hint</code></pre>
   <p><strong>Start the API / dashBOARd</strong> (no scan until you use the browser or HTTP):</p>
   <p class="muted">You must either terminate TLS at the process (<code>--https-cert-file</code> + <code>--https-key-file</code>, or the same under <code>api:</code> in config) or explicitly accept plaintext with <code>--allow-insecure-http</code> (or <code>api.allow_insecure_http: true</code>). The official Docker image passes <code>--allow-insecure-http</code> by default; mount certs and remove it for HTTPS.</p>
   <pre><code>uv run python main.py --config config.yaml --web --https-cert-file server.crt --https-key-file server.key
