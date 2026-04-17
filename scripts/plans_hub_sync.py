@@ -48,9 +48,10 @@ def parse_args() -> argparse.Namespace:
 def discover_plan_files() -> list[tuple[Path, str]]:
     """Return (absolute_path, link_prefix) where link_prefix is '' or 'completed/'."""
     out: list[tuple[Path, str]] = []
-    for p in sorted(PLANS_DIR.glob("PLAN_*.md")):
+    # Sort by basename string only; Path ordering differs on Windows vs POSIX (CI/Linux).
+    for p in sorted(PLANS_DIR.glob("PLAN_*.md"), key=lambda x: x.name):
         out.append((p, ""))
-    for p in sorted(COMPLETED_DIR.glob("PLAN_*.md")):
+    for p in sorted(COMPLETED_DIR.glob("PLAN_*.md"), key=lambda x: x.name):
         out.append((p, "completed/"))
     return out
 
