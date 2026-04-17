@@ -4,6 +4,15 @@
 
 **Theme:** Confirm **`main`** is **green on GitHub Actions** after the **`ci.yml`** Sonar job fix (job-level `secrets` `if` removed). **Pull** locally. Position **v1.7.0** + **FCPA policy sample** + **jurisdiction hints** as the **beta-stable** baseline for **IDENTIDADE_COLABORADOR_A** and **IDENTIDADE_COLABORADOR_B** to start **synthetic / structured tests**, and for **lab-op** smoke when you choose. **Triage** carryover from **2026-04-16** without abandoning **Wabbix / WRB** rhythm.
 
+### Full day ritual (2026-04-17)
+
+1. **Morning:** **`carryover-sweep`** — or **`.\scripts\operator-day-ritual.ps1 -Mode Morning`** — plus skim **[CARRYOVER.md](CARRYOVER.md)** and **`docs/private/TODAY_MODE_CARRYOVER_AND_FOUNDER_RHYTHM.md`** if you use them.
+2. **Sync git:** **`git fetch origin`**, **`git checkout main`**, **`git pull origin main`** (fresh advice needs fresh refs — see **COMMIT_AND_PR** / git sync habit).
+3. **Run this file top to bottom:** **Block A** (gates) → **B** (testers) → **C** (lab-op) as time allows.
+4. **Evening:** **`eod-sync`** — or **`.\scripts\operator-day-ritual.ps1 -Mode Eod`** — then **[End of day](#end-of-day)** below.
+
+**Resume with low risk (after sleep / before deep work):** `git status -sb` (clean or intentional WIP) → `git fetch origin && git pull origin main` → skim **[CARRYOVER.md](CARRYOVER.md)** → **Block A** (CI green + optional `check-all`). If you **closed 2026-04-16** with **`eod-sync`**, you already have log/PR snapshot; if not, run **`eod-sync` once** before merging risky work. **ADR / licensing docs:** [ADR 0027](../../adr/0027-commercial-tier-boundaries-licensing-docs-and-future-jwt-claims.md); private example: `docs/private/commercial/LICENSING_TIER_EXAMPLE_FEDERATED_OPERATOR.pt_BR.md`.
+
 ---
 
 ## Session handoff (2026-04-17 morning)
