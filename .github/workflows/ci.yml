@@ -32,6 +32,9 @@ jobs:
           # Full history required for scripts/pii_history_guard.py --full-history (PII in old commits).
           fetch-depth: 0
 
+      - name: Install libmariadb-dev (mariadb PyPI connector builds from source on Linux)
+        run: sudo apt-get update && sudo apt-get install -y libmariadb-dev pkg-config
+
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
@@ -60,6 +63,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install libmariadb-dev (mariadb PyPI connector builds from source on Linux)
+        run: sudo apt-get update && sudo apt-get install -y libmariadb-dev pkg-config
+
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
@@ -82,6 +88,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Install libmariadb-dev (mariadb PyPI connector builds from source on Linux)
+        run: sudo apt-get update && sudo apt-get install -y libmariadb-dev pkg-config
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
@@ -106,6 +115,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Install libmariadb-dev (mariadb PyPI connector builds from source on Linux)
+        run: sudo apt-get update && sudo apt-get install -y libmariadb-dev pkg-config
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
@@ -138,6 +150,9 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0
+
+      - name: Install libmariadb-dev (mariadb PyPI connector builds from source on Linux)
+        run: sudo apt-get update && sudo apt-get install -y libmariadb-dev pkg-config
 
       - name: Detect Sonar token
         id: sonar_token
