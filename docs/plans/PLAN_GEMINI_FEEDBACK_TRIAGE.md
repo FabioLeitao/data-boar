@@ -95,7 +95,7 @@ Answer **all** that apply for each candidate item:
 | -- | ---- | ---------- | ------- | ----------- | ------ |
 | **G-26-11** | **pt-PT drift** (“teu”, “vê”, “enviares”, “académico”, “ping” for Slack) undermines LGPD-facing tone. | `uv run pytest tests/test_docs_pt_br_locale.py`; manual pass on cited files (e.g. ACADEMIC_USE_AND_THESIS.pt_BR). | Warm | Compliance narrative | **Mitigado (2026-03):** revisão manual em **ACADEMIC_USE_AND_THESIS.pt_BR**, **GEMINI_PUBLIC_BUNDLE_REVIEW.pt_BR**, **WRB_DELTA_…**, **OPERATOR_LAB_DOCUMENT_MAP.pt_BR**; guard **`test_docs_pt_br_locale.py`** verde. |
 | **G-26-12** | **Legal disclaimer phrasing** — “parecer para o teu estudo” → **seu estudo**; imperatives **consulte/veja** not informal **vê**. | Same + legal-comfort review (human). | Warm | Compliance narrative | **Mitigado (2026-03):** mesmo pacote que **G-26-11** (tom formal / pt-BR em **ACADEMIC_USE_AND_THESIS.pt_BR**). |
-| **G-26-13** | **Corporate-Entity-C** referred to ambiguously (entity gender / what it is) — align EN↔pt-BR. | Glossary or one-line definition in docs; match EN. | Cold | Clarity | ⬜ |
+| **G-26-13** | **Corporate-Entity-C** referred to ambiguously (entity gender / what it is) — align EN↔pt-BR. | Glossary or one-line definition in docs; match EN. | Cold | Clarity | **Mitigado (2026-04):** entrada **Corporate-Entity-C / WRB** em **GLOSSARY.md** e **GLOSSARY.pt_BR.md** (seção 9), com link a **Corporate-Entity-C_IN_REPO_BASELINE** e guideline — vocabulário de processo, não módulo do produto. |
 
 ### 6.3 Compliance YAML samples (`… compliance config samples …` file)
 
