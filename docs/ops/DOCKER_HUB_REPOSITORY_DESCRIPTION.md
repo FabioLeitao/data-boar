@@ -13,7 +13,7 @@
 Use one line (adjust version when you bump):
 
 ```text
-Data Boar — PII/sensitive data discovery (LGPD/GDPR-aware). OSS by Fabio Leitao. Tags: latest, 1.6.8. Docs on GitHub.
+Data Boar — PII/sensitive data discovery (LGPD/GDPR-aware). OSS by Fabio Leitao. Tags: latest, 1.7.0. Docs on GitHub.
 ```
 
 ---
@@ -29,7 +29,7 @@ Copy from the block below into **Repository → Edit** on Docker Hub.
 
 **Compliance-aware discovery** of personal and sensitive data across databases, files, APIs, and more — **data soup** in, structured findings out. Open-source Python stack with optional ML/DL; aligns with **LGPD**, **GDPR**, **CCPA**, and other frameworks via config.
 
-**Current release (image build):** **1.6.8** — same app version as the **`1.6.8`** image tag when published from that release. **`latest`** tracks the most recent Hub push. Always confirm **tags on Hub** match **[GitHub Releases](https://github.com/FabioLeitao/data-boar/releases)** before telling customers a version number.
+**Current release (image build):** **1.7.0** — same app version as the **`1.7.0`** image tag when published from that release. **`latest`** tracks the most recent Hub push. Always confirm **tags on Hub** match **[GitHub Releases](https://github.com/FabioLeitao/data-boar/releases)** before telling customers a version number.
 
 ### Copyright and maintainer
 
@@ -40,7 +40,7 @@ Copy from the block below into **Repository → Edit** on Docker Hub.
 ### Supported tags
 
 - **`fabioleitao/data_boar:latest`** — newest published build
-- **`fabioleitao/data_boar:1.6.8`** — pinned semver (example; older semvers may remain pullable)
+- **`fabioleitao/data_boar:1.7.0`** — pinned semver (example; older semvers may remain pullable)
 
 ### Quick start (web API + dashboard on port 8088)
 
