@@ -684,7 +684,7 @@ def _trends_rows(
 
 
 def _get_session_metadata(db_manager: Any, session_id: str) -> dict[str, Any]:
-    """Return started_at, tenant_name, technician_name, config_scope_hash for the given session (or None)."""
+    """Return started_at, tenant_name, technician_name, config_scope_hash, jurisdiction_hint."""
     for s in db_manager.list_sessions() or []:
         if s.get("session_id") == session_id:
             return {
@@ -692,12 +692,14 @@ def _get_session_metadata(db_manager: Any, session_id: str) -> dict[str, Any]:
                 "tenant_name": s.get("tenant_name"),
                 "technician_name": s.get("technician_name"),
                 "config_scope_hash": s.get("config_scope_hash"),
+                "jurisdiction_hint": bool(s.get("jurisdiction_hint")),
             }
     return {
         "started_at": None,
         "tenant_name": None,
         "technician_name": None,
         "config_scope_hash": None,
+        "jurisdiction_hint": False,
     }
 
 
@@ -1106,6 +1108,7 @@ def _build_report_info(
     db_rows: list[dict],
     fs_rows: list[dict],
     license_ctx: Any | None = None,
+    config: dict | None = None,
 ) -> list[dict]:
     """Build the Report info sheet rows (session + tenant/technician + about + brief compatibility notes)."""
     report_info: list[dict] = []
@@ -1143,6 +1146,11 @@ def _build_report_info(
             {"Field": "Technician / Operator", "Value": meta["technician_name"] or "—"},
         ]
     )
+    from report.jurisdiction_hints import build_jurisdiction_hint_report_rows
+
+    _hint_rows = build_jurisdiction_hint_report_rows(db_rows, fs_rows, config, meta)
+    if _hint_rows:
+        report_info.extend(_hint_rows)
     if meta.get("config_scope_hash"):
         report_info.append(
             {"Field": "Config scope hash", "Value": meta["config_scope_hash"]}
@@ -1258,6 +1266,7 @@ def generate_report(
         db_rows_for_sheets,
         fs_rows_for_sheets,
         license_ctx=lic_ctx,
+        config=config,
     )
     lic_footer = None
     if lic_ctx is not None:

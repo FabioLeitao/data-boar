@@ -320,6 +320,27 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
             out["report"]["include_suggested_review_sheet"]
         )
 
+    # Optional heuristic jurisdiction hints (Report info sheet; not legal conclusions)
+    jh_raw = out["report"].get("jurisdiction_hints")
+    if not isinstance(jh_raw, dict):
+        jh_raw = {}
+
+    def _jh_int(key: str, default: int) -> int:
+        try:
+            return int(jh_raw.get(key, default))
+        except (TypeError, ValueError):
+            return default
+
+    out["report"]["jurisdiction_hints"] = {
+        "enabled": bool(jh_raw.get("enabled", False)),
+        "us_ca": bool(jh_raw.get("us_ca", True)),
+        "us_co": bool(jh_raw.get("us_co", True)),
+        "jp": bool(jh_raw.get("jp", True)),
+        "min_score_us_ca": _jh_int("min_score_us_ca", 4),
+        "min_score_us_co": _jh_int("min_score_us_co", 4),
+        "min_score_jp": _jh_int("min_score_jp", 3),
+    }
+
     # API
     out["api"] = data.get("api", {})
     if "port" not in out["api"]:
