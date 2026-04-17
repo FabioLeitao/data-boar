@@ -44,6 +44,7 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0023  | [Windows primary dev PC filename search — Everything (`es.exe`) first, capped PowerShell fallback](0023-windows-primary-dev-filename-search-everything-es-first-with-fallback.md) | Accepted |
 | 0024  | [Enterprise discovery — three complementary tracks (planning posture)](0024-enterprise-discovery-three-complementary-tracks.md) | Accepted |
 | 0025  | [Compliance positioning — evidence and inventory, not a legal-conclusion engine](0025-compliance-positioning-evidence-inventory-not-legal-conclusion-engine.md) | Accepted |
+| 0026  | [Optional jurisdiction hints — DPO-facing, heuristic, metadata-only](0026-optional-jurisdiction-hints-dpo-facing-heuristic-metadata-only.md) | Accepted |
 
 ## Related docs
 

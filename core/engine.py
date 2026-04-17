@@ -155,6 +155,7 @@ class AuditEngine:
         self,
         tenant_name: str | None = None,
         technician_name: str | None = None,
+        jurisdiction_hint: bool = False,
     ) -> str:
         """
         Run audit for all targets (sequential or parallel). Returns session_id (UUID + timestamp).
@@ -177,6 +178,7 @@ class AuditEngine:
             tenant_name=tenant_name,
             technician_name=technician_name,
             config_scope_hash=scope_hash,
+            jurisdiction_hint=jurisdiction_hint,
         )
         self._run_audit_targets()
         return session_id
