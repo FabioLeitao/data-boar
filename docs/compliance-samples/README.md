@@ -38,6 +38,7 @@ For operational governance (scope, minimization, retention, traceability), use [
 | **compliance-sample-us_ftc_coppa.yaml**        | U.S. FTC COPPA (children's online privacy): **technical mapping** terms and overrides; not age verification or legal advice.                                        |
 | **compliance-sample-us_ca_ab2273_caadca.yaml** | California AB 2273 (Age-Appropriate Design Code): **labelling** for voluntary scoping; applicability requires counsel.                                              |
 | **compliance-sample-us_co_cpa_minors.yaml**    | Colorado Privacy Act — minors / under-18 contexts: **technical** norm tags; does not establish “known minor” legally.                                               |
+| **compliance-sample-us_fcpa_internal_policy_pack.yaml** | U.S. **FCPA** + employer **anti-corruption policy** lexicon (**inventory**); not bribery detection or legal advice.                                               |
 
 All samples in the tables above are available. Each sample is self-contained (regex overrides, ML terms, recommendation overrides) so you can enable one framework by including that file's blocks in your config. For the **full regional table**, filenames, and how to merge samples into `config.yaml`, see [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md#compliance-samples) ([pt-BR](../COMPLIANCE_FRAMEWORKS.pt_BR.md#amostras-de-conformidade)).
 
