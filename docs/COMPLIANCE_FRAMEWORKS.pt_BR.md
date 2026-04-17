@@ -58,6 +58,7 @@ Lei, orientações de autoridade e o uso real de identificadores evoluem em muit
 | **EUA (FTC COPPA)**             | [compliance-sample-us_ftc_coppa.yaml](compliance-samples/compliance-sample-us_ftc_coppa.yaml)               | Privacidade online de crianças (âmbito federal EUA) — **mapeamento técnico**; sem verificação de idade nem aconselhamento jurídico. |
 | **EUA (CA AB 2273)**            | [compliance-sample-us_ca_ab2273_caadca.yaml](compliance-samples/compliance-sample-us_ca_ab2273_caadca.yaml) | Califórnia, código de desenho apropriado à idade — **rotulagem**; aplicabilidade depende de fatos e assessoria jurídica.            |
 | **EUA (CO CPA — menores)**      | [compliance-sample-us_co_cpa_minors.yaml](compliance-samples/compliance-sample-us_co_cpa_minors.yaml)       | Colorado CPA / contextos com menores de 18 anos — **mapeamento técnico**; não detecta “menor conhecido” de forma jurídica.          |
+| **EUA (FCPA / pacote política interna)** | [compliance-sample-us_fcpa_internal_policy_pack.yaml](compliance-samples/compliance-sample-us_fcpa_internal_policy_pack.yaml) | Léxico **FCPA** e **política anticorrupção** interna (empregador); **inventário** — não detecção de suborno nem conclusão jurídica. |
 
 ### O que vai em cada arquivo
 
