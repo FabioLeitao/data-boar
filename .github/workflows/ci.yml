@@ -129,7 +129,7 @@ jobs:
   sonar:
     name: SonarQube / SonarCloud
     runs-on: ubuntu-latest
-    if: ${{ secrets.SONAR_TOKEN != '' }}
+    # Do not use `secrets.*` in job-level `if:` — it can prevent the workflow from scheduling any jobs.
     needs: [test]
     permissions:
       contents: read
@@ -139,20 +139,35 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Detect Sonar token
+        id: sonar_token
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          if [ -n "$SONAR_TOKEN" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up Python
+        if: steps.sonar_token.outputs.present == 'true'
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: "3.12"
 
       - name: Install uv
+        if: steps.sonar_token.outputs.present == 'true'
         uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
         with:
           version: "0.11.2"
 
       - name: Install dependencies
+        if: steps.sonar_token.outputs.present == 'true'
         run: uv sync
 
       - name: SonarQube / SonarCloud Scan
+        if: steps.sonar_token.outputs.present == 'true'
         uses: SonarSource/sonarqube-scan-action@299e4b793aaa83bf2aba7c9c14bedbb485688ec4 # v7
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
