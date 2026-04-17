@@ -94,25 +94,51 @@ def _build_auth(client: "httpx.Client", target: dict[str, Any]) -> None:
         client.auth = httpx.BasicAuth(user, password)
 
 
+def _scalar_to_connector_data_type(value: Any, max_varchar: int = 4000) -> str | None:
+    """
+    Infer SQL-style declared type from JSON scalars for Plan §4 ``connector_format_id_hint``.
+
+    Integers map to BIGINT; strings map to VARCHAR(n) capped by ``max_varchar`` (sample length).
+    Booleans and floats are skipped (no stable schema hint).
+    """
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return "BIGINT"
+    if isinstance(value, float):
+        return None
+    if isinstance(value, str):
+        n = min(len(value), max_varchar)
+        return f"VARCHAR({max(n, 1)})"
+    return None
+
+
 def _flatten_sample(
     obj: Any, prefix: str = "", max_len: int = 500
-) -> list[tuple[str, str]]:
+) -> list[tuple[str, str, Any | None]]:
     """
-    Recursively flatten JSON-like structure into (key_path, string_value) for scanning.
-    Stops at first level of nesting for arrays (sample first element) to avoid huge payloads.
+    Recursively flatten JSON-like structure into (key_path, string_value, raw_scalar).
+
+    ``raw_scalar`` is the leaf JSON value before string coercion when applicable (used with
+    :func:`_scalar_to_connector_data_type`). Non-leaf paths use ``None``.
     """
-    out: list[tuple[str, str]] = []
+    out: list[tuple[str, str, Any | None]] = []
     if obj is None:
-        out.append((prefix or "value", ""))
+        out.append((prefix or "value", "", None))
         return out
     if isinstance(obj, bool):
-        out.append((prefix or "value", "true" if obj else "false"))
+        out.append((prefix or "value", "true" if obj else "false", obj))
         return out
-    if isinstance(obj, (int, float)):
-        out.append((prefix or "value", str(obj)[:max_len]))
+    if isinstance(obj, int):
+        out.append((prefix or "value", str(obj)[:max_len], obj))
+        return out
+    if isinstance(obj, float):
+        out.append((prefix or "value", str(obj)[:max_len], obj))
         return out
     if isinstance(obj, str):
-        out.append((prefix or "value", obj[:max_len]))
+        out.append((prefix or "value", obj[:max_len], obj))
         return out
     if isinstance(obj, list):
         for i, item in enumerate(obj[:3]):  # sample first 3
@@ -126,9 +152,14 @@ def _flatten_sample(
             if isinstance(v, (dict, list)) and v:
                 out.extend(_flatten_sample(v, key, max_len))
             else:
-                out.append((key, str(v)[:max_len] if v is not None else ""))
+                if v is None:
+                    out.append((key, "", None))
+                elif isinstance(v, (dict, list)) and not v:
+                    out.append((key, str(v)[:max_len], None))
+                else:
+                    out.append((key, str(v)[:max_len], v))
         return out
-    out.append((prefix or "value", str(obj)[:max_len]))
+    out.append((prefix or "value", str(obj)[:max_len], None))
     return out
 
 
@@ -247,10 +278,15 @@ class RESTConnector:
                 except Exception:
                     payload = {"_raw": r.text[:2000]}
 
-                def _save_if_sensitive(key: str, sample: str) -> None:
+                def _save_if_sensitive(
+                    key: str, sample: str, raw_scalar: Any | None = None
+                ) -> None:
                     if (path_str, key) in seen_path_key:
                         return
-                    result = self.scanner.scan_column(key, sample)
+                    ctype = _scalar_to_connector_data_type(raw_scalar)
+                    result = self.scanner.scan_column(
+                        key, sample, connector_data_type=ctype
+                    )
                     result = augment_low_id_like_for_persist(
                         result, key, self.detection_config
                     )
@@ -276,18 +312,20 @@ class RESTConnector:
                 if isinstance(payload, list):
                     for item in payload[: self.sample_limit]:
                         if isinstance(item, dict):
-                            for key, sample in _flatten_sample(
+                            for key, sample, raw_scalar in _flatten_sample(
                                 item, prefix="", max_len=500
                             ):
-                                _save_if_sensitive(key, sample)
+                                _save_if_sensitive(key, sample, raw_scalar)
                     if not payload:
-                        for key, sample in _flatten_sample(
+                        for key, sample, raw_scalar in _flatten_sample(
                             {}, prefix="(empty)", max_len=500
                         ):
-                            _save_if_sensitive(key, sample)
+                            _save_if_sensitive(key, sample, raw_scalar)
                 else:
-                    for key, sample in _flatten_sample(payload, max_len=500):
-                        _save_if_sensitive(key, sample)
+                    for key, sample, raw_scalar in _flatten_sample(
+                        payload, max_len=500
+                    ):
+                        _save_if_sensitive(key, sample, raw_scalar)
         finally:
             self.close()
 
