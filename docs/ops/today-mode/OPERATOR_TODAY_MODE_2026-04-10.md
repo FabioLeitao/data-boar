@@ -60,6 +60,10 @@ Pick **one or two** rows for deep work; defer the rest with a date or PLANS row:
 3. **`gh pr list`** — expect **zero** open if nothing new overnight; merge greens per **`pr-merge-when-green.ps1`** when safe.
 4. **Cursor / agent policy:** if still mid-consolidation (`CURSOR_AGENT_POLICY_HUB`, `AGENTS` index), continue in **small** PRs — avoid mixing with unrelated product code.
 
+### Doc slice (glossary — **Stark Law**)
+
+- [x] **`docs/GLOSSARY.md` / `GLOSSARY.pt_BR.md`:** entrada **Stark Law** (EUA — autoencaminhamento *Medicare*, distinto de HIPAA/PHI); ligação CMS; remissões **PHI** / **HCP**. *Commit local até `git push`.*
+
 ---
 
 ## End of day
