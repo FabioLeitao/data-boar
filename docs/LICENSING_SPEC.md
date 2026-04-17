@@ -54,6 +54,10 @@ Custom claims (namespaced to avoid collisions):
 | `dbissuer`  | string | Issuer operator id (e.g. SSH key fingerprint or email)                          |
 | `dbkid`     | string | Signing key id for rotation                                                     |
 | `dbgrace`   | int    | Grace period end (unix); after `exp`, still **GRACE** until this time           |
+| `dbmax_deployments` | int | **Planned** — max distinct **licensed production sites** (machine seeds / fingerprints) for this token; **1** = Pro-style single server or single consultant laptop; **0** may mean **unlimited** when contract allows (Enterprise). Not enforced until product reads it. |
+| `dbdeployment_pack_id` | string | **Optional** — id of a **commercial add-on** (e.g. “+5 sites”) for audit/refill trail; pairs with re-issued JWT or companion allowlist file. |
+
+**Multi-site verification (not implemented):** Today only **`dbmfp`** (single) is meaningful. For Enterprise **N** sites, options to evaluate: (1) **array** of allowed fingerprints in an extended token or **signed sidecar JSON** next to the `.lic` file; (2) **online** registration (privacy + ops cost); (3) **multiple JWTs** same `dbcid`, one fingerprint each — simplest cryptographically, heavier for the customer. See [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md) §Deployments, copies, and sites.
 
 ## Lifecycle states
 
@@ -127,15 +131,18 @@ which optional capabilities are available at runtime and which installer extras 
 | Claim / control idea                                  | Purpose                                                                                                                               |
 | ---                                                   | ---                                                                                                                                   |
 | `dbtier` (`standard`, `pro`, `partner`, `enterprise`) | Single source of truth for entitlement tier in runtime, report info, and audit trail.                                                 |
+| `dbmax_workers` (int)                                 | Optional cap on **parallel scan workers** (open core policy target: **1** default, **2** max — see [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md)). Pro/Enterprise: higher or **unbounded** in token (`0` = unlimited — product decision). |
+| `dbmax_targets` (int)                                 | Optional cap on **configured targets** per session or deployment envelope; **0** may mean unlimited when contract allows.              |
 | `dbfeatures` (string list)                            | Explicit feature flags independent from tier defaults (e.g. `compressed_scan`, `content_type_cloaking`, future `ai_heuristics_plus`). |
 | `dbkill` / revocation overlays                        | Emergency disable for vulnerable/abused capabilities without shipping a full app update.                                              |
 | `dbextras_profile` (`core`, `plus`, `full`)           | Maps entitlement to allowed dependency packs (`.[nosql]`, `.[datalake]`, etc.) in controlled environments.                            |
 
 ## Operational policy sketch (to refine in plan + legal):
 
-1. **Enterprise**: allow all vetted extras profiles (`full`) and all optional runtime controls.
-1. **Pro / Partner**: allow a curated subset (for example cloaking/content-type checks and selected premium heuristics), deny high-cost packs by default.
-1. **Standard**: core runtime only, with a short allowlist of low-risk options (example: compressed archive scan).
+1. **Enterprise**: allow all vetted extras profiles (`full`) and all optional runtime controls; **workers/targets**: **unlimited** in entitlement (subject to host), unless contract narrows.
+1. **Pro / Partner**: allow a curated subset (for example cloaking/content-type checks and selected premium heuristics), deny high-cost packs by default; **workers/targets**: **above open-core caps**, not necessarily unlimited; some **premium ingredients** may be **Enterprise-only**.
+1. **Open core / community** (no paid token): when enforcement is active for a **build** that embeds tier defaults, align with **1–2 workers** and **capped targets** policy — see [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](LICENSING_OPEN_CORE_AND_COMMERCIAL.md) §Scale and concurrency.
+1. **Standard** (if used as a label): core runtime only, with a short allowlist of low-risk options (example: compressed archive scan).
 1. **Enforcement posture**: fail closed for disallowed premium options in `enforced` mode, but keep explicit operator guidance in logs/docs.
 
 **`uv`/extras note:** automatic dependency installation must be **opt-in** and auditable (prefer explicit operator command or installer profile), never silent package mutation during scan runtime. Record entitlement decisions in audit surfaces once implemented.

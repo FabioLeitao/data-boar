@@ -3,8 +3,8 @@ Content-based type detection helper (magic bytes and simple heuristics).
 
 Step 1 for PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION: provide a lightweight helper
 that infers an internal content-type label (e.g. 'pdf', 'zip', 'text') from the
-first bytes of a file or a bytes buffer. No connectors use this yet; wiring it
-into filesystem/share scanning when ``file_scan.use_content_type`` is true (PDF slice and rich-media remapping).
+first bytes of a file or a bytes buffer. Wired into filesystem/share scanning when
+``file_scan.use_content_type`` is true (PDF slice and rich-media remapping).
 """
 
 from __future__ import annotations
