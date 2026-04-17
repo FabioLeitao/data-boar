@@ -12,7 +12,8 @@ Pipeline:
    available, may elevate LOW borderline scores to MEDIUM (FUZZY_COLUMN_MATCH); default off.
 5. Optional connector format hint: when sensitivity_detection.connector_format_id_hint and
    connectors pass declared SQL types/lengths, may elevate LOW to MEDIUM
-   (FORMAT_LENGTH_HINT_ID, FORMAT_TYPE_HINT_ID_INT, FORMAT_LENGTH_HINT_EMAIL); default off (Plan §4).
+   (FORMAT_LENGTH_HINT_ID including CPF/CNPJ/SSN lengths and UUID-like 32/36 with uuid/guid name tokens,
+   FORMAT_TYPE_HINT_ID_INT, FORMAT_LENGTH_HINT_EMAIL); default off (Plan §4).
 6. Optional embedding prototype semantic hint: when enabled and DL backend is available,
    borderline low-confidence columns may elevate to MEDIUM (EMBEDDING_PROTOTYPE_HINT); default off (Plan §5).
 
@@ -971,11 +972,20 @@ def _declared_type_email_length_hint(data_type: str | None) -> int | None:
     return None
 
 
+def _uuid_declared_length_matches_name(column_name: str, char_len: int) -> bool:
+    """True when CHAR/VARCHAR length matches UUID storage and name tokens reduce FPs."""
+    col = (column_name or "").lower()
+    if char_len == 36 and ("uuid" in col or "guid" in col or "uniqueidentifier" in col):
+        return True
+    return char_len == 32 and ("uuid" in col or "guid" in col)
+
+
 def _format_length_suggests_id_column(column_name: str, char_len: int) -> bool:
     """
     True if declared string length matches common ID sizes and the column name is ID-like.
 
-    Conservative: 9 (SSN-style), 11 (CPF digits), 14 (CNPJ digits) with name hints to limit FPs.
+    Conservative: 9 (SSN-style), 11 (CPF digits), 14 (CNPJ digits) with name hints to limit FPs;
+    32/36 for UUID-like columns when name contains uuid/guid/uniqueidentifier.
     """
     col = (column_name or "").lower()
     if char_len == 9 and (
@@ -990,7 +1000,7 @@ def _format_length_suggests_id_column(column_name: str, char_len: int) -> bool:
         "cnpj" in col or column_name_suggests_identifier_review(column_name)
     ):
         return True
-    return False
+    return _uuid_declared_length_matches_name(column_name, char_len)
 
 
 def _format_hint_suggests_sensitive_column(
