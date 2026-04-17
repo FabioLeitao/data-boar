@@ -1,5 +1,7 @@
 # Privacy Policy — Data Boar
 
+**Português (Brasil):** [PRIVACY_POLICY.pt_BR.md](PRIVACY_POLICY.pt_BR.md)
+
 _Last updated: 2026-04-05_
 
 ## What Data Boar is
@@ -93,7 +95,7 @@ in the repository changelog.
 
 For privacy-related questions about this project:
 
-- Open a [GitHub Issue](https://github.com/FabioLeitao/python3-lgpd-crawler/issues) (preferred for general questions)
+- Open a [GitHub Issue](https://github.com/FabioLeitao/data-boar/issues) (preferred for general questions)
 - For sensitive matters, contact the maintainer directly via the email on their GitHub profile
 
 ---
