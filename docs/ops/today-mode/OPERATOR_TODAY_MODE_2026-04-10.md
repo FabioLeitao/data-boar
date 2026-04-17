@@ -64,6 +64,11 @@ Pick **one or two** rows for deep work; defer the rest with a date or PLANS row:
 
 - [x] **`docs/GLOSSARY.md` / `GLOSSARY.pt_BR.md`:** entrada **Stark Law** (EUA — autoencaminhamento *Medicare*, distinto de HIPAA/PHI); ligação CMS; remissões **PHI** / **HCP**. *Commit local até `git push`.*
 
+### Doc slice (glossary — **CPML** + **PJ vs dado pessoal**)
+
+- [x] **CPML** revisto: contexto **Stark** / **FDA** / compliance comercial (**CGMP**, **CPGM**) vs sigla de engenharia; **não** confundir com **CGMP** sem fonte.
+- [x] Nova entrada **legal entity and personal data (scanning)** — CNPJ/LTDA/S.A. **não** desligam LGPD para e-mail/telefone/nome de colaborador na amostra; comportamento do motor descrito (regex/ML, sem “só PJ = ignorar”).
+
 ---
 
 ## End of day
