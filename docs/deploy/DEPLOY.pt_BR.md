@@ -41,7 +41,7 @@ O relatório é escrito em `report.output_dir` do config (ex.: `/data`). **Não*
 
 Você pode executar a aplicação **sem clonar o repositório** usando a imagem publicada no Docker Hub:
 
-- **Docker Hub:** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** e **`fabioleitao/data_boar:1.6.8`**
+- **Docker Hub:** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — **`fabioleitao/data_boar:latest`** e **`fabioleitao/data_boar:1.7.0`**
 
 Exemplo:
 
@@ -70,10 +70,10 @@ docker push ghcr.io/fabioleitao/data_boar:latest
 ### Opção B – Docker Hub (imagem branded Data Boar)
 
 ```bash
-docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.6.8 .
+docker build -t fabioleitao/data_boar:latest -t fabioleitao/data_boar:1.7.0 .
 docker login
 docker push fabioleitao/data_boar:latest
-docker push fabioleitao/data_boar:1.6.8
+docker push fabioleitao/data_boar:1.7.0
 ```
 
 Veja também [DOCKER_SETUP.md](../DOCKER_SETUP.md).
