@@ -187,6 +187,26 @@
 - text: "prontuario"
   label: sensitive
 
+# Criminal record / background check: engine label "sensitive" = high-priority column-name discovery.
+# Identifiable criminal-record data are personal data; GDPR Art. 10 and LGPD contextual rules — not always LGPD Art. 5 II.
+# See COMPLIANCE_AND_LEGAL.md; map norm_tag with counsel.
+- text: "criminal record"
+  label: sensitive
+- text: "criminal history"
+  label: sensitive
+- text: "background check"
+  label: sensitive
+- text: "antecedentes criminais"
+  label: sensitive
+- text: "certidao de antecedentes"
+  label: sensitive
+- text: "certidão de antecedentes"
+  label: sensitive
+- text: "historico criminal"
+  label: sensitive
+- text: "histórico criminal"
+  label: sensitive
+
 # Non-sensitive counter-examples
 - text: "item_count"
   label: non_sensitive
