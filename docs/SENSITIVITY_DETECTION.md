@@ -65,15 +65,15 @@ Both patterns share the same `norm_tag` (`LGPD Art. 5`). The detector performs *
 
 ---
 
-## Content type & cloaking detection (future)
+## Content type & simple cloaking
 
-The project has a **plan** for optional **content-based type detection** to help with **renamed files** and **simple cloaking** (e.g. PDF saved as `.txt`). As of version 1.6.0:
+**Simple cloaking** (in this product sense) means the **filename extension** suggests one format while **magic bytes** at the start of the file point to another. Pipelines that trust **only** the extension can mis-route the file; optional **content sniffing** narrows that gap.
 
-- **Step 1 (helper) is implemented:** a small internal helper `infer_content_type(path_or_bytes)` uses **magic bytes and simple heuristics** to infer a coarse file type label (for example: `pdf`, `zip`, `text`) from the first bytes of a file or bytes buffer.
-- **No wiring to connectors yet:** filesystem and share connectors still decide what to scan based on **extensions** and existing rules; the helper is not called in production flows.
-- **Future phase (opt-in):** a later phase will add an **opt-in toggle** (config/CLI/dashboard) so connectors can consult this helper before deciding how to extract and scan content, improving resistance to renamed/cloaked files at the cost of a small extra read per file.
+As of version 1.6.0+:
 
-For design details and rollout steps, see [USAGE.md](USAGE.md) (`file_scan`, **`use_content_type`**) and [TECH_GUIDE.md](TECH_GUIDE.md); historical plan: **`PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION`** in `docs/plans/`.
+- **Helpers:** `infer_content_type(path_or_bytes)` and related logic in `core/content_type.py` / `core/rich_media_magic.py` use **magic bytes and simple heuristics** to infer a coarse label (e.g. `pdf`, `zip`, `text`) or remap rich-media types. Examples: PDF bytes behind a `.txt` name **or** a **non-text** extension such as `.mp3`—the header still starts with `%PDF-...` when it is a PDF.
+- **Opt-in wiring:** When **`file_scan.use_content_type`** is `true`, or **`--content-type-check`** / dashboard / API for a single run, **filesystem** and **share** connectors use these helpers so misleading extensions do not alone decide extraction (narrow PDF slice + rich-media remapping where implemented), at the cost of a small extra read per file. Default remains extension-based. See [USAGE.md](USAGE.md) (`file_scan`, **`use_content_type`**) and [TECH_GUIDE.md](TECH_GUIDE.md).
+- **Broader roadmap:** Deeper cloaking and steganography-style detection are tracked separately; historical design notes: **`PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION`** in `docs/plans/`.
 
 ## Config keys
 
