@@ -65,15 +65,15 @@ Ambos os padrões usam o mesmo `norm_tag` (`LGPD Art. 5`). O detector faz apenas
 
 ---
 
-## Detecção de content type e cloaking (futuro)
+## Tipo de conteúdo e disfarce simples de extensão
 
-O projeto tem um **plano** para detecção opcional de **tipo baseada em conteúdo** para ajudar com **arquivos renomeados** e **cloaking simples** (ex.: PDF salvo como `.txt`). Na versão 1.6.0:
+**Disfarce simples** (no sentido deste produto) é quando a **extensão do nome** sugere um formato e os **magic bytes** no início do arquivo apontam para outro. Fluxos que confiam **só** na extensão podem tratar o arquivo errado; a inferência opcional pelo **conteúdo** (primeiros bytes) reduz esse gap.
 
-- **Etapa 1 (helper) está implementada:** um pequeno helper interno `infer_content_type(path_or_bytes)` usa **magic bytes e heurísticas simples** para inferir um rótulo de tipo de arquivo mais grosseiro (por exemplo: `pdf`, `zip`, `text`) a partir dos primeiros bytes de um arquivo ou buffer de bytes.
-- **Ainda sem ligação com conectores:** os conectores de sistema de arquivos e compartilhamentos ainda decidem o que escanear com base em **extensões** e regras atuais; o helper não é chamado nos fluxos de produção.
-- **Fase futura (opt-in):** uma fase posterior adicionará um **toggle opt-in** (config/CLI/dashboard) para que os conectores possam consultar esse helper antes de decidir como extrair e escanear conteúdo, melhorando a resistência a arquivos renomeados/cloaked ao custo de uma pequena leitura extra por arquivo.
+A partir da versão 1.6.0+:
 
-Para detalhes de desenho e etapas de rollout, veja [USAGE.pt_BR.md](USAGE.pt_BR.md) (`file_scan`, **`use_content_type`**) e [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md); plano histórico: **`PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION`** em `docs/plans/`.
+- **Helpers:** `infer_content_type(path_or_bytes)` e lógica relacionada em `core/content_type.py` / `core/rich_media_magic.py` usam **magic bytes e heurísticas simples** para inferir rótulo grosseiro (ex.: `pdf`, `zip`, `text`) ou remapear tipos de mídia rica. Exemplos: bytes de PDF com nome `.txt` **ou** extensão **não textual** como `.mp3` — se for PDF, o cabeçalho segue `%PDF-...`.
+- **Ligação opt-in:** Com **`file_scan.use_content_type`** `true`, ou **`--content-type-check`** / dashboard / API numa execução, os conectores de **filesystem** e **compartilhamento** usam esses helpers para que a extensão enganosa **não** seja o único critério de extração (recorte PDF + remapeamento de mídia rica onde existir), ao custo de uma leitura extra por arquivo. O padrão continua sendo por extensão. Veja [USAGE.pt_BR.md](USAGE.pt_BR.md) (`file_scan`, **`use_content_type`**) e [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md).
+- **Roadmap mais amplo:** evasões mais elaboradas e detecção estilo esteganografia ficam em planos separados; notas de desenho: **`PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION`** em `docs/plans/`.
 
 ## Chaves de config
 

@@ -1,4 +1,4 @@
-# Architecture Decision Records (ADR)
+﻿# Architecture Decision Records (ADR)
 
 **Português (Brasil):** [README.pt_BR.md](README.pt_BR.md)
 
@@ -45,6 +45,7 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0024  | [Enterprise discovery — three complementary tracks (planning posture)](0024-enterprise-discovery-three-complementary-tracks.md) | Accepted |
 | 0025  | [Compliance positioning — evidence and inventory, not a legal-conclusion engine](0025-compliance-positioning-evidence-inventory-not-legal-conclusion-engine.md) | Accepted |
 | 0026  | [Optional jurisdiction hints — DPO-facing, heuristic, metadata-only](0026-optional-jurisdiction-hints-dpo-facing-heuristic-metadata-only.md) | Accepted |
+| 0027  | [Commercial tier boundaries — licensing docs and future JWT claims](0027-commercial-tier-boundaries-licensing-docs-and-future-jwt-claims.md) | Accepted |
 
 ## Related docs
 
