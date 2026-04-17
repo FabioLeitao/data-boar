@@ -139,7 +139,7 @@ file_scan:
   # max_inner_size: valid range 1 MB–500 MB (default 10 MB); members larger than this are skipped.
   # max_inner_size: 50_000_000   # optional limit for total inner bytes per archive
   # compressed_extensions: [".zip", ".tar", ".gz", ".tgz", ".bz2", ".xz", ".7z"]
-  # use_content_type: false   # magic bytes: PDF + image/audio/video cloaking when true
+  # use_content_type: false   # magic bytes: PDF slice + rich-media remapping when extension misleads
   # scan_rich_media_metadata: false   # EXIF, mutagen tags, ffprobe (optional binaries)
   # scan_image_ocr: false   # Tesseract via pytesseract + system tesseract-ocr
   # ocr_lang: eng
@@ -480,7 +480,7 @@ targets:
 
 All share types use the same **file_scan** settings (extensions, recursive, scan_sqlite_as_db, sample_limit) from config. Findings appear in the **Filesystem findings** sheet.
 
-When you enable `file_scan.use_content_type: true`, the share connectors also participate in the content-type helper: PDFs renamed to `.txt` (or similar) with a `%PDF-...` header are treated as PDF, and **image/audio/video** files with misleading extensions are remapped using the same magic-byte table as the filesystem connector. **`scan_rich_media_metadata`** / **`scan_image_ocr`** apply to SMB, WebDAV, and SharePoint the same way (and inside **scan_compressed** archives when those members match). This remains **opt-in**; with the flag disabled, scanning stays extension-based for type choice (aside from explicit rich-media extensions when those flags add them to the effective extension set).
+When you enable `file_scan.use_content_type: true`, the share connectors use the same helper as the filesystem connector. **Simple cloaking** here means the **filename extension** does not match the **real** container (e.g. PDF bytes behind a `.txt` or **non-text** extension such as `.mp3`). Extension-only tools route wrong; magic bytes still expose `%PDF-...` or a rich-media signature, so PDFs are treated as PDF for extraction, and **image/audio/video** with misleading extensions are remapped via the shared magic-byte table. **`scan_rich_media_metadata`** / **`scan_image_ocr`** apply to SMB, WebDAV, and SharePoint the same way (and inside **scan_compressed** archives when those members match). This remains **opt-in**; with the flag disabled, scanning stays extension-based for type choice (aside from explicit rich-media extensions when those flags add them to the effective extension set).
 
 For a **single run** without editing the saved config, use CLI **`--content-type-check`**, or **`POST /scan`** / **`POST /start`** with **`content_type_check: true`**, or the dashboard checkbox next to **Start scan** (same semantics as **`--scan-compressed`** / **`scan_compressed`** for archives).
 

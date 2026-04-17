@@ -4,6 +4,15 @@
 
 **Tema:** Confirmar que **`main`** está **verde no GitHub Actions** após o ajuste do **`ci.yml`** (condição com `secrets` no nível do job removida). **Puxar** o remoto. **v1.7.0** + amostra **FCPA** + **dicas de jurisdição** como linha de base **beta estável** para **Talita** e **Felipe** iniciarem **testes sintéticos / estruturados**, e para **lab-op** quando quiseres. **Triage** do carryover do **2026-04-16** sem perder o ritmo **Wabbix / WRB**.
 
+### Ritual do dia inteiro (2026-04-17)
+
+1. **Manhã:** **`carryover-sweep`** — ou **`.\scripts\operator-day-ritual.ps1 -Mode Morning`** — e revisar **[CARRYOVER.pt_BR.md](CARRYOVER.pt_BR.md)** e, se usar, **`docs/private/TODAY_MODE_CARRYOVER_AND_FOUNDER_RHYTHM.md`**.
+2. **Git:** **`git fetch origin`**, **`git checkout main`**, **`git pull origin main`** (conselho de PR/merge pede refs atualizadas — **COMMIT_AND_PR**).
+3. **Ordem deste arquivo:** **Bloco A** → **B** → **C** conforme o tempo.
+4. **Fim do dia:** **`eod-sync`** — ou **`.\scripts\operator-day-ritual.ps1 -Mode Eod`** — e a seção **Fim do dia** abaixo.
+
+**Retomar com baixo risco (depois de dormir / antes do foco profundo):** `git status -sb` (limpo ou WIP intencional) → `git fetch origin && git pull origin main` → reler **[CARRYOVER.pt_BR.md](CARRYOVER.pt_BR.md)** → **Bloco A** (CI verde + opcional `check-all`). Se **encerrou 2026-04-16** com **`eod-sync`**, já tens recorte de log/PR; se não, roda **`eod-sync` uma vez** antes de merge arriscado. **ADR / licenciamento:** [ADR 0027](../../adr/0027-commercial-tier-boundaries-licensing-docs-and-future-jwt-claims.md); exemplo privado com nomes: `docs/private/commercial/LICENSING_TIER_EXAMPLE_FEDERATED_OPERATOR.pt_BR.md`.
+
 ---
 
 ## Handoff da sessão (manhã 2026-04-17)

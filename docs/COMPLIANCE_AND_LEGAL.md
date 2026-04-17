@@ -48,6 +48,18 @@ When your organization uses **ISO 31000** as its **risk-management framework**, 
 
 ---
 
+## ISO/IEC, ABNT NBR, and IoCs (positioning for DPOs and security leads)
+
+**ISO/IEC management systems (and ABNT NBR in Brazil):** Organisations that pursue or maintain certifications often need **documented** visibility over **where** **personal data** and **special-category** information are processed. International standards are published as **ISO/IEC**; in **Brazil** the same technical content is adopted as **ABNT NBR ISO/IEC …** (titles and purchase paths: [GLOSSARY.md](GLOSSARY.md) § *ISO/IEC management-system standards*, table). Data Boar **does not** certify, audit, or replace an accredited assessment; it supplies **technical inventory evidence**—**metadata-only findings** and **repeatable scans**—that teams can use alongside **asset** and **processing** records.
+
+- **ISO/IEC 27001** (**ISMS**): helps show **which** configured targets may hold information that feeds your **scope** and **risk treatment**—locations and categories, **not** a full control matrix.
+- **ISO/IEC 27701** (**PIMS**): privacy extension aligned with declared regulations (e.g. **LGPD**, **GDPR**); product-facing detail in [Auditable and management standards (supporting role)](COMPLIANCE_FRAMEWORKS.md#auditable-and-management-standards-supporting-role) under [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md).
+- **ISO/IEC 27005** (information security **risk** guidance): discovery and mapping **inform** treatment decisions about **data at rest** in configured sources; they do **not** replace your methodology or risk register.
+
+**Indicators of Compromise (IoCs):** In **security operations** and **incident response**, **IoCs** are observables used to detect or hunt threats—e.g. file hashes, malicious domains or IP addresses, YARA-style signatures—usually applied to **logs**, **endpoints**, and **network telemetry**. Data Boar is **not** a SIEM, EDR, or threat-intelligence platform: it does **not** ingest firewall flows or correlate **network IoCs** across the estate. It **can** complement **governance and IR readiness** by locating **stored data** where **credentials, tokens, or other security artifacts** may appear (see [Extended sensitive categories](#extended-sensitive-categories-configuration-and-services)) and by supporting **repeatable inventory** after an event—**metadata-only** for personal data, **not** malware analysis or forensic imaging. **Do not confuse** optional **embedded tracker / marketing-pixel** heuristics in exports (privacy **governance** signals) with **IoCs**—see *tracking references (embedded)* in [GLOSSARY.md](GLOSSARY.md).
+
+---
+
 ## Evidence and outputs (for audits and governance)
 
 - **Excel reports** per scan **session**: findings by source, field/path, pattern type, sensitivity, and framework-oriented recommendation text (legal basis, risk, suggested action, priority where configured).
