@@ -166,6 +166,16 @@
 
 ---
 
+## Future: session_id format (UUID v7) — evidence precision, not fraud proof
+
+**Context:** Today `core.session.new_session_id()` uses UUID4-derived hex (truncated) plus an explicit UTC timestamp suffix — already human-readable and log-friendly.
+
+**Idea (when prioritised):** Adopt **RFC 9562 UUID version 7** for `session_id` strings so identifiers are **time-ordered** and embed **millisecond-resolution** time in the standard UUID structure (modern practice, better sortability vs ad hoc suffixes). This signals attention to **evidence and correlation precision**; it is **not** a substitute for tamper detection (**hashes, signed manifests, SQLite anchor** in Phase E). Evaluate alongside minimum Python version and migration/compatibility for existing SQLite rows and API clients.
+
+**Doc pointers:** `core/session.py` module docstring, `docs/TOPOLOGY.md` (session bullet).
+
+---
+
 ## Order of execution (recommended)
 
 1. **Phase A** (runtime identity + logging + dashboard) — unblock operators immediately.

@@ -55,8 +55,11 @@ class TestDeclaredTypeHelpers(unittest.TestCase):
         self.assertFalse(_declared_type_is_integer_like("VARCHAR(20)"))
 
     def test_email_len_hint(self):
+        self.assertEqual(_declared_type_email_length_hint("VARCHAR(128)"), 128)
+        self.assertEqual(_declared_type_email_length_hint("VARCHAR(191)"), 191)
         self.assertEqual(_declared_type_email_length_hint("VARCHAR(254)"), 254)
         self.assertEqual(_declared_type_email_length_hint("CHAR(255)"), 255)
+        self.assertEqual(_declared_type_email_length_hint("VARCHAR(256)"), 256)
         self.assertEqual(
             _declared_type_email_length_hint("character varying(320)"), 320
         )
@@ -115,6 +118,16 @@ class TestDetectorFormatHintIntegration(unittest.TestCase):
         self.assertEqual(pat, "FORMAT_LENGTH_HINT_EMAIL")
         self.assertIn("email", norm.lower())
         self.assertGreaterEqual(conf, 40)
+
+    def test_enabled_email_length_hint_191_utf8mb4_common(self):
+        d = SensitivityDetector(detection_config={"connector_format_id_hint": True})
+        level, pat, _, _ = d.analyze(
+            "user_email",
+            _neutral_sample_text(),
+            connector_data_type="VARCHAR(191)",
+        )
+        self.assertEqual(level, "MEDIUM")
+        self.assertEqual(pat, "FORMAT_LENGTH_HINT_EMAIL")
 
     def test_enabled_uuid_varchar_36(self):
         d = SensitivityDetector(detection_config={"connector_format_id_hint": True})

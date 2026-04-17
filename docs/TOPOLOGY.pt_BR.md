@@ -21,7 +21,7 @@ Descrição textual dos módulos, classes e funções principais e como eles se 
 
 ## Core
 
-- **core/session.py** — `new_session_id()` retorna UUID4 hex (12 chars) + timestamp para a sessão de scan.
+- **core/session.py** — `new_session_id()` retorna UUID4 hex (12 chars) + timestamp para a sessão de scan. **Futuro:** avaliar UUID v7 (RFC 9562) para ids ordenáveis no tempo (docstring do módulo e `PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md`); não substitui integridade por hash/assinatura.
 - **core/database.py** — Modelos **ScanSession**, **DatabaseFinding**, **FilesystemFinding**, **ScanFailure**; **LocalDBManager** com `save_finding`, `save_failure`, `get_findings`, `list_sessions`, `get_previous_session`, `get_previous_sessions`, `create_session_record`, `update_session_tenant`, `update_session_technician`, `finish_session`, etc.
 - **core/detector.py** — **SensitivityDetector**: carrega regex (embutido + overrides) e padrões ML; `analyze(column_name, sample_text)` → (sensitivity_level, pattern_detected, norm_tag, confidence). Usa TF-IDF + RandomForest. Helpers: `_load_regex_overrides`, `_load_ml_patterns`.
 - **core/scanner.py** — **DataScanner** encapsula SensitivityDetector; `scan_column`, `scan_file_content`, `analyze_data` (retrocompatível).
