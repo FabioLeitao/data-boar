@@ -60,6 +60,10 @@ Escolhe **uma ou duas** linhas para trabalho profundo; o resto **defer** com dat
 3. **`gh pr list`** — esperável **zero** abertos se não entrar nada novo; merge verde com **`pr-merge-when-green.ps1`** quando seguro.
 4. **Política Cursor/agente:** se a consolidação (`CURSOR_AGENT_POLICY_HUB`, índice no `AGENTS`) estiver a meio, continua em PRs **pequenos** — não misture com código de produto sem relação.
 
+### Fatia de doc (glossário — **Stark Law**)
+
+- [x] **`docs/GLOSSARY.md` / `GLOSSARY.pt_BR.md`:** entrada **Stark Law** (EUA — autoencaminhamento *Medicare*, distinto de HIPAA/PHI); ligação CMS; remissões **PHI** / **HCP**. *Commit local até `git push`.*
+
 ---
 
 ## Fim do dia
