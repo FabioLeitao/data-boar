@@ -144,6 +144,13 @@ A tabela **S0–S6** **ainda não** tem linha dedicada para **assinatura permane
 
 - **Não adie** até “depois de todo o Tier 2” se a UI/API for exposta além de **um operador de confiança** em loopback. Assim que **M-LAB** for crível e o objetivo for **assinatura paga** ou deploy em **rede compartilhada**, trate **M-ACCESS** (abaixo) como **tema de sprint**—em geral **um sprint focado** **entrelaçado com S2–S4** (ex.: após **S1** ou trocando com uma fatia Tier-2), **não** só em **S6+**.
 - **Sequência recomendada (pragmática):** (1) **Jurídico + produto:** matriz de SKUs (assinatura permanente, trial, parceiro, lab/consultoria) → claims JWT e modelos no repositório **privado** do emissor—**antes** de cravar contratos. (2) **Endurecimento rápido:** documentar padrão com **reverse proxy** + **OIDC** (ex.: OAuth2 Proxy, Traefik, Caddy) para login estilo Microsoft/Google/Entra **sem** esperar auth completa dentro da app. (3) **Na aplicação:** chaves de API ou **Bearer** em rotas sensíveis; sessão ou token para o HTML/API do dashboard. (4) **RBAC:** papéis (ex.: leitor / operador / admin) ligados à identidade. (5) **Depois:** SSO de primeira classe, **TOTP**, **WebAuthn / passkeys** (passwordless, no espírito do fluxo com Authenticator no Office 365). **Bitwarden** (ou similar) casa melhor como **cofre de segredos** de deploy e credenciais de cliente—**não** costuma ser o IdP corporativo principal; alinhar com o IAM do cliente (Entra ID, Okta, etc.).
+
+#### Identidade: OIDC na borda vs passwordless na app (mesmo roadmap, sem contradição)
+
+- **Cliente já tem IdP:** o passo (2) desta seção—**reverse proxy + OIDC**—protege o dashboard **sem** exigir login completo dentro da app primeiro.
+- **Médias / SSO imaturo:** [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) (**#86**) ordena **WebAuthn / passkeys** (ex.: **Bitwarden Passwordless.dev** como integração mínima) **antes** de **SSO** enterprise de primeira classe **dentro** do produto.
+- **M-ACCESS** “pronto quando” fica atendido com **documentar e testar em smoke** **pelo menos um** padrão suportado (**só proxy**, **sessão na app** ou **ambos** em deploys de referência distintos).
+
 - **Consultoria / lab:** separar **direito de uso** (o que o token permite: só consultoria, limite de linhas, watermark) de **quem acessa** o dashBOARd. Os dois fecham a narrativa comercial.
 
 **Marco:** **M-ACCESS** (§5)—superfícies “prontas para assinatura” e caminho de identidade documentado.
@@ -209,6 +216,19 @@ Use **Milestones** do GitHub ou tags de release; abaixo, camada **semântica** a
 | **M-RELEASE x.y.z** | Corte versionado do produto                                           | Checklist VERSIONING existente + `docs/releases/x.y.z.md` + tags no Hub                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 **Cadência sugerida:** **M-TRUST** antes de rajada grande de feature; **M-OBS** pode vir no mesmo sprint ou no seguinte a **M-TRUST** (docs/automação pequena); **M-LAB** antes de narrativa para cliente/demo; **M-RICH** quando o PR de rich media entrar em `main`; **M-ACCESS** antes de prometer **assinatura permanente** ou **multiusuário** em host alcançável; **M-SITE-READY** quando **publicarem de propósito** a superfície marketing/docs (faz sentido depois de **M-LOCALE-V1** se quiserem UX de idioma coerente); **M-RELEASE** quando VERSIONING mandar publicar.
+
+### Compor marcos (mapa de ciclo de vida)
+
+Use **IDs de marcos** (família **M-**: **M-TRUST**, **M-LAB**, …) e [VERSIONING](../releases/) para strings semver em tags. **Não** trate esta subseção como nome alternativo de estágio do produto: sufixos como **beta** ou **rc** ainda podem aparecer como **pré-release** em versões, conforme política—aqui só descrevemos **quais combinações de marcos** costumam alinhar a uma postura de **narrativa**, **endurecimento**, **comercial** ou **automação**.
+
+| Estágio (narrativa) | Pacote típico de marcos | Ponteiros |
+| ------------------- | ----------------------- | --------- |
+| **Narrativa para stakeholder / segundo ambiente** | **M-LAB** (mínimo); opcional **M-RICH**, **M-SCAN+** | Ordem **–1L** no [PLANS_TODO.md](PLANS_TODO.md); evidência em [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.pt_BR.md) + nota datada em privado. |
+| **Confiança + operação (baseline)** | **M-TRUST**; **M-OBS** (pelo menos um item S0b) | Antes de rajadas grandes de feature; runbook / backup / cadência de KPI em [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md). |
+| **Postura de rede compartilhada / pago** | **M-ACCESS** | Licenciamento + identidade; §4.1 aqui + [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md). |
+| **Operação pronta para automação (stretch)** | **M-OBS** “completo” (runbook + backup + hábito de KPI); **M-NOTIFY**; ganchos opcionais em [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) §4.7 | Reduz toil; **não** é obrigatório para todo **M-RELEASE**. |
+
+**Cluster dashboard / idioma** (**D-WEB**, **M-LOCALE-V1**, **#86**) é **ortogonal** às linhas acima—agende conforme §4.2 quando promover o tema.
 
 **Cadeia de suprimentos (PyPI + GitHub Actions):** lockfile versionado, **`pip-audit`** na CI, **Dependabot** (pip + actions), Actions **fixadas em SHA** nos workflows principais — bullet *Integration / WIP* em **PLANS_TODO**; detalhes em [WORKFLOW_DEFERRED_FOLLOWUPS.pt_BR.md](../ops/WORKFLOW_DEFERRED_FOLLOWUPS.pt_BR.md); artefatos **SBOM:** [ADR 0003](../adr/0003-sbom-roadmap-cyclonedx-then-syft.md).
 

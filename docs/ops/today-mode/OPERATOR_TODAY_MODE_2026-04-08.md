@@ -5,6 +5,30 @@
 
 ---
 
+## MODO FORTE — aproximar de **production-ready** (prioridade absoluta)
+
+Objetivo: fechar **evidência**, não só texto. Mapa de composição de marcos: **`docs/plans/SPRINTS_AND_MILESTONES.md`** §5 (*Composing milestones*) + §4.1 (OIDC na borda vs passwordless na app). Versões continuam a seguir **`docs/releases/`** / **VERSIONING** — sem misturar com “fases” de produto.
+
+### Bloco A — Hoje (ordem sugerida)
+
+1. **Working tree público:** Se houver alterações locais em `docs/plans/` (ex.: mapa de marcos), **`.\scripts\check-all.ps1`** → commit em `main` → `git push` → PR só se estiveres noutra branch.
+2. **S0 — Trust burst (mínimo viável):** [SPRINTS_AND_MILESTONES.md §4.0](../../plans/SPRINTS_AND_MILESTONES.md#40-s0-and-s0b--execution-checklist-when-ready) — **–1 / A1** Dependabot + lockfile + `requirements.txt` alinhados; **–1b / A2** `docker scout quickview` na imagem que corresponde a `main`; **A3** higiene de tags no Hub (ou exceção documentada). *Meta:* **M-TRUST** honesto ou exceções escritas.
+3. **S0b — Operabilidade (um item):** Escolher **só um** — runbook one-liner (**`/health`**, logs, disco/SQLite), **nota backup/restore** (config + SQLite + `report.output_dir`), ou **`python scripts/kpi-export.py --limit-prs 10`** colado em `docs/releases/` ou nota. *Meta:* avançar **M-OBS**.
+4. **–1L — Homelab (fechar ou datar):** [HOMELAB_VALIDATION.md](../../HOMELAB_VALIDATION.md) — completar **§1 baseline + §2 synthetic FS** noutro host **ou** registar em `docs/private/` **porque** está adiado + próxima janela. *Meta:* **M-LAB** credível ou risco explícito.
+5. **Identidade / superfície exposta (caminho para M-ACCESS):** **Não** precisa de código no dia 1 — escolhe **uma** frente: (a) **D-WEB** doc-only — rascunhar URL map + ordem de middleware (`api/routes.py`, locale, sessão futura) em 1 página; **ou** (b) documentar deploy **reverse proxy + OIDC** (Traefik/Caddy/OAuth2 Proxy) como padrão de referência com link em `docs/deploy/`. Issue **[#86](https://github.com/FabioLeitao/data-boar/issues/86)** fica para sprint dedicado; hoje só **prepara terreno**.
+
+### Bloco B — Se ainda houver tempo nesta janela
+
+- **`gh pr list` / `git pull`** em `main`; confirmar CI verde no último merge.
+- **`.\scripts\private-git-sync.ps1`** se o nested git em `docs/private/` tiver mudanças com valor.
+- **Bandit Phase 3** (triagem *low*) — só se A+B estiverem verdes; senão adia.
+
+### Bloco C — Não desviar agora (proteger foco)
+
+- Novos conectores (S3, SAP), **i18n dashboard** implementação, **Tier 1 data soup**, Selenium QA completo, Wazuh/lab observability pesado — **depois** de A + evidência –1L + plano de identidade.
+
+---
+
 ## STATUS GERAL (eod-sync 2026-04-08)
 
 - **Branch:** `main` — alinhado com `origin/main` (working tree limpo no repo público).

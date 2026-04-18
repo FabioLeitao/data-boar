@@ -7,7 +7,7 @@
 ## Leia também:
 
 - **[PLANS_TODO.md](PLANS_TODO.md)** — fila e estado (fonte única de verdade para to-dos).
-- **[SPRINTS_AND_MILESTONES.pt_BR.md](SPRINTS_AND_MILESTONES.pt_BR.md)** — temas de sprint e marcos (par EN + pt-BR).
+- **[SPRINTS_AND_MILESTONES.pt_BR.md](SPRINTS_AND_MILESTONES.pt_BR.md)** — temas de sprint e marcos (par EN + pt-BR); subseção **Compor marcos** (mapa de ciclo de vida) alinha combinações de **M-*** a narrativa vs postura comercial/automação.
 
 **Atualizar a tabela** depois de criar, renomear ou arquivar um `PLAN_*.md`:
 

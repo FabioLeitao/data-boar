@@ -41,7 +41,7 @@
 
 Before **either** implementation PR changes route shape:
 
-1. Produce a **short URL + middleware order diagram** (can live in this section or in **#86** plan — keep cross-links). Include: unprefixed API; prefixed HTML; where **API key** runs; where **locale** is resolved; where **route class / RBAC** runs (exact order TBD in design pass — typically: normalize path → optional API key → locale for HTML → RBAC for resource class).
+1. Produce a **short URL + middleware order diagram** (can live in this section or in **#86** plan — keep cross-links). Include: unprefixed API; prefixed HTML; where **API key** runs (automation); where **browser session** runs (after WebAuthn / passwordless per **#86**); where **locale** is resolved; where **route class / RBAC** runs (exact order TBD in design pass — typically: normalize path → optional API key → session for HTML → locale for HTML → RBAC for resource class).
 
 1. **Recommended implementation order (when work actually starts):**
    - **Slice A — Locale skeleton:** introduce `/{locale}/…` for HTML with **`en`** + **`pt-BR`** JSON and negotiation; **no** RBAC behaviour change yet (defaults unchanged).
