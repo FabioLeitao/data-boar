@@ -143,6 +143,13 @@ The table **S0–S6** does **not** yet include a dedicated row for **subscriptio
 
 - **Do not defer** until “after all of Tier 2” if you will expose the UI/API beyond a **single trusted operator** on loopback. As soon as **M-LAB** is credible and you aim at **paid subscription** or **shared network** deploys, treat **M-ACCESS** (below) as a **first-class theme**—often **one focused sprint** **interleaved with S2–S4** (e.g. after **S1** or swapping with one Tier-2 slice), **not** only in **S6+**.
 - **Order of work (pragmatic):** (1) **Legal + product:** SKU matrix (permanent subscription, trial, partner, lab/consulting) → JWT claims and issuer templates in the **private** issuer repo—**before** baking enforcement into sales contracts. (2) **Fast hardening:** document a **reference pattern** putting the app behind a **reverse proxy** with **OIDC** (e.g. OAuth2 Proxy, Traefik, Caddy) so Microsoft/Google/Entra-style login protects the surface **without** waiting for full in-app auth. (3) **In-app:** API keys or **Bearer** on sensitive routes; session or token gate for dashboard HTML/API used by the UI. (4) **RBAC:** roles such as viewer / operator / admin mapped to identity claims. (5) **Later:** first-class SSO integration, **TOTP**, **WebAuthn / passkeys** (passwordless, comparable to Microsoft Authenticator flows for Office 365). **Bitwarden** (or similar) fits best as **secrets vault** for deployment and client credentials—not usually as the primary **IdP**; align with the customer’s corporate identity (Entra ID, Okta, etc.).
+
+#### Identity: edge OIDC vs in-app passwordless (same roadmap, not a contradiction)
+
+- **Customer already has an IdP:** §4.1 step (2)—**reverse proxy + OIDC**—is the fastest way to protect the dashboard **without** shipping full in-app login first.
+- **Mid-market / no mature SSO:** [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) (**#86**) sequences **WebAuthn / passkeys** (e.g. **Bitwarden Passwordless.dev** as minimum integration) **before** first-class enterprise **SSO** inside the product.
+- **M-ACCESS** “done when” is satisfied by **documenting and smoke-testing** **at least one** supported pattern (**proxy-only**, **in-app session**, or **both** in different reference deploys).
+
 - **Consulting / lab:** distinguish **entitlement** (what the token allows: e.g. consulting-only, row caps, watermark) from **authentication** (who opened the dashBOARd). Both are needed for a clean commercial story.
 
 **Milestone:** **M-ACCESS** (see §5)—“subscription-ready” surfaces and documented identity path.
@@ -208,6 +215,19 @@ Use GitHub **Milestones** or release tags; below is the **semantic** layer align
 | **M-RELEASE x.y.z** | Versioned product cut                                          | Existing VERSIONING checklist + `docs/releases/x.y.z.md` + Hub tags                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 
 **Cadence suggestion:** **M-TRUST** before a big feature push; **M-OBS** can trail **M-TRUST** in the same or next sprint (small docs/automation); **M-LAB** before customer/demo storytelling; **M-RICH** when the rich-media PR merges; **M-ACCESS** before promising **permanent subscription** or **multi-user** production on a reachable host; **M-SITE-READY** when you intentionally ship a **public** doc/marketing surface (after **M-LOCALE-V1** is wise if you want matching locale UX); **M-RELEASE** whenever VERSIONING says ship.
+
+### Composing milestones (release lifecycle map)
+
+Use **milestone IDs** (the **M-** family: **M-TRUST**, **M-LAB**, …) and [VERSIONING](../releases/) for semver strings on tags. **Do not** treat this subsection as alternate product-stage naming: tokens such as **beta** or **rc** may still appear as **pre-release suffixes** on individual versions per policy—here we only describe **which milestone bundles** typically align with a **storytelling**, **hardening**, **commercial**, or **automation** posture.
+
+| Narrative stage | Typical milestone bundle | Pointers |
+| ----------------- | ------------------------ | ----- |
+| **Stakeholder narrative / second environment** | **M-LAB** (minimum); optional **M-RICH**, **M-SCAN+** | Order **–1L** in [PLANS_TODO.md](PLANS_TODO.md); evidence per [HOMELAB_VALIDATION.md](../ops/HOMELAB_VALIDATION.md) + private dated note. |
+| **Trust + operability baseline** | **M-TRUST**; **M-OBS** (at least one S0b item) | Before large feature bursts; runbook / backup / KPI cadence in [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md). |
+| **Shared-network / paid posture** | **M-ACCESS** | Licensing + identity path; §4.1 here + [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md). |
+| **Automation-ready ops (stretch)** | **M-OBS** “full” (runbook + backup + KPI habit); **M-NOTIFY**; optional hooks in [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) §4.7 | Reduces toil; **not** a hard gate for every **M-RELEASE**. |
+
+**Dashboard / locale cluster** (**D-WEB**, **M-LOCALE-V1**, **#86**) is **orthogonal** to the rows above—schedule per §4.2 when promoted.
 
 ---
 
