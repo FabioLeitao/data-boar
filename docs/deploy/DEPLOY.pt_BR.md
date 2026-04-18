@@ -159,6 +159,28 @@ Em `deploy/docker-compose.yml` defina `image: fabioleitao/data_boar:latest` e re
 
 **English:** [DEPLOY.md §8](DEPLOY.md#8-docker-hub-supported-tags-and-retiring-old-images).
 
+## 9. Backup e restore (dados persistentes)
+
+Em implantações típicas, o estado fica sob **`/data`** (volume ou bind mount): **`config.yaml`**, o arquivo **SQLite** de `sqlite_path` (padrão **`/data/audit_results.db`**) e os **relatórios** em `report.output_dir` (muitas vezes `/data` ou um subdiretório). Arquivos opcionais (ex.: YAML de termos ML/DL) entram no mesmo conjunto se o `config.yaml` apontar para eles.
+
+#### O que fazer backup
+
+- Copiar ou gerar snapshot do **diretório inteiro** ou do volume montado em **`/data`** (ou o conteúdo do PVC no Kubernetes), preservando config, banco, relatórios e arquivos auxiliares referenciados no config.
+
+#### Como restaurar
+
+1. Parar o container, stack Compose, serviço Swarm ou escalar o Deployment para zero.
+1. Restaurar os arquivos no mesmo caminho de montagem (`/data` dentro do container).
+1. Garantir **permissões/dono** compatíveis com o usuário da imagem (**UID 1000** / `appuser`) em bind mounts em Linux.
+1. Subir de novo; verificar **`GET /health`** e um scan curto ou o dashboard.
+
+#### Notas operacionais
+
+- Prefira **chave de API por variável de ambiente** (`api.api_key_from_env`) para que segredos não dependam só de arquivos incluídos no backup de disco — veja [SECURITY.md](../../SECURITY.md).
+- Para recuperação ao longo do tempo, registre a **tag ou digest da imagem** usada (ex.: `fabioleitao/data_boar:1.7.0`) junto com o backup de dados.
+
+**English:** [DEPLOY.md §9](DEPLOY.md#9-backup-and-restore-persistent-data).
+
 ## Resumo
 
 | Objetivo              | Comando / passo                                                                                     |
@@ -171,6 +193,7 @@ Em `deploy/docker-compose.yml` defina `image: fabioleitao/data_boar:latest` e re
 | **Compose**           | `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d`           |
 | **Swarm**             | `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit` |
 | **Kubernetes**        | `kubectl apply -f deploy/kubernetes/`                                                               |
+| **Backup / restore**  | Dados em `/data` (seção 9): backup do volume ou bind mount; restaurar com o mesmo layout e validar `/health` |
 
 ## Atrás de NAT, load balancer ou proxy reverso
 
