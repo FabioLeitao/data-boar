@@ -88,7 +88,7 @@ Refresh periodically: `gh issue list --state open --limit 50` (requires [`gh`](h
 
 | #                                                        | Short title                                      | Type                  | Plan                                                                                 | Sequence (token-aware)                                                                   |
 | -                                                        | -----------                                      | ----                  | ----                                                                                 | ------------------------                                                                 |
-| [86](https://github.com/FabioLeitao/data-boar/issues/86) | Reports / dashboard access by role or permission | Feature + security UX | [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) | `[H2][U2]` after **Priority band A**; Phase 0 = docs + proxy patterns; in-app RBAC later |
+| [86](https://github.com/FabioLeitao/data-boar/issues/86) | Reports / dashboard access by role or permission | Feature + security UX | [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) | `[H2][U2]` after **Priority band A**; **Phase 0** = D-WEB + docs; **Phase 1** = session + **passwordless (WebAuthn; Bitwarden Passwordless.dev minimum)**; **Phase 2** = RBAC; **Phase 3** = enterprise SSO/OIDC optional |
 
 **Dashboard web surface cluster:** [#86](https://github.com/FabioLeitao/data-boar/issues/86) (RBAC) and [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) (locale) share `api/routes.py` / templates. **Target architecture** and **milestone IDs (D-WEB, M-LOCALE-V1, …)** are in the i18n plan; **#86** references **D-WEB** before route-changing PRs. See [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) §4.2.
 
@@ -163,7 +163,7 @@ Plans without dependencies can be run in parallel within a tier (e.g. 4 and 5). 
 
 ## Recommended sequence (aggregated, token-aware)
 
-**Optional PM view:** The same order is grouped into **token-aware sprints**, **milestones** (M-TRUST, M-OBS, M-LAB, …), **SRE/governance** notes, and **Mermaid Gantt / Kanban** patterns in **[SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md)** ([pt-BR](SPRINTS_AND_MILESTONES.pt_BR.md))—useful for retros, sidequests (housekeeping, lab rush), and **operator-only** tasks (Hub, hardware, study).
+**Optional PM view:** The same order is grouped into **token-aware sprints**, **milestones** (M-TRUST, M-OBS, M-LAB, …), **SRE/governance** notes, and **Mermaid Gantt / Kanban** patterns in **[SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md)** ([pt-BR](SPRINTS_AND_MILESTONES.pt_BR.md))—useful for retros, sidequests (housekeeping, lab rush), and **operator-only** tasks (Hub, hardware, study). To see **how milestones compose** into a coherent posture (storytelling, trust baseline, paid surface, automation stretch), read **SPRINTS_AND_MILESTONES.md** section **5** subsection **Composing milestones (release lifecycle map)**—**not** alternate naming for releases; version strings follow [VERSIONING](../releases/).
 
 The list below is ordered for the current billing cycle, with a focus on:
 
