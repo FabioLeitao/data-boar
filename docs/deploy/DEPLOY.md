@@ -379,6 +379,28 @@ To run a single audit from the CLI in the cluster, use a **Job** that overrides 
 
 **Português (Brasil):** [DEPLOY.pt_BR.md §8](DEPLOY.pt_BR.md#8-docker-hub-tags-suportadas-e-descontinuar-imagens-antigas).
 
+## 9. Backup and restore (persistent data)
+
+Typical deployments keep all durable state under **`/data`** (volume or bind mount): **`config.yaml`**, the **SQLite** file from `sqlite_path` (default **`/data/audit_results.db`**), and **report output** under `report.output_dir` (often `/data` or a subdirectory). Optional files such as ML/DL term YAMLs belong in the same tree if referenced by config.
+
+#### What to back up
+
+- Copy or snapshot the **entire** host directory or volume you mount at **`/data`** (or the Kubernetes PVC contents), so you preserve config, database, reports, and any auxiliary files paths in `config.yaml` point to.
+
+#### How to restore
+
+1. Stop the container, Compose stack, Swarm service, or scale the Kubernetes Deployment to zero.
+1. Restore files onto a new volume or directory at the same mount path (`/data` inside the container).
+1. Ensure **file ownership** is compatible with the image user (**UID 1000** / `appuser`) when using bind mounts on Linux hosts.
+1. Start the workload again; verify **`GET /health`**, then run a short scan or open the dashboard to confirm SQLite and reports are visible.
+
+#### Operational notes
+
+- Prefer **API keys from environment** (`api.api_key_from_env`) so secrets are not only in files you include in file-level backups—see [SECURITY.md](../../SECURITY.md).
+- For long-term recovery, record the **image tag or digest** you ran (e.g. `fabioleitao/data_boar:1.7.0`) alongside the data backup so you can match behaviour when restoring.
+
+**Português (Brasil):** [DEPLOY.pt_BR.md §9](DEPLOY.pt_BR.md#9-backup-e-restore-dados-persistentes).
+
 ## Summary
 
 | Goal                     | Command / step                                                                                                                             |
@@ -391,6 +413,7 @@ To run a single audit from the CLI in the cluster, use a **Job** that overrides 
 | **Docker Compose**       | `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d` — prepare `./data/config.yaml` first (section 4) |
 | **Docker Swarm**         | `docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit` (section 5)                            |
 | **Kubernetes**           | `kubectl apply -f deploy/kubernetes/` — see `deploy/kubernetes/README.md` for image and config (section 6)                                 |
+| **Backup / restore**     | Persisted data under `/data` (section 9): back up the mounted volume or bind mount; restore with the same layout, then verify `/health`        |
 
 You can use **Docker Compose** or **Kubernetes** as alternatives to Docker Swarm; same image and config layout apply. All paths and image names assume you are in the repo root or in `deploy/` as indicated.
 
