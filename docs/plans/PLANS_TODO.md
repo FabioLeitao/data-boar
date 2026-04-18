@@ -47,8 +47,9 @@ When revising **license terms** for IP, commerciality, and profitability, explic
 
 **Brand and experience IP (same pass):** Include **mascot**, **Data Boar / dashBOARd** naming, **data soup** metaphor and connector narrative, **UI/report appearance**, documented **operation** (CLI/API/Docker story), and **companion artifacts** (Docker image branding, website, related repos) in trademark and commercial-license review — see [LICENSING_OPEN_CORE_AND_COMMERCIAL.md § Brand, narrative, and experience IP](../LICENSING_OPEN_CORE_AND_COMMERCIAL.md#brand-narrative-and-experience-ip-inventory-for-counsel-and-commercial-policy) and [COPYRIGHT_AND_TRADEMARK.md](../COPYRIGHT_AND_TRADEMARK.md#6-brand-narrative-and-product-experience-inventory).
 
-### Integration / WIP — last refreshed **2026-04-17**
+### Integration / WIP — last refreshed **2026-04-18**
 
+- **S0 – Trust burst (in progress):** **–1** applied on branch (Dependabot-equivalent bumps: FastAPI/pydantic/rich/mypy/Ruff + dev transitives; **github-actions**: `astral-sh/setup-uv` **v8.1.0**, `github/codeql-action` **4.35.2** SHAs); **`uv lock`** + **`requirements.txt`** export; **`.\scripts\check-all.ps1`** green; **`uvx pip-audit -r requirements.txt`** clean. **–1b** on Hub **`fabioleitao/data_boar:latest`**: **`docker scout quickview`** **0C / 0H / 1M / 31L**; **`docker-scout-critical-gate.ps1`** pass (no actionable CRITICAL). **A3** Hub tag hygiene remains **operator** (UI). Close Dependabot PRs **#191–#194** after merge.
 - **Sprint focus (when ready):** **S0 – Trust burst** (Dependabot/lockfile **–1**, Docker Scout **–1b**, Hub tag hygiene **A3**) with checklist in [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) **§4.0**; optional **S0b – Operability** same week (one runbook, backup note, or KPI snapshot).
 - **Branches:** Work ships via **PRs to `main`**; avoid tracking a long-lived “integration” branch name here (it goes stale).
 - **Cloud object storage (data soup):** **Not implemented yet** — phased plan [PLAN_OBJECT_STORAGE_CLOUD_CONNECTORS.md](PLAN_OBJECT_STORAGE_CLOUD_CONNECTORS.md) (S3 first, then Azure Blob, GCS); reuses file/compressed pipeline after list + fetch.
