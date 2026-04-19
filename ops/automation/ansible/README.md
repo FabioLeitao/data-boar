@@ -15,6 +15,8 @@ Debian/Ubuntu installs can be blocked by **`apt-listbugs`** during unattended ru
 
 (or `combine` with play-specific extras, as in `playbooks/t14-baseline.yml`). Defaults are in **`group_vars/all.yml`**. Repo CI fails if a tracked playbook under `playbooks/*.yml` omits `environment` on any play — see **`tests/test_ansible_playbooks_unattended_apt.py`** and **[CONTRIBUTING.md](../../CONTRIBUTING.md)**.
 
+- **`playbooks/lab-data-boar-share-clients.yml`** — installs **CIFS/NFS/sshfs/FUSE** client packages on **`[lab_share_clients]`** (Debian/Ubuntu) for **OS-mounted** shares. Native **`type: smb`** / **`type: webdav`** still need **`uv sync --extra shares`** (Python extras) on the machine that runs Data Boar; see **[LAB_SMOKE_MULTI_HOST.md](../../docs/ops/LAB_SMOKE_MULTI_HOST.md)**.
+
 ## Quick start
 
 ### Prerequisites on the T14 (target)

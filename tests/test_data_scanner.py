@@ -11,6 +11,8 @@ try:
 except ImportError as rest_import_error:
     _ = str(rest_import_error)
 
+import connectors.nfs_connector  # noqa: F401 — always registers `nfs`
+
 from core.connector_registry import connector_for_target, list_connector_types
 
 
@@ -18,6 +20,48 @@ def test_registry_has_sql_and_filesystem():
     types = list_connector_types()
     assert "filesystem" in types
     assert "postgresql" in types or "mysql" in types
+
+
+def test_registry_has_nfs_connector():
+    """NFS targets use a local mount point; connector is always registered."""
+    assert "nfs" in list_connector_types()
+    resolved = connector_for_target({"type": "nfs", "name": "LabNFS", "path": "/tmp"})
+    assert resolved is not None
+
+
+def test_registry_has_smb_when_shares_extra_installed():
+    """SMB/CIFS use smbprotocol (optional `.[shares]`); register when import succeeds."""
+    import connectors.smb_connector  # noqa: F401
+
+    types = list_connector_types()
+    if "smb" not in types:
+        pytest.skip(
+            "SMB/CIFS connectors not registered (install: uv sync --extra shares)"
+        )
+    assert (
+        connector_for_target(
+            {
+                "type": "smb",
+                "name": "LabSMB",
+                "host": "127.0.0.1",
+                "share": "test",
+                "path": "/",
+            }
+        )
+        is not None
+    )
+    assert (
+        connector_for_target(
+            {
+                "type": "cifs",
+                "name": "LabCIFS",
+                "host": "127.0.0.1",
+                "share": "s",
+                "path": "/",
+            }
+        )
+        is not None
+    )
 
 
 def test_connector_for_filesystem():
