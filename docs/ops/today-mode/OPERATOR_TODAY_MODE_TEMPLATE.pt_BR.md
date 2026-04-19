@@ -8,13 +8,12 @@
 
 ## Bloco 0 — Realidade de manhã (10–15 min)
 
-Rode **`carryover-sweep`** ou **`.\scripts\operator-day-ritual.ps1 -Mode Morning`**, depois:
+Rode **`carryover-sweep`** ou **`.\scripts\operator-day-ritual.ps1 -Mode Morning`** — o script imprime o **Tier A** (`git fetch`, `git status -sb`, PRs abertos, último CI do **`main`**, arquivo **today-mode** para **hoje**) e lembretes dos **Tiers B–D** (cadência de supply Colleague-Nn / imagem / lab). Ver **[README.pt_BR.md](README.pt_BR.md)** (*Prontidão de manhã*). Depois:
 
-1. `git fetch origin` · `git status -sb` · `gh pr list --state open`
-2. **`origin/main`:** faz **`git pull`** se outra máquina mergeou à noite.
-3. **Working tree (repo público):** decide: commits, branch, stash ou continuar.
-4. **Git privado empilhado (`docs/private/`):** se houver fila, agenda **`.\scripts\private-git-sync.ps1`** (e **`-Push`** conforme política).
-5. `- [ ] **Block close (lab / VC):** ao pausar ou sair do lab mais tarde, escreva **`block-close`** no chat e siga a política de sessão VeraCrypt em **privado** **`docs/private/homelab/OPERATOR_VERACRYPT_SESSION_POLICY*.md`** — checklist de **fronteira**, **não** o ritual completo **`eod-sync`** (git/gh).
+1. **`origin/main`:** **`git pull origin main`** se o ritual mostrar que estás atrás.
+2. **Working tree (repo público):** decide: commits, branch, stash ou continuar.
+3. **Git privado empilhado (`docs/private/`):** se houver fila, agenda **`.\scripts\private-git-sync.ps1`** (e **`-Push`** conforme política).
+4. `- [ ] **Block close (lab / VC):** ao pausar ou sair do lab mais tarde, escreva **`block-close`** no chat e siga a política de sessão VeraCrypt em **privado** **`docs/private/homelab/OPERATOR_VERACRYPT_SESSION_POLICY*.md`** — checklist de **fronteira**, **não** o ritual completo **`eod-sync`** (git/gh).
 
 **Fila viva:** [CARRYOVER.pt_BR.md](CARRYOVER.pt_BR.md) · **Publicado:** [PUBLISHED_SYNC.pt_BR.md](PUBLISHED_SYNC.pt_BR.md)
 
