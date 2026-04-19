@@ -23,6 +23,21 @@
 1. **Docker container churn:** Prefer `docker run --rm` for one-shot checks. If you keep a named **Data Boar** container between runs, aim for **one** primary instance—or **two** only for explicit **A/B** (image or config). Remove throwaway containers when done so ports (`8088`) and volumes stay predictable. See [DOCKER_SETUP.md](../DOCKER_SETUP.md) §7.
 1. **Docker CE + Swarm already active:** On a **Swarm manager** (including **single-node** homelab swarms), `docker build` and `docker run -p …` still work for §1.3–1.5—same CLI, published ports bind on the host unless something else already owns `8088`. If you standardise on **stacks** (`docker stack deploy`), translate the playbook’s `docker run` into a small Compose file with a `ports:` mapping and a bind mount for `/data`; overlay networks use **service names** as DNS (like the §4 `lab-net` example). Keep **service names and node roles** in private notes, not in this repo.
 
+### 0.1 LAN access from another lab host (dashboard / API)
+
+To hit the Data Boar **HTTP** dashboard and REST API from **another machine on the lab LAN** (browser on a second box, `curl` from a test VM, etc.):
+
+| What | Detail |
+| ---- | ------ |
+| **Port** | **TCP 8088** by default (same for native `uv run` and Docker `-p 8088:8088`). |
+| **Bind address** | The process must listen on **`0.0.0.0`**, not only **`127.0.0.1`**. Use `--web --host 0.0.0.0 --port 8088` (plus `--allow-insecure-http` if you are not terminating TLS in-app). Docker images that already bind all interfaces are fine; still confirm with `ss -tlnp` / `curl` from the other host. |
+| **Host firewall (Linux)** | Allow **inbound** **8088/tcp** from **your LAN subnet only** (example pattern, adjust CIDR: `sudo ufw allow from 10.0.0.0/16 to any port 8088 proto tcp comment 'Data Boar lab LAN'`). More context: [LMDE7_LAB-NODE-01_DEVELOPER_SETUP.pt_BR.md](LMDE7_LAB-NODE-01_DEVELOPER_SETUP.pt_BR.md). |
+| **Router / UniFi (VLANs, Wi‑Fi, guest)** | If the client is not on the same L2 segment as the server, add an **allow** rule so the client network can reach **server:8088** (and DNS if you use names). Record **real** IPs/VLAN IDs only in **gitignored** notes. |
+| **WAN** | Do **not** open **8088** on the internet for casual lab tests; use VPN or SSH tunnel if you need remote access. |
+| **TLS / reverse proxy** | If you front the app with nginx/Caddy on **443**, open **443** to the proxy instead of exposing raw **8088** at the edge. |
+
+**Dependencies on the lab host:** `uv sync` (and any **system** packages from [TECH_GUIDE.md](../TECH_GUIDE.md) for your distro) before §1.1; no extra Python package is required **only** to listen on the LAN.
+
 ---
 
 ## 1. Lab baseline checklist (copy/paste)
