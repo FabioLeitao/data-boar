@@ -21,7 +21,9 @@
 
 **Why not run B–D every day?** They are higher-latency or environment-dependent. Running **pip-audit + Scout + SSH lab** daily would add noise without extra safety once **`main`** is green. Tier **A** catches “surprise WIP”, **stale refs**, **open PRs**, and **red CI** before you invest hours.
 
-**Fast path:** `.\scripts\operator-day-ritual.ps1 -Mode Morning -SkipReadiness` — file list + social hints only (rare).
+**Fast path:** `.\scripts\operator-day-ritual.ps1 -Mode Morning -SkipReadiness` — file list + social hints only (rare). This **skips Tier A** (git fetch, PRs, CI snapshot); it is **not** the full code/regression gate.
+
+**Code / dependency gate:** use **`.\scripts\check-all.ps1`** before a PR or merge (optional **`-IncludeVersionSmoke`** for version vs published release coherence). CI runs the same pytest suite, including lock/export sync tests—see [SECURITY.md](../../SECURITY.md) and [ADR 0030](../../adr/0030-python-dependency-update-closure-single-pass.md).
 
 **Chat:** optional English token **`morning-readiness`** — same intent as **`carryover-sweep`** for Tier A + doc pointer (see **`.cursor/rules/session-mode-keywords.mdc`**).
 

@@ -56,6 +56,18 @@ Formal **CycloneDX JSON** SBOMs support **supply-Colleague-Nn** visibility and *
 
 - Dependencies in **`pyproject.toml`** use **minimum versions (`>=`)** so security patches are allowed; pin exact versions (`==`) only where necessary. The **lockfile (`uv.lock`)** is committed so that everyone (and CI) installs the same tree; it is refreshed when dependencies change or before a stable release so the app stays updated, compatible, and safe. **Dependabot** (see `.github/dependabot.yml`) opens weekly PRs for pip and GitHub Actions and helps signal when to act: when you apply an update (or before a release), update **`pyproject.toml`** first, then run `uv lock` and `uv export --no-emit-package pyproject.toml -o requirements.txt`, and commit **pyproject.toml**, **uv.lock**, and **requirements.txt**. Do not merge a change that only edits `requirements.txt` or `uv.lock` without updating the other. Merge dependency PRs only after CI (tests and audit) pass.
 
+### Dependency update closure (one pass, any trigger)
+
+The **trigger** for a change (CI, Dependabot, Docker Scout, review feedback, maintainer choice, or another signal) does not change the **workflow**. When you decide an update is **justified and safe** after tests and audit:
+
+1. Express intent in **`pyproject.toml`**, then **`uv lock`** and **`uv export --no-emit-package pyproject.toml -o requirements.txt`**—commit all three together.
+2. Run **`uv sync`** locally so **`.venv`** matches the lockfile.
+3. Run **`.\scripts\check-all.ps1`** (full gate) before merge—no “half green” dependency PRs.
+4. Refresh **SBOM** artifacts when your release or compliance path requires an updated bill of materials at the **same commit**—see [ADR 0003](docs/adr/0003-sbom-roadmap-cyclonedx-then-syft.md) and **`scripts/generate-sbom.ps1`** / workflow **`SBOM`**.
+5. Add or update an **ADR** when the bump reflects a **policy or architecture** choice (optional extras boundaries, toolColleague-Nns, recorded upstream constraints), not for every routine patch.
+
+This is **not** permission to churn dependencies blindly; defer or reject changes that lack rationale or fail gates. Recorded decision: [ADR 0030](docs/adr/0030-python-dependency-update-closure-single-pass.md).
+
 - Locally, install and run a dependency audit (CI does the same on every push/PR):
 
   ```bash
