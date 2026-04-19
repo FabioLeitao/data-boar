@@ -126,6 +126,10 @@ Homelab com **várias máquinas** (portátil Ubuntu/derivado com Docker, mini-PC
 
 Nota datada em `**docs/private/homelab/**` (gitignored): **hostnames**, tag da imagem, alvos, pass/fail.
 
+### 11.1 Lockfile e imagem publicada (alinhar –1L com –1 / –1b)
+
+Quando **`uv.lock`**, **`requirements.txt`** ou **`Dockerfile`** mudam no **`main`**, mantenha **Docker Hub** e **lab** no mesmo ritmo: imagem local com **`scripts/docker-lab-build.ps1`**, **publicação** conforme **[DOCKER_IMAGE_RELEASE_ORDER.md](DOCKER_IMAGE_RELEASE_ORDER.md)** (semver em `pyproject.toml`, gate Scout, texto do Hub se precisar), depois **§1.3–1.6** no host de lab com **`fabioleitao/data_boar:latest`** ou o mesmo tag **semver**, para o digest do smoke bater com o que quem faz **pull** recebe. **`git` HEAD**, hash do **`uv.lock`** e **image ID** só em **`docs/private/homelab/`** — não neste arquivo.
+
 ---
 
 ## 12. Ver também
