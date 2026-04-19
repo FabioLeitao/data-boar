@@ -8,6 +8,8 @@
 
 **Not legal advice.** For **real** personal data, use **lawful basis**, **minimisation**, and **read-only** technical accounts; prefer **synthetic** or **public sample** data when unsure.
 
+**Multi-host “completão” (full lab round):** This file is the **single-machine** baseline (clone, `check-all`, Docker smoke, synthetic FS). For **ordered E2E across several lab hosts**—Postgres/MariaDB stack, compressed fixtures, optional SMB/NFS/**SSHFS**/WebDAV/**iSCSI-backed** filesystem paths—follow **[LAB_SMOKE_MULTI_HOST.md](LAB_SMOKE_MULTI_HOST.md)** (host order, pass/fail checklist **A–M**, definition of *completão*). **PII / publishing:** do not put real mount lines, credentials, LAN addresses, or home paths in tracked docs or public issues; see [ADR 0018](../adr/0018-pii-anti-recurrence-guardrails-for-tracked-files-and-branch-history.md) and [ADR 0019](../adr/0019-pii-verification-cadence-and-manual-review-gate.md). Operator-specific evidence stays under **gitignored** `docs/private/homelab/`.
+
 **Related:** [deploy/DEPLOY.md](../deploy/DEPLOY.md) · [SONARQUBE_HOME_LAB.md](SONARQUBE_HOME_LAB.md) (optional quality server) · [OPERATOR_IT_REQUIREMENTS.md](OPERATOR_IT_REQUIREMENTS.md) · [TESTING.md](../TESTING.md) · [SECURITY.md](../SECURITY.md) · **Lab-op minimal stack (Podman + k3s):** [LAB_OP_MINIMAL_CONTAINER_STACK.md](LAB_OP_MINIMAL_CONTAINER_STACK.md) · **ThinkPad T14 + LMDE 7:** [LMDE7_T14_DEVELOPER_SETUP.pt_BR.md](LMDE7_T14_DEVELOPER_SETUP.pt_BR.md) · **Optional observability:** [PLAN_LAB_OP_OBSERVABILITY_STACK.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.md) · **Optional SIEM (Wazuh):** [LAB_OP_MINIMAL_CONTAINER_STACK.md](LAB_OP_MINIMAL_CONTAINER_STACK.md) §6
 
 ---
@@ -240,6 +242,7 @@ Keep a **dated note** (e.g. in **`docs/private/homelab/`** or a personal wiki): 
 
 ## See also
 
+- [LAB_SMOKE_MULTI_HOST.md](LAB_SMOKE_MULTI_HOST.md) — **multi-host** DB + filesystem lab, optional **SSHFS / WebDAV / iSCSI→FS**, checklist **A–M**, and what “**completão**” means vs this file’s §1 baseline.
 - [OS_COMPATIBILITY_TESTING_MATRIX.md](OS_COMPATIBILITY_TESTING_MATRIX.md) — **which Linux distros** to test (RHEL/Fedora/AlmaLinux, Arch/Manjaro/BigLinux, Gentoo, musl) prioritized by **production relevance** and **Python 3.12+** availability.
 - [LAB_OP_MINIMAL_CONTAINER_STACK.md](LAB_OP_MINIMAL_CONTAINER_STACK.md) §5 — **tower / Alpine / AlmaLinux**, multi-VM “cluster” simulation, **when** to prioritize **HA / horizontal scale** (vs **–1L** baseline).
 - [HOMELAB_LOCAL_REPOSITORIES.md](HOMELAB_LOCAL_REPOSITORIES.md) — **local Docker registry** and **apt repository** on Proxmox **after** the server is ready; enables **offline** validation, **faster** pulls, and **testing** `.deb` builds before public release.
