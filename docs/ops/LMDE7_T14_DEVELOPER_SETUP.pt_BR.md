@@ -2,7 +2,7 @@
 
 **English (short pointer):** same content intent as this file; no separate EN twin unless needed for reviewers — use [TECH_GUIDE.md](../TECH_GUIDE.md) for package names in English context.
 
-**Objetivo:** Deixar o **ThinkPad T14** com **LMDE 7** atualizado, com uma linha de base **segura** e com os **pacotes de sistema** necessários para clonar este repositório, rodar **`uv sync`**, **`pytest`**, e (opcional) **Podman/Docker** alinhados a [HOMELAB_HOST_PACKAGE_INVENTORY.md](HOMELAB_HOST_PACKAGE_INVENTORY.md) e [TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md).
+**Objetivo:** Deixar o **ThinkPad T14** com **LMDE 7** atualizado, com uma linha de base **segura** e com os **pacotes de sistema** necessários para clonar este repositório, rodar **`uv sync`**, **`pytest`**, e **Docker CE** (baseline Ansible; Podman opcional) alinhados a [HOMELAB_HOST_PACKAGE_INVENTORY.md](HOMELAB_HOST_PACKAGE_INVENTORY.md) e [TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md).
 
 **Base:** LMDE 7 (“Gigi”) usa **Debian 13 (Trixie)** — nomes de pacotes seguem `apt` como no Debian. Ajuste se a sua imagem for mais antiga ou misturar repositórios.
 
@@ -21,7 +21,7 @@
 |**§4**|Ferramentas de dev gerais (`git`, `build-essential`, etc.).|
 |**§5**|Python **3.13** (recomendado; **≥3.12** ok) + libs de sistema, **`uv`**, clone, `uv sync`, `pytest`.|
 |**§6**|T14: energia (**`tlp`**), **I/O NVMe**, **kernel/sysctl** (performance prudente).|
-|**§7**|Podman/Docker opcional.|
+|**§7**|Docker CE (baseline Ansible) e Podman opcional.|
 |**§8–§9**|Pacotes homelab/auditoria; checklist final.|
 |**§10**|Links relacionados no repositório.|
 
@@ -914,26 +914,19 @@ Quando o T14 for host de laboratório:
 
 ---
 
-## 7. Contentores (lab — opcional)
+## 7. Contentores (lab — recomendado: Docker CE via baseline)
 
-Alinha com [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md):
+**Fonte de verdade no repositório:** [playbooks/t14-baseline.yml](../../ops/automation/ansible/playbooks/t14-baseline.yml) com **`t14_install_docker_ce: true`** e plugin **Compose**. O papel **`t14_operator_supplementary_groups`** adiciona o login do operador ao grupo **`docker`** (e outros grupos padrão). **Depois do playbook:** novo login na sessão gráfica **ou** `newgrp docker` na shell **ou** SSH novo — senão `docker compose` falha com **permission denied** em `/var/run/docker.sock`.
 
-- **Podman** (preferido para alinhar a rootless/lab):
+- **Ansible (preferido):** ver [ops/automation/ansible/README.md](../../ops/automation/ansible/README.md) e variáveis como **`t14_operator_target_user`** no inventário se correres `sudo ansible-playbook` (para não aplicar grupos ao utilizador errado).
 
-```bash
-sudo apt install -y podman
-podman --version
-```
+- **Manual (não substitui o repo oficial Docker):** se precisares só de sanity sem Ansible, alinha com a doc Docker CE para Debian — **não** uses `docker.io` do Debian como substituto da baseline do projeto salvo decisão documentada.
 
-- **Docker** (se a tua equipe padronizar `docker` em vez de `podman`):
+**Podman** (rootless) continua **opt-in** no mesmo playbook (`t14_install_podman: false` por omissão). Para stack mínima lab-op com Podman/k3s, ver [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md).
 
-```bash
-sudo apt install -y docker.io
-sudo usermod -aG docker "$USER"
-# Novo login para o grupo aplicar
-```
+**Lab smoke multi-host:** [LAB_SMOKE_MULTI_HOST.pt_BR.md](LAB_SMOKE_MULTI_HOST.pt_BR.md) — política prática: **dois** hubs Docker (por exemplo **latitude + T14**); mini-bt e pi3b **sem** obrigação de Docker.
 
-Não corras **k3s** no T14 a menos que queiras consumir RAM/CPU para testes de cluster — para “só desenvolver”, **Podman** ou **Docker** basta para `build`/`run` do `Dockerfile`.
+Não corras **k3s** no T14 a menos que queiras consumir RAM/CPU para testes de cluster — para desenvolvimento e `lab-smoke-stack`, **Docker CE + Compose** basta.
 
 ---
 
@@ -1115,7 +1108,7 @@ Inventário completo sugerido pelo projeto: [HOMELAB_HOST_PACKAGE_INVENTORY.md](
 |---|---|
 |[TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md)|Instalação app, conectores, `uv`.|
 |[HOMELAB_HOST_PACKAGE_INVENTORY.md](HOMELAB_HOST_PACKAGE_INVENTORY.md)|Lista de pacotes e captura de inventário.|
-|[LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md)|Podman + k3s no host de lab (opcional no T14).|
+|[LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md)|Podman + k3s no host de lab (opcional; **Docker CE** vem da baseline Ansible).|
 |[PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md)|Grafana, Prometheus/Influx, Loki, Graylog — **depois** da baseline (§7 do doc acima).|
 |[OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md](OPERATOR_PACKAGE_MAINTENANCE_AND_BW_CLI.pt_BR.md)|Atualizações no workstation, **Topgrade**, **`gta`**, **Bitwarden CLI** (`bw`).|
 |[SECURITY.md](../../SECURITY.md)|API key, binding, boas práticas.|

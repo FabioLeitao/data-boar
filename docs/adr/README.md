@@ -46,6 +46,8 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0025  | [Compliance positioning — evidence and inventory, not a legal-conclusion engine](0025-compliance-positioning-evidence-inventory-not-legal-conclusion-engine.md) | Accepted |
 | 0026  | [Optional jurisdiction hints — DPO-facing, heuristic, metadata-only](0026-optional-jurisdiction-hints-dpo-facing-heuristic-metadata-only.md) | Accepted |
 | 0027  | [Commercial tier boundaries — licensing docs and future JWT claims](0027-commercial-tier-boundaries-licensing-docs-and-future-jwt-claims.md) | Accepted |
+| 0028  | [Lab external connectivity evaluation playbook (tracked)](0028-lab-external-connectivity-eval-playbook.md) | Accepted |
+| 0029  | [Cursor Markdown preview guardrail + lab-smoke Ansible hook](0029-cursor-markdown-preview-guardrail-and-lab-smoke-ansible-hook.md) | Accepted |
 
 ## Related docs
 

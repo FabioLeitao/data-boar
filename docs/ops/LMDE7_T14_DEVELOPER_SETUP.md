@@ -30,8 +30,8 @@ Security baseline (details in pt-BR §3): **`ufw`**, **`unattended-upgrades`**, 
 
 ## Containers and lab-op
 
-- **Podman** (preferred) or **docker.io** — §7 in pt-BR, consistent with [LAB_OP_MINIMAL_CONTAINER_STACK.md](LAB_OP_MINIMAL_CONTAINER_STACK.md).
-- When the T14 is a lab host: SSH hardening, **`docs/private/homelab/lab-op-hosts.manifest.json`** from the example manifest, then **`scripts/lab-op-sync-and-collect.ps1`** from the workstation — §6.5.
+- **Docker CE** (official repo) **+ Compose plugin** are the **default** for this repo’s T14 baseline: [playbooks/t14-baseline.yml](../../ops/automation/ansible/playbooks/t14-baseline.yml) enables **`t14_install_docker_ce: true`** and the **`t14_operator_supplementary_groups`** role adds the operator login to the **`docker`** group (log out and back in, or `newgrp docker`, so **`docker compose`** works without `sudo`). **Podman** remains opt-in in the same playbook (`t14_install_podman: false` by default). See §7 in the pt-BR guide and [ops/automation/ansible/README.md](../../ops/automation/ansible/README.md).
+- When the T14 is a lab host: SSH hardening, **`docs/private/homelab/lab-op-hosts.manifest.json`** from the example manifest, then **`scripts/lab-op-sync-and-collect.ps1`** from the workstation — §6.5. For **`deploy/lab-smoke-stack`**, see [LAB_SMOKE_MULTI_HOST.md](LAB_SMOKE_MULTI_HOST.md) (two Docker hubs: e.g. **latitude + T14**; no compose requirement on mini-bt / pi3b).
 
 ---
 
