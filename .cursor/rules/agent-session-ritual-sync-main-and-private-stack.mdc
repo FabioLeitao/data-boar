@@ -5,6 +5,16 @@ alwaysApply: true
 
 # Agent session ritual — synced `main`, private stack, next steps
 
+## Calendar / “today” (operator workstation — not the model’s clock)
+
+When you need **which calendar day** matters (today-mode checklist path, dated drafts, “this morning”, release timing):
+
+1. **Do not** rely only on IDE **User** / chat **“Today’s date”** fields — they can be **wrong or stale** for the real session.
+2. On **Windows** (typical for this repo’s dev PC), run in the **integrated terminal**: **`Get-Date -Format "yyyy-MM-dd"`** (PowerShell) or **`date /t`** (cmd). Use that string to pick **`docs/ops/today-mode/OPERATOR_TODAY_MODE_YYYY-MM-DD.md`** unless the operator fixes the date in chat.
+3. On **Linux/macOS** shells, use **`date -I`** or **`date "+%Y-%m-%d"`** the same way.
+
+Canonical prose: **`AGENTS.md`** (*Workstation calendar clock*), **`docs/ops/today-mode/README.md`** (*For assistants*).
+
 ## Public repo (`origin`)
 
 1. Before **substantive** edits: run **`git fetch origin`** and **`git status -sb`** in the integrated terminal (or rely on fresh output from the same session).
