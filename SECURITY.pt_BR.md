@@ -56,6 +56,18 @@ SBOMs formais em **CycloneDX JSON** apoiam **visibilidade da cadeia de supriment
 
 - As dependências em **`pyproject.toml`** usam versões mínimas (`>=`) para permitir correções de segurança. O **lockfile (`uv.lock`)** é commitado para que todos (e o CI) instalem a mesma árvore; ele é atualizado quando as dependências mudam ou antes de uma release estável, mantendo o app atualizado, compatível e seguro. O **Dependabot** (veja `.github/dependabot.yml`) abre PRs semanais para pip e GitHub Actions e ajuda a sinalizar quando agir: ao aplicar uma atualização (ou antes de uma release), atualize primeiro o **`pyproject.toml`**, execute `uv lock` e `uv export --no-emit-package pyproject.toml -o requirements.txt`, e faça commit de **pyproject.toml**, **uv.lock** e **requirements.txt**. Não faça merge de alteração que edite só `requirements.txt` ou `uv.lock` sem atualizar o outro. Faça merge dos PRs de dependência somente após o CI (testes e auditoria) passar.
 
+### Fechamento de atualização de dependências (um passe, qualquer origem)
+
+O **gatilho** da mudança (CI, Dependabot, Docker Scout, revisão externa, decisão do mantenedor ou outro sinal) **não muda** o **fluxo**. Quando você concluir que uma atualização é **justificada e segura** após testes e auditoria:
+
+1. Declare a intenção no **`pyproject.toml`**, depois **`uv lock`** e **`uv export --no-emit-package pyproject.toml -o requirements.txt`** — faça commit dos três juntos.
+2. Rode **`uv sync`** localmente para o **`.venv`** bater com o lockfile.
+3. Rode **`.\scripts\check-all.ps1`** (gate completo) antes do merge — sem PR de dependência “meio verde”.
+4. Atualize artefatos de **SBOM** quando o release ou o trilho de compliance exigir lista de materiais no **mesmo commit** — veja [ADR 0003](docs/adr/0003-sbom-roadmap-cyclonedx-then-syft.md) e **`scripts/generate-sbom.ps1`** / workflow **`SBOM`**.
+5. Acrescente ou atualize um **ADR** quando o bump refletir **política ou arquitetura** (limites de extras opcionais, toolColleague-Nns, restrição upstream documentada), não para cada patch de rotina.
+
+Isto **não** é licença para churn cego de dependências; adie ou rejeite mudanças sem fundamento ou que falhem nos gates. Decisão registrada: [ADR 0030](docs/adr/0030-python-dependency-update-closure-single-pass.md).
+
 - Localmente, instale e execute uma auditoria de dependências (o CI faz o mesmo em todo push/PR):
 
   ```bash

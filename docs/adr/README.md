@@ -48,6 +48,7 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0027  | [Commercial tier boundaries — licensing docs and future JWT claims](0027-commercial-tier-boundaries-licensing-docs-and-future-jwt-claims.md) | Accepted |
 | 0028  | [Lab external connectivity evaluation playbook (tracked)](0028-lab-external-connectivity-eval-playbook.md) | Accepted |
 | 0029  | [Cursor Markdown preview guardrail + lab-smoke Ansible hook](0029-cursor-markdown-preview-guardrail-and-lab-smoke-ansible-hook.md) | Accepted |
+| 0030  | [Python dependency update closure (single pass)](0030-python-dependency-update-closure-single-pass.md) | Accepted |
 
 ## Related docs
 
