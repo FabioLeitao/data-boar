@@ -31,7 +31,8 @@ try:
     from webdav3.client import Client as WebDAVClient
 
     _WEBDAV_AVAILABLE = True
-except ImportError:
+except (ImportError, SyntaxError):
+    # SyntaxError: some webdav3 builds use invalid string escapes (e.g. Python 3.13+).
     _WEBDAV_AVAILABLE = False
     WebDAVClient = None
 

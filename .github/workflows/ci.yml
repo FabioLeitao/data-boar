@@ -46,7 +46,8 @@ jobs:
           version: "0.11.2"
 
       - name: Install dependencies
-        run: uv sync
+        # shares extra: smbprotocol/webdav — keeps SMB/CIFS/WebDAV connector registration aligned with TECH_GUIDE
+        run: uv sync --extra shares
 
       - name: Run tests
         run: uv run pytest -v -W error
@@ -77,7 +78,7 @@ jobs:
           version: "0.11.2"
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --extra shares
 
       # Single gate: same hooks as local `uv run pre-commit run --all-files` (.pre-commit-config.yaml).
       - name: Pre-commit (all files)
@@ -103,7 +104,7 @@ jobs:
           version: "0.11.2"
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --extra shares
 
       # -ll = medium and high only; [tool.bandit] in pyproject.toml (skips, exclude_dirs). See PLAN_BANDIT_SECURITY_LINTER.md.
       - name: Run Bandit
@@ -130,7 +131,7 @@ jobs:
           version: "0.11.2"
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --extra shares
 
       - name: Install pip-audit
         run: uv pip install pip-audit
@@ -179,7 +180,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.sonar_token.outputs.present == 'true'
-        run: uv sync
+        run: uv sync --extra shares
 
       - name: SonarQube / SonarCloud Scan
         if: steps.sonar_token.outputs.present == 'true'
