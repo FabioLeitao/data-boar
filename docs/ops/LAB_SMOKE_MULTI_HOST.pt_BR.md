@@ -85,6 +85,41 @@ O Data Boar lê **o path que o processo vê**. Não há conector SMB separado �
 
 **Entre hosts:** Outras máquinas (latitude, mini-bt) podem usar **TCP** para o BD no hub; **não** precisam das mesmas montagens de nuvem salvo que estejam a testar **filesystem** nesse host — aí montam ou copiam fixtures localmente.
 
+### 5.1 SSHFS (FUSE sobre SSH)
+
+Quando isto funciona no teu laboratório, é um modo **válido** de expor uma **árvore remota** como path local—o Data Boar usa depois um alvo **`filesystem`** normal (não implementa SSHFS por si).
+
+1. **Pacotes (Linux típico):** `sshfs` + FUSE (`fuse3` / `fuse` conforme a distro). Em **WSL2**, alinha FUSE/WinFsp à documentação da tua distro; falhas são **ambiente**, não bug do produto.
+1. **Montagem (só ilustrativo—usa usuário/host/paths do teu lab):**
+
+   ```bash
+   mkdir -p /mnt/lab-sshfs
+   sshfs USER@HOST:/caminho/remoto /mnt/lab-sshfs -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,ro
+   ```
+
+   Preferir **`-o ro`** para leitura tipo auditoria quando o remoto permitir.
+1. **Config:** `type: filesystem`, `path:` por baixo do mount (ex.: `/mnt/lab-sshfs/...`). Mesmas regras que qualquer árvore local; espera **maior latência** e possíveis **handles** instáveis com Wi‑Fi fraco—`reconnect` e keep-alive ajudam.
+1. **Desmontar:** `fusermount -u /mnt/lab-sshfs` (Linux) ou equivalente no SO.
+1. **PII e publicação:** **Não** coloques `USER@HOST` reais, chaves, IPs de LAN ou caminhos de casa em Markdown **rastreado**, issues ou corpos de PR. Referências: [ADR 0018](../adr/0018-pii-anti-recurrence-guardrails-for-tracked-files-and-branch-history.md), [ADR 0019](../adr/0019-pii-verification-cadence-and-manual-review-gate.md). Notas operacionais com montagens reais ficam em **`docs/private/homelab/`** (gitignored).
+
+### 5.2 WebDAV — dois padrões de integração
+
+| Padrão | Quando | Lado Data Boar |
+| ------ | ------ | -------------- |
+| **A — Conector nativo** | Queres exercitar **`webdavclient3`** / o pipeline de shares por **HTTPS** | `type: webdav`, `base_url`, credenciais conforme [TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md) / [USAGE.pt_BR.md](../USAGE.pt_BR.md); instalar **`.[shares]`** |
+| **B — Montagem no SO** | Queres o mesmo **caminho de código** que SMB/NFS (diretório parece local) | Montar com **davfs2**, **rclone mount**, ou similar, depois **`type: filesystem`** no ponto de montagem |
+
+Escolhe **um** padrão por corrida de teste para falhas serem fáceis de atribuir (conector vs FUSE vs rede).
+
+### 5.3 iSCSI / dispositivos de bloco / “LBA”
+
+- **iSCSI:** O produto **não** tem conector iniciador iSCSI. O fluxo suportado é **só no SO**: anexar LUN → particionar/formatar se preciso → **montar filesystem** → alvo **`filesystem`** nesse mount.
+- **LBA (endereçamento lógico de blocos):** Detalhe de disco/geometria **abaixo** do filesystem. **Não** entra no YAML do Data Boar; só importa o **path montado**.
+
+### 5.4 Ordem (eficiência)
+
+Corre os opcionais **§5.1–5.3** **depois** de **A–I** verdes. Trata **J** e **K–M** como **expansões opcionais** da mesma volta “completão”—não substituem **`check-all`** nem CI.
+
 ---
 
 ## 6. pi3b (ARM) — quando incluir
@@ -115,8 +150,13 @@ Usar depois da ordem de hosts da **§1**. Marcar na tua folha de laboratório.
 | H | **pi3b:** `scan.max_workers: 1`; último na cadeia. | Conclui ou documenta timeout/OOM para o runbook. |
 | I | **Filesystem extra:** montar `tests/data/compressed` **e** `tests/data/homelab_synthetic` só leitura; `scan_compressed: true`. | Findings em arquivos compactados + texto/CSV de ligação. |
 | J | **Compartilhamentos (opcional):** SMB/NFS/sshfs/pasta de nuvem local em alvo `filesystem` depois de montado no SO. | Igual a qualquer alvo FS — arquivos hidratados (não placeholders de nuvem). |
+| K | **Conector WebDAV (opcional):** `type: webdav` contra um servidor de lab; credenciais só em config **privada** / gitignored. | Sessão concluída; listagem/download conforme [TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md); sem eco de credenciais em logs que vás colar publicamente. |
+| L | **SSHFS (opcional):** montagem conforme **§5.1**, depois alvo `filesystem` no mount. | Scan concluído ou documentas timeouts/limites de latência no runbook—**sem** hostnames/IPs reais em docs rastreados. |
+| M | **iSCSI → FS (opcional):** SO apresenta bloco, path montado, depois alvo `filesystem`. | Comprova **SO + storage**; mesmo critério que §2—**não** é feature separada do produto. |
 
 **Bloqueios atuais?** Se os logs LAB-OP mostrarem **ramos divergentes** ou **disco cheio**, os passos **A–B** são obrigatórios antes de relatórios de host úteis ou `uv sync` fresco nessas máquinas.
+
+**Definição — “completão”:** Esta checklist (**A–M** conforme aplicável) mais **`.\scripts\check-all.ps1`** na raiz no PC de desenvolvimento é a volta manual **completa** que o projeto menciona em conversa de operador—**não** “só pytest num PC.” Omitir hosts físicos só com **motivo** registado (tempo, hardware offline).
 
 ---
 
