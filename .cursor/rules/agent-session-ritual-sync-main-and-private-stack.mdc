@@ -24,9 +24,11 @@ alwaysApply: true
 
 - After meaningful changes under **`docs/private/`**, run **`scripts/private-git-sync.ps1`** from repo root; use **`-Push`** to lab remotes when configured. See **`docs/ops/PRIVATE_STACK_SYNC_RITUAL.md`**, keyword **`private-stack-sync`**.
 
-## After a gated slice ships
+## PR / merge (when it makes sense — not every commit)
 
-- Proceed to the obvious next step (open PR, merge when green, plan row, private sync) per **`AGENTS.md`** — avoid redundant permission pings.
+- **Sync + local commits** preserve history on the canonical clone; **PR + merge** are for slices **worth** review/CI on GitHub.
+- **Do not** spiral: open PR → CI nit → merge → pull → another PR for the next typo in the same breath. **Batch** fixes; **one** PR per coherent slice when possible (**`execution-priority-and-pr-batching.mdc`**).
+- Merge when green per **`agent-autonomous-merge-and-lab-ops.mdc`** only when the PR is the right integration step—not a reflex.
 
 ## Canonical prose
 
