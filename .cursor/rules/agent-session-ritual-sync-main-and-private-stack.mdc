@@ -1,0 +1,33 @@
+---
+description: Start sessions with git fetch/status; pull main when behind; integrate origin/main on feature branches; private-git-sync after meaningful docs/private changes; next steps without redundant asks; sidequest exception; protect canonical primary dev clone.
+alwaysApply: true
+---
+
+# Agent session ritual — synced `main`, private stack, next steps
+
+## Public repo (`origin`)
+
+1. Before **substantive** edits: run **`git fetch origin`** and **`git status -sb`** in the integrated terminal (or rely on fresh output from the same session).
+2. On **`main`**: if behind **`origin/main`**, **`git pull origin main`** before building on a stale base.
+3. On a **feature branch**: **`git fetch`**; integrate **`origin/main`** when the branch is stale or before opening/updating a PR (**merge** or **rebase** per repo habit).
+4. Do **not** give merge advice, PR numbers, or “what’s next” without this refresh—see **`git-pr-sync-before-advice.mdc`**.
+
+## Canonical workstation (primary dev PC — not a cloud hop)
+
+- Do **not** run destructive repo history ops on the canonical clone from routine sessions (**`primary-windows-workstation-protected-no-destructive-repo-ops.mdc`**, **`docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**).
+
+## Sidequests
+
+- Exploratory **`sidequest`** branches may be abandoned if impractical; document **stop condition** and **resume pointer** (session keywords).
+
+## Stacked private Git (`docs/private/`)
+
+- After meaningful changes under **`docs/private/`**, run **`scripts/private-git-sync.ps1`** from repo root; use **`-Push`** to lab remotes when configured. See **`docs/ops/PRIVATE_STACK_SYNC_RITUAL.md`**, keyword **`private-stack-sync`**.
+
+## After a gated slice ships
+
+- Proceed to the obvious next step (open PR, merge when green, plan row, private sync) per **`AGENTS.md`** — avoid redundant permission pings.
+
+## Canonical prose
+
+- Root **`AGENTS.md`** — bullets *Assistant session ritual* and *Assistant session closure*.
