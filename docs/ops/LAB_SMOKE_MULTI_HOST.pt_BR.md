@@ -175,6 +175,7 @@ Re-seed implica recriar volumes ou DDL manual em bases existentes — para estad
 
 ## 10. Documentos relacionados
 
+- [LAB_COMPLETAO_RUNBOOK.pt_BR.md](LAB_COMPLETAO_RUNBOOK.pt_BR.md) — **completão** (produto + hosts do lab + orquestração SSH) vs **pytest** / **check-all** só no PC de desenvolvimento.
 - [WSL2_DATA_BOAR_DEV_TESTING.pt_BR.md](WSL2_DATA_BOAR_DEV_TESTING.pt_BR.md) — segunda superfície de execução opcional no PC Windows de desenvolvimento.
 - [LAB_EXTERNAL_CONNECTIVITY_EVAL.md](LAB_EXTERNAL_CONNECTIVITY_EVAL.md) — APIs publicas e BD somente leitura opcional (complementa o smoke LAN).
 - [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md) — playbook base.

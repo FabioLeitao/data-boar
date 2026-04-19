@@ -16,6 +16,14 @@
 .\scripts\lab-op-sync-and-collect.ps1
 ```
 
+**“Completão” (product + runtime smoke, not pytest):** same manifest; optional per-host **`completaoHealthUrl`** (see **`../lab-op-hosts.manifest.example.json`**). From repo root:
+
+```powershell
+.\scripts\lab-completao-orchestrate.ps1
+```
+
+See tracked **[LAB_COMPLETAO_RUNBOOK.md](../../../ops/LAB_COMPLETAO_RUNBOOK.md)**. Logs: **`completao_<timestamp>_allhosts.log`** and per-host `*_completao_host_smoke.log`. Lessons template: **`COMPLETAO_SESSION_TEMPLATE.pt_BR.md`** next to private `homelab/` when copied.
+
 Repeat per host (`-SshHost` = entry in your `~/.ssh/config`) for single-host flow. Output defaults to **`docs/private/homelab/reports/`** next to this README when you copy the tree from `docs/private.example/`.
 
 ## Populate on Linux (repo on host):
