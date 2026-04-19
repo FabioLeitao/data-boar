@@ -38,7 +38,7 @@ uv run python scripts/run_poc_error_scenarios.py --output reports/poc_error_metr
 ```ash
 uv run python main.py --config config.yaml --web --port 8088
 # or Docker:
-docker run -p 8088:8088 -v \C:\Users\<username>\Documents\dev\python3-lgpd-crawler/config.yaml:/data/config.yaml fabioleitao/data_boar:latest
+docker run -p 8088:8088 -v \C:\Users\<username>\Documents\dev\data-boar/config.yaml:/data/config.yaml fabioleitao/data_boar:latest
 ```
 
 **Validation:** `curl http://localhost:8088/health` returns `{"status":"ok"}`.

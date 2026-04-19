@@ -25,7 +25,7 @@ Use these tags in headings to keep priorities explicit and machine-countable:
 
 Do not edit this block manually; refresh with `python scripts/plans-stats.py --write`.
 
-- **Status rows counted:** 145  (Done: 80 | Incomplete: 65)
+- **Status rows counted:** 146  (Done: 81 | Incomplete: 65)
 - **Incomplete breakdown:** Pending `⬜`=61, Tracked `🔄` / `Tracked (partially done)`=4, Under consideration=0, Backlog-marked rows=0
 
 | Horizon | Total rows | Done | Incomplete |
@@ -36,7 +36,7 @@ Do not edit this block manually; refresh with `python scripts/plans-stats.py --w
 | `H3` | 106 | 48 | 58 |
 | `H4` | 0 | 0 | 0 |
 | `H5` | 0 | 0 | 0 |
-| `UNSPECIFIED` | 1 | 1 | 0 |
+| `UNSPECIFIED` | 2 | 2 | 0 |
 <!-- PLANS_STATUS_DASHBOARD:END -->
 
 **Plan status:** Corporate compliance ✅ · Minor data detection ✅ · Aggregated identification ✅ · Sensitive categories ML/DL ✅ · Rate limiting ✅ · Web hardening ✅ · Logo and naming ✅ · **Security hardening** ✅ Done (Tier 1) · **Secrets/vault** ✅ Phase A done (Tier 1) · **Configurable timeouts** ✅ Done · **Commercial licensing (runtime + docs + issuer bootstrap)** ✅ Phase 1 in repo (see `docs/LICENSING_SPEC.md`, `core/licensing/`); operational hardening ⬜ Priority band A · **Release 1.6.4** ✅ shipped **2026-03-20** (GitHub Release **v1.6.4**, Docker Hub **`fabioleitao/data_boar:1.6.4`**, `docs/releases/1.6.4.md`; maintenance **#99–#104**) · **Release 1.6.5** ✅ `docs/releases/1.6.5.md` (prior slice; tags/Hub may lag) · **Release 1.6.6** ✅ shipped **2026-03-25** (Git **v1.6.6**, GitHub Release, Docker Hub **`fabioleitao/data_boar:1.6.6`** + **`latest`**, `docs/releases/1.6.6.md`) · **Release 1.6.7** ✅ shipped **2026-03-26** (GitHub Release **v1.6.7** Latest, Docker Hub **`fabioleitao/data_boar:1.6.7`** + **`latest`**, [`docs/releases/1.6.7.md`](../releases/1.6.7.md), [`CHANGELOG.md`](../../CHANGELOG.md); legacy **`run.py`** removed — **migrate to `main.py`** with correct **bind** and **transport** flags) · **Release 1.6.8** ✅ shipped **2026-04-02** (GitHub **v1.6.8**, Docker Hub **`fabioleitao/data_boar:1.6.8`** + **`latest`**, [`docs/releases/1.6.8.md`](../releases/1.6.8.md); paste **Hub description** from [`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md)) · **Release 1.7.0** ✅ shipped **2026-04-17** (GitHub **v1.7.0**, Docker Hub **`fabioleitao/data_boar:1.7.0`** + **`latest`**, [`docs/releases/1.7.0.md`](../releases/1.7.0.md); **minor** — detector hints, HEIC, compliance/glossary expansion) · **Version check & self-upgrade** ⬜ Not started · **Build identity & release integrity** 🔄 Partial (Phase **E.11** CLI audit export on `main`; anchor/integrity still ⬜) ([PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md](PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md)) · **Additional compliance samples** ✅ Done · **Compliance standards alignment (ISO/IEC 27701, FELCA)** ✅ Done (doc only) · **US child privacy technical alignment (COPPA / AB 2273 / CO CPA minors)** ✅ Phase 1 ([PLAN_US_CHILD_PRIVACY_TECHNICAL_ALIGNMENT.md](PLAN_US_CHILD_PRIVACY_TECHNICAL_ALIGNMENT.md)) · **Additional detection techniques & FN reduction** 🔄 Slices 1–4 done (`fuzzy_column_match`, `FUZZY_COLUMN_MATCH`, `connector_format_id_hint`, `FORMAT_LENGTH_HINT_ID`); next: optional aggregated/incomplete-data modes and semantic hints (priorities 5+). · **Compressed files** ✅ Done (steps 1–12; follow-ups 13–14 optional) · **Content type & cloaking detection** ✅ Core plan done (optional: man pages / OpenAPI examples) · **Data source versions & hardening** ⬜ Not started · **Strong crypto & controls validation** ⬜ Not started · **CNPJ alphanumeric format validation** ✅ Phase 4 done (Phase 5 checksum future) · **Selenium QA test suite** ⬜ Not started · **Synthetic data & confidence validation** ⬜ Not started · **Notifications (off-band + scan-complete)** ✅ Phase 1–4.2 + manual script audit ([PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md](PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md)); Phase 4.3+ backlog · **Dashboard i18n** ⬜ Under consideration · **Dashboard mobile responsive** ⬜ Planned ([PLAN_DASHBOARD_MOBILE_RESPONSIVE.md](PLAN_DASHBOARD_MOBILE_RESPONSIVE.md) — **M-MOBILE-V1**) · **Dashboard reports RBAC** ⬜ Tracked (GitHub [#86](https://github.com/FabioLeitao/data-boar/issues/86); [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md)) · **Operator API key–first auth UX** ⬜ Exploratory sidequest ([PLAN_OPERATOR_API_KEY_FIRST_AUTH_UX.md](PLAN_OPERATOR_API_KEY_FIRST_AUTH_UX.md); JWT/Bearer toil → env/API key habit) · **SAP connector** ⬜ Not started · **Scope import / inventory bootstrap (exports → YAML)** ⬜ Not started ([PLAN_SCOPE_IMPORT_FROM_EXPORTS.md](PLAN_SCOPE_IMPORT_FROM_EXPORTS.md)) · **Object storage (S3-class, Azure Blob, GCS)** ⬜ Not started ([PLAN_OBJECT_STORAGE_CLOUD_CONNECTORS.md](PLAN_OBJECT_STORAGE_CLOUD_CONNECTORS.md)) · **Semgrep CI** ✅ **Complete** — [`.github/workflows/semgrep.yml`](../../.github/workflows/semgrep.yml) + [PLAN_SEMGREP_CI.md](PLAN_SEMGREP_CI.md); Slack notify includes **Semgrep** failures when **`SLACK_WEBHOOK_URL`** set · **Bandit** 🔄 Dev dep + `[tool.bandit]` + CI job **medium+** ([PLAN_BANDIT_SECURITY_LINTER.md](PLAN_BANDIT_SECURITY_LINTER.md)); Phase 3 low triage ⬜ · **Additional data soup formats** 🔄 **Tier 3 rich media** ✅ on **`main`** (optional **`.[richmedia]`**; subtitles/metadata/OCR paths per plan); **Tier 1** (epub, parquet, …) + **stego** + **Tier 3b** tracker heuristics ⬜ backlog ([PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md](PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md)) · **Home lab (–1L)** 🔄 Partial: LAN dashBOARd + `uv`/git on a second host; playbook [§9 multi-host Linux](../ops/HOMELAB_VALIDATION.md#9-multi-host-linux-optional-matrix-dns-ssh-different-distros) (DNS/SSH; Void/Pi notes; no agent-side OS installs). **Done** when [§12](../ops/HOMELAB_VALIDATION.md#12-when-you-are-done-with-a-lab-pass) criteria + dated note (e.g. `docs/private/`).
@@ -74,7 +74,7 @@ When revising **license terms** for IP, commerciality, and profitability, explic
 
 | Seq | ID | Slice | Notes |
 | --- | -- | ----- | ----- |
-| 1 | **G-26-04** | README / TECH_GUIDE — “install identity” (`python3-lgpd-crawler` vs **Data Boar** brand) | Pure prose; no rename of PyPI/package without release plan |
+| 1 | **G-26-04** | README / TECH_GUIDE — install identity (**Data Boar** / PyPI **`data-boar`**) | ✅ Done — `pyproject` + docs aligned (PyPI publish when scheduled) |
 | 2 | **G-26-13** | **Wabbix** — one-line definition; align EN ↔ pt-BR in **GLOSSARY** (or linked ops stub) | Small; avoids ambiguous reviewer-facing wording |
 | 3 | **G-26-09** | Man pages — editorial pass (`docs/data_boar.1` + install docs): why two pages, de-duplicate install narrative | Docs only |
 | 4 | **G-26-08** | README — optional quality badges (Sonar / CI / Ruff); keep shields minimal | Verify URLs; avoid noisy or broken badges |
@@ -319,8 +319,8 @@ Tighten runtime defaults for the API host. Implemented: default `127.0.0.1`, opt
 
 - **Operator help sync (CLI, man, web, OpenAPI):** After new flags or API fields, keep **argparse `--help`**, **`docs/data_boar.1`**, **`docs/USAGE.md` / `USAGE.pt_BR.md`**, dashboard **`/help`**, and **OpenAPI** aligned. Checklist and bind-order notes: [OPERATOR_HELP_AUDIT.md](../OPERATOR_HELP_AUDIT.md). Regression: `tests/test_operator_help_sync.py` + `tests/operator_help_sync_manifest.py` (CLI, `/help`, man §1).
 - **pt-BR translation review:** ✅ **Done (baseline)** — Locale sweep + **`tests/test_docs_pt_br_locale.py`** guard **`.pt_BR.md`**; **`.cursor/rules/docs-pt-br-locale.mdc`** + chat rule **`operator-chat-language-pt-br.mdc`** keep **pt-BR** (not pt-PT) for docs and dialogue. **Ongoing:** when syncing EN → pt-BR, still prefer **natural** wording over literal translation; extend the pytest allowlist/patterns if new false positives appear.
-- **Legacy remote / branches cleanup (non-blocking):** Tidy local branches still tracking **`python3-lgpd-crawler-legacy-and-history-only`** (not `python2-…`); verify no active work, repoint upstream to **data-boar** or delete locally; optional archive old GitHub repo. Step-by-step: [ops/BRANCH_AND_DOCKER_CLEANUP.md](../ops/BRANCH_AND_DOCKER_CLEANUP.md) §7 · [REMOTES_AND_ORIGIN.md](../ops/REMOTES_AND_ORIGIN.md).
-- **PyPI / pip package name vs product brand (non-blocking, high-effort):** Product name is **Data Boar**; **`pyproject.toml`** / PyPI may still publish as **`python3-lgpd-crawler`**. **Align** (rename on PyPI or new package + deprecation path), **`pip install`** docs, import paths if any public, and **Docker Hub** `fabioleitao/data_boar` — **breaking** for existing `pip` consumers; **schedule** after **Priority band A** when a dedicated slice is justified (token-aware). Private operator notes: `docs/private/homelab/LAB_OP_SHOPPING_LIST_AND_POWER.md` §12.6.
+- **Legacy remote / branches cleanup (non-blocking):** Tidy local branches still tracking an optional **legacy** remote (often `*-legacy-and-history-only`, not `python2-…`); verify no active work, repoint upstream to **data-boar** or delete locally. Step-by-step: [ops/BRANCH_AND_DOCKER_CLEANUP.md](../ops/BRANCH_AND_DOCKER_CLEANUP.md) §7 · [REMOTES_AND_ORIGIN.md](../ops/REMOTES_AND_ORIGIN.md).
+- **PyPI publish:** Product and **`pyproject.toml`** name are **`data-boar`**. First publish to the Python Package Index is **scheduled with the release process** (not blocking day-to-day dev). **Docker Hub** image: `fabioleitao/data_boar`.
 - **Operator reachability (non-blocking):** Prefer **two channels** (e.g. GitHub notifications + **Slack** and/or **Signal** via Docker REST bridge). **Telegram is not** used for Data Boar ops (maintainer policy). Policy: [OPERATOR_NOTIFICATION_CHANNELS.md](../ops/OPERATOR_NOTIFICATION_CHANNELS.md) ([pt-BR](../ops/OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md)).
 - **KPI snapshot automation (optional):** Weekly `scripts/kpi-export.py` via Actions `workflow_dispatch` or schedule → artifact or chat excerpt; see [PLAN_READINESS_AND_OPERATIONS.md](PLAN_READINESS_AND_OPERATIONS.md) §4.7.
 
@@ -667,23 +667,15 @@ Core flow first (sections 1–7); then optional Phase 9 (complexity/gain: high c
 
 ---
 
-## [H3][U2] Branding rename — `python3-lgpd-crawler` -> `data-boar` (next release)
+## [H3][U2] Branding rename — PyPI id **`data-boar`** (ADR 0014)
 
 **ADR:** `docs/adr/0014-rename-repo-and-package-python3-lgpd-crawler-to-data-boar.md`
-**Scope:** cosmetic/houseclean — no behavior change, no history rewrite needed.
 
-GitHub repo and `origin` remote already point to `data-boar`. Remaining work:
+**Done in tree:** `pyproject.toml` **`name = "data-boar"`**, `core/about.py` metadata, docs/README/GLOSSARY/USAGE/SECURITY, Sonar default key, `requirements.txt` / `uv.lock`, release notes (Docker `fabioleitao/data_boar`).
 
-| # | To-do | Status |
-|---|---|---|
-| 1 | `pyproject.toml`: change `name = "python3-lgpd-crawler"` to `name = "data-boar"` | Pending |
-| 2 | Batch replace `python3-lgpd-crawler` -> `data-boar` in ~50 tracked doc files (non-historical) | Pending |
-| 3 | Run `check-all` to confirm no regressions | Pending |
-| 4 | Notify collaborator: `git remote set-url origin git@github.com:FabioLeitao/data-boar.git` | Pending |
-| 5 | Tag release with changelog note: "Repository fully renamed to data-boar" | Pending |
-| 6 | Remove `python3-lgpd-crawler-legacy-and-history-only` remote from `.git/config` | Pending |
+**Optional follow-ups (non-blocking):** first **PyPI publish** under `data-boar`; collaborator `origin` URL check; optional removal of legacy second remote after [BRANCH_AND_DOCKER_CLEANUP.md](../ops/BRANCH_AND_DOCKER_CLEANUP.md) §7.
 
-Historical mentions (ADRs, changelogs, `docs/plans/completed/`) may stay as-is — they document the project origin.
+Historical mentions (ADRs, some completed plans) may still cite the **original** bootstrap name where they record history.
 
 ---
 
