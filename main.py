@@ -461,7 +461,14 @@ def main() -> None:
 
             now = datetime.now(timezone.utc)
             started_at = last["started_at"]
-            if started_at <= now:
+            if isinstance(started_at, datetime):
+                if started_at.tzinfo is None:
+                    started_at = started_at.replace(tzinfo=timezone.utc)
+                else:
+                    started_at = started_at.astimezone(timezone.utc)
+            else:
+                started_at = None
+            if started_at is not None and started_at <= now:
                 delta = (now - started_at).total_seconds()
                 if delta < float(min_interval):
                     warn_lines.append(
