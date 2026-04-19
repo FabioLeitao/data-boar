@@ -16,7 +16,7 @@
 | ----- | ------------- | ------ |
 | 1a | **LAB-NODE-01** (Linux x86_64, Docker CE via [lab-node-01-baseline.yml](../../ops/automation/ansible/playbooks/lab-node-01-baseline.yml)) | Hub de primeira classe para `deploy/lab-smoke-stack`. O mesmo playbook adiciona o operador ao grupo **`docker`** — **novo login** (ou `newgrp docker`) após o Ansible ou `docker compose` falha com **permission denied** em `docker.sock`. |
 | 1b | **lab-node-02** (Zorin, Docker) | Segundo hub: repetir a mesma pilha Compose para o smoke de BD na LAN não depender de um único host. |
-| 2 | **WORKSTATION (Windows dev)** | `docker-lab-build.ps1` / imagem Hub + `/health` + scan contra **IP LAN do hub** nos alvos de BD; opcional montar `tests/data/compressed`. Opcional **WSL2** como segunda superfície de execução — [WSL2_DATA_BOAR_DEV_TESTING.pt_BR.md](WSL2_DATA_BOAR_DEV_TESTING.pt_BR.md). |
+| 2 | **PC Windows principal de desenvolvimento** | `docker-lab-build.ps1` / imagem Hub + `/health` + scan contra **IP LAN do hub** nos alvos de BD; opcional montar `tests/data/compressed`. Opcional **WSL2** como segunda superfície de execução — [WSL2_DATA_BOAR_DEV_TESTING.pt_BR.md](WSL2_DATA_BOAR_DEV_TESTING.pt_BR.md). |
 | 3 | **LAB-NODE-03** (Void **musl**) | Expõe surpresas de **wheels / libc** (`cryptography`, build `mysqlclient`); scan **CLI** para BD por LAN. **Sem** obrigação de Docker. |
 | 4 | **LAB-NODE-04** (ARM, pouca RAM) | **Por último** — lento; usar `scan.max_workers: 1`; confirmar `uv sync` / headers MariaDB conforme **HOMELAB_HOST_PACKAGE_INVENTORY.md**. **Pré-requisito:** espaço em disco. **Sem** obrigação de Docker. |
 
@@ -80,7 +80,7 @@ O Data Boar lê **o path que o processo vê**. Não há conector SMB separado �
 | --------- | ------ |
 | **SMB/CIFS** | Montar no **mesmo host** que corre o Data Boar (`/mnt/lab-share/...`); usar esse path no alvo `filesystem`. |
 | **NFS** | Idem — montar primeiro, depois `path:` no YAML. |
-| **sshfs** | Montar diretório remoto na **lab-node-02** (ou WSL WORKSTATION), depois `path:` no mount. Latência aumenta o tempo de scan — aceitável em laboratório. |
+| **sshfs** | Montar diretório remoto na **lab-node-02** (ou **WSL2** no PC de desenvolvimento), depois `path:` no mount. Latência aumenta o tempo de scan — aceitável em laboratório. |
 | **OneDrive / pCloud / Google Drive / Dropbox** | Usar a **pasta local sincronizada** pelo cliente (arquivos materializados). **Arquivos sob demanda** podem bloquear leitura — fixar ou hidratar antes do scan. |
 
 **Entre hosts:** Outras máquinas (lab-node-02, LAB-NODE-03) podem usar **TCP** para o BD no hub; **não** precisam das mesmas montagens de nuvem salvo que estejam a testar **filesystem** nesse host — aí montam ou copiam fixtures localmente.
@@ -109,7 +109,7 @@ Usar depois da ordem de hosts da **§1**. Marcar na tua folha de laboratório.
 | B | **LAB-NODE-04:** libertar espaço em disco; depois `git fetch` funciona. | Sem `No space left on device` no fetch. |
 | C | No **LAB-NODE-01** **e** num **segundo** hub (ex.: **lab-node-02**): `deploy/lab-smoke-stack` → `docker compose up -d`; healthchecks OK **nos dois**. | `docker compose ps` saudável em cada um; TCP `55432` / `33306` a partir da LAN para cada IP de hub. |
 | D | **Povoamento** automático via `init/postgres/*.sql` e `init/mariadb/*.sql` (inclui tabelas `02_*` de ligação). | Cliente `psql`/`mysql` mostra linhas em `lab_guardians`, `lab_minors_synthetic`, `lab_phone_directory`. |
-| E | **WORKSTATION:** Data Boar (contentor ou Win) com `config.lab-smoke.example.yaml` e IP **LAN** do hub; scan dos dois alvos de BD + FS opcional. | Sessão concluída; findings em `lab_customers` / tabelas de ligação; contadores `dob_possible_minor` se o seed de menores disparar. |
+| E | **PC de desenvolvimento (Windows):** Data Boar (contentor ou Win) com `config.lab-smoke.example.yaml` e IP **LAN** do hub; scan dos dois alvos de BD + FS opcional. | Sessão concluída; findings em `lab_customers` / tabelas de ligação; contadores `dob_possible_minor` se o seed de menores disparar. |
 | F | **lab-node-02:** `uv run` scan para o mesmo host:portas; dashboard opcional `:8088`. | Igual a E a partir de caminhos Linux. |
 | G | **LAB-NODE-03:** scan CLI pela LAN; confirmar wheels **musl** (PyMySQL/psycopg2). | Sem erros de import; scan concluído. |
 | H | **LAB-NODE-04:** `scan.max_workers: 1`; último na cadeia. | Conclui ou documenta timeout/OOM para o runbook. |

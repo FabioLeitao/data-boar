@@ -3,7 +3,7 @@
     {
       "sshHost": "lab-node-02",
       "repoPaths": [
-        "/home/REPLACE_USER/projects/python3-lgpd-crawler"
+        "/home/REPLACE_USER/Projects/dev/data-boar"
       ]
     }
   ],

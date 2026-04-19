@@ -50,3 +50,5 @@ sudo -v
 echo "OK: sudo -v succeeded."
 echo "Next: bw login / bw unlock  (then export BW_SESSION=... per Bitwarden docs)"
 echo "      VeraCrypt: see docs/private/homelab/VERACRYPT_PRIVATE_REPO_SETUP.pt_BR.md section 6.0.1"
+echo "Docker: if journal shows live-restore + swarm incompatible, from repo on LAB-NODE-01:"
+echo "      sudo bash scripts/lab-node-01-docker-remove-live-restore-and-restart.sh"

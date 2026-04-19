@@ -2,7 +2,7 @@
 
 **Português (Brasil):** [WSL2_DATA_BOAR_DEV_TESTING.pt_BR.md](WSL2_DATA_BOAR_DEV_TESTING.pt_BR.md)
 
-**Purpose:** Treat **WSL2** on the primary Windows dev machine (WORKSTATION-class) as an **optional second execution surface** alongside native Windows and alongside Linux laptops (LAB-NODE-01, lab-node-02). This does **not** replace CI or homelab hosts; it reduces the risk of assuming a single OS or a single container runtime for how customers or integrators run Data Boar.
+**Purpose:** Treat **WSL2** on the primary Windows dev machine (typical ThinkPad-class laptop) as an **optional second execution surface** alongside native Windows and alongside Linux laptops (LAB-NODE-01, lab-node-02). This does **not** replace CI or homelab hosts; it reduces the risk of assuming a single OS or a single container runtime for how customers or integrators run Data Boar.
 
 ---
 

@@ -327,6 +327,27 @@ def test_lab-node-01_fix_docker_list_sh_syntax():
     assert proc.returncode == 0, f"bash -n failed: {proc.stderr or proc.stdout}"
 
 
+def test_lab-node-01_docker_remove_live_restore_and_restart_sh_syntax():
+    """scripts/lab-node-01-docker-remove-live-restore-and-restart.sh has valid bash syntax. Skipped on Windows."""
+    if sys.platform == "win32":
+        return
+    root = _project_root()
+    script = root / "scripts" / "lab-node-01-docker-remove-live-restore-and-restart.sh"
+    if not script.exists():
+        return
+    try:
+        proc = subprocess.run(
+            ["bash", "-n", str(script)],
+            cwd=str(root),
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except FileNotFoundError:
+        return
+    assert proc.returncode == 0, f"bash -n failed: {proc.stderr or proc.stdout}"
+
+
 def test_lab-node-01_bitwarden_cli_bootstrap_sh_syntax():
     """scripts/lab-node-01-bitwarden-cli-bootstrap.sh has valid bash syntax (bash -n). Skipped on Windows."""
     if sys.platform == "win32":
