@@ -16,7 +16,7 @@
 | ----- | ----------- | --- |
 | 1a | **T14** (x86_64 Linux, Docker CE via [t14-baseline.yml](../../ops/automation/ansible/playbooks/t14-baseline.yml)) | First-class hub for `deploy/lab-smoke-stack` (DB containers). Same playbook adds the operator to the **`docker`** group — **log out/in** (or `newgrp docker`) after Ansible or `docker compose` fails with **permission denied** on `docker.sock`. |
 | 1b | **latitude** (Zorin, Docker) | Second hub: repeat the same compose stack so LAN DB smoke is not “one host only.” |
-| 2 | **L14 (Windows dev)** | `docker-lab-build.ps1` / Hub image + quick `/health` + scan against **hub LAN IP** for DB targets; optional mount of `tests/data/compressed`. Optional **WSL2** clone for a second execution surface — [WSL2_DATA_BOAR_DEV_TESTING.md](WSL2_DATA_BOAR_DEV_TESTING.md). |
+| 2 | **Primary Windows dev PC** | `docker-lab-build.ps1` / Hub image + quick `/health` + scan against **hub LAN IP** for DB targets; optional mount of `tests/data/compressed`. Optional **WSL2** clone for a second execution surface — [WSL2_DATA_BOAR_DEV_TESTING.md](WSL2_DATA_BOAR_DEV_TESTING.md). |
 | 3 | **mini-bt** (Void **musl**) | Catches **wheel / libc** surprises (`cryptography`, `mysqlclient` build); run **CLI** scan to DB over LAN after opening firewall port. **No** Docker requirement. |
 | 4 | **pi3b** (ARM, low RAM) | **Last** — slow; use `scan.max_workers: 1`; confirm `uv sync` / MariaDB headers per **HOMELAB_HOST_PACKAGE_INVENTORY.md**. **Prerequisite:** free disk space (`git fetch` failed on full SD in recent LAB-OP runs). **No** Docker requirement. |
 
@@ -80,7 +80,7 @@ Data Boar reads **whatever path the process sees**. There is no separate “SMB 
 | --------- | ------- |
 | **SMB/CIFS** | Mount on the **same host** that runs Data Boar (`/mnt/lab-share/...`); put that path in `filesystem` target. |
 | **NFS** | Same — mount first, then `path:` in YAML. |
-| **sshfs** | Mount remote directory on **latitude** (or L14 WSL), then point `path:` to the mount. Latency affects scan time — acceptable for lab. |
+| **sshfs** | Mount remote directory on **latitude** (or **WSL2** on the dev PC), then point `path:` to the mount. Latency affects scan time — acceptable for lab. |
 | **OneDrive / pCloud / Google Drive / Dropbox** | Use the vendor’s **local sync folder** (fully synced files). **Files On-Demand** placeholders can block reads — pin or hydrate files before scanning. |
 
 **Cross-host:** Other machines (latitude, mini-bt) can use **TCP** to the hub DB; they do **not** need the same cloud mounts unless you are testing **filesystem** on that host — then mount or copy fixtures locally.
@@ -109,7 +109,7 @@ Use after **§1** host order. Tick when done on your lab sheet.
 | B | **pi3b:** free disk space; then `git fetch` works. | No `No space left on device` on fetch. |
 | C | On **T14** **and** a **second** hub (e.g. **latitude**): `deploy/lab-smoke-stack` → `docker compose up -d`; healthchecks green on **both**. | `docker compose ps` healthy on each; TCP `55432` / `33306` from LAN to each hub IP. |
 | D | **Populate** is automatic from `init/postgres/*.sql` and `init/mariadb/*.sql` (including `02_*` linkage tables). | `psql`/`mysql` client shows `lab_guardians`, `lab_minors_synthetic`, `lab_phone_directory` rows. |
-| E | **L14:** Data Boar (container or Win) uses `config.lab-smoke.example.yaml` with hub **LAN IP**; scan both DB targets + optional FS mounts. | Session completes; findings for `lab_customers` / linkage tables; `dob_possible_minor` counters if minors seed triggers. |
+| E | **Dev PC (Windows):** Data Boar (container or Win) uses `config.lab-smoke.example.yaml` with hub **LAN IP**; scan both DB targets + optional FS mounts. | Session completes; findings for `lab_customers` / linkage tables; `dob_possible_minor` counters if minors seed triggers. |
 | F | **latitude:** `uv run` scan to same DB host:ports; optional dashboard `:8088`. | Same as E from Linux paths. |
 | G | **mini-bt:** CLI scan over LAN; confirm **musl** wheels (PyMySQL/psycopg2) load. | No import errors; scan completes. |
 | H | **pi3b:** `scan.max_workers: 1`; last in chain. | Completes or documents timeout/OOM for runbook. |

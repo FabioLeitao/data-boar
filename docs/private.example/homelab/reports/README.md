@@ -51,11 +51,11 @@ Para gravar a saída do probe SNMP em **arquivo local** (pasta gitignored), sem 
    - Confirme que a tarefa está **habilitada**.
 1. **Ações** → **Iniciar um programa**:
    - **Programa:** `powershell.exe`
-   - **Argumentos:** `-NoProfile -ExecutionPolicy Bypass -File "C:\Users\<username>\Documents\dev\python3-lgpd-crawler\scripts\snmp-udm-lab-probe-to-log.ps1" -WslDistro "Debian" -MaxLines 400`
+   - **Argumentos:** `-NoProfile -ExecutionPolicy Bypass -File "C:\Users\<username>\Documents\dev\data-boar\scripts\snmp-udm-lab-probe-to-log.ps1" -WslDistro "Debian" -MaxLines 400`
 
      (ajuste o caminho do repo; o nome da distro com `wsl -l -v`. Se o alvo for um **`.env` dedicado** (ex. UDM-SE), acrescenta **`-EnvFile "…\docs\private\homelab\.env.snmp.udm-se.local"`** antes ou depois dos outros switches.)
 
-   - **Começar em:** `C:\Users\<username>\Documents\dev\python3-lgpd-crawler` (raiz do clone).
+   - **Começar em:** `C:\Users\<username>\Documents\dev\data-boar` (raiz do clone **Data Boar**).
 1. Execute como **seu usuário** (para ler `.env` e usar WSL); “Executar somente quando o usuário estiver conectado” costuma ser mais simples que serviço sem ambiente.
 
 **Disco:** a cada 30 minutos o log do **mesmo dia** cresce; com **`-MaxLines 400`** limitas cada execução. Apague ou arquive logs antigos em `reports/` quando necessário.

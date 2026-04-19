@@ -18,8 +18,8 @@
     t14_docker_install_compose_plugin: true
     # Docker Swarm (single-node manager) — enables `docker service` / `docker stack deploy`
     t14_docker_swarm_init: true
-    # Podman (rootless containers, OCI-compatible)
-    t14_install_podman: false
+    # Podman (rootless containers, OCI-compatible) — lab smokes / completão may use alongside Docker CE
+    t14_install_podman: true
     # k3s (lightweight Kubernetes — installs from get.k3s.io; opt-in deliberately)
     t14_install_k3s: false
 
