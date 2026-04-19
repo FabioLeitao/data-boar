@@ -43,6 +43,7 @@
 | `lab-op-sync-and-collect.ps1` | Multi-host batch | **`autonomous-merge-and-lab`** SKILL, private manifest |
 | `lab-completao-orchestrate.ps1` | Lab “completão” (SSH smoke per host + optional HTTP) | **`LAB_COMPLETAO_RUNBOOK.md`**, private manifest **`completaoHealthUrl`** |
 | `collect-homelab-report-remote.ps1`, `run-homelab-host-report-all.ps1` | Remote reports | **`HOMELAB_VALIDATION.md`**, private manifest |
+| `lab-allow-data-boar-inbound.ps1`, `lab-allow-data-boar-inbound.sh` | Lab firewall allow for TCP 8088 (Windows / Linux) | **`DATA_BOAR_LAB_SECURITY_TOOLING.md`** |
 | `lab-env-load.ps1` | Dot-source env for probes | **`lab-op-systems-context.mdc`** §3 |
 | `growatt.ps1`, `enel.ps1`, `energy-report.ps1` | Solar / grid / correlation | **`homelab-lab-op-data`** SKILL, **`LAB-ROUTER-01-scan`**, **`solar-snap`**, **`enel-check`**, **`energy-report`** keywords |
 | `growatt-session-collect.ps1`, `enel-session-collect.ps1` | Session window refresh | **`session-aware-collect`** SKILL, **`session-collect`** keyword |

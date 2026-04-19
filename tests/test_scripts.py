@@ -732,6 +732,38 @@ def test_lab_op_ps1_syntax():
     assert _parse_powershell_script(script, root), "lab-op.ps1 parse failed"
 
 
+def test_lab_allow_data_boar_inbound_ps1_syntax():
+    """scripts/lab-allow-data-boar-inbound.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "lab-allow-data-boar-inbound.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), (
+        "lab-allow-data-boar-inbound.ps1 parse failed"
+    )
+
+
+def test_lab_allow_data_boar_inbound_sh_syntax():
+    """scripts/lab-allow-data-boar-inbound.sh has valid bash syntax (bash -n)."""
+    if sys.platform == "win32":
+        return
+    root = _project_root()
+    script = root / "scripts" / "lab-allow-data-boar-inbound.sh"
+    if not script.exists():
+        return
+    try:
+        proc = subprocess.run(
+            ["bash", "-n", str(script)],
+            cwd=str(root),
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+    except FileNotFoundError:
+        return
+    assert proc.returncode == 0, f"bash -n failed: {proc.stderr or proc.stdout}"
+
+
 def test_es_find_ps1_syntax():
     """scripts/es-find.ps1 has valid PowerShell syntax (parse-only)."""
     root = _project_root()
