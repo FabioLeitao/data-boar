@@ -203,6 +203,16 @@ def test_usage_internal_links_resolve():
     assert not broken, f"docs/USAGE.md broken relative link(s): {broken}"
 
 
+def test_lab_smoke_multi_host_pt_br_no_operator_scratch_arrows():
+    """LAB_SMOKE pt-BR checklist must not ship informal notes after '<-' (tracked hygiene)."""
+    path = _project_root() / "docs" / "ops" / "LAB_SMOKE_MULTI_HOST.pt_BR.md"
+    text = _read_md(path)
+    assert " <-" not in text, (
+        "Remove inline operator scratch notes (pattern ' <-' ) from "
+        "docs/ops/LAB_SMOKE_MULTI_HOST.pt_BR.md; keep criteria in the table clean."
+    )
+
+
 # --- Optional: key doc files are non-empty and have minimal structure ---
 
 
