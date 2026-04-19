@@ -6,7 +6,7 @@
 
 **Não é aconselhamento jurídico.** Para dados **reais** de pessoas, exija **base legal**, **minimização** e contas técnicas **só leitura**; prefira dados **sintéticos** ou **amostras públicas** quando houver dúvida.
 
-**“Completão” multi-host (volta completa de laboratório):** Este arquivo é o **baseline** de **uma máquina** (clone, `check-all`, smoke Docker, FS sintético). Para **E2E ordenado em vários hosts**—pilha Postgres/MariaDB, arquivos comprimidos, SMB/NFS opcional, **SSHFS**, WebDAV, **filesystem sobre iSCSI** montado no SO—seguir **[LAB_SMOKE_MULTI_HOST.pt_BR.md](LAB_SMOKE_MULTI_HOST.pt_BR.md)** (ordem de hosts, checklist **A–M**, definição de *completão*). **PII / publicação:** não coloques linhas de montagem reais, credenciais, IPs de LAN ou caminhos de casa em docs rastreados ou issues públicas; ver [ADR 0018](../adr/0018-pii-anti-recurrence-guardrails-for-tracked-files-and-branch-history.md) e [ADR 0019](../adr/0019-pii-verification-cadence-and-manual-review-gate.md). Evidência operacional fica em **`docs/private/homelab/`** (gitignored).
+**“Completão” multi-host (volta completa de laboratório):** Este arquivo é o **baseline** de **uma máquina** (clone, `check-all`, smoke Docker, FS sintético). Para **E2E ordenado em vários hosts**—pilha Postgres/MariaDB, arquivos comprimidos, SMB/NFS opcional, **SSHFS**, WebDAV, **filesystem sobre iSCSI** montado no SO—seguir **[LAB_SMOKE_MULTI_HOST.pt_BR.md](LAB_SMOKE_MULTI_HOST.pt_BR.md)** (ordem de hosts, checklist **A–M**, definição de *completão*). **PII / publicação:** não coloques linhas de montagem reais, credenciais, IPs de LAN ou caminhos de casa em docs rastreados ou issues públicas; ver [ADR 0018](../adr/0018-pii-anti-recurrence-guardrails-for-tracked-files-and-branch-history.md) e [ADR 0019](../adr/0019-pii-verification-cadence-and-manual-review-gate.md). Evidência operacional fica em `**docs/private/homelab/`** (gitignored).
 
 **Relacionado:** [deploy/DEPLOY.pt_BR.md](../deploy/DEPLOY.pt_BR.md) · [SONARQUBE_HOME_LAB.md](SONARQUBE_HOME_LAB.md) · [OPERATOR_IT_REQUIREMENTS.pt_BR.md](OPERATOR_IT_REQUIREMENTS.pt_BR.md) · [TESTING.pt_BR.md](../TESTING.pt_BR.md) · [SECURITY.pt_BR.md](../SECURITY.pt_BR.md) · **Lab-op — stack mínimo (Podman + k3s):** [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md) ([EN](LAB_OP_MINIMAL_CONTAINER_STACK.md)) · **LAB-NODE-01 + LMDE 7:** [LMDE7_LAB-NODE-01_DEVELOPER_SETUP.pt_BR.md](LMDE7_LAB-NODE-01_DEVELOPER_SETUP.pt_BR.md) · **Observabilidade opcional:** [PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md) · **SIEM (Wazuh):** mesmo doc LAB_OP §6
 
@@ -15,18 +15,33 @@
 ## 0. Princípios
 
 1. **Automatizar primeiro no repo:** `.\scripts\check-all.ps1` ou `uv run pytest -v -W error` na raiz.
-1. **Lab = integração:** caminhos, volumes Docker, portas de BD, firewall.
-1. **Por padrão, sintético:** arquivos `.txt` / `.csv` com padrões **falsos** (inspire-se nos testes do projeto, **não** use dados reais de terceiros).
-1. **Real só com permissão:** cópias não produtivas, anonimizadas ou documentos seus.
-1. **Containers Docker:** Prefira `docker run --rm` em checagens pontuais. Se mantiver um container **Data Boar** nomeado entre execuções, objetive **uma** instância principal—ou **duas** só para **A/B** explícito. Remova containers descartáveis ao fim para não confundir portas (`8088`) e volumes. Ver [DOCKER_SETUP.pt_BR.md](../DOCKER_SETUP.pt_BR.md) §7.
-1. **Docker CE + Swarm já ativo:** Num **manager** Swarm (incluindo **um só nó** em homelab), `docker build` e `docker run -p …` continuam a servir para §1.3–1.5; a porta publicada liga-se ao host salvo conflito com outro serviço. Se usar **stacks** (`docker stack deploy`), traduza o `docker run` do guia para Compose com `ports:` e volume para `/data`; em rede overlay o **nome do serviço** faz DNS (como `lab-net` na §4 em inglês). Nomes de serviços e papéis dos nós só em notas privadas.
+2. **Lab = integração:** caminhos, volumes Docker, portas de BD, firewall.
+3. **Por padrão, sintético:** arquivos `.txt` / `.csv` com padrões **falsos** (inspire-se nos testes do projeto, **não** use dados reais de terceiros).
+4. **Real só com permissão:** cópias não produtivas, anonimizadas ou documentos seus.
+5. **Containers Docker:** Prefira `docker run --rm` em checagens pontuais. Se mantiver um container **Data Boar** nomeado entre execuções, objetive **uma** instância principal—ou **duas** só para **A/B** explícito. Remova containers descartáveis ao fim para não confundir portas (`8088`) e volumes. Ver [DOCKER_SETUP.pt_BR.md](../DOCKER_SETUP.pt_BR.md) §7.
+6. **Docker CE + Swarm já ativo:** Num **manager** Swarm (incluindo **um só nó** em homelab), `docker build` e `docker run -p …` continuam a servir para §1.3–1.5; a porta publicada liga-se ao host salvo conflito com outro serviço. Se usar **stacks** (`docker stack deploy`), traduza o `docker run` do guia para Compose com `ports:` e volume para `/data`; em rede overlay o **nome do serviço** faz DNS (como `lab-net` na §4 em inglês). Nomes de serviços e papéis dos nós só em notas privadas.
+
+### 0.1 Acesso pela LAN a partir de outro host do lab (dashboard / API)
+
+Para usar o **dashboard HTTP** e a **API REST** do Data Boar a partir de **outra máquina na LAN do laboratório** (navegador num segundo PC, `curl` numa VM de teste, etc.):
+
+| Item | Detalhe |
+| ---- | ------- |
+| **Porta** | **TCP 8088** por padrão (igual para `uv run` nativo e Docker `-p 8088:8088`). |
+| **Endereço de bind** | O processo precisa escutar em **`0.0.0.0`**, não só em **`127.0.0.1`**. Use `--web --host 0.0.0.0 --port 8088` (e `--allow-insecure-http` se não estiver usando TLS na app). Imagens Docker que já fazem bind em todas as interfaces costumam estar OK; confira com `ss -tlnp` / `curl` a partir do outro host. |
+| **Firewall no host (Linux)** | Liberar **entrada** **8088/tcp** **só da sub-rede da LAN** (exemplo de padrão — ajuste o CIDR: `sudo ufw allow from 10.0.0.0/16 to any port 8088 proto tcp comment 'Data Boar lab LAN'`). Mais contexto: [LMDE7_LAB-NODE-01_DEVELOPER_SETUP.pt_BR.md](LMDE7_LAB-NODE-01_DEVELOPER_SETUP.pt_BR.md). |
+| **Roteador / UniFi (VLANs, Wi‑Fi, convidado)** | Se o cliente não estiver no mesmo segmento L2 do servidor, inclua regra **permitindo** a rede cliente a alcançar **servidor:8088** (e DNS se usar nomes). **IPs/VLAN reais** só em notas **gitignored**. |
+| **WAN** | **Não** exponha **8088** na internet para testes casuais; use VPN ou túnel SSH se precisar de acesso remoto. |
+| **TLS / proxy reverso** | Se nginx/Caddy ficar na frente na **443**, abra **443** até o proxy em vez de publicar **8088** cru na borda. |
+
+**Dependências no host de lab:** `uv sync` (e **pacotes de sistema** do [TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md) conforme a distro) antes do §1.1; não há pacote Python extra só para “escutar na LAN”.
 
 ---
 
 ## 1. Checklist base (copiar)
 
 | Passo | Ação                                                                                | Critério de sucesso                                                                                                                                  |
-| ----- | ----                                                                                | --------------------                                                                                                                                 |
+| ----- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1.1   | `git pull`; `uv sync`                                                               | Dependências OK                                                                                                                                      |
 | 1.2   | Testes completos                                                                    | Tudo verde                                                                                                                                           |
 | 1.3   | `docker build -t data_boar:lab .`                                                   | Build concluído (reutilize esta tag em cada smoke de lab — não crie tag nova por execução; ver [DOCKER_SETUP.pt_BR.md](../DOCKER_SETUP.pt_BR.md) §7) |
@@ -87,7 +102,7 @@ Modo `enforced` sem `.lic` deve bloquear; ver [LICENSING_SPEC.md](LICENSING_SPEC
 
 ## 9. Vários hosts Linux (matriz opcional)
 
-Homelab com **várias máquinas** (portátil Ubuntu/derivado com Docker, mini-PC musl, Raspberry Pi, mais tarde **hipervisor + VMs**): repetir o **mínimo** do §1 em cada “sabor” para apanhar **ARM vs x86**, **musl vs glibc**, RAM, **VM vs bare metal**. Derivados Ubuntu seguem a mesma lógica de pacotes/Docker que Ubuntu. **Swarm** no portátil não impede §1.3–1.5; atenção a portas. **Não** instalar pacotes de sistema via automação sem o operador — se faltar `uv`/Python, o operador instala e volta a correr §1.1–1.2.
+Homelab com **várias máquinas** (portátil Ubuntu/derivado com Docker, mini-PC musl, Raspberry Pi, mais tarde **hipervisor + VMs**): repetir o **mínimo** do §1 em cada “sabor” para apanhar **ARM vs x86**, **musl vs glibc**, RAM, **VM vs bare metal**. Derivados Ubuntu seguem a mesma lógica de pacotes/Docker que Ubuntu. **Swarm** no portátil não impede §1.3–1.5; atenção a portas. **PODE i**nstalar pacotes de sistema via automação sem o operador, desde que seguro e safe — se faltar `uv`/Python, o operador instala e volta a correr §1.1–1.2.
 
 **Tabela completa (EN):** [HOMELAB_VALIDATION.md §9](HOMELAB_VALIDATION.md#9-multi-host-linux-optional-matrix-dns-ssh-different-distros) — **três portáteis** em papel: **Windows+WSL** (dev), **Linux nativo** (lab), **terceiro** (muitas vezes **silício mais recente** — candidato a **paralelismo** Docker/pytest; ver linha *Secondary x86_64 laptop* na tabela EN); **WSL extra** no Windows **não** é um quarto chassis — ver [WINDOWS_WSL_MULTI_DISTRO_LAB.pt_BR.md](WINDOWS_WSL_MULTI_DISTRO_LAB.pt_BR.md). **Rig paralelo (opcional):** [§9.2 em inglês](HOMELAB_VALIDATION.md#92-parallel-testing-rig-optional--secondary-laptop-or-tower-guest). Inclui **Proxmox**, *spare desktop*, etc.; ver EN §9 e §9.1.
 
@@ -95,7 +110,7 @@ Homelab com **várias máquinas** (portátil Ubuntu/derivado com Docker, mini-PC
 
 **Simulação de cluster, Alpine / AlmaLinux e escala horizontal (§9.3 em EN):** quando a **torre + Proxmox** estiver no ar, dá para várias VMs (sabores **Alpine**, **AlmaLinux**, etc.) com **Docker/Podman** para simular **vários nós** e ensaios de **resiliência** e **réplicas** — ver [§9.3 em inglês](HOMELAB_VALIDATION.md#93-cluster-simulation-alpine--almalinux-and-when-horizontal-scale-matters) e a tabela **“quando priorizar”** no §5 de [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md).
 
-**Não** publique no GitHub nomes reais de máquinas, IPs da LAN ou caminhos em `$HOME`—use só **`docs/private/homelab/`** (ignorado pelo git) ou notas locais; política em [PRIVATE_OPERATOR_NOTES.pt_BR.md](../PRIVATE_OPERATOR_NOTES.pt_BR.md).
+**Não** publique no GitHub nomes reais de máquinas, IPs da LAN ou caminhos em `$HOME`—use só `**docs/private/homelab/`** (ignorado pelo git) ou notas locais; política em [PRIVATE_OPERATOR_NOTES.pt_BR.md](../PRIVATE_OPERATOR_NOTES.pt_BR.md).
 
 ---
 
@@ -107,7 +122,7 @@ Homelab com **várias máquinas** (portátil Ubuntu/derivado com Docker, mini-PC
 
 ## 11. Registar resultados
 
-Nota datada em **`docs/private/homelab/`** (gitignored): **hostnames**, tag da imagem, alvos, pass/fail.
+Nota datada em `**docs/private/homelab/**` (gitignored): **hostnames**, tag da imagem, alvos, pass/fail.
 
 ---
 
@@ -121,3 +136,4 @@ Nota datada em **`docs/private/homelab/`** (gitignored): **hostnames**, tag da i
 - [HOMELAB_MOBILE_OPERATOR_TOOLS.pt_BR.md](HOMELAB_MOBILE_OPERATOR_TOOLS.pt_BR.md) — **iPhone / tablet Android** como ferramentas do operador (UniFi, GitHub, Bitwarden, SSH na LAN, smoke da UI, fotos para notas privadas).
 - [PLANS_TODO.md](../plans/PLANS_TODO.md) — sequência token-aware após o lab.
 - [CODE_PROTECTION_OPERATOR_PLAYBOOK.md](../CODE_PROTECTION_OPERATOR_PLAYBOOK.md) — Priority band A.
+
