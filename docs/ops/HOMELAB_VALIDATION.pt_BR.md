@@ -36,6 +36,8 @@ Para usar o **dashboard HTTP** e a **API REST** do Data Boar a partir de **outra
 
 **Dependências no host de lab:** `uv sync` (e **pacotes de sistema** do [TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md) conforme a distro) antes do §1.1; não há pacote Python extra só para “escutar na LAN”.
 
+**Pilha de segurança no host (firewall, AppArmor, fail2ban, EDR, integridade):** controles em camadas podem bloquear portas ou gerar ruído durante runs de lab. Veja **[DATA_BOAR_LAB_SECURITY_TOOLING.pt_BR.md](DATA_BOAR_LAB_SECURITY_TOOLING.pt_BR.md)** para o que ajustar, por quê e scripts auxiliares (`scripts/lab-allow-data-boar-inbound.ps1`, `scripts/lab-allow-data-boar-inbound.sh`).
+
 ---
 
 ## 1. Checklist base (copiar)
