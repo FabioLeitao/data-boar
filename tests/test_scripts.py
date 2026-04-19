@@ -700,6 +700,17 @@ def test_pii_fresh_clone_audit_ps1_syntax():
     )
 
 
+def test_check_cursor_markdown_preview_settings_ps1_syntax():
+    """scripts/check-cursor-markdown-preview-settings.ps1 parses on Windows (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "check-cursor-markdown-preview-settings.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), (
+        "check-cursor-markdown-preview-settings.ps1 parse failed"
+    )
+
+
 # ---------------------------------------------------------------------------
 # PowerShell ASCII-safety guard
 # Non-ASCII characters (em-dash U+2014, curly quotes, etc.) cause

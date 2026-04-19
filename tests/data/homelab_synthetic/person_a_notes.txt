@@ -1,0 +1,4 @@
+Lab fixture — fictional person for cross-file linkage tests.
+Nome preferencial: Aurora Sintetica Lab
+Documento de teste (CPF formato): 123.456.789-09
+Observacao: mesmo rotulo aparece no CSV companheiro na pasta homelab_synthetic.
