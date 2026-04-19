@@ -123,6 +123,8 @@ docker run -d --name lab-pg --network lab-net -e POSTGRES_PASSWORD=labpass -e PO
 
 **MySQL/MariaDB:** same idea; install connector deps per [TECH_GUIDE.md](../TECH_GUIDE.md).
 
+**Bundled compose + seeds:** For a **ready-made** two-DB stack (Postgres + MariaDB) with synthetic `lab_customers` / `lab_notes` tables and example `config.lab-smoke.example.yaml`, use **`deploy/lab-smoke-stack/`** and follow **[LAB_SMOKE_MULTI_HOST.md](LAB_SMOKE_MULTI_HOST.md)** (ordering hosts, firewall, compressed fixtures, shares).
+
 ---
 
 ## 5. NoSQL (optional extras)

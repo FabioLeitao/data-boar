@@ -15,6 +15,7 @@ Exemplos versionados e scripts usam o alias SSH **`lab-op`** para o servidor Lin
 ## Relacionado
 
 - [LAB_OP_SHORTHANDS.pt_BR.md](LAB_OP_SHORTHANDS.pt_BR.md) · [EN](LAB_OP_SHORTHANDS.md) — ações do `lab-op.ps1`
+- [LAB_EXTERNAL_CONNECTIVITY_EVAL.pt_BR.md](LAB_EXTERNAL_CONNECTIVITY_EVAL.pt_BR.md) · [EN](LAB_EXTERNAL_CONNECTIVITY_EVAL.md) — **`external-eval`** + `lab-external-smoke.ps1` + playbook de APIs/datasets públicos (sem segredos no GitHub)
 - [PII_FRESH_CLONE_AUDIT.pt_BR.md](PII_FRESH_CLONE_AUDIT.pt_BR.md) · [EN](PII_FRESH_CLONE_AUDIT.md) — **`pii-fresh-audit`** + `pii-fresh-clone-audit.ps1`
 - [EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.pt_BR.md](EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.pt_BR.md) · [EN](EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md) — **`es-find`** + `es-find.ps1` (Windows (PC principal de desenvolvimento); nao Linux **lab-op**)
 - [PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md](PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md) · [EN](PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md) — sem operações destrutivas no repo no PC principal; `es-find` / auditorias PII em temp só leitura ou só em `%TEMP%`

@@ -14,6 +14,7 @@ Tracked examples and scripts use the SSH alias **`lab-op`** for the Linux lab se
 
 ## Related
 
+- [LAB_EXTERNAL_CONNECTIVITY_EVAL.md](LAB_EXTERNAL_CONNECTIVITY_EVAL.md) ([pt-BR](LAB_EXTERNAL_CONNECTIVITY_EVAL.pt_BR.md)) — **`external-eval`**, `lab-external-smoke.ps1`, public API / read-only DB lab (no secrets in git)
 - [LAB_OP_SHORTHANDS.md](LAB_OP_SHORTHANDS.md) ([pt-BR](LAB_OP_SHORTHANDS.pt_BR.md)) — `lab-op.ps1` actions
 - [PII_FRESH_CLONE_AUDIT.md](PII_FRESH_CLONE_AUDIT.md) ([pt-BR](PII_FRESH_CLONE_AUDIT.pt_BR.md)) — **`pii-fresh-audit`** + `pii-fresh-clone-audit.ps1`
 - [EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md](EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md) ([pt-BR](EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.pt_BR.md)) — **`es-find`** + `es-find.ps1` (Windows primary dev PC; not Linux **lab-op**)
