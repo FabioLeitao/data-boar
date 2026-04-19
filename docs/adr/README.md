@@ -49,6 +49,7 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0028  | [Lab external connectivity evaluation playbook (tracked)](0028-lab-external-connectivity-eval-playbook.md) | Accepted |
 | 0029  | [Cursor Markdown preview guardrail + lab-smoke Ansible hook](0029-cursor-markdown-preview-guardrail-and-lab-smoke-ansible-hook.md) | Accepted |
 | 0030  | [Python dependency update closure (single pass)](0030-python-dependency-update-closure-single-pass.md) | Accepted |
+| 0031  | [PyPI packaging with Hatchling (flat layout)](0031-pypi-packaging-hatchling-flat-layout.md) | Accepted |
 
 ## Related docs
 
