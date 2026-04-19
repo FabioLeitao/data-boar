@@ -25,7 +25,7 @@ Defined in **`.cursor/rules/session-mode-keywords.mdc`**.
 
 ## Today mode (one-day focus)
 
-**Dated** checklists (`OPERATOR_TODAY_MODE_YYYY-MM-DD.md`), **carryover queue**, and **publish vs `pyproject.toml` sync** live under **[`today-mode/`](today-mode/README.md)** — start there instead of hunting loose files in `docs/ops/`. Chat token: **`today-mode YYYY-MM-DD`** (English-only). **Social editorial + hub (private):** [today-mode/SOCIAL_PUBLISH_AND_TODAY_MODE.md](today-mode/SOCIAL_PUBLISH_AND_TODAY_MODE.md) ([pt-BR](today-mode/SOCIAL_PUBLISH_AND_TODAY_MODE.pt_BR.md)); token **`social-today-check`**.
+**Dated** checklists (`OPERATOR_TODAY_MODE_YYYY-MM-DD.md`), **carryover queue**, **morning readiness ladder** (Tier A daily; –1 / –1b / –1L cadence), and **publish vs `pyproject.toml` sync** live under **[`today-mode/`](today-mode/README.md)** — start there instead of hunting loose files in `docs/ops/`. Chat tokens: **`today-mode YYYY-MM-DD`**, **`carryover-sweep`** / **`morning-readiness`** (English-only). **Social editorial + hub (private):** [today-mode/SOCIAL_PUBLISH_AND_TODAY_MODE.md](today-mode/SOCIAL_PUBLISH_AND_TODAY_MODE.md) ([pt-BR](today-mode/SOCIAL_PUBLISH_AND_TODAY_MODE.pt_BR.md)); token **`social-today-check`**.
 
 ---
 

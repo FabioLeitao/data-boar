@@ -8,13 +8,12 @@
 
 ## Block 0 — Morning reality check (10–15 min)
 
-Run **`carryover-sweep`** or **`.\scripts\operator-day-ritual.ps1 -Mode Morning`**, then:
+Run **`carryover-sweep`** or **`.\scripts\operator-day-ritual.ps1 -Mode Morning`** — the script prints **Tier A** (`git fetch`, `git status -sb`, open PRs, latest **`main`** CI, today-mode file for **today**) plus **Tier B–D reminders** (supply Colleague-Nn / image / lab cadence). See **[README.md](README.md)** (*Morning readiness*). Then:
 
-1. `git fetch origin` · `git status -sb` · `gh pr list --state open`
-2. **`origin/main`:** pull if another machine merged overnight.
-3. **Working tree (public repo):** decide: commits, branch, stash, or continue.
-4. **Stacked private git (`docs/private/`):** if pending, schedule **`.\scripts\private-git-sync.ps1`** (and **`-Push`** if policy says so).
-5. `- [ ] **Block close (lab / VC):** when pausing or leaving lab later, type **`block-close`** in chat and follow VeraCrypt session policy in **private** **`docs/private/homelab/OPERATOR_VERACRYPT_SESSION_POLICY*.md`** — optional **boundary** checklist, **not** the full **`eod-sync`** git/gh ritual.
+1. **`origin/main`:** **`git pull origin main`** if the ritual shows your branch is behind.
+2. **Working tree (public repo):** decide: commits, branch, stash, or continue.
+3. **Stacked private git (`docs/private/`):** if pending, schedule **`.\scripts\private-git-sync.ps1`** (and **`-Push`** if policy says so).
+4. `- [ ] **Block close (lab / VC):** when pausing or leaving lab later, type **`block-close`** in chat and follow VeraCrypt session policy in **private** **`docs/private/homelab/OPERATOR_VERACRYPT_SESSION_POLICY*.md`** — optional **boundary** checklist, **not** the full **`eod-sync`** git/gh ritual.
 
 **Canonical rolling queue:** [CARRYOVER.md](CARRYOVER.md) · **Published truth:** [PUBLISHED_SYNC.md](PUBLISHED_SYNC.md)
 
