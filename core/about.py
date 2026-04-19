@@ -13,7 +13,7 @@ def get_about_info() -> dict:
     try:
         from importlib.metadata import version
 
-        ver = version("python3-lgpd-crawler")
+        ver = version("data-boar")
     except Exception:
         ver = "1.7.0"
     return {
@@ -21,7 +21,7 @@ def get_about_info() -> dict:
         "version": ver,
         # Note: the template already prints `about.name` before `about.description`,
         # so `description` must not repeat the product name.
-        "description": "based on lgpd_crawler technology. Audits personal and sensitive data across databases and filesystems, aligned with LGPD, GDPR, CCPA, HIPAA, and GLBA.",
+        "description": "Audits personal and sensitive data across databases and filesystems, aligned with LGPD, GDPR, CCPA, HIPAA, and GLBA.",
         "author": "Fabio Leitao",
         "license": "BSD 3-Clause License",
         "license_url": "https://opensource.org/licenses/BSD-3-Clause",

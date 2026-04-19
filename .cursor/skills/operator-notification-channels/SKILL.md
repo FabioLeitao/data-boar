@@ -24,4 +24,4 @@ description: >-
 
 ## Legacy Git + cleanup
 
-- **Legacy remote tidy:** [docs/ops/BRANCH_AND_DOCKER_CLEANUP.md](../../../docs/ops/BRANCH_AND_DOCKER_CLEANUP.md) §7 (`python3-lgpd-crawler-legacy-and-history-only`, not python2).
+- **Legacy remote tidy:** [docs/ops/BRANCH_AND_DOCKER_CLEANUP.md](../../../docs/ops/BRANCH_AND_DOCKER_CLEANUP.md) §7 (optional `*-legacy-and-history-only` remote, not python2).

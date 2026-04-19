@@ -23,7 +23,7 @@ If those paths are missing, create them on the operator machine only (see **`doc
 Dot-source the helper from PowerShell (optional; add to **`$PROFILE`** for a persistent alias):
 
 ```powershell
-. "C:\path\to\python3-lgpd-crawler\scripts\talent-dossier.ps1"
+. "C:\path\to\data-boar\scripts\talent-dossier.ps1"
 ```
 
 **Repo root resolution (in order):**

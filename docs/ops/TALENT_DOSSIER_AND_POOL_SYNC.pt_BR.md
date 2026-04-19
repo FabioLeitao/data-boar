@@ -23,7 +23,7 @@ Se esses caminhos não existirem, crie na máquina do operador apenas (veja **`d
 Faça dot-source do helper no PowerShell (opcional; inclua no **`$PROFILE`** para alias persistente):
 
 ```powershell
-. "C:\caminho\para\python3-lgpd-crawler\scripts\talent-dossier.ps1"
+. "C:\caminho\para\data-boar\scripts\talent-dossier.ps1"
 ```
 
 **Resolução da raiz do repositório (nesta ordem):**
