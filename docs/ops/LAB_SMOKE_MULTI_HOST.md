@@ -74,16 +74,18 @@ docker compose ps
 
 ## 5. Shares (SMB / NFS / sshfs / cloud)
 
-Data Boar reads **whatever path the process sees**. There is no separate “SMB connector” — the OS must mount the share first.
+**Source of truth:** [TECH_GUIDE.md](../TECH_GUIDE.md) (share types, YAML) and the connectors under **`connectors/`** (`smb_connector.py`, `nfs_connector.py`, …).
 
-| Mechanism | Pattern |
-| --------- | ------- |
-| **SMB/CIFS** | Mount on the **same host** that runs Data Boar (`/mnt/lab-share/...`); put that path in `filesystem` target. |
-| **NFS** | Same — mount first, then `path:` in YAML. |
-| **sshfs** | Mount remote directory on **lab-node-02** (or **WSL2** on the dev PC), then point `path:` to the mount. Latency affects scan time — acceptable for lab. |
-| **OneDrive / pCloud / Google Drive / Dropbox** | Use the vendor’s **local sync folder** (fully synced files). **Files On-Demand** placeholders can block reads — pin or hydrate files before scanning. |
+| Mechanism | How Data Boar supports it |
+| --------- | ------------------------- |
+| **SMB/CIFS** | **Native:** `type: smb` or `type: cifs` with `host`, `share`, `path`, credentials — uses **Python** `smbprotocol` (install **`uv sync --extra shares`** / `.[shares]`). **No kernel mount required** for this path. **Optional lab pattern:** mount the share with the OS (`mount.cifs` / GUI), then use **`type: filesystem`** on the mount point — same scan pipeline, different setup. |
+| **NFS** | **`type: nfs`** in config uses a **local mount point** (`path`); the server export must be **mounted by the OS first** (see `nfs_connector.py` — it wraps the filesystem scanner on that path). `host` / `export_path` are for reporting. **Alternatively:** mount NFS, then use **`type: filesystem`** on the same directory. |
+| **sshfs** | **No** dedicated connector — expose the tree as a local directory (FUSE), then **`type: filesystem`**. |
+| **OneDrive / pCloud / Google Drive / Dropbox** | Use the vendor’s **local sync folder** (fully synced files). **Files On-Demand** placeholders can block reads — pin or hydrate before scanning. |
 
-**Cross-host:** Other machines (lab-node-02, LAB-NODE-03) can use **TCP** to the hub DB; they do **not** need the same cloud mounts unless you are testing **filesystem** on that host — then mount or copy fixtures locally.
+**Lab packages (kernel mounts only):** If you use **CIFS** or **NFS** mounts (or **sshfs**), install the usual client packages on that host (`cifs-utils`, `nfs-common`, `sshfs`, `fuse3` on Debian/Ubuntu — names vary by distro). Optional Ansible: **`ops/automation/ansible/playbooks/lab-data-boar-share-clients.yml`** (Debian-family). **Native SMB/CIFS** via `type: smb` only needs the **Python** extra `.[shares]`, not `mount.cifs`.
+
+**Cross-host:** Other machines (lab-node-02, LAB-NODE-03) can use **TCP** to the hub DB; they do **not** need the same share mounts unless you are testing **filesystem** or **native share targets** on that host — then install deps and config per row above, or copy fixtures locally.
 
 ### 5.1 SSHFS (FUSE over SSH)
 
