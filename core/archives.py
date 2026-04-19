@@ -278,7 +278,8 @@ def iter_archive_members(
         pwd = pw.get(".7z") or pw.get("default") or None
         try:
             with py7zr.SevenZipFile(path, "r", password=pwd) as archive:
-                for member in archive.files_list:
+                # py7zr >= 0.22: use list(); older docs used files_list (removed in 1.x).
+                for member in archive.list():
                     if member.is_directory:
                         continue
                     size = getattr(member, "uncompressed", 0) or 0
