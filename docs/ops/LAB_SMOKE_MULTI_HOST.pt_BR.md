@@ -41,6 +41,8 @@ docker compose ps
 
 **Swarm:** Para um único nó, `docker compose up` basta. Para **Stack**, adaptar `ports`/`networks` e `docker stack deploy`; manter as mesmas portas publicadas para outros hosts alcançarem os BDs.
 
+**Podman (opcional):** Os mesmos arquivos `docker-compose.yml`; usar `podman compose` no hub se você preferir rootless/OCI **sem** desinstalar o Docker CE — ver [deploy/lab-smoke-stack/README.md](../../deploy/lab-smoke-stack/README.md) (seção Podman). **k3s** continua opt-in no [t14-baseline.yml](../../ops/automation/ansible/playbooks/t14-baseline.yml); converter esta pilha para manifests Kubernetes não é obrigatório para o smoke de lab.
+
 **SCP ou cópia parcial:** Se `init/postgres` / `init/mariadb` ficarem sem permissões de leitura para “outros”, os contentores podem falhar com **Permission denied** em `/docker-entrypoint-initdb.d`. No hub: `chmod -R a+rX init/postgres init/mariadb` dentro de `deploy/lab-smoke-stack`, ou o playbook **`ops/automation/ansible/playbooks/lab-smoke-stack-init-perms.yml`** com o grupo **`[lab_smoke]`** no inventário (ver **`ops/automation/ansible/inventory.example.ini`**). **Docker CE** em Debian/Ubuntu: papel **`deploy/ansible/roles/docker`** (ADR 0009).
 
 **`permission denied` no socket Docker:** No T14, aplicar [t14-baseline.yml](../../ops/automation/ansible/playbooks/t14-baseline.yml) (ou `usermod -aG docker` ao operador e **nova sessão de login**). SSH não interativo não fornece senha ao `sudo` para `docker compose`; corrigir membros de grupo em vez de depender de `sudo docker` no dia a dia.
