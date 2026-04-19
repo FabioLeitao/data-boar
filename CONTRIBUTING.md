@@ -18,6 +18,18 @@ Thank you for considering contributing. This document covers local setup, workfl
 
   Until a release is published under that name, use a **git clone** with **`uv sync`** or **`pip install -e .`**. The tree still contains the historical **`lgpd_crawler`** Python package for imports and continuity — that is implementation layout, not the product name. Rename context: **[ADR 0014](docs/adr/0014-rename-repo-and-package-python3-lgpd-crawler-to-data-boar.md)**.
 
+### Publishing to PyPI (maintainers)
+
+Build uses **[hatchling](https://github.com/pypa/hatch)** via **`pyproject.toml`** (`[build-system]` + `[tool.hatch.build]`). From the repo root (Windows):
+
+```powershell
+.\scripts\pypi-publish.ps1 -DryRun   # build + validate upload path only
+$env:UV_PUBLISH_TOKEN = "<PyPI API token>"   # never commit this
+.\scripts\pypi-publish.ps1
+```
+
+Or: **`uv build`** then **`uv publish dist/*`** with **`UV_PUBLISH_TOKEN`** set. The console script **`data-boar`** maps to **`main:main`**.
+
 ## Quick start (development)
 
 1. **Clone and enter the repo**

@@ -248,6 +248,10 @@ If you run a lab SonarQube server, follow [SONARQUBE_HOME_LAB.md](SONARQUBE_HOME
 
 Keep a **dated note** (e.g. in **`docs/private/homelab/`** or a personal wiki): date, hostnames tried, image tag, targets tried, pass/fail, and **one** lesson (e.g. “Postgres needed `host` = service name on lab-net”). Updates **PLANS_TODO** only when you change supported behaviour or find a doc gap worth fixing in-repo.
 
+### 11.1 Lockfile and published image (keep –1L aligned with –1 / –1b)
+
+When **`uv.lock`**, **`requirements.txt`**, or **`Dockerfile`** change on **`main`**, keep **Docker Hub** and **lab** on the same rhythm: refresh a **local** image with **`scripts/docker-lab-build.ps1`**, **publish** per **[DOCKER_IMAGE_RELEASE_ORDER.md](DOCKER_IMAGE_RELEASE_ORDER.md)** (semver in `pyproject.toml`, Scout gate, Hub description when needed), then run **§1.3–1.6** on a lab host using **`fabioleitao/data_boar:latest`** or the same **semver** tag so the digest you smoke-test matches what pullers get. Record **`git` HEAD**, **`uv.lock`** hash, and **image ID** only under **`docs/private/homelab/`**—not in this file.
+
 ---
 
 ## 12. When you are “done” with a lab pass

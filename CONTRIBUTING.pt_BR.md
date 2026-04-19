@@ -18,6 +18,18 @@ Obrigado por considerar contribuir. Este documento cobre a configuração local,
 
   Até lá, use **clone git** + **`uv sync`** ou **`pip install -e .`**. O repositório ainda contém o pacote Python histórico **`lgpd_crawler`** (imports) — é detalhe de implementação, não o nome do produto. Contexto da renomeação: **[ADR 0014](docs/adr/0014-rename-repo-and-package-python3-lgpd-crawler-to-data-boar.md)**.
 
+### Publicação no PyPI (maintainers)
+
+O build usa **hatchling** via **`pyproject.toml`**. Na raiz do repositório (Windows):
+
+```powershell
+.\scripts\pypi-publish.ps1 -DryRun
+$env:UV_PUBLISH_TOKEN = "<token de API PyPI>"
+.\scripts\pypi-publish.ps1
+```
+
+Ou **`uv build`** e **`uv publish dist/*`** com **`UV_PUBLISH_TOKEN`** definido. O entry point de **linha de comando** **`data-boar`** aponta para **`main:main`**.
+
 ## Início rápido (desenvolvimento)
 
 1. **Clone e entre no repositório**
