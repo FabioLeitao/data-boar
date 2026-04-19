@@ -6,6 +6,16 @@
 
 **Session keywords:** Type **`today-mode YYYY-MM-DD`** (English-only token) in chat; see **`.cursor/rules/session-mode-keywords.mdc`**. For **end of a work block or lab exit** (VeraCrypt / carryover / optional private stack — not necessarily calendar EOD), use **`block-close`**. Morning/evening shell helper: **`scripts/operator-day-ritual.ps1`** (Tier A readiness + lists recent files — see **Morning readiness** below).
 
+### For assistants (Cursor / agent)
+
+**“Today”** for checklist filenames and dated work must match the **operator workstation clock**, not only static chat context.
+
+1. In the **integrated terminal** on the dev PC: **PowerShell** `Get-Date -Format "yyyy-MM-dd"` (or `Get-Date -Format "o"` for ISO with offset); **cmd** `date /t` (and `time /t` if needed).
+2. Open or create **`OPERATOR_TODAY_MODE_<that-YYYY-MM-DD>.md`** in this folder when aligning to **today-mode**.
+3. If the operator **names a different date** in chat, use their date for the file anchor.
+
+See **`AGENTS.md`** (*Workstation calendar clock*) and **`.cursor/rules/agent-session-ritual-sync-main-and-private-stack.mdc`**.
+
 ---
 
 ## Morning readiness (SRE-style ladder)
