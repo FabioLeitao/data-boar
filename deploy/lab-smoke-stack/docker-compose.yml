@@ -1,0 +1,49 @@
+# Lab-only: PostgreSQL + MariaDB with synthetic rows for multi-host Data Boar smoke tests.
+# Deploy on a LAN host (e.g. burst laptop). Do not expose WAN. Change passwords via env file.
+#
+# Usage (Compose v2):
+#   cd deploy/lab-smoke-stack
+#   copy env.example .env   # Windows — or: cp env.example .env
+#   docker compose up -d
+#
+# Published ports (avoid clashing with local DBs):
+#   PostgreSQL: 55432 -> 5432
+#   MariaDB:    33306 -> 3306
+#
+# See: docs/ops/LAB_SMOKE_MULTI_HOST.md
+#
+services:
+  lab-postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${LAB_PG_USER:-lab_smoke}
+      POSTGRES_PASSWORD: ${LAB_PG_PASSWORD:-lab_smoke_change_me}
+      POSTGRES_DB: ${LAB_PG_DATABASE:-lab_smoke_pg}
+    ports:
+      - "${LAB_PG_PORT:-55432}:5432"
+    volumes:
+      - ./init/postgres:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lab_smoke -d lab_smoke_pg"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  lab-mariadb:
+    image: mariadb:11
+    environment:
+      MARIADB_ROOT_PASSWORD: ${LAB_MY_ROOT_PASSWORD:-lab_smoke_root_change_me}
+      MARIADB_DATABASE: ${LAB_MY_DATABASE:-lab_smoke_my}
+      MARIADB_USER: ${LAB_MY_USER:-lab_smoke}
+      MARIADB_PASSWORD: ${LAB_MY_PASSWORD:-lab_smoke_change_me}
+    ports:
+      - "${LAB_MY_PORT:-33306}:3306"
+    volumes:
+      - ./init/mariadb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
