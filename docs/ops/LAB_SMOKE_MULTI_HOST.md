@@ -41,6 +41,8 @@ docker compose ps
 
 **Swarm:** For a single-node lab, `docker compose up` is enough. To use **Stack**, convert `ports`/`networks` as needed and `docker stack deploy`; keep the same published ports for other hosts to reach the DBs.
 
+**Podman (optional):** Same `docker-compose.yml` files; use `podman compose` on the hub if you prefer rootless/OCI without uninstalling Docker CE — see [deploy/lab-smoke-stack/README.md](../../deploy/lab-smoke-stack/README.md) (Podman section). **k3s** remains a separate opt-in in [lab-node-01-baseline.yml](../../ops/automation/ansible/playbooks/lab-node-01-baseline.yml); converting this stack to Kubernetes manifests is not required for lab smoke.
+
 **SCP or partial copy:** If `init/postgres` / `init/mariadb` were copied without world-readable bits, containers may fail with **Permission denied** on `/docker-entrypoint-initdb.d`. On the hub run `chmod -R a+rX init/postgres init/mariadb` under `deploy/lab-smoke-stack`, or use **`ops/automation/ansible/playbooks/lab-smoke-stack-init-perms.yml`** with inventory group **`[lab_smoke]`** (see **`ops/automation/ansible/inventory.example.ini`**). **Docker CE** on Debian-family hosts: **`deploy/ansible/roles/docker`** (ADR 0009).
 
 **`permission denied` connecting to the Docker socket:** On LAB-NODE-01, apply [lab-node-01-baseline.yml](../../ops/automation/ansible/playbooks/lab-node-01-baseline.yml) (or add the operator to group **`docker`** and **start a new login session**). Non-interactive SSH cannot supply `sudo` password for `docker compose`; fix group membership instead of relying on `sudo docker` for routine compose.
