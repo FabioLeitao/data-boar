@@ -22,6 +22,7 @@ Esta página é a **fase B de consolidação**: o mesmo mapa **tema → primeiro
 | **Carreira / LinkedIn (privado)** | [`.cursor/rules/operator-career-private-layout.mdc`](../../.cursor/rules/operator-career-private-layout.mdc) · [`docs/private/author_info/career/README.pt_BR.md`](../private/author_info/career/README.pt_BR.md) |
 | **Git empilhado em `docs/private/`** | [`PRIVATE_LOCAL_VERSIONING.md`](PRIVATE_LOCAL_VERSIONING.md) · mini-plano [`docs/private/ops/CURSOR_CONSOLIDATION_MINI_PLAN.pt_BR.md`](../private/ops/CURSOR_CONSOLIDATION_MINI_PLAN.pt_BR.md) |
 | **Risco / não destrutivo vs destrutivo** | Parágrafo **Risk posture** no [`AGENTS.md`](../../AGENTS.md) (logo abaixo da tabela Quick index) |
+| **Execução direta** (pedido claro de fechar — evitar confirmação redundante) | [`.cursor/rules/operator-direct-execution.mdc`](../../.cursor/rules/operator-direct-execution.mdc) |
 
 ## Runbooks relacionados
 
