@@ -6,6 +6,8 @@
 
 **Não é aconselhamento jurídico.** Para dados **reais** de pessoas, exija **base legal**, **minimização** e contas técnicas **só leitura**; prefira dados **sintéticos** ou **amostras públicas** quando houver dúvida.
 
+**“Completão” multi-host (volta completa de laboratório):** Este arquivo é o **baseline** de **uma máquina** (clone, `check-all`, smoke Docker, FS sintético). Para **E2E ordenado em vários hosts**—pilha Postgres/MariaDB, arquivos comprimidos, SMB/NFS opcional, **SSHFS**, WebDAV, **filesystem sobre iSCSI** montado no SO—seguir **[LAB_SMOKE_MULTI_HOST.pt_BR.md](LAB_SMOKE_MULTI_HOST.pt_BR.md)** (ordem de hosts, checklist **A–M**, definição de *completão*). **PII / publicação:** não coloques linhas de montagem reais, credenciais, IPs de LAN ou caminhos de casa em docs rastreados ou issues públicas; ver [ADR 0018](../adr/0018-pii-anti-recurrence-guardrails-for-tracked-files-and-branch-history.md) e [ADR 0019](../adr/0019-pii-verification-cadence-and-manual-review-gate.md). Evidência operacional fica em **`docs/private/homelab/`** (gitignored).
+
 **Relacionado:** [deploy/DEPLOY.pt_BR.md](../deploy/DEPLOY.pt_BR.md) · [SONARQUBE_HOME_LAB.md](SONARQUBE_HOME_LAB.md) · [OPERATOR_IT_REQUIREMENTS.pt_BR.md](OPERATOR_IT_REQUIREMENTS.pt_BR.md) · [TESTING.pt_BR.md](../TESTING.pt_BR.md) · [SECURITY.pt_BR.md](../SECURITY.pt_BR.md) · **Lab-op — stack mínimo (Podman + k3s):** [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md) ([EN](LAB_OP_MINIMAL_CONTAINER_STACK.md)) · **T14 + LMDE 7:** [LMDE7_T14_DEVELOPER_SETUP.pt_BR.md](LMDE7_T14_DEVELOPER_SETUP.pt_BR.md) · **Observabilidade opcional:** [PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md](../plans/PLAN_LAB_OP_OBSERVABILITY_STACK.pt_BR.md) · **SIEM (Wazuh):** mesmo doc LAB_OP §6
 
 ---
@@ -111,6 +113,7 @@ Nota datada em **`docs/private/homelab/`** (gitignored): **hostnames**, tag da i
 
 ## 12. Ver também
 
+- [LAB_SMOKE_MULTI_HOST.pt_BR.md](LAB_SMOKE_MULTI_HOST.pt_BR.md) — laboratório **multi-host** (BD + FS), opcional **SSHFS / WebDAV / iSCSI→FS**, checklist **A–M** e o que significa **“completão”** face ao baseline da §1 deste guia.
 - [OS_COMPATIBILITY_TESTING_MATRIX.pt_BR.md](OS_COMPATIBILITY_TESTING_MATRIX.pt_BR.md) — **quais distros** testar (RHEL/Fedora, Arch/Manjaro, Gentoo, musl) priorizadas por relevância em produção.
 - [LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md](LAB_OP_MINIMAL_CONTAINER_STACK.pt_BR.md) §5 — torre / **Alpine** / **AlmaLinux**, simulação multi-VM, **quando** priorizar **HA / escala horizontal** (vs baseline **–1L**).
 - [HOMELAB_HOST_PACKAGE_INVENTORY.pt_BR.md](HOMELAB_HOST_PACKAGE_INVENTORY.pt_BR.md) — inventário de pacotes nos hosts (o repo não “vê” as suas máquinas).
