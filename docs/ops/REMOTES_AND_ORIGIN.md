@@ -2,7 +2,9 @@
 
 **Português (Brasil):** [REMOTES_AND_ORIGIN.pt_BR.md](REMOTES_AND_ORIGIN.pt_BR.md)
 
-This repo uses **data-boar** as the only push/PR destination. The following is stored in local `.git/config` and can be checked or changed from the terminal.
+This repo uses **data-boar** as the only push/PR destination. **Product name:** **Data Boar**. An optional second remote may still use a **long historical label** in `.git/config` pointing at an archived GitHub URL — that is a **Git convenience** for fetch-only history, not the public product identity.
+
+The following is stored in local `.git/config` and can be checked or changed from the terminal.
 
 ## Verify current remotes
 

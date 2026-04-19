@@ -117,7 +117,7 @@ Open `http://<server-ip>:9000`. Default login is **admin / admin** — you **mus
 
 ## 4. Create project and token (for CI, IDE, MCP)
 
-1. **Create a project** in SonarQube with a **Project key** that matches `sonar.projectKey` in this repo (`python3-lgpd-crawler` unless you change it).
+1. **Create a project** in SonarQube with a **Project key** that matches `sonar.projectKey` in this repo (`data-boar` unless you change it).
 1. **User token (not project token):** **My Account → Security → Generate Tokens.**
    - The MCP rule file [`.cursor/rules/sonarqube_mcp_instructions.mdc`](../../.cursor/rules/sonarqube_mcp_instructions.mdc) states SonarQube expects **user** tokens for API/MCP-style use.
 1. **GitHub repository secrets** (for `ci.yml` sonar job):

@@ -51,7 +51,7 @@ Abra `http://<ip-do-servidor>:9000`, login inicial **admin/admin**, **altere a s
 
 ## 4. Projeto e token
 
-1. Crie projeto com **Project key** igual a `sonar.projectKey` no repositório (`python3-lgpd-crawler`).
+1. Crie projeto com **Project key** igual a `sonar.projectKey` no repositório (`data-boar`).
 1. **Token de usuário** (não token de projeto): **My Account → Security → Generate Tokens** (ver regra MCP sobre tokens de usuário).
 1. **Secrets no GitHub:** `SONAR_TOKEN`, `SONAR_HOST_URL` (URL base, sem barra final). Em servidor próprio **não** use `sonar.organization` (isso é SonarCloud).
 

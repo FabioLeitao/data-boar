@@ -28,7 +28,7 @@ def safe_get(url: str, timeout: int = TIMEOUT) -> tuple[int | None, str | None]:
 
 
 def main() -> int:
-    names_to_check = ["data-boar", "data_boar", "python3-lgpd-crawler"]
+    names_to_check = ["data-boar", "data_boar"]
     results = []
     for name in names_to_check:
         url = f"https://pypi.org/pypi/{name}/json"

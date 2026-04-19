@@ -530,13 +530,13 @@ sudo chmod 755 /usr/local/share/man/man1/ /usr/local/share/man/man5/
 sudo cp docs/data_boar.1 /usr/local/share/man/man1/
 sudo cp docs/data_boar.5 /usr/local/share/man/man5/
 sudo chmod 644 /usr/local/share/man/man1/data_boar.1 /usr/local/share/man/man5/data_boar.5
-# Optional: compatibility with legacy name (based on python3-lgpd-crawler)
+# Optional: compatibility symlink for environments that still invoke `lgpd_crawler`
 sudo ln -sf data_boar.1 /usr/local/share/man/man1/lgpd_crawler.1
 sudo ln -sf data_boar.5 /usr/local/share/man/man5/lgpd_crawler.5
 sudo mandb    # or: sudo makewhatis   # depends on distro
 ```
 
-After installation, `man data_boar` and `man 5 data_boar` show the command and config formats. If you added the compatibility symlinks, `man lgpd_crawler` and `man 5 lgpd_crawler` show the same pages (legacy name from the python3-lgpd-crawler project).
+After installation, `man data_boar` and `man 5 data_boar` show the command and config formats. If you added the compatibility symlinks, `man lgpd_crawler` and `man 5 lgpd_crawler` show the same pages (legacy command alias).
 
 ```bash
 man data_boar        # command and options (section 1)

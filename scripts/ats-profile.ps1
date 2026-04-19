@@ -3,12 +3,12 @@
 # =============================================================================
 # Adicione ao seu perfil PowerShell:
 #   code $PROFILE   (ou notepad $PROFILE)
-#   . "C:\Users\<username>\Documents\dev\python3-lgpd-crawler\scripts\ats-profile.ps1"
+#   . "C:\Users\<username>\Documents\dev\data-boar\scripts\ats-profile.ps1"
 # Ou inclua direto com:
 #   Add-Content $PROFILE '. "C:\path\to\scripts\ats-profile.ps1"'
 # =============================================================================
 
-$AtsRepoRoot = "C:\Users\<username>\Documents\dev\python3-lgpd-crawler"
+$AtsRepoRoot = "C:\Users\<username>\Documents\dev\data-boar"
 $AtsScript   = "$AtsRepoRoot\scripts\ats.ps1"
 $LAB-ROUTER-01Script   = "$AtsRepoRoot\scripts\LAB-ROUTER-01.ps1"
 
