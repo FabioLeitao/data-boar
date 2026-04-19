@@ -38,6 +38,8 @@ To hit the Data Boar **HTTP** dashboard and REST API from **another machine on t
 
 **Dependencies on the lab host:** `uv sync` (and any **system** packages from [TECH_GUIDE.md](../TECH_GUIDE.md) for your distro) before §1.1; no extra Python package is required **only** to listen on the LAN.
 
+**Host security stack (firewall, AppArmor, fail2ban, EDR, integrity tools):** Layered controls can block ports or add noise during lab runs. See **[DATA_BOAR_LAB_SECURITY_TOOLING.md](DATA_BOAR_LAB_SECURITY_TOOLING.md)** for what to adjust, why, and helper scripts (`scripts/lab-allow-data-boar-inbound.ps1`, `scripts/lab-allow-data-boar-inbound.sh`).
+
 ---
 
 ## 1. Lab baseline checklist (copy/paste)
