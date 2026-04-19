@@ -26,7 +26,8 @@ t14_docker_daemon_json:
     max-size: "20m"
     max-file: "5"
   storage-driver: overlay2
-  live-restore: true
+  # Do not set live-restore: true when Swarm is enabled (t14_docker_swarm_init / docker swarm init).
+  # Docker 29+ exits: "live-restore daemon configuration is incompatible with swarm mode".
   default-address-pools:
     - base: "172.30.0.0/16"
       size: 24
