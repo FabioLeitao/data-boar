@@ -264,6 +264,27 @@ def test_homelab_host_report_sh_syntax():
     assert proc.returncode == 0, f"bash -n failed: {proc.stderr or proc.stdout}"
 
 
+def test_labop_share_client_install_sh_syntax():
+    """scripts/labop-share-client-install.sh has valid bash syntax (bash -n). Skipped on Windows."""
+    if sys.platform == "win32":
+        return
+    root = _project_root()
+    script = root / "scripts" / "labop-share-client-install.sh"
+    if not script.exists():
+        return
+    try:
+        proc = subprocess.run(
+            ["bash", "-n", str(script)],
+            cwd=str(root),
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except FileNotFoundError:
+        return
+    assert proc.returncode == 0, f"bash -n failed: {proc.stderr or proc.stdout}"
+
+
 def test_lab-node-01_ansible_preflight_sh_syntax():
     """scripts/lab-node-01-ansible-preflight.sh has valid bash syntax (bash -n). Skipped on Windows."""
     if sys.platform == "win32":

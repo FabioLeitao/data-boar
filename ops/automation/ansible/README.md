@@ -16,6 +16,7 @@ Debian/Ubuntu installs can be blocked by **`apt-listbugs`** during unattended ru
 (or `combine` with play-specific extras, as in `playbooks/lab-node-01-baseline.yml`). Defaults are in **`group_vars/all.yml`**. Repo CI fails if a tracked playbook under `playbooks/*.yml` omits `environment` on any play — see **`tests/test_ansible_playbooks_unattended_apt.py`** and **[CONTRIBUTING.md](../../CONTRIBUTING.md)**.
 
 - **`playbooks/lab-data-boar-share-clients.yml`** — installs **CIFS/NFS/sshfs/FUSE** client packages on **`[lab_share_clients]`** (Debian/Ubuntu) for **OS-mounted** shares. Native **`type: smb`** / **`type: webdav`** still need **`uv sync --extra shares`** (Python extras) on the machine that runs Data Boar; see **[LAB_SMOKE_MULTI_HOST.md](../../docs/ops/LAB_SMOKE_MULTI_HOST.md)**.
+- **SSH batch from the dev PC:** `ansible-playbook` / `sudo apt` over **`ssh`** without a TTY may still prompt for a password. Use **`scripts/labop-share-client-install.sh`** on each host (Debian **apt** or Void **xbps**) and, if you need fully non-interactive runs, a **narrow** `NOPASSWD` entry for that script path — template in **gitignored** `docs/private/homelab/LABOP_SHARE_CLIENTS_SUDOERS.pt_BR.md` (same idea as **`homelab-host-report.sh`**).
 
 ## Quick start
 
