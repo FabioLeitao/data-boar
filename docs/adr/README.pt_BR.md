@@ -28,6 +28,8 @@ Notas curtas e duradouras que registram **por que** o projeto escolheu um caminh
 
 ## Docs relacionados
 
+- [ADR 0029](0029-cursor-markdown-preview-guardrail-and-lab-smoke-ansible-hook.md) (EN) — guardrail Cursor (preview Markdown em aba) + playbook Ansible `lab-smoke-stack-init-perms`; ver [CURSOR_MARKDOWN_PREVIEW_SETTINGS.pt_BR.md](../ops/CURSOR_MARKDOWN_PREVIEW_SETTINGS.pt_BR.md) e [LAB_SMOKE_MULTI_HOST.pt_BR.md](../ops/LAB_SMOKE_MULTI_HOST.pt_BR.md).
+- [ADR 0028](0028-lab-external-connectivity-eval-playbook.md) (EN) — playbook rastreado para avaliação de conectividade **externa** (APIs públicas, BD somente leitura com política); sem segredos no Git; ver [LAB_EXTERNAL_CONNECTIVITY_EVAL.pt_BR.md](../ops/LAB_EXTERNAL_CONNECTIVITY_EVAL.pt_BR.md).
 - [ADR 0026](0026-optional-jurisdiction-hints-dpo-facing-heuristic-metadata-only.md) (EN) — *jurisdiction hints* opcionais (DPO, heurística, só metadados no Report info); não conclusão jurídica; ver [USAGE.md](../USAGE.md) e [COMPLIANCE_AND_LEGAL.pt_BR.md](../COMPLIANCE_AND_LEGAL.pt_BR.md).
 - [ADR 0027](0027-commercial-tier-boundaries-licensing-docs-and-future-jwt-claims.md) (EN) — limites **Pro / Enterprise** documentados em `LICENSING_OPEN_CORE_AND_COMMERCIAL`; claims JWT ilustrativos em `LICENSING_SPEC`; enforcement ainda não no runtime; exemplos com nome ficam em `docs/private/`.
 - [ADR 0025](0025-compliance-positioning-evidence-inventory-not-legal-conclusion-engine.md) (EN) — posicionamento de **compliance**: evidência e inventário, **não** motor de **conclusão jurídica**; alinhado a [COMPLIANCE_AND_LEGAL.md](../COMPLIANCE_AND_LEGAL.md).
