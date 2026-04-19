@@ -58,7 +58,7 @@
 | **[poc-api-siscomex-rfb](https://github.com/FabioLeitao/poc-api-siscomex-rfb)** | POC de consumos das APIs Siscomex no portal da RFB | Siscomex / customs API integration POC. |
 | **[powershell_nddprint_control](https://github.com/FabioLeitao/powershell_nddprint_control)** | nddprint_control | Windows print control automation. |
 | **[python3-healthcheck-and-reconnect-sgad](https://github.com/FabioLeitao/python3-healthcheck-and-reconnect-sgad)** | python3-healthcheck-and-reconnect-sgad | SGAD healthcheck / reconnect (Python). |
-| **[python3-lgpd-crawler](https://github.com/FabioLeitao/python3-lgpd-crawler)** | Dashboard com capacidade de sondagem, apreciação e mapeamento dos dados pessoais e/ou sensíveis | Legacy name; history of Data Boar; **no push** per repo note. |
+| **[data-boar](https://github.com/FabioLeitao/data-boar)** | Dashboard com capacidade de sondagem, apreciação e mapeamento dos dados pessoais e/ou sensíveis | Repositório canónico (**Data Boar**). URL antiga `github.com/.../python3-lgpd-crawler` redireciona; não usar o nome antigo como identidade do produto. |
 | **[python3-qrcodegenerator](https://github.com/FabioLeitao/python3-qrcodegenerator)** | Script to read from file with a list of strings to generate as QRCode images ready to print as labels | QR labels; small utility. |
 | **[python3-sabor-express](https://github.com/FabioLeitao/python3-sabor-express)** | Projeto da aula de backend em Python3 | Python backend course project. |
 | **[rust-healthcheck-and-reconnect-sgad](https://github.com/FabioLeitao/rust-healthcheck-and-reconnect-sgad)** | rust-healthcheck-and-reconnect-sgad | SGAD healthcheck / reconnect (Rust). |

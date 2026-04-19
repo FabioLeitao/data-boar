@@ -1,6 +1,6 @@
 # Test suite
 
-Tests for **Data Boar**: API, core logic, connectors, config, reports, and quality/security guards. (Legacy PyPI installs may still use `pip install python3-lgpd-crawler`; see [CONTRIBUTING.md](../CONTRIBUTING.md#repository-and-install-identity-data-boar).)
+Tests for **Data Boar**: API, core logic, connectors, config, reports, and quality/security guards. Install identity: [CONTRIBUTING.md](../CONTRIBUTING.md#repository-and-install-identity-data-boar).
 
 ## Quick run
 

@@ -23,6 +23,7 @@ This page is **consolidation phase B**: the same **theme → first place to look
 | **Private stacked git** | [`PRIVATE_LOCAL_VERSIONING.md`](PRIVATE_LOCAL_VERSIONING.md) · mini-plan [`docs/private/ops/CURSOR_CONSOLIDATION_MINI_PLAN.pt_BR.md`](../private/ops/CURSOR_CONSOLIDATION_MINI_PLAN.pt_BR.md) |
 | **Risk / non-destructive vs destructive** | **Risk posture** paragraph in [`AGENTS.md`](../../AGENTS.md) (immediately under the Quick index table) |
 | **Direct execution** (clear “ship it” requests) | [`.cursor/rules/operator-direct-execution.mdc`](../../.cursor/rules/operator-direct-execution.mdc) |
+| **Publication truthfulness** (no invented dates/facts; **capture permalinks** when reachable) | [`.cursor/rules/publication-truthfulness-no-invented-facts.mdc`](../../.cursor/rules/publication-truthfulness-no-invented-facts.mdc) · [`docs/private/social_drafts/editorial/SOCIAL_HUB.md`](../private/social_drafts/editorial/SOCIAL_HUB.md) (*Política de data* + inventory) |
 
 ## Related operator runbooks
 

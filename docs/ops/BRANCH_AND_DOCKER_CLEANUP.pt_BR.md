@@ -95,7 +95,7 @@ docker builder prune -f
 
 ## 5. Remote legado apenas (`python3-lgpd-crawler-legacy-and-history-only`)
 
-**Backlog / não bloqueante.** Push cotidiano só em **`data-boar`** (`origin`). O remote extra ([REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md)) é o repositório **antigo** python3-lgpd-crawler (só fetch, sem push).
+**Backlog / não bloqueante.** Push cotidiano só em **`data-boar`** (`origin`). O remote extra ([REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md)) aponta para um repositório GitHub **arquivado** (só fetch, sem push).
 
 ### Objetivos
 
