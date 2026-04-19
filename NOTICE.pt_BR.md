@@ -2,7 +2,7 @@
 
 **English:** [NOTICE](NOTICE)
 
-Data Boar (python3-lgpd-crawler)
+Data Boar
 
 Copyright (c) 2025 Fabio Leitao. Todos os direitos reservados.
 

@@ -1,4 +1,4 @@
-# Contribuindo para o python3-lgpd-crawler
+# Contribuindo para o Data Boar
 
 **English:** [CONTRIBUTING.md](CONTRIBUTING.md)
 
@@ -6,13 +6,25 @@ Obrigado por considerar contribuir. Este documento cobre a configuração local,
 
 **Equipe (mantenedor + colaborador, Cursor + Git):** fluxo com **comandos**, **prompts** sugeridos e alinhamento com **rules** — **[docs/COLLABORATION_TEAM.pt_BR.md](docs/COLLABORATION_TEAM.pt_BR.md)** ([EN stub](docs/COLLABORATION_TEAM.md)). Regra aplicada: **`.cursor/rules/collaboration-maintainer-contributor.mdc`**.
 
+## Repositório e identidade de instalação (Data Boar)
+
+- **Produto e marca:** **Data Boar** — use esse nome em texto, issues e títulos de PR, salvo quando referir o id PyPI abaixo.
+- **Repositório upstream:** **[github.com/FabioLeitao/data-boar](https://github.com/FabioLeitao/data-boar)** — faça fork ou clone a partir daí (troque pelo seu fork se aplicável).
+- **Nome da distribuição PyPI (legado):** o `pyproject.toml` ainda declara **`name = "python3-lgpd-crawler"`**. Instalações pelo índice de pacotes Python usam:
+
+  ```bash
+  pip install python3-lgpd-crawler
+  ```
+
+  É a **mesma** aplicação que este repositório. Renomeação futura: **[ADR 0014](docs/adr/0014-rename-repo-and-package-python3-lgpd-crawler-to-data-boar.md)**. Para desenvolvimento, prefira **clone git** + **`uv sync`**.
+
 ## Início rápido (desenvolvimento)
 
 1. **Clone e entre no repositório**
 
    ```bash
-   git clone https://github.com/YOUR_ORG/python3-lgpd-crawler.git
-   cd python3-lgpd-crawler
+   git clone https://github.com/FabioLeitao/data-boar.git
+   cd data-boar
    ```
 
 1. **Use Python 3.12+**
