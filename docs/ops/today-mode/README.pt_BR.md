@@ -6,6 +6,16 @@
 
 **Atalhos no chat:** escreve **`today-mode YYYY-MM-DD`** (token **só em inglês**); ver **`.cursor/rules/session-mode-keywords.mdc`**. Para **fim de bloco de trabalho ou saída do lab** (VeraCrypt / carryover / private stack opcional — não necessariamente fim do dia no calendário), usa **`block-close`**. Ritual manhã/fim de dia: **`scripts/operator-day-ritual.ps1`** (readiness Tier A + lista de arquivos — ver **Prontidão de manhã** abaixo).
 
+### Para assistentes (Cursor / agente)
+
+O **“hoje”** para nomes de checklist e trabalho datado deve bater com o **relógio da estação de trabalho do operador**, não só com contexto estático do chat.
+
+1. No **terminal integrado** do PC de desenvolvimento: **PowerShell** `Get-Date -Format "yyyy-MM-dd"` (ou `Get-Date -Format "o"` para ISO com fuso); **cmd** `date /t` (e `time /t` se precisar).
+2. Abre ou cria **`OPERATOR_TODAY_MODE_<esse-YYYY-MM-DD>.md`** nesta pasta ao alinhar ao **today-mode**.
+3. Se o operador **disser outra data** no chat, usa a data dele como âncora do arquivo.
+
+Ver **`AGENTS.md`** (*Workstation calendar clock*) e **`.cursor/rules/agent-session-ritual-sync-main-and-private-stack.mdc`**.
+
 ---
 
 ## Prontidão de manhã (escada estilo SRE)
