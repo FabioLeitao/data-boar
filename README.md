@@ -2,7 +2,7 @@
 
 **Data Boar — based on lgpd_crawler technology.** Compliance-aware discovery and mapping of personal and sensitive data across your data soup.
 
-![Data Boar mascot](api/static/mascot/data_boar_mascote_color_translucent.png)
+![Data Boar mascot](api/static/mascot/data_boar_mascote_color.svg)
 
 **LGPD — real-world witness report (ISP field visit, Brazil):** [English](docs/LGPD_WITNESS_REPORT_NIO_FIELD_VISIT_2026.md) · [Português (Brasil)](docs/LGPD_WITNESS_REPORT_NIO_FIELD_VISIT_2026.pt_BR.md)
 
