@@ -85,7 +85,7 @@ Se você estiver usando o catálogo MCP do Docker, o servidor costuma se chamar 
 O Dockerfile usa build multi-stage (imagem de runtime mínima; ferramentas de build apenas no estágio de build). A partir da **raiz do projeto**:
 
 ```powershell
-cd c:\Users\<username>\Documents\dev\python3-lgpd-crawler
+cd c:\Users\<username>\Documents\dev\data-boar
 
 docker build -t data_boar:latest .
 ```
@@ -132,7 +132,7 @@ docker push fabioleitao/data_boar:latest
 O config fica em `data/config.yaml`. Execute:
 
 ```powershell
-cd c:\Users\<username>\Documents\dev\python3-lgpd-crawler
+cd c:\Users\<username>\Documents\dev\data-boar
 
 docker run -d --name data-boar-audit `
   -p 8088:8088 `

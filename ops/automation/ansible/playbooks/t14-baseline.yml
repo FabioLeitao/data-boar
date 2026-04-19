@@ -18,8 +18,8 @@
     lab-node-01_docker_install_compose_plugin: true
     # Docker Swarm (single-node manager) — enables `docker service` / `docker stack deploy`
     lab-node-01_docker_swarm_init: true
-    # Podman (rootless containers, OCI-compatible)
-    lab-node-01_install_podman: false
+    # Podman (rootless containers, OCI-compatible) — lab smokes / completão may use alongside Docker CE
+    lab-node-01_install_podman: true
     # k3s (lightweight Kubernetes — installs from get.k3s.io; opt-in deliberately)
     lab-node-01_install_k3s: false
 
