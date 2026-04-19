@@ -6,7 +6,7 @@
 
 ## Context
 
-The repository **`python3-lgpd-crawler`** hosts **Data Boar** — a compliance-oriented engine to **discover and map personal and sensitive data** across files, databases, APIs, and related “data soup” sources, with reporting and dashboard surfaces for operators and compliance roles. The product positioning and feature narrative live in the canonical **[README.md](../../README.md)**; technical operation is in **[docs/TECH_GUIDE.md](../TECH_GUIDE.md)** and **[docs/USAGE.md](../USAGE.md)**.
+The repository **`data-boar`** hosts **Data Boar** — a compliance-oriented engine to **discover and map personal and sensitive data** across files, databases, APIs, and related “data soup” sources, with reporting and dashboard surfaces for operators and compliance roles. The product positioning and feature narrative live in the canonical **[README.md](../../README.md)**; technical operation is in **[docs/TECH_GUIDE.md](../TECH_GUIDE.md)** and **[docs/USAGE.md](../USAGE.md)**.
 
 For years before **Architecture Decision Records** existed in this tree, design choices were embedded in **code**, **plans** under **`docs/plans/`**, **release notes** under **`docs/releases/`**, and **SECURITY** / **CONTRIBUTING** text — without a numbered “why” series. That history remains valid; this ADR does **not** replace those sources.
 

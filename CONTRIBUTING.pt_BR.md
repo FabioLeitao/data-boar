@@ -8,15 +8,15 @@ Obrigado por considerar contribuir. Este documento cobre a configuração local,
 
 ## Repositório e identidade de instalação (Data Boar)
 
-- **Produto e marca:** **Data Boar** — use esse nome em texto, issues e títulos de PR, salvo quando referir o id PyPI abaixo.
+- **Produto e marca:** **Data Boar** — use esse nome em texto, issues e títulos de PR.
 - **Repositório upstream:** **[github.com/FabioLeitao/data-boar](https://github.com/FabioLeitao/data-boar)** — faça fork ou clone a partir daí (troque pelo seu fork se aplicável).
-- **Nome da distribuição PyPI (legado):** o `pyproject.toml` ainda declara **`name = "python3-lgpd-crawler"`**. Instalações pelo índice de pacotes Python usam:
+- **Nome da distribuição PyPI:** o `pyproject.toml` declara **`name = "data-boar"`**. Quando houver publicação no índice de pacotes Python, a instalação será:
 
   ```bash
-  pip install python3-lgpd-crawler
+  pip install data-boar
   ```
 
-  É a **mesma** aplicação que este repositório. Renomeação futura: **[ADR 0014](docs/adr/0014-rename-repo-and-package-python3-lgpd-crawler-to-data-boar.md)**. Para desenvolvimento, prefira **clone git** + **`uv sync`**.
+  Até lá, use **clone git** + **`uv sync`** ou **`pip install -e .`**. O repositório ainda contém o pacote Python histórico **`lgpd_crawler`** (imports) — é detalhe de implementação, não o nome do produto. Contexto da renomeação: **[ADR 0014](docs/adr/0014-rename-repo-and-package-python3-lgpd-crawler-to-data-boar.md)**.
 
 ## Início rápido (desenvolvimento)
 

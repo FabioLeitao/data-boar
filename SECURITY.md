@@ -6,7 +6,7 @@ This document describes which versions of the application are supported, which d
 
 ## Supported versions
 
-- **Application (brand):** **Data Boar**. Package/distribution identifier remains `python3-lgpd-crawler` for compatibility. Current development targets **Python 3.12+**.
+- **Application (brand):** **Data Boar**. PyPI distribution id: **`data-boar`** (see [CONTRIBUTING.md](CONTRIBUTING.md#repository-and-install-identity-data-boar)). Current development targets **Python 3.12+**.
 - We aim to support the latest stable minor versions of Python 3.12 and 3.13 on Linux, macOS and Windows.
 - Older Python versions (< 3.12) are not tested and should be considered unsupported.
 
