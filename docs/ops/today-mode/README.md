@@ -4,7 +4,26 @@
 
 **Purpose:** One place for **dated day plans** (`OPERATOR_TODAY_MODE_YYYY-MM-DD.md`), the **active carryover queue**, and **how to keep “published” aligned with `pyproject.toml`** so checklists do not drift.
 
-**Session keywords:** Type **`today-mode YYYY-MM-DD`** (English-only token) in chat; see **`.cursor/rules/session-mode-keywords.mdc`**. For **end of a work block or lab exit** (VeraCrypt / carryover / optional private stack — not necessarily calendar EOD), use **`block-close`**. Morning/evening shell helper: **`scripts/operator-day-ritual.ps1`** (lists recent files under this folder).
+**Session keywords:** Type **`today-mode YYYY-MM-DD`** (English-only token) in chat; see **`.cursor/rules/session-mode-keywords.mdc`**. For **end of a work block or lab exit** (VeraCrypt / carryover / optional private stack — not necessarily calendar EOD), use **`block-close`**. Morning/evening shell helper: **`scripts/operator-day-ritual.ps1`** (Tier A readiness + lists recent files — see **Morning readiness** below).
+
+---
+
+## Morning readiness (SRE-style ladder)
+
+**Goal:** Start most days with **cheap, evidence-backed** sync — without pretending that every trust/prod check runs every morning. **`carryover-sweep`** in chat maps to **`.\scripts\operator-day-ritual.ps1 -Mode Morning`** (same script).
+
+| Tier | What | When |
+| ---- | ---- | ---- |
+| **A — Sync & surface** | `git fetch`, `git status -sb`, open PRs, latest **`main`** **CI** (`ci.yml`), and whether **`OPERATOR_TODAY_MODE_YYYY-MM-DD.md`** exists for **today** | **Daily** (~2 min). Always safe before deep work. |
+| **B — Supply chain (-1)** | `uvx pip-audit -r requirements.txt` (same family as CI **Dependency audit**) | **Weekly**, before a **release**, or right after **`deps`** / lockfile work — not every breakfast. |
+| **C — Image (-1b)** | `docker scout quickview` (or project policy) on the **published** image after **Dockerfile** / lock / base image changes | When the **image** or **supply** story changed — not daily. |
+| **D — Second environment (-1L)** | **[HOMELAB_VALIDATION.md](../HOMELAB_VALIDATION.md)**; optional **`scripts/lab-op-sync-and-collect.ps1`** when **`docs/private/homelab/lab-op-hosts.manifest.json`** exists | When proving **deploy + connector** on a **second** machine, or on a **scheduled** lab health pass — not every morning. |
+
+**Why not run B–D every day?** They are higher-latency or environment-dependent. Running **pip-audit + Scout + SSH lab** daily would add noise without extra safety once **`main`** is green. Tier **A** catches “surprise WIP”, **stale refs**, **open PRs**, and **red CI** before you invest hours.
+
+**Fast path:** `.\scripts\operator-day-ritual.ps1 -Mode Morning -SkipReadiness` — file list + social hints only (rare).
+
+**Chat:** optional English token **`morning-readiness`** — same intent as **`carryover-sweep`** for Tier A + doc pointer (see **`.cursor/rules/session-mode-keywords.mdc`**).
 
 ---
 
