@@ -4,7 +4,8 @@
       "sshHost": "latitude",
       "repoPaths": [
         "/home/REPLACE_USER/Projects/dev/data-boar"
-      ]
+      ],
+      "completaoHealthUrl": "http://REPLACE_HOST_LAN:8088/health"
     }
   ],
   "outDir": "docs/private/homelab/reports"

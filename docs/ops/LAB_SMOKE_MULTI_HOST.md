@@ -175,6 +175,7 @@ Re-seed requires recreating volumes or running manual DDL on existing DBs — fo
 
 ## 10. Related docs
 
+- [LAB_COMPLETAO_RUNBOOK.md](LAB_COMPLETAO_RUNBOOK.md) — **completão** (product + lab hosts + SSH orchestration) vs **pytest** / **check-all** on the dev PC alone.
 - [WSL2_DATA_BOAR_DEV_TESTING.md](WSL2_DATA_BOAR_DEV_TESTING.md) — optional second execution surface on the Windows dev PC.
 - [LAB_EXTERNAL_CONNECTIVITY_EVAL.md](LAB_EXTERNAL_CONNECTIVITY_EVAL.md) — public APIs and optional third-party read-only DBs (complements LAN smoke).
 - [HOMELAB_VALIDATION.md](HOMELAB_VALIDATION.md) — baseline playbook.
