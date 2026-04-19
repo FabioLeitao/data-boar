@@ -1,6 +1,6 @@
 # How to Use Data Boar (LGPD Audit Application)
 
-**Data Boar** is the product name. This guide covers **command-line arguments and outcomes**, **deploying and using the web API**, **configuration (targets and credentials)**, and **downloading reports** (current and previous sessions). Operators can use it to learn how to run, configure, and navigate the app. The codebase builds on **lgpd_crawler** modules; installs from PyPI still use the legacy distribution id **`python3-lgpd-crawler`** — see [CONTRIBUTING.md](../CONTRIBUTING.md#repository-and-install-identity-data-boar).
+**Data Boar** is the product name. This guide covers **command-line arguments and outcomes**, **deploying and using the web API**, **configuration (targets and credentials)**, and **downloading reports** (current and previous sessions). Operators can use it to learn how to run, configure, and navigate the app. Install identity and PyPI **`data-boar`**: [CONTRIBUTING.md](../CONTRIBUTING.md#repository-and-install-identity-data-boar). (The repository still ships the historical **`lgpd_crawler`** Python package for imports — implementation detail, not the product name.)
 
 **Português (Brasil):** [USAGE.pt_BR.md](USAGE.pt_BR.md)
 

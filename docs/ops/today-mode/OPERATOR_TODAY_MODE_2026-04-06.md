@@ -23,8 +23,8 @@ Branch: main — sincronizado com origin.
       → `ansible-playbook site-full.yml --check -i inventory/hosts.ini`
 - [x] **Adicionar seção Ansible ao USAGE.pt_BR.md** (sync EN→pt-BR) — **feito** (2026-04-09).
 - [ ] **PLANS_TODO.md**: marcar Ansible como adicionado (H3/houseclean ou feature)
-- [ ] **Branding rename**: execução do ADR 0014 (renomear python3-lgpd-crawler → data-boar)
-      → Cheklist completo em `docs/adr/0014-rename-repo-and-package-python3-lgpd-crawler-to-data-boar.md`
+- [x] **Branding rename**: ADR 0014 — `pyproject` / docs em **`data-boar`** (PyPI publish quando agendado)
+      → `docs/adr/0014-rename-repo-and-package-python3-lgpd-crawler-to-data-boar.md`
 
 ### REDES SOCIAIS / FOUNDER
 - [ ] **Revisar posts LinkedIn e X revisados** (blobs + lab-op + milestones) e decidir se publica

@@ -172,7 +172,7 @@ docker builder prune -af
 
 ## 7. Legacy remote only (`python3-lgpd-crawler-legacy-and-history-only`)
 
-**Backlog / non-blocking.** Day-to-day work and pushes belong to **`FabioLeitao/data-boar`** (`origin`). The extra remote ([REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md)) points at the **old** `python3-lgpd-crawler` repo (fetch-only, `pushurl = no-push`).
+**Backlog / non-blocking.** Day-to-day work and pushes belong to **`FabioLeitao/data-boar`** (`origin`). The extra remote ([REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md)) points at an **archived** GitHub repository URL (fetch-only, `pushurl = no-push`).
 
 ### Tidy-up goals
 

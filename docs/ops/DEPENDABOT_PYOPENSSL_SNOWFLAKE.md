@@ -2,7 +2,7 @@
 
 **Context:** GitHub Dependabot may show **open** alerts **#9** and **#10** for **pyOpenSSL** (CVE-2026-27448 low, CVE-2026-27459 high). The fix is **pyOpenSSL ≥ 26.0.0**.
 
-**Why we cannot bump yet:** **`pyopenssl`** is pulled in as a **transitive** dependency of **`snowflake-connector-python`** ([`bigdata` optional extra](../../pyproject.toml)). Published **`snowflake-connector-python`** versions (through **4.3.0** on PyPI) declare **`pyopenssl<26`**, so **`uv lock`** cannot resolve **`pyopenssl>=26`** together with **`python3-lgpd-crawler[bigdata]`** without an unsatisfiable graph.
+**Why we cannot bump yet:** **`pyopenssl`** is pulled in as a **transitive** dependency of **`snowflake-connector-python`** ([`bigdata` optional extra](../../pyproject.toml)). Published **`snowflake-connector-python`** versions (through **4.3.0** on PyPI) declare **`pyopenssl<26`**, so **`uv lock`** cannot resolve **`pyopenssl>=26`** together with **`data-boar[bigdata]`** without an unsatisfiable graph.
 
 **Upstream:** Snowflake is aware (e.g. [snowflake-connector-python#2789](https://github.com/snowflakedb/snowflake-connector-python/issues/2789)) — watch for a connector release that relaxes the upper bound to allow **pyOpenSSL 26+**, then:
 

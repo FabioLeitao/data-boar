@@ -6,7 +6,7 @@ Este documento descreve quais versões da aplicação são suportadas, qual linh
 
 ## Versões suportadas
 
-- **Aplicação (marca):** **Data Boar**. O identificador do pacote/distribuição permanece `python3-lgpd-crawler` por compatibilidade. O desenvolvimento atual tem como alvo **Python 3.12+**.
+- **Aplicação (marca):** **Data Boar**. Id da distribuição PyPI: **`data-boar`** (veja [CONTRIBUTING.pt_BR.md](CONTRIBUTING.pt_BR.md#repositório-e-identidade-de-instalação-data-boar)). O desenvolvimento atual tem como alvo **Python 3.12+**.
 - Objetivamos suportar as últimas versões estáveis minor do Python 3.12 e 3.13 em Linux, macOS e Windows.
 - Versões antigas do Python (< 3.12) não são testadas e devem ser consideradas não suportadas.
 

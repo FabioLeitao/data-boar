@@ -2,7 +2,9 @@
 
 **English:** [REMOTES_AND_ORIGIN.md](REMOTES_AND_ORIGIN.md)
 
-Este repositório usa **data-boar** como único destino de push e PR. O que segue fica no `.git/config` local e pode ser conferido ou alterado pelo terminal.
+Este repositório usa **data-boar** como único destino de push e PR. **Nome do produto:** **Data Boar**. Um segundo remote opcional pode ainda usar um **rótulo histórico longo** no `.git/config` apontando para URL arquivada no GitHub — é **conveniência Git** (fetch só de histórico), não identidade pública do produto.
+
+O que segue fica no `.git/config` local e pode ser conferido ou alterado pelo terminal.
 
 ## Verificar os remotes atuais
 
