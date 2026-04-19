@@ -203,6 +203,13 @@ def test_usage_internal_links_resolve():
     assert not broken, f"docs/USAGE.md broken relative link(s): {broken}"
 
 
+def test_lab_completao_runbook_docs_exist():
+    """LAB_COMPLETAO_RUNBOOK EN/pt-BR pair exists (completão vs pytest)."""
+    root = _project_root()
+    assert (root / "docs" / "ops" / "LAB_COMPLETAO_RUNBOOK.md").is_file()
+    assert (root / "docs" / "ops" / "LAB_COMPLETAO_RUNBOOK.pt_BR.md").is_file()
+
+
 def test_lab_smoke_multi_host_pt_br_no_operator_scratch_arrows():
     """LAB_SMOKE pt-BR checklist must not ship informal notes after '<-' (tracked hygiene)."""
     path = _project_root() / "docs" / "ops" / "LAB_SMOKE_MULTI_HOST.pt_BR.md"
