@@ -1,5 +1,5 @@
 """
-Generate favicon.ico from the Data Boar mascot (translucent PNG).
+Generate favicon.ico from the Data Boar mascot (dark-tuned translucent PNG).
 
 Uses Pillow to resize the mascot to 16×16 and 32×32 and save as a multi-size ICO.
 Run from the project root, e.g.:
@@ -26,7 +26,7 @@ def main() -> None:
         / "api"
         / "static"
         / "mascot"
-        / "data_boar_mascote_color_translucent.png"
+        / "data_boar_mascote_color_translucent_not_zombie.png"
     )
     out = repo_root / "api" / "static" / "favicon.ico"
 
