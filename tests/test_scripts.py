@@ -232,6 +232,17 @@ def test_lab_op_sync_and_collect_ps1_syntax():
     )
 
 
+def test_lab_completao_orchestrate_ps1_syntax():
+    """scripts/lab-completao-orchestrate.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "lab-completao-orchestrate.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), (
+        "lab-completao-orchestrate.ps1 parse failed"
+    )
+
+
 def test_collect_homelab_report_remote_ps1_syntax():
     """scripts/collect-homelab-report-remote.ps1 has valid PowerShell syntax (parse-only)."""
     root = _project_root()
@@ -270,6 +281,27 @@ def test_labop_share_client_install_sh_syntax():
         return
     root = _project_root()
     script = root / "scripts" / "labop-share-client-install.sh"
+    if not script.exists():
+        return
+    try:
+        proc = subprocess.run(
+            ["bash", "-n", str(script)],
+            cwd=str(root),
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except FileNotFoundError:
+        return
+    assert proc.returncode == 0, f"bash -n failed: {proc.stderr or proc.stdout}"
+
+
+def test_lab_completao_host_smoke_sh_syntax():
+    """scripts/lab-completao-host-smoke.sh has valid bash syntax (bash -n). Skipped on Windows."""
+    if sys.platform == "win32":
+        return
+    root = _project_root()
+    script = root / "scripts" / "lab-completao-host-smoke.sh"
     if not script.exists():
         return
     try:

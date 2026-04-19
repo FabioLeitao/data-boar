@@ -41,6 +41,7 @@
 | ------ | ---- | -------- |
 | `lab-op.ps1` | SSH report / sync-collect | **`docs/ops/LAB_OP_SHORTHANDS.md`**, **`lab-op-systems-context.mdc`** |
 | `lab-op-sync-and-collect.ps1` | Multi-host batch | **`autonomous-merge-and-lab`** SKILL, private manifest |
+| `lab-completao-orchestrate.ps1` | Lab “completão” (SSH smoke per host + optional HTTP) | **`LAB_COMPLETAO_RUNBOOK.md`**, private manifest **`completaoHealthUrl`** |
 | `collect-homelab-report-remote.ps1`, `run-homelab-host-report-all.ps1` | Remote reports | **`HOMELAB_VALIDATION.md`**, private manifest |
 | `lab-env-load.ps1` | Dot-source env for probes | **`lab-op-systems-context.mdc`** §3 |
 | `growatt.ps1`, `enel.ps1`, `energy-report.ps1` | Solar / grid / correlation | **`homelab-lab-op-data`** SKILL, **`udm-scan`**, **`solar-snap`**, **`enel-check`**, **`energy-report`** keywords |
