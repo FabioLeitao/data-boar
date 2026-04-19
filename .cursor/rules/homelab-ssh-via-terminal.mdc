@@ -14,6 +14,8 @@ alwaysApply: true
 
 1. **If a command fails:** DNS from dev PC, **`ping`**, **`ssh -v`**, **`sshd`** on target, **WSL vs Windows** `~/.ssh`, whether the service is listening (e.g. **8088**).
 
+1. **Agent SSH vs operator tmux / `sudo` on the lab host:** Commands the assistant runs use **`ssh`** from the **Cursor integrated terminal** on the **dev PC** — same **machine and LAN** as your shell; **switching IDE/editor** does **not** remove keys, DNS, or reachability. It is **not** the same **TTY** as an existing **tmux** pane on **T14 / latitude / etc.** Default **`sudo`** caching is usually **per TTY**: **`sudo -v` in tmux** warms sudo for **commands you type in that same pane**, not automatically for a **separate** non-interactive **`ssh host "sudo …"`** from Cursor (unless your **`sudoers`** uses a **global** timestamp — uncommon). If **`sudo -n`** fails, the assistant may use **`ssh -tt`** so **you** can type the password once, **or** you run the privileged one-liner **on the host** (tmux/SSH session), **or** **`ansible-playbook`** with **`become`** (rewrites e.g. **`/etc/docker/daemon.json`** from role defaults — see **`ops/automation/ansible/README.md`** Docker troubleshooting). **Do not** claim the assistant shares your tmux **`sudo`** cache without that mechanism.
+
 1. **Windows `P:` (pCloud):** **`P:\...`** is in scope on the dev PC when mounted — see **`AGENTS.md`**.
 
 1. **Prefer running repo scripts over pasting one-liners** when the operator has configured SSH and a manifest: **`scripts/lab-op-sync-and-collect.ps1`**, **`scripts/collect-homelab-report-remote.ps1`** — see **`agent-autonomous-merge-and-lab-ops.mdc`**.
