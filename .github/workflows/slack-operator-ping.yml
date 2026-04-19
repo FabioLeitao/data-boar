@@ -20,6 +20,7 @@ permissions:
 jobs:
   ping:
     runs-on: ubuntu-latest
+    if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
     steps:
       - name: Post to Slack incoming webhook
         env:

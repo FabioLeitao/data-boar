@@ -94,6 +94,8 @@ Implement **one generic “notify” step** in CI (bash/PowerShell) that posts t
 
 ### 4.1 Slack setup checklist (channel B)
 
+**Webhook guard (all Slack Actions):** Every workflow in `.github/workflows/slack-*.yml` that POSTs to Slack uses a **job-level** `if:` with `secrets.SLACK_WEBHOOK_URL != ''` (except where additional toggles apply). If the secret is unset, the job is **Skipped** — not failed.
+
 1. In your Slack workspace, create a channel (e.g. **`#data-boar-ops`**).
 1. Create an [**Incoming Webhook**](https://api.slack.com/messaging/webhooks) for your workspace (Slack app → choose channel → copy the webhook URL).
 1. On GitHub: **Settings → Secrets and variables → Actions → New repository secret** — name **`SLACK_WEBHOOK_URL`**, value = the webhook URL.

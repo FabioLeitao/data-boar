@@ -20,6 +20,7 @@ Use this table to jump to the **canonical bullet** or **rule** for each theme. D
 | **Operator career / LinkedIn layout (private)** | **`operator-career-private-layout.mdc`** · **`docs/private/author_info/career/README.pt_BR.md`** |
 | **Private stacked git** | **`docs/ops/PRIVATE_LOCAL_VERSIONING.md`** · mini-plan **`docs/private/ops/CURSOR_CONSOLIDATION_MINI_PLAN.pt_BR.md`** |
 | **Risk / non-destructive vs destructive** | **Risk posture** bullet below — do not fear harmless actions; pause and ask when destructive ops are doubtful |
+| **Direct execution** (clear “ship it” requests — avoid redundant confirmation) | **`.cursor/rules/operator-direct-execution.mdc`** |
 
 - **Risk posture — non-destructive vs destructive:** Do **not** shy away from **non-destructive** actions that fit these notes (read/list tools, searches, tests, doc edits, additive scripts). **Respect** **destructive or high-blast-radius** work even when it looks “reversible”: e.g. `git reset --hard`, history rewrite / `filter-repo`, **force-push**, mass deletes, DB drops, **`clean-slate`** on the **canonical** clone — **assess** impact and rollback **before** running. If **in doubt** whether the operator wants the **next step**, **stop and ask**, **explaining clearly why** (what could break, what rollback exists, **regression** risk). “Reversible in theory” ≠ always safe in practice.
 

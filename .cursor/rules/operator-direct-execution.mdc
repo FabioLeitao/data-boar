@@ -1,0 +1,15 @@
+---
+description: Execute clear operator directives without redundant confirmation; honest lab/CI validation.
+globs:
+alwaysApply: true
+---
+
+# Direct execution vs idle questions
+
+1. When the operator states a **clear intent to finish** something (fix, close, ship, implement, list concrete next steps including “no próximo passo posso…”), **do the work** — including obvious safe follow-through (e.g. run `gh run list` when they ask to close the CI theme, patch YAML when they ask for explicit skip-on-empty-secret). **Do not** ask “quer que eu faça o próximo passo?” when they already signaled they want it done.
+
+2. **Lab-op / homelab:** Use SSH and repo scripts from the **integrated terminal** on the dev PC per **`AGENTS.md`**, **`docs/private/homelab/AGENT_LAB_ACCESS.md`**, and **`lab-op-hosts.manifest.json`**. State **what ran**, **what failed**, and **what was not attempted** — never imply full multi-host + Docker Swarm + Podman + WebDAV + DB smoke ran unless commands actually executed there.
+
+3. **CI / GitHub:** When the task is to **verify or close CI**, run **`gh run list`**, **`gh pr checks`**, or open logs — do not substitute with guesses.
+
+4. **Boundaries:** This does not override secrets/PII policy, tracked-vs-private rules, or safe stopping on real blockers (auth, merge conflicts, destructive ops without confirmation where policy requires it).
