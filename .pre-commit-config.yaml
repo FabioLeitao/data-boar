@@ -1,7 +1,7 @@
 # Pre-commit hooks: run before each commit to catch issues early.
 # Install (once per clone): uv sync && uv run pre-commit install
 # Run manually / CI parity: uv run pre-commit run --all-files
-# Hooks mirror .github/workflows/ci.yml lint job (Ruff, markdown, pt-BR, commercial guard, external-docs plan links, plans-stats).
+# Hooks mirror .github/workflows/ci.yml lint job (Ruff, markdown, pt-BR, commercial guard, external-docs plan links, plans-stats, dependency artifacts vs uv).
 # The CI test job also runs scripts/pii_history_guard.py --full-history (ADR 0020); pre-commit runs the incremental guard only.
 # See https://pre-commit.com and docs/QUALITY_WORKFLOW_RECOMMENDATIONS.md
 
@@ -40,6 +40,11 @@ repos:
       - id: docs-external-no-plan-links
         name: external-tier docs must not link into docs/plans
         entry: uv run pytest tests/test_docs_external_no_plan_links.py -q -W error
+        language: system
+        pass_filenames: false
+      - id: dependency-artifacts-sync
+        name: uv.lock and requirements.txt match pyproject (uv)
+        entry: uv run pytest tests/test_dependency_artifacts_sync.py -q -W error
         language: system
         pass_filenames: false
       - id: pii-guard
