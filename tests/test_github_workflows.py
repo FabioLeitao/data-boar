@@ -75,6 +75,34 @@ def test_slack_ops_digest_workflow_present_and_valid() -> None:
     assert "notify" in (data.get("jobs") or {})
 
 
+def test_slack_post_workflows_guard_webhook_secret() -> None:
+    """Slack workflows that POST must skip the ubuntu job when SLACK_WEBHOOK_URL is empty."""
+    names = (
+        "slack-operator-ping.yml",
+        "slack-ci-failure-notify.yml",
+        "slack-release-published-notify.yml",
+        "slack-pr-merged-notify.yml",
+        "slack-ops-digest.yml",
+    )
+    for name in names:
+        data = _load_workflow(name)
+        jobs = data.get("jobs") or {}
+        for job_id, job in jobs.items():
+            if not isinstance(job, dict):
+                continue
+            if job.get("runs-on") != "ubuntu-latest":
+                continue
+            if "steps" not in job:
+                continue
+            job_if = job.get("if")
+            assert job_if is not None, (
+                f"{name} job {job_id}: expected job-level if (webhook guard)"
+            )
+            assert "SLACK_WEBHOOK_URL" in str(job_if), (
+                f"{name} job {job_id}: if must reference SLACK_WEBHOOK_URL"
+            )
+
+
 def test_semgrep_workflow_present_and_valid() -> None:
     data = _load_workflow("semgrep.yml")
     assert data.get("name") == "Semgrep"

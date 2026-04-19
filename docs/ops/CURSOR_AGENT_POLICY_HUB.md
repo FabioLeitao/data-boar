@@ -22,6 +22,7 @@ This page is **consolidation phase B**: the same **theme → first place to look
 | **Operator career / LinkedIn layout (private)** | [`.cursor/rules/operator-career-private-layout.mdc`](../../.cursor/rules/operator-career-private-layout.mdc) · [`docs/private/author_info/career/README.pt_BR.md`](../private/author_info/career/README.pt_BR.md) |
 | **Private stacked git** | [`PRIVATE_LOCAL_VERSIONING.md`](PRIVATE_LOCAL_VERSIONING.md) · mini-plan [`docs/private/ops/CURSOR_CONSOLIDATION_MINI_PLAN.pt_BR.md`](../private/ops/CURSOR_CONSOLIDATION_MINI_PLAN.pt_BR.md) |
 | **Risk / non-destructive vs destructive** | **Risk posture** paragraph in [`AGENTS.md`](../../AGENTS.md) (immediately under the Quick index table) |
+| **Direct execution** (clear “ship it” requests) | [`.cursor/rules/operator-direct-execution.mdc`](../../.cursor/rules/operator-direct-execution.mdc) |
 
 ## Related operator runbooks
 

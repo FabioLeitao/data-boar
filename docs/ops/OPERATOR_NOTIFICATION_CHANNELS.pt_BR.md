@@ -91,6 +91,8 @@ Um passo genérico “notify” pode enviar o mesmo texto ao **Slack** e/ou ao *
 
 ### 4.1 Checklist Slack (canal B)
 
+**Proteção do webhook (todos os Actions Slack):** Cada workflow em `.github/workflows/slack-*.yml` que faz POST no Slack usa um `if:` no **job** com `secrets.SLACK_WEBHOOK_URL != ''` (salvo toggles extra). Sem secret → job **Skipped**, não falha.
+
 1. No workspace Slack, crie um canal (ex.: **`#data-boar-ops`**).
 1. Crie um [**Incoming Webhook**](https://api.slack.com/messaging/webhooks) (app no workspace → escolha o canal → copie a URL do webhook).
 1. No GitHub: **Settings → Secrets and variables → Actions → New repository secret** — nome **`SLACK_WEBHOOK_URL`**, valor = essa URL.
