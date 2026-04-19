@@ -8,6 +8,10 @@
     - carryover-sweep  ->  -Mode Morning
     - eod-sync         ->  -Mode Eod
 
+    Morning Mode runs Tier A readiness by default: git fetch, status, open PRs,
+    latest main CI runs, today-mode file existence; then reminders for trust cadence
+    (-1 / -1b / -1L). See docs/ops/today-mode/README.md "Morning readiness".
+
     Does not post to Slack or GitHub; runs local git/gh read-only steps and prints
     paths. Secrets stay in Actions / env per OPERATOR_NOTIFICATION_CHANNELS.
 
@@ -16,8 +20,15 @@
     Eod: git fetch, short log of origin/main since local midnight (progress), status,
     open PRs list, tomorrow today-mode path hint.
 
+.PARAMETER SkipReadiness
+    Morning only: skip the daily Tier A block (git fetch, status, gh PRs/CI, today-mode file check).
+    Use when you only want the file list + social hints.
+
 .EXAMPLE
     .\scripts\operator-day-ritual.ps1 -Mode Morning
+
+.EXAMPLE
+    .\scripts\operator-day-ritual.ps1 -Mode Morning -SkipReadiness
 
 .EXAMPLE
     .\scripts\operator-day-ritual.ps1 -Mode Eod
@@ -30,6 +41,9 @@ param(
 
     [Parameter(Mandatory = $false)]
     [int]$Days = 0
+,
+    [Parameter(Mandatory = $false)]
+    [switch]$SkipReadiness
 )
 
 $ErrorActionPreference = "Stop"
@@ -52,6 +66,38 @@ if ($Mode -eq "Morning") {
     $yesterday = [DateTime]::Today.AddDays(-1).ToString("yyyy-MM-dd")
     Write-Host "Calendar yesterday: $yesterday  |  today: $today"
     Write-Host ""
+
+    if (-not $SkipReadiness) {
+        Write-Host "=== Readiness Tier A (daily, ~2 min) ===" -ForegroundColor Cyan
+        Write-Host "Full ladder: docs/ops/today-mode/README.md (Morning readiness)"
+        $prevEap = $ErrorActionPreference
+        $ErrorActionPreference = "SilentlyContinue"
+        git fetch origin 2>$null | Out-Null
+        $ErrorActionPreference = $prevEap
+        Write-Host ""
+        Write-Host "git status -sb:" -ForegroundColor Yellow
+        git status -sb
+        Write-Host ""
+        if (Get-Command gh -ErrorAction SilentlyContinue) {
+            Write-Host "Open PRs (gh):" -ForegroundColor Yellow
+            gh pr list --state open --limit 8 2>$null
+            Write-Host ""
+            Write-Host "Latest CI on main (ci.yml, max 3):" -ForegroundColor Yellow
+            gh run list -L 3 --workflow ci.yml --branch main 2>$null
+        } else {
+            Write-Host "gh not in PATH; skip PR list and CI run list." -ForegroundColor DarkYellow
+        }
+        Write-Host ""
+        $todayModePath = Join-Path $repoRoot ("docs/ops/today-mode/OPERATOR_TODAY_MODE_{0}.md" -f $today)
+        if (Test-Path -LiteralPath $todayModePath) {
+            Write-Host "Today-mode file: OK  $todayModePath" -ForegroundColor Green
+        } else {
+            Write-Host "Today-mode file: MISSING for today. Copy template:" -ForegroundColor Yellow
+            Write-Host "  docs/ops/today-mode/OPERATOR_TODAY_MODE_TEMPLATE.md -> OPERATOR_TODAY_MODE_$today.md"
+        }
+        Write-Host ""
+    }
+
     Write-Host "Private rhythm note (gitignored):" -ForegroundColor Yellow
     $carry = Join-Path $repoRoot "docs/private/TODAY_MODE_CARRYOVER_AND_FOUNDER_RHYTHM.md"
     if (Test-Path -LiteralPath $carry) {
@@ -89,6 +135,11 @@ if ($Mode -eq "Morning") {
             Write-Host "VeraCrypt: ${vl}: nao montado. Opcional: .\scripts\mount-secure-vault.ps1 -VaultPath `$env:DATA_BOAR_VERACRYPT_CONTAINER -DriveLetter $vl" -ForegroundColor DarkYellow
         }
     }
+    Write-Host ""
+    Write-Host "=== Trust / prod cadence (B-D: NOT every day; see PLANS_TODO -1 / -1b / -1L) ===" -ForegroundColor Cyan
+    Write-Host "  Tier B (-1):  uvx pip-audit -r requirements.txt   (weekly, before release, or after deps work)"
+    Write-Host "  Tier C (-1b): docker scout quickview fabioleitao/data_boar:latest   (after Dockerfile/lock/image change)"
+    Write-Host "  Tier D (-1L): docs/ops/HOMELAB_VALIDATION.md + optional scripts/lab-op-sync-and-collect.ps1 (second env proof)"
     Write-Host ""
     Write-Host "Optional: uv run pytest tests/test_operator_help_sync.py -v" -ForegroundColor Gray
     exit 0

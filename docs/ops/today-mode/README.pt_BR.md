@@ -4,7 +4,26 @@
 
 **Objetivo:** Este diretório reúne **planos de dia com data** (`OPERATOR_TODAY_MODE_YYYY-MM-DD.md`), a **fila de carryover** e **como manter o “publicado” alinhado ao `pyproject.toml`** — para os checklists não ficarem defasados.
 
-**Atalhos no chat:** escreve **`today-mode YYYY-MM-DD`** (token **só em inglês**); ver **`.cursor/rules/session-mode-keywords.mdc`**. Para **fim de bloco de trabalho ou saída do lab** (VeraCrypt / carryover / private stack opcional — não necessariamente fim do dia no calendário), usa **`block-close`**. Ritual manhã/fim de dia: **`scripts/operator-day-ritual.ps1`** (lista arquivos recentes nesta pasta).
+**Atalhos no chat:** escreve **`today-mode YYYY-MM-DD`** (token **só em inglês**); ver **`.cursor/rules/session-mode-keywords.mdc`**. Para **fim de bloco de trabalho ou saída do lab** (VeraCrypt / carryover / private stack opcional — não necessariamente fim do dia no calendário), usa **`block-close`**. Ritual manhã/fim de dia: **`scripts/operator-day-ritual.ps1`** (readiness Tier A + lista de arquivos — ver **Prontidão de manhã** abaixo).
+
+---
+
+## Prontidão de manhã (escada estilo SRE)
+
+**Objetivo:** começar o dia com **sync barato e com evidência** — sem fingir que **todo** passo de confiança/produção roda **toda** manhã. No chat, **`carryover-sweep`** corresponde a **`.\scripts\operator-day-ritual.ps1 -Mode Morning`** (o mesmo script).
+
+| Tier | O quê | Quando |
+| ---- | ----- | ------ |
+| **A — Sync e superfície** | `git fetch`, `git status -sb`, PRs abertos, últimos runs de **CI** do **`main`** (`ci.yml`), e se existe **`OPERATOR_TODAY_MODE_YYYY-MM-DD.md`** para **hoje** | **Diário** (~2 min). Sempre seguro antes do trabalho fundo. |
+| **B — Cadeia de dependências (-1)** | `uvx pip-audit -r requirements.txt` (mesma família do job **Dependency audit** no CI) | **Semanal**, antes de **release**, ou logo após **`deps`** / mudança de lock — não todo café da manhã. |
+| **C — Imagem (-1b)** | `docker scout quickview` (ou política do projeto) na imagem **publicada** depois de mudança em **Dockerfile** / lock / base | Quando a **imagem** ou a história de **supply** mudou — não diário. |
+| **D — Segundo ambiente (-1L)** | **[HOMELAB_VALIDATION.md](../HOMELAB_VALIDATION.md)**; opcional **`scripts/lab-op-sync-and-collect.ps1`** se existir **`docs/private/homelab/lab-op-hosts.manifest.json`** | Ao provar **deploy + conector** em **outra** máquina, ou em passada **agendada** de saúde do lab — não toda manhã. |
+
+**Por que não B–D todo dia?** São mais lentos ou dependem de ambiente. Rodar **pip-audit + Scout + SSH lab** diariamente vira ruído se o **`main`** já está verde. O tier **A** pega **WIP surpresa**, **refs velhas**, **PRs abertos** e **CI vermelho** antes de gastar horas.
+
+**Atalho rápido:** `.\scripts\operator-day-ritual.ps1 -Mode Morning -SkipReadiness` — só lista de arquivos + dicas sociais (raro).
+
+**Chat:** token opcional em inglês **`morning-readiness`** — mesmo objetivo do **`carryover-sweep`** para Tier A + ponteiro de doc (ver **`.cursor/rules/session-mode-keywords.mdc`**).
 
 ---
 
