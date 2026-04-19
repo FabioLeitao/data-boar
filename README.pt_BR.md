@@ -2,7 +2,7 @@
 
 **Data Boar — baseado na tecnologia lgpd_crawler.** Descoberta e mapeamento de dados pessoais e sensíveis com consciência de conformidade na sua sopa de dados.
 
-![Data Boar mascot](api/static/mascot/data_boar_mascote_color_translucent.png)
+![Data Boar mascot](api/static/mascot/data_boar_mascote_color.svg)
 
 **LGPD — relato-testemunho (visita de campo, Brasil):** [Português (Brasil)](docs/LGPD_WITNESS_REPORT_NIO_FIELD_VISIT_2026.pt_BR.md) · [English](docs/LGPD_WITNESS_REPORT_NIO_FIELD_VISIT_2026.md)
 
