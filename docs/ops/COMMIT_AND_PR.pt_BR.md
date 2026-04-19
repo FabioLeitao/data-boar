@@ -98,7 +98,7 @@ O GitHub guarda títulos e descrições por muito tempo. Para alinhar com **LGPD
 ## Qual repositório usar (apenas data-boar)
 
 - **`origin`** aponta para **FabioLeitao/data-boar** — é o **único** repositório para onde você faz push e abre PRs. Todo o trabalho novo e a identidade do projeto ficam aqui.
-- Um remote chamado **`python3-lgpd-crawler-legacy-and-history-only`** (o antigo repositório python3-lgpd-crawler) é mantido só para **histórico legado e fetch**. **Não** faça push para ele; o push está desabilitado para evitar envios acidentais.
+- Um **segundo remote** (opcional), mantido só para **histórico legado e fetch** — costuma ter sufixo `*-legacy-and-history-only` apontando para o URL antigo no GitHub. **Não** faça push para ele; o push está desabilitado para evitar envios acidentais. Detalhes: [BRANCH_AND_DOCKER_CLEANUP.pt_BR.md](BRANCH_AND_DOCKER_CLEANUP.pt_BR.md) §7.
 - Ao abrir o PR no navegador (página de compare ou `gh pr create --web`), confira:
 - **Repositório base:** `FabioLeitao/data-boar`
 - **Branch base:** `main`

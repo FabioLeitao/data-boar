@@ -117,7 +117,7 @@ $body = @"
 ## Which repository to use (data-boar only)
 
 - **`origin`** points to **FabioLeitao/data-boar** — this is the **only** repo you push to and open PRs in. All new work and branding live here.
-- A remote named **`python3-lgpd-crawler-legacy-and-history-only`** (the old python3-lgpd-crawler repo) is kept for **legacy history and fetch only**. Do **not** push to it; push is disabled so accidental pushes fail safely.
+- A **second remote** (optional), kept for **legacy history and fetch only** — often named with a `*-legacy-and-history-only` suffix pointing at the archived GitHub URL. Do **not** push to it; push is disabled so accidental pushes fail safely. Details: [BRANCH_AND_DOCKER_CLEANUP.md](BRANCH_AND_DOCKER_CLEANUP.md) §7.
 - When you open the PR in the browser (compare page or `gh pr create --web`), ensure:
 - **Base repository:** `FabioLeitao/data-boar`
 - **Base branch:** `main`
