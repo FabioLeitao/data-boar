@@ -32,7 +32,7 @@
 
 ## Current state
 
-- **Version:** `importlib.metadata.version("python3-lgpd-crawler")` in [core/about.py](../../core/about.py), aligned with `pyproject.toml`; fallback string if metadata missing.
+- **Version:** `importlib.metadata.version("data-boar")` in [core/about.py](../../core/about.py), aligned with `pyproject.toml`; fallback string if metadata missing.
 - **UI/API:** [api/routes.py](../../api/routes.py) passes `about` to templates; Excel/report footer uses `get_about_info()`.
 - **Startup:** [main.py](../../main.py) does not yet emit a standard **INFO** build line before audit/web.
 - **Existing plan:** [PLAN_SELF_UPGRADE_AND_VERSION_CHECK.md](PLAN_SELF_UPGRADE_AND_VERSION_CHECK.md) covers **remote** latest version and upgrade UX—**complement** with local **build identity** first so operators see **what is running** before checking **whether an update exists**.

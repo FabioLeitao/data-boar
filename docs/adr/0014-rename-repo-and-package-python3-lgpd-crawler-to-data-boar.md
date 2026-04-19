@@ -1,6 +1,6 @@
 # ADR 0014 — Rename repository and package from `python3-lgpd-crawler` to `data-boar`
 
-**Status:** Accepted — pending full execution in next release cycle
+**Status:** Accepted — package and primary docs executed in-repo; PyPI publish and optional legacy-remote removal remain operator follow-ups
 **Date:** 2026-04-05
 **Deciders:** Fabio Tavares Leitao (maintainer)
 **Related:** `docs/plans/completed/PLAN_LOGO_AND_NAMING.md`, `docs/ops/REMOTES_AND_ORIGIN.md`
@@ -75,11 +75,11 @@ need to be changed.
 
 ## Execution checklist (for the release implementing this ADR)
 
-- [ ] `pyproject.toml`: change `name = "python3-lgpd-crawler"` to `name = "data-boar"`
-- [ ] Batch replace `python3-lgpd-crawler` → `data-boar` in all non-historical docs
-- [ ] Batch replace references in CI workflows if hardcoded
-- [ ] Run `check-all` to confirm no regressions
-- [ ] Update `docs/ops/REMOTES_AND_ORIGIN.md` to remove legacy remote documentation
-- [ ] Notify collaborator with: `git remote set-url origin git@github.com:FabioLeitao/data-boar.git`
-- [ ] Tag the release with a changelog note: "Repository fully renamed to data-boar"
-- [ ] Verify `python3-lgpd-crawler-legacy-and-history-only` remote can be removed from `.git/config`
+- [x] `pyproject.toml`: change `name = "python3-lgpd-crawler"` to `name = "data-boar"`
+- [x] Batch replace `python3-lgpd-crawler` → `data-boar` in primary operator docs (README, CONTRIBUTING, GLOSSARY, USAGE, SECURITY, TECH_GUIDE, releases narrative, Sonar defaults, etc.)
+- [x] CI workflows: no hardcoded old package name found
+- [ ] Run `check-all` to confirm no regressions (before merge)
+- [ ] `docs/ops/REMOTES_AND_ORIGIN.md`: keep operational git remote names for copy-paste; optional doc-only trim later
+- [ ] Notify collaborator with: `git remote set-url origin git@github.com:FabioLeitao/data-boar.git` (if still on old URL)
+- [ ] Tag the release with a changelog note when publishing **data-boar** to PyPI
+- [ ] Optional: remove legacy second remote from `.git/config` after [BRANCH_AND_DOCKER_CLEANUP.md](../ops/BRANCH_AND_DOCKER_CLEANUP.md) §7

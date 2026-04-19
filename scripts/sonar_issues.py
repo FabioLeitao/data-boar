@@ -42,12 +42,12 @@ def _load_project_key() -> str:
     """Read sonar.projectKey from sonar-project.properties."""
     prop = REPO_ROOT / "sonar-project.properties"
     if not prop.exists():
-        return os.environ.get("SONAR_PROJECT_KEY", "python3-lgpd-crawler")
+        return os.environ.get("SONAR_PROJECT_KEY", "data-boar")
     for line in prop.read_text(encoding="utf-8", errors="replace").splitlines():
         line = line.strip()
         if line.startswith("sonar.projectKey=") and "=" in line:
             return line.split("=", 1)[1].strip()
-    return os.environ.get("SONAR_PROJECT_KEY", "python3-lgpd-crawler")
+    return os.environ.get("SONAR_PROJECT_KEY", "data-boar")
 
 
 def _fetch_issues(
