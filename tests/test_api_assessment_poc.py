@@ -172,6 +172,7 @@ def test_assessment_post_persists_answers_with_integrity_secret(tmp_path, monkey
         assert r3.status_code == 200
         assert "2 verified" in r3.text
         assert "Integrity (POC" in r3.text
+        assert "75.0" in r3.text
         db = LocalDBManager(str(tmp_path / "audit_results.db"))
         try:
             rows = db.maturity_assessment_rows_for_integrity()
@@ -233,11 +234,48 @@ def test_assessment_post_persists_answers(tmp_path):
         assert r3.status_code == 200
         assert "Submission summary" in r3.text
         assert "Stored 2 answer row" in r3.text
+        assert "Rubric score" in r3.text
+        assert "75.0" in r3.text
+        assert "Download CSV" in r3.text
+        ex = client.get(
+            f"/en/assessment/export?batch={bid}&format=csv",
+        )
+        assert ex.status_code == 200
+        assert ex.headers.get("content-disposition", "").startswith("attachment")
+        assert "sample_dpo" in ex.text
+        assert "disclaimer" in ex.text.lower()
+        exm = client.get(f"/en/assessment/export?batch={bid}&format=md")
+        assert exm.status_code == 200
+        assert "# Maturity self-assessment export" in exm.text
         db = LocalDBManager(str(tmp_path / "audit_results.db"))
         try:
             assert db.count_maturity_assessment_answers() == 2
         finally:
             db.dispose()
+    finally:
+        _teardown_routes(routes, orig_path, orig_cfg, orig_engine)
+
+
+def test_assessment_export_404_when_batch_has_no_rows(tmp_path):
+    routes, client, orig_path, orig_cfg, orig_engine = _setup_routes(
+        tmp_path,
+        api_extra=(
+            "  maturity_self_assessment_poc_enabled: true\n"
+            "  maturity_assessment_pack_path: "
+            + str(
+                Path(__file__).resolve().parent
+                / "fixtures"
+                / "maturity_assessment"
+                / "sample_pack.yaml"
+            ).replace("\\", "/")
+            + "\n"
+        ),
+        licensing_block="licensing:\n  effective_tier: pro\n",
+    )
+    try:
+        ghost = "c" * 32
+        r = client.get(f"/en/assessment/export?batch={ghost}&format=csv")
+        assert r.status_code == 404
     finally:
         _teardown_routes(routes, orig_path, orig_cfg, orig_engine)
 

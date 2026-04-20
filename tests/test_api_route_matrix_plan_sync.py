@@ -42,6 +42,7 @@ EXPECTED_HTTP_ROUTES: tuple[str, ...] = (
     "GET /{locale_slug}/",
     "GET /{locale_slug}/about",
     "GET /{locale_slug}/assessment",
+    "GET /{locale_slug}/assessment/export",
     "GET /{locale_slug}/config",
     "GET /{locale_slug}/help",
     "GET /{locale_slug}/reports",
