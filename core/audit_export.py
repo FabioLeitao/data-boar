@@ -2,6 +2,7 @@
 Export a machine-readable **audit trail** snapshot from the local SQLite database.
 
 Used by CLI ``--export-audit-trail`` for governance: wipe history, session summary,
+optional **maturity self-assessment** HMAC summary (same counts as ``GET /status``),
 and (when implemented) build integrity anchor rows — see
 ``docs/plans/PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md`` Phase E.
 """
@@ -13,6 +14,7 @@ from typing import Any
 
 from core.about import get_about_info
 from core.dashboard_transport import get_dashboard_transport_snapshot
+from core.maturity_assessment.integrity import load_integrity_secret_from_config
 from core.runtime_trust import get_runtime_trust_snapshot
 
 # Bump when JSON shape changes in a breaking way.
@@ -51,6 +53,8 @@ def build_audit_trail_payload(
     dashboard_transport = get_dashboard_transport_snapshot()
     wipe_rows = db_manager.list_data_wipe_log_entries()
     session_summary = db_manager.get_scan_sessions_summary()
+    sec = load_integrity_secret_from_config(config)
+    maturity_integrity = db_manager.verify_maturity_assessment_integrity(sec)
 
     payload: dict[str, Any] = {
         "schema_version": AUDIT_TRAIL_SCHEMA_VERSION,
@@ -69,11 +73,15 @@ def build_audit_trail_payload(
         "dashboard_transport": dashboard_transport,
         "data_wipe_log": wipe_rows,
         "scan_sessions_summary": session_summary,
+        # Same structure as GET /status (POC): HMAC row counts for maturity answers.
+        "maturity_assessment_integrity": maturity_integrity,
         # Populated when PLAN_BUILD_IDENTITY Phase E ships (integrity anchor,
         # per-run integrity events).
         "integrity_anchor": None,
         "integrity_events": None,
         "notes": (
+            "maturity_assessment_integrity matches GET /status for the same DB and "
+            "config/env secret (POC tamper-evidence; not encryption). "
             "integrity_anchor and integrity_events are reserved for "
             "PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY Phase E. "
             "data_wipe_log rows are append-only and are never removed by "
