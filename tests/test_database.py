@@ -1,6 +1,7 @@
 """Tests for config loader and database layer (no live DB required)."""
 
 import os
+import time
 import pytest
 from pathlib import Path
 
@@ -381,6 +382,32 @@ def test_wipe_all_data_logs_and_clears(tmp_path):
             assert inventories == []
         finally:
             s.close()
+    finally:
+        mgr.dispose()
+
+
+def test_maturity_assessment_batch_summaries_newest_first(tmp_path):
+    db_path = str(tmp_path / "batch_hist.db")
+    mgr = LocalDBManager(db_path)
+    try:
+        mgr.save_maturity_assessment_answers(
+            batch_id="a" * 32,
+            locale_slug="en",
+            pack_version=1,
+            answers={"q1": "yes"},
+        )
+        time.sleep(0.05)
+        mgr.save_maturity_assessment_answers(
+            batch_id="b" * 32,
+            locale_slug="en",
+            pack_version=1,
+            answers={"q2": "no"},
+        )
+        rows = mgr.maturity_assessment_batch_summaries(limit=10)
+        assert len(rows) == 2
+        assert rows[0]["batch_id"] == "b" * 32
+        assert rows[1]["batch_id"] == "a" * 32
+        assert rows[0]["answer_count"] == 1
     finally:
         mgr.dispose()
 
