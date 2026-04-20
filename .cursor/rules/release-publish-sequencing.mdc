@@ -1,14 +1,14 @@
 ---
-description: Mandatory order for shipping a semver — merge final X.Y.Z, tag vX.Y.Z, GitHub Release, Docker Hub + description, PUBLISHED_SYNC; only then pre-release bump on main. Stops confusing beta commits before publish.
+description: Mandatory order for shipping a semver — merge final X.Y.Z, tag vX.Y.Z, GitHub Release, Docker Desktop smoke before Hub push, prune, Hub UI + description, PUBLISHED_SYNC; only then pre-release bump on main.
 globs: ["**/*"]
 alwaysApply: true
 ---
 
 # Release publish sequencing (do not invert)
 
-**Problem:** Assistants (and rushed humans) stack a **pre-release** bump (`X.Y.Z-beta`) or the **next** dev version on `main` **before** **Git tag**, **GitHub Release**, and **Docker Hub** are real. That makes **`vX.Y.Z`** ambiguous, breaks “tag this commit,” and confuses **published** vs **working** version across **GitHub**, **Hub**, and **README**.
+**Problem:** Assistants (and rushed humans) stack a **pre-release** bump (`X.Y.Z-beta`) or the **next** dev version on `main` **before** **Git tag**, **GitHub Release**, and **Docker Hub** are real. That makes **`vX.Y.Z`** ambiguous, breaks “tag this commit,” and confuses **published** vs **working** version across **GitHub**, **Hub**, and **README**. A second failure mode is **pushing Hub images without a local smoke** on **Docker Desktop** (or without **disk headroom**), then **never pruning** — leaving **many** `data_boar:*` / `fabioleitao/data_boar:*` tags and stopped containers on the **primary Windows dev workstation**.
 
-**Canonical prose + checklist:** **`docs/VERSIONING.md`** (working vs published, bump list, distribution). **Per-release commands:** **`docs/releases/X.Y.Z.md`**, **`docs/ops/DOCKER_IMAGE_RELEASE_ORDER.md`**, **`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`**.
+**Canonical prose + checklist:** **`docs/VERSIONING.md`** (working vs published, bump list, distribution). **Per-release commands:** **`docs/releases/X.Y.Z.md`**, **`docs/ops/DOCKER_IMAGE_RELEASE_ORDER.md`**, **`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`**. **Local Docker hygiene:** **`.cursor/rules/docker-local-smoke-cleanup.mdc`**, **`.cursor/skills/docker-smoke-container-hygiene/SKILL.md`**, **`scripts/docker/README.md`**.
 
 ---
 
@@ -27,7 +27,13 @@ Do **not** claim a version is **published** until **all** relevant steps for **t
 2. **Git tag:** `vX.Y.Z` on the **exact commit** that still has **`X.Y.Z` final** in `pyproject.toml`. If there are **two** commits (release, then beta), the tag **must** point to the **release** commit, **not** `HEAD` with beta.
 3. **Push tag:** `git push origin vX.Y.Z` (or project remote).
 4. **GitHub Release:** `gh release create vX.Y.Z` with notes from **`docs/releases/X.Y.Z.md`** (or equivalent). **Verify** with `gh release list` / `gh release view vX.Y.Z` in-session — **do not** invent “it’s live” without a check when tools work.
-5. **Docker Hub:** build/push **`fabioleitao/data_boar:X.Y.Z`** and **`latest`** per project scripts. **Then** open Docker Hub **Repository → General → Edit** and paste **Short + Full** from **`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`** (replace the **entire** Full description — Hub **does not** sync from Git; stale blocks like old **## Tags** / **1.6.5** stay until overwritten). **Stable releases only** for this marketing refresh; **`-beta`** / **`-rc`** image experiments do **not** require updating the public Hub page copy unless the operator asks.
+5. **Docker image — build, smoke, push, prune, Hub UI (see also [`docs/ops/DOCKER_IMAGE_RELEASE_ORDER.md`](../../docs/ops/DOCKER_IMAGE_RELEASE_ORDER.md)):**
+   1. **Disk (primary dev PC):** Before a large `docker build`, confirm **free space** on the volume Docker uses (Windows: e.g. `Get-PSDrive C` / relevant drive; Docker Desktop **Settings → Resources** for disk location). Full disks cause **opaque build failures** and image corruption.
+   2. **Build:** From repo root at the release commit, **`.\scripts\docker-lab-build.ps1`** (or the publish script’s build step) so the image embeds the same **`pyproject.toml`** as **`X.Y.Z`**.
+   3. **Smoke on Docker Desktop (mandatory before `docker push` to Hub):** Run at least one **`docker run --rm`** against the local image (e.g. **`data_boar:lab`**) — e.g. `python main.py --version` / `--help` or **`/health`** per **`docs/DOCKER_SETUP.md`** §7. **Do not** push **`:X.Y.Z`** / **`:latest`** to **Docker Hub** if smoke fails. Saying “published” without a smoke run on the **same** machine used to push is an **incomplete** ritual unless the operator explicitly waives (CI-only build).
+   4. **Push:** `docker login` + push **`fabioleitao/data_boar:X.Y.Z`** and **`latest`** per **`docs/ops/DOCKER_IMAGE_RELEASE_ORDER.md`** / **`docker-hub-publish.ps1`** when present.
+   5. **Prune (same workstation):** **`.\scripts\docker-prune-local.ps1 -WhatIf`** then without **`-WhatIf`** — avoids **dozens** of stale **`data_boar:*`** tags cluttering Docker Desktop; align with **`docs/ops/BRANCH_AND_DOCKER_CLEANUP.md`** §4. Optional: `docker image prune -f` / `docker builder prune -f` when disk is tight — **confirm** with operator before aggressive prunes.
+   6. **Hub repository page:** Paste **Short + Full** from **`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`** (replace **entire** Full description). **Stable** releases only for this marketing refresh; **`-beta`** / **`-rc`** do not require Hub page text updates unless asked.
 6. **Reconciliation:** **`docs/ops/today-mode/PUBLISHED_SYNC.md`** (+ **`.pt_BR.md`**) aligned with **published** semver, Hub tags, and **`pyproject.toml` on `main`** (often **pre-release** after step 7).
 
 **Only after** the operator (or automation with credentials) has completed the publish steps they care about:
@@ -41,11 +47,13 @@ Do **not** claim a version is **published** until **all** relevant steps for **t
 - **Do not** add **`X.Y.Z-beta`** on `main` in the **same** PR as the final **`X.Y.Z`** **before** tag + GitHub Release + Hub steps are **actually done**, unless the operator explicitly orders a **rebase/split** workflow and names the **SHA** to tag.
 - **Do not** tell the operator the release is on GitHub because “the commits exist locally” — **verify** `origin` and **`gh`**.
 - **Do not** tag **`vX.Y.Z`** on a commit whose **`pyproject.toml`** already says **`beta`** for the **next** line of work.
+- **Do not** treat **Docker Hub push** as complete for a **stable** release **without** a **local smoke** on the operator **Docker Desktop** (or an explicit waiver, e.g. CI-only image) — see step **5.3**.
+- **Do not** omit **prune** guidance after publish when many **`data_boar:*`** / **`fabioleitao/data_boar:*`** tags accumulate — use **`.\scripts\docker-prune-local.ps1`** per **`scripts/docker/README.md`**.
 
 ---
 
 ## Mental model (one sentence)
 
-**Published = tag + GitHub Release + Docker Hub (+ Hub copy); working = what `pyproject.toml` says on `main` after you intentionally move forward.**
+**Published = tag + GitHub Release + Docker Hub image (+ local smoke before push) + Hub page copy + prune habit; working = what `pyproject.toml` says on `main` after you intentionally move forward.**
 
-Session keyword **`release-ritual`**: re-read this rule and **`docs/VERSIONING.md`** before editing versions or release docs.
+Session keyword **`release-ritual`**: re-read this rule, **`docs/VERSIONING.md`**, and **`.cursor/rules/docker-local-smoke-cleanup.mdc`** before editing versions, release docs, or advising Docker publish.

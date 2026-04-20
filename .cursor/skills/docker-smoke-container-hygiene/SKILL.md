@@ -9,6 +9,16 @@ description: >-
 
 # Docker smoke container hygiene (Data Boar)
 
+## Stable release publish (Hub) — non-optional pieces
+
+When the operator (or **`release-ritual`**) is cutting a **published** **`X.Y.Z`** image for **Docker Hub**:
+
+1. **Disk:** Confirm free space on the volume Docker uses on the **primary dev PC** before **`docker-lab-build.ps1`** (full disk ⇒ broken builds).
+2. **Smoke before push:** After **`.\scripts\docker-lab-build.ps1`**, run at least one **`docker run --rm`** against **`data_boar:lab`** — **`python main.py --version`** or **`/health`** per **`docs/DOCKER_SETUP.md`** §7. **Do not** advise **`docker push`** to **`fabioleitao/data_boar`** if smoke failed (unless CI-only waiver is explicit).
+3. **After push:** **`.\scripts\docker-prune-local.ps1 -WhatIf`** then without **`-WhatIf`** on the **same** machine — see **`docs/ops/DOCKER_IMAGE_RELEASE_ORDER.md`**.
+
+Authoritative order: **`.cursor/rules/release-publish-sequencing.mdc`**.
+
 ## When to use
 
 - You (or the operator) ran `docker build`, `docker run`, or `docker compose` for **Data Boar** (`data_boar` image, `data-boar-*` names).
