@@ -40,6 +40,10 @@ Isso complementa o **PR em lote**: muitos commits **locais** podem virar **um PR
 - **Quando agrupar:** fim de sprint — um PR com descrição resumindo o conjunto, ou **dois PRs** se uma fatia for arriscada e outra só documentação.
 - **Estratégia de merge no GitHub:** **merge commit** preserva commits no `main`; **squash** colapsa o PR em um commit — escolha conforme a equipe; o repositório não impõe um estilo só nestes docs.
 
+### Issues grandes no GitHub: manter PRs separáveis (ex.: [#86](https://github.com/FabioLeitao/data-boar/issues/86))
+
+**Recomendação:** Trabalho que mira **[#86](https://github.com/FabioLeitao/data-boar/issues/86)** (**sessão** no painel / **passwordless** / **RBAC**, conforme [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](../plans/PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md)) costuma ficar melhor num **branch e PR próprios**. Evite misturar com outras fatias do dashboard (por exemplo funcionalidades do questionário de **maturity**) no mesmo PR, salvo se você **quiser de propósito** uma revisão única — PRs menores são mais fáceis de reverter e batem com a entrega em fases do plano.
+
 ## Fazer manualmente
 
 ### Preview: lista de arquivos vs mensagem de commit

@@ -6,6 +6,20 @@
 <section class="card assessment-summary" aria-labelledby="assessment-summary-h">
   <h2 id="assessment-summary-h">{{ t('assessment.summary_title') }}</h2>
   <p role="status">{{ t('assessment.summary_rows_stored').format(count=assessment_summary.answer_count) }}</p>
+  {% if assessment_summary.score and assessment_summary.score.has_rubric %}
+  <p><strong>{{ t('assessment.summary_score').format(total=assessment_summary.score.total_display, maximum=assessment_summary.score.maximum_display, pct=assessment_summary.score.percentage_display) }}</strong></p>
+  {% elif assessment_summary.score and not assessment_summary.score.has_rubric %}
+  <p class="muted">{{ t('assessment.summary_score_none') }}</p>
+  {% endif %}
+  {% if assessment_summary.answer_count > 0 and assessment_summary.batch_id and maturity_pack_sections %}
+  <p class="assessment-export-links">
+    <a href="{{ base_path }}assessment/export?batch={{ assessment_summary.batch_id }}&amp;format=csv">{{ t('assessment.export_csv') }}</a>
+    <span aria-hidden="true"> · </span>
+    <a href="{{ base_path }}assessment/export?batch={{ assessment_summary.batch_id }}&amp;format=md">{{ t('assessment.export_md') }}</a>
+  </p>
+  <p class="muted">{{ t('assessment.export_contract') }}</p>
+  {% endif %}
+  <p class="muted">{{ t('assessment.summary_disclaimer') }}</p>
   {% if assessment_summary.answer_count > 0 %}
   <h3 class="assessment-subh">{{ t('assessment.summary_integrity_heading') }}</h3>
   {% if assessment_summary.integrity.secret_configured %}
