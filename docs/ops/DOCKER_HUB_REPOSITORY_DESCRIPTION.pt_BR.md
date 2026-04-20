@@ -2,10 +2,10 @@
 
 **English (canônico):** [DOCKER_HUB_REPOSITORY_DESCRIPTION.md](DOCKER_HUB_REPOSITORY_DESCRIPTION.md)
 
-**Objetivo:** O texto curto e a descrição longa no [Docker Hub](https://hub.docker.com/r/fabioleitao/data_boar) **não** ficam versionados no Git. O documento em inglês [DOCKER_HUB_REPOSITORY_DESCRIPTION.md](DOCKER_HUB_REPOSITORY_DESCRIPTION.md) é a **fonte** para colar após cada release, alinhada a **`pyproject.toml`** e às notas em **`docs/releases/`**.
+**Objetivo:** O texto curto e a descrição longa no [Docker Hub](https://hub.docker.com/r/fabioleitao/data_boar) **não** ficam versionados no Git. O documento em inglês [DOCKER_HUB_REPOSITORY_DESCRIPTION.md](DOCKER_HUB_REPOSITORY_DESCRIPTION.md) é a **fonte** para colar após cada release **estável** (**`X.Y.Z`** final), alinhada a **`pyproject.toml`** e a **`docs/releases/`**.
 
-**Quando atualizar:** Logo após **`docker push`** de **`fabioleitao/data_boar:<semver>`** e **`latest`**. Atualize a linha da versão no bloco **Short description** e no corpo **Full description** no arquivo em inglês.
+**Quando atualizar:** Logo após **`docker push`** de **`fabioleitao/data_boar:<semver>`** e **`latest`** para um release estável. No Hub: **Repository → General → Edit** — cole **Short** + **Full** inteiro (substitua a descrição longa por completo; blocos antigos como **## Tags** com **1.6.5** podem permanecer anos se você só editar um parágrafo). Atualize a versão no arquivo em inglês **antes** de colar.
 
-**Checklist:** Veja a seção **Maintainer checklist** no documento em inglês (inclui **copyright/mantenedor** no bloco **Full** — com link opcional ao **LinkedIn** do mantenedor para contexto profissional); mantenha **[PUBLISHED_SYNC.md](today-mode/PUBLISHED_SYNC.md)** coerente com o que os clientes podem puxar do Hub.
+**Checklist:** Veja **Maintainer checklist** no documento em inglês (inclui **copyright/mantenedor** no **Full** — link opcional ao **LinkedIn** no editor do Hub). **Pushes só de imagem `-beta` / `-rc`** não exigem atualizar o texto público do repositório salvo pedido explícito. Mantenha **[PUBLISHED_SYNC.md](today-mode/PUBLISHED_SYNC.md)** coerente com o que os clientes podem puxar do Hub.
 
 **Versão em todos os artefatos:** [VERSIONING.md](../VERSIONING.md) (seção **6. Distribuição…**, EN) — Docker Hub, `PUBLISHED_SYNC`, TECH_GUIDE, rascunhos sociais.
