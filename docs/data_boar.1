@@ -198,7 +198,7 @@ See SECURITY.md before use in production.
 .
 .TP
 .BI "\-\-export\-audit\-trail " PATH
-Export a JSON audit trail from the SQLite database (wipe log, session summary; future: integrity anchor). Does not modify the database. If
+Export a JSON audit trail from the SQLite database (wipe log, session summary, maturity assessment HMAC summary when rows exist; future: build integrity anchor). Does not modify the database. If
 .I PATH
 is omitted or is
 .BR \- ,
