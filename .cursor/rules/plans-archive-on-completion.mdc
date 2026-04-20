@@ -1,0 +1,19 @@
+---
+description: When a PLAN_*.md is truly done, archive it under docs/plans/completed/ so docs/plans/ stays active work only.
+alwaysApply: true
+---
+
+# Plans: archive completed work (operator expectation)
+
+1. **Goal:** **`docs/plans/`** holds **in-progress and upcoming** `PLAN_*.md` files only. **Delivered** plans belong in **`docs/plans/completed/`** so the folder is quick to scan.
+
+1. **When to move:** The plan’s **Status** and **PLANS_TODO.md** narrative agree the work is **done** (or the doc-only / CI slice is **complete**), with no misleading **⬜** rows left for that theme.
+
+1. **How (same merge / follow-up commit):**
+   - `git mv docs/plans/PLAN_FOO.md docs/plans/completed/`
+   - Fix **relative links** inside the moved file (`../PLANS_TODO.md`, `../PLAN_STILL_OPEN.md`).
+   - Update **references** in **`PLANS_TODO.md`**, sprint docs, and code comments that pointed at the old path (`completed/PLAN_FOO.md` or `docs/plans/completed/PLAN_FOO.md`).
+   - Run **`python scripts/plans_hub_sync.py --write`** and commit **`docs/plans/PLANS_HUB.md`**.
+   - If **`PLANS_TODO.md`** dashboard rows changed: **`python scripts/plans-stats.py --write`**.
+
+1. **Full checklist:** **`.cursor/rules/docs-plans.mdc`** § *When completing a plan* · **`.cursor/rules/plans-status-pl-sync.mdc`**.

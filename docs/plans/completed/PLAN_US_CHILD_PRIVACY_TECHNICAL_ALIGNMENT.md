@@ -1,7 +1,7 @@
 # Plan: U.S. child and minor privacy — technical mapping (samples + docs)
 
-**Status:** Phase 1 complete (config samples + EN/pt-BR product docs + README mentions)
-**Synced with:** [PLANS_TODO.md](PLANS_TODO.md)
+**Status:** Phase 1 complete (archived under `docs/plans/completed/`; later phases if any stay in PLANS_TODO / new plan rows).
+**Synced with:** [PLANS_TODO.md](../PLANS_TODO.md)
 
 ## Purpose
 
@@ -21,11 +21,11 @@ This plan tracks **documentation and sample YAML only** unless a future phase ex
 
 Samples **name** common U.S. reference points so teams can tag findings consistently. **Laws and rules evolve and vary by facts and venue**; maintainers do not warrant completeness or currentness of statutory citations in YAML comments.
 
-1. **FTC COPPA (Children’s Online Privacy Protection Act and Rule)** — federal framing for operators of websites/services directed to children and certain collections from children under 13. Sample: [compliance-sample-us_ftc_coppa.yaml](../compliance-samples/compliance-sample-us_ftc_coppa.yaml).
-1. **California AB 2273 (Age-Appropriate Design Code Act)** — California statute; **applicability and enforcement have seen legal challenge**; sample is for **technical labelling** when organisations voluntarily map systems. Sample: [compliance-sample-us_ca_ab2273_caadca.yaml](../compliance-samples/compliance-sample-us_ca_ab2273_caadca.yaml).
-1. **Colorado Privacy Act (CPA) and Colorado Attorney General rules on consumers under 18** state-law framing for **known minors** and related processing constraints in reporting text. Sample: [compliance-sample-us_co_cpa_minors.yaml](../compliance-samples/compliance-sample-us_co_cpa_minors.yaml).
+1. **FTC COPPA (Children’s Online Privacy Protection Act and Rule)** — federal framing for operators of websites/services directed to children and certain collections from children under 13. Sample: [compliance-sample-us_ftc_coppa.yaml](../../compliance-samples/compliance-sample-us_ftc_coppa.yaml).
+1. **California AB 2273 (Age-Appropriate Design Code Act)** — California statute; **applicability and enforcement have seen legal challenge**; sample is for **technical labelling** when organisations voluntarily map systems. Sample: [compliance-sample-us_ca_ab2273_caadca.yaml](../../compliance-samples/compliance-sample-us_ca_ab2273_caadca.yaml).
+1. **Colorado Privacy Act (CPA) and Colorado Attorney General rules on consumers under 18** state-law framing for **known minors** and related processing constraints in reporting text. Sample: [compliance-sample-us_co_cpa_minors.yaml](../../compliance-samples/compliance-sample-us_co_cpa_minors.yaml).
 
-**Interaction with built-in detection:** Continue to use product **minor / DOB** behaviour (see [MINOR_DETECTION.md](../MINOR_DETECTION.md)) as configured; these samples add **norm tags and narrative** that legal/compliance stakeholders may ask for in U.S. threads.
+**Interaction with built-in detection:** Continue to use product **minor / DOB** behaviour (see [MINOR_DETECTION.md](../../MINOR_DETECTION.md)) as configured; these samples add **norm tags and narrative** that legal/compliance stakeholders may ask for in U.S. threads.
 
 ## Implementation to-dos
 
