@@ -6,7 +6,7 @@
 
 **Broader context:** [OPERATOR_MANUAL_ACTIONS.md](OPERATOR_MANUAL_ACTIONS.md) · [PLANS_TODO.md](../plans/PLANS_TODO.md) “Resume next session”.
 
-**Dated one-day focus:** see **[today-mode/README.md](today-mode/README.md)** (indexed checklists). Current example: [OPERATOR_TODAY_MODE_2026-04-02.md](today-mode/OPERATOR_TODAY_MODE_2026-04-02.md) ([pt-BR](today-mode/OPERATOR_TODAY_MODE_2026-04-02.pt_BR.md)). **WRB delta (example):** [WRB_DELTA_SNAPSHOT_2026-04-16.md](WRB_DELTA_SNAPSHOT_2026-04-16.md). **Working version is `1.7.0`**; keep publish truth in [today-mode/PUBLISHED_SYNC.md](today-mode/PUBLISHED_SYNC.md).
+**Dated one-day focus:** see **[today-mode/README.md](today-mode/README.md)** (indexed checklists). Current example: [OPERATOR_TODAY_MODE_2026-04-02.md](today-mode/OPERATOR_TODAY_MODE_2026-04-02.md) ([pt-BR](today-mode/OPERATOR_TODAY_MODE_2026-04-02.pt_BR.md)). **WRB delta (example):** [WRB_DELTA_SNAPSHOT_2026-04-16.md](WRB_DELTA_SNAPSHOT_2026-04-16.md). **Working version on `main` is `1.7.2-beta`**; **published** latest is **`1.7.1`** — keep reconcile rows in [today-mode/PUBLISHED_SYNC.md](today-mode/PUBLISHED_SYNC.md).
 
 ---
 
