@@ -2,7 +2,7 @@
 
 **Status:** Planned — Priority band B (after open core POC)
 **Owner:** Fabio Leitao
-**Relates to:** `PLAN_PRODUCT_TIERS_AND_OPEN_CORE.md`, `LICENSING_SPEC.md`
+**Relates to:** `PLAN_PRODUCT_TIERS_AND_OPEN_CORE.md`, `LICENSING_SPEC.md`, `PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md` (org questionnaire is a **separate** commercial track — this PDF is **technical scan** output only).
 **Tier:** Pro feature (PDF on-demand; XLSX always generated)
 
 ---
