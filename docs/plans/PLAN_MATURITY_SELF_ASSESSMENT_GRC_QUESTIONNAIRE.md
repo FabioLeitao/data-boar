@@ -9,6 +9,32 @@
 
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (Backlog catalogue entry).
 
+### POC ready — minimum checklist (definition of done)
+
+Use this list to declare the **maturity POC “ready”** for demos, beta notes, or a checkpoint before the **tier/JWT** slice and long before **[#86](https://github.com/FabioLeitao/data-boar/issues/86)**. All items are **verifiable**; none require production SSO, RBAC, or multi-tenant storage.
+
+| # | Gate | How to verify |
+| --- | --- | --- |
+| 1 | **CI / tests** | `main` green: `pytest` coverage for assessment routes and DB (`tests/test_api_assessment_poc.py`, `tests/test_maturity_assessment_integrity.py`, `tests/test_database.py` batch summaries), plus repo-wide gate (`scripts/check-all.ps1` or CI **Lint** + **Test**). |
+| 2 | **Config documented** | `api.maturity_self_assessment_poc_enabled: true`, valid **`api.maturity_assessment_pack_path`** (YAML shape per `tests/fixtures/maturity_assessment/sample_pack.yaml`), and tier **Pro+** for this feature — in lab via `licensing.effective_tier: pro` in YAML ([docs/USAGE.md](../USAGE.md) table row). |
+| 3 | **Happy path (manual smoke)** | Open `GET /{locale}/assessment` → form renders from pack → **POST** submit → redirect shows **submission summary** (row count + rubric % when `scores` exist) → **Recent submissions** lists the batch → **CSV** (and optionally **Markdown**) export downloads; links in the history table resolve. |
+| 4 | **Integrity (optional demo)** | With **`DATA_BOAR_MATURITY_INTEGRITY_SECRET`** (or `api.maturity_integrity_secret_from_env`) set at submit time: **`GET /status`** shows **`maturity_assessment_integrity`** with non-zero “verified” counts; **`python main.py --export-audit-trail`** includes the same object ([ADR 0015](../adr/0015-poc-test-infrastructure-synthetic-corpus-and-api-testing.md) test posture). |
+| 5 | **Docs / ADR** | Operator-facing text in [USAGE.md](../USAGE.md) (+ pt-BR) for assessment + batch history; [ADR 0032](../adr/0032-maturity-assessment-batch-history-sqlite.md) for history behaviour. |
+
+**Explicitly not required for “POC ready”:** GitHub **#86** (session / WebAuthn / RBAC), **tenant-scoped** batch lists, **`licensing.mode: enforced`** + JWT in production, **DOCX→YAML** private import, legal/commercial one-pager, report-bundle annex.
+
+### Next slice (sketch): tier / JWT alignment — **not** #86
+
+**Intent:** Close the gap between **lab** tier simulation (`licensing.effective_tier` in YAML) and **enforced** mode where product tier comes from the **signed license JWT** (`dbtier` claim per [LICENSING_SPEC.md](../LICENSING_SPEC.md)), using the **same** runtime gate already wired for dashboard features: **`_runtime_tier_for_features`** in `api/routes.py` (JWT `dbtier` wins over YAML when enforcement and valid token).
+
+| Topic | Boundary |
+| ----- | -------- |
+| **In scope for this slice** | Prove **`maturity_self_assessment_poc`** respects `Tier.PRO` when `licensing.mode: enforced` and token carries `dbtier` (e.g. community → **404** on assessment routes; pro → **200**). Extend or add **automated tests** (API or licensing integration) so the gate does not regress; short **USAGE** note that enforced deployments use JWT tier for this POC. Optional: cross-link from [LICENSING_SPEC.md](../LICENSING_SPEC.md) “future extensions” to this plan. |
+| **Out of scope (still #86 / later)** | Browser **session**, **passwordless** / WebAuthn, **per-route RBAC**, **identity** for tenant-scoped history, **middleware** reorder — see [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md). |
+| **Branch / merge discipline** | Implement on a **dedicated feature branch**; **do not** combine with **#86 Phase 1** PRs — merge order remains: maturity POC checkpoint **→** tier/JWT slice **→** **#86** when scheduled ([SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) §4.2). |
+
+**Code anchors:** `core/licensing/tier_features.py` (`maturity_self_assessment_poc` → **Pro**); `core/licensing/guard.py` (`dbtier` on context); tests in `tests/test_tier_features_open_core_subscription.py`, `tests/test_licensing.py`.
+
 ### Operator sequencing — prerequisites done; POC **A** in progress (SQLite + HMAC shipped; scoring next)
 
 **M-LOCALE-V1 (dashboard i18n):** ✅ **shipped on `main`** (**2026-04**) — path-prefixed HTML, `en` + `pt-BR` catalogs, negotiation. See [PLAN_DASHBOARD_I18N.md](completed/PLAN_DASHBOARD_I18N.md) and [PLANS_TODO.md](PLANS_TODO.md) (Dashboard i18n section).
@@ -89,7 +115,7 @@ Feasible: treat **question banks** and **weights** as data (like **compliance sa
 
 ## Next steps (ordered; POC-first)
 
-1. **POC A — done for persistence + integrity + rubric + download export + in-dashboard batch history:** SQLite + YAML pack (optional **`scores`**) + HMAC + `/status` + audit export ✅; **post-submit summary** on `GET /{locale}/assessment?saved=1&batch=…` (row count + rubric + HMAC counts for that batch) ✅; **recent submissions** table on `GET /{locale}/assessment` (per `batch_id`, newest first) ✅; **`GET /{locale}/assessment/export?batch=…&format=csv|md`** ✅. **Next:** **import** questionnaire from private DOCX → YAML **without** pasting proprietary wording into public Git; **tier/JWT** alignment; **tenant-scoped** history with **#86** RBAC when identity model exists.
+1. **POC A — done for persistence + integrity + rubric + download export + in-dashboard batch history:** SQLite + YAML pack (optional **`scores`**) + HMAC + `/status` + audit export ✅; **post-submit summary** on `GET /{locale}/assessment?saved=1&batch=…` (row count + rubric + HMAC counts for that batch) ✅; **recent submissions** table on `GET /{locale}/assessment` (per `batch_id`, newest first) ✅; **`GET /{locale}/assessment/export?batch=…&format=csv|md`** ✅. Declare **POC ready** using the checklist in § *POC ready — minimum checklist* above. **Then (separate branch):** **tier/JWT** slice per § *Next slice (sketch): tier / JWT alignment* — **not** mixed with **#86**. **Later:** **import** questionnaire from private DOCX → YAML **without** pasting proprietary wording into public Git; **tenant-scoped** history with **#86** RBAC when identity model exists.
 2. Legal/commercial one-pager: positioning vs audit; consent for storing responses.
 3. **Architecture lock:** spike **A** remains default; revisit **C** only after A/B learnings — align with [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) and API key / future SSO (#86).
 4. MVP: **bundle** org answers into report annex or narrative export (distinct from technical **[PLAN_PDF_GRC_REPORT.md](PLAN_PDF_GRC_REPORT.md)** PDF stream).
