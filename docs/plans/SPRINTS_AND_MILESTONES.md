@@ -170,12 +170,15 @@ The table **S0–S6** does **not** yet include a dedicated row for **subscriptio
 
 **Mobile-first within this cluster (optional scheduling):** **M-MOBILE-V1** does **not** require **D-WEB** — ship responsive CSS/HTML on current URLs; when **M-LOCALE-V1** or **#86** change paths, run a **short mobile regression** pass.
 
+**GRC maturity POC (related URLs, different theme):** Organizational questionnaire work ([PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md](PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md)) shares `api/routes.py` / templates with the dashboard but has **its own** backlog (rubric, export, then **per-submit history** / **tier** / **RBAC hooks** when the **product story** closes). **Sequence:** bring that POC slice to a coherent checkpoint **before** prioritizing **[#86](https://github.com/FabioLeitao/data-boar/issues/86) Phase 1** on a **separate branch** — Phase 1 remains **ASAP** **after** that checkpoint, not “instead of” finishing POC momentum. Cross-link: [PLANS_TODO.md](PLANS_TODO.md) *Integration / WIP* bullet *Maturity self-assessment*.
+
 | Order | Item                           | Owner | Notes                                                                                                                                                                                                |
 | ----- | ----                           | ----- | -----                                                                                                                                                                                                |
 | 0     | **M-MOBILE-V1** (optional)     | A     | Responsive nav + tables + chart — [PLAN_DASHBOARD_MOBILE_RESPONSIVE.md](PLAN_DASHBOARD_MOBILE_RESPONSIVE.md). **Before** or **parallel** to locale work if operator prioritizes phone/tablet.        |
 | 1     | **D-WEB**                      | A/M   | ✅ **Done** (route matrix + middleware — [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) § Phase 0).                                                            |
-| 2     | **M-LOCALE-V1**                | A     | **Next code slice** in this cluster: locale prefix + `en` / `pt-BR` JSON + cookie / `Accept-Language` / config — [PLAN_DASHBOARD_I18N.md](completed/PLAN_DASHBOARD_I18N.md). **Before** row 3.                 |
-| 3     | **#86 Phase 1+**               | A     | Session + passwordless (Bitwarden Passwordless.dev minimum) on **same** `/{locale}/…` paths — **after** **M-LOCALE-V1**.                                                                             |
+| 2     | **M-LOCALE-V1**                | A     | ✅ **Done** on **`main`** (**2026-04**) — prefixed HTML, `en` / `pt-BR` JSON, negotiation — [PLAN_DASHBOARD_I18N.md](completed/PLAN_DASHBOARD_I18N.md). **Before** row 4.                            |
+| 3     | **Maturity POC follow-up**     | A/M   | **After** rubric + export merge: **history**, **tier alignment**, **RBAC hooks** per product narrative — same maturity plan; **before** row 4 if POC is the active theme.                           |
+| 4     | **#86 Phase 1+**               | A     | Session + passwordless (Bitwarden Passwordless.dev minimum) on **same** `/{locale}/…` paths — **dedicated branch/PR**; **ASAP** **after** row 3 reaches an agreed checkpoint (see paragraph above).   |
 
 **Kanban:** Add **D-WEB** to **Backlog** or **Selected** when you schedule the design pass; keep **one** agent-heavy theme in **In progress** per [TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md).
 

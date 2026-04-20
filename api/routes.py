@@ -1,6 +1,7 @@
 """
 FastAPI app: dashboard HTML under GET /{locale_slug}/ (e.g. /en/, /pt-br/), config, reports, help, about,
-optional POST /{locale_slug}/assessment (gated maturity POC); unprefixed /, /config, … redirect to the
+optional POST /{locale_slug}/assessment and GET /{locale_slug}/assessment/export (gated maturity POC);
+unprefixed /, /config, … redirect to the
 negotiated locale prefix. API: POST /scan and /start (optional tenant/technician tags), GET /status,
 /report, /list, GET /reports/{session_id}, POST /scan_database (optional tenant/technician),
 PATCH /sessions/{session_id} and /sessions/{session_id}/technician for metadata updates. On startup load
@@ -30,8 +31,14 @@ from enum import Enum
 from pathlib import Path
 
 import yaml
-from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Query, Request
+from fastapi.responses import (
+    FileResponse,
+    HTMLResponse,
+    JSONResponse,
+    RedirectResponse,
+    Response,
+)
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
@@ -46,7 +53,13 @@ from core.maturity_assessment.integrity import (
     load_integrity_secret_from_config,
     verify_maturity_assessment_rows,
 )
+from core.maturity_assessment.export_render import (
+    render_maturity_export_csv,
+    render_maturity_export_markdown,
+    score_for_export,
+)
 from core.maturity_assessment.pack import load_maturity_pack
+from core.maturity_assessment.scoring import rubric_result_to_summary_dict
 
 from api.locale_i18n import (
     LOCALE_SLUG_BY_TAG,
@@ -56,6 +69,13 @@ from api.locale_i18n import (
     make_t,
     negotiate_locale_tag,
 )
+
+
+class AssessmentExportFormat(str, Enum):
+    """Query ``format`` for GET /{locale}/assessment/export (download)."""
+
+    csv = "csv"
+    md = "md"
 
 
 class LocaleSlug(str, Enum):
@@ -1532,9 +1552,15 @@ async def maturity_self_assessment_placeholder(
         rows = eng.db_manager.maturity_assessment_rows_for_integrity_batch(batch_q)
         sec = load_integrity_secret_from_config(cfg)
         integrity = verify_maturity_assessment_rows(secret=sec, rows=rows)
+        score_dict: dict[str, object] | None = None
+        if pack is not None and rows:
+            rubric = score_for_export(pack, rows)
+            score_dict = rubric_result_to_summary_dict(rubric)
         assessment_summary = {
             "answer_count": len(rows),
             "integrity": integrity,
+            "batch_id": batch_q,
+            "score": score_dict,
         }
     return templates.TemplateResponse(
         request=request,
@@ -1595,6 +1621,54 @@ async def maturity_self_assessment_submit(request: Request, locale_slug: LocaleS
     return RedirectResponse(
         url=f"/{slug}/assessment?saved=1&batch={batch_enc}",
         status_code=303,
+    )
+
+
+@app.get("/{locale_slug}/assessment/export")
+async def maturity_assessment_export(
+    locale_slug: LocaleSlug,
+    batch: str = Query(..., min_length=1, max_length=64),
+    export_format: AssessmentExportFormat = Query(
+        AssessmentExportFormat.csv, alias="format"
+    ),
+):
+    """
+    Download CSV or Markdown for one submit batch (same POC gate as GET /assessment).
+
+    This is an **HTTP attachment** response (``Content-Disposition: attachment``), not a
+    server-side path under ``report.output_dir``. When ``api.require_api_key`` is true, use
+    ``X-API-Key`` or ``Authorization: Bearer`` like other dashboard routes.
+    """
+    del locale_slug  # locale reserved for future localized filenames / parity with UI
+    cfg = _get_config()
+    if not _maturity_self_assessment_poc_allowed(cfg):
+        raise HTTPException(status_code=404, detail="Not found")
+    if not _valid_maturity_assessment_batch_id(batch):
+        raise HTTPException(status_code=404, detail="Not found")
+    pack = _get_maturity_pack_cached(cfg)
+    if pack is None:
+        raise HTTPException(status_code=404, detail="Not found")
+    eng = _get_engine()
+    rows = eng.db_manager.maturity_assessment_rows_for_integrity_batch(batch)
+    if not rows:
+        raise HTTPException(status_code=404, detail="Not found")
+    score = score_for_export(pack, rows)
+    if export_format == AssessmentExportFormat.csv:
+        body = render_maturity_export_csv(pack=pack, batch_id=batch, score=score)
+        media = "text/csv; charset=utf-8"
+        ext = "csv"
+    else:
+        body = render_maturity_export_markdown(pack=pack, batch_id=batch, score=score)
+        media = "text/markdown; charset=utf-8"
+        ext = "md"
+    safe_batch = batch[:24] if len(batch) > 24 else batch
+    filename = f"maturity_assessment_{safe_batch}.{ext}"
+    return Response(
+        content=body.encode("utf-8"),
+        media_type=media,
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+        },
     )
 
 
