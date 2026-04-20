@@ -1,6 +1,6 @@
 # Plan: Scope import from exports (inventory bootstrap → YAML config)
 
-**Status:** Not started (planning / backlog catalogue)
+**Status:** Phase B shipped on `main` (CSV → YAML fragment CLI + tests + docs); vendor-specific adapters and further docs remain incremental.
 
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md)
 
@@ -10,7 +10,7 @@
 
 **Related plans:** [PLAN_NEXT_WAVE_PLATFORM_AND_GTM.md](PLAN_NEXT_WAVE_PLATFORM_AND_GTM.md) (N2 modular runtime + GTM), [PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md](PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md) (active probes — complementary), [PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md](PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md) (live back-office connectors — different scope), [PLAN_DATA_SOURCE_VERSIONS_AND_HARDENING.md](PLAN_DATA_SOURCE_VERSIONS_AND_HARDENING.md) (future: tags from imported asset metadata).
 
-<!-- plans-hub-summary: Offline exports (monitoring, ITSM, assessment) → canonical format → Data Boar config targets; seed early scan rounds for consultants and enterprise teams. -->
+<!-- plans-hub-summary: Phase B–C: generic CSV → YAML targets fragment (scripts/scope_import_csv.py); vendor adapters backlog. -->
 <!-- plans-hub-related: PLAN_NEXT_WAVE_PLATFORM_AND_GTM.md, PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md, PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md -->
 
 ---
@@ -52,11 +52,17 @@ Typical sources (examples, not an exhaustive commitment):
 
 ---
 
-## Canonical import model (draft)
+## Canonical import model (v1 CSV)
 
-**Design direction:** one **documented** canonical schema (JSON or CSV) that the engine can consume — e.g. rows with: `asset_id`, `hostname`, `ip`, `path_hints[]`, `port_hints[]`, `tags[]`, `source_system`, `source_export_type`, `confidence` (optional).
+**Implemented:** `config/scope_import_csv.py` + `scripts/scope_import_csv.py`. CSV header must include **`type`**. Columns are matched case-insensitively; header spaces become underscores.
 
-Vendor-specific adapters **map** to this schema; the **loader** merges or emits a **config fragment** for operator review (never silent overwrite of secrets).
+| Column | Purpose |
+| ------ | ------- |
+| `type` | **Required.** `filesystem`, `postgresql` / `mysql` / `database` (+ `driver`), `smb`, `nfs`, etc. |
+| `name`, `path`, `host`, `port`, `database`, `driver`, `user`, `pass_from_env`, `user_from_env`, `share`, `domain`, `export_path`, `recursive` | Target fields (subset per type). |
+| `asset_id`, `hostname`, `ip`, `tags`, `path_hints`, `port_hints`, `source_system`, `source_export_type`, `confidence` | Optional breadcrumbs; emitted under each target’s **`scope_import`** key. |
+
+Vendor-specific adapters **map** to this schema in future phases; v1 is the **generic CSV** only.
 
 ---
 
@@ -64,10 +70,10 @@ Vendor-specific adapters **map** to this schema; the **loader** merges or emits 
 
 | Phase | Deliverable | Status |
 | ----- | ----------- | ------ |
-| A | **Plan + schema doc** (this file + TECH_GUIDE / USAGE pointer when code exists) | ✅ Plan filed (canonical schema remains **draft** until Phase B) |
-| B | **CLI or script**: canonical file → **stdout** or **fragment file** (merge instructions) | ⬜ Pending |
-| C | **One reference adapter** (e.g. generic CSV host list or GLPI-shaped export) + pytest | ⬜ Pending |
-| D | **Docs (EN + pt-BR):** operator workflow, privacy note (exports may contain sensitive infra metadata) | ⬜ Pending |
+| A | **Plan + schema doc** (this file + TECH_GUIDE / USAGE pointer when code exists) | ✅ Done |
+| B | **CLI or script**: canonical file → **stdout** or **fragment file** (merge instructions) | ✅ `scripts/scope_import_csv.py` + `config/scope_import_csv.py` |
+| C | **One reference adapter** (e.g. generic CSV host list or GLPI-shaped export) + pytest | ✅ Generic CSV + `tests/test_scope_import_csv.py`; GLPI-shaped adapter ⬜ later |
+| D | **Docs (EN + pt-BR):** operator workflow, privacy note (exports may contain sensitive infra metadata) | 🔄 USAGE / TECH_GUIDE + example CSV + [ops quickstart](../ops/SCOPE_IMPORT_QUICKSTART.md); GLPI adapter TBD |
 | E | **Optional:** second adapter; **commercial** narrative: “accelerator” / partner-delivered slices ([LICENSING_SPEC.md](../LICENSING_SPEC.md)) | ⬜ Pending |
 
 ---
