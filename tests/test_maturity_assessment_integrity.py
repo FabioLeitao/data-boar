@@ -6,10 +6,36 @@ from pathlib import Path
 
 from core.database import LocalDBManager
 from core.maturity_assessment.integrity import (
+    HMAC_VERSION,
     compute_answer_hmac,
     load_integrity_secret_from_config,
     verify_maturity_assessment_rows,
 )
+
+
+def test_compute_answer_hmac_golden_vector_regression():
+    """
+    Frozen HMAC output: changing canonical payload, algorithm, or HMAC_VERSION must update this test.
+    """
+    assert HMAC_VERSION == "maturity-answer-hmac-v1"
+    got = compute_answer_hmac(
+        b"golden-hmac-test-key",
+        batch_id="abcd1234",
+        locale_slug="en",
+        pack_version=2,
+        question_id="q_sample",
+        answer_text="yes",
+    )
+    assert got == ("29470dee9272f9a3495dae99329afac9e1056de3cb5e6182e5521f9c629e28dd")
+    alt = compute_answer_hmac(
+        b"golden-hmac-test-key",
+        batch_id="abcd1234",
+        locale_slug="en",
+        pack_version=2,
+        question_id="q_sample",
+        answer_text="no",
+    )
+    assert alt != got
 
 
 def test_verify_rows_empty():

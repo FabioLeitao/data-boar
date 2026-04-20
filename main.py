@@ -178,8 +178,9 @@ def main() -> None:
         const="-",
         default=None,
         help=(
-            "Export a JSON audit trail from SQLite (data_wipe_log, session summary; "
-            "future: integrity anchor). PATH optional: omit or '-' for stdout; "
+            "Export a JSON audit trail from SQLite (data_wipe_log, session summary, "
+            "maturity_assessment_integrity when applicable; future: integrity anchor). "
+            "PATH optional: omit or '-' for stdout; "
             "otherwise write to PATH. Does not modify the database. "
             "Incompatible with --web and --reset-data."
         ),
