@@ -45,6 +45,8 @@ class LicenseContext:
     machine_fingerprint: str = ""
     detail: str = ""
     watermark: str = ""
+    # Product tier hint from JWT (`dbtier` claim) when mode is enforced — see LICENSING_SPEC.md
+    dbtier: str = ""
 
     def to_public_dict(self) -> dict[str, Any]:
         return {
@@ -59,6 +61,7 @@ class LicenseContext:
             "issuer_id": self.issuer_id or None,
             "trial": self.trial,
             "watermark": self.watermark or None,
+            "dbtier": self.dbtier or None,
         }
 
 
@@ -304,6 +307,7 @@ class LicenseGuard:
             machine_fingerprint=mfp,
             detail="ok" if state in ("VALID", "GRACE") else state.lower(),
             watermark=wm,
+            dbtier=str(claims.get("dbtier") or "").strip(),
         )
 
     @property

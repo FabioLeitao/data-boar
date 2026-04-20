@@ -210,6 +210,25 @@ class DataSourceInventory(Base):
     created_at = Column(DateTime, default=_utc_now)
 
 
+class MaturityAssessmentAnswer(Base):
+    """
+    One answer line for the organizational maturity self-assessment POC (GRC-style).
+    Not scan findings; grouped by ``batch_id`` (one browser submit).
+    ``row_hmac`` is HMAC-SHA256 (hex) when ``api.maturity_integrity_secret_from_env`` /
+    ``DATA_BOAR_MATURITY_INTEGRITY_SECRET`` was set at write time; empty otherwise.
+    """
+
+    __tablename__ = "maturity_assessment_answers"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    batch_id = Column(String(64), nullable=False, index=True)
+    created_at = Column(DateTime, default=_utc_now)
+    locale_slug = Column(String(32), nullable=False)
+    pack_version = Column(Integer, nullable=False, default=1)
+    question_id = Column(String(128), nullable=False)
+    answer_text = Column(Text, nullable=False)
+    row_hmac = Column(String(64), nullable=False, default="")
+
+
 class LocalDBManager:
     """Single SQLite DB for all audit results; session id set externally (core.session)."""
 
@@ -224,6 +243,8 @@ class LocalDBManager:
         self._ensure_jurisdiction_hint_column()
         self._ensure_data_source_inventory_table()
         self._ensure_notification_send_log_table()
+        self._ensure_maturity_assessment_answers_table()
+        self._ensure_maturity_row_hmac_column()
         self._session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
         self._current_session_id: str | None = None
 
@@ -302,6 +323,114 @@ class LocalDBManager:
     def _ensure_notification_send_log_table(self) -> None:
         """Create notification_send_log table if it does not exist (additive migration)."""
         NotificationSendLog.__table__.create(self.engine, checkfirst=True)
+
+    def _ensure_maturity_assessment_answers_table(self) -> None:
+        """Create maturity_assessment_answers table if it does not exist (additive migration)."""
+        MaturityAssessmentAnswer.__table__.create(self.engine, checkfirst=True)
+
+    def _ensure_maturity_row_hmac_column(self) -> None:
+        """Add row_hmac column for tamper-evident MAC (additive migration)."""
+        with self.engine.connect() as conn:
+            r = conn.execute(
+                text(
+                    "SELECT 1 FROM pragma_table_info('maturity_assessment_answers') "
+                    "WHERE name='row_hmac'"
+                )
+            )
+            if r.fetchone() is None:
+                conn.execute(
+                    text(
+                        "ALTER TABLE maturity_assessment_answers "
+                        "ADD COLUMN row_hmac VARCHAR(64) DEFAULT '' NOT NULL"
+                    )
+                )
+                conn.commit()
+
+    def save_maturity_assessment_answers(
+        self,
+        *,
+        batch_id: str,
+        locale_slug: str,
+        pack_version: int,
+        answers: dict[str, str],
+        integrity_secret: bytes | None = None,
+    ) -> None:
+        """Persist questionnaire answers for one submit. Skips when ``answers`` is empty."""
+        if not answers:
+            return
+        from core.maturity_assessment.integrity import compute_answer_hmac
+
+        bid = (batch_id or "")[:64]
+        loc = (locale_slug or "")[:32]
+        pv = int(pack_version)
+        session = self._session_factory()
+        try:
+            for qid, text in answers.items():
+                qkey = (qid or "")[:128]
+                if not qkey:
+                    continue
+                atext = (text or "")[:4000]
+                mac = ""
+                if integrity_secret:
+                    mac = compute_answer_hmac(
+                        integrity_secret,
+                        batch_id=bid,
+                        locale_slug=loc,
+                        pack_version=pv,
+                        question_id=qkey,
+                        answer_text=atext,
+                    )
+                row = MaturityAssessmentAnswer(
+                    batch_id=bid,
+                    locale_slug=loc,
+                    pack_version=pv,
+                    question_id=qkey,
+                    answer_text=atext,
+                    row_hmac=mac,
+                )
+                session.add(row)
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+
+    def maturity_assessment_rows_for_integrity(self) -> list[dict[str, object]]:
+        """Return all maturity answer rows as dicts for HMAC verification."""
+        session = self._session_factory()
+        try:
+            rows = session.query(MaturityAssessmentAnswer).all()
+            out: list[dict[str, object]] = []
+            for r in rows:
+                out.append(
+                    {
+                        "batch_id": r.batch_id,
+                        "locale_slug": r.locale_slug,
+                        "pack_version": r.pack_version,
+                        "question_id": r.question_id,
+                        "answer_text": r.answer_text,
+                        "row_hmac": r.row_hmac or "",
+                    }
+                )
+            return out
+        finally:
+            session.close()
+
+    def verify_maturity_assessment_integrity(self, secret: bytes | None) -> dict:
+        """Recompute HMACs and compare to stored ``row_hmac`` (see ``integrity.verify_maturity_assessment_rows``)."""
+        from core.maturity_assessment.integrity import verify_maturity_assessment_rows
+
+        rows = self.maturity_assessment_rows_for_integrity()
+        return verify_maturity_assessment_rows(secret=secret, rows=rows)
+
+    def count_maturity_assessment_answers(self) -> int:
+        """Row count for tests / diagnostics."""
+        session = self._session_factory()
+        try:
+            return session.query(MaturityAssessmentAnswer).count()
+        finally:
+            session.close()
 
     def record_notification_send_log(
         self,
@@ -935,6 +1064,7 @@ class LocalDBManager:
             session.query(ScanFailure).delete(synchronize_session=False)
             # Delete all scan session rows
             session.query(ScanSession).delete(synchronize_session=False)
+            session.query(MaturityAssessmentAnswer).delete(synchronize_session=False)
             # Record the wipe event itself
             session.add(DataWipeLog(reason=reason))
             session.commit()

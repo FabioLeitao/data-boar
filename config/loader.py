@@ -356,6 +356,15 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
     if api_key_env and not out["api"]["api_key"]:
         out["api"]["api_key"] = (os.environ.get(api_key_env) or "").strip() or None
     out["api"]["api_key_from_env"] = api_key_env or None
+    out["api"]["maturity_self_assessment_poc_enabled"] = bool(
+        out["api"].get("maturity_self_assessment_poc_enabled", False)
+    )
+    out["api"]["maturity_assessment_pack_path"] = str(
+        out["api"].get("maturity_assessment_pack_path") or ""
+    ).strip()
+    out["api"]["maturity_integrity_secret_from_env"] = (
+        str(out["api"].get("maturity_integrity_secret_from_env") or "").strip() or None
+    )
 
     # Optional external pattern files (ML/DL training terms: list of { text, label } with label "sensitive"|1 or "non_sensitive"|0)
     out["ml_patterns_file"] = data.get("ml_patterns_file") or ""
@@ -612,6 +621,8 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         "revocation_list_path": str(lic.get("revocation_list_path") or "").strip(),
         "manifest_path": str(lic.get("manifest_path") or "").strip(),
         "machine_bind_strict": bool(lic.get("machine_bind_strict", False)),
+        # Dev/lab: simulate tier for feature gates (community | pro | enterprise). Not a JWT claim.
+        "effective_tier": str(lic.get("effective_tier") or "").strip().lower(),
     }
 
     # Optional operator notifications (webhooks; default off). Secrets via ${VAR} or env-only docs.
@@ -692,7 +703,7 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
     # Unique, sanitized audit log labels per target (text logs only; DB keeps config ``name``).
     assign_unique_audit_log_names(out.get("targets") or [])
 
-    # Dashboard HTML locale (path-prefixed UI; see docs/plans/PLAN_DASHBOARD_I18N.md)
+    # Dashboard HTML locale (path-prefixed UI; see docs/plans/completed/PLAN_DASHBOARD_I18N.md)
     loc_raw = data.get("locale") or {}
     if not isinstance(loc_raw, dict):
         loc_raw = {}
