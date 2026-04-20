@@ -8,6 +8,7 @@ This page is **consolidation phase B**: the same **theme → first place to look
 
 | Theme | Where to look first |
 | ----- | ------------------- |
+| **`.cursor/` / `.vscode/` / `.github/` / caches** — what is tracked vs gitignored | [CURSOR_AND_EDITOR_ARTIFACTS.md](CURSOR_AND_EDITOR_ARTIFACTS.md) |
 | **`docs/private/`** read access / never self-block | [First `AGENTS.md` bullet after the Quick index](../../AGENTS.md) · [`.cursor/rules/agent-docs-private-read-access.mdc`](../../.cursor/rules/agent-docs-private-read-access.mdc) · [`docs/PRIVATE_OPERATOR_NOTES.md`](../PRIVATE_OPERATOR_NOTES.md) |
 | Chat **pt-BR** / locale (private `docs/private/` Portuguese = pt-BR; explicit EN prose → `en-US`) | [`.cursor/rules/operator-chat-language.mdc`](../../.cursor/rules/operator-chat-language.mdc) · [`.cursor/rules/operator-chat-language-pt-br.mdc`](../../.cursor/rules/operator-chat-language-pt-br.mdc) · [`.cursor/rules/docs-pt-br-locale.mdc`](../../.cursor/rules/docs-pt-br-locale.mdc) · [`.cursor/skills/operator-dialogue-pt-br/SKILL.md`](../../.cursor/skills/operator-dialogue-pt-br/SKILL.md) |
 | **Session keywords** (deps, feature, `es-find`, …) | [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) |

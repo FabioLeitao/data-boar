@@ -6,6 +6,7 @@ Use this table to jump to the **canonical bullet** or **rule** for each theme. D
 
 | Theme | Where to look first |
 | ----- | ------------------- |
+| **`.cursor/` / `.vscode/` / `.github/` / caches** — tracked vs gitignored | **`docs/ops/CURSOR_AND_EDITOR_ARTIFACTS.md`** |
 | **`docs/private/`** read access / never self-block | First bullet below · **`.cursor/rules/agent-docs-private-read-access.mdc`** · **`docs/PRIVATE_OPERATOR_NOTES.md`** |
 | Chat **pt-BR** / locale (**private drafts = pt-BR**; **EN-only prose → `en-US`**) | **`operator-chat-language*.mdc`** · **`docs-pt-br-locale.mdc`** · **`.cursor/skills/operator-dialogue-pt-br/SKILL.md`** |
 | **Session keywords** (deps, feature, `es-find`, …) | **`.cursor/rules/session-mode-keywords.mdc`** |
