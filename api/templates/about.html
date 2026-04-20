@@ -1,40 +1,39 @@
 {% extends "base.html" %}
-{% block title %}About — Data Boar (dashBOARd){% endblock %}
+{% block title %}{{ t('about.page_title') }}{% endblock %}
 {% block content %}
-<h1>About <span class="muted">(dashBOARd)</span></h1>
+<h1>{{ t('about.h1') }} <span class="muted">{{ t('about.dashmuted') }}</span></h1>
 
 <section class="card">
-  <h2>Application</h2>
+  <h2>{{ t('about.app_h2') }}</h2>
   <p><img src="/static/mascot/data_boar_mascote_color.svg" alt="Data Boar" width="72" height="72" style="vertical-align: middle; margin-right: 0.5em;"><strong>{{ about.name }}</strong> — {{ about.description }}</p>
   <p><span class="muted">Version:</span> {{ about.version }}</p>
-  <p class="muted">Web dashboard experience: <strong>dashBOARd</strong> (part of Data Boar).</p>
+  <p class="muted">{{ t('about.web_dash') }} <strong>dashBOARd</strong> (part of Data Boar).</p>
 </section>
 
 <section class="card">
-  <h2>Author</h2>
+  <h2>{{ t('about.author_h2') }}</h2>
   <p><strong>{{ about.author }}</strong></p>
   <p class="muted">{{ about.copyright }}</p>
 </section>
 
 <section class="card">
-  <h2>Subscription / runtime license status</h2>
-  <p class="muted">Operational status of optional commercial enforcement (default: open distribution). See <code>docs/LICENSING_SPEC.md</code>.</p>
-  <p><strong>State:</strong> {{ license.get('license_state', '—') }}</p>
-  <p><strong>Mode:</strong> {{ license.get('license_mode', '—') }}</p>
+  <h2>{{ t('about.license_h2') }}</h2>
+  <p class="muted">{{ t('about.license_intro') }}</p>
+  <p><strong>{{ t('about.state') }}</strong> {{ license.get('license_state', '—') }}</p>
+  <p><strong>{{ t('about.mode') }}</strong> {{ license.get('license_mode', '—') }}</p>
   {% if license.get('customer_name') %}
-  <p><strong>Licensed customer (token):</strong> {{ license.get('customer_name') }}</p>
+  <p><strong>{{ t('about.licensed_customer') }}</strong> {{ license.get('customer_name') }}</p>
   {% endif %}
   {% if license.get('expires_at') %}
-  <p><strong>Expiration (UTC):</strong> {{ license.get('expires_at') }}</p>
+  <p><strong>{{ t('about.expires') }}</strong> {{ license.get('expires_at') }}</p>
   {% endif %}
   {% if license.get('issuer_id') %}
-  <p><strong>Issuer (token):</strong> {{ license.get('issuer_id') }}</p>
+  <p><strong>{{ t('about.issuer') }}</strong> {{ license.get('issuer_id') }}</p>
   {% endif %}
 </section>
 
 <section class="card">
-  <h2>License</h2>
-  <p>This project is released under the <strong>{{ about.license }}</strong>, as established in the <code>LICENSE</code> file in the project repository (see also <a href="{{ about.license_url }}" target="_blank" rel="noopener noreferrer">OSI BSD 3-Clause</a>).</p>
-  <p class="muted">Summary: Redistribution and use in source and binary forms, with or without modification, are permitted provided that the copyright notice, list of conditions and the following disclaimer are retained; redistributions in binary form must reproduce the same in documentation; and the name of the copyright holder may not be used to endorse or promote derived products without permission. Full text is in the repository <code>LICENSE</code> file.</p>
+  <h2>Links</h2>
+  <p class="muted"><a href="https://github.com/FabioLeitao/data-boar/blob/main/LICENSE" target="_blank" rel="noopener">LICENSE</a> · <a href="https://github.com/FabioLeitao/data-boar/blob/main/NOTICE" target="_blank" rel="noopener">NOTICE</a></p>
 </section>
 {% endblock %}

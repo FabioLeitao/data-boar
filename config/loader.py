@@ -692,4 +692,36 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
     # Unique, sanitized audit log labels per target (text logs only; DB keeps config ``name``).
     assign_unique_audit_log_names(out.get("targets") or [])
 
+    # Dashboard HTML locale (path-prefixed UI; see docs/plans/PLAN_DASHBOARD_I18N.md)
+    loc_raw = data.get("locale") or {}
+    if not isinstance(loc_raw, dict):
+        loc_raw = {}
+    default_loc = str(loc_raw.get("default_locale") or "en").strip()
+    if default_loc.lower() in ("pt-br", "pt_br"):
+        default_loc = "pt-BR"
+    supported_raw = loc_raw.get("supported_locales")
+    if not isinstance(supported_raw, list) or not supported_raw:
+        supported_norm = ["en", "pt-BR"]
+    else:
+        supported_norm = []
+        for x in supported_raw:
+            s = str(x).strip()
+            if s.lower() in ("pt-br", "pt_br"):
+                s = "pt-BR"
+            supported_norm.append(s)
+    if default_loc not in supported_norm:
+        default_loc = supported_norm[0]
+    cookie_name = str(loc_raw.get("cookie_name") or "db_locale").strip() or "db_locale"
+    try:
+        cookie_max_age = int(loc_raw.get("cookie_max_age_seconds", 31536000))
+    except (TypeError, ValueError):
+        cookie_max_age = 31536000
+    cookie_max_age = max(60, min(cookie_max_age, 63072000))
+    out["locale"] = {
+        "default_locale": default_loc,
+        "supported_locales": supported_norm,
+        "cookie_name": cookie_name,
+        "cookie_max_age_seconds": cookie_max_age,
+    }
+
     return out

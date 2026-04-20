@@ -2,6 +2,16 @@
 // Uses data attributes rendered by the template and the /status and /scan API endpoints.
 
 (function () {
+  function getDbI18n() {
+    var el = document.getElementById('db-dashboard-i18n-data');
+    if (!el || !el.textContent) return {};
+    try {
+      return JSON.parse(el.textContent);
+    } catch (e) {
+      return {};
+    }
+  }
+
   function getChartElements() {
     var canvas = document.getElementById('progress-chart');
     var emptyEl = document.getElementById('chart-empty');
@@ -17,6 +27,7 @@
   }
 
   function initChart() {
+    var i18n = getDbI18n();
     var parts = getChartElements();
     var canvas = parts.canvas;
     var emptyEl = parts.emptyEl;
@@ -38,13 +49,17 @@
       var labels = chartData.map(function (d) { return d.label; });
       var findings = chartData.map(function (d) { return d.total_findings; });
       var scores = chartData.map(function (d) { return d.score; });
+      var labelTotal = i18n.chart_total || 'Total findings';
+      var labelRisk = i18n.chart_risk || 'Risk score (0–100)';
+      var yTotal = i18n.chart_y_total || labelTotal;
+      var yRisk = i18n.chart_y_risk || 'Risk score';
       new Chart(canvas, {
         type: 'line',
         data: {
           labels: labels,
           datasets: [
             {
-              label: 'Total findings',
+              label: labelTotal,
               data: findings,
               borderColor: 'rgb(88, 166, 255)',
               backgroundColor: 'rgba(88, 166, 255, 0.1)',
@@ -52,7 +67,7 @@
               yAxisID: 'y'
             },
             {
-              label: 'Risk score (0–100)',
+              label: labelRisk,
               data: scores,
               borderColor: 'rgb(243, 133, 81)',
               backgroundColor: 'rgba(243, 133, 81, 0.1)',
@@ -72,7 +87,7 @@
               type: 'linear',
               display: true,
               position: 'left',
-              title: { display: true, text: 'Total findings' },
+              title: { display: true, text: yTotal },
               min: 0,
               ticks: { precision: 0 }
             },
@@ -80,7 +95,7 @@
               type: 'linear',
               display: true,
               position: 'right',
-              title: { display: true, text: 'Risk score' },
+              title: { display: true, text: yRisk },
               min: 0,
               max: 100,
               grid: { drawOnChartArea: false }
@@ -95,6 +110,7 @@
   }
 
   function initScanControls() {
+    var i18n = getDbI18n();
     var btn = document.getElementById('btn-start-scan');
     var feedback = document.getElementById('scan-feedback');
     var feedbackGuide = document.getElementById('scan-feedback-guide');
@@ -106,8 +122,10 @@
       fetch('/status')
         .then(function (r) { return r.json(); })
         .then(function (d) {
-          if (statusRunning) statusRunning.textContent = d.running ? 'Running' : 'Idle';
-          if (statusSession) statusSession.textContent = d.current_session_id || '—';
+          var runLabel = i18n.status_running || 'Running';
+          var idleLabel = i18n.status_idle || 'Idle';
+          if (statusRunning) statusRunning.textContent = d.running ? runLabel : idleLabel;
+          if (statusSession) statusSession.textContent = d.current_session_id || '\u2014';
           if (statusFindings) statusFindings.textContent = d.findings_count;
           if (d.running) {
             if (btn) btn.disabled = true;
@@ -141,7 +159,8 @@
         var jurisdictionHintEl = document.getElementById('scan-jurisdiction-hint');
         var jurisdictionHint = jurisdictionHintEl && jurisdictionHintEl.checked;
 
-        if (feedback) feedback.textContent = 'Starting…';
+        var starting = i18n.starting || 'Starting\u2026';
+        if (feedback) feedback.textContent = starting;
         if (feedbackGuide) { feedbackGuide.textContent = ''; feedbackGuide.style.display = 'none'; }
         if (btn) btn.disabled = true;
         var body = {};
@@ -170,7 +189,8 @@
           .then(function (d) {
             if (feedback) {
               var sid = (d.session_id || '').slice(0, 16);
-              feedback.textContent = 'Started: ' + (sid ? sid + '…' : '');
+              var pref = i18n.started_prefix || 'Started:';
+              feedback.textContent = pref + ' ' + (sid ? sid + '\u2026' : '');
             }
             if (feedbackGuide) { feedbackGuide.textContent = ''; feedbackGuide.style.display = 'none'; }
             pollStatus();
@@ -180,23 +200,26 @@
             var msg = e.message || String(e);
             var guide = '';
             if (e.status === 409) {
-              msg = 'Scan already in progress.';
-              guide = 'Wait for the current scan to finish, or restart the API if it is stuck.';
+              msg = i18n.err_scan_progress || msg;
+              guide = i18n.err_scan_progress_guide || '';
             } else if (e.status === 429) {
-              msg = 'Rate limited; try again shortly.';
-              guide = 'Wait and try again, or adjust rate_limit.max_concurrent_scans and min_interval_seconds in config.';
+              msg = i18n.err_rate || msg;
+              guide = i18n.err_rate_guide || '';
             } else if (e.status === 401 || e.status === 403) {
-              msg = 'Not authorized (' + e.status + ').';
-              guide = 'Check API key or auth configuration if the API is protected.';
+              var authTemplate = i18n.err_auth || 'Not authorized ({code}).';
+              msg = authTemplate.replace('{code}', String(e.status));
+              guide = i18n.err_auth_guide || '';
             } else if (!e.status && !e.response) {
-              guide = 'Request did not reach the server. Check network, CORS, or ad-blockers; ensure the API is running.';
+              guide = i18n.err_network_guide || '';
             } else if (e.status >= 500) {
-              guide = 'Server error. Check API logs and try again.';
+              guide = i18n.err_server_guide || '';
             }
+            var what = i18n.err_what || 'What to do:';
+            var errPrefix = i18n.err_prefix || 'Error:';
             function showError(displayMsg, displayGuide) {
-              if (feedback) feedback.textContent = 'Error: ' + (displayMsg || msg);
+              if (feedback) feedback.textContent = errPrefix + ' ' + (displayMsg || msg);
               if (feedbackGuide) {
-                feedbackGuide.textContent = displayGuide || guide ? 'What to do: ' + (displayGuide || guide) : '';
+                feedbackGuide.textContent = displayGuide || guide ? what + ' ' + (displayGuide || guide) : '';
                 feedbackGuide.style.display = (displayGuide || guide) ? 'block' : 'none';
               }
             }
@@ -208,7 +231,13 @@
                   var j = JSON.parse(t);
                   if (j.detail) {
                     if (typeof j.detail === 'string') displayMsg = j.detail;
-                    else if (j.detail.reason) { displayMsg = j.detail.reason; if (j.detail.retry_after_seconds != null) displayGuide = 'Retry after ' + j.detail.retry_after_seconds + ' seconds, or adjust rate_limit in config.'; }
+                    else if (j.detail.reason) {
+                      displayMsg = j.detail.reason;
+                      if (j.detail.retry_after_seconds != null) {
+                        var rt = i18n.retry_after || 'Retry after {n} seconds, or adjust rate_limit in config.';
+                        displayGuide = rt.replace('{n}', String(j.detail.retry_after_seconds));
+                      }
+                    }
                     else displayMsg = JSON.stringify(j.detail);
                   }
                 } catch (_) {}
@@ -221,7 +250,7 @@
       });
     }
 
-    if (statusRunning && statusRunning.textContent === 'Running') {
+    if (statusRunning && statusRunning.getAttribute('data-running') === '1') {
       pollStatus();
     }
   }
@@ -235,4 +264,3 @@
     initScanControls();
   });
 })();
-

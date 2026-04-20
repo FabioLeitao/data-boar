@@ -192,6 +192,9 @@ sqlite_path: {tmp_path}/audit.db
         client = TestClient(routes.app)
         resp = client.get("/status")
         assert resp.status_code == 200
+        body = resp.json()
+        assert "enterprise_surface" in body
+        assert body["enterprise_surface"]["access_surface"]["rbac"] == "not_implemented"
     finally:
         routes._config_path = orig_path
         routes._config = orig_cfg

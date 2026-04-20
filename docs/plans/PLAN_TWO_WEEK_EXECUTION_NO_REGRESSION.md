@@ -1,7 +1,20 @@
 # Plan: Two-week execution sprint (no regressions, low toil, fast delivery)
 
-**Status:** Proposed (ready to execute)
+**Status:** Active — cycle **2026-04-21 → 2026-05-04** (replace dates when you start the next wall-clock window)
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md)
+
+**Previous template cycles:** Earlier uses of this file without a dated closure are **superseded** by the [Integration / WIP](PLANS_TODO.md) narrative (S0 closed, **S1 – Lab proof** selected). Close each cycle with: green `main`, explicit carryover rows, and one release or demo note if you shipped user-visible slices.
+
+### This cycle — focus (2026-04-21 → 2026-05-04)
+
+| Week | Theme | Outcomes |
+| ---- | ----- | -------- |
+| **1** | **Enterprise demo signal** | Transport + trust + global access surface exposed as **`enterprise_surface`** on **`GET /status`** / **`GET /health`** (paired slice; **not** full RBAC — see [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md)). Dashboard tinted banner when license trust is **degraded**/**untrusted** or API key is misconfigured. |
+| **2** | **Open-core POC / beta readiness** | One of: **–1L** lab proof checkpoint, **`D-WEB`** design doc milestone, or **`1.7.1`** patch bundle (pick **one** primary — avoid three parallel themes). |
+
+**Definition of done (this cycle):** At least one merged PR with tests for the governance bundle; **`check-all`** green; docs or plan rows updated; **no** silent deferral of **A3** Hub hygiene (operator) or **–1b** Scout if you touched deps/Docker.
+
+---
 
 ## Purpose
 

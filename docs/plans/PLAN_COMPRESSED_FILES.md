@@ -1,6 +1,6 @@
 # Plan: Optional scan inside compressed files (archives)
 
-**Status:** Not started
+**Status:** Core delivery complete (steps **1–12** ✅); optional follow-ups in **Notes to remind later** (password-protected archives test, archive bombs, nested archives, …) — see table below.
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
@@ -281,4 +281,4 @@ Follow-ups or optional improvements, **ordered by recommended execution** under 
 
 ## Last updated
 
-Plan created. Update this doc when completing steps or when design decisions change.
+- **2026-04-20:** Header **Status** aligned with completed steps 1–12 and [PLANS_TODO.md](PLANS_TODO.md) (drift fix).
