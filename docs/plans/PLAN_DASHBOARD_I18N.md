@@ -1,6 +1,8 @@
 # Dashboard i18n and multi-language web UI
 
-**Status:** **Target architecture agreed** — implementation **deferred** until higher-priority product slices ship; milestones and sequencing below are **planning only** until scheduled.
+**Status:** **Target architecture agreed**; **D-WEB** ✅. **Operator priority:** ship **M-LOCALE-V1** (path-prefixed HTML + `en` / `pt-BR`) **before** [#86](https://github.com/FabioLeitao/data-boar/issues/86) **Phase 1** (session + passwordless) so auth work lands on **stable** `/{locale}/…` routes — see § *Meshing with dashboard reports RBAC*.
+
+**Next `feature` session (primary slice):** implement **M-LOCALE-V1** per § *Implementation checklist* + USAGE/TECH_GUIDE (EN + pt-BR). **Do not** bundle [GRC maturity POC](PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md) scaffolding in the same PR unless the operator explicitly combines tracks — GRC is the **following** `feature` session after M-LOCALE-V1 lands.
 
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md), [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md), [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) (**#86**). **Future public website** (marketing + doc hub) should **reuse the same locale model** (path prefix, cookie, `Accept-Language`, JSON catalogs) — see [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) §2.2.
 
@@ -20,6 +22,19 @@
 | **Default locale**   | **(1)** Valid **preference cookie** → **(2)** **`Accept-Language`** vs `supported_locales` → **(3)** **`default_locale`** in config (fallback often `en`).                                                                                 | User does **not** re-pick language every visit.                                                                                                                                                                       |
 | **Catalog size**     | **Long-term cap ~5** shipped UI locales (`en`, `pt-BR`, + optional `es`, `fr`, + one **token** slot). **gettext** reconsider only if **many** locales or **heavy** translator workflow — typically **not** for months/years at this scale. | JSON + **CI key-parity** checks across locale files stays token- and maintainer-friendly.                                                                                                                             |
 | **Plurals / gender** | Prefer **label + number** patterns in copy to limit grammar pain; if rich phrases appear later, consider **ICU MessageFormat in JSON** or migrate string layer — **without** changing URL or API design.                                   | Avoids locking out Japanese etc. when you add them.                                                                                                                                                                   |
+
+### Terminology — do not conflate these layers
+
+Editors, assistants, and operators should keep the following **separate** (mixing them causes wrong URLs, wrong filenames, or pt-PT wording in pt-BR docs):
+
+| Layer | What to use | Example |
+| ----- | ----------- | ------- |
+| **BCP 47 locale tag** | Config `locale.supported_locales`, `locale.default_locale`, **cookie value**, and **`api/locales/<tag>.json` filename** | `en`, **`pt-BR`** (capital **BR**, hyphen) |
+| **URL path segment** (dashboard HTML prefix) | First path segment after `/` — **slug**, lowercase | `en`, **`pt-br`** (see `LOCALE_SLUG_BY_TAG` in code) |
+| **Tracked documentation mirror** | Suffix on Markdown pairs | **`*.pt_BR.md`** (underscore; **pt-BR** prose, Brazilian vocabulary per `tests/test_docs_pt_br_locale.py`) |
+| **Human prose language** | Brazilian Portuguese for pt mirror files and operator chat when pt is chosen | **pt-BR** — not **pt-PT** (avoid *ficheiro*, *partilhar*, *utilizador*, *secção*, *defeito* for “default”) |
+
+**Quick rule:** In dialogue and docs, say **“slug `pt-br` in the URL”** vs **“tag `pt-BR` in config and JSON filenames”** — never use one phrase to mean both.
 
 ### Scripts, data encodings, and demand-driven locales (customer reminder)
 
@@ -43,12 +58,14 @@ Before **either** implementation PR changes route shape:
 
 1. Produce a **short URL + middleware order diagram** (can live in this section or in **#86** plan — keep cross-links). Include: unprefixed API; prefixed HTML; where **API key** runs (automation); where **browser session** runs (after WebAuthn / passwordless per **#86**); where **locale** is resolved; where **route class / RBAC** runs (exact order TBD in design pass — typically: normalize path → optional API key → session for HTML → locale for HTML → RBAC for resource class).
 
-1. **Recommended implementation order (when work actually starts):**
-   - **Slice A — Locale skeleton:** introduce `/{locale}/…` for HTML with **`en`** + **`pt-BR`** JSON and negotiation; **no** RBAC behaviour change yet (defaults unchanged).
-   - **Slice B — #86 Phase 0–1:** docs + optional middleware on **that same** path layout (avoid gating `/reports` on legacy paths then re-gating on prefixed paths in a second refactor).
-   - **Slice C — #86 Phase 2+** and **optional `es`/`fr`/token locale** as separate PRs.
+1. **Recommended implementation order (locked sequencing):**
+   - **Slice A — M-LOCALE-V1 (prioritize first):** introduce `/{locale}/…` for HTML with **`en`** + **`pt-BR`** JSON and negotiation; **no** RBAC / session behaviour change yet (defaults unchanged). **Ship this before** #86 Phase 1 code to avoid binding session/login to legacy unprefixed URLs.
+   - **Slice B — #86 Phase 1:** session + **passwordless** (**[Bitwarden Passwordless.dev](https://bitwarden.com/products/passwordless/)** minimum) on the **same** `/{locale}/…` paths as Slice A. **Phase 0 (D-WEB)** is ✅ docs-only; **enterprise SSO/OIDC** stays **Phase 3**, later.
+   - **Slice C — #86 Phase 2+** (RBAC) and **optional `es`/`fr`/token locale** (`M-LOCALE-PLUS`) as separate PRs.
 
 **Higher rework cost (avoid unless security forces it):** ship #86 only on **legacy** unprefixed paths, then add locale prefix later — implies **second** pass on every guard and link.
+
+**D-WEB snapshot (Phase 0):** Route table, actual middleware order (Starlette outer→inner), and target layers (session, locale, RBAC) live in [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) § *Phase 0 deliverable — route matrix and middleware*.
 
 ---
 
@@ -56,11 +73,11 @@ Before **either** implementation PR changes route shape:
 
 | ID                | Name                             | Type          | Done when                                                                                                                                                          |
 | --                | ----                             | ----          | ---------                                                                                                                                                          |
-| **D-WEB**         | **Dashboard web surface design** | Doc / diagram | URL map + middleware order agreed; cross-linked from **#86** plan; no feature code required.                                                                       |
+| **D-WEB**         | **Dashboard web surface design** | Doc / diagram | URL map + middleware order agreed; cross-linked from **#86** plan; **no product code** (no WebAuthn). Later identity order: **Bitwarden Passwordless.dev** (Phase 1) **before** corporate **SSO** (Phase 3) — [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) § *Phase 0 (D-WEB)*. |
 | **M-LOCALE-V1**   | **Locale v1 on `main`**          | Code          | Path-prefixed HTML; `en` + `pt-BR` JSON; cookie + `Accept-Language` + config fallback; switcher; tests; USAGE/TECH_GUIDE touch; CI key parity for shipped locales. |
 | **M-LOCALE-PLUS** | **Optional locales**             | Code          | `es` and/or `fr` and/or fifth market locale — same mechanics; still no gettext unless reprioritised.                                                               |
 
-**Sprint placement:** **D-WEB** can run in a **buffer** sprint or **ahead of** the first implementation slice; **M-LOCALE-V1** is **Tier 4 / H2** alongside **#86** — see [PLANS_TODO.md](PLANS_TODO.md) and [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) §4.2. **Do not** schedule **M-LOCALE-V1** until explicit priority after current Tier-2 / integration work unless the operator promotes it.
+**Sprint placement:** **D-WEB** ✅. **M-LOCALE-V1** is **promoted** to run **before** [#86](https://github.com/FabioLeitao/data-boar/issues/86) **Phase 1** (see [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) §4.2). Tier / ordering in [PLANS_TODO.md](PLANS_TODO.md) **Integration / WIP** may still list other fronts; within the **dashboard web surface cluster**, prefer **locale prefix first**, then **in-app identity**.
 
 ---
 
@@ -79,9 +96,9 @@ Before **either** implementation PR changes route shape:
 
 ## Current state (baseline)
 
-- **Routes:** HTML at `/`, `/config`, `/reports`, `/help`, `/about` ([api/routes.py](../api/routes.py)); API endpoints locale-agnostic.
-- **Templates:** English hard-coded in Jinja.
-- **JS:** [api/static/dashboard.js](../api/static/dashboard.js) — a few visible strings.
+- **Routes:** HTML under `/{locale_slug}/…` (`en`, `pt-br`, …); unprefixed `/`, `/config`, `/reports`, `/help`, `/about` redirect per negotiation ([api/routes.py](../api/routes.py)); API endpoints locale-agnostic.
+- **Templates:** Jinja uses `t(key)` with JSON catalogs in [api/locales/](../api/locales/).
+- **JS:** [api/static/dashboard.js](../api/static/dashboard.js) — chart labels and scan feedback strings from server-injected `dashboard_js_i18n`.
 
 ---
 

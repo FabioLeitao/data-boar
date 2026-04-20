@@ -1,9 +1,9 @@
 """
-FastAPI app: dashboard (GET /), config (GET/POST /config), reports list (GET /reports).
-API: POST /scan and /start (optional tenant/technician tags), GET /status, /report, /list,
-GET /reports/{session_id}, POST /scan_database (optional tenant/technician), PATCH /sessions/{session_id}
-and /sessions/{session_id}/technician for metadata updates. On startup load config (config.yaml or CONFIG_PATH)
-and create a singleton AuditEngine.
+FastAPI app: dashboard HTML under GET /{locale_slug}/ (e.g. /en/, /pt-br/), config, reports, help, about;
+unprefixed /, /config, … redirect to the negotiated locale prefix. API: POST /scan and /start (optional
+tenant/technician tags), GET /status, /report, /list, GET /reports/{session_id}, POST /scan_database
+(optional tenant/technician), PATCH /sessions/{session_id} and /sessions/{session_id}/technician for
+metadata updates. On startup load config (config.yaml or CONFIG_PATH) and create a singleton AuditEngine.
 
 Path safety: session_id is validated before use in file paths. Report paths use
 ``_real_file_under_out_dir_str`` / ``_resolved_existing_file_under_out_dir``: CodeQL's
@@ -23,6 +23,7 @@ import re
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
+from enum import Enum
 from pathlib import Path
 
 import yaml
@@ -34,8 +35,25 @@ from pydantic import BaseModel
 
 from core.about import get_about_info
 from core.dashboard_transport import get_dashboard_transport_snapshot
+from core.enterprise_surface_posture import get_enterprise_surface_posture
 from core.host_resolution import effective_api_key_configured
 from core.runtime_trust import get_runtime_trust_snapshot
+
+from api.locale_i18n import (
+    LOCALE_SLUG_BY_TAG,
+    LOCALE_TAG_BY_SLUG,
+    VALID_SLUGS,
+    html_base_path,
+    make_t,
+    negotiate_locale_tag,
+)
+
+
+class LocaleSlug(str, Enum):
+    """URL path segment for dashboard HTML (maps to BCP 47 in locale negotiation)."""
+
+    en = "en"
+    pt_br = "pt-br"
 
 
 def _about_info() -> dict:
@@ -46,9 +64,94 @@ def _about_info() -> dict:
 def _template_context(base: dict) -> dict:
     """Merge dashboard transport snapshot into Jinja context (banner, /status parity)."""
     snap = get_dashboard_transport_snapshot()
+    esp = get_enterprise_surface_posture(_get_config())
     ctx = dict(base)
     ctx["dashboard_transport"] = snap
+    ctx["enterprise_surface"] = esp
     ctx["show_insecure_banner"] = bool(snap.get("show_insecure_banner"))
+    reasons = list(esp.get("reasons") or [])
+    only_plaintext = reasons == ["plaintext_http_explicit"]
+    ctx["show_trust_governance_banner"] = (
+        esp.get("severity") in ("caution", "elevated") and not only_plaintext
+    )
+    return ctx
+
+
+def _html_lang_attr(locale_tag: str) -> str:
+    return "pt-BR" if locale_tag == "pt-BR" else "en"
+
+
+def _locale_tag_from_slug(slug: str) -> str:
+    return LOCALE_TAG_BY_SLUG.get(slug.lower(), "en")
+
+
+def _switcher_entries(request: Request, current_slug: str, t) -> list[dict]:
+    cfg = _get_config()
+    supported = (cfg.get("locale") or {}).get("supported_locales") or ["en", "pt-BR"]
+    segs = [p for p in request.url.path.split("/") if p]
+    if segs and segs[0].lower() in VALID_SLUGS:
+        tail_path = "/" + "/".join(segs[1:]) if len(segs) > 1 else "/"
+    else:
+        tail_path = "/"
+    entries: list[dict] = []
+    for tag in supported:
+        s = LOCALE_SLUG_BY_TAG[tag]
+        if tail_path == "/":
+            url = f"/{s}/"
+        else:
+            url = f"/{s}{tail_path}"
+        if request.url.query:
+            url += f"?{request.url.query}"
+        label_key = "nav.locale_en" if tag == "en" else "nav.locale_pt"
+        entries.append(
+            {
+                "slug": s,
+                "url": url,
+                "label": t(label_key),
+                "current": s == current_slug,
+            }
+        )
+    return entries
+
+
+def _i18n_template_context(
+    request: Request, locale_slug: str, locale_tag: str, base: dict
+) -> dict:
+    cfg = _get_config()
+    loc = cfg.get("locale") or {}
+    supported = loc.get("supported_locales") or ["en", "pt-BR"]
+    default = loc.get("default_locale") or "en"
+    catalogs: dict = {}
+    t_call = make_t(locale_tag, supported, default, catalogs)
+    ctx = _template_context(base)
+    ctx["t"] = t_call
+    ctx["locale_slug"] = locale_slug
+    ctx["locale_tag"] = locale_tag
+    ctx["html_lang"] = _html_lang_attr(locale_tag)
+    ctx["base_path"] = html_base_path(locale_slug)
+    ctx["locale_switcher"] = _switcher_entries(request, locale_slug, t_call)
+    js_keys = (
+        "chart_total",
+        "chart_risk",
+        "chart_y_total",
+        "chart_y_risk",
+        "status_running",
+        "status_idle",
+        "starting",
+        "started_prefix",
+        "err_scan_progress",
+        "err_scan_progress_guide",
+        "err_rate",
+        "err_rate_guide",
+        "err_auth",
+        "err_auth_guide",
+        "err_network_guide",
+        "err_server_guide",
+        "err_what",
+        "err_prefix",
+        "retry_after",
+    )
+    ctx["dashboard_js_i18n"] = {k: t_call(f"js.{k}") for k in js_keys}
     return ctx
 
 
@@ -307,6 +410,11 @@ report:
   output_dir: .
 api:
   port: 8088
+locale:
+  default_locale: en
+  supported_locales: [en, pt-BR]
+  cookie_name: db_locale
+  cookie_max_age_seconds: 31536000
 sqlite_path: audit_results.db
 scan:
   max_workers: 1
@@ -371,6 +479,12 @@ def _get_config():
                 "sqlite_path": "audit_results.db",
                 "report": {"output_dir": "."},
                 "api": {"port": 8088},
+                "locale": {
+                    "default_locale": "en",
+                    "supported_locales": ["en", "pt-BR"],
+                    "cookie_name": "db_locale",
+                    "cookie_max_age_seconds": 31536000,
+                },
             }
     return _config
 
@@ -641,6 +755,87 @@ async def request_body_size_middleware(request: Request, call_next):
     return await call_next(request)
 
 
+_UNPREFIXED_HTML_PATHS = frozenset({"/", "/config", "/reports", "/help", "/about"})
+
+
+def _is_api_or_asset_path(path: str) -> bool:
+    """Paths that must not receive locale prefix redirects (API, static, OpenAPI)."""
+    if path.startswith("/static"):
+        return True
+    if path == "/health":
+        return True
+    if path in ("/status", "/list", "/report", "/heatmap", "/logs"):
+        return True
+    if path in ("/scan", "/start", "/scan_database"):
+        return True
+    if path.startswith("/sessions/"):
+        return True
+    if path.startswith("/heatmap/") or path.startswith("/logs/"):
+        return True
+    if path.startswith("/reports/") and path != "/reports":
+        return True
+    if path.startswith("/about/json"):
+        return True
+    if path.startswith("/openapi") or path in ("/docs", "/redoc"):
+        return True
+    return False
+
+
+@app.middleware("http")
+async def locale_html_middleware(request: Request, call_next):
+    """
+    Redirect unprefixed dashboard HTML paths to /{slug}/…; fix invalid locale prefix;
+    set locale preference cookie on successful HTML responses.
+    Registered last so it runs first on incoming requests (outermost).
+    """
+    path = request.url.path
+    if _is_api_or_asset_path(path):
+        return await call_next(request)
+    cfg = _get_config()
+    loc_cfg = cfg.get("locale") or {}
+    cookie_name = str(loc_cfg.get("cookie_name") or "db_locale")
+    try:
+        cookie_max_age = int(loc_cfg.get("cookie_max_age_seconds") or 31536000)
+    except (TypeError, ValueError):
+        cookie_max_age = 31536000
+
+    tag = negotiate_locale_tag(request, cfg)
+    slug = LOCALE_SLUG_BY_TAG[tag]
+
+    if path in _UNPREFIXED_HTML_PATHS or (
+        request.method == "POST" and path == "/config"
+    ):
+        dest = f"/{slug}/" if path == "/" else f"/{slug}{path}"
+        if request.url.query:
+            dest += f"?{request.url.query}"
+        code = 307 if request.method in ("POST", "PUT", "PATCH", "DELETE") else 302
+        return RedirectResponse(url=dest, status_code=code)
+
+    segments = [p for p in path.split("/") if p]
+    if segments and segments[0].lower() not in VALID_SLUGS:
+        rest = "/" + "/".join(segments[1:]) if len(segments) > 1 else "/"
+        dest = f"/{slug}{rest}" if rest != "/" else f"/{slug}/"
+        if request.url.query:
+            dest += f"?{request.url.query}"
+        return RedirectResponse(url=dest, status_code=302)
+
+    response = await call_next(request)
+    if (
+        200 <= response.status_code < 400
+        and segments
+        and segments[0].lower() in VALID_SLUGS
+    ):
+        lt = LOCALE_TAG_BY_SLUG[segments[0].lower()]
+        response.set_cookie(
+            cookie_name,
+            lt,
+            max_age=cookie_max_age,
+            path="/",
+            samesite="lax",
+        )
+    return response
+
+
 app.mount("/static", StaticFiles(directory=str(_api_dir / "static")), name="static")
 
 
@@ -655,29 +850,8 @@ async def health():
     body: dict = {"status": "ok"}
     body["license"] = _license_public_dict()
     body["dashboard_transport"] = get_dashboard_transport_snapshot()
+    body["enterprise_surface"] = get_enterprise_surface_posture(_get_config())
     return body
-
-
-@app.get("/help", response_class=HTMLResponse)
-async def help_page(request: Request):
-    """Help and documentation page: quickstart, config example, links to README/USAGE docs."""
-    return templates.TemplateResponse(
-        request=request,
-        name="help.html",
-        context=_template_context({}),
-    )
-
-
-@app.get("/about", response_class=HTMLResponse)
-async def about_page(request: Request):
-    """About: application name, version, author and license (same as established in the project LICENSE)."""
-    return templates.TemplateResponse(
-        request=request,
-        name="about.html",
-        context=_template_context(
-            {"about": _about_info(), "license": _license_public_dict()}
-        ),
-    )
 
 
 @app.get("/about/json")
@@ -710,108 +884,6 @@ def _build_chart_data(sessions: list[dict]) -> list[dict]:
             }
         )
     return out
-
-
-@app.get("/", response_class=HTMLResponse)
-async def dashboard(request: Request):
-    """Dashboard: scan status, discovery stats, progress chart, recent sessions, start scan."""
-    engine = _get_engine()
-    status = {
-        "running": engine.is_running,
-        "current_session_id": engine.db_manager.current_session_id,
-        "findings_count": engine.get_current_findings_count(),
-    }
-    sessions = _list_sessions_cached()
-    last_session = sessions[0] if sessions else None
-    chart_data = _build_chart_data(sessions)
-    return templates.TemplateResponse(
-        request=request,
-        name="dashboard.html",
-        context=_template_context(
-            {
-                "status": status,
-                "sessions": sessions,
-                "last_session": last_session,
-                "chart_data": chart_data,
-                "about": _about_info(),
-                "license": _license_public_dict(),
-            }
-        ),
-    )
-
-
-@app.get("/config", response_class=HTMLResponse)
-async def config_page(request: Request):
-    """Configuration editor (YAML). Secret values are redacted so the UI never displays them. Query: saved=1 or error=... for feedback after POST."""
-    saved = request.query_params.get("saved") == "1"
-    error = request.query_params.get("error")
-    return templates.TemplateResponse(
-        request=request,
-        name=_TEMPLATE_CONFIG,
-        context=_template_context(
-            {
-                "config_path": _get_config_path(),
-                "config_yaml": _get_config_yaml_for_display(),
-                "config_saved": saved,
-                "config_save_error": error,
-            }
-        ),
-    )
-
-
-@app.post("/config", response_class=HTMLResponse)
-async def config_save(request: Request):
-    """Save configuration (form body: yaml=...). Redacted/placeholder secrets are merged with current so they are not overwritten. Redirects back to GET /config with success or error."""
-    form = await request.form()
-    yaml_content = form.get("yaml", "")
-    if not yaml_content:
-        return templates.TemplateResponse(
-            request=request,
-            name=_TEMPLATE_CONFIG,
-            context=_template_context(
-                {
-                    "config_path": _get_config_path(),
-                    "config_yaml": _get_config_yaml_for_display(),
-                    "config_saved": False,
-                    "config_save_error": "No YAML content provided.",
-                }
-            ),
-        )
-    try:
-        _merge_and_save_config_yaml(yaml_content)
-        return RedirectResponse(url="/config?saved=1", status_code=303)
-    except ValueError as e:
-        return templates.TemplateResponse(
-            request=request,
-            name=_TEMPLATE_CONFIG,
-            context=_template_context(
-                {
-                    "config_path": _get_config_path(),
-                    "config_yaml": yaml_content,
-                    "config_saved": False,
-                    "config_save_error": str(e),
-                }
-            ),
-        )
-
-
-@app.get("/reports", response_class=HTMLResponse)
-async def reports_page(request: Request):
-    """Reports list page with download links. Query: sort=date_desc (newest first, default) or sort=date_asc (oldest first)."""
-    sessions = _list_sessions_cached()
-    sort = (request.query_params.get("sort") or "date_desc").strip().lower()
-    if sort == "date_asc":
-        sessions = list(reversed(sessions))
-        sort = "date_asc"
-    else:
-        sort = "date_desc"
-    return templates.TemplateResponse(
-        request=request,
-        name="reports.html",
-        context=_template_context(
-            {"sessions": sessions, "sort": sort, "about": _about_info()}
-        ),
-    )
 
 
 _RATE_LIMIT_429 = {
@@ -904,12 +976,14 @@ async def get_status():
     """Return running, current_session_id, findings_count."""
     engine = _get_engine()
     runtime_trust = get_runtime_trust_snapshot(_get_config())
+    cfg = _get_config()
     return {
         "running": engine.is_running,
         "current_session_id": engine.db_manager.current_session_id,
         "findings_count": engine.get_current_findings_count(),
         "runtime_trust": runtime_trust,
         "dashboard_transport": get_dashboard_transport_snapshot(),
+        "enterprise_surface": get_enterprise_surface_posture(cfg),
     }
 
 
@@ -1170,3 +1244,169 @@ async def scan_database(config: DatabaseConfig, background_tasks: BackgroundTask
     background_tasks.add_task(run_one_target)
     _invalidate_sessions_cache()
     return {"status": "started", "session_id": session_id}
+
+
+# --- Dashboard HTML (locale-prefixed). Registered after API routes so /status, /list, … are not
+# captured by /{locale_slug}.
+
+
+@app.get("/{locale_slug}/help", response_class=HTMLResponse)
+async def help_page(request: Request, locale_slug: LocaleSlug):
+    """Help and documentation page: quickstart, config example, links to README/USAGE docs."""
+    tag = _locale_tag_from_slug(locale_slug.value)
+    return templates.TemplateResponse(
+        request=request,
+        name="help.html",
+        context=_i18n_template_context(request, locale_slug.value, tag, {}),
+    )
+
+
+@app.get("/{locale_slug}/about", response_class=HTMLResponse)
+async def about_page(request: Request, locale_slug: LocaleSlug):
+    """About: application name, version, author and license (same as established in the project LICENSE)."""
+    tag = _locale_tag_from_slug(locale_slug.value)
+    return templates.TemplateResponse(
+        request=request,
+        name="about.html",
+        context=_i18n_template_context(
+            request,
+            locale_slug.value,
+            tag,
+            {"about": _about_info(), "license": _license_public_dict()},
+        ),
+    )
+
+
+@app.get("/{locale_slug}", response_class=HTMLResponse)
+async def dashboard_locale_root_redirect(locale_slug: LocaleSlug):
+    """Normalize /en -> /en/ for the dashboard."""
+    return RedirectResponse(url=f"/{locale_slug.value}/", status_code=302)
+
+
+@app.get("/{locale_slug}/", response_class=HTMLResponse)
+async def dashboard(request: Request, locale_slug: LocaleSlug):
+    """Dashboard: scan status, discovery stats, progress chart, recent sessions, start scan."""
+    tag = _locale_tag_from_slug(locale_slug.value)
+    engine = _get_engine()
+    status = {
+        "running": engine.is_running,
+        "current_session_id": engine.db_manager.current_session_id,
+        "findings_count": engine.get_current_findings_count(),
+    }
+    sessions = _list_sessions_cached()
+    last_session = sessions[0] if sessions else None
+    chart_data = _build_chart_data(sessions)
+    return templates.TemplateResponse(
+        request=request,
+        name="dashboard.html",
+        context=_i18n_template_context(
+            request,
+            locale_slug.value,
+            tag,
+            {
+                "status": status,
+                "sessions": sessions,
+                "last_session": last_session,
+                "chart_data": chart_data,
+                "about": _about_info(),
+                "license": _license_public_dict(),
+            },
+        ),
+    )
+
+
+@app.get("/{locale_slug}/config", response_class=HTMLResponse)
+async def config_page(request: Request, locale_slug: LocaleSlug):
+    """Configuration editor (YAML). Secret values are redacted so the UI never displays them. Query: saved=1 or error=... for feedback after POST."""
+    tag = _locale_tag_from_slug(locale_slug.value)
+    saved = request.query_params.get("saved") == "1"
+    error = request.query_params.get("error")
+    return templates.TemplateResponse(
+        request=request,
+        name=_TEMPLATE_CONFIG,
+        context=_i18n_template_context(
+            request,
+            locale_slug.value,
+            tag,
+            {
+                "config_path": _get_config_path(),
+                "config_yaml": _get_config_yaml_for_display(),
+                "config_saved": saved,
+                "config_save_error": error,
+            },
+        ),
+    )
+
+
+@app.post("/{locale_slug}/config", response_class=HTMLResponse)
+async def config_save(request: Request, locale_slug: LocaleSlug):
+    """Save configuration (form body: yaml=...). Redirects back to GET .../config with success or error."""
+    tag = _locale_tag_from_slug(locale_slug.value)
+    ls = locale_slug.value
+    form = await request.form()
+    yaml_content = form.get("yaml", "")
+    if not yaml_content:
+        t_call = make_t(
+            tag,
+            (_get_config().get("locale") or {}).get("supported_locales")
+            or ["en", "pt-BR"],
+            (_get_config().get("locale") or {}).get("default_locale") or "en",
+            {},
+        )
+        return templates.TemplateResponse(
+            request=request,
+            name=_TEMPLATE_CONFIG,
+            context=_i18n_template_context(
+                request,
+                ls,
+                tag,
+                {
+                    "config_path": _get_config_path(),
+                    "config_yaml": _get_config_yaml_for_display(),
+                    "config_saved": False,
+                    "config_save_error": t_call("config.no_yaml_error"),
+                },
+            ),
+        )
+    try:
+        _merge_and_save_config_yaml(yaml_content)
+        return RedirectResponse(url=f"/{ls}/config?saved=1", status_code=303)
+    except ValueError as e:
+        return templates.TemplateResponse(
+            request=request,
+            name=_TEMPLATE_CONFIG,
+            context=_i18n_template_context(
+                request,
+                ls,
+                tag,
+                {
+                    "config_path": _get_config_path(),
+                    "config_yaml": yaml_content,
+                    "config_saved": False,
+                    "config_save_error": str(e),
+                },
+            ),
+        )
+
+
+@app.get("/{locale_slug}/reports", response_class=HTMLResponse)
+async def reports_page(request: Request, locale_slug: LocaleSlug):
+    """Reports list page with download links. Query: sort=date_desc (newest first, default) or sort=date_asc (oldest first)."""
+    tag = _locale_tag_from_slug(locale_slug.value)
+    sessions = _list_sessions_cached()
+    sort = (request.query_params.get("sort") or "date_desc").strip().lower()
+    if sort == "date_asc":
+        sessions = list(reversed(sessions))
+        sort = "date_asc"
+    else:
+        sort = "date_desc"
+    return templates.TemplateResponse(
+        request=request,
+        name="reports.html",
+        context=_i18n_template_context(
+            request,
+            locale_slug.value,
+            tag,
+            {"sessions": sessions, "sort": sort, "about": _about_info()},
+        ),
+    )

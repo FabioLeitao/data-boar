@@ -26,9 +26,27 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
   border-radius: 4px;
   font-size: 0.85em;
 }
-.nav { background: var(--surface); padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; gap: 1.5rem; }
+.governance-trust-banner {
+  background: #2a1f3d;
+  color: #e6d9f5;
+  border-bottom: 1px solid #6b4c9c;
+  padding: 0.55rem 1.25rem;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+.governance-trust-banner strong { color: #d4b8ff; }
+.governance-trust-banner code {
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+.nav { background: var(--surface); padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: center; }
 .nav a { color: var(--accent); text-decoration: none; }
 .nav a:hover { text-decoration: underline; }
+.nav-locale { margin-left: auto; font-size: 0.9rem; color: var(--muted); }
+.nav-locale a { color: var(--muted); }
+.nav-locale strong { color: var(--text); }
 .main { max-width: 960px; margin: 0 auto; padding: 1.5rem; }
 
 h1 { font-size: 1.5rem; margin-top: 0; }

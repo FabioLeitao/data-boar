@@ -1,6 +1,6 @@
 # Plan: Dashboard HTTPS-by-default with explicit HTTP risk mode
 
-**Status:** Core phases shipped (TLS + explicit HTTP + status/banner); audit-export / tamper phases still open
+**Status:** Core phases shipped (TLS + explicit HTTP + status/banner + audit-export `dashboard_transport`); **Phase 7** transport integrity / tamper trust still open
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md)
 
 ## Purpose

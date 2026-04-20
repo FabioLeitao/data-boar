@@ -172,12 +172,10 @@ The table **S0–S6** does **not** yet include a dedicated row for **subscriptio
 
 | Order | Item                           | Owner | Notes                                                                                                                                                                                                |
 | ----- | ----                           | ----- | -----                                                                                                                                                                                                |
-| 0     | **M-MOBILE-V1** (optional)     | A     | Responsive nav + tables + chart — [PLAN_DASHBOARD_MOBILE_RESPONSIVE.md](PLAN_DASHBOARD_MOBILE_RESPONSIVE.md). **Before** or **parallel** to row 1 if operator prioritizes phone/tablet operators.   |
-| 1     | **D-WEB**                      | A/M   | **Doc-only:** final URL map + **middleware stack order** (API unprefixed; HTML `/{locale}/…`; where API key, locale negotiation, RBAC run). **Before** any implementation PR that moves HTML routes. |
-| 2     | Higher-priority product slices | —     | Per [PLANS_TODO.md](PLANS_TODO.md) **near-term** / **Integration / WIP** — i18n implementation stays **deferred** unless operator promotes.                                                          |
-| 3     | **M-LOCALE-V1**                | A     | First **code** slice: locale prefix + `en` / `pt-BR` JSON + cookie / `Accept-Language` / config fallback — see i18n plan checklist.                                                                  |
-| 4     | **#86 Phase 0**                | A/M   | Docs / proxy matrix — can overlap calendar with step 3 prep.                                                                                                                                         |
-| 5     | **#86 Phase 1+**               | A     | Middleware / route classes on **same prefixed paths** as i18n — avoids double refactor.                                                                                                              |
+| 0     | **M-MOBILE-V1** (optional)     | A     | Responsive nav + tables + chart — [PLAN_DASHBOARD_MOBILE_RESPONSIVE.md](PLAN_DASHBOARD_MOBILE_RESPONSIVE.md). **Before** or **parallel** to locale work if operator prioritizes phone/tablet.        |
+| 1     | **D-WEB**                      | A/M   | ✅ **Done** (route matrix + middleware — [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) § Phase 0).                                                            |
+| 2     | **M-LOCALE-V1**                | A     | **Next code slice** in this cluster: locale prefix + `en` / `pt-BR` JSON + cookie / `Accept-Language` / config — [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md). **Before** row 3.                 |
+| 3     | **#86 Phase 1+**               | A     | Session + passwordless (Bitwarden Passwordless.dev minimum) on **same** `/{locale}/…` paths — **after** **M-LOCALE-V1**.                                                                             |
 
 **Kanban:** Add **D-WEB** to **Backlog** or **Selected** when you schedule the design pass; keep **one** agent-heavy theme in **In progress** per [TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md).
 
