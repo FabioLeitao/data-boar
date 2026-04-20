@@ -41,6 +41,7 @@ EXPECTED_HTTP_ROUTES: tuple[str, ...] = (
     "GET /{locale_slug}",
     "GET /{locale_slug}/",
     "GET /{locale_slug}/about",
+    "GET /{locale_slug}/assessment",
     "GET /{locale_slug}/config",
     "GET /{locale_slug}/help",
     "GET /{locale_slug}/reports",
@@ -50,6 +51,7 @@ EXPECTED_HTTP_ROUTES: tuple[str, ...] = (
     "POST /scan",
     "POST /scan_database",
     "POST /start",
+    "POST /{locale_slug}/assessment",
     "POST /{locale_slug}/config",
 )
 

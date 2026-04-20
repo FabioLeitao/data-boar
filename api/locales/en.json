@@ -5,6 +5,7 @@
     "config": "Configuration",
     "help": "Help & Docs",
     "about": "About",
+    "assessment": "Self-assessment (POC)",
     "locale_en": "English",
     "locale_pt": "Portuguese (Brazil)"
   },
@@ -16,6 +17,21 @@
   },
   "meta": {
     "title_suffix": "Data Boar"
+  },
+  "assessment": {
+    "page_title": "Self-assessment (POC) — Data Boar",
+    "h1": "Organizational self-assessment",
+    "pack_intro": "Below is a YAML-loaded placeholder questionnaire (generic copy in the public repo). Replace with a private or licensed pack via config.",
+    "pack_note": "Submitted answers are stored in the local SQLite database (same file as scan results) for this POC.",
+    "saved_ok": "Responses saved.",
+    "form_submit": "Save responses",
+    "answer_unset": "—",
+    "answer_yes": "Yes",
+    "answer_no": "No",
+    "answer_na": "Not applicable",
+    "lead": "This page is an optional product placeholder. The open repository does not ship proprietary questionnaire items.",
+    "body_p1": "Scope and architecture options are described in docs/plans/PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md.",
+    "body_p2": "Any future output is a self-reported maturity signal only—not legal advice, audit, or certification."
   },
   "dashboard": {
     "page_title": "Dashboard — Data Boar",
