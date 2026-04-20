@@ -1,11 +1,11 @@
 # PLAN: Organizational maturity self-assessment (GRC-style questionnaire)
 
-<!-- plans-hub-summary: POC on main: gated /{locale}/assessment + YAML pack + SQLite + HMAC + post-submit HTML summary; scoring/export/RBAC still backlog—companion to technical scans; not legal audit. -->
+<!-- plans-hub-summary: POC on main: gated /{locale}/assessment + YAML rubric scores + SQLite + HMAC + post-submit summary + GET /assessment/export (CSV/Markdown); RBAC/history/report-bundle still backlog—companion to technical scans; not legal audit. -->
 <!-- plans-hub-related: PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md, LICENSING_OPEN_CORE_AND_COMMERCIAL.md (future tier features), PLAN_SCOPE_IMPORT_FROM_EXPORTS.md (inventory bootstrap narrative) -->
 
-**Status:** **POC A in progress on `main`** — gated `GET`/`POST /{locale}/assessment`, optional **`api.maturity_assessment_pack_path`** (YAML), **SQLite** table `maturity_assessment_answers`, optional **HMAC-SHA256 per row** (`row_hmac`) when **`DATA_BOAR_MATURITY_INTEGRITY_SECRET`** (or **`api.maturity_integrity_secret_from_env`**) is set at write time. **`GET /status`** and **`python main.py --export-audit-trail`** include **`maturity_assessment_integrity`** (counts: ok / mismatch / unsealed / unknown_sealed). **Not** encryption; deters casual DB edits and supports demo narrative. **Still backlog:** scoring, consultant UX, legal one-pager, RBAC (#86), report bundle export.
+**Status:** **POC A in progress on `main`** — gated `GET`/`POST /{locale}/assessment`, optional **`api.maturity_assessment_pack_path`** (YAML with optional per-answer **`scores`**), **SQLite** table `maturity_assessment_answers`, optional **HMAC-SHA256 per row** (`row_hmac`) when **`DATA_BOAR_MATURITY_INTEGRITY_SECRET`** (or **`api.maturity_integrity_secret_from_env`**) is set at write time. **`GET /status`** and **`python main.py --export-audit-trail`** include **`maturity_assessment_integrity`** (counts: ok / mismatch / unsealed / unknown_sealed). **Not** encryption; deters casual DB edits and supports demo narrative. **Shipped on `main`:** rubric **total / percent** on post-submit summary; **`GET /{locale}/assessment/export`** (CSV or Markdown **attachment** — not an on-disk path under `report.output_dir`). **Still backlog:** consultant UX, legal one-pager, per-user history, RBAC (#86), report bundle annex export.
 
-**Horizon / urgency:** `[H3]` or `[H4]` · `[U3]` for the **complete** product slice; next code slices: **scoring / export**, then **tenant model** when clear.
+**Horizon / urgency:** `[H3]` or `[H4]` · `[U3]` for the **complete** product slice; next code slices: **tenant/history model** when clear, then **RBAC** (#86) alignment.
 
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (Backlog catalogue entry).
 
@@ -15,7 +15,7 @@
 
 **Version signal for testers (do not rely on git inference alone):** in-repo semver is **`1.7.1-beta`** ([VERSIONING.md](../VERSIONING.md) `-beta`); **last stable** published story remains **1.7.0** (Hub / GitHub Release). Callouts: [CHANGELOG.md](../../CHANGELOG.md), [docs/releases/1.7.1-beta.md](../releases/1.7.1-beta.md), README **Latest stable** vs **`main` pre-release**. Anyone pulling `main` for **formal** beta testing should use those files—not only `git log`.
 
-**Are we on option A in code right now?** **Yes (POC):** `GET`/`POST /{locale}/assessment` when **`api.maturity_self_assessment_poc_enabled`** is on and tier allows it (`core/licensing/tier_features.py`); otherwise **404**. Optional YAML pack drives questions; answers persist to SQLite; optional **HMAC** seals rows when a secret is configured. **Scoring**, **RBAC**, and **report narrative export** are still **not** implemented — the plan still compares full **A / B / C / D** product shapes for later evaluation.
+**Are we on option A in code right now?** **Yes (POC):** `GET`/`POST /{locale}/assessment` and **`GET /{locale}/assessment/export`** when **`api.maturity_self_assessment_poc_enabled`** is on and tier allows it (`core/licensing/tier_features.py`); otherwise **404**. Optional YAML pack drives questions and optional rubric weights; answers persist to SQLite; optional **HMAC** seals rows when a secret is configured. **RBAC** and **bundling org answers into the technical report PDF** are still **not** implemented — the plan still compares full **A / B / C / D** product shapes for later evaluation.
 
 **POC architecture A — progress:**
 
@@ -89,10 +89,10 @@ Feasible: treat **question banks** and **weights** as data (like **compliance sa
 
 ## Next steps (ordered; POC-first)
 
-1. **POC A — done for persistence + integrity demo:** SQLite + YAML pack + HMAC + `/status` + audit export ✅; **post-submit summary** on `GET /{locale}/assessment?saved=1&batch=…` (row count + HMAC counts for that batch) ✅. **Next:** lightweight **scoring** or richer **read-only summary** in-dashboard (product decision); **import** questionnaire from private DOCX → YAML **without** pasting proprietary wording into public Git.
+1. **POC A — done for persistence + integrity + rubric + download export:** SQLite + YAML pack (optional **`scores`**) + HMAC + `/status` + audit export ✅; **post-submit summary** on `GET /{locale}/assessment?saved=1&batch=…` (row count + rubric + HMAC counts for that batch) ✅; **`GET /{locale}/assessment/export?batch=…&format=csv|md`** ✅. **Next:** **import** questionnaire from private DOCX → YAML **without** pasting proprietary wording into public Git; optional richer in-dashboard history when tenant model exists.
 2. Legal/commercial one-pager: positioning vs audit; consent for storing responses.
 3. **Architecture lock:** spike **A** remains default; revisit **C** only after A/B learnings — align with [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) and API key / future SSO (#86).
-4. MVP: **export** org answers into report bundle or annex (distinct from technical **[PLAN_PDF_GRC_REPORT.md](PLAN_PDF_GRC_REPORT.md)** PDF stream).
+4. MVP: **bundle** org answers into report annex or narrative export (distinct from technical **[PLAN_PDF_GRC_REPORT.md](PLAN_PDF_GRC_REPORT.md)** PDF stream).
 
 ## Relationship to other plans
 
