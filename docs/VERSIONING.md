@@ -52,6 +52,10 @@ Use lowercase suffixes consistently:
 - **Published version:** latest Git tag + GitHub Release + Docker Hub tag available to external users.
 - Do not assume they are equal; always call both explicitly in release notes and review requests.
 
+### Assistant / automation (ordering guardrail)
+
+**Cursor / agents:** follow **`.cursor/rules/release-publish-sequencing.mdc`** — create Git tag **`vX.Y.Z`**, GitHub Release, and Docker Hub publish steps **before** moving `main` to the next **`-beta`** (or next dev) bump. Session keyword **`release-ritual`** means re-read that rule and this file before editing semver or release docs.
+
 ---
 
 ## Where the version appears (bump checklist)
