@@ -3,11 +3,55 @@
 from __future__ import annotations
 
 import re
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import jwt
+import pytest
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from fastapi.testclient import TestClient
 
 from core.database import LocalDBManager
+from core.licensing.guard import reset_license_guard_for_tests
+
+
+def _pem_public(priv: Ed25519PrivateKey) -> str:
+    pub = priv.public_key()
+    return (
+        pub.public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
+        )
+        .decode("ascii")
+        .strip()
+    )
+
+
+def _make_license_token(
+    priv: Ed25519PrivateKey,
+    *,
+    extra: dict | None = None,
+) -> str:
+    now = datetime.now(timezone.utc)
+    payload = {
+        "sub": "assessment-jwt-tier-test",
+        "iat": int(now.timestamp()),
+        "exp": int((now + timedelta(days=7)).timestamp()),
+        "dbcid": "cust-test",
+        "dbcname": "Tier Test",
+        "dbenv": "qa",
+        "dbissuer": "pytest",
+        "dbkid": "k1",
+    }
+    if extra:
+        payload.update(extra)
+    return jwt.encode(payload, priv, algorithm="EdDSA")
+
+
+@pytest.fixture
+def ed25519_priv() -> Ed25519PrivateKey:
+    return Ed25519PrivateKey.generate()
 
 
 def _setup_routes(tmp_path: Path, api_extra: str = "", licensing_block: str = ""):
@@ -42,6 +86,47 @@ def _teardown_routes(routes, original_config_path, original_config, original_eng
     routes._config = original_config
     routes._audit_engine = original_engine
     routes._maturity_pack_cache = None
+
+
+def _setup_enforced_assessment_routes(
+    tmp_path: Path,
+    ed25519_priv: Ed25519PrivateKey,
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    jwt_dbtier: str,
+    yaml_effective_tier_line: str = "  effective_tier: pro\n",
+):
+    """
+    ``licensing.mode: enforced`` + JWT file with ``dbtier`` claim.
+
+    When ``yaml_effective_tier_line`` is empty, YAML omits ``effective_tier`` (tier from JWT only).
+    """
+    pem = _pem_public(ed25519_priv)
+    monkeypatch.setenv("DATA_BOAR_LICENSE_PUBLIC_KEY_PEM", pem)
+    lic = tmp_path / "license.lic"
+    lic.write_text(
+        _make_license_token(ed25519_priv, extra={"dbtier": jwt_dbtier}),
+        encoding="utf-8",
+    )
+    reset_license_guard_for_tests()
+    pack_src = (
+        Path(__file__).resolve().parent
+        / "fixtures"
+        / "maturity_assessment"
+        / "sample_pack.yaml"
+    )
+    pack_dst = tmp_path / "pack.yaml"
+    pack_dst.write_text(pack_src.read_text(encoding="utf-8"), encoding="utf-8")
+    pack_path = str(pack_dst).replace("\\", "/")
+    lic_path = str(lic).replace("\\", "/")
+    licensing_block = f"""licensing:
+  mode: enforced
+  license_path: {lic_path}
+{yaml_effective_tier_line}"""
+    extra = f"""  maturity_self_assessment_poc_enabled: true
+  maturity_assessment_pack_path: {pack_path}
+"""
+    return _setup_routes(tmp_path, api_extra=extra, licensing_block=licensing_block)
 
 
 def test_assessment_placeholder_404_when_flag_off(tmp_path):
@@ -334,3 +419,52 @@ def test_assessment_renders_yaml_pack_when_configured(tmp_path):
         assert "privacy governance" in r.text.lower()
     finally:
         _teardown_routes(routes, orig_path, orig_cfg, orig_engine)
+
+
+def test_assessment_enforced_jwt_dbtier_community_overrides_yaml_pro_returns_404(
+    tmp_path, ed25519_priv, monkeypatch
+):
+    """JWT ``dbtier: community`` wins over ``licensing.effective_tier: pro``; POC needs Pro+ -> 404."""
+    routes, client, orig_path, orig_cfg, orig_engine = (
+        _setup_enforced_assessment_routes(
+            tmp_path,
+            ed25519_priv,
+            monkeypatch,
+            jwt_dbtier="community",
+            yaml_effective_tier_line="  effective_tier: pro\n",
+        )
+    )
+    try:
+        r = client.get("/en/assessment")
+        assert r.status_code == 404
+        r2 = client.post(
+            "/en/assessment",
+            data={"assessment_batch_id": "a" * 32, "pack_version": "1"},
+        )
+        assert r2.status_code == 404
+        r3 = client.get("/en/assessment/export?batch=" + "b" * 32 + "&format=csv")
+        assert r3.status_code == 404
+    finally:
+        _teardown_routes(routes, orig_path, orig_cfg, orig_engine)
+        reset_license_guard_for_tests()
+
+
+def test_assessment_enforced_jwt_dbtier_pro_returns_200(
+    tmp_path, ed25519_priv, monkeypatch
+):
+    routes, client, orig_path, orig_cfg, orig_engine = (
+        _setup_enforced_assessment_routes(
+            tmp_path,
+            ed25519_priv,
+            monkeypatch,
+            jwt_dbtier="pro",
+            yaml_effective_tier_line="",
+        )
+    )
+    try:
+        r = client.get("/en/assessment")
+        assert r.status_code == 200
+        assert "PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE" in r.text
+    finally:
+        _teardown_routes(routes, orig_path, orig_cfg, orig_engine)
+        reset_license_guard_for_tests()
