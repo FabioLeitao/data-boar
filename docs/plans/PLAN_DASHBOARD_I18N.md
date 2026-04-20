@@ -1,8 +1,8 @@
 # Dashboard i18n and multi-language web UI
 
-**Status:** **Target architecture agreed**; **D-WEB** ✅. **Operator priority:** ship **M-LOCALE-V1** (path-prefixed HTML + `en` / `pt-BR`) **before** [#86](https://github.com/FabioLeitao/data-boar/issues/86) **Phase 1** (session + passwordless) so auth work lands on **stable** `/{locale}/…` routes — see § *Meshing with dashboard reports RBAC*.
+**Status:** **Target architecture agreed**; **D-WEB** ✅; **M-LOCALE-V1** ✅ on **`main`** (**2026-04**). **Next dashboard-web priority:** [#86](https://github.com/FabioLeitao/data-boar/issues/86) **Phase 1** (session + passwordless) on **stable** `/{locale}/…` routes — see § *Meshing with dashboard reports RBAC*.
 
-**Next `feature` session (primary slice):** implement **M-LOCALE-V1** per § *Implementation checklist* + USAGE/TECH_GUIDE (EN + pt-BR). **Do not** bundle [GRC maturity POC](PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md) scaffolding in the same PR unless the operator explicitly combines tracks — GRC is the **following** `feature` session after M-LOCALE-V1 lands.
+**Next `feature` session (when scheduled):** [#86](https://github.com/FabioLeitao/data-boar/issues/86) Phase 1 per **PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md**, or [GRC maturity POC](PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md) when promoted in **PLANS_TODO.md** — **do not** bundle unrelated tracks in one PR unless the operator explicitly combines them.
 
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md), [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md), [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) (**#86**). **Future public website** (marketing + doc hub) should **reuse the same locale model** (path prefix, cookie, `Accept-Language`, JSON catalogs) — see [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) §2.2.
 
@@ -59,8 +59,8 @@ Before **either** implementation PR changes route shape:
 1. Produce a **short URL + middleware order diagram** (can live in this section or in **#86** plan — keep cross-links). Include: unprefixed API; prefixed HTML; where **API key** runs (automation); where **browser session** runs (after WebAuthn / passwordless per **#86**); where **locale** is resolved; where **route class / RBAC** runs (exact order TBD in design pass — typically: normalize path → optional API key → session for HTML → locale for HTML → RBAC for resource class).
 
 1. **Recommended implementation order (locked sequencing):**
-   - **Slice A — M-LOCALE-V1 (prioritize first):** introduce `/{locale}/…` for HTML with **`en`** + **`pt-BR`** JSON and negotiation; **no** RBAC / session behaviour change yet (defaults unchanged). **Ship this before** #86 Phase 1 code to avoid binding session/login to legacy unprefixed URLs.
-   - **Slice B — #86 Phase 1:** session + **passwordless** (**[Bitwarden Passwordless.dev](https://bitwarden.com/products/passwordless/)** minimum) on the **same** `/{locale}/…` paths as Slice A. **Phase 0 (D-WEB)** is ✅ docs-only; **enterprise SSO/OIDC** stays **Phase 3**, later.
+   - **Slice A — M-LOCALE-V1:** ✅ **shipped** (**2026-04** on **`main`**) — `/{locale}/…` HTML with **`en`** + **`pt-BR`** JSON and negotiation; **no** RBAC / session behaviour change in that slice.
+   - **Slice B — #86 Phase 1:** **next** — session + **passwordless** (**[Bitwarden Passwordless.dev](https://bitwarden.com/products/passwordless/)** minimum) on the **same** `/{locale}/…` paths as Slice A. **Phase 0 (D-WEB)** is ✅ docs-only; **enterprise SSO/OIDC** stays **Phase 3**, later.
    - **Slice C — #86 Phase 2+** (RBAC) and **optional `es`/`fr`/token locale** (`M-LOCALE-PLUS`) as separate PRs.
 
 **Higher rework cost (avoid unless security forces it):** ship #86 only on **legacy** unprefixed paths, then add locale prefix later — implies **second** pass on every guard and link.
@@ -74,10 +74,10 @@ Before **either** implementation PR changes route shape:
 | ID                | Name                             | Type          | Done when                                                                                                                                                          |
 | --                | ----                             | ----          | ---------                                                                                                                                                          |
 | **D-WEB**         | **Dashboard web surface design** | Doc / diagram | URL map + middleware order agreed; cross-linked from **#86** plan; **no product code** (no WebAuthn). Later identity order: **Bitwarden Passwordless.dev** (Phase 1) **before** corporate **SSO** (Phase 3) — [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) § *Phase 0 (D-WEB)*. |
-| **M-LOCALE-V1**   | **Locale v1 on `main`**          | Code          | Path-prefixed HTML; `en` + `pt-BR` JSON; cookie + `Accept-Language` + config fallback; switcher; tests; USAGE/TECH_GUIDE touch; CI key parity for shipped locales. |
+| **M-LOCALE-V1**   | **Locale v1 on `main`**          | Code          | ✅ **Done** (**2026-04**) — path-prefixed HTML; `en` + `pt-BR` JSON; cookie + `Accept-Language` + config fallback; switcher; tests; USAGE/TECH_GUIDE; CI key parity for shipped locales. |
 | **M-LOCALE-PLUS** | **Optional locales**             | Code          | `es` and/or `fr` and/or fifth market locale — same mechanics; still no gettext unless reprioritised.                                                               |
 
-**Sprint placement:** **D-WEB** ✅. **M-LOCALE-V1** is **promoted** to run **before** [#86](https://github.com/FabioLeitao/data-boar/issues/86) **Phase 1** (see [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) §4.2). Tier / ordering in [PLANS_TODO.md](PLANS_TODO.md) **Integration / WIP** may still list other fronts; within the **dashboard web surface cluster**, prefer **locale prefix first**, then **in-app identity**.
+**Sprint placement:** **D-WEB** ✅. **M-LOCALE-V1** ✅. **#86** Phase 1 is **next** in the dashboard web cluster (see [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) §4.2). Tier / ordering in [PLANS_TODO.md](PLANS_TODO.md) **Integration / WIP** may still list other fronts; within the **dashboard web surface cluster**, **locale prefix** is now on **`main`**; **in-app identity** (#86 Phase 1) follows.
 
 ---
 
