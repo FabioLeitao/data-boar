@@ -10,7 +10,7 @@
 
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (GitHub issues queue + recommended sequence).
 
-**Cluster (same code paths, different goals):** This plan is the **authorisation / exposure** slice for the HTML app. **[PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md)** is the **locale** slice. They are **not duplicates**: merging them into one document would blur acceptance criteria (security vs translation). Do **entangle sequencing**: any work that changes **route layout** (e.g. `/{locale}/reports`) or **middleware stack** should consider both plans in the same sprint **design** pass—even if implementation stays in separate PRs. See **§ Relationship to other plans** below.
+**Cluster (same code paths, different goals):** This plan is the **authorisation / exposure** slice for the HTML app. **[PLAN_DASHBOARD_I18N.md](completed/PLAN_DASHBOARD_I18N.md)** is the **locale** slice. They are **not duplicates**: merging them into one document would blur acceptance criteria (security vs translation). Do **entangle sequencing**: any work that changes **route layout** (e.g. `/{locale}/reports`) or **middleware stack** should consider both plans in the same sprint **design** pass—even if implementation stays in separate PRs. See **§ Relationship to other plans** below.
 
 ---
 
@@ -48,8 +48,8 @@ See [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md), [TECH_GUIDE.md](../T
 
 | Phase | Scope | Outcome |
 | ----- | ----- | ------- |
-| **0** | Docs + **D-WEB** | Route matrix (what is public vs protected); proxy recipes; **middleware order** diagram with [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) (`API key` → `locale` for HTML → `session` → `RBAC`). **2026-04:** `GET /status` and `GET /health` expose **`enterprise_surface`** (transport + license trust + global API-key surface + explicit `rbac: not_implemented`) for demo/enterprise narrative — not a substitute for Phase 2 RBAC. |
-| **1** | **Session + passwordless (minimum)** | **HTTPS required** for WebAuthn. After successful WebAuthn (via Passwordless.dev or equivalent), issue **opaque server session** (**httpOnly cookie** + CSRF strategy) or short-lived internal JWT **separate** from commercial license JWT. **Global `api.require_api_key`** can remain for automation / break-glass; **browser** flows use session. **Schedule after [M-LOCALE-V1](PLAN_DASHBOARD_I18N.md)** so HTML routes are already under `/{locale}/…`. |
+| **0** | Docs + **D-WEB** | Route matrix (what is public vs protected); proxy recipes; **middleware order** diagram with [PLAN_DASHBOARD_I18N.md](completed/PLAN_DASHBOARD_I18N.md) (`API key` → `locale` for HTML → `session` → `RBAC`). **2026-04:** `GET /status` and `GET /health` expose **`enterprise_surface`** (transport + license trust + global API-key surface + explicit `rbac: not_implemented`) for demo/enterprise narrative — not a substitute for Phase 2 RBAC. |
+| **1** | **Session + passwordless (minimum)** | **HTTPS required** for WebAuthn. After successful WebAuthn (via Passwordless.dev or equivalent), issue **opaque server session** (**httpOnly cookie** + CSRF strategy) or short-lived internal JWT **separate** from commercial license JWT. **Global `api.require_api_key`** can remain for automation / break-glass; **browser** flows use session. **Schedule after [M-LOCALE-V1](completed/PLAN_DASHBOARD_I18N.md)** so HTML routes are already under `/{locale}/…`. |
 | **2** | **RBAC** | Named roles (`scanner`, `reports_reader`, `config_admin`, …) bound to **authenticated subject**; route/resource gates on prefixed HTML paths; optional machine keys for API with role claims (design TBD). |
 | **3** | **Enterprise SSO (optional)** | **OIDC** (SAML later if needed): map IdP groups → product roles; **coexist** with passwordless (e.g. local passkeys for break-glass, SSO for staff). |
 
@@ -62,7 +62,7 @@ See [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md), [TECH_GUIDE.md](../T
 **Deliverables (checklist):**
 
 1. **Route matrix** — ✅ table in § *Phase 0 deliverable — route matrix and middleware* (verify when routes change).
-1. **Middleware order** — ✅ actual stack + Mermaid + **target** stack (session → locale → RBAC) in same section; [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) cross-links here.
+1. **Middleware order** — ✅ actual stack + Mermaid + **target** stack (session → locale → RBAC) in same section; [PLAN_DASHBOARD_I18N.md](completed/PLAN_DASHBOARD_I18N.md) cross-links here.
 1. **Proxy recipes** — ✅ pointers to SECURITY + SECURE_DASHBOARD runbook in § *Phase 0 deliverable*; no product code in Phase 0.
 
 **Identity roadmap (locked for sequencing — not implemented in Phase 0):**
@@ -78,7 +78,7 @@ See [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md), [TECH_GUIDE.md](../T
 
 ## Phase 0 deliverable — route matrix and middleware (snapshot)
 
-**Purpose:** Single place for **D-WEB** — what exists on `main` today, how middleware runs, and **target** hooks for Phase 1 (session + Bitwarden Passwordless.dev) and Phase 3 (SSO). **No code changes** in this subsection; re-verify against `api/routes.py` when routes move (e.g. `/{locale}/…` per [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md)).
+**Purpose:** Single place for **D-WEB** — what exists on `main` today, how middleware runs, and **target** hooks for Phase 1 (session + Bitwarden Passwordless.dev) and Phase 3 (SSO). **No code changes** in this subsection; re-verify against `api/routes.py` when routes move (e.g. `/{locale}/…` per [PLAN_DASHBOARD_I18N.md](completed/PLAN_DASHBOARD_I18N.md)).
 
 **Drift guard:** `tests/test_api_route_matrix_plan_sync.py` asserts the HTTP route set matches **`EXPECTED_HTTP_ROUTES`** — update that tuple **and** this table **in the same PR** whenever you add, remove, or rename routes in `api/routes.py`.
 
@@ -89,6 +89,8 @@ See [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md), [TECH_GUIDE.md](../T
 | `GET` | `/health` | JSON | **Always unauthenticated** (no API key); liveness/readiness | `public` |
 | `GET` | `/{locale_slug}/help` | HTML | Help / doc links (`en`, `pt-br`, …) | `public` (or `authenticated` if product tightens) |
 | `GET` | `/{locale_slug}/about` | HTML | About page | `public` |
+| `GET` | `/{locale_slug}/assessment` | HTML | Optional POC placeholder (gated: `api.maturity_self_assessment_poc_enabled` + tier); **404** when off — [PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md](PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md) | `authenticated` (TBD) |
+| `POST` | `/{locale_slug}/assessment` | redirect | Save answers to SQLite when a YAML pack is configured; **400** without pack; **404** when gate off | `authenticated` (TBD) |
 | `GET` | `/about/json` | JSON | Public license/about payload | `public` |
 | `GET` | `/` | redirect | Unprefixed `/` → `302`/`307` to `/{negotiated}/` (cookie → `Accept-Language` → `locale.default_locale`) | n/a |
 | `GET` | `/{locale_slug}/` | HTML | Dashboard (dashBOARd) | `authenticated` once session exists |
@@ -108,7 +110,7 @@ See [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md), [TECH_GUIDE.md](../T
 | `GET` | `/logs/{session_id}` | text | Session log | `authenticated` |
 | `POST` | `/scan_database` | JSON | DB scan | `scanner`+ |
 
-Static: `GET /static/...` (long cache; same process). **Today:** no per-route RBAC — global `api.require_api_key` only when enabled. **Locale:** see [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) (M-LOCALE-V1); unprefixed legacy HTML paths (`/config`, `/reports`, `/help`, `/about`) redirect the same way as `/`.
+Static: `GET /static/...` (long cache; same process). **Today:** no per-route RBAC — global `api.require_api_key` only when enabled. **Locale:** see [PLAN_DASHBOARD_I18N.md](completed/PLAN_DASHBOARD_I18N.md) (M-LOCALE-V1); unprefixed legacy HTML paths (`/config`, `/reports`, `/help`, `/about`) redirect the same way as `/`.
 
 ### Middleware order (as implemented in `api/routes.py`)
 
@@ -141,7 +143,7 @@ flowchart LR
 
 ### Target stack (Phase 1–3 — design only)
 
-Not implemented yet. Intended **additions** (order still TBD with [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) for `/{locale}/…`):
+Not implemented yet. Intended **additions** (order still TBD with [PLAN_DASHBOARD_I18N.md](completed/PLAN_DASHBOARD_I18N.md) for `/{locale}/…`):
 
 ```mermaid
 flowchart TB
@@ -193,7 +195,7 @@ Operators terminating TLS upstream should set **`X-Forwarded-Proto: https`** so 
 - **Conflicts with:** None; additive flags, default preserves today’s behaviour until enabled.
 - **Token-aware:** Treat as **one plan file + one implementation slice per session**; start with Phase 0–1 only.
 
-### Sequencing with dashboard i18n ([PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md))
+### Sequencing with dashboard i18n ([PLAN_DASHBOARD_I18N.md](completed/PLAN_DASHBOARD_I18N.md))
 
 **Shared risk:** Changing HTML routes **twice** (once unprefixed for RBAC, again for `/{locale}/…`) wastes review and tokens.
 
@@ -220,7 +222,7 @@ Details and anti-footgun rules: **PLAN_DASHBOARD_I18N.md** § *Meshing with dash
 
 | Plan / doc                                                                       | Overlap                                                                              | How to treat it                                                                                                                                                                                                          |
 | ----------                                                                       | -------                                                                              | ----------------                                                                                                                                                                                                         |
-| [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md)                                 | Same routes and templates (`/`, `/reports`, …).                                      | **Coordinate:** **M-LOCALE-V1** (locale prefix) **before** this plan’s **Phase 1** (session/passwordless); then **Phase 2+** RBAC on **prefixed** paths. i18n does not replace RBAC. |
+| [PLAN_DASHBOARD_I18N.md](completed/PLAN_DASHBOARD_I18N.md)                                 | Same routes and templates (`/`, `/reports`, …).                                      | **Coordinate:** **M-LOCALE-V1** (locale prefix) **before** this plan’s **Phase 1** (session/passwordless); then **Phase 2+** RBAC on **prefixed** paths. i18n does not replace RBAC. |
 | [LICENSING_SPEC.md](../LICENSING_SPEC.md) / commercial JWT                       | Product **license** claims (`dbtier`, …) vs **session** roles (`reports_reader`, …). | **Optional convergence** in a far enterprise phase: both might read JWT-shaped claims; keep **specs separate** until requirements are explicit—no need to fold this plan into licensing docs.                            |
 | [completed/PLAN_RATE_LIMIT_SCANS.md](completed/PLAN_RATE_LIMIT_SCANS.md)         | GET `/reports`, `/heatmap` intentionally not rate-limited for reads.                 | **Compatible:** RBAC restricts *who*; rate limits restrict *how hard*. Changing either should mention the other in release notes.                                                                                        |
 | [PLAN_SELENIUM_QA_TEST_SUITE.md](PLAN_SELENIUM_QA_TEST_SUITE.md)                 | Future E2E on dashboard flows.                                                       | When RBAC lands, QA plan should add cases for **forbidden** vs **allowed** roles on `/reports`.                                                                                                                          |
@@ -235,5 +237,5 @@ Details and anti-footgun rules: **PLAN_DASHBOARD_I18N.md** § *Meshing with dash
 
 - [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) §4.1 (*Identity: edge OIDC vs in-app passwordless*) and §5 (*Composing milestones*) — how **#86** fits the **M-ACCESS** story next to proxy-only patterns.
 - [Bitwarden Passwordless.dev](https://bitwarden.com/products/passwordless/) — reference **minimum** integration for FIDO2 / WebAuthn / passkeys (product marketing + docs links from there).
-- [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) — locale (orthogonal concern; coordinate route/middleware design).
+- [PLAN_DASHBOARD_I18N.md](completed/PLAN_DASHBOARD_I18N.md) — locale (orthogonal concern; coordinate route/middleware design).
 - [PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md](PLAN_NOTIFICATIONS_OFFBAND_AND_SCAN_COMPLETE.md) — operator channels (complementary ops story).

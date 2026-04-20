@@ -1,10 +1,10 @@
 # Dashboard i18n and multi-language web UI
 
-**Status:** **Target architecture agreed**; **D-WEB** ✅; **M-LOCALE-V1** ✅ on **`main`** (**2026-04**). **Next dashboard-web priority:** [#86](https://github.com/FabioLeitao/data-boar/issues/86) **Phase 1** (session + passwordless) on **stable** `/{locale}/…` routes — see § *Meshing with dashboard reports RBAC*.
+**Status:** **Complete (archived)** — **Target architecture agreed**; **D-WEB** ✅; **M-LOCALE-V1** ✅ on **`main`** (**2026-04**). This file lives in **`docs/plans/completed/`** for reference. **Next dashboard-web priority:** [#86](https://github.com/FabioLeitao/data-boar/issues/86) **Phase 1** (session + passwordless) on **stable** `/{locale}/…` routes — see § *Meshing with dashboard reports RBAC*.
 
-**Next `feature` session (when scheduled):** [#86](https://github.com/FabioLeitao/data-boar/issues/86) Phase 1 per **PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md**, or [GRC maturity POC](PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md) when promoted in **PLANS_TODO.md** — **do not** bundle unrelated tracks in one PR unless the operator explicitly combines them.
+**Next `feature` session (when scheduled):** [#86](https://github.com/FabioLeitao/data-boar/issues/86) Phase 1 per **PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md**, or [GRC maturity POC](../PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md) when promoted in **PLANS_TODO.md** — **do not** bundle unrelated tracks in one PR unless the operator explicitly combines them.
 
-**Synced with:** [PLANS_TODO.md](PLANS_TODO.md), [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md), [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) (**#86**). **Future public website** (marketing + doc hub) should **reuse the same locale model** (path prefix, cookie, `Accept-Language`, JSON catalogs) — see [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) §2.2.
+**Synced with:** [PLANS_TODO.md](../PLANS_TODO.md), [SPRINTS_AND_MILESTONES.md](../SPRINTS_AND_MILESTONES.md), [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](../PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) (**#86**). **Future public website** (marketing + doc hub) should **reuse the same locale model** (path prefix, cookie, `Accept-Language`, JSON catalogs) — see [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](../PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) §2.2.
 
 ## When implementing: update docs and tests; then update PLANS_TODO.md, sprints, and this file.
 
@@ -38,7 +38,7 @@ Editors, assistants, and operators should keep the following **separate** (mixin
 
 ### Scripts, data encodings, and demand-driven locales (customer reminder)
 
-- **Scanned content** is handled as **Unicode** end-to-end (e.g. **Cyrillic**, **CJK / Japanese**, **Arabic script**, RTL where viewers support it). **Legacy byte encodings** for configs and pattern files are a separate concern—see [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md#multi-language-multi-encoding-and-multi-regional-operation) and [USAGE.md](../USAGE.md#file-encoding-config-and-pattern-files). **Sniffing and heuristics** for specific corpora can be **tuned** (config, patterns, connectors); **consulting** is available when IT, security, compliance, or DPO teams need a **custom profile**.
+- **Scanned content** is handled as **Unicode** end-to-end (e.g. **Cyrillic**, **CJK / Japanese**, **Arabic script**, RTL where viewers support it). **Legacy byte encodings** for configs and pattern files are a separate concern—see [COMPLIANCE_FRAMEWORKS.md](../../COMPLIANCE_FRAMEWORKS.md#multi-language-multi-encoding-and-multi-regional-operation) and [USAGE.md](../../USAGE.md#file-encoding-config-and-pattern-files). **Sniffing and heuristics** for specific corpora can be **tuned** (config, patterns, connectors); **consulting** is available when IT, security, compliance, or DPO teams need a **custom profile**.
 - **Dashboard HTML and full doc translations** in additional locales (e.g. **es**, **fr**, **ja**, **ru**, **ar**) are **short- to mid-term** roadmap items **after** **M-LOCALE-V1** (`en` + `pt-BR` first), bundled with other product priorities—not a promise of simultaneous ship for every script. **Sponsorship or strong demand** can reprioritise a locale.
 - **Illustrative backlog** (not shipped; order TBD): **East / Southeast Asia** — **Mandarin** / **Cantonese** (and other **Chinese** written forms), **Korean**, **Indonesian**, **Thai**, **Vietnamese**, **Filipino**; **South Asia** — **Hindi**, **Bengali**, **Tamil**, other **Indic** scripts as needed; **Africa / Middle East** — **Amharic** / **Ethiopic**, **Swahili**, further **Arabic** variants; **Europe** — **Catalan**, **Basque**, **Galician**, other **co-official** languages. **YAML compliance samples** for matching jurisdictions track the same **demand-led** cadence as UI strings—public **README** summarizes direction without internal filenames.
 - **Expanding shipped locales** beyond the **~5-slot** long-term cap (the **“token”** market slot in the table above) stays **deliberately demand-driven** so JSON catalog maintenance and **CI key parity** stay tractable.
@@ -65,7 +65,7 @@ Before **either** implementation PR changes route shape:
 
 **Higher rework cost (avoid unless security forces it):** ship #86 only on **legacy** unprefixed paths, then add locale prefix later — implies **second** pass on every guard and link.
 
-**D-WEB snapshot (Phase 0):** Route table, actual middleware order (Starlette outer→inner), and target layers (session, locale, RBAC) live in [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) § *Phase 0 deliverable — route matrix and middleware*.
+**D-WEB snapshot (Phase 0):** Route table, actual middleware order (Starlette outer→inner), and target layers (session, locale, RBAC) live in [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](../PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) § *Phase 0 deliverable — route matrix and middleware*.
 
 ---
 
@@ -73,11 +73,11 @@ Before **either** implementation PR changes route shape:
 
 | ID                | Name                             | Type          | Done when                                                                                                                                                          |
 | --                | ----                             | ----          | ---------                                                                                                                                                          |
-| **D-WEB**         | **Dashboard web surface design** | Doc / diagram | URL map + middleware order agreed; cross-linked from **#86** plan; **no product code** (no WebAuthn). Later identity order: **Bitwarden Passwordless.dev** (Phase 1) **before** corporate **SSO** (Phase 3) — [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) § *Phase 0 (D-WEB)*. |
+| **D-WEB**         | **Dashboard web surface design** | Doc / diagram | URL map + middleware order agreed; cross-linked from **#86** plan; **no product code** (no WebAuthn). Later identity order: **Bitwarden Passwordless.dev** (Phase 1) **before** corporate **SSO** (Phase 3) — [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](../PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) § *Phase 0 (D-WEB)*. |
 | **M-LOCALE-V1**   | **Locale v1 on `main`**          | Code          | ✅ **Done** (**2026-04**) — path-prefixed HTML; `en` + `pt-BR` JSON; cookie + `Accept-Language` + config fallback; switcher; tests; USAGE/TECH_GUIDE; CI key parity for shipped locales. |
 | **M-LOCALE-PLUS** | **Optional locales**             | Code          | `es` and/or `fr` and/or fifth market locale — same mechanics; still no gettext unless reprioritised.                                                               |
 
-**Sprint placement:** **D-WEB** ✅. **M-LOCALE-V1** ✅. **#86** Phase 1 is **next** in the dashboard web cluster (see [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) §4.2). Tier / ordering in [PLANS_TODO.md](PLANS_TODO.md) **Integration / WIP** may still list other fronts; within the **dashboard web surface cluster**, **locale prefix** is now on **`main`**; **in-app identity** (#86 Phase 1) follows.
+**Sprint placement:** **D-WEB** ✅. **M-LOCALE-V1** ✅. **#86** Phase 1 is **next** in the dashboard web cluster (see [SPRINTS_AND_MILESTONES.md](../SPRINTS_AND_MILESTONES.md) §4.2). Tier / ordering in [PLANS_TODO.md](../PLANS_TODO.md) **Integration / WIP** may still list other fronts; within the **dashboard web surface cluster**, **locale prefix** is now on **`main`**; **in-app identity** (#86 Phase 1) follows.
 
 ---
 
@@ -96,9 +96,9 @@ Before **either** implementation PR changes route shape:
 
 ## Current state (baseline)
 
-- **Routes:** HTML under `/{locale_slug}/…` (`en`, `pt-br`, …); unprefixed `/`, `/config`, `/reports`, `/help`, `/about` redirect per negotiation ([api/routes.py](../api/routes.py)); API endpoints locale-agnostic.
-- **Templates:** Jinja uses `t(key)` with JSON catalogs in [api/locales/](../api/locales/).
-- **JS:** [api/static/dashboard.js](../api/static/dashboard.js) — chart labels and scan feedback strings from server-injected `dashboard_js_i18n`.
+- **Routes:** HTML under `/{locale_slug}/…` (`en`, `pt-br`, …); unprefixed `/`, `/config`, `/reports`, `/help`, `/about` redirect per negotiation ([api/routes.py](../../../api/routes.py)); API endpoints locale-agnostic.
+- **Templates:** Jinja uses `t(key)` with JSON catalogs in [api/locales/](../../../api/locales/).
+- **JS:** [api/static/dashboard.js](../../../api/static/dashboard.js) — chart labels and scan feedback strings from server-injected `dashboard_js_i18n`.
 
 ---
 
@@ -110,5 +110,5 @@ Earlier comparisons of path vs query/cookie and JSON vs gettext remain valid for
 
 ## See also
 
-- [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) — **#86**; **coordinate** D-WEB and route order.
-- [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) — public marketing site (separate from in-app dashboard).
+- [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](../PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) — **#86**; **coordinate** D-WEB and route order.
+- [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](../PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) — public marketing site (separate from in-app dashboard).
