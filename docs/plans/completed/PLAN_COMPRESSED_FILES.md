@@ -1,7 +1,7 @@
 # Plan: Optional scan inside compressed files (archives)
 
-**Status:** Core delivery complete (steps **1–12** ✅); optional follow-ups in **Notes to remind later** (password-protected archives test, archive bombs, nested archives, …) — see table below.
-**Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
+**Status:** Core delivery complete (archived under `docs/plans/completed/`). Steps **1–12** ✅; optional follow-ups in **Notes to remind later** (password-protected archives test, archive bombs, nested archives, …) — see table below.
+**Synced with:** [PLANS_TODO.md](../PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
 
@@ -234,7 +234,7 @@ When implementing **scan inside compressed files**, ensure we do **not** run int
 - **Tier 3 archives:** LHA, ARJ, ZOO, PAK, ARC, ACE — via patool + external tools or dedicated libs; document and gate behind same option.
 - **Nested archives:** Zip-inside-zip (and tar inside zip, etc.) with a depth limit and size limit to avoid bombs.
 - **Other data sources not yet aimed for:**
-- **Cloud blob storage:** **Planned** as a dedicated connector plan — [PLAN_OBJECT_STORAGE_CLOUD_CONNECTORS.md](PLAN_OBJECT_STORAGE_CLOUD_CONNECTORS.md) (S3-class first, then Azure Blob, GCS). Reuses the same file/archive logic after list + fetch.
+- **Cloud blob storage:** **Planned** as a dedicated connector plan — [PLAN_OBJECT_STORAGE_CLOUD_CONNECTORS.md](../PLAN_OBJECT_STORAGE_CLOUD_CONNECTORS.md) (S3-class first, then Azure Blob, GCS). Reuses the same file/archive logic after list + fetch.
 - **Google Drive / OneDrive API:** List and download files (and optionally open archives).
 - **Email stores:** IMAP, Exchange (already have .eml/.msg; could add “mailbox” as a target type).
 - **Container images:** Scan layers or extracted rootfs for config files and DBs (advanced).
@@ -262,7 +262,7 @@ When implementing **scan inside compressed files**, ensure we do **not** run int
 | 11  | Docs: USAGE, TECH_GUIDE, man pages, help.html, README (EN and pt-BR) for scan_compressed and --scan-compressed                                                                                                                | ✅ Done     |        |
 | 12  | Resource exhaustion: enforce max_inner_size and optional temp caps; document and show user warning (dashboard + docs) when enabling scan-inside-compressed (disk, I/O, run time risks)                                        | ✅ Done     |        |
 
-**Sync:** When a step is done, mark **✅ Done** in this table and in [PLANS_TODO.md](PLANS_TODO.md) so both stay in sync.
+**Sync:** When a step is done, mark **✅ Done** in this table and in [PLANS_TODO.md](../PLANS_TODO.md) so both stay in sync.
 
 ---
 
@@ -281,4 +281,4 @@ Follow-ups or optional improvements, **ordered by recommended execution** under 
 
 ## Last updated
 
-- **2026-04-20:** Header **Status** aligned with completed steps 1–12 and [PLANS_TODO.md](PLANS_TODO.md) (drift fix).
+- **2026-04-20:** Header **Status** aligned with completed steps 1–12 and [PLANS_TODO.md](../PLANS_TODO.md) (drift fix).

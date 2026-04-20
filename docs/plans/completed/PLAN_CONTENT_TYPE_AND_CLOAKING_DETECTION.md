@@ -1,7 +1,7 @@
 # Plan: Content-based type detection and cloaking resistance
 
-**Status:** Steps 1–4 implemented (config, connectors, CLI, API/dashboard); tests and doc polish tracked below
-**Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
+**Status:** Core complete (archived under `docs/plans/completed/`). Steps 1–4 implemented (config, connectors, CLI, API/dashboard); optional man/OpenAPI polish tracked below.
+**Synced with:** [PLANS_TODO.md](../PLANS_TODO.md) (central to-do list)
 
 ## When implementing steps: update docs and tests; then update PLANS_TODO.md and this file.
 
@@ -80,7 +80,7 @@ This keeps the default lightweight and lets operators who care about renamed fil
 | 5   | Tests: default behaviour unchanged; with option on, renamed PDF (or other) is scanned by content; no regressions.                                                                                     | ✅ Done (`tests/test_api_scan_content_type_check.py` + existing connector tests)                                                                                         |
 | 6   | Docs: USAGE, TECH_GUIDE, help—content-type option, benefit (renamed/cloaking), and resource impact. Note: steganography out of scope for v1; possible future phase.                                   | ✅ Done (USAGE, USAGE.pt_BR, TECH_GUIDE EN/pt_BR; optional: man pages / OpenAPI examples later)                                                                          |
 
-**Sync:** When a step is done, mark **✅ Done** in this table and in [PLANS_TODO.md](PLANS_TODO.md).
+**Sync:** When a step is done, mark **✅ Done** in this table and in [PLANS_TODO.md](../PLANS_TODO.md).
 
 ---
 

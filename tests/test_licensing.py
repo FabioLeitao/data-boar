@@ -106,6 +106,22 @@ def test_enforced_valid_token(ed25519_priv, tmp_path):
     assert g.context.customer_name == "Test Customer"
 
 
+def test_enforced_token_dbtier_claim_exposed(ed25519_priv, tmp_path):
+    """JWT ``dbtier`` is stored for feature gates (e.g. maturity POC) — see LICENSING_SPEC.md."""
+    pem = _pem_public(ed25519_priv)
+    lic = tmp_path / "t.lic"
+    lic.write_text(
+        _make_token(ed25519_priv, extra={"dbtier": "pro"}),
+        encoding="utf-8",
+    )
+    cfg = {"licensing": {"mode": "enforced", "license_path": str(lic)}}
+    os.environ["DATA_BOAR_LICENSE_PUBLIC_KEY_PEM"] = pem
+    g = LicenseGuard(cfg)
+    assert g.context.state == "VALID"
+    assert g.context.dbtier == "pro"
+    assert g.context.to_public_dict().get("dbtier") == "pro"
+
+
 def test_enforced_revoked(ed25519_priv, tmp_path):
     pem = _pem_public(ed25519_priv)
     lic = tmp_path / "t.lic"

@@ -24,6 +24,9 @@
     <a href="{{ base_path }}/reports">{{ t('nav.reports') }}</a>
     <a href="{{ base_path }}/config">{{ t('nav.config') }}</a>
     <a href="{{ base_path }}/help">{{ t('nav.help') }}</a>
+    {% if show_maturity_assessment_nav %}
+    <a href="{{ base_path }}/assessment">{{ t('nav.assessment') }}</a>
+    {% endif %}
     <a href="{{ base_path }}/about">{{ t('nav.about') }}</a>
     <span class="nav-locale" aria-label="Language">
       {% for item in locale_switcher %}

@@ -1,7 +1,7 @@
 # Plan: Compliance standards alignment (ISO/IEC 27701, FELCA, auditable norms)
 
-**Status:** Done (documentation)
-**Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (central to-do list)
+**Status:** Done (documentation; archived under `docs/plans/completed/`)
+**Synced with:** [PLANS_TODO.md](../PLANS_TODO.md) (central to-do list)
 
 ## Purpose
 
@@ -28,13 +28,13 @@ Document how the product **supports** (does not certify) alignment with **audita
 
 ### Other auditable or regional norms
 
-- **Existing:** We already support many regional laws via [compliance-samples](compliance-samples/) and [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md) (e.g. LGPD, GDPR, CCPA, UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS, and others). Organisations can map our findings to SOC 2, ISO/IEC 27001/27002, or other control frameworks by using norm tags and recommendation overrides.
+- **Existing:** We already support many regional laws via [compliance-samples](../../compliance-samples/) and [COMPLIANCE_FRAMEWORKS.md](../../COMPLIANCE_FRAMEWORKS.md) (e.g. LGPD, GDPR, CCPA, UK GDPR, PIPEDA, POPIA, APPI, PCI-DSS, and others). Organisations can map our findings to SOC 2, ISO/IEC 27001/27002, or other control frameworks by using norm tags and recommendation overrides.
 - **Future:** As new norms emerge (e.g. other regional child-protection or platform rules), we extend via config and samples; the plan does not mandate code changes for each new law.
 
 ### Other compliance to watch
 
 - **Regional child-protection or platform laws** (beyond FELCA) may impose similar or stricter obligations (e.g. age verification, parental controls, transparency). Our minor-data detection and config-driven norm tags help you map scope; we extend samples and docs as norms become relevant.
-- **Sector-specific rules** (e.g. health, finance, education) and **data-localisation or cross-border** requirements can affect where and how you process data. Use [compliance-samples](compliance-samples/) and recommendation overrides to align report text and norm tags; no code change is required to add new frameworks.
+- **Sector-specific rules** (e.g. health, finance, education) and **data-localisation or cross-border** requirements can affect where and how you process data. Use [compliance-samples](../../compliance-samples/) and recommendation overrides to align report text and norm tags; no code change is required to add new frameworks.
 
 ---
 

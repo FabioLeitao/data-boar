@@ -4,6 +4,10 @@
 
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md)
 
+### Operator sequencing (maintainer — relative to GRC / maturity)
+
+**Intended order:** (1) **[PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md](PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md)** — DOCX → curated YAML, architecture **A** POC; (2) **this plan** — **manual CSV / export breadcrumbs** → canonical asset list → config fragments (Phases B/C), even when the customer only has a **hand-maintained spreadsheet**; (3) **[#86](https://github.com/FabioLeitao/data-boar/issues/86)** — session + **passwordless (Bitwarden Passwordless.dev minimum)** + RBAC on **`/{locale}/…`** per [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md). **Yes, this sequence is achievable** as a roadmap; delivery is **token- and sprint-paced** — see [TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md).
+
 **Related plans:** [PLAN_NEXT_WAVE_PLATFORM_AND_GTM.md](PLAN_NEXT_WAVE_PLATFORM_AND_GTM.md) (N2 modular runtime + GTM), [PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md](PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md) (active probes — complementary), [PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md](PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md) (live back-office connectors — different scope), [PLAN_DATA_SOURCE_VERSIONS_AND_HARDENING.md](PLAN_DATA_SOURCE_VERSIONS_AND_HARDENING.md) (future: tags from imported asset metadata).
 
 <!-- plans-hub-summary: Offline exports (monitoring, ITSM, assessment) → canonical format → Data Boar config targets; seed early scan rounds for consultants and enterprise teams. -->

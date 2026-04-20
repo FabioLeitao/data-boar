@@ -2,7 +2,7 @@
 
 **Status:** **Not started** — planning target; milestones below are **planning only** until scheduled on `main`.
 
-**Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (Tier 4 / `[H3][U2]`), [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) (dashboard web surface). **Independent** of dashboard i18n (**D-WEB** / **M-LOCALE-V1** in [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md)) — ship responsive CSS first where possible. **Retest** after locale-prefixed routes or **#86** RBAC changes ([PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md)).
+**Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (Tier 4 / `[H3][U2]`), [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) (dashboard web surface). **Independent** of dashboard i18n (**D-WEB** / **M-LOCALE-V1** in [PLAN_DASHBOARD_I18N.md](completed/PLAN_DASHBOARD_I18N.md)) — ship responsive CSS first where possible. **Retest** after locale-prefixed routes or **#86** RBAC changes ([PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md)).
 
 ## When implementing: update USAGE/TECH_GUIDE touch if operator-visible; update PLANS_TODO.md / sprints / this file; run `plans-stats` + `plans_hub_sync` if tables change.
 
@@ -63,7 +63,7 @@ Make the **operator dashboard** (Jinja + shared CSS) **usable on narrow viewport
 
 | Plan | Relationship |
 | ---- | ------------- |
-| [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) | Responsive layout can ship **before** locale prefixes; **re-verify** after path prefixes (nav links, switcher). |
+| [PLAN_DASHBOARD_I18N.md](completed/PLAN_DASHBOARD_I18N.md) | Responsive layout can ship **before** locale prefixes; **re-verify** after path prefixes (nav links, switcher). |
 | [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) | RBAC may change who sees `/reports`; **retest** responsive tables after #86 phases. |
 | [PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md](PLAN_WEBSITE_AND_DOCS_I18N_FUTURE.md) | **Out of scope** — public marketing site is separate. |
 
