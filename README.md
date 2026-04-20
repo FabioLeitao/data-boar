@@ -32,7 +32,7 @@ Multilingual and legacy encodings are supported; **configurable timeouts** and *
 
 **Typical scenarios:** Preparing for an audit or regulator request; mapping data before a migration or DLP rollout; raising compliance awareness without a full war room.
 
-> **Current release:** 1.7.0. Summary: [CHANGELOG.md](CHANGELOG.md). Full notes: [docs/releases/](docs/releases/) and the [GitHub Releases page](https://github.com/FabioLeitao/data-boar/releases).
+> **Latest stable release:** **1.7.0** (Docker Hub + GitHub). **`main` pre-release:** **1.7.1-beta** — dashboard i18n (`/{locale}/…`) and `enterprise_surface` on status/health; **not** equivalent to **1.7.0** for operators expecting the last published image. Summary: [CHANGELOG.md](CHANGELOG.md). Full notes: [docs/releases/](docs/releases/) and [GitHub Releases](https://github.com/FabioLeitao/data-boar/releases) (stable tags).
 > **Documentation note:** This README and `docs/USAGE.md` are the canonical English references. When features or options change, update **both** languages to keep them in sync.
 
 **Product blog (narrative updates, shorter posts):** [databoar.wordpress.com](https://databoar.wordpress.com) — canonical technical documentation remains in this repository (`docs/`).

@@ -2,6 +2,13 @@
 
 Human-readable summary of user-facing changes. **Detailed release notes:** [docs/releases/](docs/releases/) (full checklists, Docker publish commands, GitHub Release text).
 
+## 1.7.1-beta (2026-04-08) — pre-release
+
+- **Not a stable release:** `main` is ahead of **1.7.0**; use **1.7.0** on Docker Hub / GitHub Releases for production parity until **1.7.1** ships.
+- **Dashboard (web):** path-prefixed HTML locales (**`en`** / **`pt-BR`**), negotiation (cookie, `Accept-Language`, config), JSON catalogs, localized dashboard JS strings.
+- **API / posture:** **`enterprise_surface`** on **`GET /status`** and **`GET /health`** (transport + license trust + global API-key surface; RBAC still not per-route).
+- See [docs/releases/1.7.1-beta.md](docs/releases/1.7.1-beta.md).
+
 ## 1.7.0 (2026-04-17)
 
 - **Minor release:** detector **format hints** (REST JSON scalars, **email**/**UUID** `VARCHAR` hints), **HEIC** / Apple images when optional deps are present; reporting/security fixes (heatmap path guard, report import hygiene).

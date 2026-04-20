@@ -553,7 +553,7 @@ You can run the API as a **single container** (`docker run`), with **Docker Comp
 
 Docker images are available on **Docker Hub** so you can run the application without cloning the repository:
 
-- **Docker Hub:** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` and `fabioleitao/data_boar:1.7.0`
+- **Docker Hub:** [hub.docker.com/r/fabioleitao/data_boar](https://hub.docker.com/r/fabioleitao/data_boar) — `fabioleitao/data_boar:latest` and `fabioleitao/data_boar:1.7.0` (stable). **`main`** may match a **pre-release** semver (e.g. **1.7.1-beta** in `pyproject.toml`) until the next stable tag; see [CHANGELOG.md](../CHANGELOG.md) and [releases/1.7.1-beta.md](releases/1.7.1-beta.md).
 
 The image includes regex + ML + optional DL sensitivity detection; you can set ML/DL training terms in config (see [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) and [deploy/config.example.yaml](../deploy/config.example.yaml)).
 

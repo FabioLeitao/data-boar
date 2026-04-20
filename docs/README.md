@@ -117,7 +117,7 @@ Deploy assets (Compose, Kubernetes, config examples) remain in the [deploy/](../
 - [plans/PYTHON_UPGRADE_PLAYBOOK.md](plans/PYTHON_UPGRADE_PLAYBOOK.md) — Python runtime upgrade sequencing (3.12→3.13→…), Docker, CI, and wheels; [pt-BR companion](plans/PYTHON_UPGRADE_PLAYBOOK.pt_BR.md).
 - [plans/SPRINTS_AND_MILESTONES.md](plans/SPRINTS_AND_MILESTONES.md) — Token-aware sprints, milestones, Gantt/Kanban, SRE-aligned workflow (toil, SLO/error budget, blameless retro); [pt-BR companion](plans/SPRINTS_AND_MILESTONES.pt_BR.md).
 - External evolution reviews are mapped into plan history (internal; not a public doc surface).
-- [releases/](releases/) — Release notes (e.g. 1.7.0, 1.6.8, 1.6.7, 1.6.5, 1.6.4, 1.6.3, 1.6.2, 1.6.1, 1.6.0, 1.5.4, 1.5.3, 1.4.3).
+- [releases/](releases/) — Release notes (e.g. 1.7.1-beta pre-release, 1.7.0, 1.6.8, 1.6.7, 1.6.5, 1.6.4, 1.6.3, 1.6.2, 1.6.1, 1.6.0, 1.5.4, 1.5.3, 1.4.3).
 - [plans/completed/](plans/completed/) — Archived completed plans and the implementation checklist ([NEXT_STEPS.md](plans/completed/NEXT_STEPS.md)), all items Done.
 
 Man pages: `docs/data_boar.1` (command), `docs/data_boar.5` (config and file formats). Install and optionally add compatibility symlinks so `man lgpd_crawler` also works (see root README and [TECH_GUIDE.md](TECH_GUIDE.md)).

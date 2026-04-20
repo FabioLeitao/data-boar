@@ -29,7 +29,7 @@ Copy from the block below into **Repository → Edit** on Docker Hub.
 
 **Compliance-aware discovery** of personal and sensitive data across databases, files, APIs, and more — **data soup** in, structured findings out. Open-source Python stack with optional ML/DL; aligns with **LGPD**, **GDPR**, **CCPA**, and other frameworks via config.
 
-**Current release (image build):** **1.7.0** — same app version as the **`1.7.0`** image tag when published from that release. **`latest`** tracks the most recent Hub push. Always confirm **tags on Hub** match **[GitHub Releases](https://github.com/FabioLeitao/data-boar/releases)** before telling customers a version number.
+**Current release (image build):** **1.7.0** — same app version as the **`1.7.0`** image tag when published from that release. **`latest`** should stay aligned to the **last stable** publish unless you intentionally move it. **`main`** in Git may carry a **pre-release** semver (**`1.7.1-beta`**) before **1.7.1** final — see [CHANGELOG.md](../../CHANGELOG.md) and [releases/1.7.1-beta.md](../releases/1.7.1-beta.md). Optional Hub tag **`fabioleitao/data_boar:1.7.1-beta`** only if you build and push it; do not assume it exists. Always confirm **tags on Hub** match **[GitHub Releases](https://github.com/FabioLeitao/data-boar/releases)** before telling customers a version number.
 
 ### Copyright and maintainer
 

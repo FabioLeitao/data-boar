@@ -17,12 +17,13 @@ def _project_version_from_pyproject() -> str:
 
 
 def _fallback_version_in_about_source() -> str:
-    """String used when importlib.metadata has no distribution (see docs/VERSIONING.md)."""
+    """Literal after last `except` in `_version_string` (metadata + pyproject unavailable)."""
     root = Path(__file__).resolve().parent.parent
     text = (root / "core" / "about.py").read_text(encoding="utf-8")
-    m = re.search(r"except Exception:\s*\n\s*ver = \"([^\"]+)\"", text)
+    m = re.search(r"except Exception:\s*\n\s*return \"([^\"]+)\"", text)
     assert m is not None, (
-        'expected fallback `ver = "..."` after `except Exception:` in core/about.py'
+        'expected fallback `return "..."` after `except Exception:` in core/about.py '
+        "(`_version_string`)"
     )
     return m.group(1)
 
@@ -36,7 +37,7 @@ def test_about_version_matches_pyproject() -> None:
 
 
 def test_about_fallback_string_matches_pyproject() -> None:
-    """Bump checklist: `core/about.py` except-branch must track `pyproject.toml`."""
+    """Bump checklist: `core/about.py` hardcoded fallback must track `pyproject.toml`."""
     assert _fallback_version_in_about_source() == _project_version_from_pyproject()
 
 
