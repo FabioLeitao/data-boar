@@ -234,8 +234,10 @@ cython_debug/
 # Visual Studio Code
 #  Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore
 #  that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
-#  and can be added to the global gitignore or merged into this file. However, if you prefer,
-#  you could uncomment the following to ignore the entire vscode folder
+#  and can be added to the global gitignore or merged into this file.
+#  This repo tracks a minimal .vscode/ for shared editor defaults (non-secret only).
+#  Do not add launch.json/tasks with LAN hosts, tokens, or absolute paths; keep those local or under docs/private/.
+#  To ignore the entire folder locally, uncomment:
 # .vscode/
 
 # Ruff stuff:
