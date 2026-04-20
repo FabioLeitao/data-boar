@@ -166,6 +166,12 @@ def test_assessment_post_persists_answers_with_integrity_secret(tmp_path, monkey
             follow_redirects=False,
         )
         assert r2.status_code == 303
+        loc = r2.headers.get("location") or ""
+        assert f"batch={bid}" in loc
+        r3 = client.get(loc)
+        assert r3.status_code == 200
+        assert "2 verified" in r3.text
+        assert "Integrity (POC" in r3.text
         db = LocalDBManager(str(tmp_path / "audit_results.db"))
         try:
             rows = db.maturity_assessment_rows_for_integrity()
@@ -220,7 +226,13 @@ def test_assessment_post_persists_answers(tmp_path):
             follow_redirects=False,
         )
         assert r2.status_code == 303
-        assert "saved=1" in (r2.headers.get("location") or "")
+        loc = r2.headers.get("location") or ""
+        assert "saved=1" in loc
+        assert f"batch={bid}" in loc
+        r3 = client.get(loc)
+        assert r3.status_code == 200
+        assert "Submission summary" in r3.text
+        assert "Stored 2 answer row" in r3.text
         db = LocalDBManager(str(tmp_path / "audit_results.db"))
         try:
             assert db.count_maturity_assessment_answers() == 2

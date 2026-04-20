@@ -1,6 +1,6 @@
 # PLAN: Organizational maturity self-assessment (GRC-style questionnaire)
 
-<!-- plans-hub-summary: POC on main: gated /{locale}/assessment + optional YAML pack + SQLite answers + optional HMAC row sealing; scoring/export/RBAC still backlog—companion to technical scans; not legal audit. -->
+<!-- plans-hub-summary: POC on main: gated /{locale}/assessment + YAML pack + SQLite + HMAC + post-submit HTML summary; scoring/export/RBAC still backlog—companion to technical scans; not legal audit. -->
 <!-- plans-hub-related: PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md, LICENSING_OPEN_CORE_AND_COMMERCIAL.md (future tier features), PLAN_SCOPE_IMPORT_FROM_EXPORTS.md (inventory bootstrap narrative) -->
 
 **Status:** **POC A in progress on `main`** — gated `GET`/`POST /{locale}/assessment`, optional **`api.maturity_assessment_pack_path`** (YAML), **SQLite** table `maturity_assessment_answers`, optional **HMAC-SHA256 per row** (`row_hmac`) when **`DATA_BOAR_MATURITY_INTEGRITY_SECRET`** (or **`api.maturity_integrity_secret_from_env`**) is set at write time. **`GET /status`** and **`python main.py --export-audit-trail`** include **`maturity_assessment_integrity`** (counts: ok / mismatch / unsealed / unknown_sealed). **Not** encryption; deters casual DB edits and supports demo narrative. **Still backlog:** scoring, consultant UX, legal one-pager, RBAC (#86), report bundle export.
@@ -89,7 +89,7 @@ Feasible: treat **question banks** and **weights** as data (like **compliance sa
 
 ## Next steps (ordered; POC-first)
 
-1. **POC A — done for persistence + integrity demo:** SQLite + YAML pack + HMAC + `/status` + audit export ✅. **Next:** lightweight **scoring** or **read-only summary** in-dashboard (product decision); **import** questionnaire from private DOCX → YAML **without** pasting proprietary wording into public Git.
+1. **POC A — done for persistence + integrity demo:** SQLite + YAML pack + HMAC + `/status` + audit export ✅; **post-submit summary** on `GET /{locale}/assessment?saved=1&batch=…` (row count + HMAC counts for that batch) ✅. **Next:** lightweight **scoring** or richer **read-only summary** in-dashboard (product decision); **import** questionnaire from private DOCX → YAML **without** pasting proprietary wording into public Git.
 2. Legal/commercial one-pager: positioning vs audit; consent for storing responses.
 3. **Architecture lock:** spike **A** remains default; revisit **C** only after A/B learnings — align with [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) and API key / future SSO (#86).
 4. MVP: **export** org answers into report bundle or annex (distinct from technical **[PLAN_PDF_GRC_REPORT.md](PLAN_PDF_GRC_REPORT.md)** PDF stream).

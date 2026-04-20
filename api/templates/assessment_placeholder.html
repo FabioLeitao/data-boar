@@ -2,7 +2,27 @@
 {% block title %}{{ t('assessment.page_title') }}{% endblock %}
 {% block content %}
 <h1>{{ t('assessment.h1') }}</h1>
-{% if assessment_saved %}
+{% if assessment_summary %}
+<section class="card assessment-summary" aria-labelledby="assessment-summary-h">
+  <h2 id="assessment-summary-h">{{ t('assessment.summary_title') }}</h2>
+  <p role="status">{{ t('assessment.summary_rows_stored').format(count=assessment_summary.answer_count) }}</p>
+  {% if assessment_summary.answer_count > 0 %}
+  <h3 class="assessment-subh">{{ t('assessment.summary_integrity_heading') }}</h3>
+  {% if assessment_summary.integrity.secret_configured %}
+  <p class="{% if assessment_summary.integrity.rows_mismatch > 0 %}warn{% else %}success{% endif %}">
+    {{ t('assessment.summary_integrity_detail').format(
+      ok=assessment_summary.integrity.rows_ok,
+      mismatch=assessment_summary.integrity.rows_mismatch,
+      unsealed=assessment_summary.integrity.rows_unsealed,
+      unknown=assessment_summary.integrity.rows_unknown_sealed
+    ) }}
+  </p>
+  {% else %}
+  <p class="muted">{{ t('assessment.summary_integrity_none') }}</p>
+  {% endif %}
+  {% endif %}
+</section>
+{% elif assessment_saved %}
 <p class="success" role="status">{{ t('assessment.saved_ok') }}</p>
 {% endif %}
 {% if maturity_pack_sections %}

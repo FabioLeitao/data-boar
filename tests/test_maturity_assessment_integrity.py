@@ -165,6 +165,33 @@ def test_db_save_verify_tamper(tmp_path: Path):
         mgr.dispose()
 
 
+def test_maturity_rows_for_batch_matches_full_table(tmp_path: Path):
+    db_path = str(tmp_path / "batch.db")
+    mgr = LocalDBManager(db_path)
+    try:
+        mgr.save_maturity_assessment_answers(
+            batch_id="batch-a",
+            locale_slug="en",
+            pack_version=1,
+            answers={"q1": "x"},
+            integrity_secret=None,
+        )
+        mgr.save_maturity_assessment_answers(
+            batch_id="batch-b",
+            locale_slug="en",
+            pack_version=1,
+            answers={"q2": "y"},
+            integrity_secret=None,
+        )
+        a = mgr.maturity_assessment_rows_for_integrity_batch("batch-a")
+        b = mgr.maturity_assessment_rows_for_integrity_batch("batch-b")
+        assert len(a) == 1 and len(b) == 1
+        assert a[0]["question_id"] == "q1"
+        assert b[0]["question_id"] == "q2"
+    finally:
+        mgr.dispose()
+
+
 def test_db_unsealed_when_no_secret(tmp_path: Path):
     db_path = str(tmp_path / "u.db")
     mgr = LocalDBManager(db_path)
