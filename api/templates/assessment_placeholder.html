@@ -2,6 +2,40 @@
 {% block title %}{{ t('assessment.page_title') }}{% endblock %}
 {% block content %}
 <h1>{{ t('assessment.h1') }}</h1>
+{% if assessment_batch_history %}
+<section class="card assessment-history" aria-labelledby="assessment-history-h">
+  <h2 id="assessment-history-h">{{ t('assessment.history_title') }}</h2>
+  <p class="muted">{{ t('assessment.history_intro') }}</p>
+  <table class="assessment-history-table">
+    <thead>
+      <tr>
+        <th scope="col">{{ t('assessment.history_th_submitted') }}</th>
+        <th scope="col">{{ t('assessment.history_th_batch') }}</th>
+        <th scope="col">{{ t('assessment.history_th_locale') }}</th>
+        <th scope="col">{{ t('assessment.history_th_pack') }}</th>
+        <th scope="col">{{ t('assessment.history_th_rows') }}</th>
+        <th scope="col">{{ t('assessment.history_th_actions') }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in assessment_batch_history %}
+      <tr{% if assessment_summary and assessment_summary.batch_id == row.batch_id %} class="assessment-history-current"{% endif %}>
+        <td>{{ row.submitted_at_display }}</td>
+        <td><code title="{{ row.batch_id }}">{{ row.batch_id_short }}</code></td>
+        <td>{{ row.locale_slug }}</td>
+        <td>{{ row.pack_version }}</td>
+        <td>{{ row.answer_count }}</td>
+        <td>
+          <a href="{{ base_path }}assessment?saved=1&amp;batch={{ row.batch_id }}">{{ t('assessment.history_view') }}</a>
+          <span aria-hidden="true"> · </span>
+          <a href="{{ base_path }}assessment/export?batch={{ row.batch_id }}&amp;format=csv">{{ t('assessment.export_csv') }}</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
 {% if assessment_summary %}
 <section class="card assessment-summary" aria-labelledby="assessment-summary-h">
   <h2 id="assessment-summary-h">{{ t('assessment.summary_title') }}</h2>

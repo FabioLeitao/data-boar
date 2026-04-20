@@ -170,6 +170,45 @@ def _valid_maturity_assessment_batch_id(batch_id: str) -> bool:
     return bool(re.fullmatch(r"[0-9a-fA-F]+", batch_id))
 
 
+def _format_maturity_submitted_at(dt: object | None) -> str:
+    """UTC display string for batch submit time (SQLite may return naive datetime)."""
+    if dt is None:
+        return ""
+    if not isinstance(dt, datetime):
+        return ""
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    else:
+        dt = dt.astimezone(timezone.utc)
+    return dt.strftime("%Y-%m-%d %H:%M UTC")
+
+
+def _assessment_batch_history_for_template(dbm) -> list[dict[str, object]]:
+    """Rows for assessment HTML: distinct batches, newest first.
+
+    When GitHub #86 (RBAC) adds per-subject identity, filter summaries by tenant or
+    subject instead of listing every batch in the shared SQLite file — same query
+    shape, narrower WHERE. See ADR 0032 and PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.
+    """
+    rows_out: list[dict[str, object]] = []
+    for r in dbm.maturity_assessment_batch_summaries(limit=50):
+        bid = str(r.get("batch_id") or "")
+        short = bid if len(bid) <= 16 else f"{bid[:16]}…"
+        rows_out.append(
+            {
+                "batch_id": bid,
+                "batch_id_short": short,
+                "submitted_at_display": _format_maturity_submitted_at(
+                    r.get("submitted_at")
+                ),
+                "answer_count": int(r.get("answer_count") or 0),
+                "locale_slug": str(r.get("locale_slug") or ""),
+                "pack_version": int(r.get("pack_version") or 0),
+            }
+        )
+    return rows_out
+
+
 def _switcher_entries(request: Request, current_slug: str, t) -> list[dict]:
     cfg = _get_config()
     supported = (cfg.get("locale") or {}).get("supported_locales") or ["en", "pt-BR"]
@@ -1544,11 +1583,12 @@ async def maturity_self_assessment_placeholder(
             }
             for s in pack.sections
         ]
+    eng = _get_engine()
+    assessment_batch_history = _assessment_batch_history_for_template(eng.db_manager)
     saved = (request.query_params.get("saved") or "").strip() == "1"
     batch_q = (request.query_params.get("batch") or "").strip()
     assessment_summary: dict | None = None
     if saved and batch_q and _valid_maturity_assessment_batch_id(batch_q):
-        eng = _get_engine()
         rows = eng.db_manager.maturity_assessment_rows_for_integrity_batch(batch_q)
         sec = load_integrity_secret_from_config(cfg)
         integrity = verify_maturity_assessment_rows(secret=sec, rows=rows)
@@ -1575,6 +1615,7 @@ async def maturity_self_assessment_placeholder(
                 "maturity_pack_version": pack_version,
                 "assessment_saved": saved,
                 "assessment_summary": assessment_summary,
+                "assessment_batch_history": assessment_batch_history,
             },
         ),
     )
