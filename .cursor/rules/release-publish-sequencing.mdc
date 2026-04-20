@@ -27,7 +27,7 @@ Do **not** claim a version is **published** until **all** relevant steps for **t
 2. **Git tag:** `vX.Y.Z` on the **exact commit** that still has **`X.Y.Z` final** in `pyproject.toml`. If there are **two** commits (release, then beta), the tag **must** point to the **release** commit, **not** `HEAD` with beta.
 3. **Push tag:** `git push origin vX.Y.Z` (or project remote).
 4. **GitHub Release:** `gh release create vX.Y.Z` with notes from **`docs/releases/X.Y.Z.md`** (or equivalent). **Verify** with `gh release list` / `gh release view vX.Y.Z` in-session — **do not** invent “it’s live” without a check when tools work.
-5. **Docker Hub:** build/push **`fabioleitao/data_boar:X.Y.Z`** and **`latest`** per project scripts; paste **Short + Full** from **`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`** into the Hub UI.
+5. **Docker Hub:** build/push **`fabioleitao/data_boar:X.Y.Z`** and **`latest`** per project scripts. **Then** open Docker Hub **Repository → General → Edit** and paste **Short + Full** from **`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`** (replace the **entire** Full description — Hub **does not** sync from Git; stale blocks like old **## Tags** / **1.6.5** stay until overwritten). **Stable releases only** for this marketing refresh; **`-beta`** / **`-rc`** image experiments do **not** require updating the public Hub page copy unless the operator asks.
 6. **Reconciliation:** **`docs/ops/today-mode/PUBLISHED_SYNC.md`** (+ **`.pt_BR.md`**) aligned with **published** semver, Hub tags, and **`pyproject.toml` on `main`** (often **pre-release** after step 7).
 
 **Only after** the operator (or automation with credentials) has completed the publish steps they care about:
