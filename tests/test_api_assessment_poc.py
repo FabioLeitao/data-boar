@@ -232,6 +232,9 @@ def test_assessment_post_persists_answers(tmp_path):
         assert f"batch={bid}" in loc
         r3 = client.get(loc)
         assert r3.status_code == 200
+        assert "Recent submissions" in r3.text
+        assert "assessment-history" in r3.text
+        assert f"assessment?saved=1&amp;batch={bid}" in r3.text
         assert "Submission summary" in r3.text
         assert "Stored 2 answer row" in r3.text
         assert "Rubric score" in r3.text
@@ -276,6 +279,34 @@ def test_assessment_export_404_when_batch_has_no_rows(tmp_path):
         ghost = "c" * 32
         r = client.get(f"/en/assessment/export?batch={ghost}&format=csv")
         assert r.status_code == 404
+    finally:
+        _teardown_routes(routes, orig_path, orig_cfg, orig_engine)
+
+
+def test_assessment_history_section_absent_without_submissions(tmp_path):
+    """No empty history card: table is omitted until at least one batch exists in SQLite."""
+    pack_src = (
+        Path(__file__).resolve().parent
+        / "fixtures"
+        / "maturity_assessment"
+        / "sample_pack.yaml"
+    )
+    pack_dst = tmp_path / "pack.yaml"
+    pack_dst.write_text(pack_src.read_text(encoding="utf-8"), encoding="utf-8")
+    pack_path = str(pack_dst).replace("\\", "/")
+    extra = f"""  maturity_self_assessment_poc_enabled: true
+  maturity_assessment_pack_path: {pack_path}
+"""
+    routes, client, orig_path, orig_cfg, orig_engine = _setup_routes(
+        tmp_path,
+        api_extra=extra,
+        licensing_block="licensing:\n  effective_tier: pro\n",
+    )
+    try:
+        r = client.get("/en/assessment")
+        assert r.status_code == 200
+        assert "Recent submissions" not in r.text
+        assert "assessment-history" not in r.text
     finally:
         _teardown_routes(routes, orig_path, orig_cfg, orig_engine)
 

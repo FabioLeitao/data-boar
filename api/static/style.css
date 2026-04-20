@@ -73,6 +73,10 @@ h2 { font-size: 1.1rem; margin: 0 0 0.75rem; color: var(--muted); }
 .warn { color: #d29922; }
 .assessment-subh { font-size: 1rem; font-weight: 600; margin: 0.75rem 0 0.35rem; color: var(--muted); }
 .assessment-summary p { margin: 0.35rem 0; }
+.assessment-history-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 0.5rem; }
+.assessment-history-table th, .assessment-history-table td { padding: 0.45rem 0.6rem; text-align: left; border-bottom: 1px solid var(--border); }
+.assessment-history-table th { color: var(--muted); font-weight: 600; }
+.assessment-history-table tbody tr.assessment-history-current { background: rgba(88, 166, 255, 0.08); }
 
 .chart-container { max-width: 100%; min-height: 200px; margin-bottom: 0.5rem; }
 

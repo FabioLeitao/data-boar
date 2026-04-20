@@ -15,6 +15,7 @@ from sqlalchemy import (
     String,
     Text,
     create_engine,
+    desc,
     func,
     text,
 )
@@ -451,6 +452,46 @@ class LocalDBManager:
         session = self._session_factory()
         try:
             return session.query(MaturityAssessmentAnswer).count()
+        finally:
+            session.close()
+
+    def maturity_assessment_batch_summaries(
+        self, *, limit: int = 50
+    ) -> list[dict[str, object]]:
+        """
+        One row per distinct ``batch_id`` (newest submit first): time, locale, pack version, answer rows.
+
+        Used for POC dashboard history; cap ``limit`` to keep the HTML table bounded.
+        """
+        cap = max(1, min(int(limit), 500))
+        session = self._session_factory()
+        try:
+            q = (
+                session.query(
+                    MaturityAssessmentAnswer.batch_id,
+                    func.min(MaturityAssessmentAnswer.created_at).label("submitted_at"),
+                    func.count(MaturityAssessmentAnswer.id).label("answer_count"),
+                    func.max(MaturityAssessmentAnswer.locale_slug).label("locale_slug"),
+                    func.max(MaturityAssessmentAnswer.pack_version).label(
+                        "pack_version"
+                    ),
+                )
+                .group_by(MaturityAssessmentAnswer.batch_id)
+                .order_by(desc(func.min(MaturityAssessmentAnswer.created_at)))
+                .limit(cap)
+            )
+            out: list[dict[str, object]] = []
+            for row in q.all():
+                out.append(
+                    {
+                        "batch_id": str(row.batch_id),
+                        "submitted_at": row.submitted_at,
+                        "answer_count": int(row.answer_count),
+                        "locale_slug": str(row.locale_slug),
+                        "pack_version": int(row.pack_version),
+                    }
+                )
+            return out
         finally:
             session.close()
 
