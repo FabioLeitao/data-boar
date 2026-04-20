@@ -23,6 +23,7 @@ import os
 import re
 import secrets
 import time
+from urllib.parse import quote
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from enum import Enum
@@ -41,7 +42,10 @@ from core.enterprise_surface_posture import get_enterprise_surface_posture
 from core.host_resolution import effective_api_key_configured
 from core.licensing.tier_features import Tier, is_feature_available
 from core.runtime_trust import get_runtime_trust_snapshot
-from core.maturity_assessment.integrity import load_integrity_secret_from_config
+from core.maturity_assessment.integrity import (
+    load_integrity_secret_from_config,
+    verify_maturity_assessment_rows,
+)
 from core.maturity_assessment.pack import load_maturity_pack
 
 from api.locale_i18n import (
@@ -137,6 +141,13 @@ def _maturity_self_assessment_poc_allowed(cfg: dict) -> bool:
         "maturity_self_assessment_poc",
         _runtime_tier_for_features(cfg),
     )
+
+
+def _valid_maturity_assessment_batch_id(batch_id: str) -> bool:
+    """Same validation as POST ``assessment_batch_id`` (hex, length cap)."""
+    if not batch_id or len(batch_id) > 64:
+        return False
+    return bool(re.fullmatch(r"[0-9a-fA-F]+", batch_id))
 
 
 def _switcher_entries(request: Request, current_slug: str, t) -> list[dict]:
@@ -1514,6 +1525,17 @@ async def maturity_self_assessment_placeholder(
             for s in pack.sections
         ]
     saved = (request.query_params.get("saved") or "").strip() == "1"
+    batch_q = (request.query_params.get("batch") or "").strip()
+    assessment_summary: dict | None = None
+    if saved and batch_q and _valid_maturity_assessment_batch_id(batch_q):
+        eng = _get_engine()
+        rows = eng.db_manager.maturity_assessment_rows_for_integrity_batch(batch_q)
+        sec = load_integrity_secret_from_config(cfg)
+        integrity = verify_maturity_assessment_rows(secret=sec, rows=rows)
+        assessment_summary = {
+            "answer_count": len(rows),
+            "integrity": integrity,
+        }
     return templates.TemplateResponse(
         request=request,
         name="assessment_placeholder.html",
@@ -1526,6 +1548,7 @@ async def maturity_self_assessment_placeholder(
                 "assessment_batch_id": secrets.token_hex(16),
                 "maturity_pack_version": pack_version,
                 "assessment_saved": saved,
+                "assessment_summary": assessment_summary,
             },
         ),
     )
@@ -1545,11 +1568,7 @@ async def maturity_self_assessment_submit(request: Request, locale_slug: LocaleS
         )
     form = await request.form()
     batch_id = str(form.get("assessment_batch_id") or "").strip()
-    if (
-        not batch_id
-        or len(batch_id) > 64
-        or not re.fullmatch(r"[0-9a-fA-F]+", batch_id)
-    ):
+    if not _valid_maturity_assessment_batch_id(batch_id):
         raise HTTPException(status_code=400, detail="Invalid assessment_batch_id")
     pack = _get_maturity_pack_cached(cfg)
     pack_version = int(pack.version) if pack is not None else 1
@@ -1572,8 +1591,9 @@ async def maturity_self_assessment_submit(request: Request, locale_slug: LocaleS
         integrity_secret=sec,
     )
     slug = locale_slug.value
+    batch_enc = quote(batch_id, safe="")
     return RedirectResponse(
-        url=f"/{slug}/assessment?saved=1",
+        url=f"/{slug}/assessment?saved=1&batch={batch_enc}",
         status_code=303,
     )
 
