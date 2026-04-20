@@ -1,22 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Reports — Data Boar{% endblock %}
+{% block title %}{{ t('reports.page_title') }}{% endblock %}
 {% block content %}
-<h1><img src="/static/mascot/data_boar_mascote_color.svg" alt="" width="40" height="40" style="vertical-align: middle; margin-right: 0.35em;">Reports</h1>
-<p>Download Excel reports (and heatmap) for each scan session. “Download” regenerates the report for that session.</p>
-<p class="sort-row">Order by date: {% if sort == "date_desc" %}<strong>Newest first</strong>{% else %}<a href="/reports?sort=date_desc">Newest first</a>{% endif %} · {% if sort == "date_asc" %}<strong>Oldest first</strong>{% else %}<a href="/reports?sort=date_asc">Oldest first</a>{% endif %}</p>
+<h1><img src="/static/mascot/data_boar_mascote_color.svg" alt="" width="40" height="40" style="vertical-align: middle; margin-right: 0.35em;">{{ t('reports.h1') }}</h1>
+<p>{{ t('reports.intro') }}</p>
+<p class="sort-row">{{ t('reports.order_label') }} {% if sort == "date_desc" %}<strong>{{ t('reports.sort_newest') }}</strong>{% else %}<a href="{{ base_path }}/reports?sort=date_desc">{{ t('reports.sort_newest') }}</a>{% endif %} · {% if sort == "date_asc" %}<strong>{{ t('reports.sort_oldest') }}</strong>{% else %}<a href="{{ base_path }}/reports?sort=date_asc">{{ t('reports.sort_oldest') }}</a>{% endif %}</p>
 <table class="table">
   <thead>
     <tr>
-      <th>Session ID</th>
-      <th>Started</th>
-      <th>Finished</th>
-      <th>Status</th>
-      <th>Tenant / Customer</th>
-      <th>Technician / Operator</th>
-      <th>DB findings</th>
-      <th>FS findings</th>
-      <th>Failures</th>
-      <th>Report</th>
+      <th>{{ t('reports.th_session') }}</th>
+      <th>{{ t('reports.th_started') }}</th>
+      <th>{{ t('reports.th_finished') }}</th>
+      <th>{{ t('reports.th_status') }}</th>
+      <th>{{ t('reports.th_tenant') }}</th>
+      <th>{{ t('reports.th_technician') }}</th>
+      <th>{{ t('reports.th_db') }}</th>
+      <th>{{ t('reports.th_fs') }}</th>
+      <th>{{ t('reports.th_failures') }}</th>
+      <th>{{ t('reports.th_report') }}</th>
     </tr>
   </thead>
   <tbody>
@@ -31,16 +31,11 @@
       <td>{{ s.database_findings }}</td>
       <td>{{ s.filesystem_findings }}</td>
       <td>{{ s.scan_failures }}</td>
-      <td><a href="/reports/{{ s.session_id }}" download class="btn btn-sm">Download</a></td>
+      <td><a href="/reports/{{ s.session_id }}" download class="btn btn-sm">{{ t('reports.download') }}</a></td>
     </tr>
     {% else %}
-    <tr><td colspan="10">No sessions yet. Run a scan from the <a href="/">dashboard</a>.</td></tr>
+    <tr><td colspan="10">{{ t('reports.no_sessions') }} <a href="{{ base_path }}/">{{ t('reports.dashboard_link') }}</a>.</td></tr>
     {% endfor %}
   </tbody>
 </table>
-
-<section class="card about-report" aria-label="Application and report attribution" style="margin-top: 1.5rem;">
-  <h2>About this application</h2>
-  <p class="muted"><img src="/static/mascot/data_boar_mascote_color.svg" alt="" width="32" height="32" style="vertical-align: middle; margin-right: 0.25em;"><strong>{{ about.name }}</strong> v{{ about.version }} · Author: {{ about.author }} · {{ about.license }} · {{ about.copyright }}. Downloaded Excel reports and heatmap images include this information in the spreadsheet and on the image. See <a href="/about">About</a> for full details.</p>
-</section>
 {% endblock %}

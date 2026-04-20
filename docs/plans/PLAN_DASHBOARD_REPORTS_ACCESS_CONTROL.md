@@ -1,6 +1,6 @@
 # Plan: Dashboard / reports access control (roles & permissions)
 
-**Status:** Not started (backlog — tracked from GitHub)
+**Status:** Phase **0 (D-WEB)** design snapshot ✅ (route matrix + middleware Mermaid + proxy pointers — § *Phase 0 deliverable* below); **implementation** Phases 1–3 ⬜ — [GitHub #86](https://github.com/FabioLeitao/data-boar/issues/86)
 
 **Horizon / urgency:** `[H2]` / `[U2]` — after **Priority band A** and when multi-tenant / multi-user dashboard exposure is real, not before core scan stability.
 
@@ -48,12 +48,118 @@ See [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md), [TECH_GUIDE.md](../T
 
 | Phase | Scope | Outcome |
 | ----- | ----- | ------- |
-| **0** | Docs + **D-WEB** | Route matrix (what is public vs protected); proxy recipes; **middleware order** diagram with [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) (`API key` → `locale` for HTML → `session` → `RBAC`). |
-| **1** | **Session + passwordless (minimum)** | **HTTPS required** for WebAuthn. After successful WebAuthn (via Passwordless.dev or equivalent), issue **opaque server session** (**httpOnly cookie** + CSRF strategy) or short-lived internal JWT **separate** from commercial license JWT. **Global `api.require_api_key`** can remain for automation / break-glass; **browser** flows use session. |
+| **0** | Docs + **D-WEB** | Route matrix (what is public vs protected); proxy recipes; **middleware order** diagram with [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) (`API key` → `locale` for HTML → `session` → `RBAC`). **2026-04:** `GET /status` and `GET /health` expose **`enterprise_surface`** (transport + license trust + global API-key surface + explicit `rbac: not_implemented`) for demo/enterprise narrative — not a substitute for Phase 2 RBAC. |
+| **1** | **Session + passwordless (minimum)** | **HTTPS required** for WebAuthn. After successful WebAuthn (via Passwordless.dev or equivalent), issue **opaque server session** (**httpOnly cookie** + CSRF strategy) or short-lived internal JWT **separate** from commercial license JWT. **Global `api.require_api_key`** can remain for automation / break-glass; **browser** flows use session. **Schedule after [M-LOCALE-V1](PLAN_DASHBOARD_I18N.md)** so HTML routes are already under `/{locale}/…`. |
 | **2** | **RBAC** | Named roles (`scanner`, `reports_reader`, `config_admin`, …) bound to **authenticated subject**; route/resource gates on prefixed HTML paths; optional machine keys for API with role claims (design TBD). |
 | **3** | **Enterprise SSO (optional)** | **OIDC** (SAML later if needed): map IdP groups → product roles; **coexist** with passwordless (e.g. local passkeys for break-glass, SSO for staff). |
 
 **Non-goals for v1 of Phase 1–2:** Password **storage** as primary factor (passkeys first); full **SCIM** provisioning; replacing customer IdP — **SSO is additive in Phase 3**.
+
+### Phase 0 (D-WEB) — documentation-only slice (no WebAuthn yet)
+
+**Intent:** Ship **one PR** that is **design + operator docs + diagram(s)** only. **Out of scope for that PR:** WebAuthn handlers, Bitwarden Passwordless.dev SDK wiring, session cookies, and new RBAC middleware — those belong to **Phase 1+**.
+
+**Deliverables (checklist):**
+
+1. **Route matrix** — ✅ table in § *Phase 0 deliverable — route matrix and middleware* (verify when routes change).
+1. **Middleware order** — ✅ actual stack + Mermaid + **target** stack (session → locale → RBAC) in same section; [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) cross-links here.
+1. **Proxy recipes** — ✅ pointers to SECURITY + SECURE_DASHBOARD runbook in § *Phase 0 deliverable*; no product code in Phase 0.
+
+**Identity roadmap (locked for sequencing — not implemented in Phase 0):**
+
+| Order | Track | Notes |
+| ----- | ----- | ----- |
+| **1st** | **Passwordless for humans** | **[Bitwarden Passwordless.dev](https://bitwarden.com/products/passwordless/)** as the **minimum** supported integration for **Phase 1** (SDK + hosted API); align with teams already on Bitwarden. |
+| **Later** | **Enterprise SSO** | **Phase 3** — OIDC (Azure AD, Google Workspace, Okta, IAM IC–compatible, …); **additive** after passwordless + RBAC are stable; coexist with passkeys for break-glass where needed. |
+
+**Non-goals for Phase 0:** Choosing a final OIDC vendor; implementing SSO; storing passwords as a primary factor.
+
+---
+
+## Phase 0 deliverable — route matrix and middleware (snapshot)
+
+**Purpose:** Single place for **D-WEB** — what exists on `main` today, how middleware runs, and **target** hooks for Phase 1 (session + Bitwarden Passwordless.dev) and Phase 3 (SSO). **No code changes** in this subsection; re-verify against `api/routes.py` when routes move (e.g. `/{locale}/…` per [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md)).
+
+**Drift guard:** `tests/test_api_route_matrix_plan_sync.py` asserts the HTTP route set matches **`EXPECTED_HTTP_ROUTES`** — update that tuple **and** this table **in the same PR** whenever you add, remove, or rename routes in `api/routes.py`.
+
+### HTTP routes (current shapes)
+
+| Method(s) | Path | Response | Notes (today) | Target route class (future) |
+| --------- | ---- | -------- | ------------- | ----------------------------- |
+| `GET` | `/health` | JSON | **Always unauthenticated** (no API key); liveness/readiness | `public` |
+| `GET` | `/{locale_slug}/help` | HTML | Help / doc links (`en`, `pt-br`, …) | `public` (or `authenticated` if product tightens) |
+| `GET` | `/{locale_slug}/about` | HTML | About page | `public` |
+| `GET` | `/about/json` | JSON | Public license/about payload | `public` |
+| `GET` | `/` | redirect | Unprefixed `/` → `302`/`307` to `/{negotiated}/` (cookie → `Accept-Language` → `locale.default_locale`) | n/a |
+| `GET` | `/{locale_slug}/` | HTML | Dashboard (dashBOARd) | `authenticated` once session exists |
+| `GET` | `/{locale_slug}/config` | HTML | View/edit YAML | `admin` or `authenticated` (TBD) |
+| `POST` | `/{locale_slug}/config` | HTML | Save config | `admin` or mutating role |
+| `GET` | `/{locale_slug}/reports` | HTML | Session list | `authenticated` |
+| `POST` | `/scan`, `/start` | JSON | Start background scan | `scanner` or `authenticated` |
+| `GET` | `/status` | JSON | Runtime status + `enterprise_surface` | `authenticated` or automation via API key |
+| `GET` | `/report` | XLSX | Last report download | `reports_reader`+ |
+| `GET` | `/heatmap` | PNG | Last heatmap | `reports_reader`+ |
+| `GET` | `/list` | JSON | List API | `authenticated` / automation |
+| `PATCH` | `/sessions/{session_id}` | JSON | Metadata | `authenticated` |
+| `PATCH` | `/sessions/{session_id}/technician` | JSON | Technician tag | `authenticated` |
+| `GET` | `/reports/{session_id}` | XLSX | Report by session | `reports_reader`+ |
+| `GET` | `/heatmap/{session_id}` | PNG | Heatmap by session | `reports_reader`+ |
+| `GET` | `/logs` | text | Logs listing | `authenticated` |
+| `GET` | `/logs/{session_id}` | text | Session log | `authenticated` |
+| `POST` | `/scan_database` | JSON | DB scan | `scanner`+ |
+
+Static: `GET /static/...` (long cache; same process). **Today:** no per-route RBAC — global `api.require_api_key` only when enabled. **Locale:** see [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) (M-LOCALE-V1); unprefixed legacy HTML paths (`/config`, `/reports`, `/help`, `/about`) redirect the same way as `/`.
+
+### Middleware order (as implemented in `api/routes.py`)
+
+Starlette/FastAPI: **the last `@app.middleware("http")` registered runs first** on the **incoming** request (outermost).
+
+Registration order in code (first listed = innermost, closest to route):
+
+1. `security_headers_middleware` — CSP, HSTS when HTTPS, etc. (runs **after** inner layers return, still participates in the stack).
+2. `cache_control_middleware` — `Cache-Control` for `/static` vs no-store.
+3. `optional_api_key_middleware` — if `api.require_api_key`, require key for **all paths except** `GET /health`.
+4. `request_body_size_middleware` — reject body over 1 MB.
+5. `locale_html_middleware` — unprefixed dashboard HTML paths → `/{slug}/…`; invalid locale segment → redirect; `Set-Cookie` for `db_locale` on successful locale HTML responses (**registered last** → runs **first** on incoming request).
+
+**Incoming request path (outer → inner):**
+
+`locale_html` → `request_body_size` → `optional_api_key` → `cache_control` → `security_headers` → **route handler** (or static mount).
+
+```mermaid
+flowchart LR
+  subgraph incoming["Incoming request (outer → inner)"]
+    L[locale_html]
+    A[request_body_size]
+    B[optional_api_key]
+    C[cache_control]
+    D[security_headers]
+    R[Route / static]
+  end
+  L --> A --> B --> C --> D --> R
+```
+
+### Target stack (Phase 1–3 — design only)
+
+Not implemented yet. Intended **additions** (order still TBD with [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md) for `/{locale}/…`):
+
+```mermaid
+flowchart TB
+  subgraph future["Future layers (conceptual)"]
+    E[Normalize path / strip or accept locale prefix]
+    F[Optional API key — automation & break-glass]
+    G[Session cookie — after Bitwarden Passwordless.dev / WebAuthn]
+    H[Locale for HTML only]
+    I[RBAC / route class]
+  end
+  E --> F --> G --> H --> I
+```
+
+**Sequencing reminder:** **Bitwarden Passwordless.dev** (human, Phase 1) **before** enterprise **OIDC/SSO** (Phase 3). **API key** remains for scripts and probes alongside session for browsers where configured.
+
+### Proxy / TLS
+
+Operators terminating TLS upstream should set **`X-Forwarded-Proto: https`** so HSTS and `_is_secure_request` behave correctly — see [SECURITY.md](../SECURITY.md), [SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md](../ops/SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md).
 
 ---
 
@@ -94,8 +200,8 @@ See [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md), [TECH_GUIDE.md](../T
 | Step               | Track                    | Action                                                                                                                                                                                                                                                                   |
 | ----               | -----                    | ------                                                                                                                                                                                                                                                                   |
 | **D-WEB**          | Both                     | **Design-only:** URL map + **middleware order** (optional API key for automation, **session** for browser after WebAuthn, locale resolution for HTML, route-class / RBAC). Cross-link between this file and the i18n plan.                                                                                                               |
-| **Implementation** | i18n first (recommended) | **M-LOCALE-V1:** path-prefixed HTML + `en` / `pt-BR` JSON + negotiation; **no** new RBAC semantics required on first merge if defaults unchanged.                                                                                                                        |
-| **Implementation** | #86                      | Phase **0** (docs) can ship anytime. Phase **1+** gates should target the **same prefixed paths** as i18n (e.g. `/{locale}/reports`), not legacy unprefixed HTML — unless a **security exception** forces early guards on old paths (then budget a **migration** slice). |
+| **Implementation** | i18n first (**required** before Phase 1 here) | **M-LOCALE-V1:** path-prefixed HTML + `en` / `pt-BR` JSON + negotiation; **no** new RBAC semantics required on first merge if defaults unchanged. **Promoted** ahead of #86 Phase 1 code.                                                                                                                        |
+| **Implementation** | #86                      | Phase **0** (D-WEB) ✅. Phase **1+** **after** **M-LOCALE-V1** on the **same** prefixed paths (e.g. `/{locale}/reports`) — unless a **security exception** forces early guards on legacy paths (then budget a **migration** slice). |
 
 Details and anti-footgun rules: **PLAN_DASHBOARD_I18N.md** § *Meshing with dashboard reports RBAC*.
 
@@ -114,7 +220,7 @@ Details and anti-footgun rules: **PLAN_DASHBOARD_I18N.md** § *Meshing with dash
 
 | Plan / doc                                                                       | Overlap                                                                              | How to treat it                                                                                                                                                                                                          |
 | ----------                                                                       | -------                                                                              | ----------------                                                                                                                                                                                                         |
-| [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md)                                 | Same routes and templates (`/`, `/reports`, …).                                      | **Coordinate:** **D-WEB** design checkpoint first; then implement **locale prefix** before or with **Phase 1+** RBAC on **prefixed** paths — see **§ Sequencing with dashboard i18n** above. i18n does not replace RBAC. |
+| [PLAN_DASHBOARD_I18N.md](PLAN_DASHBOARD_I18N.md)                                 | Same routes and templates (`/`, `/reports`, …).                                      | **Coordinate:** **M-LOCALE-V1** (locale prefix) **before** this plan’s **Phase 1** (session/passwordless); then **Phase 2+** RBAC on **prefixed** paths. i18n does not replace RBAC. |
 | [LICENSING_SPEC.md](../LICENSING_SPEC.md) / commercial JWT                       | Product **license** claims (`dbtier`, …) vs **session** roles (`reports_reader`, …). | **Optional convergence** in a far enterprise phase: both might read JWT-shaped claims; keep **specs separate** until requirements are explicit—no need to fold this plan into licensing docs.                            |
 | [completed/PLAN_RATE_LIMIT_SCANS.md](completed/PLAN_RATE_LIMIT_SCANS.md)         | GET `/reports`, `/heatmap` intentionally not rate-limited for reads.                 | **Compatible:** RBAC restricts *who*; rate limits restrict *how hard*. Changing either should mention the other in release notes.                                                                                        |
 | [PLAN_SELENIUM_QA_TEST_SUITE.md](PLAN_SELENIUM_QA_TEST_SUITE.md)                 | Future E2E on dashboard flows.                                                       | When RBAC lands, QA plan should add cases for **forbidden** vs **allowed** roles on `/reports`.                                                                                                                          |

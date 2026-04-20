@@ -9,6 +9,25 @@
 
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (Backlog catalogue entry).
 
+### Operator sequencing (2026-04) — architecture options A–D
+
+**Are we on option A in code right now?** **No.** There is **no** GRC/maturity route shipped yet; the plan only compares **A / B / C / D**. The **next agreed `feature` session** is **[M-LOCALE-V1](PLAN_DASHBOARD_I18N.md)** (path-prefixed HTML + `en` / `pt-BR`) **before** [#86](https://github.com/FabioLeitao/data-boar/issues/86) Phase 1 — see Integration / WIP in [PLANS_TODO.md](PLANS_TODO.md).
+
+**When GRC POC work starts (after M-LOCALE-V1 unless reprioritised):**
+
+| Step | Architecture | Intent |
+| --- | --- | --- |
+| **1** | **A** — New dashBOARd routes (`/…/assessment` once locale prefix exists) + SQLite persistence | **First** in-app spike: single app, same audit story; align with RBAC/#86 later. |
+| **2** | **B** — Excel sheet + formula scoring | Fast tabular path; compare UX vs A for consultant workflows. |
+| **3** | **C** — Companion app + API/SSO | Separation / white-label; evaluate **after** A/B learnings. |
+| **4** | **D** — PDF/export-only narrative | Simplicity vs interactivity; last in the **comparison Colleague-Nn**, not “never”. |
+
+**POC scaffolding (minimal, when scheduled):** feature-flag or **`dbtier`**-gated **placeholder** route + empty state + pointer to this plan — **no** proprietary questionnaire text in public repo; YAML pack under private or licensed pack later. Prefer **`/{locale}/…/assessment`** once **M-LOCALE-V1** lands so paths are not rewritten twice.
+
+**Operator deferral (confirmed):** GRC scaffolding is **not** part of the **M-LOCALE-V1** slice — schedule as the **next `feature` session after** [M-LOCALE-V1](PLAN_DASHBOARD_I18N.md) merges, unless the operator reprioritises.
+
+**Remember:** proceed **A → B → C → D** as **evaluation spikes**, not four full products—pick one shipping path after spikes unless counsel/commercial demands otherwise.
+
 ## Problem statement
 
 Operators and consultants need **organizational** visibility (roles, processes, awareness) alongside **technical** inventory from Data Boar. A structured **self-assessment** (not audit, not legal advice) can raise maturity and align teams (DPO, IT, cyber, compliance, HR, contracts, customer-facing) with preparation for LGPD and related frameworks—**if** answers are sincere and the instrument is clearly framed as **consciousness-raising** only.
