@@ -6,7 +6,7 @@ This guide covers installation, configuration, CLI and API reference, supported 
 
 ## Features
 
-- **Multi-target scanning**: Configure multiple databases, filesystems, APIs, remote shares, **Power BI**, and **Power Apps (Dataverse)** in a single YAML/JSON config.
+- **Multi-target scanning**: Configure multiple databases, filesystems, APIs, remote shares, **Power BI**, and **Power Apps (Dataverse)** in a single YAML/JSON config. **Scope import (CSV):** `scripts/scope_import_csv.py` emits a YAML fragment of `targets` from a canonical CSV for operator review and merge—see [USAGE.md](USAGE.md#scope-import-from-csv-config-fragment).
 - **SQL databases**: PostgreSQL, MySQL, MariaDB, SQLite, Microsoft SQL Server, Oracle (via SQLAlchemy drivers).
 - **Power BI (optional)**: Discover workspaces, datasets, and tables via Power BI REST API; sample with DAX. Azure AD OAuth2 (client credentials). Findings in **Database findings** sheet; inventory metadata in **Data source inventory**.
 - **Power Apps / Dataverse (optional)**: Discover entities and attributes via Dataverse Web API; sample rows. Azure AD OAuth2 (client credentials). Findings in **Database findings** sheet; inventory metadata in **Data source inventory**.

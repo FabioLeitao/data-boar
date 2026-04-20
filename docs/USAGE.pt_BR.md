@@ -315,6 +315,20 @@ Esse endpoint procura, entre os arquivos `audit_YYYYMMDD.log` disponíveis (do m
 - Opcionais: `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection` (termos ML/DL inline), `learned_patterns` (export de termos classificados), **`pattern_files_encoding`** (encoding dos arquivos de padrões; ver abaixo).
 - **Pedindo acesso à TI:** Quando for preciso solicitar permissões à equipe de TI (ex.: pastas compartilhadas, contas de banco, tokens de API), solicite o **mínimo** necessário. Veja [OPERATOR_IT_REQUIREMENTS.pt_BR.md](ops/OPERATOR_IT_REQUIREMENTS.pt_BR.md) para o checklist por fonte (somente leitura, sem admin), o que não precisamos e uma breve justificativa, alinhada a zero-trust ou IAM restrito. ([EN](ops/OPERATOR_IT_REQUIREMENTS.md))
 
+### Importação de escopo a partir de CSV (fragmento de config) {#scope-import-csv-fragment}
+
+Dá para **montar a lista de `targets`** a partir de um **CSV canônico** (por exemplo exportado de uma planilha) e gerar um **fragmento YAML** para colar em `targets:` ou salvar em arquivo para revisão. O produto **não** mescla automaticamente com um `config.yaml` existente; o operador revisa e integra manualmente ou com ferramentas próprias.
+
+- **Script:** `uv run python scripts/scope_import_csv.py <arquivo.csv>` imprime YAML no stdout; `-o saida.yaml` grava arquivo. `--no-merge-hint` omite o bloco inicial de comentários.
+- **Coluna obrigatória:** `type` (ex.: `filesystem`, `postgresql`, `mysql`, `database`, `smb`, `nfs`). Cabeçalhos são reconhecidos sem distinção de maiúsculas/minúsculas; espaços viram `_`.
+- **Colunas usuais:** `name`, `path`, `host`, `port`, `database`, `driver`, `user`, `pass_from_env`, `user_from_env`, `share`, `domain`, `export_path`, `recursive`, além de breadcrumbs opcionais: `asset_id`, `hostname`, `ip`, `tags` (vários valores com `|` ou `;`), `path_hints`, `port_hints`, `source_system`, `source_export_type`, `confidence`. Metadados opcionais ficam em `scope_import` em cada alvo.
+- **Segredos:** Prefira `pass_from_env` / `user_from_env` no CSV; **não** coloque senhas reais no arquivo.
+- **Privacidade:** Exportações podem listar infraestrutura sensível — trate como config (permissões, evite commit acidental). Ver [SECURITY.md](../SECURITY.md).
+- **Exemplo:** [`deploy/scope_import.example.csv`](../deploy/scope_import.example.csv).
+- **Quem não é de TI:** [docs/ops/SCOPE_IMPORT_QUICKSTART.pt_BR.md](ops/SCOPE_IMPORT_QUICKSTART.pt_BR.md) ([EN](ops/SCOPE_IMPORT_QUICKSTART.md)) — montar o CSV a partir de planilha ou memória quando ainda não houver export do CMDB.
+
+O comportamento está em `config/scope_import_csv.py` (v1: `filesystem`, `database` / aliases SQL, `smb`, `nfs`). Detalhes em inglês: [USAGE.md](USAGE.md) (mesma seção).
+
 ### Encoding de arquivos (config e arquivos de padrões) {#file-encoding-config-and-pattern-files}
 
 Config e amostras de conformidade podem usar diferentes conjuntos de caracteres. A aplicação suporta isso para que termos multilíngues (ex.: japonês, árabe, francês) e ambientes legados não quebrem em produção.

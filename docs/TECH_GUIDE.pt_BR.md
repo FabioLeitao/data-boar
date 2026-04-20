@@ -6,7 +6,7 @@ Este guia cobre instalação, configuração, referência da CLI e da API, conec
 
 ## Recursos
 
-- **Varredura multi-alvo**: Configure vários bancos de dados, sistemas de arquivos, APIs, compartilhamentos remotos, **Power BI** e **Power Apps (Dataverse)** em um único arquivo de configuração YAML/JSON.
+- **Varredura multi-alvo**: Configure vários bancos de dados, sistemas de arquivos, APIs, compartilhamentos remotos, **Power BI** e **Power Apps (Dataverse)** em um único arquivo de configuração YAML/JSON. **Importação de escopo (CSV):** `scripts/scope_import_csv.py` gera um fragmento YAML de `targets` a partir de um CSV canônico para revisão e mescla manual — veja [USAGE.pt_BR.md](USAGE.pt_BR.md#scope-import-csv-fragment).
 - **Bancos SQL**: PostgreSQL, MySQL, MariaDB, SQLite, Microsoft SQL Server, Oracle (via drivers SQLAlchemy).
 - **Power BI (opcional)**: Descubra workspaces, datasets e tabelas via Power BI REST API; amostragem com DAX. OAuth2 do Azure AD (credenciais de cliente). Achados na planilha **Database findings**; inventário na aba **Data source inventory**.
 - **Power Apps / Dataverse (opcional)**: Descubra entidades e atributos via Dataverse Web API; amostragem de linhas. OAuth2 do Azure AD (credenciais de cliente). Achados na planilha **Database findings**; inventário na aba **Data source inventory**.
