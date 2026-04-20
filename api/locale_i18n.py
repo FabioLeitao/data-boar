@@ -1,7 +1,7 @@
 """
 Dashboard HTML locale: JSON catalogs (no gettext in v1), slug negotiation, and t(key).
 
-See docs/plans/PLAN_DASHBOARD_I18N.md (M-LOCALE-V1).
+See docs/plans/completed/PLAN_DASHBOARD_I18N.md (M-LOCALE-V1).
 """
 
 from __future__ import annotations
