@@ -12,6 +12,17 @@ from core.audit_export import AUDIT_TRAIL_SCHEMA_VERSION, build_audit_trail_payl
 from core.database import LocalDBManager
 
 
+def _expected_empty_maturity_integrity() -> dict:
+    return {
+        "secret_configured": False,
+        "rows_checked": 0,
+        "rows_ok": 0,
+        "rows_mismatch": 0,
+        "rows_unsealed": 0,
+        "rows_unknown_sealed": 0,
+    }
+
+
 def test_build_audit_trail_payload_structure(tmp_path, monkeypatch):
     # Make the assertion deterministic regardless of other tests / environment.
     monkeypatch.delenv("DATA_BOAR_DASHBOARD_TRANSPORT", raising=False)
@@ -41,7 +52,40 @@ def test_build_audit_trail_payload_structure(tmp_path, monkeypatch):
     assert "first wipe for test" in payload["data_wipe_log"][0]["reason"]
     assert payload["scan_sessions_summary"]["count"] == 0
     assert payload["integrity_anchor"] is None
+    assert (
+        payload["maturity_assessment_integrity"] == _expected_empty_maturity_integrity()
+    )
     assert "data_wipe_log" in payload["notes"].lower()
+    assert "maturity_assessment_integrity" in payload["notes"].lower()
+
+
+def test_build_audit_trail_maturity_integrity_matches_verify(tmp_path, monkeypatch):
+    """Export must include the same maturity HMAC summary as LocalDBManager.verify_maturity_assessment_integrity."""
+    monkeypatch.delenv("DATA_BOAR_MATURITY_INTEGRITY_SECRET", raising=False)
+    monkeypatch.setenv("DATA_BOAR_MATURITY_INTEGRITY_SECRET", "export-parity-secret")
+    db_path = str(tmp_path / "m.db")
+    mgr = LocalDBManager(db_path)
+    try:
+        mgr.save_maturity_assessment_answers(
+            batch_id="b1",
+            locale_slug="en",
+            pack_version=1,
+            answers={"q1": "a"},
+            integrity_secret=b"export-parity-secret",
+        )
+        cfg = {"api": {}}
+        payload = build_audit_trail_payload(
+            mgr,
+            config=cfg,
+            config_path=str(tmp_path / "cfg.yaml"),
+            sqlite_path=db_path,
+        )
+        direct = mgr.verify_maturity_assessment_integrity(b"export-parity-secret")
+        assert payload["maturity_assessment_integrity"] == direct
+        assert direct["rows_ok"] == 1
+        assert direct["secret_configured"] is True
+    finally:
+        mgr.dispose()
 
 
 def test_export_audit_trail_cli_stdout(tmp_path):
