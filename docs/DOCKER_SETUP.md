@@ -111,11 +111,11 @@ docker login
 docker push fabioleitao/data_boar:latest
 ```
 
-Optional: push a version tag (e.g. 1.7.0):
+Optional: push a version tag (e.g. 1.7.1):
 
 ```powershell
-docker tag data_boar:latest fabioleitao/data_boar:1.7.0
-docker push fabioleitao/data_boar:1.7.0
+docker tag data_boar:latest fabioleitao/data_boar:1.7.1
+docker push fabioleitao/data_boar:1.7.1
 ```
 
 Non-interactive login with token:
