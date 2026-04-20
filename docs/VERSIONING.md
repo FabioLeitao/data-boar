@@ -104,7 +104,7 @@ Keep **published** semver story consistent for anyone pulling images or reading 
 
 | Location | What to change |
 | --- | --- |
-| **`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`** | **Short** + **Full** blocks for the Docker Hub UI: **Current release**, example semver tags, **copyright/maintainer** lines, and CLI examples (`python main.py`). Paste into Hub after each image push. |
+| **`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`** | **Short** + **Full** blocks for the Docker Hub UI: **Current release**, **Supported tags** semver, **copyright/maintainer** lines, and CLI examples (`python main.py`). **Manual paste** into Hub **after each stable image push** — the website does not pull from Git; drift (e.g. years-old **Tags** listing **1.6.5**) means someone skipped this step. Skip Hub copy refresh for **`-beta`** / **`-rc`**-only pushes unless you intentionally advertise them. |
 | **`docs/ops/today-mode/PUBLISHED_SYNC.md`** (+ **`.pt_BR.md`**) | Table row: **GitHub Latest**, **Docker Hub** tags, and “next” patch — must match what customers can actually install. |
 | **`docs/TECH_GUIDE.md`** (+ **`.pt_BR.md`**) | Example Hub tag in the Docker subsection (if it pins a semver). |
 | **Operator social / milestones** (e.g. **`docs/private/social_drafts/`**, gitignored) | If a post cites “current release”, “latest on Docker Hub”, or a version number, align with **`README.md`** **Current release** line and **`PUBLISHED_SYNC`** — never celebrate a version that is not yet on GitHub + Hub unless you label it as **upcoming**. |

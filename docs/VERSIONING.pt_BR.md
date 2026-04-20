@@ -104,7 +104,7 @@ Mantenha a história do **semver publicado** alinhada para quem faz pull da imag
 
 | Local | O que alterar |
 | --- | --- |
-| **`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`** | Blocos **Short** + **Full** para a UI do Docker Hub: **Current release**, exemplo de tags semver, linhas de **copyright/mantenedor** e exemplos de CLI (`python main.py`). Colar no Hub após cada push de imagem. |
+| **`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`** | Blocos **Short** + **Full** para a UI do Docker Hub: **Current release**, **Supported tags** (semver), **copyright/mantenedor**, CLI (`python main.py`). **Colagem manual** no Hub após cada push de imagem **estável** — o site **não** puxa do Git; se aparecer versão antiga (ex.: **1.6.5** num bloco **Tags**), alguém pulou este passo. Para pushes só **`-beta`** / **`-rc`**, não é obrigatório atualizar o texto público do repositório salvo pedido explícito. |
 | **`docs/ops/today-mode/PUBLISHED_SYNC.md`** (+ **`.pt_BR.md`**) | Linhas da tabela: **GitHub Latest**, **Docker Hub** e “próxima” patch — devem refletir o que o cliente consegue instalar. |
 | **`docs/TECH_GUIDE.md`** (+ **`.pt_BR.md`**) | Tag de exemplo do Hub na subseção Docker (se fixar semver). |
 | **Social / marcos (operador)** (ex.: **`docs/private/social_drafts/`**, gitignored) | Se o texto citar “release atual”, “último no Docker Hub” ou número de versão, alinhar ao **`README.md`** (**Release atual**) e ao **`PUBLISHED_SYNC`** — não celebrar versão que ainda não está no GitHub + Hub sem marcar como **em breve**. |
