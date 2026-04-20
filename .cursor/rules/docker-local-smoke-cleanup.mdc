@@ -1,10 +1,12 @@
 ---
-description: Keep at most one or two local Data Boar containers; reuse one image tag (e.g. data_boar:lab) for smoke builds; prune extra tags; remove smoke-test leftovers unless A/B needs them.
-globs: Dockerfile,deploy/**,docs/DOCKER_SETUP.md,docs/DOCKER_SETUP.pt_BR.md,docs/ops/HOMELAB_VALIDATION.md,docs/ops/BRANCH_AND_DOCKER_CLEANUP.md,docs/deploy/**
-alwaysApply: false
+description: Keep at most one or two local Data Boar containers; reuse data_boar:lab for smoke; prune extra tags; disk-aware; paired with release-publish-sequencing for Hub pushes.
+globs: ["**/*"]
+alwaysApply: true
 ---
 
 # Local Docker smoke tests — container and image hygiene
+
+**Release context:** Before **Docker Hub** push for a **stable** semver, **`release-publish-sequencing.mdc`** requires **smoke** + **prune** on the **primary dev workstation** — read that rule first.
 
 When creating or advising **local** `data_boar` / **data-boar** containers for smoke tests, builds, or lab validation:
 
