@@ -679,6 +679,15 @@ def test_pii_history_guard_py_compiles():
     py_compile.compile(str(script), doraise=True)
 
 
+def test_issue_dev_license_jwt_py_compiles():
+    """scripts/issue_dev_license_jwt.py compiles (lab JWT issuer; keys stay private)."""
+    root = _project_root()
+    script = root / "scripts" / "issue_dev_license_jwt.py"
+    if not script.exists():
+        return
+    py_compile.compile(str(script), doraise=True)
+
+
 def test_recovery_doc_bundle_sanity_ps1_syntax():
     """scripts/recovery-doc-bundle-sanity.ps1 has valid PowerShell syntax (parse-only)."""
     root = _project_root()
