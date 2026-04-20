@@ -372,6 +372,20 @@ By default the web API binds to **`127.0.0.1` (loopback)** when started via the 
 
 If you run behind a reverse proxy or have special network constraints, you can still override with `api.host` in the config (e.g. `0.0.0.0` / `127.0.0.1`)—but keep the safe loopback default unless the runtime is explicitly fenced.
 
+### Scope import from CSV (config fragment) {#scope-import-from-csv-config-fragment}
+
+You can **bootstrap `targets`** from a **canonical CSV** (for example an export from a spreadsheet) and emit a **YAML fragment** to paste under `targets:` or save as a separate file for review. This does **not** live-merge into an existing config file; operators merge manually or with their own tooling.
+
+- **Script:** `uv run python scripts/scope_import_csv.py <file.csv>` writes YAML to stdout; `-o out.yaml` writes a file. `--no-merge-hint` omits the leading comment block.
+- **Required column:** `type` (e.g. `filesystem`, `postgresql`, `mysql`, `database`, `smb`, `nfs`). Header names are matched case-insensitively; spaces become underscores.
+- **Common columns:** `name`, `path`, `host`, `port`, `database`, `driver`, `user`, `pass_from_env`, `user_from_env`, `share`, `domain`, `export_path`, `recursive`, plus optional breadcrumbs: `asset_id`, `hostname`, `ip`, `tags` (use `|` or `;` to separate multiple values), `path_hints`, `port_hints`, `source_system`, `source_export_type`, `confidence`. Optional metadata is stored under each target’s `scope_import` key.
+- **Secrets:** Prefer `pass_from_env` / `user_from_env` in the CSV; **do not** put live passwords in the CSV file.
+- **Privacy:** Exports may contain sensitive infrastructure metadata—handle like config (permissions, no accidental commits). See [SECURITY.md](../SECURITY.md).
+- **Example:** [`deploy/scope_import.example.csv`](../deploy/scope_import.example.csv).
+- **Non-technical path:** [docs/ops/SCOPE_IMPORT_QUICKSTART.md](ops/SCOPE_IMPORT_QUICKSTART.md) ([pt-BR](ops/SCOPE_IMPORT_QUICKSTART.pt_BR.md)) — build the CSV from a spreadsheet or memory when no CMDB export exists yet.
+
+Full behaviour is implemented in `config/scope_import_csv.py` (v1 focuses on `filesystem`, `database` / SQL aliases, `smb`, `nfs`).
+
 ### File encoding (config and pattern files)
 
 Config and compliance sample files can use different character sets. The application supports this so multilingual terms (e.g. Japanese, Arabic, French) and legacy environments do not break in production.
