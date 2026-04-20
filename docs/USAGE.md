@@ -170,8 +170,9 @@ When the API server is running, a **simple web dashboard** is available in the b
 | **Configuration** | `http://<host>:<port>/en/config`         | Edit the scan configuration (YAML) in the browser. “Save configuration” writes to the config file (see `CONFIG_PATH` or `config.yaml`). Changes apply to the next scan.                                                                                                                                                                                                                                                                            |
 | **Help**          | `http://<host>:<port>/en/help`           | Quickstart, config examples, and links to README/USAGE.                                                                                                                                                                                                                                                                                                                                                                                             |
 | **About**         | `http://<host>:<port>/en/about`          | Application name, version, author, and license (same as repository LICENSE).                                                                                                                                                                                                                                                                                                                                                                        |
+| **Self-assessment (POC)** | `http://<host>:<port>/en/assessment` | Optional placeholder when **`api.maturity_self_assessment_poc_enabled`** is on; **404** when off. **Tier:** `licensing.effective_tier` in YAML for lab, or **`dbtier`** in the JWT when `licensing.mode: enforced` (**Pro+** needed for this feature). Optional **`api.maturity_assessment_pack_path`** points to a YAML questionnaire pack (see `core/maturity_assessment/pack.py`). Optional **`DATA_BOAR_MATURITY_INTEGRITY_SECRET`** (or **`api.maturity_integrity_secret_from_env`**) enables **HMAC-SHA256 per row** (tamper-evident; not encryption). **`GET /status`** includes **`maturity_assessment_integrity`** when you need to demo integrity. No proprietary text in the public repo. |
 
-**Locale configuration (optional):** under top-level `locale`: `default_locale` (e.g. `en`), `supported_locales` (e.g. `[en, pt-BR]`), `cookie_name` (default `db_locale`), `cookie_max_age_seconds`. UI strings are loaded from `api/locales/<tag>.json` (no gettext in v1). Maintainer-facing architecture notes: ``docs/plans/PLAN_DASHBOARD_I18N.md`` (not linked from product-only reading paths per ADR 0004).
+**Locale configuration (optional):** under top-level `locale`: `default_locale` (e.g. `en`), `supported_locales` (e.g. `[en, pt-BR]`), `cookie_name` (default `db_locale`), `cookie_max_age_seconds`. UI strings are loaded from `api/locales/<tag>.json` (no gettext in v1). Maintainer-facing architecture notes: ``docs/plans/completed/PLAN_DASHBOARD_I18N.md`` (not linked from product-only reading paths per ADR 0004).
 
 The **Start scan** button sends `POST /scan` and triggers a **full audit of all targets** in the current configuration (the same databases, filesystems, APIs, and options defined in your config file). Saving the Configuration page updates the config used for the next scan. The dashboard uses the same API under the hood (`/status`, `/scan`, `/list`, `/reports/{session_id}`). Status polls automatically when a scan is running. No separate frontend build (Python + Jinja2 + minimal CSS/JS).
 
@@ -181,7 +182,7 @@ The **Start scan** button sends `POST /scan` and triggers a **full audit of all 
 | ---     | ---                                 | ---                                                                                                                                                    |
 | `POST`  | `/scan` or `/start`                 | Start a full audit in the background. Returns `session_id`. Optional JSON body: `tenant`, `technician`, `scan_compressed`, `content_type_check`, `jurisdiction_hint` (booleans for run-local toggles). |
 | `POST`  | `/scan_database`                    | One-off scan of a single database (body: name, host, port, user, password, database, driver, optional tenant/technician, optional `jurisdiction_hint`). Returns `session_id`.        |
-| `GET`   | `/status`                           | Current run state: `running`, `current_session_id`, `findings_count`.                                                                                  |
+| `GET`   | `/status`                           | Current run state: `running`, `current_session_id`, `findings_count`, plus `runtime_trust`, `dashboard_transport`, `enterprise_surface`, and **`maturity_assessment_integrity`** (HMAC summary for POC questionnaire rows when configured). |
 | `GET`   | `/report`                           | Download the **last generated** Excel report (or generate from last session if none).                                                                  |
 | `GET`   | `/heatmap`                          | Download the **last generated** heatmap PNG (sensitivity/risk heatmap for the most recent session).                                                    |
 | `GET`   | `/logs`                             | Download the most recent `audit_YYYYMMDD.log` file with connection/finding entries.                                                                    |
@@ -908,6 +909,16 @@ api:
   # require_api_key: true
   # api_key: "your-secret-key"              # or use api_key_from_env to read from environment
   # api_key_from_env: "AUDIT_API_KEY"
+  # Optional POC: dashboard GET /{locale}/assessment (see Web dashboard table). Default off.
+  # maturity_self_assessment_poc_enabled: true
+  # maturity_assessment_pack_path: /path/to/maturity_pack.yaml
+  # Optional: HMAC per stored answer (set env before process start). Not encryption; deters casual DB edits.
+  # maturity_integrity_secret_from_env: "DATA_BOAR_MATURITY_INTEGRITY_SECRET"
+  # (or rely on default env name DATA_BOAR_MATURITY_INTEGRITY_SECRET without this key)
+
+# Optional: simulate commercial tier in lab (community | pro | enterprise). Omits OPEN dev behaviour for feature gates.
+# licensing:
+#   effective_tier: pro
 
 # Optional: possible minor data detection (LGPD Art. 14, GDPR Art. 8). See MINOR_DETECTION.md.
 # detection:
