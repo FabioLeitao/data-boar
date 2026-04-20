@@ -52,6 +52,10 @@ Use sufixos em minúsculo de forma consistente:
 - **Versão publicada:** última tag Git + GitHub Release + tag do Docker Hub disponível para uso externo.
 - Não assuma que são iguais; informe as duas explicitamente em release notes e pedidos de revisão.
 
+### Assistente / automação (ordem obrigatória)
+
+**Cursor / agentes:** seguir **`.cursor/rules/release-publish-sequencing.mdc`** — criar tag Git **`vX.Y.Z`**, GitHub Release e passos de publicação no Docker Hub **antes** de avançar o `main` para o próximo bump **`-beta`** (ou próximo dev). A palavra de sessão **`release-ritual`** significa reler essa regra e este arquivo antes de editar semver ou notas de release.
+
 ---
 
 ## Onde a versão aparece (checklist ao dar bump)
