@@ -401,21 +401,43 @@ class LocalDBManager:
         session = self._session_factory()
         try:
             rows = session.query(MaturityAssessmentAnswer).all()
-            out: list[dict[str, object]] = []
-            for r in rows:
-                out.append(
-                    {
-                        "batch_id": r.batch_id,
-                        "locale_slug": r.locale_slug,
-                        "pack_version": r.pack_version,
-                        "question_id": r.question_id,
-                        "answer_text": r.answer_text,
-                        "row_hmac": r.row_hmac or "",
-                    }
-                )
-            return out
+            return self._maturity_rows_to_integrity_dicts(rows)
         finally:
             session.close()
+
+    def maturity_assessment_rows_for_integrity_batch(
+        self, batch_id: str
+    ) -> list[dict[str, object]]:
+        """Return maturity answer rows for one ``batch_id`` (submit batch) for HMAC verification."""
+        bid = (batch_id or "")[:64]
+        session = self._session_factory()
+        try:
+            rows = (
+                session.query(MaturityAssessmentAnswer)
+                .filter(MaturityAssessmentAnswer.batch_id == bid)
+                .all()
+            )
+            return self._maturity_rows_to_integrity_dicts(rows)
+        finally:
+            session.close()
+
+    @staticmethod
+    def _maturity_rows_to_integrity_dicts(
+        rows: list[MaturityAssessmentAnswer],
+    ) -> list[dict[str, object]]:
+        out: list[dict[str, object]] = []
+        for r in rows:
+            out.append(
+                {
+                    "batch_id": r.batch_id,
+                    "locale_slug": r.locale_slug,
+                    "pack_version": r.pack_version,
+                    "question_id": r.question_id,
+                    "answer_text": r.answer_text,
+                    "row_hmac": r.row_hmac or "",
+                }
+            )
+        return out
 
     def verify_maturity_assessment_integrity(self, secret: bytes | None) -> dict:
         """Recompute HMACs and compare to stored ``row_hmac`` (see ``integrity.verify_maturity_assessment_rows``)."""
