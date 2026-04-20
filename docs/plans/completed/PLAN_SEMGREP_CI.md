@@ -1,14 +1,14 @@
 # Plan: Semgrep in CI (OSS ruleset)
 
-**Status:** ✅ **Complete** (workflow on `main`, tests, docs, Wabbix baseline). **Slack:** failure notify watches **`Semgrep`** when **`SLACK_WEBHOOK_URL`** is set — optional operator smoke: see § below. **Synced with:** [PLANS_TODO.md](PLANS_TODO.md).
+**Status:** ✅ **Complete** (archived under `docs/plans/completed/`). Workflow on `main`, tests, docs, Wabbix baseline. **Slack:** failure notify watches **`Semgrep`** when **`SLACK_WEBHOOK_URL`** is set — optional operator smoke: see § below. **Synced with:** [PLANS_TODO.md](../PLANS_TODO.md).
 
 ## Purpose
 
 Add **Semgrep** as a **complementary** static scan in GitHub Actions alongside **CodeQL** and optional **SonarQube**. Semgrep is **pattern-based**, good for **custom rules** later and quick feedback on Python anti-patterns. It does **not** replace CodeQL; it adds another lens with different rule authors and heuristics.
 
-**Workflow file:** `.github/workflows/semgrep.yml`. **Reference:** [docs/QUALITY_WORKFLOW_RECOMMENDATIONS.md](../QUALITY_WORKFLOW_RECOMMENDATIONS.md) §4.
+**Workflow file:** `.github/workflows/semgrep.yml`. **Reference:** [docs/QUALITY_WORKFLOW_RECOMMENDATIONS.md](../../QUALITY_WORKFLOW_RECOMMENDATIONS.md) §4.
 
-**See also:** [PLAN_BANDIT_SECURITY_LINTER.md](PLAN_BANDIT_SECURITY_LINTER.md) (Bandit in **CI** / `pyproject` — overlapping SQL-string heuristics; we skip **B608** where identifiers are vetted, analogous to the Semgrep exclude above).
+**See also:** [PLAN_BANDIT_SECURITY_LINTER.md](../PLAN_BANDIT_SECURITY_LINTER.md) (Bandit in **CI** / `pyproject` — overlapping SQL-string heuristics; we skip **B608** where identifiers are vetted, analogous to the Semgrep exclude above).
 
 ---
 
@@ -29,9 +29,9 @@ Add **Semgrep** as a **complementary** static scan in GitHub Actions alongside *
 | - | -----                                                                                                                                                                             | ------         |
 | 1 | Add `.github/workflows/semgrep.yml` (container `semgrep/semgrep`, checkout, `semgrep scan` as above).                                                                             | ✅ Done         |
 | 2 | Extend `tests/test_github_workflows.py` so the workflow YAML parses and has expected `on` / job shape.                                                                            | ✅ Done         |
-| 3 | Update [QUALITY_WORKFLOW_RECOMMENDATIONS.md](../QUALITY_WORKFLOW_RECOMMENDATIONS.md) §4 to point at the workflow.                                                                 | ✅ Done         |
-| 4 | Document in [PLANS_TODO.md](PLANS_TODO.md) and ops baseline for Wabbix.                                                                                                           | ✅ Done         |
-| 5 | **Slack on Semgrep failure:** [slack-ci-failure-notify.yml](../../.github/workflows/slack-ci-failure-notify.yml) lists **`Semgrep`** in `workflow_run.workflows` (with **`CI`**). | ✅ Done (wired) |
+| 3 | Update [QUALITY_WORKFLOW_RECOMMENDATIONS.md](../../QUALITY_WORKFLOW_RECOMMENDATIONS.md) §4 to point at the workflow.                                                                 | ✅ Done         |
+| 4 | Document in [PLANS_TODO.md](../PLANS_TODO.md) and ops baseline for Wabbix.                                                                                                           | ✅ Done         |
+| 5 | **Slack on Semgrep failure:** [slack-ci-failure-notify.yml](../../../.github/workflows/slack-ci-failure-notify.yml) lists **`Semgrep`** in `workflow_run.workflows` (with **`CI`**). | ✅ Done (wired) |
 
 ---
 

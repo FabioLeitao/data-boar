@@ -65,6 +65,8 @@ FEATURE_TIER_MAP: dict[str, Tier] = {
     "scheduled_scans": Tier.PRO,
     "api_key_management_ui": Tier.PRO,
     "dashboard_rbac": Tier.PRO,
+    # GRC-style org maturity questionnaire UI (POC); not open core — see PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md
+    "maturity_self_assessment_poc": Tier.PRO,
     "notifications_email": Tier.PRO,
     "notifications_slack": Tier.PRO,
     "sbom_export": Tier.PRO,
