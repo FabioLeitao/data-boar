@@ -26,6 +26,8 @@ alwaysApply: true
 1. **Preview:** `.\scripts\preview-commit.ps1` to see files and diff; propose a short title and bullet body.
 1. **Commit + describe + PR:** `.\scripts\commit-or-pr.ps1 -Action PR -Title "..." -Body "..." -RunTests` (or `.\scripts\create-pr.ps1 -Title "..." -BodyFilePath path` / one-off .ps1 for long body). This commits, runs tests again, fetch+rebase if behind, push, open PR.
 
+**Merge-ready slice (operator expectation):** When work is clearly ready to land (tests/docs committed, no open blocker), **run `check-all`**, then merge to `main` and **`git push origin main`** (or open/update PR) **without** asking permission to run the standard gate — the gate is the default safety step, not a decision point.
+
 Avoid raw `pytest`/`ruff` invocations when a script covers the need; scripts keep behaviour consistent and reduce back-and-forth. For **commit, description, push, and PR**, prefer the commit-or-pr workflow (and helpers) over ad-hoc `git add`/`git commit`/`git push` so behaviour is consistent and tokens are saved. See `.cursor/skills/token-aware-automation/SKILL.md` for when to use which.
 
 ## Proactive automation policy (regression + token savings)
