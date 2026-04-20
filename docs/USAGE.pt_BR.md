@@ -61,7 +61,7 @@ python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Col
 
 #### Servidor API (`--web`)
 
-**Transporte:** é preciso usar **HTTPS** (certificado + chave PEM na CLI ou em `api` no config) ou **aceitar explicitamente** texto plano com **`--allow-insecure-http`** (ou `api.allow_insecure_http: true`). Caso contrário, `main.py --web` termina com código **2**. **`GET /status`** e **`GET /health`** incluem `dashboard_transport`; em HTTP texto plano há **faixa de aviso** nas páginas do dashboard.
+**Transporte:** é preciso usar **HTTPS** (certificado + chave PEM na CLI ou em `api` no config) ou **aceitar explicitamente** texto plano com **`--allow-insecure-http`** (ou `api.allow_insecure_http: true`). Caso contrário, `main.py --web` termina com código **2**. **`GET /status`** e **`GET /health`** incluem `dashboard_transport` e **`enterprise_surface`** (transporte + confiança da licença + postura global da chave de API; **RBAC** por rota ainda não implementado); em HTTP texto plano há **faixa de aviso** nas páginas do dashboard.
 
 ```bash
 python main.py --config config.yaml --web --https-cert-file server.crt --https-key-file server.key --port 8088
@@ -124,16 +124,18 @@ Imagens pré-construídas estão no Docker Hub: `fabioleitao/data_boar:latest` (
 
 ### URLs principais
 
-- **Dashboard:** `http://<host>:<port>/`
-- **Reports:** `http://<host>:<port>/reports`
-- **Configuration:** `http://<host>:<port>/config`
-- **Help:** `http://<host>:<port>/help` — início rápido, exemplos de config, detecção de sensibilidade e `recommendation_overrides`, links para README e USAGE (EN/pt-BR)
-- **About:** `http://<host>:<port>/about` — aplicação, versão, autor e licença (conforme LICENSE)
+As páginas HTML usam **prefixo de idioma** (`/en/…`, `/pt-br/…`). Acessar `/`, `/reports`, `/config`, `/help` ou `/about` **sem** prefixo redireciona conforme cookie `db_locale`, cabeçalho `Accept-Language` e `locale.default_locale` no YAML (veja bloco `locale` em [USAGE.md](USAGE.md)). As rotas JSON da API continuam **sem** prefixo.
+
+- **Dashboard:** `http://<host>:<port>/en/` (ou `/pt-br/`)
+- **Reports:** `http://<host>:<port>/en/reports`
+- **Configuration:** `http://<host>:<port>/en/config`
+- **Help:** `http://<host>:<port>/en/help` — início rápido, exemplos de config, detecção de sensibilidade e `recommendation_overrides`, links para README e USAGE (EN/pt-BR)
+- **About:** `http://<host>:<port>/en/about` — aplicação, versão, autor e licença (conforme LICENSE)
 - **Swagger UI:** `http://<host>:<port>/docs` — documentação interativa da API (OpenAPI)
 - **Health:** `http://<host>:<port>/health` — sonda de liveness/readiness para Docker/Kubernetes (sempre público mesmo com API key exigida)
 - **Autenticação (API key opcional):** Por padrão a API não exige autenticação. Para exigir chave, use `api.require_api_key: true` e `api.api_key` **ou** `api.api_key_from_env: "VAR"` com a variável definida **antes** de subir o processo — passos em **[API_KEY_FROM_ENV_OPERATOR_STEPS.md](ops/API_KEY_FROM_ENV_OPERATOR_STEPS.md)** (EN, operador). **Passo a passo (chave + HTTPS, Let’s Encrypt, cert de lab):** **[SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.pt_BR.md](ops/SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.pt_BR.md)** ([EN](ops/SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md)). Em produção, prefira **`api_key_from_env`** para não versionar segredo em YAML rastreado.
-- **`GET /health` (sempre público):** Sonda liveness/readiness; JSON com `status`, resumo **público** de `license` e `dashboard_transport`. **Não** é necessário (nem checado) `X-API-Key` / Bearer.
-- **Demais rotas** (HTML, `GET /status`, `POST /scan`, `GET /config`, OpenAPI `/docs`, etc.): com `require_api_key` e chave resolvida, envie **X-API-Key** ou **Authorization: Bearer**. **401** = chave ausente ou inválida. **503** = `require_api_key` true porém nenhuma chave resolvida (corrija config/ambiente). O **`main.py --web` encerra com código 2** nesse caso para não subir dashboard aberto por engano.
+- **`GET /health` (sempre público):** Sonda liveness/readiness; JSON com `status`, resumo **público** de `license`, `dashboard_transport` e `enterprise_surface`. **Não** é necessário (nem checado) `X-API-Key` / Bearer.
+- **Demais rotas** (HTML com prefixo de idioma, `GET /status`, `POST /scan`, `GET /en/config`, OpenAPI `/docs`, etc.): com `require_api_key` e chave resolvida, envie **X-API-Key** ou **Authorization: Bearer**. **401** = chave ausente ou inválida. **503** = `require_api_key` true porém nenhuma chave resolvida (corrija config/ambiente). O **`main.py --web` encerra com código 2** nesse caso para não subir dashboard aberto por engano.
 - **Rollout:** Inventário de consumidores da API (scripts, cron, CI, probes), **staging** primeiro com TLS + chave quando couber, depois produção com janela curta de compatibilidade se necessário — **[SECURE_BY_DEFAULT_BLOCKERS_AND_MIGRATION.pt_BR.md](ops/SECURE_BY_DEFAULT_BLOCKERS_AND_MIGRATION.pt_BR.md)**. Com HTTPS ou HTTP explícito, use **`GET /status` / `GET /health`** e **`--export-audit-trail`** (campo `dashboard_transport` no JSON) para auditar postura.
 - Veja [SECURITY.pt_BR.md](../SECURITY.pt_BR.md) (chave opcional).
 
@@ -156,13 +158,13 @@ Imagens pré-construídas estão no Docker Hub: `fabioleitao/data_boar:latest` (
 | `GET`   | `/report`                           | Baixa o último relatório Excel gerado (ou gera a partir da sessão mais recente).                        |
 | `GET`   | `/heatmap`                          | Baixa o último heatmap PNG gerado (sessão mais recente).                                                |
 | `GET`   | `/logs`                             | Baixa o arquivo de log mais recente (`audit_YYYYMMDD.log`) com registros de conexões e achados.         |
-| `GET`   | `/list` ou `/reports`               | Lista sessões anteriores com data, status, contagens, `tenant_name` e `technician_name` (se definidos). |
+| `GET`   | `/list`                             | Lista sessões anteriores (JSON). A lista HTML fica em `/en/reports` ou `/pt-br/reports`.                |
 | `GET`   | `/reports/{session_id}`             | Gera (se necessário) e baixa o relatório Excel para a sessão indicada.                                  |
 | `GET`   | `/heatmap/{session_id}`             | Gera (se necessário) e baixa o heatmap PNG para a sessão indicada.                                      |
 | `GET`   | `/logs/{session_id}`                | Baixa o primeiro arquivo de log que contiver o `session_id` informado (análise detalhada da sessão).    |
 | `PATCH` | `/sessions/{session_id}`            | Atualiza/limpa o tenant de uma sessão existente (`{ "tenant": "..." }`).                                |
 | `PATCH` | `/sessions/{session_id}/technician` | Atualiza/limpa o técnico de uma sessão existente (`{ "technician": "..." }`).                           |
-| `GET`   | `/about`                            | Página About (HTML): aplicação, versão, autor, licença.                                                 |
+| `GET`   | `/en/about` (ou outro prefixo de locale) | Página About (HTML): aplicação, versão, autor, licença.                                            |
 | `GET`   | `/about/json`                       | Informações de about em JSON (nome, versão, autor, licença, copyright).                                 |
 | `GET`   | `/health`                           | Sonda de liveness/readiness para Docker e Kubernetes.                                                   |
 

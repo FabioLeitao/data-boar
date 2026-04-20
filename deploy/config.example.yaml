@@ -17,6 +17,13 @@ api:
   port: 8088
   # workers: 1   # 1 = minimal footprint; 2+ if you need more concurrent API traffic (I/O-bound)
 
+# Optional: dashboard HTML locale (path prefix /en/, /pt-br/; cookie + Accept-Language; see docs/USAGE.md).
+# locale:
+#   default_locale: en
+#   supported_locales: [en, pt-BR]
+#   cookie_name: db_locale
+#   cookie_max_age_seconds: 31536000
+
 sqlite_path: /data/audit_results.db
 scan:
   # Parallel targets: 1 = sequential (minimal), 2–4 for many DB/FS targets (I/O-bound; network/disk are the bottleneck)

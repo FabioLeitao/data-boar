@@ -56,6 +56,12 @@ Do **not** put plan files in `docs/` root or in `docs/completed/` (that folder w
 
 When you **create** a new plan, add the new roadmap goal to the pitch (README "For decision-makers" / "Why it holds up"). When you **complete** a plan, update the pitch so the new capability is reflected and that item is removed from the Roadmap sentence. When you **remove, cancel, or substitute** a plan, update the pitch so the Roadmap no longer mentions the dropped goal. Keep README and README.pt_BR in sync. **Rule:** `.cursor/rules/pitch-roadmap-sync.mdc`.
 
+## Header Status vs body vs PLANS_TODO (anti-drift)
+
+- After shipping work tied to a plan, update the plan **`**Status:**`** line **and** `PLANS_TODO.md` in the **same** themed pass when possible.
+- **Always-on reminder:** **`.cursor/rules/plans-status-pl-sync.mdc`**.
+- **`api/routes.py` ↔ D-WEB route table:** **`.cursor/rules/api-routes-plan-matrix-sync.mdc`** + **`tests/test_api_route_matrix_plan_sync.py`**.
+
 ## Reference
 
 - **Central to-do list:** `docs/plans/PLANS_TODO.md`.
