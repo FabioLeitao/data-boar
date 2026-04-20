@@ -59,6 +59,10 @@ This complements **PR batching**: many **local** commits can still ship as **one
 - **When to batch:** End of a sprint — group related commits into **one PR** with a summary description, or **split** into two PRs if one slice is risky and another is docs-only.
 - **Merge strategy on GitHub:** **Merge commit** preserves per-commit history on `main`; **squash** collapses the PR to one commit — choose per team preference; this repo does not mandate one style in docs.
 
+### Large GitHub issues: keep PRs separable (example: [#86](https://github.com/FabioLeitao/data-boar/issues/86))
+
+**Recommendation:** Work that targets **[#86](https://github.com/FabioLeitao/data-boar/issues/86)** (dashboard **session** / **passwordless** / **RBAC** per [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](../plans/PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md)) should usually live in its **own branch and PR**. Avoid mixing it with unrelated dashboard slices (for example **maturity self-assessment** questionnaire features) in the same PR unless you **explicitly** want one combined review — smaller PRs are easier to revert and match the plan’s phased delivery.
+
 ## Doing it yourself
 
 ### Preview: file list vs commit message
