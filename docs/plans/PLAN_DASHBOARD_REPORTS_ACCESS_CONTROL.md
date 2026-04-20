@@ -89,7 +89,7 @@ See [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md), [TECH_GUIDE.md](../T
 | `GET` | `/health` | JSON | **Always unauthenticated** (no API key); liveness/readiness | `public` |
 | `GET` | `/{locale_slug}/help` | HTML | Help / doc links (`en`, `pt-br`, …) | `public` (or `authenticated` if product tightens) |
 | `GET` | `/{locale_slug}/about` | HTML | About page | `public` |
-| `GET` | `/{locale_slug}/assessment` | HTML | Optional POC placeholder (gated: `api.maturity_self_assessment_poc_enabled` + tier); **404** when off — [PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md](PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md) | `authenticated` (TBD) |
+| `GET` | `/{locale_slug}/assessment` | HTML | Optional POC placeholder (gated: `api.maturity_self_assessment_poc_enabled` + tier); **404** when off — [PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md](PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md). When answers exist in SQLite, HTML includes a **recent submissions** table (all batches in the DB file — **#86** should scope this list by role/tenant). | `authenticated` (TBD) |
 | `POST` | `/{locale_slug}/assessment` | redirect | Save answers to SQLite when a YAML pack is configured; **400** without pack; **404** when gate off | `authenticated` (TBD) |
 | `GET` | `/{locale_slug}/assessment/export` | CSV or Markdown attachment | Query `batch` (submit id) and `format` (`csv` or `md`); same POC gate + tier as `GET /assessment`; **404** if gate off, unknown batch, or no rows; **not** a write under `report.output_dir` (browser/curl download only) | `authenticated` (TBD) |
 | `GET` | `/about/json` | JSON | Public license/about payload | `public` |
