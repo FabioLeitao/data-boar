@@ -15,7 +15,7 @@ def get_about_info() -> dict:
 
         ver = version("data-boar")
     except Exception:
-        ver = "1.7.1"
+        ver = "1.7.2-beta"
     return {
         "name": "Data Boar",
         "version": ver,
