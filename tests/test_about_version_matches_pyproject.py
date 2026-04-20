@@ -7,6 +7,7 @@ import tomllib
 from pathlib import Path
 
 import pytest
+from packaging.version import Version
 
 
 def _project_version_from_pyproject() -> str:
@@ -32,7 +33,8 @@ def test_about_version_matches_pyproject() -> None:
     from core.about import get_about_info
 
     expected = _project_version_from_pyproject()
-    assert get_about_info()["version"] == expected
+    # importlib.metadata returns PEP 440-normalized strings (e.g. 1.7.2b0 vs 1.7.2-beta in pyproject).
+    assert Version(get_about_info()["version"]) == Version(expected)
 
 
 def test_about_fallback_string_matches_pyproject() -> None:
@@ -48,7 +50,7 @@ def test_about_fallback_string_matches_pyproject() -> None:
     ],
 )
 def test_man_th_line_contains_project_version(path: str, label: str) -> None:
-    """`.TH` fourth argument includes the marketing version (e.g. Data Boar 1.7.1)."""
+    """`.TH` fourth argument includes the marketing version (e.g. Data Boar 1.7.2-beta)."""
     root = Path(__file__).resolve().parent.parent
     ver = _project_version_from_pyproject()
     text = (root / path).read_text(encoding="utf-8")

@@ -4,6 +4,8 @@ Human-readable summary of user-facing changes. **Detailed release notes:** [docs
 
 ## Unreleased (`main`)
 
+- **Development:** Pre-release **`1.7.2-beta`** on `main` — next build window (dashboard **#86**, data source versions, additional soup formats — see [PLANS_TODO.md](docs/plans/PLANS_TODO.md)).
+
 ## 1.7.1 (2026-04-21)
 
 - **Scope import (CSV):** `scripts/scope_import_csv.py` + `config/scope_import_csv.py` emit a YAML **`targets`** fragment from a canonical CSV for operator review and merge; see [USAGE.md](docs/USAGE.md#scope-import-from-csv-config-fragment), `deploy/scope_import.example.csv`, [docs/ops/SCOPE_IMPORT_QUICKSTART.md](docs/ops/SCOPE_IMPORT_QUICKSTART.md), [PLAN_SCOPE_IMPORT_FROM_EXPORTS.md](docs/plans/PLAN_SCOPE_IMPORT_FROM_EXPORTS.md).

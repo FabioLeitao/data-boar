@@ -10,11 +10,11 @@
 
 | Campo | Valor |
 | ----- | ----- |
-| **Verificado** | **2026-04-17** |
-| **`pyproject.toml` em `main`** | **1.7.0** |
-| **GitHub Release Latest** | [**v1.7.0**](https://github.com/FabioLeitao/data-boar/releases/tag/v1.7.0) (publicar com **`gh release create`** após push da tag; notas: **`docs/releases/1.7.0.md`**) |
-| **Docker Hub** | **`fabioleitao/data_boar:1.7.0`** + **`latest`** — reconfirma tags e **descrição do repositório** após push; cola a partir de **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** |
-| **Próxima versão pública** (quando `main` tiver bundle novo) | **1.7.1** — seguir **`docs/VERSIONING.md`** + **`docs/releases/`** |
+| **Verificado** | **2026-04-21** |
+| **`pyproject.toml` em `main`** | **1.7.2-beta** (pré-release; **publicado** imagem/GitHub = **1.7.1**) |
+| **GitHub Release Latest** | [**v1.7.1**](https://github.com/FabioLeitao/data-boar/releases/tag/v1.7.1) (publicar com **`gh release create`** após push da tag; notas: **`docs/releases/1.7.1.md`**) |
+| **Docker Hub** | **`fabioleitao/data_boar:1.7.1`** + **`latest`** — reconfirma tags e **descrição do repositório** após push; cola a partir de **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** |
+| **Próxima versão pública** (quando `main` tiver bundle novo) | **1.7.2** — seguir **`docs/VERSIONING.md`** + **`docs/releases/`** |
 
 ---
 
@@ -29,7 +29,7 @@ grep -n '^version' pyproject.toml
 gh release list --repo FabioLeitao/data-boar --limit 5
 ```
 
-Docker Hub: confirma **`1.7.0`** e **`latest`** em [hub.docker.com/r/fabioleitao/data_boar/tags](https://hub.docker.com/r/fabioleitao/data_boar/tags) ou na API do registry; **descrição longa** alinhada a **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)**.
+Docker Hub: confirma **`1.7.1`** e **`latest`** em [hub.docker.com/r/fabioleitao/data_boar/tags](https://hub.docker.com/r/fabioleitao/data_boar/tags) ou na API do registry; **descrição longa** alinhada a **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)**.
 
 ---
 
