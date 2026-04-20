@@ -351,6 +351,13 @@ def test_wipe_all_data_logs_and_clears(tmp_path):
             product="sqlite",
             product_version="3.x",
         )
+        mgr.save_maturity_assessment_answers(
+            batch_id="batch-wipe-test",
+            locale_slug="en",
+            pack_version=1,
+            answers={"q1": "yes", "q2": "no"},
+        )
+        assert mgr.count_maturity_assessment_answers() == 2
 
         # Sanity check: we have sessions and findings
         assert mgr.list_sessions()
@@ -362,6 +369,7 @@ def test_wipe_all_data_logs_and_clears(tmp_path):
 
         sessions_after = mgr.list_sessions()
         assert sessions_after == []
+        assert mgr.count_maturity_assessment_answers() == 0
 
         # Directly inspect DataWipeLog via a new session factory
         s = mgr._session_factory()
