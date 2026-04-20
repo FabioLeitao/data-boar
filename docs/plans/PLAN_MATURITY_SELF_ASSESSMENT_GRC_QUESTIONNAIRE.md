@@ -1,32 +1,32 @@
 # PLAN: Organizational maturity self-assessment (GRC-style questionnaire)
 
-<!-- plans-hub-summary: POC on main: gated /{locale}/assessment + optional YAML pack; SQLite/scoring/product commitment still backlog—companion to technical scans; not legal audit. -->
+<!-- plans-hub-summary: POC on main: gated /{locale}/assessment + optional YAML pack + SQLite answers + optional HMAC row sealing; scoring/export/RBAC still backlog—companion to technical scans; not legal audit. -->
 <!-- plans-hub-related: PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md, LICENSING_OPEN_CORE_AND_COMMERCIAL.md (future tier features), PLAN_SCOPE_IMPORT_FROM_EXPORTS.md (inventory bootstrap narrative) -->
 
-**Status:** **POC scaffolding in repo** (gated route, optional `maturity_assessment_pack_path`, tier/JWT hooks) — **full** questionnaire UX, scoring, persistence, and legal positioning remain **exploration / backlog** until product/legal review and private content import.
+**Status:** **POC A in progress on `main`** — gated `GET`/`POST /{locale}/assessment`, optional **`api.maturity_assessment_pack_path`** (YAML), **SQLite** table `maturity_assessment_answers`, optional **HMAC-SHA256 per row** (`row_hmac`) when **`DATA_BOAR_MATURITY_INTEGRITY_SECRET`** (or **`api.maturity_integrity_secret_from_env`**) is set at write time. **`GET /status`** and **`python main.py --export-audit-trail`** include **`maturity_assessment_integrity`** (counts: ok / mismatch / unsealed / unknown_sealed). **Not** encryption; deters casual DB edits and supports demo narrative. **Still backlog:** scoring, consultant UX, legal one-pager, RBAC (#86), report bundle export.
 
-**Horizon / urgency:** `[H3]` or `[H4]` · `[U3]` for the **complete** product slice; active **feature** track for the **next code slice** (SQLite + responses) when scheduled.
+**Horizon / urgency:** `[H3]` or `[H4]` · `[U3]` for the **complete** product slice; next code slices: **scoring / export**, then **tenant model** when clear.
 
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (Backlog catalogue entry).
 
-### Operator sequencing — prerequisites done; POC **A** in progress (code), **SQLite next**
+### Operator sequencing — prerequisites done; POC **A** in progress (SQLite + HMAC shipped; scoring next)
 
 **M-LOCALE-V1 (dashboard i18n):** ✅ **shipped on `main`** (**2026-04**) — path-prefixed HTML, `en` + `pt-BR` catalogs, negotiation. See [PLAN_DASHBOARD_I18N.md](completed/PLAN_DASHBOARD_I18N.md) and [PLANS_TODO.md](PLANS_TODO.md) (Dashboard i18n section).
 
 **Version signal for testers (do not rely on git inference alone):** in-repo semver is **`1.7.1-beta`** ([VERSIONING.md](../VERSIONING.md) `-beta`); **last stable** published story remains **1.7.0** (Hub / GitHub Release). Callouts: [CHANGELOG.md](../../CHANGELOG.md), [docs/releases/1.7.1-beta.md](../releases/1.7.1-beta.md), README **Latest stable** vs **`main` pre-release**. Anyone pulling `main` for **formal** beta testing should use those files—not only `git log`.
 
-**Are we on option A in code right now?** **Minimal scaffolding only:** `GET /{locale}/assessment` exists when **`api.maturity_self_assessment_poc_enabled`** is on and tier allows it (see `core/licensing/tier_features.py`); otherwise **404**. No questionnaire items, scoring, or persistence yet — the plan still compares full **A / B / C / D** product shapes.
+**Are we on option A in code right now?** **Yes (POC):** `GET`/`POST /{locale}/assessment` when **`api.maturity_self_assessment_poc_enabled`** is on and tier allows it (`core/licensing/tier_features.py`); otherwise **404**. Optional YAML pack drives questions; answers persist to SQLite; optional **HMAC** seals rows when a secret is configured. **Scoring**, **RBAC**, and **report narrative export** are still **not** implemented — the plan still compares full **A / B / C / D** product shapes for later evaluation.
 
-**Next `feature` slice (when scheduled): POC architecture A** — first spike after the above prerequisites:
+**POC architecture A — progress:**
 
 | Step | Architecture | Intent |
 | --- | --- | --- |
-| **1** | **A** — Routes under **`/{locale}/…/assessment`** + optional YAML pack ✅; **SQLite persistence + answers** ⬜ | **First** in-app spike: single app, same audit story; align with RBAC [#86](https://github.com/FabioLeitao/data-boar/issues/86) later. |
+| **1** | **A** — Routes under **`/{locale}/…/assessment`** + optional YAML pack ✅; **SQLite persistence + answers** ✅; **optional HMAC row integrity** ✅ (`GET /status`, **`--export-audit-trail`**) | **First** in-app spike: single app, same audit story; align with RBAC [#86](https://github.com/FabioLeitao/data-boar/issues/86) later. |
 | **2** | **B** — Excel sheet + formula scoring | Fast tabular path; compare UX vs A for consultant workflows. |
 | **3** | **C** — Companion app + API/SSO | Separation / white-label; evaluate **after** A/B learnings. |
 | **4** | **D** — PDF/export-only narrative | Simplicity vs interactivity; last in the **comparison chain**, not “never”. |
 
-**POC scaffolding (minimal, first PR for A):** feature-flag or **`dbtier`**-gated **placeholder** route + empty state + pointer to this plan — **no** proprietary questionnaire text in public repo; YAML pack under private or licensed pack later. Routes **must** use the same **`/{locale_slug}/…`** pattern as the rest of the dashboard HTML ([PLAN_DASHBOARD_I18N.md](completed/PLAN_DASHBOARD_I18N.md)).
+**POC scaffolding (ongoing):** feature-flag + tier / JWT gates; optional YAML pack from **`api.maturity_assessment_pack_path`** — **no** proprietary questionnaire text in the **public** repo (curate privately; see `tests/fixtures/maturity_assessment/sample_pack.yaml` for shape). Routes use the same **`/{locale_slug}/…`** pattern as the rest of the dashboard HTML ([PLAN_DASHBOARD_I18N.md](completed/PLAN_DASHBOARD_I18N.md)).
 
 **Remember:** proceed **A → B → C → D** as **evaluation spikes**, not four full products—pick one shipping path after spikes unless counsel/commercial demands otherwise.
 
@@ -69,6 +69,13 @@ Operators and consultants need **organizational** visibility (roles, processes, 
 
 Feasible: treat **question banks** and **weights** as data (like **compliance samples**), keyed by `norm_tag` / selected **compliance profile** for the tenant. Scoring must stay **transparent** (documented weights, “fair if honest” disclaimer). **Not** mirabolante if scoped as **config-driven questionnaire + rubric**, not bespoke law engine.
 
+## Tamper-evidence (POC) — HMAC on stored answers
+
+- **What:** Each stored answer row can carry **`row_hmac`** = HMAC-SHA256 (hex) over a **canonical UTF-8 payload** (`core/maturity_assessment/integrity.py`, version prefix `maturity-answer-hmac-v1`). The **secret** is read from env (**`DATA_BOAR_MATURITY_INTEGRITY_SECRET`** by default, or the env var named by **`api.maturity_integrity_secret_from_env`**). If no secret is set at submit time, rows are stored **unsealed** (empty MAC).
+- **Where to read:** **`GET /status`** → **`maturity_assessment_integrity`**; **`python main.py --export-audit-trail`** includes the **same** object for offline governance snapshots.
+- **What it is not:** Not **encryption**; not proof against an attacker with the secret, the app process, or full disk control (“evil maid”). It **does** help demos and operators detect **casual SQLite edits** without updating the MAC.
+- **Regression tests:** `tests/test_maturity_assessment_integrity.py` (golden HMAC vector, verify counts, DB tamper); `tests/test_api_assessment_poc.py`; `tests/test_audit_export.py` (export parity with `verify_maturity_assessment_integrity`).
+
 ## Risks and guardrails
 
 - **Honesty / gaming:** Scores are only as good as inputs; position as **trend and conversation starter**, not compliance scorecard.
@@ -80,12 +87,12 @@ Feasible: treat **question banks** and **weights** as data (like **compliance sa
 - **Open core:** **No** — keep scanner/dashboard baseline OSS; ship assessment as **source-available / subscription** module, **or** separate paid app.
 - **Subscription value:** Periodic re-assessment, trend charts, consultant “tenant” view—matches **partner SKUs** in [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](../LICENSING_OPEN_CORE_AND_COMMERCIAL.md).
 
-## Next steps (when revisiting — e.g. after token refill / calmer sprint)
+## Next steps (ordered; POC-first)
 
-1. **POC A (in progress):** gated `GET /{locale}/assessment` placeholder ✅ — next: **SQLite persistence** for responses (per session/tenant when model is clear), then **import** questionnaire from private DOCX → structured YAML (sections, weights, help text) **without** pasting proprietary wording into public Git.
+1. **POC A — done for persistence + integrity demo:** SQLite + YAML pack + HMAC + `/status` + audit export ✅. **Next:** lightweight **scoring** or **read-only summary** in-dashboard (product decision); **import** questionnaire from private DOCX → YAML **without** pasting proprietary wording into public Git.
 2. Legal/commercial one-pager: positioning vs audit; consent for storing responses.
-3. **Architecture lock:** spike **A** is the default path; revisit **C** only after A/B learnings — align with [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) and API key / future SSO (#86).
-4. MVP: save responses + single **text/Markdown annex** in report bundle (narrative slot aligned with long-form / **[PLAN_PDF_GRC_REPORT.md](PLAN_PDF_GRC_REPORT.md)**-style reporting for **technical** findings — keep org vs technical streams distinct).
+3. **Architecture lock:** spike **A** remains default; revisit **C** only after A/B learnings — align with [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md) and API key / future SSO (#86).
+4. MVP: **export** org answers into report bundle or annex (distinct from technical **[PLAN_PDF_GRC_REPORT.md](PLAN_PDF_GRC_REPORT.md)** PDF stream).
 
 ## Relationship to other plans
 
