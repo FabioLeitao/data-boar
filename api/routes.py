@@ -1,9 +1,10 @@
 """
-FastAPI app: dashboard HTML under GET /{locale_slug}/ (e.g. /en/, /pt-br/), config, reports, help, about;
-unprefixed /, /config, … redirect to the negotiated locale prefix. API: POST /scan and /start (optional
-tenant/technician tags), GET /status, /report, /list, GET /reports/{session_id}, POST /scan_database
-(optional tenant/technician), PATCH /sessions/{session_id} and /sessions/{session_id}/technician for
-metadata updates. On startup load config (config.yaml or CONFIG_PATH) and create a singleton AuditEngine.
+FastAPI app: dashboard HTML under GET /{locale_slug}/ (e.g. /en/, /pt-br/), config, reports, help, about,
+optional POST /{locale_slug}/assessment (gated maturity POC); unprefixed /, /config, … redirect to the
+negotiated locale prefix. API: POST /scan and /start (optional tenant/technician tags), GET /status,
+/report, /list, GET /reports/{session_id}, POST /scan_database (optional tenant/technician),
+PATCH /sessions/{session_id} and /sessions/{session_id}/technician for metadata updates. On startup load
+config (config.yaml or CONFIG_PATH) and create a singleton AuditEngine.
 
 Path safety: session_id is validated before use in file paths. Report paths use
 ``_real_file_under_out_dir_str`` / ``_resolved_existing_file_under_out_dir``: CodeQL's
@@ -20,6 +21,7 @@ Referrer-Policy, Permissions-Policy, and Strict-Transport-Security (only when se
 
 import os
 import re
+import secrets
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
@@ -37,7 +39,10 @@ from core.about import get_about_info
 from core.dashboard_transport import get_dashboard_transport_snapshot
 from core.enterprise_surface_posture import get_enterprise_surface_posture
 from core.host_resolution import effective_api_key_configured
+from core.licensing.tier_features import Tier, is_feature_available
 from core.runtime_trust import get_runtime_trust_snapshot
+from core.maturity_assessment.integrity import load_integrity_secret_from_config
+from core.maturity_assessment.pack import load_maturity_pack
 
 from api.locale_i18n import (
     LOCALE_SLUG_BY_TAG,
@@ -83,6 +88,55 @@ def _html_lang_attr(locale_tag: str) -> str:
 
 def _locale_tag_from_slug(slug: str) -> str:
     return LOCALE_TAG_BY_SLUG.get(slug.lower(), "en")
+
+
+def _map_dbtier_string_to_tier(raw: str) -> Tier:
+    """Map JWT ``dbtier`` / lab ``effective_tier`` strings to :class:`Tier`. Unknown non-empty → COMMUNITY."""
+    r = raw.strip().lower()
+    if not r:
+        return Tier.OPEN
+    if r in ("enterprise", "ent"):
+        return Tier.ENTERPRISE
+    if r in ("pro", "professional", "consultant", "partner", "trial"):
+        return Tier.PRO
+    if r in ("community", "standard", "oss", "open_core"):
+        return Tier.COMMUNITY
+    return Tier.COMMUNITY
+
+
+def _runtime_tier_for_features(cfg: dict) -> Tier:
+    """
+    Resolve tier for ``is_feature_available``: JWT ``dbtier`` when enforced and VALID/GRACE wins over
+    ``licensing.effective_tier``; otherwise lab YAML; default OPEN (all features on).
+    """
+    dbtier_claim = ""
+    try:
+        from core.licensing.guard import get_license_guard
+
+        g = get_license_guard(cfg)
+        c = g.context
+        if c.state in ("VALID", "GRACE"):
+            dbtier_claim = str(getattr(c, "dbtier", "") or "").strip().lower()
+    except Exception:
+        pass
+    lc = cfg.get("licensing") if isinstance(cfg.get("licensing"), dict) else {}
+    yaml_tier = str(lc.get("effective_tier") or "").strip().lower()
+    if dbtier_claim:
+        return _map_dbtier_string_to_tier(dbtier_claim)
+    if yaml_tier:
+        return _map_dbtier_string_to_tier(yaml_tier)
+    return Tier.OPEN
+
+
+def _maturity_self_assessment_poc_allowed(cfg: dict) -> bool:
+    """POC route + nav: ``api.maturity_self_assessment_poc_enabled`` and tier feature map."""
+    api = cfg.get("api") if isinstance(cfg.get("api"), dict) else {}
+    if not api.get("maturity_self_assessment_poc_enabled"):
+        return False
+    return is_feature_available(
+        "maturity_self_assessment_poc",
+        _runtime_tier_for_features(cfg),
+    )
 
 
 def _switcher_entries(request: Request, current_slug: str, t) -> list[dict]:
@@ -152,6 +206,7 @@ def _i18n_template_context(
         "retry_after",
     )
     ctx["dashboard_js_i18n"] = {k: t_call(f"js.{k}") for k in js_keys}
+    ctx["show_maturity_assessment_nav"] = _maturity_self_assessment_poc_allowed(cfg)
     return ctx
 
 
@@ -159,6 +214,50 @@ def _i18n_template_context(
 _SESSIONS_CACHE_TTL = 2.0
 _sessions_cache: list[dict] | None = None
 _sessions_cache_time: float = 0.0
+
+# Cached maturity assessment pack (path key, mtime, pack).
+_maturity_pack_cache: tuple[str, float, object] | None = None
+
+
+def _maturity_pack_question_ids(cfg: dict) -> set[str]:
+    """Question ids from the configured YAML pack; empty if unset or invalid."""
+    pack = _get_maturity_pack_cached(cfg)
+    if pack is None:
+        return set()
+    out: set[str] = set()
+    for sec in pack.sections:
+        for q in sec.questions:
+            out.add(q.id)
+    return out
+
+
+def _get_maturity_pack_cached(cfg: dict) -> object | None:
+    """Load ``api.maturity_assessment_pack_path`` once per path mtime; None if unset or invalid."""
+    global _maturity_pack_cache
+
+    api = cfg.get("api") if isinstance(cfg.get("api"), dict) else {}
+    path = str(api.get("maturity_assessment_pack_path") or "").strip()
+    if not path:
+        return None
+    p = Path(path)
+    try:
+        mtime = p.stat().st_mtime
+    except OSError:
+        return None
+    key = str(p.resolve())
+    if (
+        _maturity_pack_cache is not None
+        and _maturity_pack_cache[0] == key
+        and _maturity_pack_cache[1] == mtime
+    ):
+        return _maturity_pack_cache[2]
+    try:
+        pack = load_maturity_pack(p)
+    except (OSError, ValueError, yaml.YAMLError):
+        return None
+    _maturity_pack_cache = (key, mtime, pack)
+    return pack
+
 
 _api_dir = Path(__file__).resolve().parent
 templates = Jinja2Templates(directory=str(_api_dir / "templates"))
@@ -977,6 +1076,8 @@ async def get_status():
     engine = _get_engine()
     runtime_trust = get_runtime_trust_snapshot(_get_config())
     cfg = _get_config()
+    sec = load_integrity_secret_from_config(cfg)
+    maturity_integrity = engine.db_manager.verify_maturity_assessment_integrity(sec)
     return {
         "running": engine.is_running,
         "current_session_id": engine.db_manager.current_session_id,
@@ -984,6 +1085,7 @@ async def get_status():
         "runtime_trust": runtime_trust,
         "dashboard_transport": get_dashboard_transport_snapshot(),
         "enterprise_surface": get_enterprise_surface_posture(cfg),
+        "maturity_assessment_integrity": maturity_integrity,
     }
 
 
@@ -1387,6 +1489,93 @@ async def config_save(request: Request, locale_slug: LocaleSlug):
                 },
             ),
         )
+
+
+@app.get("/{locale_slug}/assessment", response_class=HTMLResponse)
+async def maturity_self_assessment_placeholder(
+    request: Request, locale_slug: LocaleSlug
+):
+    """Optional POC: organizational self-assessment placeholder (gated; no bundled questionnaire text)."""
+    cfg = _get_config()
+    if not _maturity_self_assessment_poc_allowed(cfg):
+        raise HTTPException(status_code=404, detail="Not found")
+    tag = _locale_tag_from_slug(locale_slug.value)
+    pack = _get_maturity_pack_cached(cfg)
+    pack_sections: list[dict] | None = None
+    pack_version = 1
+    if pack is not None:
+        pack_version = int(pack.version)
+        pack_sections = [
+            {
+                "id": s.id,
+                "title": s.title,
+                "questions": [{"id": q.id, "prompt": q.prompt} for q in s.questions],
+            }
+            for s in pack.sections
+        ]
+    saved = (request.query_params.get("saved") or "").strip() == "1"
+    return templates.TemplateResponse(
+        request=request,
+        name="assessment_placeholder.html",
+        context=_i18n_template_context(
+            request,
+            locale_slug.value,
+            tag,
+            {
+                "maturity_pack_sections": pack_sections,
+                "assessment_batch_id": secrets.token_hex(16),
+                "maturity_pack_version": pack_version,
+                "assessment_saved": saved,
+            },
+        ),
+    )
+
+
+@app.post("/{locale_slug}/assessment")
+async def maturity_self_assessment_submit(request: Request, locale_slug: LocaleSlug):
+    """Persist assessment answers to SQLite when a YAML pack is configured (POC)."""
+    cfg = _get_config()
+    if not _maturity_self_assessment_poc_allowed(cfg):
+        raise HTTPException(status_code=404, detail="Not found")
+    valid_ids = _maturity_pack_question_ids(cfg)
+    if not valid_ids:
+        raise HTTPException(
+            status_code=400,
+            detail="No maturity pack configured (api.maturity_assessment_pack_path)",
+        )
+    form = await request.form()
+    batch_id = str(form.get("assessment_batch_id") or "").strip()
+    if (
+        not batch_id
+        or len(batch_id) > 64
+        or not re.fullmatch(r"[0-9a-fA-F]+", batch_id)
+    ):
+        raise HTTPException(status_code=400, detail="Invalid assessment_batch_id")
+    pack = _get_maturity_pack_cached(cfg)
+    pack_version = int(pack.version) if pack is not None else 1
+    answers: dict[str, str] = {}
+    prefix = "answer__"
+    for k, v in form.multi_items():
+        if not isinstance(k, str) or not k.startswith(prefix):
+            continue
+        qid = k[len(prefix) :].strip()
+        if qid not in valid_ids:
+            continue
+        answers[qid] = str(v).strip()[:4000]
+    eng = _get_engine()
+    sec = load_integrity_secret_from_config(cfg)
+    eng.db_manager.save_maturity_assessment_answers(
+        batch_id=batch_id,
+        locale_slug=locale_slug.value,
+        pack_version=pack_version,
+        answers=answers,
+        integrity_secret=sec,
+    )
+    slug = locale_slug.value
+    return RedirectResponse(
+        url=f"/{slug}/assessment?saved=1",
+        status_code=303,
+    )
 
 
 @app.get("/{locale_slug}/reports", response_class=HTMLResponse)

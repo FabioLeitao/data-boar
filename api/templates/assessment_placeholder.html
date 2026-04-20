@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ t('assessment.page_title') }}{% endblock %}
+{% block content %}
+<h1>{{ t('assessment.h1') }}</h1>
+{% if assessment_saved %}
+<p class="success" role="status">{{ t('assessment.saved_ok') }}</p>
+{% endif %}
+{% if maturity_pack_sections %}
+<section class="card">
+  <p>{{ t('assessment.pack_intro') }}</p>
+  <form method="post" action="{{ base_path }}assessment" class="assessment-form">
+    <input type="hidden" name="assessment_batch_id" value="{{ assessment_batch_id }}" />
+    <input type="hidden" name="pack_version" value="{{ maturity_pack_version }}" />
+  {% for sec in maturity_pack_sections %}
+  <h2>{{ sec.title }}</h2>
+  <ul class="assessment-questions">
+    {% for q in sec.questions %}
+    <li id="q-{{ q.id }}">
+      <label for="ans-{{ q.id }}">{{ q.prompt }}</label>
+      <select name="answer__{{ q.id }}" id="ans-{{ q.id }}">
+        <option value="">{{ t('assessment.answer_unset') }}</option>
+        <option value="yes">{{ t('assessment.answer_yes') }}</option>
+        <option value="no">{{ t('assessment.answer_no') }}</option>
+        <option value="na">{{ t('assessment.answer_na') }}</option>
+      </select>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endfor %}
+    <p><button type="submit">{{ t('assessment.form_submit') }}</button></p>
+  </form>
+  <p class="muted">{{ t('assessment.pack_note') }}</p>
+</section>
+{% endif %}
+<section class="card">
+  <p>{{ t('assessment.lead') }}</p>
+  <p class="muted">{{ t('assessment.body_p1') }}</p>
+  <p class="muted">{{ t('assessment.body_p2') }}</p>
+</section>
+{% endblock %}
