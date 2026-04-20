@@ -10,10 +10,10 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Verified** | **2026-04-21** |
+| **Verified** | **2026-04-08** |
 | **`pyproject.toml` on `main`** | **1.7.2-beta** (pre-release; **published** image/GitHub = **1.7.1**) |
-| **GitHub Release Latest** | [**v1.7.1**](https://github.com/FabioLeitao/data-boar/releases/tag/v1.7.1) (publish with **`gh release create`** after tag push; notes: **`docs/releases/1.7.1.md`**) |
-| **Docker Hub** | **`fabioleitao/data_boar:1.7.1`** + **`latest`** — re-confirm tags and **repository description** after push; paste from **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** |
+| **GitHub Release Latest** | [**v1.7.1**](https://github.com/FabioLeitao/data-boar/releases/tag/v1.7.1) (notes: **`docs/releases/1.7.1.md`**) |
+| **Docker Hub** | **`fabioleitao/data_boar:1.7.1`** + **`latest`** — digest `sha256:03a4c0d3bbce6c8c901c53bc5f5c58d5e260af55fe226834d4e0c78ccbcdd707`; paste **Short** + **Full** from **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** |
 | **Next public version** (when `main` has a new bundle) | **1.7.2** — follow **`docs/VERSIONING.md`** + **`docs/releases/`** |
 
 ---
