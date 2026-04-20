@@ -8,6 +8,7 @@ Esta página é a **fase B de consolidação**: o mesmo mapa **tema → primeiro
 
 | Tema | Onde olhar primeiro |
 | ---- | ------------------- |
+| **`.cursor/` / `.vscode/` / `.github/` / caches** — o que é versionado vs gitignore | [CURSOR_AND_EDITOR_ARTIFACTS.pt_BR.md](CURSOR_AND_EDITOR_ARTIFACTS.pt_BR.md) |
 | Leitura de **`docs/private/`** / nunca bloquear o agente | [Primeiro bullet do `AGENTS.md` depois do Quick index](../../AGENTS.md) · [`.cursor/rules/agent-docs-private-read-access.mdc`](../../.cursor/rules/agent-docs-private-read-access.mdc) · [`docs/PRIVATE_OPERATOR_NOTES.md`](../PRIVATE_OPERATOR_NOTES.md) |
 | Chat **pt-BR** / locale (PT em `docs/private/` = pt-BR; prosa só EN → `en-US`) | [`.cursor/rules/operator-chat-language.mdc`](../../.cursor/rules/operator-chat-language.mdc) · [`.cursor/rules/operator-chat-language-pt-br.mdc`](../../.cursor/rules/operator-chat-language-pt-br.mdc) · [`.cursor/rules/docs-pt-br-locale.mdc`](../../.cursor/rules/docs-pt-br-locale.mdc) · [`.cursor/skills/operator-dialogue-pt-br/SKILL.md`](../../.cursor/skills/operator-dialogue-pt-br/SKILL.md) |
 | **Palavras-chave de sessão** (deps, feature, `es-find`, …) | [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) |
