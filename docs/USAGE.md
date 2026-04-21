@@ -375,6 +375,22 @@ CLI uses the path you pass with `--config` (e.g. `config.yaml`). For the **web s
 - **Location:** Any path; typical names: `config.yaml`, `config/config.json`. Legacy `config/config.json` with `databases` and `file_scan.directories` is normalized automatically.
 - **Root keys:** `targets`, `file_scan`, `report`, `api`, `sqlite_path`, `scan`, **`rate_limit`**, **`timeouts`**, optional `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection`, `learned_patterns`, **`pattern_files_encoding`**.
 
+### Starter config (copy-paste) and where to look first {#starter-config-samples}
+
+If you are **new to the product** (counsel, DPO, audit lead, or anyone validating what the scanner can do) and need **one file** to align with IT without reading every guide first:
+
+1. Open the **hub** **[docs/samples/README.md](samples/README.md)** ([pt-BR](samples/README.pt_BR.md)) — it links the starter YAML, the minimal Docker template, the scope CSV, and explains **`config/config.json`** (legacy JSON only).
+1. Copy **[deploy/samples/config.starter-lgpd-eval.yaml](../deploy/samples/config.starter-lgpd-eval.yaml)** to your machine as **`config.yaml`** (any writable folder). The file is **Runnable defaults** (two folders + one database + rate limit + ML/DL terms) plus **commented optional** sections (e.g. `scan_compressed`, `file_passwords`, `learned_patterns`, external pattern files) so you can enable features gradually.
+1. Replace the **fictitious** paths (`/opt/lgpd-demo/...`) and the database host **`192.0.2.10`** (documentation-only TEST-NET) with your lab paths and hostname.
+1. Set the environment variable referenced by **`pass_from_env`** (example: `DEMO_DB_PASSWORD`) **before** starting the process — do not paste real passwords into YAML for production.
+1. Run a one-shot scan: `uv run python main.py --config config.yaml` or start the dashboard with the same `--config` path.
+
+The starter is **not** as exhaustive as **`docs/compliance-samples/`** (those are for **framework-specific** tuning).
+
+For **Docker**, start from **[deploy/config.example.yaml](../deploy/config.example.yaml)** (`targets: []`, `/data` paths) and merge sections from the starter if you need a fuller lab profile.
+
+**Legacy JSON:** The repo’s **`config/config.json`** illustrates the old `databases` + `file_scan.directories` layout only — see **[config/README.md](../config/README.md)**. **YAML is preferred** for new projects.
+
 By default the web API binds to **`127.0.0.1` (loopback)** when started via the CLI (`python main.py --web ...`). When you run the official Docker image, the container sets `API_HOST=0.0.0.0` so the published port works from outside Docker Desktop/WSL.
 
 If you run behind a reverse proxy or have special network constraints, you can still override with `api.host` in the config (e.g. `0.0.0.0` / `127.0.0.1`)—but keep the safe loopback default unless the runtime is explicitly fenced.
