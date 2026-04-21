@@ -837,6 +837,17 @@ def test_smoke_maturity_assessment_poc_ps1_parses():
     )
 
 
+def test_smoke_webauthn_json_ps1_parses():
+    """scripts/smoke-webauthn-json.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "smoke-webauthn-json.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), (
+        "smoke-webauthn-json.ps1 parse failed"
+    )
+
+
 # ---------------------------------------------------------------------------
 # PowerShell ASCII-safety guard
 # Non-ASCII characters (em-dash U+2014, curly quotes, etc.) cause

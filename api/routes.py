@@ -1,6 +1,7 @@
 """
 FastAPI app: dashboard HTML under GET /{locale_slug}/ (e.g. /en/, /pt-br/), config, reports, help, about,
 optional POST /{locale_slug}/assessment and GET /{locale_slug}/assessment/export (gated maturity POC);
+optional JSON /auth/webauthn/* when ``api.webauthn.enabled`` (Phase 1 passkeys);
 unprefixed /, /config, … redirect to the
 negotiated locale prefix. API: POST /scan and /start (optional tenant/technician tags), GET /status,
 /report, /list, GET /reports/{session_id}, POST /scan_database (optional tenant/technician),
@@ -69,6 +70,7 @@ from api.locale_i18n import (
     make_t,
     negotiate_locale_tag,
 )
+from api.webauthn_routes import register_webauthn_routes
 
 
 class AssessmentExportFormat(str, Enum):
@@ -699,10 +701,26 @@ def _raise_if_license_blocks_scan() -> None:
     )
 
 
+def _validate_webauthn_startup(cfg: dict) -> None:
+    """Fail fast when WebAuthn is enabled but no token secret is available."""
+    from core.webauthn_rp.settings import resolve_token_secret, webauthn_block
+
+    wa = webauthn_block(cfg)
+    if wa is None:
+        return
+    if not resolve_token_secret(wa):
+        raise RuntimeError(
+            "api.webauthn.enabled is true but no token secret was resolved. "
+            "Set the environment variable named in api.webauthn.token_secret_from_env "
+            "(default DATA_BOAR_WEBAUTHN_TOKEN_SECRET) before starting the API."
+        )
+
+
 @asynccontextmanager
 async def _lifespan(app: FastAPI):
     """Load config and create AuditEngine on startup (replaces deprecated on_event)."""
-    _get_config()
+    cfg = _get_config()
+    _validate_webauthn_startup(cfg)
     _get_engine()
     yield
     # shutdown: nothing to tear down
@@ -876,6 +894,8 @@ async def optional_api_key_middleware(request: Request, call_next):
     """
     if request.url.path == "/health":
         return await call_next(request)
+    if request.url.path.startswith("/auth/webauthn"):
+        return await call_next(request)
     cfg = _get_config()
     api_cfg = cfg.get("api") or {}
     if not api_cfg.get("require_api_key"):
@@ -930,6 +950,8 @@ _UNPREFIXED_HTML_PATHS = frozenset({"/", "/config", "/reports", "/help", "/about
 def _is_api_or_asset_path(path: str) -> bool:
     """Paths that must not receive locale prefix redirects (API, static, OpenAPI)."""
     if path.startswith("/static"):
+        return True
+    if path.startswith("/auth/"):
         return True
     if path == "/health":
         return True
@@ -1734,3 +1756,6 @@ async def reports_page(request: Request, locale_slug: LocaleSlug):
             {"sessions": sessions, "sort": sort, "about": _about_info()},
         ),
     )
+
+
+register_webauthn_routes(app)
