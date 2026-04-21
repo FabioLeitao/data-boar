@@ -3,7 +3,8 @@ FastAPI app: dashboard HTML under GET /{locale_slug}/ (e.g. /en/, /pt-br/), conf
 GET /{locale_slug}/login (WebAuthn browser sign-in when enabled),
 optional POST /{locale_slug}/assessment and GET /{locale_slug}/assessment/export (gated maturity POC);
 optional JSON /auth/webauthn/* when ``api.webauthn.enabled`` (Phase 1 passkeys); optional HTML session gate
-when at least one passkey exists (Phase 1b, GitHub #86);
+when at least one passkey exists (Phase 1b, GitHub #86); optional per-route RBAC when ``api.rbac.enabled``
+(Phase 2, Pro+ ``dashboard_rbac``);
 unprefixed /, /config, … redirect to the
 negotiated locale prefix. API: POST /scan and /start (optional tenant/technician tags), GET /status,
 /report, /list, GET /reports/{session_id}, POST /scan_database (optional tenant/technician),
@@ -50,7 +51,8 @@ from core.about import get_about_info
 from core.dashboard_transport import get_dashboard_transport_snapshot
 from core.enterprise_surface_posture import get_enterprise_surface_posture
 from core.host_resolution import effective_api_key_configured
-from core.licensing.tier_features import Tier, is_feature_available
+from core.licensing.runtime_feature_tier import get_runtime_tier_for_features
+from core.licensing.tier_features import is_feature_available
 from core.runtime_trust import get_runtime_trust_snapshot
 from core.maturity_assessment.integrity import (
     load_integrity_secret_from_config,
@@ -126,44 +128,6 @@ def _locale_tag_from_slug(slug: str) -> str:
     return LOCALE_TAG_BY_SLUG.get(slug.lower(), "en")
 
 
-def _map_dbtier_string_to_tier(raw: str) -> Tier:
-    """Map JWT ``dbtier`` / lab ``effective_tier`` strings to :class:`Tier`. Unknown non-empty → COMMUNITY."""
-    r = raw.strip().lower()
-    if not r:
-        return Tier.OPEN
-    if r in ("enterprise", "ent"):
-        return Tier.ENTERPRISE
-    if r in ("pro", "professional", "consultant", "partner", "trial"):
-        return Tier.PRO
-    if r in ("community", "standard", "oss", "open_core"):
-        return Tier.COMMUNITY
-    return Tier.COMMUNITY
-
-
-def _runtime_tier_for_features(cfg: dict) -> Tier:
-    """
-    Resolve tier for ``is_feature_available``: JWT ``dbtier`` when enforced and VALID/GRACE wins over
-    ``licensing.effective_tier``; otherwise lab YAML; default OPEN (all features on).
-    """
-    dbtier_claim = ""
-    try:
-        from core.licensing.guard import get_license_guard
-
-        g = get_license_guard(cfg)
-        c = g.context
-        if c.state in ("VALID", "GRACE"):
-            dbtier_claim = str(getattr(c, "dbtier", "") or "").strip().lower()
-    except Exception:
-        pass
-    lc = cfg.get("licensing") if isinstance(cfg.get("licensing"), dict) else {}
-    yaml_tier = str(lc.get("effective_tier") or "").strip().lower()
-    if dbtier_claim:
-        return _map_dbtier_string_to_tier(dbtier_claim)
-    if yaml_tier:
-        return _map_dbtier_string_to_tier(yaml_tier)
-    return Tier.OPEN
-
-
 def _maturity_self_assessment_poc_allowed(cfg: dict) -> bool:
     """POC route + nav: ``api.maturity_self_assessment_poc_enabled`` and tier feature map."""
     api = cfg.get("api") if isinstance(cfg.get("api"), dict) else {}
@@ -171,7 +135,7 @@ def _maturity_self_assessment_poc_allowed(cfg: dict) -> bool:
         return False
     return is_feature_available(
         "maturity_self_assessment_poc",
-        _runtime_tier_for_features(cfg),
+        get_runtime_tier_for_features(cfg),
     )
 
 
@@ -539,6 +503,9 @@ class ScanStartBody(BaseModel):
     jurisdiction_hint: bool | None = (
         None  # when True, opt-in to heuristic jurisdiction notes on Report info for this session
     )
+    scan_for_stego: bool | None = (
+        None  # when True, merge into file_scan for this run only (entropy hints on rich media)
+    )
 
 
 # Load config and create engine at import time (or on startup event)
@@ -851,6 +818,18 @@ def _is_secure_request(request: Request) -> bool:
 
 
 @app.middleware("http")
+async def rbac_middleware(request: Request, call_next):
+    """
+    When ``api.rbac.enabled`` and tier allows ``dashboard_rbac``, enforce role checks on API and
+    locale HTML routes (Phase 2, GitHub #86). Registered before the WebAuthn HTML gate so it runs
+    **after** session authentication on the inner stack (closest to the route handler).
+    """
+    from api.rbac import rbac_middleware_handler
+
+    return await rbac_middleware_handler(request, call_next, _get_config, _get_engine)
+
+
+@app.middleware("http")
 async def webauthn_html_session_middleware(request: Request, call_next):
     """
     When WebAuthn is enabled and at least one passkey exists, require a valid session cookie
@@ -1116,7 +1095,7 @@ _SESSION_RESPONSES = {
 async def start_scan(
     background_tasks: BackgroundTasks, body: ScanStartBody | None = None
 ):
-    """Start audit in background. Optional body: tenant, technician, scan_compressed, content_type_check, jurisdiction_hint. Returns session_id."""
+    """Start audit in background. Optional body: tenant, technician, scan_compressed, content_type_check, scan_for_stego, jurisdiction_hint. Returns session_id."""
     _raise_if_license_blocks_scan()
     engine = _get_engine()
     if engine.is_running:
@@ -1142,6 +1121,7 @@ async def start_scan(
     fs = engine.config.get("file_scan") or {}
     prev_scan_compressed = fs.get("scan_compressed")
     prev_use_content_type = fs.get("use_content_type")
+    prev_scan_for_stego = fs.get("scan_for_stego")
     _rep_prev = engine.config.get("report") or {}
     _jh_prev = _rep_prev.get("jurisdiction_hints")
     prev_jurisdiction_hints_enabled = (
@@ -1152,6 +1132,8 @@ async def start_scan(
         engine.config.setdefault("file_scan", {})["scan_compressed"] = True
     if body and getattr(body, "content_type_check", None) is True:
         engine.config.setdefault("file_scan", {})["use_content_type"] = True
+    if body and getattr(body, "scan_for_stego", None) is True:
+        engine.config.setdefault("file_scan", {})["scan_for_stego"] = True
     if jh:
         engine.config.setdefault("report", {}).setdefault("jurisdiction_hints", {})
         engine.config["report"]["jurisdiction_hints"]["enabled"] = True
@@ -1171,6 +1153,10 @@ async def start_scan(
                     engine.config["file_scan"]["use_content_type"] = (
                         prev_use_content_type
                     )
+                if prev_scan_for_stego is None:
+                    engine.config["file_scan"].pop("scan_for_stego", None)
+                else:
+                    engine.config["file_scan"]["scan_for_stego"] = prev_scan_for_stego
             if jh:
                 engine.config.setdefault("report", {}).setdefault(
                     "jurisdiction_hints", {}

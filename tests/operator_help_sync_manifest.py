@@ -38,6 +38,7 @@ _MAN_PORT = r"\-\-port"
 _MAN_CONFIG = r"\-\-config"
 _MAN_SCAN_COMPRESSED = r"\-\-scan\-compressed"
 _MAN_CONTENT_TYPE = r"\-\-content\-type\-check"
+_MAN_SCAN_STEGO = r"\-\-scan\-stego"
 _MAN_RESET = r"\-\-reset\-data"
 _MAN_EXPORT_AUDIT = r"\-\-export\-audit\-trail"
 _MAN_TENANT = r"\-\-tenant"
@@ -81,6 +82,12 @@ OPERATOR_HELP_MARKERS: tuple[OperatorHelpMarker, ...] = (
         "--content-type-check",
         "--content-type-check",
         _MAN_CONTENT_TYPE,
+    ),
+    OperatorHelpMarker(
+        "scan_stego",
+        "--scan-stego",
+        "--scan-stego",
+        _MAN_SCAN_STEGO,
     ),
     OperatorHelpMarker("reset_data", "--reset-data", "--reset-data", _MAN_RESET),
     OperatorHelpMarker(

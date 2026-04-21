@@ -13,7 +13,7 @@
     "insecure_title": "HTTP em texto claro",
     "insecure_body": "este painel não está usando TLS. O tráfego pode ser lido ou alterado no caminho da rede. Use --https-cert-file / --https-key-file ou termine TLS em um proxy reverso. Veja GET /status (dashboard_transport).",
     "gov_title": "Governança / confiança",
-    "gov_body": "severidade {severity} (licença {license_state}). Superfície de API key global: {mode}. RBAC por rota ainda não está implementado — veja GET /status (enterprise_surface)."
+    "gov_body": "severidade {severity} (licença {license_state}). Superfície de API key global: {mode}. RBAC por rota opcional (api.rbac, Pro+ dashboard_rbac) — veja GET /status (enterprise_surface.access_surface.rbac)."
   },
   "meta": {
     "title_suffix": "Data Boar"
@@ -69,11 +69,13 @@
     "tech_ph": "ex.: João Silva",
     "cli_parity": "Paridade com a CLI para varreduras pontuais:",
     "cli_parity_link": "Ajuda e documentação",
-    "cli_parity_tail": "Da CLI (--scan-compressed, --content-type-check, --jurisdiction-hint).",
+    "cli_parity_tail": "Da CLI (--scan-compressed, --content-type-check, --scan-stego, --jurisdiction-hint).",
     "scan_compressed": "Também varrer dentro de arquivos compactados (zip, tar, 7z, …)",
     "scan_compressed_hint": "Pode aumentar bastante o tempo de execução e E/S. Use só quando precisar inspecionar conteúdo de arquivos.",
     "content_type": "Usar detecção de tipo de conteúdo (magic bytes) para o formato do arquivo",
     "content_type_hint": "Ajuda a encontrar arquivos renomeados ou disfarçados (ex.: PDF salvo como .txt). Lê o início de cada arquivo — pode aumentar E/S e tempo de execução.",
+    "scan_stego": "Dicas de esteganografia em mídia rica (heurística de entropia)",
+    "scan_stego_hint": "Dica opcional de entropia de bytes em imagens/áudio/vídeo — não prova dado oculto. Leitura extra por arquivo; use só em investigação de ocultação.",
     "jurisdiction": "Dicas heurísticas de jurisdição (informações do relatório — DPO / jurídico)",
     "jurisdiction_hint": "Notas opcionais quando metadados podem sugerir escopo CCPA/CPRA, Colorado ou APPI do Japão. Não é conclusão jurídica; configure report.jurisdiction_hints para padrões.",
     "start_scan": "Iniciar varredura",

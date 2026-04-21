@@ -13,7 +13,7 @@
     "insecure_title": "Plaintext HTTP",
     "insecure_body": "this dashboard is not using TLS. Traffic can be read or modified on the network path. Use --https-cert-file / --https-key-file or terminate TLS on a reverse proxy. See GET /status (dashboard_transport).",
     "gov_title": "Governance / trust",
-    "gov_body": "severity {severity} (license {license_state}). Global API key surface: {mode}. Per-route RBAC is not implemented yet — see GET /status (enterprise_surface)."
+    "gov_body": "severity {severity} (license {license_state}). Global API key surface: {mode}. Optional per-route RBAC (api.rbac, Pro+ dashboard_rbac) — see GET /status (enterprise_surface.access_surface.rbac)."
   },
   "meta": {
     "title_suffix": "Data Boar"
@@ -69,11 +69,13 @@
     "tech_ph": "e.g. João Silva",
     "cli_parity": "CLI parity for one-shot scans:",
     "cli_parity_link": "Help & Docs",
-    "cli_parity_tail": "From the CLI (--scan-compressed, --content-type-check, --jurisdiction-hint).",
+    "cli_parity_tail": "From the CLI (--scan-compressed, --content-type-check, --scan-stego, --jurisdiction-hint).",
     "scan_compressed": "Also scan inside compressed files (zip, tar, 7z, …)",
     "scan_compressed_hint": "May significantly increase run time and I/O. Use only when you need to inspect contents of archives.",
     "content_type": "Use content-type detection (magic bytes) for file format",
     "content_type_hint": "Helps find renamed or cloaked files (e.g. PDF saved as .txt). Reads the start of each file—may increase I/O and run time.",
+    "scan_stego": "Steganography hints on rich media (entropy heuristic)",
+    "scan_stego_hint": "Optional byte-entropy hint for images/audio/video—not proof of hidden data. Extra read per file; use only when investigating concealment.",
     "jurisdiction": "Heuristic jurisdiction hints (Report info — DPO / counsel)",
     "jurisdiction_hint": "Optional notes when metadata may suggest CCPA/CPRA, Colorado, or Japan APPI scope. Not a legal conclusion; configure report.jurisdiction_hints for defaults.",
     "start_scan": "Start scan",
