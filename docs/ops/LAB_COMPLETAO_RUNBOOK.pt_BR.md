@@ -13,6 +13,8 @@
 
 - **Âmbito “datacenter de testes” no lab:** Para **completão**, o assistente **pode** instalar **dependências em falta**, corrigir **portas** da app/compose, acrescentar regras **estreitas** **lab-op↔lab-op** no **firewall** ou **VLAN** (via **`ufw`**, **`nftables`**, **`LAB-ROUTER-01.ps1`** quando houver credenciais), e ajustar **SELinux**/**AppArmor**/**fail2ban**/**sshguard**/**USBGuard**/**AIDE**/**auditd** (etc.) só com **least privilege** e intenção **reversível** — política completa: **`lab-completao-workflow.mdc`**. Regista alterações em **`docs/private/homelab/`**; **nunca** commits públicos com **segredos** ou **detalhes LAN**.
 
+- **Wrappers + sudoers + sem perguntas ociosas:** Preferir **`lab-completao-orchestrate.ps1 -Privileged`** e os restantes scripts do repo (ver **`LAB_OP_PRIVILEGED_COLLECTION.pt_BR.md`**, modelo gitignored **`LABOP_COMPLETÃO_SUDOERS*.md`**) para **sudo estreito sem senha** nos probes. **Não** voltar a pedir permissão para o fluxo acordado SSH/**`-Privileged`**. **Proteger** o **PC Windows principal de desenvolvimento** (papel **L-series**, **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md`**) e o clone **canônico**; **outros** hosts no manifesto e imagens **Docker** podem ser **resincronizados** com **`origin`** / Hub para testes.
+
 **Relação:**
 
 | Camada | O que é | Comando típico |
