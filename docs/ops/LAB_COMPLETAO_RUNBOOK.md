@@ -13,6 +13,8 @@
 
 - **Lab-as-test-datacenter scope:** For **completão**, the assistant **may** install **missing deps**, fix **app/compose ports**, add **narrow** **lab-op-to-lab-op** firewall or **VLAN** rules (via **`ufw`**, **`nftables`**, **UDM** scripts when configured), and tune **SELinux**/**AppArmor**/**fail2ban**/**sshguard**/**USBGuard**/**AIDE**/**auditd** (etc.) **only** with **least privilege** and **reversible** intent — full policy: **`lab-completao-workflow.mdc`**. Record what changed in **`docs/private/homelab/`**; never ship **secrets** or **LAN specifics** to **public** Git.
 
+- **Wrappers + sudoers + no idle prompts:** Prefer **`lab-completao-orchestrate.ps1 -Privileged`** and related repo scripts (see **`LAB_OP_PRIVILEGED_COLLECTION.md`**, gitignored **`LABOP_COMPLETÃO_SUDOERS*.md`**) so remote hosts use **passwordless narrow sudo** for probes. **Do not** re-ask permission for the agreed SSH/**`-Privileged`** flow. **Protect** the **primary Windows dev PC** (**L-series** role, **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**) and its **canonical** clone; **other** manifest hosts and **Docker** images may be **resynced** from **`origin`** / Hub for tests.
+
 **Relationship:**
 
 | Layer | What it is | Typical command |
