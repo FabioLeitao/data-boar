@@ -120,7 +120,8 @@ foreach ($h in $manifest.hosts) {
             $hu = $healthUrl -replace "'", "'\''"
             $healthEsc = " --health-url '$hu'"
         }
-        $remoteCmd = "cd '$rpEsc' && bash scripts/lab-completao-host-smoke.sh$privArg$healthEsc 2>&1"
+        # Require an up-to-date clone (script ships on main); clear message if missing after git sync.
+        $remoteCmd = "cd '$rpEsc' && if [ ! -f scripts/lab-completao-host-smoke.sh ]; then echo 'MISSING_SCRIPT: scripts/lab-completao-host-smoke.sh not in clone - on the host: cd to repo, git fetch origin && integrate origin/main (see docs/ops/LAB_COMPLETAO_RUNBOOK.md)'; exit 3; fi && bash scripts/lab-completao-host-smoke.sh$privArg$healthEsc 2>&1"
         $remoteCmdEsc = $remoteCmd.Replace('"', '\"')
         $remoteLine = "ssh.exe -o BatchMode=yes -o ConnectTimeout=180 $alias `"$remoteCmdEsc`" 2>&1"
         $remoteOut = Invoke-CmdCapture -CmdLine $remoteLine

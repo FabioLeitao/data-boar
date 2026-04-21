@@ -180,5 +180,5 @@ class MongoDBConnector:
             return
 
 
-if _MONGO_AVAILABLE:
-    register("mongodb", MongoDBConnector, ["name", "type"])
+# Always register so YAML with driver: mongodb resolves; connect() errors if pymongo is missing.
+register("mongodb", MongoDBConnector, ["name", "type"])

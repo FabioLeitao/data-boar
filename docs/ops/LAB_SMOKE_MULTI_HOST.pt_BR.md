@@ -36,6 +36,7 @@ docker compose ps
 
 - **PostgreSQL** na porta de host `**55432`** (mapeia para 5432).
 - **MariaDB** na porta de host `**33306`** (mapeia para 3306).
+- **MongoDB (opcional):** não sobe só com `docker compose up -d`. Use **`docker compose -f docker-compose.yml -f docker-compose.mongo.yml up -d`** — publica **`27018`** por padrão. No Data Boar: **`uv sync --extra nosql`** para `driver: mongodb`.
 
 **Firewall:** permitir TCP da LAN de laboratório só para essas portas. **Não** expor na WAN.
 

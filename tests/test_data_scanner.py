@@ -11,7 +11,8 @@ try:
 except ImportError as rest_import_error:
     _ = str(rest_import_error)
 
-import connectors.nfs_connector  # noqa: F401 — always registers `nfs`
+import connectors.nfs_connector  # noqa: F401 - always registers `nfs`
+import connectors.mongodb_connector  # noqa: F401 - registers `mongodb` even without pymongo
 
 from core.connector_registry import connector_for_target, list_connector_types
 
@@ -70,6 +71,22 @@ def test_connector_for_filesystem():
     assert resolved is not None
     cls, _ = resolved
     assert cls is not None
+
+
+def test_mongodb_driver_always_resolves_in_registry():
+    """YAML with driver: mongodb must resolve; connect() requires pymongo (nosql extra)."""
+    assert "mongodb" in list_connector_types()
+    resolved = connector_for_target(
+        {
+            "type": "database",
+            "driver": "mongodb",
+            "name": "M",
+            "host": "127.0.0.1",
+            "port": 27017,
+            "database": "test",
+        }
+    )
+    assert resolved is not None
 
 
 def test_connector_for_database_postgres():

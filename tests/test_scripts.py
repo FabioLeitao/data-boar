@@ -243,6 +243,15 @@ def test_lab_completao_orchestrate_ps1_syntax():
     )
 
 
+def test_lab_op_repo_status_ps1_syntax():
+    """scripts/lab-op-repo-status.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "lab-op-repo-status.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), "lab-op-repo-status.ps1 parse failed"
+
+
 def test_collect_homelab_report_remote_ps1_syntax():
     """scripts/collect-homelab-report-remote.ps1 has valid PowerShell syntax (parse-only)."""
     root = _project_root()
