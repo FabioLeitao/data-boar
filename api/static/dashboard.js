@@ -156,6 +156,8 @@
         var scanCompressed = scanCompressedEl && scanCompressedEl.checked;
         var contentTypeEl = document.getElementById('scan-content-type');
         var contentTypeCheck = contentTypeEl && contentTypeEl.checked;
+        var scanStegoEl = document.getElementById('scan-stego');
+        var scanStego = scanStegoEl && scanStegoEl.checked;
         var jurisdictionHintEl = document.getElementById('scan-jurisdiction-hint');
         var jurisdictionHint = jurisdictionHintEl && jurisdictionHintEl.checked;
 
@@ -168,6 +170,7 @@
         if (technician != null) body.technician = technician;
         if (scanCompressed) body.scan_compressed = true;
         if (contentTypeCheck) body.content_type_check = true;
+        if (scanStego) body.scan_for_stego = true;
         if (jurisdictionHint) body.jurisdiction_hint = true;
 
         var opts = {
