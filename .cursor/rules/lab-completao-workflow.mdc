@@ -1,5 +1,5 @@
 ---
-description: Lab completão — wrappers + -Privileged + narrow sudoers (LAB_OP_PRIVILEGED_COLLECTION); protect primary L-series dev PC (PRIMARY_WINDOWS_WORKSTATION_PROTECTION); disposable remote lab resync; token-aware scripted passes; no redundant permission pings; doc+code capability matrix (storage, DB, compliance, WebAuthn POC, ML/DL); SSH from dev PC.
+description: Lab completão — wrappers + -Privileged + narrow sudoers; L-series protection; token-aware automation reuse; document timeouts, latency, FP/FN vs synthetic, real-path confidence; doc+code capability matrix; SSH from dev PC.
 globs: scripts/lab-completao*.ps1,scripts/lab-completao*.sh,docs/ops/LAB_COMPLETAO_RUNBOOK.md,docs/ops/LAB_SMOKE_MULTI_HOST.md
 alwaysApply: true
 ---
@@ -88,6 +88,20 @@ When the operator asks for **completão** to **learn what the product actually d
 
 1. **Outcome:** For each major theme, record **observed behaviour**, **doc drift**, and **gaps** in **`COMPLETAO_SESSION_*.md`** (private) and, when product bugs are confirmed, **issues** / **`PLANS_TODO.md`** with **redacted** repro steps.
 
+## Automation reuse + documented learnings (every signal counts)
+
+1. **Automate new toil:** Whenever completão surfaces a **repeatable** step (wrapper, one-liner, firewall tweak sequence, mount order, env export), **prefer** adding or extending **`scripts/`**, **`ops/automation/ansible/`**, or **manifest** fields so the **next** run costs **fewer tokens** and less cognition — see **`docs/ops/TOKEN_AWARE_SCRIPTS_HUB.md`**.
+
+1. **Document everything material** in **`docs/private/homelab/`** session files (template **`COMPLETAO_SESSION_TEMPLATE.pt_BR.md`** when present), not only pass/fail:
+   - **Timeouts** and **wall-clock** duration (CLI, API, web, DB connectors).
+   - **Unexpected slowness** vs **expected** on the same host class.
+   - **False positives / false negatives** when **ground truth** is known from **synthetic** fixtures — compare **report output** to **expected** labels/paths; note **confidence** / **score** behaviour.
+   - **Real-path** scans (e.g. system log trees, user home samples): **time to complete**, **operator confidence** in findings, and **permission** noise — **no** raw PII in **public** Git.
+   - **Latency** for **remote** work: **public HTTP APIs**, **SSH**-bound steps, **resource-constrained** lab hosts (e.g. small **ARM** boards vs **x86** laptops).
+   - Any **deviation** between **docs/config defaults** and **observed** runtime (ports, extras, **`uv`** features).
+
+1. **Feed improvements:** Turn recurring signals into **`PLANS_TODO.md`** rows or **GitHub issues** (product), or **script**/**runbook** edits (workflow) — **link** the private session date when triaging.
+
 ## Related rules
 
 - **`homelab-ssh-via-terminal.mdc`** — TTY vs SSH, `P:`, private `AGENT_LAB_ACCESS.md`.
@@ -96,3 +110,4 @@ When the operator asks for **completão** to **learn what the product actually d
 - **`docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`** — non-destructive posture for the **primary** dev PC.
 - **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`** — scripts, slice order, capability coverage.
 - **`docs/ops/LAB_EXTERNAL_CONNECTIVITY_EVAL.md`** — external eval smoke (complements lab LAN).
+- **`docs/ops/TOKEN_AWARE_SCRIPTS_HUB.md`** — map scripts to session keywords / reuse.

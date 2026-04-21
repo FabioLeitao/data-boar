@@ -64,9 +64,14 @@
 - When the operator asks for **completão** and wants tests **unblocked**, the assistant **may apply** **narrow**, **lab-op-scoped**, **least-privilege** fixes (packages, ports, **`ufw`**/**nft**, UniFi via **`udm.ps1`** when keys exist, container paths, NFS/SMB/SSHFS mounts per product support) per **`lab-completao-workflow.mdc`**. **Escalate** to the operator before **broad** or **irreversible** hardening changes.
 - **Production readiness** stays **iterative**: repeat completão, file issues, patch code/docs, re-run.
 
+## Automation reuse and documented learnings
+
+- **Encode repeat work:** When a completão step is **repeatable**, add or extend **`scripts/`**, **Ansible** under **`ops/automation/ansible/`**, or **manifest** fields — hub: **[TOKEN_AWARE_SCRIPTS_HUB.md](TOKEN_AWARE_SCRIPTS_HUB.md)**; policy: **`lab-completao-workflow.mdc`** (*Automation reuse + documented learnings*).
+- **Capture signals in private session notes** (`docs/private/homelab/`, template **`COMPLETAO_SESSION_TEMPLATE.pt_BR.md`**): **timeouts**, **wall-clock** duration, **unexpected slowness**, **FP/FN** vs **known synthetic** ground truth (report vs expected), **confidence** on **real** paths (e.g. system log trees, home-directory samples), **latency** over **public APIs** / **SSH** / **low-resource** lab hosts vs faster machines, and any **default**/**doc** mismatch. These feed **`PLANS_TODO.md`** / **issues** — **no** raw PII in public Git.
+
 ## Quick start
 
 1. Ensure each lab host has the repo clone and **`uv`** (often **`~/.local/bin/uv`** — **`lab-completao-host-smoke.sh`** prepends that to **`PATH`**); run **`uv sync`** and **`uv sync --extra nosql`** if Mongo targets are in your YAML (and [TECH_GUIDE.md](../TECH_GUIDE.md) extras for compressed/shares as needed).
 2. Optional manifest fields: **`docs/private.example/homelab/lab-op-hosts.manifest.example.json`** (`completaoHealthUrl`).
 3. From repo root on Windows: **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** (assistant-led completão default; omit **`-Privileged`** only if you must avoid privileged probes).
-4. Append lessons to the private template; link findings to **`PLANS_TODO.md`** / issues when product gaps appear.
+4. Append lessons to the private template (**timeouts**, **FP/FN**, **latency**, **confidence**); link findings to **`PLANS_TODO.md`** / issues when product gaps appear.
