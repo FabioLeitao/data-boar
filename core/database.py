@@ -225,6 +225,8 @@ class WebAuthnCredential(Base):
     public_key = Column(LargeBinary(2048), nullable=False)
     sign_count = Column(Integer, nullable=False, default=0)
     created_at = Column(DateTime, default=_utc_now)
+    # JSON array of role names, e.g. ["reports_reader","dashboard"]. NULL = use config api.rbac.default_roles.
+    roles_json = Column(String(512), nullable=True)
 
 
 class MaturityAssessmentAnswer(Base):
@@ -263,6 +265,7 @@ class LocalDBManager:
         self._ensure_maturity_assessment_answers_table()
         self._ensure_maturity_row_hmac_column()
         self._ensure_webauthn_credentials_table()
+        self._ensure_webauthn_roles_json_column()
         self._session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
         self._current_session_id: str | None = None
 
@@ -368,6 +371,23 @@ class LocalDBManager:
         """Create webauthn_credentials table if missing (additive migration)."""
         WebAuthnCredential.__table__.create(self.engine, checkfirst=True)
 
+    def _ensure_webauthn_roles_json_column(self) -> None:
+        """Add roles_json column for RBAC (#86 Phase 2) when missing."""
+        with self.engine.connect() as conn:
+            r = conn.execute(
+                text(
+                    "SELECT 1 FROM pragma_table_info('webauthn_credentials') "
+                    "WHERE name='roles_json'"
+                )
+            )
+            if r.fetchone() is None:
+                conn.execute(
+                    text(
+                        "ALTER TABLE webauthn_credentials ADD COLUMN roles_json VARCHAR(512)"
+                    )
+                )
+                conn.commit()
+
     def webauthn_credential_count(self) -> int:
         """Return number of registered WebAuthn credentials."""
         session = self._session_factory()
@@ -441,6 +461,26 @@ class LocalDBManager:
         except Exception:
             session.rollback()
             raise
+        finally:
+            session.close()
+
+    def webauthn_roles_json_for_user_id(self, user_id: bytes) -> str | None:
+        """Return stored ``roles_json`` for the WebAuthn user id, or None if unknown / unset."""
+        uid = user_id[:64]
+        session = self._session_factory()
+        try:
+            row = (
+                session.query(WebAuthnCredential)
+                .filter(WebAuthnCredential.user_id == uid)
+                .one_or_none()
+            )
+            if row is None:
+                return None
+            rj = row.roles_json
+            if rj is None:
+                return None
+            s = str(rj).strip()
+            return s if s else None
         finally:
             session.close()
 

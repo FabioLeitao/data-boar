@@ -26,7 +26,7 @@
   <pre><code>uv run python main.py --config config.yaml
 uv run python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Silva"
 # Same optional toggles as the dashboard checkboxes (this run only):
-uv run python main.py --config config.yaml --scan-compressed --content-type-check --jurisdiction-hint</code></pre>
+uv run python main.py --config config.yaml --scan-compressed --content-type-check --scan-stego --jurisdiction-hint</code></pre>
   <p><strong>{{ t('help.run_cli_api') }}</strong></p>
   <p class="muted">{{ t('help.run_cli_tls') }}</p>
   <pre><code>uv run python main.py --config config.yaml --web --https-cert-file server.crt --https-key-file server.key

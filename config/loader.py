@@ -192,6 +192,12 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         ".vtt",
         ".ass",
         ".ssa",
+        ".epub",
+        ".parquet",
+        ".feather",
+        ".orc",
+        ".avro",
+        ".dbf",
     ]
     fs_cfg = data.get("file_scan", {}) or {}
     out["file_scan"] = {
@@ -230,6 +236,7 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
     except (TypeError, ValueError):
         _ocr_md = 2000
     out["file_scan"]["ocr_max_dimension"] = max(256, min(8000, _ocr_md))
+    out["file_scan"]["scan_for_stego"] = bool(fs_cfg.get("scan_for_stego", False))
     # Normalize extensions to list of suffixes (e.g. "*.pdf" -> ".pdf")
     exts = out["file_scan"]["extensions"]
     out["file_scan"]["extensions"] = [
@@ -382,6 +389,21 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         or "DATA_BOAR_WEBAUTHN_TOKEN_SECRET",
         "user_id_hex": str(wa_raw.get("user_id_hex") or "").strip(),
         "additional_origins": wa_raw.get("additional_origins"),
+    }
+
+    rb_raw = out["api"].get("rbac")
+    if not isinstance(rb_raw, dict):
+        rb_raw = {}
+    _default_rbac_roles = [
+        "dashboard",
+        "scanner",
+        "reports_reader",
+        "config_admin",
+    ]
+    out["api"]["rbac"] = {
+        "enabled": bool(rb_raw.get("enabled", False)),
+        "default_roles": list(rb_raw.get("default_roles") or _default_rbac_roles),
+        "api_key_roles": list(rb_raw.get("api_key_roles") or _default_rbac_roles),
     }
 
     # Optional external pattern files (ML/DL training terms: list of { text, label } with label "sensitive"|1 or "non_sensitive"|0)

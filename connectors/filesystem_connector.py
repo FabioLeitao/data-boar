@@ -131,10 +131,22 @@ _DOCUMENT_EXTENSIONS = {
     ".eml",
     ".mht",
     ".mhtml",
+    ".epub",
 }
 
 # Database / structured (sample or path-only)
-_DATA_EXTENSIONS = {".sqlite", ".sqlite3", ".db", ".accdb", ".mdb"}
+_DATA_EXTENSIONS = {
+    ".sqlite",
+    ".sqlite3",
+    ".db",
+    ".accdb",
+    ".mdb",
+    ".parquet",
+    ".feather",
+    ".orc",
+    ".avro",
+    ".dbf",
+}
 
 # Supported extensions = all of the above (recursive scan uses this when config does not override)
 SUPPORTED_EXTENSIONS = _TEXT_EXTENSIONS | _DOCUMENT_EXTENSIONS | _DATA_EXTENSIONS
@@ -175,6 +187,7 @@ def _read_text_sample(
     scan_image_ocr: bool = False,
     ocr_max_dimension: int = 2000,
     ocr_lang: str = "eng",
+    scan_for_stego: bool = False,
 ) -> str:
     """Extract text from file for sensitivity scan; return empty on error. No content stored after return.
 
@@ -186,26 +199,37 @@ def _read_text_sample(
 
     When *rich_media_metadata* or *scan_image_ocr* is true, image/audio/video extensions invoke
     ``connectors.rich_media_sample.build_rich_media_text_sample`` (optional mutagen, ffprobe, tesseract).
+
+    When *scan_for_stego* is true, rich-media containers may receive a short entropy-based hint line
+    (heuristic only; see ``connectors.stego_hint``).
     """
     pw = file_passwords or {}
+
+    def finalize(text: str) -> str:
+        text = text if len(text) <= max_chars else text[:max_chars]
+        if not scan_for_stego:
+            return text[:max_chars]
+        from connectors.stego_hint import append_stego_hint
+
+        return append_stego_hint(path, ext, text, max_chars)
+
     try:
-        from connectors.rich_media_sample import (
-            IMAGE_EXTENSIONS,
-            RICH_MEDIA_SCAN_EXTENSIONS,
-            build_rich_media_text_sample,
-        )
+        from connectors.rich_media_sample import build_rich_media_text_sample
+        from core.rich_media_magic import IMAGE_EXTENSIONS, RICH_MEDIA_SCAN_EXTENSIONS
 
         if ext.lower() in RICH_MEDIA_SCAN_EXTENSIONS and (
             rich_media_metadata or scan_image_ocr
         ):
-            return build_rich_media_text_sample(
-                path,
-                ext,
-                max_chars,
-                metadata=rich_media_metadata,
-                image_ocr=bool(scan_image_ocr and ext.lower() in IMAGE_EXTENSIONS),
-                ocr_max_dimension=ocr_max_dimension,
-                ocr_lang=ocr_lang,
+            return finalize(
+                build_rich_media_text_sample(
+                    path,
+                    ext,
+                    max_chars,
+                    metadata=rich_media_metadata,
+                    image_ocr=bool(scan_image_ocr and ext.lower() in IMAGE_EXTENSIONS),
+                    ocr_max_dimension=ocr_max_dimension,
+                    ocr_lang=ocr_lang,
+                )
             )
 
         # Plain text and markup: read as text
@@ -213,8 +237,8 @@ def _read_text_sample(
             with open(path, "r", encoding="utf-8", errors="replace") as f:
                 raw = f.read(max_chars)
             if ext in SUBTITLE_EXTENSIONS:
-                return normalize_subtitle_sample(raw, ext)[:max_chars]
-            return raw
+                return finalize(normalize_subtitle_sample(raw, ext)[:max_chars])
+            return finalize(raw)
 
         if ext == ".pdf":
             from pypdf import PdfReader
@@ -225,18 +249,18 @@ def _read_text_sample(
                 if password:
                     reader.decrypt(password)
                 else:
-                    return ""
-            return " ".join(p.extract_text() or "" for p in reader.pages[:5])[
-                :max_chars
-            ]
+                    return finalize("")
+            return finalize(
+                " ".join(p.extract_text() or "" for p in reader.pages[:5])[:max_chars]
+            )
         if ext == ".docx":
             from docx import Document
 
             doc = Document(path)
-            return " ".join(p.text for p in doc.paragraphs[:50])[:max_chars]
+            return finalize(" ".join(p.text for p in doc.paragraphs[:50])[:max_chars])
         if ext == ".doc":
             # Legacy .doc: binary format; path/name still analyzed
-            return ""
+            return finalize("")
         if ext == ".odt":
             try:
                 from odf.opendocument import load
@@ -246,9 +270,9 @@ def _read_text_sample(
                 parts = [
                     teletype.extractText(el) for el in doc.getElementsByType(odf_text.P)
                 ]
-                return " ".join(parts)[:max_chars]
+                return finalize(" ".join(parts)[:max_chars])
             except Exception:
-                return ""
+                return finalize("")
         if ext == ".ods":
             try:
                 from odf.opendocument import load
@@ -258,9 +282,9 @@ def _read_text_sample(
                 parts = [
                     teletype.extractText(el) for el in doc.getElementsByType(odf_text.P)
                 ]
-                return " ".join(parts)[:max_chars]
+                return finalize(" ".join(parts)[:max_chars])
             except Exception:
-                return ""
+                return finalize("")
         if ext == ".odp":
             try:
                 from odf.opendocument import load
@@ -270,22 +294,22 @@ def _read_text_sample(
                 parts = [
                     teletype.extractText(el) for el in doc.getElementsByType(odf_text.P)
                 ]
-                return " ".join(parts)[:max_chars]
+                return finalize(" ".join(parts)[:max_chars])
             except Exception:
-                return ""
+                return finalize("")
         if ext in (".xlsx", ".xls", ".xlsm"):
             import pandas as pd
 
             df = pd.read_excel(path, nrows=20, header=None)
-            return " ".join(df.astype(str).stack().tolist())[:max_chars]
+            return finalize(" ".join(df.astype(str).stack().tolist())[:max_chars])
         if ext == ".xlsb":
             try:
                 import pandas as pd
 
                 df = pd.read_excel(path, engine="pyxlsb", nrows=20, header=None)
-                return " ".join(df.astype(str).stack().tolist())[:max_chars]
+                return finalize(" ".join(df.astype(str).stack().tolist())[:max_chars])
             except Exception:
-                return ""
+                return finalize("")
         if ext == ".pptx":
             try:
                 with zipfile.ZipFile(path, "r") as z:
@@ -305,9 +329,9 @@ def _read_text_sample(
                             import re
 
                             parts.append(re.sub(r"<[^>]+>", " ", data))
-                    return " ".join(parts)[:max_chars]
+                    return finalize(" ".join(parts)[:max_chars])
             except Exception:
-                return ""
+                return finalize("")
         if ext == ".msg":
             try:
                 import extract_msg
@@ -317,16 +341,40 @@ def _read_text_sample(
                 for att in (msg.attachments or [])[:3]:
                     body += " " + (getattr(att, "longFilename", "") or "")
                 msg.close()
-                return body[:max_chars]
+                return finalize(body[:max_chars])
             except Exception:
-                return ""
+                return finalize("")
         if ext in (".eml", ".mht", ".mhtml"):
             with open(path, "r", encoding="utf-8", errors="replace") as f:
-                return f.read(max_chars)
+                return finalize(f.read(max_chars))
+        if ext == ".epub":
+            from connectors.data_soup_formats import sample_epub_text
+
+            return finalize(sample_epub_text(path, max_chars))
+        if ext == ".parquet":
+            from connectors.data_soup_formats import sample_parquet_text
+
+            return finalize(sample_parquet_text(path, max_chars))
+        if ext == ".feather":
+            from connectors.data_soup_formats import sample_feather_text
+
+            return finalize(sample_feather_text(path, max_chars))
+        if ext == ".orc":
+            from connectors.data_soup_formats import sample_orc_text
+
+            return finalize(sample_orc_text(path, max_chars))
+        if ext == ".avro":
+            from connectors.data_soup_formats import sample_avro_text
+
+            return finalize(sample_avro_text(path, max_chars))
+        if ext == ".dbf":
+            from connectors.data_soup_formats import sample_dbf_text
+
+            return finalize(sample_dbf_text(path, max_chars))
         # .sqlite, .db, .accdb, .mdb: path/name only for text; SQLite files scanned as DB in run() when scan_sqlite_as_db
-        return ""
+        return finalize("")
     except Exception:
-        return ""
+        return finalize("")
 
 
 def _scan_sqlite_file_as_db(
@@ -443,6 +491,7 @@ class FilesystemConnector:
             self.ocr_max_dimension = 2000
         self.ocr_max_dimension = max(256, min(8000, self.ocr_max_dimension))
         self.ocr_lang = str(fs_opts.get("ocr_lang") or "eng").strip() or "eng"
+        self.scan_for_stego = bool(fs_opts.get("scan_for_stego", False))
         # "*" or "all" in list => use full SUPPORTED_EXTENSIONS; else use provided list or default
         use_all = False
         if extensions:
@@ -489,6 +538,7 @@ class FilesystemConnector:
             scan_image_ocr=self.scan_image_ocr,
             ocr_max_dimension=self.ocr_max_dimension,
             ocr_lang=self.ocr_lang,
+            scan_for_stego=self.scan_for_stego,
             use_content_type=self.use_content_type,
             scan_root=scan_root,
             audit_log_name=audit_log_name,
@@ -598,6 +648,7 @@ class FilesystemConnector:
                 scan_image_ocr=self.scan_image_ocr,
                 ocr_max_dimension=self.ocr_max_dimension,
                 ocr_lang=self.ocr_lang,
+                scan_for_stego=self.scan_for_stego,
             )
             res = self.scanner.scan_file_content(content, file_path)
             if res is None:
@@ -648,6 +699,7 @@ def scan_archive_at_path(
     scan_image_ocr: bool = False,
     ocr_max_dimension: int = 2000,
     ocr_lang: str = "eng",
+    scan_for_stego: bool = False,
     use_content_type: bool = False,
     scan_root: Path | None = None,
     audit_log_name: str | None = None,
@@ -699,6 +751,7 @@ def scan_archive_at_path(
                     scan_image_ocr=scan_image_ocr,
                     ocr_max_dimension=ocr_max_dimension,
                     ocr_lang=ocr_lang,
+                    scan_for_stego=scan_for_stego,
                 )
                 res = scanner.scan_file_content(content, member_name)
                 if res is None:

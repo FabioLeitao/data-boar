@@ -187,6 +187,12 @@ When set, treat
 as true for this run: infer file type from magic bytes, not only extension (helps find renamed or cloaked files). Adds extra I/O and CPU per file.
 .
 .TP
+.B \-\-scan\-stego
+When set, treat
+.B file_scan.scan_for_stego
+as true for this run: append lightweight byte-entropy hints for image/audio/video containers (heuristic only; not proof of hidden payload). May increase read size per rich-media file.
+.
+.TP
 .B \-\-reset\-data
 Dangerous maintenance operation: wipes all scan sessions, findings and failures from the SQLite database, deletes generated Excel reports and heatmap PNGs under
 .I report.output_dir

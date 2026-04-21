@@ -1,4 +1,10 @@
-"""One-off generator for api/locales/en.json and pt-BR.json (identical key trees)."""
+"""One-off generator for api/locales/en.json and pt-BR.json (identical key trees).
+
+Warning: ``_en()`` / ``_pt_br()`` must stay in sync with all template ``t('…')`` keys.
+Do not run this script to refresh a single string unless those dicts include every
+namespace (e.g. ``assessment``); otherwise prefer editing ``en.json`` / ``pt-BR.json``
+directly for small copy changes.
+"""
 
 from __future__ import annotations
 
@@ -31,7 +37,8 @@ def _en() -> dict:
             "gov_body": (
                 "severity {severity} (license {license_state}). "
                 "Global API key surface: {mode}. "
-                "Per-route RBAC is not implemented yet — see GET /status (enterprise_surface)."
+                "Optional per-route RBAC (api.rbac, Pro+ dashboard_rbac) — see GET /status "
+                "(enterprise_surface.access_surface.rbac)."
             ),
         },
         "meta": {"title_suffix": "Data Boar"},
@@ -379,7 +386,8 @@ def _pt_br(en: dict) -> dict:
     base["banner"]["gov_body"] = (
         "severidade {severity} (licença {license_state}). "
         "Superfície de API key global: {mode}. "
-        "RBAC por rota ainda não está implementado — veja GET /status (enterprise_surface)."
+        "RBAC por rota opcional (api.rbac, Pro+ dashboard_rbac) — veja GET /status "
+        "(enterprise_surface.access_surface.rbac)."
     )
     base["meta"]["title_suffix"] = "Data Boar"
     base["dashboard"]["page_title"] = "Painel — Data Boar"

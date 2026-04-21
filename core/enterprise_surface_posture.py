@@ -1,7 +1,8 @@
 """
 Enterprise-facing snapshot: transport + license trust + global API-key surface.
 
-This is **not** RBAC (no per-route roles). It pairs transport and access posture
+When ``api.rbac.enabled`` is active and tier allows it, ``access_surface.rbac`` reflects enforcement;
+otherwise it stays ``not_implemented``. It pairs transport and access posture
 for `/status`, `/health`, and dashboard banners so demos can show a single JSON
 bundle aligned with PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL Phase 0 narrative.
 """
@@ -12,6 +13,7 @@ from typing import Any
 
 from core.dashboard_transport import get_dashboard_transport_snapshot
 from core.host_resolution import effective_api_key_configured
+from core.rbac_settings import rbac_enforcement_active
 from core.runtime_trust import get_runtime_trust_snapshot
 
 
@@ -62,6 +64,18 @@ def get_enterprise_surface_posture(config: dict[str, Any]) -> dict[str, Any]:
 
     severity = _severity_from_reasons(reasons)
 
+    rbac_on = rbac_enforcement_active(config)
+    rbac_val = "enabled" if rbac_on else "not_implemented"
+    rbac_note = (
+        "Per-route roles enforced when api.rbac.enabled and tier allows dashboard_rbac; "
+        "see USAGE / TECH_GUIDE."
+    )
+    if not rbac_on:
+        rbac_note = (
+            "Per-route RBAC is optional (api.rbac); when off, only the global API key gate applies "
+            "if api.require_api_key is true."
+        )
+
     summary_parts = [
         f"transport={mode}",
         f"trust_state={trust_state}",
@@ -82,10 +96,7 @@ def get_enterprise_surface_posture(config: dict[str, Any]) -> dict[str, Any]:
             "mode": access_mode,
             "require_api_key": require_key,
             "effective_api_key_configured": key_ok,
-            "rbac": "not_implemented",
-            "note": (
-                "Per-route RBAC is not implemented; optional global API key gates "
-                "the whole HTTP/API surface when enabled."
-            ),
+            "rbac": rbac_val,
+            "note": rbac_note,
         },
     }

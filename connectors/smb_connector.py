@@ -94,6 +94,7 @@ class SMBConnector:
             self.ocr_max_dimension = 2000
         self.ocr_max_dimension = max(256, min(8000, self.ocr_max_dimension))
         self.ocr_lang = str(fs_opts.get("ocr_lang") or "eng").strip() or "eng"
+        self.scan_for_stego = bool(fs_opts.get("scan_for_stego", False))
         from core.rich_media_magic import IMAGE_EXTENSIONS, RICH_MEDIA_SCAN_EXTENSIONS
 
         if self.scan_rich_media_metadata:
@@ -226,6 +227,7 @@ class SMBConnector:
                                 scan_image_ocr=self.scan_image_ocr,
                                 ocr_max_dimension=self.ocr_max_dimension,
                                 ocr_lang=self.ocr_lang,
+                                scan_for_stego=self.scan_for_stego,
                                 use_content_type=self.use_content_type,
                                 audit_log_name=audit_name,
                             )
@@ -256,6 +258,7 @@ class SMBConnector:
                         scan_image_ocr=self.scan_image_ocr,
                         ocr_max_dimension=self.ocr_max_dimension,
                         ocr_lang=self.ocr_lang,
+                        scan_for_stego=self.scan_for_stego,
                     )
                     res = self.scanner.scan_file_content(text, Path(unc_file))
                     if res is None:
