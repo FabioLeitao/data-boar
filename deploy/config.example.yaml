@@ -16,6 +16,14 @@ report:
 api:
   port: 8088
   # workers: 1   # 1 = minimal footprint; 2+ if you need more concurrent API traffic (I/O-bound)
+  # Optional Phase 1a: WebAuthn JSON under /auth/webauthn/ (FIDO2/passkeys). Default off.
+  # Set DATA_BOAR_WEBAUTHN_TOKEN_SECRET (or token_secret_from_env) before start; align origin/rp_id with HTTPS URL.
+  # webauthn:
+  #   enabled: true
+  #   rp_id: localhost
+  #   rp_name: Data Boar
+  #   origin: https://localhost:8088
+  #   # token_secret_from_env: "DATA_BOAR_WEBAUTHN_TOKEN_SECRET"
   # Optional POC: dashboard HTML GET /{locale}/assessment (organizational self-assessment placeholder).
   # Requires Pro+ when licensing.effective_tier is set; omit effective_tier for OPEN (dev) tier checks off.
   # JWT: dbtier claim overrides effective_tier for gates (see LICENSING_SPEC.md).

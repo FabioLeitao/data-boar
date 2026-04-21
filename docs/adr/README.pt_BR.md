@@ -29,6 +29,7 @@ Notas curtas e duradouras que registram **por que** o projeto escolheu um caminh
 ## Docs relacionados
 
 - [ADR 0032](0032-maturity-assessment-batch-history-sqlite.md) (EN) — histórico por **batch** do questionário de maturidade no HTML do dashboard (agregação SQLite + tabela; RBAC/tenant **não** — ver [#86](https://github.com/FabioLeitao/data-boar/issues/86)).
+- [ADR 0033](0033-webauthn-open-relying-party-json-endpoints.md) (EN) — WebAuthn **RP** aberto (biblioteca `webauthn`): endpoints JSON em `/auth/webauthn/` por trás de `api.webauthn.enabled`; sem lock-in de vendor; UI do dashboard ainda não exige login (fase **#86**).
 - [ADR 0030](0030-python-dependency-update-closure-single-pass.md) (EN) — fechamento de atualização Python num único passe (`pyproject.toml` → lock → `requirements.txt`, `uv sync`, gate completo, SBOM/ADR quando aplicável); qualquer origem (CI, bots, review) usa o mesmo fluxo.
 - [ADR 0031](0031-pypi-packaging-hatchling-flat-layout.md) (EN) — empacotamento PyPI com **Hatchling** (layout plano explícito), script **`scripts/pypi-publish.ps1`**, entry point **`data-boar`** → `main:main`.
 - [ADR 0029](0029-cursor-markdown-preview-guardrail-and-lab-smoke-ansible-hook.md) (EN) — guardrail Cursor (preview Markdown em aba) + playbook Ansible `lab-smoke-stack-init-perms`; ver [CURSOR_MARKDOWN_PREVIEW_SETTINGS.pt_BR.md](../ops/CURSOR_MARKDOWN_PREVIEW_SETTINGS.pt_BR.md) e [LAB_SMOKE_MULTI_HOST.pt_BR.md](../ops/LAB_SMOKE_MULTI_HOST.pt_BR.md).
