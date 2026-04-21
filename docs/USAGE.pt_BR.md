@@ -62,7 +62,7 @@ python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Sil
 
 #### Servidor API (`--web`)
 
-**Transporte:** é preciso usar **HTTPS** (certificado + chave PEM na CLI ou em `api` no config) ou **aceitar explicitamente** texto plano com **`--allow-insecure-http`** (ou `api.allow_insecure_http: true`). Caso contrário, `main.py --web` termina com código **2**. **`GET /status`** e **`GET /health`** incluem `dashboard_transport` e **`enterprise_surface`** (transporte + confiança da licença + postura global da chave de API; **RBAC** por rota ainda não implementado); em HTTP texto plano há **faixa de aviso** nas páginas do dashboard.
+**Transporte:** é preciso usar **HTTPS** (certificado + chave PEM na CLI ou em `api` no config) ou **aceitar explicitamente** texto plano com **`--allow-insecure-http`** (ou `api.allow_insecure_http: true`). Caso contrário, `main.py --web` termina com código **2**. **`GET /status`** e **`GET /health`** incluem `dashboard_transport` e **`enterprise_surface`** (transporte + confiança da licença + postura global da chave de API; **RBAC** opcional por rota aparece em **`enterprise_surface.access_surface.rbac`** — **`enabled`** quando `api.rbac` está ligado e o tier permite **`dashboard_rbac`**, senão **`not_implemented`**); em HTTP texto plano há **faixa de aviso** nas páginas do dashboard.
 
 ```bash
 python main.py --config config.yaml --web --https-cert-file server.crt --https-key-file server.key --port 8088
