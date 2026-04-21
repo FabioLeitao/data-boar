@@ -322,6 +322,22 @@ Esse endpoint procura, entre os arquivos `audit_YYYYMMDD.log` disponíveis (do m
 - Opcionais: `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection` (termos ML/DL inline), `learned_patterns` (export de termos classificados), **`pattern_files_encoding`** (encoding dos arquivos de padrões; ver abaixo).
 - **Pedindo acesso à TI:** Quando for preciso solicitar permissões à equipe de TI (ex.: pastas compartilhadas, contas de banco, tokens de API), solicite o **mínimo** necessário. Veja [OPERATOR_IT_REQUIREMENTS.pt_BR.md](ops/OPERATOR_IT_REQUIREMENTS.pt_BR.md) para o checklist por fonte (somente leitura, sem admin), o que não precisamos e uma breve justificativa, alinhada a zero-trust ou IAM restrito. ([EN](ops/OPERATOR_IT_REQUIREMENTS.md))
 
+### Config inicial (copiar e colar) e onde começar {#config-inicial-exemplos}
+
+Se você está **começando agora** (jurídico, DPO, liderança de auditoria ou **validação de capacidades**) e precisa de **um único arquivo** para alinhar com a TI **sem** ler todos os guias primeiro:
+
+1. Abra o **hub** **[docs/samples/README.pt_BR.md](samples/README.pt_BR.md)** ([EN](samples/README.md)) — ele aponta para o YAML *starter*, o modelo mínimo Docker, o CSV de escopo e explica **`config/config.json`** (JSON legado só para referência).
+1. Copie **[deploy/samples/config.starter-lgpd-eval.yaml](../deploy/samples/config.starter-lgpd-eval.yaml)** para a sua máquina como **`config.yaml`**. O arquivo traz **valores padrão utilizáveis** (duas pastas + um banco + timeouts + limite de taxa + termos ML/DL) e **blocos opcionais comentados** (ex.: arquivos compactados, `file_passwords`, `learned_patterns`) para ir habilitando aos poucos.
+1. Substitua os caminhos **fictícios** (`/opt/lgpd-demo/...`) e o host **`192.0.2.10`** (rede só de documentação) pelos valores de laboratório reais.
+1. Defina a variável de ambiente de **`pass_from_env`** (exemplo: `DEMO_DB_PASSWORD`) **antes** de subir o processo — não coloque senhas reais no YAML em produção.
+1. Execute uma varredura one-shot: `uv run python main.py --config config.yaml` ou suba o painel com o mesmo `--config`.
+
+O *starter* **não** substitui os grandes YAML de **`docs/compliance-samples/`** (ajuste fino por norma).
+
+Em **Docker**, comece por **[deploy/config.example.yaml](../deploy/config.example.yaml)** e una trechos do *starter* se precisar de um perfil de laboratório mais completo.
+
+**JSON legado:** O arquivo **`config/config.json`** no repositório só ilustra o formato antigo `databases` + `file_scan.directories` — veja **[config/README.pt_BR.md](../config/README.pt_BR.md)**. **Prefira YAML** em projetos novos.
+
 ### Importação de escopo a partir de CSV (fragmento de config) {#scope-import-csv-fragment}
 
 Dá para **montar a lista de `targets`** a partir de um **CSV canônico** (por exemplo exportado de uma planilha) e gerar um **fragmento YAML** para colar em `targets:` ou salvar em arquivo para revisão. O produto **não** mescla automaticamente com um `config.yaml` existente; o operador revisa e integra manualmente ou com ferramentas próprias.

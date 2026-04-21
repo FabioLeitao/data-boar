@@ -105,7 +105,7 @@ uv pip install -e ".[nosql]"
 
 ## Configuration
 
-Use a single config file in **YAML** or **JSON**. The API loads it from `CONFIG_PATH` or `config.yaml` in the working directory. For detailed **targets and credentials** (databases, filesystems, APIs with basic/bearer/OAuth2, and shared content), see **[USAGE.md](USAGE.md)**. For **multi-language and multi-regional** use (encoding, compliance samples per region), see [USAGE – File encoding](USAGE.md#file-encoding-config-and-pattern-files) and [COMPLIANCE_FRAMEWORKS](COMPLIANCE_FRAMEWORKS.md#multi-language-multi-encoding-and-multi-regional-operation). Example `config.yaml`:
+Use a single config file in **YAML** or **JSON**. The API loads it from `CONFIG_PATH` or `config.yaml` in the working directory. **First-time / evaluation:** see **[docs/samples/README.md](samples/README.md)** ([pt-BR](samples/README.pt_BR.md)) for a one-page map, then copy **[deploy/samples/config.starter-lgpd-eval.yaml](../deploy/samples/config.starter-lgpd-eval.yaml)** (full starter + commented optional blocks) or the minimal **[deploy/config.example.yaml](../deploy/config.example.yaml)** (Docker-oriented); legacy JSON shape is explained under **[config/README.md](../config/README.md)**. For detailed **targets and credentials** (databases, filesystems, APIs with basic/bearer/OAuth2, and shared content), see **[USAGE.md](USAGE.md)**. For **multi-language and multi-regional** use (encoding, compliance samples per region), see [USAGE – File encoding](USAGE.md#file-encoding-config-and-pattern-files) and [COMPLIANCE_FRAMEWORKS](COMPLIANCE_FRAMEWORKS.md#multi-language-multi-encoding-and-multi-regional-operation). Example `config.yaml`:
 
 ```yaml
 targets:
