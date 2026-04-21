@@ -4,6 +4,13 @@
 
 **Objetivo:** Definir o que é **completão** neste projeto: **rodar o produto** (CLI, API, web) nos **hosts do lab**, via **SSH**, com **registo** de resultados — não é a mesma coisa que só **`pytest`** ou **`.\scripts\check-all.ps1`** no PC de desenvolvimento.
 
+## Contrato assistente + operador (Cursor)
+
+- **Acesso:** O assistente corre **`ssh`**, scripts e **`curl`** no **terminal integrado do Cursor** no **PC Windows do operador** — **mesma LAN e configuração SSH** que o teu shell (ver **`homelab-ssh-via-terminal.mdc`**). Não tratar o “assistente” como rede separada.
+- **Orquestração por defeito:** Quando pedes **completão** ou usas o token **`completao`**, o assistente deve correr **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** na raiz do repo, salvo optares por não usar. Registos: **`docs/private/homelab/reports/`**.
+- **Probes privilegiados:** **`sudo -n`** no script de smoke exige **sudoers estreito** em cada Linux (modelo em **`LABOP_COMPLETÃO_SUDOERS*.md`** gitignored). **`sudo -v` no tmux** aquece sudo **para aquele TTY**, não automaticamente para **`ssh host 'sudo …'`** não interactivo — para **`-Privileged`** fiável, alinha sudoers com o modelo.
+- **Em falha:** Se **`sudo -n`** ou SSH falhar, o assistente **lembra-te** de atualizar sudoers / agente SSH / sudo interactivo conforme preciso e **volta a correr** os testes — ver **`lab-completao-workflow.mdc`**.
+
 **Relação:**
 
 | Camada | O que é | Comando típico |
@@ -51,5 +58,5 @@
 
 1. Garantir clone + **`uv`** em cada host (muitas vezes **`~/.local/bin/uv`** — o smoke script antecede isso ao **`PATH`**); **`uv sync`** e **`uv sync --extra nosql`** se houver alvos Mongo; outros extras conforme [TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md).
 2. No manifest, opcionalmente **`completaoHealthUrl`** por host (ex.: `http://<host-lan>:8088/health`).
-3. Na raiz do repo no Windows: **`.\scripts\lab-completao-orchestrate.ps1`** (e **`-Privileged`** se o sudoers permitir).
+3. Na raiz do repo no Windows: **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** (padrão para completão orientado pelo assistente; omite **`-Privileged`** só se precisares de evitar probes privilegiados).
 4. Preencher o template privado; abrir issues / planos quando houver lacunas de produto.

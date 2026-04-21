@@ -4,6 +4,13 @@
 
 **Purpose:** Define what **completão** means in this project: **running the product** (CLI, API, web) on **lab hosts**, across **SSH**, with **documented** outcomes — not the same thing as **`pytest`** or **`.\scripts\check-all.ps1`** on the dev PC alone.
 
+## Assistant and operator contract (Cursor)
+
+- **Access:** The assistant runs **`ssh`**, scripts, and **`curl`** from the **Cursor integrated terminal** on the **operator’s Windows dev PC** — **same LAN and SSH config** as the operator’s shell (see **`homelab-ssh-via-terminal.mdc`**). Do **not** treat “assistant” as a separate network.
+- **Default orchestration:** When the operator asks for **completão** or uses session keyword **`completao`**, the assistant should run **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** from the repo root unless the operator opts out. Logs: **`docs/private/homelab/reports/`**.
+- **Privileged probes:** **`sudo -n`** in the smoke script requires **narrow sudoers** on each Linux host (template under gitignored **`LABOP_COMPLETÃO_SUDOERS*.md`**). **`sudo -v` in tmux** warms sudo for **that TTY**, not automatically for **non-interactive** `ssh host 'sudo …'` — for reliable **`-Privileged`** runs, align sudoers with the template.
+- **On failure:** If **`sudo -n`** or SSH fails, the assistant **reminds** the operator to refresh sudoers / SSH agent / interactive sudo as needed, then **re-runs** the tests — see **`lab-completao-workflow.mdc`**.
+
 **Relationship:**
 
 | Layer | What it is | Typical command |
@@ -52,5 +59,5 @@
 
 1. Ensure each lab host has the repo clone and **`uv`** (often **`~/.local/bin/uv`** — **`lab-completao-host-smoke.sh`** prepends that to **`PATH`**); run **`uv sync`** and **`uv sync --extra nosql`** if Mongo targets are in your YAML (and [TECH_GUIDE.md](../TECH_GUIDE.md) extras for compressed/shares as needed).
 2. Optional manifest fields: **`docs/private.example/homelab/lab-op-hosts.manifest.example.json`** (`completaoHealthUrl`).
-3. From repo root on Windows: **`.\scripts\lab-completao-orchestrate.ps1`** (add **`-Privileged`** if sudoers allow non-interactive privileged probes on Linux).
+3. From repo root on Windows: **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** (assistant-led completão default; omit **`-Privileged`** only if you must avoid privileged probes).
 4. Append lessons to the private template; link findings to **`PLANS_TODO.md`** / issues when product gaps appear.
