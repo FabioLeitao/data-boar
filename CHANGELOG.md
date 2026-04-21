@@ -4,7 +4,7 @@ Human-readable summary of user-facing changes. **Detailed release notes:** [docs
 
 ## Unreleased (`main`)
 
-- **Development:** Pre-release **`1.7.2-beta`** on `main` — next build window (dashboard **#86**, data source versions, additional soup formats — see [PLANS_TODO.md](docs/plans/PLANS_TODO.md)).
+- **Development:** Pre-release **`1.7.2-beta`** on `main`. Release planning: **one** primary slice per patch (**POC ready** for maturity assessment **or** scope-import vendor work **or** another small governance item)—see [PLANS_TODO.md](docs/plans/PLANS_TODO.md). **Plans:** scope import **Phase D** marked complete in [PLAN_SCOPE_IMPORT_FROM_EXPORTS.md](docs/plans/PLAN_SCOPE_IMPORT_FROM_EXPORTS.md) (operator docs + quickstart + privacy alignment). **Maturity POC:** [PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md](docs/plans/PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md) + [SMOKE_MATURITY_ASSESSMENT_POC.md](docs/ops/SMOKE_MATURITY_ASSESSMENT_POC.md) now spell out **autonomous (CI/smoke) vs operator (browser §D)** closure; [LICENSING_SPEC.md](docs/LICENSING_SPEC.md) links **`dbtier`** to POC regression tests.
 
 ## 1.7.1 (2026-04-21)
 
