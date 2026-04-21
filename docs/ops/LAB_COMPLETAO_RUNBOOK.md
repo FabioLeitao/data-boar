@@ -4,6 +4,8 @@
 
 **Purpose:** Define what **completão** means in this project: **running the product** (CLI, API, web) on **lab hosts**, across **SSH**, with **documented** outcomes — not the same thing as **`pytest`** or **`.\scripts\check-all.ps1`** on the dev PC alone.
 
+**New Cursor chat / zero context:** Use **[LAB_COMPLETAO_FRESH_AGENT_BRIEF.md](LAB_COMPLETAO_FRESH_AGENT_BRIEF.md)** — copy-paste prompt, preconditions, and what a fresh agent can/cannot do.
+
 ## Assistant and operator contract (Cursor)
 
 - **Access:** The assistant runs **`ssh`**, scripts, and **`curl`** from the **Cursor integrated terminal** on the **operator’s Windows dev PC** — **same LAN and SSH config** as the operator’s shell (see **`homelab-ssh-via-terminal.mdc`**). Do **not** treat “assistant” as a separate network.
