@@ -6,6 +6,8 @@
 
 This runbook closes **manual** checklist items **3** (happy path) and **4** (optional integrity). **Automated** gate **1** is covered by CI and by `scripts/smoke-maturity-assessment-poc.ps1` (subset of pytest).
 
+**Evidence levels (A/B/C):** [PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md](../plans/PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md) § *POC ready — evidence levels* — **A** = this script + CI; **B** = USAGE + ADR; **C** = §D below.
+
 ---
 
 ## A. Autonomous smoke (any machine with the repo)
@@ -17,6 +19,21 @@ From the repo root (Windows):
 ```
 
 Full gate before merge remains **`.\scripts\check-all.ps1`** (not replaced by this script).
+
+### Pytest coverage vs browser checklist (§D)
+
+Automated tests exercise the **same routes and persistence** as §D without a browser. Use this table to see what is already proven in CI; **§D** remains the **human UX** check (layout, redirects, file download in a real browser).
+
+| Runbook §D | Covered in tests (representative) |
+| --- | --- |
+| D1 — page loads, questions from pack | `test_assessment_renders_yaml_pack_when_configured`, tier/flag tests in `tests/test_api_assessment_poc.py` |
+| D2 — submit → redirect / saved batch | `test_assessment_post_persists_answers`, `test_assessment_post_persists_answers_with_integrity_secret` |
+| D3 — summary + recent submissions | History/batch behaviour in `tests/test_api_assessment_poc.py`, `tests/test_database.py::test_maturity_assessment_batch_summaries_newest_first` |
+| D4 — batch in URL / summary link | Same module (GET with `saved` / `batch` query patterns) |
+| D5 — CSV / Markdown export | CSV and Markdown export assertions inside `test_assessment_post_persists_answers` |
+| D6 — `pt-br` locale | `test_assessment_placeholder_200_when_flag_on_open_tier` (GET `/pt-br/assessment`) |
+
+**Why §D is still required for “full POC ready”:** Styling, accessibility, and real download behaviour are not a substitute for one **operator pass** through the runbook — see [PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md](../plans/PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md) § *Autonomous vs operator*.
 
 ---
 

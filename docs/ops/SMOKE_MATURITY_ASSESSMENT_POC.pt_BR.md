@@ -6,6 +6,8 @@
 
 Este runbook cobre os itens **manuais** **3** (happy path) e **4** (integridade opcional). O gate **1** automatizado fica na CI e no script **`scripts/smoke-maturity-assessment-poc.ps1`** (subconjunto de pytest).
 
+**Níveis de evidência (A/B/C):** [PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md](../plans/PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md) secao *POC ready — evidence levels* — **A** = este script + CI; **B** = USAGE + ADR; **C** = secao D abaixo.
+
 ---
 
 ## A. Smoke autonomo (qualquer maquina com o clone)
@@ -17,6 +19,21 @@ Na raiz do repo (Windows):
 ```
 
 O gate completo antes do merge continua sendo **`.\scripts\check-all.ps1`** (este script nao substitui).
+
+### Cobertura pytest vs checklist no browser (secao D)
+
+Os testes automatizados exercitam as **mesmas rotas e persistencia** que a secao D **sem** browser. A tabela abaixo mostra o que a CI ja prova; a **secao D** continua sendo a verificacao **humana** de UX (layout, redirects, download no browser).
+
+| Runbook D | Testes (exemplos) |
+| --- | --- |
+| D1 — pagina e perguntas do pack | `test_assessment_renders_yaml_pack_when_configured`, testes de tier/flag em `tests/test_api_assessment_poc.py` |
+| D2 — envio e batch salvo | `test_assessment_post_persists_answers`, `test_assessment_post_persists_answers_with_integrity_secret` |
+| D3 — resumo e envios recentes | Historico/batch em `tests/test_api_assessment_poc.py`, `tests/test_database.py::test_maturity_assessment_batch_summaries_newest_first` |
+| D4 — batch na URL | Mesmo modulo (GET com query `saved` / `batch`) |
+| D5 — export CSV / Markdown | Assercoes de export dentro de `test_assessment_post_persists_answers` |
+| D6 — locale `pt-br` | `test_assessment_placeholder_200_when_flag_on_open_tier` (GET `/pt-br/assessment`) |
+
+**Por que D ainda e obrigatorio para “POC ready completo”:** estilo, acessibilidade e download real nao substituem uma **passada do operador** no runbook — ver [PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md](../plans/PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md) secao *Autonomous vs operator*.
 
 ---
 
