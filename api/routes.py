@@ -1,7 +1,9 @@
 """
 FastAPI app: dashboard HTML under GET /{locale_slug}/ (e.g. /en/, /pt-br/), config, reports, help, about,
+GET /{locale_slug}/login (WebAuthn browser sign-in when enabled),
 optional POST /{locale_slug}/assessment and GET /{locale_slug}/assessment/export (gated maturity POC);
-optional JSON /auth/webauthn/* when ``api.webauthn.enabled`` (Phase 1 passkeys);
+optional JSON /auth/webauthn/* when ``api.webauthn.enabled`` (Phase 1 passkeys); optional HTML session gate
+when at least one passkey exists (Phase 1b, GitHub #86);
 unprefixed /, /config, … redirect to the
 negotiated locale prefix. API: POST /scan and /start (optional tenant/technician tags), GET /status,
 /report, /list, GET /reports/{session_id}, POST /scan_database (optional tenant/technician),
@@ -61,6 +63,7 @@ from core.maturity_assessment.export_render import (
 )
 from core.maturity_assessment.pack import load_maturity_pack
 from core.maturity_assessment.scoring import rubric_result_to_summary_dict
+from core.webauthn_rp.settings import webauthn_block
 
 from api.locale_i18n import (
     LOCALE_SLUG_BY_TAG,
@@ -69,6 +72,13 @@ from api.locale_i18n import (
     html_base_path,
     make_t,
     negotiate_locale_tag,
+)
+from api.webauthn_html_gate import (
+    csrf_context_for_request,
+    is_locale_login_get,
+    safe_next_path,
+    verify_html_form_csrf_or_raise,
+    webauthn_html_session_middleware as webauthn_html_session_gate,
 )
 from api.webauthn_routes import register_webauthn_routes
 
@@ -841,6 +851,16 @@ def _is_secure_request(request: Request) -> bool:
 
 
 @app.middleware("http")
+async def webauthn_html_session_middleware(request: Request, call_next):
+    """
+    When WebAuthn is enabled and at least one passkey exists, require a valid session cookie
+    for locale-prefixed HTML except ``help``, ``about``, and ``login`` (GET). Registered first
+    so this layer is innermost (runs last before the route handler). See PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL Phase 1b.
+    """
+    return await webauthn_html_session_gate(request, call_next)
+
+
+@app.middleware("http")
 async def security_headers_middleware(request: Request, call_next):
     """
     Add current best-practice security headers to all responses.
@@ -895,6 +915,8 @@ async def optional_api_key_middleware(request: Request, call_next):
     if request.url.path == "/health":
         return await call_next(request)
     if request.url.path.startswith("/auth/webauthn"):
+        return await call_next(request)
+    if is_locale_login_get(request.url.path, request.method):
         return await call_next(request)
     cfg = _get_config()
     api_cfg = cfg.get("api") or {}
@@ -1471,6 +1493,23 @@ async def about_page(request: Request, locale_slug: LocaleSlug):
     )
 
 
+@app.get("/{locale_slug}/login", response_class=HTMLResponse)
+async def webauthn_login_page(request: Request, locale_slug: LocaleSlug):
+    """Browser WebAuthn sign-in / passkey registration (Phase 1b). Public when HTML gate is off; with gate on, always reachable (see middleware)."""
+    tag = _locale_tag_from_slug(locale_slug.value)
+    fb = f"/{locale_slug.value}/"
+    next_path = safe_next_path(request.query_params.get("next"), fb)
+    ctx = {
+        "login_next": next_path,
+        "webauthn_enabled": webauthn_block(_get_config()) is not None,
+    }
+    return templates.TemplateResponse(
+        request=request,
+        name="login.html",
+        context=_i18n_template_context(request, locale_slug.value, tag, ctx),
+    )
+
+
 @app.get("/{locale_slug}", response_class=HTMLResponse)
 async def dashboard_locale_root_redirect(locale_slug: LocaleSlug):
     """Normalize /en -> /en/ for the dashboard."""
@@ -1515,20 +1554,17 @@ async def config_page(request: Request, locale_slug: LocaleSlug):
     tag = _locale_tag_from_slug(locale_slug.value)
     saved = request.query_params.get("saved") == "1"
     error = request.query_params.get("error")
+    cfg_ctx = {
+        "config_path": _get_config_path(),
+        "config_yaml": _get_config_yaml_for_display(),
+        "config_saved": saved,
+        "config_save_error": error,
+    }
+    cfg_ctx.update(csrf_context_for_request(request))
     return templates.TemplateResponse(
         request=request,
         name=_TEMPLATE_CONFIG,
-        context=_i18n_template_context(
-            request,
-            locale_slug.value,
-            tag,
-            {
-                "config_path": _get_config_path(),
-                "config_yaml": _get_config_yaml_for_display(),
-                "config_saved": saved,
-                "config_save_error": error,
-            },
-        ),
+        context=_i18n_template_context(request, locale_slug.value, tag, cfg_ctx),
     )
 
 
@@ -1538,6 +1574,7 @@ async def config_save(request: Request, locale_slug: LocaleSlug):
     tag = _locale_tag_from_slug(locale_slug.value)
     ls = locale_slug.value
     form = await request.form()
+    verify_html_form_csrf_or_raise(request, form)
     yaml_content = form.get("yaml", "")
     if not yaml_content:
         t_call = make_t(
@@ -1547,39 +1584,33 @@ async def config_save(request: Request, locale_slug: LocaleSlug):
             (_get_config().get("locale") or {}).get("default_locale") or "en",
             {},
         )
+        err_ctx = {
+            "config_path": _get_config_path(),
+            "config_yaml": _get_config_yaml_for_display(),
+            "config_saved": False,
+            "config_save_error": t_call("config.no_yaml_error"),
+        }
+        err_ctx.update(csrf_context_for_request(request))
         return templates.TemplateResponse(
             request=request,
             name=_TEMPLATE_CONFIG,
-            context=_i18n_template_context(
-                request,
-                ls,
-                tag,
-                {
-                    "config_path": _get_config_path(),
-                    "config_yaml": _get_config_yaml_for_display(),
-                    "config_saved": False,
-                    "config_save_error": t_call("config.no_yaml_error"),
-                },
-            ),
+            context=_i18n_template_context(request, ls, tag, err_ctx),
         )
     try:
         _merge_and_save_config_yaml(yaml_content)
         return RedirectResponse(url=f"/{ls}/config?saved=1", status_code=303)
     except ValueError as e:
+        ve_ctx = {
+            "config_path": _get_config_path(),
+            "config_yaml": yaml_content,
+            "config_saved": False,
+            "config_save_error": str(e),
+        }
+        ve_ctx.update(csrf_context_for_request(request))
         return templates.TemplateResponse(
             request=request,
             name=_TEMPLATE_CONFIG,
-            context=_i18n_template_context(
-                request,
-                ls,
-                tag,
-                {
-                    "config_path": _get_config_path(),
-                    "config_yaml": yaml_content,
-                    "config_saved": False,
-                    "config_save_error": str(e),
-                },
-            ),
+            context=_i18n_template_context(request, ls, tag, ve_ctx),
         )
 
 
@@ -1624,6 +1655,15 @@ async def maturity_self_assessment_placeholder(
             "batch_id": batch_q,
             "score": score_dict,
         }
+    assess_ctx = {
+        "maturity_pack_sections": pack_sections,
+        "assessment_batch_id": secrets.token_hex(16),
+        "maturity_pack_version": pack_version,
+        "assessment_saved": saved,
+        "assessment_summary": assessment_summary,
+        "assessment_batch_history": assessment_batch_history,
+    }
+    assess_ctx.update(csrf_context_for_request(request))
     return templates.TemplateResponse(
         request=request,
         name="assessment_placeholder.html",
@@ -1631,14 +1671,7 @@ async def maturity_self_assessment_placeholder(
             request,
             locale_slug.value,
             tag,
-            {
-                "maturity_pack_sections": pack_sections,
-                "assessment_batch_id": secrets.token_hex(16),
-                "maturity_pack_version": pack_version,
-                "assessment_saved": saved,
-                "assessment_summary": assessment_summary,
-                "assessment_batch_history": assessment_batch_history,
-            },
+            assess_ctx,
         ),
     )
 
@@ -1656,6 +1689,7 @@ async def maturity_self_assessment_submit(request: Request, locale_slug: LocaleS
             detail="No maturity pack configured (api.maturity_assessment_pack_path)",
         )
     form = await request.form()
+    verify_html_form_csrf_or_raise(request, form)
     batch_id = str(form.get("assessment_batch_id") or "").strip()
     if not _valid_maturity_assessment_batch_id(batch_id):
         raise HTTPException(status_code=400, detail="Invalid assessment_batch_id")

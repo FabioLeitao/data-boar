@@ -1,6 +1,6 @@
 # Plan: Dashboard / reports access control (roles & permissions)
 
-**Status:** Phase **0 (D-WEB)** design snapshot ✅ (route matrix + middleware Mermaid + proxy pointers — § *Phase 0 deliverable* below); **Phase 1a** (vendor-neutral **WebAuthn JSON RP** + SQLite — § *Phase 1a deliverable* below) ✅ on `main`; **Phase 1b** (browser session gates **HTML** on `/{locale}/…` + CSRF) + **Phases 2–3** ⬜ — [GitHub #86](https://github.com/FabioLeitao/data-boar/issues/86)
+**Status:** Phase **0 (D-WEB)** design snapshot ✅ (route matrix + middleware Mermaid + proxy pointers — § *Phase 0 deliverable* below); **Phase 1a** (vendor-neutral **WebAuthn JSON RP** + SQLite — § *Phase 1a deliverable* below) ✅ on `main`; **Phase 1b** (browser session gates **HTML** on `/{locale}/…` + CSRF for forms) ✅ minimal on `main` ( **`GET /{locale}/login`** + middleware + `tests/test_webauthn_html_gate.py` ); **Phases 2–3** ⬜ — [GitHub #86](https://github.com/FabioLeitao/data-boar/issues/86)
 
 **Horizon / urgency:** `[H2]` / `[U2]` — after **Priority band A** and when multi-tenant / multi-user dashboard exposure is real, not before core scan stability.
 
@@ -67,7 +67,7 @@ See [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md), [TECH_GUIDE.md](../T
 | Limits | Challenge `state` is **in-memory** (single-worker); **one** registration while a credential row exists (**403** on second registration attempt) |
 | Tests + smoke | `tests/test_webauthn_rp.py`, `tests/test_webauthn_session_cookie.py`; operator pytest subset: [SMOKE_WEBAUTHN_JSON.md](../ops/SMOKE_WEBAUTHN_JSON.md) |
 
-**Explicitly not in 1a:** Gating **HTML** dashboard routes, **RBAC**, **CSRF** policy for locale-prefixed forms, **Bitwarden Passwordless.dev** adapter, **multi-worker** challenge store — those remain **Phase 1b+** / [#86](https://github.com/FabioLeitao/data-boar/issues/86).
+**Explicitly not in 1a:** Gating **HTML** dashboard routes, **RBAC**, **CSRF** policy for locale-prefixed forms, **Bitwarden Passwordless.dev** adapter, **multi-worker** challenge store — HTML gate + form CSRF shipped in **1b** (minimal); **RBAC**, Bitwarden adapter, shared challenge store remain **Phase 2+** / [#86](https://github.com/FabioLeitao/data-boar/issues/86).
 
 ### Phase 0 (D-WEB) — documentation-only slice (no WebAuthn yet)
 
@@ -108,6 +108,7 @@ See [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md), [TECH_GUIDE.md](../T
 | `GET` | `/auth/webauthn/status` | JSON | `{ enabled, registered_credentials, session_authenticated }` — **404** when off | `public` |
 | `POST` | `/auth/webauthn/logout` | JSON | Clear session cookie — **404** when off | `public` |
 | `GET` | `/{locale_slug}/help` | HTML | Help / doc links (`en`, `pt-br`, …) | `public` (or `authenticated` if product tightens) |
+| `GET` | `/{locale_slug}/login` | HTML | WebAuthn browser sign-in / passkey registration (`webauthn-login.js`) | `public` (GET; **exempt** global API key for reachability) |
 | `GET` | `/{locale_slug}/about` | HTML | About page | `public` |
 | `GET` | `/{locale_slug}/assessment` | HTML | Optional POC placeholder (gated: `api.maturity_self_assessment_poc_enabled` + tier); **404** when off — [PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md](PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md). When answers exist in SQLite, HTML includes a **recent submissions** table (all batches in the DB file — **#86** should scope this list by role/tenant). | `authenticated` (TBD) |
 | `POST` | `/{locale_slug}/assessment` | redirect | Save answers to SQLite when a YAML pack is configured; **400** without pack; **404** when gate off | `authenticated` (TBD) |
@@ -139,15 +140,16 @@ Starlette/FastAPI: **the last `@app.middleware("http")` registered runs first** 
 
 Registration order in code (first listed = innermost, closest to route):
 
-1. `security_headers_middleware` — CSP, HSTS when HTTPS, etc. (runs **after** inner layers return, still participates in the stack).
-2. `cache_control_middleware` — `Cache-Control` for `/static` vs no-store.
-3. `optional_api_key_middleware` — if `api.require_api_key`, require key for **all paths except** `GET /health`.
-4. `request_body_size_middleware` — reject body over 1 MB.
-5. `locale_html_middleware` — unprefixed dashboard HTML paths → `/{slug}/…`; invalid locale segment → redirect; `Set-Cookie` for `db_locale` on successful locale HTML responses (**registered last** → runs **first** on incoming request).
+1. `webauthn_html_session_middleware` — when WebAuthn is enabled **and** at least one passkey exists, require session cookie for locale HTML except `help`, `about`, `login` (GET); redirect to `/{slug}/login` when unauthenticated (**registered first** in code → **innermost** → runs **last** before the route).
+2. `security_headers_middleware` — CSP, HSTS when HTTPS, etc. (runs **after** inner layers return, still participates in the stack).
+3. `cache_control_middleware` — `Cache-Control` for `/static` vs no-store.
+4. `optional_api_key_middleware` — if `api.require_api_key`, require key for **all paths except** `GET /health`, `/auth/webauthn/*`, and **`GET /{locale}/login`**.
+5. `request_body_size_middleware` — reject body over 1 MB.
+6. `locale_html_middleware` — unprefixed dashboard HTML paths → `/{slug}/…`; invalid locale segment → redirect; `Set-Cookie` for `db_locale` on successful locale HTML responses (**registered last** → runs **first** on incoming request).
 
 **Incoming request path (outer → inner):**
 
-`locale_html` → `request_body_size` → `optional_api_key` → `cache_control` → `security_headers` → **route handler** (or static mount).
+`locale_html` → `request_body_size` → `optional_api_key` → `cache_control` → `security_headers` → `webauthn_html_session` → **route handler** (or static mount).
 
 ```mermaid
 flowchart LR
@@ -157,9 +159,10 @@ flowchart LR
     B[optional_api_key]
     C[cache_control]
     D[security_headers]
+    W[webauthn_html_session]
     R[Route / static]
   end
-  L --> A --> B --> C --> D --> R
+  L --> A --> B --> C --> D --> W --> R
 ```
 
 ### Target stack (Phase 1–3 — design only)
@@ -234,8 +237,8 @@ Details and anti-footgun rules: **PLAN_DASHBOARD_I18N.md** § *Meshing with dash
 
 - [x] USAGE + TECH_GUIDE (EN + pt-BR) updated for **Phase 1a** WebAuthn JSON; SECURITY cross-links remain via USAGE / deployment runbooks.
 - [x] Tests: `tests/test_webauthn_rp.py`, `tests/test_webauthn_session_cookie.py` (disabled path, options+state, status, negative cases, startup without secret).
-- [ ] Session cookies: **CSRF** strategy for **locale-prefixed** mutating routes when **Phase 1b** gates HTML — pending.
-- [ ] This file + [PLANS_TODO.md](PLANS_TODO.md) + [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) refreshed; **close or narrow** GitHub #86 when **Phase 1b+** ships (1a alone does not close #86).
+- [x] Session cookies: **CSRF** for **locale-prefixed** HTML form POSTs (`/{locale}/config`, `/{locale}/assessment`) when the WebAuthn HTML gate is active (signed token, `tests/test_webauthn_html_gate.py`).
+- [ ] This file + [PLANS_TODO.md](PLANS_TODO.md) + [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) refreshed; **close or narrow** GitHub #86 when **Phase 2+** ships (1a+1b alone do not close #86 — RBAC pending).
 
 ---
 

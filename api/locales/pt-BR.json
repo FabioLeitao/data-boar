@@ -205,6 +205,15 @@
     "more_li3": "docs/plans/completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md – categorias sensíveis (saúde, religião, política etc.)",
     "more_tail": "Esses arquivos estão no repositório do projeto e devem refletir o comportamento que você vê aqui."
   },
+  "login": {
+    "page_title": "Entrar — Data Boar",
+    "h1": "Entrar",
+    "disabled": "WebAuthn não está habilitado nesta instalação. Defina api.webauthn.enabled e a variável de ambiente do segredo de token antes de subir o processo.",
+    "help_link": "Ajuda e documentação",
+    "intro": "Use uma passkey (WebAuthn) para acessar o painel depois que a primeira passkey estiver registrada. Se ainda não existir nenhuma, abra esta página e escolha Registrar passkey.",
+    "button_placeholder": "…",
+    "hint_https": "WebAuthn exige HTTPS ou localhost. Alinhe api.webauthn.origin e rp_id com a URL do navegador."
+  },
   "js": {
     "chart_total": "Total de achados",
     "chart_risk": "Pontuação de risco (0–100)",

@@ -25,7 +25,7 @@ GitHub **#86** requires in-app identity before RBAC. Commercial passwordless Saa
 ## Consequences
 
 - **Positive:** Standard-aligned, testable, no lock-in; optional future adapters (Bitwarden-hosted, OIDC/Entra Phase 3) can sit beside this path.
-- **Negative:** HTML dashboard is **not** yet gated by these cookies (RBAC / template login **#86** follow-up); operators must call JSON endpoints from a front-end or script until UI lands.
+- **Negative:** Per-route **RBAC** is **not** implemented; Phase **1b** adds an HTML session gate (after the first passkey) and CSRF on mutating dashboard forms — see `PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md`. Operators can use **`/{locale}/login`** or JSON endpoints.
 - **Operational:** Operators must set **`origin`** / **`rp_id`** to match the browser URL (HTTPS recommended); `localhost` vs `127.0.0.1` matters for WebAuthn.
 
 ## Links
