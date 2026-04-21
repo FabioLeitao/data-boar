@@ -6,7 +6,7 @@ Estes **arquivos** estão **versionados** no Git para quem está começando (jur
 
 | Arquivo | Finalidade |
 | ------- | ---------- |
-| **[config.starter-lgpd-eval.yaml](config.starter-lgpd-eval.yaml)** | **Ponto de partida recomendado** para a primeira execução em laboratório ou on-prem: duas pastas de filesystem, um PostgreSQL (senha por variável de ambiente), timeouts, limite de taxa, termos mínimos de ML/DL, mais **blocos comentados** para recursos opcionais (arquivos compactados, `file_passwords`, `learned_patterns`, arquivos externos de padrões, `detection.cnpj_alphanumeric`). Substitua os caminhos e defina a variável de `pass_from_env`. |
+| **[config.starter-lgpd-eval.yaml](config.starter-lgpd-eval.yaml)** | **Ponto de partida recomendado** para jurídico, DPO, auditoria ou TI na primeira execução em laboratório ou on-prem: duas pastas fictícias de filesystem, um alvo estilo PostgreSQL (senha por variável de ambiente), timeouts, limite de taxa, termos mínimos de ML/DL, mais **blocos comentados** para recursos opcionais (arquivos compactados, `file_passwords`, `learned_patterns`, arquivos externos de padrões, `detection.cnpj_alphanumeric`, `connector_format_id_hint`, chave de API, dicas de jurisdição). Substitua os caminhos e defina a variável de `pass_from_env`. |
 | **[../config.example.yaml](../config.example.yaml)** | Modelo **mínimo** orientado a contêiner (`targets: []`, caminhos `/data`). Use quando só precisa do arquivo válido menor. |
 | **[../scope_import.example.csv](../scope_import.example.csv)** | Cabeçalho CSV canônico para **`scripts/scope_import_csv.py`** quando os alvos vêm de planilha. |
 

@@ -4,6 +4,20 @@
 
 Use this when you have **no** GLPI / CMDB export yet — only a workshop list, email thread, or “what we remember.” The machine-readable path is still **CSV → YAML fragment**; see [USAGE.md](../USAGE.md#scope-import-from-csv-config-fragment) for columns and types.
 
+## In one sentence
+
+The scope importer turns a **simple spreadsheet** (saved as UTF-8 CSV) into a **YAML list of `targets`** that you **paste** into a real config file — usually after copying **[`deploy/samples/config.starter-lgpd-eval.yaml`](../../deploy/samples/config.starter-lgpd-eval.yaml)** and replacing or merging the `targets:` block.
+
+## Handoff checklist (non-technical author → IT operator)
+
+| Step | Done when |
+| ---- | --------- |
+| Header row | Matches **[`deploy/scope_import.example.csv`](../../deploy/scope_import.example.csv)** exactly (column names unchanged). |
+| Passwords | **No** real passwords in cells — only **`pass_from_env`** / **`user_from_env`** *names*; IT sets those variables on the server. |
+| Encoding | File is **CSV UTF-8** (comma-separated); avoid mojibake for Portuguese accents. |
+| Fragment | `scope_import_csv.py` output is **reviewed** and merged into `config.yaml` (not committed if it contains real paths). |
+| Run | Operator runs `python main.py --config …` (or API) with env vars set. |
+
 ## If you are validating the product (not running IT yourself)
 
 **Goal:** Produce a **list of places** where personal data might live (folders, databases, shares) so specialists can run the scanner. You do **not** need to understand YAML.
