@@ -299,12 +299,13 @@ class AuditEngine:
                 detection_config=self.config.get("detection"),
             )
         else:
-            # Database targets (postgresql, mysql, sqlite, mssql, oracle, etc.): pass detection
-            # config for optional minor full-scan and collect best-effort strong-crypto signals.
+            # Database targets (postgresql, mysql, sqlite, mssql, oracle, mongodb, etc.): pass
+            # sample_limit from file_scan (row/doc caps) and detection config for optional probes.
             connector = connector_class(
                 target,
                 self.scanner,
                 self.db_manager,
+                sample_limit=sample_limit,
                 detection_config=self.config.get("detection"),
             )
             # Phase 1: inspect connection info to collect coarse crypto/transport hints.

@@ -36,6 +36,7 @@ docker compose ps
 
 - **PostgreSQL** listens on **host port `55432`** (maps to 5432).
 - **MariaDB** listens on **host port `33306`** (maps to 3306).
+- **MongoDB (optional):** not started by `docker compose up -d` alone. Run **`docker compose -f docker-compose.yml -f docker-compose.mongo.yml up -d`** — publishes **`27018`** by default. Requires **`uv sync --extra nosql`** on the Data Boar side for `driver: mongodb`.
 
 **Firewall:** allow TCP from lab LAN to those ports **only** (e.g. UFW on Ubuntu, `nft` on Void). **Do not** expose on WAN.
 

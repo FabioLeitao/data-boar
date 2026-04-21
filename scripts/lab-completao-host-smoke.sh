@@ -9,6 +9,10 @@
 
 set -u
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin${PATH+:$PATH}"
+# uv is often installed to ~/.local/bin (login shells add it; non-interactive SSH may not).
+if [[ -d "${HOME}/.local/bin" ]]; then
+  export PATH="${HOME}/.local/bin:${PATH}"
+fi
 
 LC_PRIV=0
 LC_HEALTH_URL="${LAB_COMPLETAO_HEALTH_URL:-}"

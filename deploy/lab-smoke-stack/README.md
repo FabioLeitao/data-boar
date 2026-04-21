@@ -1,6 +1,8 @@
-# Lab smoke stack (PostgreSQL + MariaDB)
+# Lab smoke stack (PostgreSQL + MariaDB + optional MongoDB)
 
 Docker Compose bundle for **LAN-only** multi-host Data Boar tests. See **[docs/ops/LAB_SMOKE_MULTI_HOST.md](../../docs/ops/LAB_SMOKE_MULTI_HOST.md)** for host order, firewall, and checklist.
+
+**MongoDB:** not included in the default `docker compose up -d`; add **`docker compose -f docker-compose.yml -f docker-compose.mongo.yml up -d`** (or only `docker-compose.mongo.yml` if you need Mongo alone). Data Boar needs **`uv sync --extra nosql`** for `driver: mongodb`.
 
 **Quick start:**
 
