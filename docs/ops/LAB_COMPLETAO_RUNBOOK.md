@@ -22,7 +22,7 @@
 
 3. **Passwordless sudo (narrow)** — same discipline as **`homelab-host-report.sh`**: template under **gitignored** **`docs/private/homelab/LABOP_COMPLETÃO_SUDOERS.pt_BR.md`**. Do **not** commit real sudoers content to GitHub.
 
-4. **Session log / lessons template** — **`docs/private/homelab/COMPLETAO_SESSION_TEMPLATE.pt_BR.md`** (gitignored private tree): date, host, pass/fail, value, lessons learned.
+4. **Session log / lessons template** — **`docs/private/homelab/COMPLETAO_SESSION_TEMPLATE.pt_BR.md`** (gitignored private tree): date, host, pass/fail, value, lessons learned. Filled examples stay under **`docs/private/homelab/`** as **`COMPLETAO_SESSION_YYYY-MM-DD.md`** (operator-only; never public GitHub).
 
 ## What this runbook does *not* automate
 

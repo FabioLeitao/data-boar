@@ -22,7 +22,7 @@
 
 3. **Sudo sem senha (estreito)** — mesmo critério do **`homelab-host-report.sh`**: modelo em **`docs/private/homelab/LABOP_COMPLETÃO_SUDOERS.pt_BR.md`** (não commitar sudoers reais no GitHub).
 
-4. **Template de sessão / lições** — **`docs/private/homelab/COMPLETAO_SESSION_TEMPLATE.pt_BR.md`**.
+4. **Template de sessão / lições** — **`docs/private/homelab/COMPLETAO_SESSION_TEMPLATE.pt_BR.md`**. Exemplos preenchidos: **`docs/private/homelab/COMPLETAO_SESSION_YYYY-MM-DD.md`** (só operador; nunca no GitHub público).
 
 ## O que este runbook **não** automatiza
 
