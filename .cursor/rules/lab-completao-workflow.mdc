@@ -1,0 +1,39 @@
+---
+description: Lab completão — assistant runs lab-completao-orchestrate.ps1 -Privileged from dev PC; SSH same LAN as operator; on sudo/SSH failure remind operator to fix sudoers/sessions and re-run; no "no access" excuses.
+globs: scripts/lab-completao*.ps1,scripts/lab-completao*.sh,docs/ops/LAB_COMPLETAO_RUNBOOK.md,docs/ops/LAB_SMOKE_MULTI_HOST.md
+alwaysApply: true
+---
+
+# Lab completão — assistant / operator workflow (SSH from dev PC)
+
+## Access model (canonical for this repo)
+
+1. The assistant runs commands in the **Cursor integrated terminal** on the **operator’s Windows dev PC**. That session uses the **same SSH client, keys, and LAN reachability** as the operator’s shell when invoking **`ssh`**, **`scp`**, or **`curl`** to lab hosts. **Do not** tell the operator the assistant “cannot reach the lab” or “has no SSH” from this workspace when the usual **`ssh Host`** aliases work from that terminal.
+
+1. **Non-interactive SSH is not the same TTY as tmux:** `sudo -v` in a **tmux** pane warms sudo for **that terminal**. A separate **`ssh user@host 'sudo …'`** from Cursor uses a **non-interactive** session; **`sudo -n`** for privileged probes succeeds when **sudoers** allows those commands **without a password** (see gitignored **`docs/private/homelab/LABOP_COMPLETÃO_SUDOERS*.md`** template referenced from **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`**). If **`sudo -n`** fails in logs, treat it as an **operator configuration** issue for that host, not an assistant limitation.
+
+## When the operator asks for completão / session token **`completao`**
+
+1. **Default command** from repo root (unless the operator explicitly opts out, e.g. “without privileged”):
+
+   ```text
+   .\scripts\lab-completao-orchestrate.ps1 -Privileged
+   ```
+
+1. **Manifest:** **`docs/private/homelab/lab-op-hosts.manifest.json`** (same as **`lab-op-sync-and-collect.ps1`**). Optional per-host **`completaoHealthUrl`** for HTTP checks from the dev PC.
+
+1. **Read logs** under **`docs/private/homelab/reports/`** (`completao_*_allhosts.log`, per-host `*_completao_host_smoke.log`) and summarize pass/fail **without** pasting secrets, passwords, or unnecessary LAN identifiers into **public** issues/PRs.
+
+## Failure handling (no “excuses” loop — operator + assistant loop)
+
+1. If **SSH** fails: report the **error**; suggest **`ssh -v`**, manifest **`sshHost`**, agent, key — **execute** retries when the operator confirms keys or config.
+
+1. If **`sudo -n`** fails for privileged probes: **remind** the operator to (a) align **sudoers** with the narrow template for completão / host-report, and/or (b) refresh an interactive session on the host if they rely on password sudo for **manual** steps — then **re-run** **`lab-completao-orchestrate.ps1 -Privileged`**. **Do not** blame “the AI” for lack of network access when the failure is **permission denied** for **`sudo -n`**.
+
+1. If **`MISSING_SCRIPT`** or stale clone: **`lab-op-repo-status.ps1`** first; **`lab-op-git-align-main.ps1`** only when destructive reset is acceptable — see **`LAB_COMPLETAO_RUNBOOK.md`**.
+
+## Related rules
+
+- **`homelab-ssh-via-terminal.mdc`** — TTY vs SSH, `P:`, private `AGENT_LAB_ACCESS.md`.
+- **`agent-autonomous-merge-and-lab-ops.mdc`** — when to run **`lab-op-sync-and-collect.ps1`** vs completão.
+- **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`** — scripts, slice order, what is out of scope.
