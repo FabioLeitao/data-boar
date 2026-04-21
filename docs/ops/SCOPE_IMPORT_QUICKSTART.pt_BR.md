@@ -4,6 +4,20 @@
 
 Use quando ainda **não** há exportação GLPI / CMDB — só lista de workshop, e-mail ou o que a equipe lembra. O fluxo técnico continua sendo **CSV → fragmento YAML**; colunas e tipos em [USAGE.pt_BR.md](../USAGE.pt_BR.md#scope-import-csv-fragment).
 
+## Em uma frase
+
+O importador de escopo transforma uma **planilha simples** (salva como **CSV UTF-8**) numa **lista YAML de `targets`** que você **cola** num arquivo de configuração real — em geral depois de copiar **[`deploy/samples/config.starter-lgpd-eval.yaml`](../../deploy/samples/config.starter-lgpd-eval.yaml)** e substituir ou mesclar o bloco `targets:`.
+
+## Lista de entrega (autor não técnico → operador de TI)
+
+| Etapa | Critério |
+| ----- | -------- |
+| Cabeçalho | Igual ao de **[`deploy/scope_import.example.csv`](../../deploy/scope_import.example.csv)** (nomes de coluna inalterados). |
+| Senhas | **Sem** senhas reais nas células — só **nomes** em **`pass_from_env`** / **`user_from_env`**; o TI define as variáveis no servidor. |
+| Encoding | Arquivo **CSV UTF-8** (separado por vírgula); evitar caracteres quebrados em português. |
+| Fragmento | Saída do `scope_import_csv.py` **revisada** e mesclada ao `config.yaml` (não commitar se houver caminhos reais). |
+| Execução | Operador roda `python main.py --config …` (ou API) com variáveis de ambiente definidas. |
+
 ## Se você está validando o produto (não vai operar a TI)
 
 **Objetivo:** Entregar uma **lista de lugares** onde pode haver dados pessoais (pastas, bancos, compartilhamentos) para quem vai rodar o scanner. **Não** precisa entender YAML.

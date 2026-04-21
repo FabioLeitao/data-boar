@@ -6,7 +6,7 @@
 
 | O que você precisa | Onde ir |
 | ------------------ | ------- |
-| **Starter completo** (duas pastas + um banco + rate limit + termos ML/DL; blocos opcionais comentados) | [`deploy/samples/config.starter-lgpd-eval.yaml`](../deploy/samples/config.starter-lgpd-eval.yaml) |
+| **Starter completo** (duas pastas + um banco + rate limit + termos ML/DL; blocos opcionais comentados; para avaliadores e operadores) | [`deploy/samples/config.starter-lgpd-eval.yaml`](../deploy/samples/config.starter-lgpd-eval.yaml) |
 | **Mínimo Docker / contêiner** (`targets: []`, caminhos `/data`) | [`deploy/config.example.yaml`](../deploy/config.example.yaml) |
 | **Planilha → YAML de alvos** (importação de escopo) | [`deploy/scope_import.example.csv`](../deploy/scope_import.example.csv) + [ops/SCOPE_IMPORT_QUICKSTART.pt_BR.md](../ops/SCOPE_IMPORT_QUICKSTART.pt_BR.md) |
 | **Por que existe `config/config.json`** | [`config/README.pt_BR.md`](../config/README.pt_BR.md) (só formato JSON legado) |
