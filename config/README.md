@@ -7,7 +7,7 @@ The file **`config.json`** in this folder exists to show the **legacy** configur
 - Top-level **`databases`**: list of connection objects (mapped to `type: database` targets).
 - Top-level **`file_scan.directories`**: list of folder paths (each becomes a `type: filesystem` target).
 
-**For new work, prefer YAML** — it is easier to comment, review, and merge. A **single copy-paste-friendly starter** (targets, rate limits, ML/DL terms, and **commented optional** blocks for compressed files, passwords, learned patterns, etc.) lives under **`deploy/samples/config.starter-lgpd-eval.yaml`**. From **`docs/`**, open **[docs/samples/README.md](../docs/samples/README.md)** for the same links in one place.
+**For new work, prefer YAML** — it is easier to comment, review, and merge. A **single copy-paste-friendly starter** (targets, rate limits, ML/DL terms, and **commented optional** blocks for compressed files, passwords, learned patterns, etc.) lives under **`deploy/samples/config.starter-lgpd-eval.yaml`**. From **`docs/`**, open **[docs/samples/README.md](../docs/samples/README.md)** for the same links in one place. **First-run narrative** (YAML vs JSON, table of samples): [USAGE.md](../docs/USAGE.md#configuration-file-first-run) ([pt-BR](../docs/USAGE.pt_BR.md#arquivo-de-configuração-primeira-execução)).
 
 The minimal Docker-oriented template is **`deploy/config.example.yaml`** (`targets: []`).
 

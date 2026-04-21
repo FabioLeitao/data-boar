@@ -75,6 +75,18 @@ python main.py --config config.yaml --web --allow-insecure-http --host 0.0.0.0 -
 - Configuração para a API:
 - Se `--config` não for usado, a API lê de `CONFIG_PATH` ou `config.yaml` no diretório atual.
 
+### Arquivo de configuração (primeira execução)
+
+**Prefira YAML** (`.yaml` / `.yml`) em projetos novos: dá para comentar, revisar diff e mesclar com segurança. **`--config`** usa por padrão **`config.yaml`** no diretório de trabalho atual; esse nome está no **`.gitignore`** na raiz do repositório para não versionar caminhos de LAN ou segredos — use uma **cópia** de uma amostra versionada num caminho privado ou defina **`CONFIG_PATH`**.
+
+| O que copiar | Quando usar |
+| ------------ | ----------- |
+| **[`deploy/samples/config.starter-lgpd-eval.yaml`](../deploy/samples/config.starter-lgpd-eval.yaml)** | **Recomendado** para primeiro laboratório ou avaliação: duas pastas fictícias de sistema de arquivos, um alvo estilo PostgreSQL com `pass_from_env`, `scan.max_workers`, timeouts, **`rate_limit`**, termos ML/DL mínimos e blocos opcionais **comentados** (arquivos compactados, `file_passwords`, `learned_patterns`, arquivos de padrões, `detection.cnpj_alphanumeric`, `connector_format_id_hint`, chave de API, dicas de jurisdição). Substitua caminhos e defina variáveis de ambiente — os valores usam **IPs de documentação RFC 5737** e caminhos placeholder apenas. |
+| **[`deploy/config.example.yaml`](../deploy/config.example.yaml)** | Arquivo **mínimo** válido para Docker (`targets: []`, caminhos `/data`). |
+| **JSON legado** em [`config/config.json`](../config/README.md) | O carregador ainda aceita o formato antigo **`databases`** + **`file_scan.directories`**; **trabalhos novos devem usar YAML** — veja [`config/README.md`](../config/README.md). |
+
+**Índice (mesmos links a partir de `docs/`):** [samples/README.pt_BR.md](samples/README.pt_BR.md) ([EN](samples/README.md)). **Montar alvos a partir de planilha:** [deploy/scope_import.example.csv](../deploy/scope_import.example.csv) e [ops/SCOPE_IMPORT_QUICKSTART.pt_BR.md](ops/SCOPE_IMPORT_QUICKSTART.pt_BR.md) ([EN](ops/SCOPE_IMPORT_QUICKSTART.md)) — texto para jurídico, DPO e gestores que **não** são equipe de infra em tempo integral.
+
 ---
 
 ## 2. API web e dashboard
