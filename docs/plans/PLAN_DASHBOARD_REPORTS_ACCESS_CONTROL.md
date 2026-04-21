@@ -1,6 +1,6 @@
 # Plan: Dashboard / reports access control (roles & permissions)
 
-**Status:** Phase **0 (D-WEB)** design snapshot ✅ (route matrix + middleware Mermaid + proxy pointers — § *Phase 0 deliverable* below); **Phase 1a** (vendor-neutral **WebAuthn JSON RP** + SQLite — § *Phase 1a deliverable* below) ✅ on `main`; **Phase 1b** (browser session gates **HTML** on `/{locale}/…` + CSRF for forms) ✅ minimal on `main` ( **`GET /{locale}/login`** + middleware + `tests/test_webauthn_html_gate.py` ); **Phases 2–3** ⬜ — [GitHub #86](https://github.com/FabioLeitao/data-boar/issues/86)
+**Status:** Phase **0 (D-WEB)** design snapshot ✅ (route matrix + middleware Mermaid + proxy pointers — § *Phase 0 deliverable* below); **Phase 1a** (vendor-neutral **WebAuthn JSON RP** + SQLite — § *Phase 1a deliverable* below) ✅ on `main`; **Phase 1b** (browser session gates **HTML** on `/{locale}/…` + CSRF for forms) ✅ minimal on `main` ( **`GET /{locale}/login`** + middleware + `tests/test_webauthn_html_gate.py` ); **Phase 2** (**RBAC** — `api.rbac`, optional `roles_json` on `webauthn_credentials`, `api.rbac` in `config/loader`, `tests/test_rbac.py`) ✅ on `main` when tier allows `dashboard_rbac`; **Phase 3** (enterprise **SSO/OIDC**) ⬜ — [GitHub #86](https://github.com/FabioLeitao/data-boar/issues/86)
 
 **Horizon / urgency:** `[H2]` / `[U2]` — after **Priority band A** and when multi-tenant / multi-user dashboard exposure is real, not before core scan stability.
 
@@ -238,7 +238,7 @@ Details and anti-footgun rules: **PLAN_DASHBOARD_I18N.md** § *Meshing with dash
 - [x] USAGE + TECH_GUIDE (EN + pt-BR) updated for **Phase 1a** WebAuthn JSON; SECURITY cross-links remain via USAGE / deployment runbooks.
 - [x] Tests: `tests/test_webauthn_rp.py`, `tests/test_webauthn_session_cookie.py` (disabled path, options+state, status, negative cases, startup without secret).
 - [x] Session cookies: **CSRF** for **locale-prefixed** HTML form POSTs (`/{locale}/config`, `/{locale}/assessment`) when the WebAuthn HTML gate is active (signed token, `tests/test_webauthn_html_gate.py`).
-- [ ] This file + [PLANS_TODO.md](PLANS_TODO.md) + [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) refreshed; **close or narrow** GitHub #86 when **Phase 2+** ships (1a+1b alone do not close #86 — RBAC pending).
+- [x] Phase **2** RBAC shipped (USAGE/TECH_GUIDE + `enterprise_surface.access_surface.rbac`); **close or narrow** GitHub #86 when **Phase 3 (SSO/OIDC)** ships or issue scope is explicitly split.
 
 ---
 

@@ -111,3 +111,35 @@ def test_enterprise_surface_caution_license_degraded(monkeypatch):
     out = esp_mod.get_enterprise_surface_posture({"api": {"require_api_key": False}})
     assert out["severity"] == "caution"
     assert "license_trust_degraded" in out["reasons"]
+
+
+def test_enterprise_surface_rbac_enabled_when_config_and_tier_allow(monkeypatch):
+    monkeypatch.setattr(
+        esp_mod,
+        "get_dashboard_transport_snapshot",
+        lambda: {
+            "mode": "https",
+            "tls_active": True,
+            "insecure_http_explicit_opt_in": False,
+            "show_insecure_banner": False,
+        },
+    )
+    monkeypatch.setattr(
+        esp_mod,
+        "get_runtime_trust_snapshot",
+        lambda _cfg: {
+            "trust_state": "trusted",
+            "trust_level": "expected",
+            "license_state": "OPEN",
+            "license_mode": "open",
+        },
+    )
+    cfg = {
+        "api": {
+            "require_api_key": False,
+            "rbac": {"enabled": True},
+        },
+        "licensing": {"effective_tier": "pro"},
+    }
+    out = esp_mod.get_enterprise_surface_posture(cfg)
+    assert out["access_surface"]["rbac"] == "enabled"

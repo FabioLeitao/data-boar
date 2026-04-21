@@ -6,7 +6,10 @@ import pytest
 
 from core.licensing.guard import reset_license_guard_for_tests
 
-from api.routes import _map_dbtier_string_to_tier, _runtime_tier_for_features
+from core.licensing.runtime_feature_tier import (
+    get_runtime_tier_for_features,
+    map_dbtier_string_to_tier,
+)
 from core.licensing.tier_features import (
     Tier,
     features_for_tier,
@@ -72,7 +75,7 @@ def test_features_for_tier_includes_maturity_only_from_pro_up():
     ],
 )
 def test_map_dbtier_string_to_tier(raw: str, expected: Tier):
-    assert _map_dbtier_string_to_tier(raw) == expected
+    assert map_dbtier_string_to_tier(raw) == expected
 
 
 def test_runtime_tier_open_when_no_effective_tier_and_open_license():
@@ -80,7 +83,7 @@ def test_runtime_tier_open_when_no_effective_tier_and_open_license():
         "licensing": {"mode": "open", "effective_tier": ""},
         "api": {},
     }
-    assert _runtime_tier_for_features(cfg) == Tier.OPEN
+    assert get_runtime_tier_for_features(cfg) == Tier.OPEN
 
 
 def test_runtime_tier_from_yaml_effective_tier():
@@ -88,4 +91,4 @@ def test_runtime_tier_from_yaml_effective_tier():
         "licensing": {"mode": "open", "effective_tier": "pro"},
         "api": {},
     }
-    assert _runtime_tier_for_features(cfg) == Tier.PRO
+    assert get_runtime_tier_for_features(cfg) == Tier.PRO

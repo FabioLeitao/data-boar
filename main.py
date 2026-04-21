@@ -220,6 +220,16 @@ def main() -> None:
         ),
     )
     parser.add_argument(
+        "--scan-stego",
+        action="store_true",
+        dest="scan_stego",
+        help=(
+            "When set, act as if file_scan.scan_for_stego is true for this run: "
+            "append lightweight entropy hints for image/audio/video containers (heuristic only; "
+            "not proof of hidden data). Increases per-file reads on rich media."
+        ),
+    )
+    parser.add_argument(
         "--jurisdiction-hint",
         action="store_true",
         dest="jurisdiction_hint",
@@ -253,6 +263,8 @@ def main() -> None:
         config.setdefault("file_scan", {})["scan_compressed"] = True
     if args.content_type_check:
         config.setdefault("file_scan", {})["use_content_type"] = True
+    if getattr(args, "scan_stego", False):
+        config.setdefault("file_scan", {})["scan_for_stego"] = True
     if args.jurisdiction_hint:
         config.setdefault("report", {}).setdefault("jurisdiction_hints", {})
         config["report"]["jurisdiction_hints"]["enabled"] = True
