@@ -25,6 +25,10 @@
 
 **Canonical multi-host checklist** (manual steps A–M): [LAB_SMOKE_MULTI_HOST.md](LAB_SMOKE_MULTI_HOST.md).
 
+## Capability coverage (documentation + code truth)
+
+**Goal:** Learn **observed** behaviour vs **documented** intent — **English** docs and **code** are canonical ([docs/README.md](../README.md)). Completão should **exercise** (where lab resources allow): **remote storage** (NFS, SSHFS, SMB/CIFS — OS mounts and/or connector paths per [TECH_GUIDE.md](../TECH_GUIDE.md)); **databases** ([deploy/lab-smoke-stack](../deploy/lab-smoke-stack/), connectors per [ADDING_CONNECTORS.md](../ADDING_CONNECTORS.md)); **file types**, **extensions**, **hidden/dot** paths, **archives**; **local vs remote** targets; **LGPD-oriented discoverables** as **detection language** ([COMPLIANCE_AND_LEGAL.md](../COMPLIANCE_AND_LEGAL.md) — not legal advice); **ML/DL sensitivity** ([SENSITIVITY_DETECTION.md](../SENSITIVITY_DETECTION.md), [TESTING.md](../TESTING.md)); **reports** and **dashboard** flows; **POC** paths — maturity questionnaire ([SMOKE_MATURITY_ASSESSMENT_POC.md](SMOKE_MATURITY_ASSESSMENT_POC.md)), **WebAuthn/FIDO2** JSON RP ([SMOKE_WEBAUTHN_JSON.md](SMOKE_WEBAUTHN_JSON.md), [SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md](SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md), [ADR 0033](../adr/0033-webauthn-open-relying-party-json-endpoints.md)). **Secure-by-design** claims must align with [SECURITY.md](../SECURITY.md) and **what actually ran**. Record **pass / gap / drift** in **private** session notes (`docs/private/homelab/`) — **policy:** **`.cursor/rules/lab-completao-workflow.mdc`** (capability matrix section).
+
 ## Scripts (tracked)
 
 1. **`scripts/lab-completao-host-smoke.sh`** (run **on each Linux lab host**, from repo root): `uv`, `docker` / `podman`, `deploy/lab-smoke-stack` compose `ps` if present, optional **`LAB_COMPLETAO_HEALTH_URL`** or **`--health-url`** for `/health`, quick **`import core.engine`**. **`--privileged`**: read-only snapshots via **`sudo -n`** (iptables/nft/ufw/fail2ban-related) — skips if sudo cannot run non-interactively.

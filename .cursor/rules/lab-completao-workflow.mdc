@@ -1,5 +1,5 @@
 ---
-description: Lab completão — wrappers + -Privileged + narrow sudoers (LAB_OP_PRIVILEGED_COLLECTION); protect primary L-series dev PC (PRIMARY_WINDOWS_WORKSTATION_PROTECTION); disposable remote lab resync; token-aware scripted passes; no redundant permission pings; SSH from dev PC.
+description: Lab completão — wrappers + -Privileged + narrow sudoers (LAB_OP_PRIVILEGED_COLLECTION); protect primary L-series dev PC (PRIMARY_WINDOWS_WORKSTATION_PROTECTION); disposable remote lab resync; token-aware scripted passes; no redundant permission pings; doc+code capability matrix (storage, DB, compliance, WebAuthn POC, ML/DL); SSH from dev PC.
 globs: scripts/lab-completao*.ps1,scripts/lab-completao*.sh,docs/ops/LAB_COMPLETAO_RUNBOOK.md,docs/ops/LAB_SMOKE_MULTI_HOST.md
 alwaysApply: true
 ---
@@ -70,7 +70,23 @@ When the operator asks for **completão** and expects the lab to behave like a *
 
 1. **Containers and orchestration:** Aim for **at least one** runnable Data Boar path per **major** lab **OS/runtime** the manifest covers — **Docker** / **Compose**, **Podman**, **Swarm** where used, **Kubernetes** (e.g. **Docker Desktop** on the primary dev laptop) **if** the operator has a cluster/context. Use **`deploy/`** and **`scripts/docker/`** patterns; do **not** commit operator kubeconfig.
 
-1. **Remote storage protocols:** Exercise **NFS**, **SSHFS**, **SMB/CIFS** (and similar) **when** the product supports them and mounts exist — follow **[TECH_GUIDE.md](../../docs/TECH_GUIDE.md)** extras; keep **credentials** in **`docs/private/`** only.
+1. **Remote storage protocols:** Exercise **NFS**, **SSHFS**, **SMB/CIFS** (and similar) **when** the product supports them and mounts exist — follow **[TECH_GUIDE.md](../../docs/TECH_GUIDE.md)** extras; keep **credentials** in **`docs/private/`** only. If mounts are **missing**, **configure** OS-level exports/mounts or **connector** targets in **private** YAML so lab hosts can reach paths **between** themselves — **least privilege** only.
+
+## Documentation + code as source of truth (capability matrix)
+
+When the operator asks for **completão** to **learn what the product actually does** vs what docs promise, treat **English docs** + **`pyproject.toml` / `main.py` / connectors / tests** as the **authority**. **Ingest** a **mixed lab corpus** (synthetic + intentional edge cases + non-secret samples) through **CLI**, **API**, and **web** — goal: **document** **pass/fail/gap** in **`docs/private/homelab/`** (session notes), not marketing claims.
+
+1. **Orientation (read first):** **[docs/README.md](../../docs/README.md)** index — then **[USAGE.md](../../docs/USAGE.md)**, **[TECH_GUIDE.md](../../docs/TECH_GUIDE.md)**, **[TESTING.md](../../docs/TESTING.md)**, **[SENSITIVITY_DETECTION.md](../../docs/SENSITIVITY_DETECTION.md)**, **[MINOR_DETECTION.md](../../docs/MINOR_DETECTION.md)**, **[COMPLIANCE_AND_LEGAL.md](../../docs/COMPLIANCE_AND_LEGAL.md)** (detection language **≠** legal conclusion), **[COMPLIANCE_TECHNICAL_REFERENCE.md](../../docs/COMPLIANCE_TECHNICAL_REFERENCE.md)**, **[SECURITY.md](../../docs/SECURITY.md)**, **[LICENSING_SPEC.md](../../docs/LICENSING_SPEC.md)** (trial/POC behaviour).
+
+1. **Databases and connectors:** Exercise **`deploy/lab-smoke-stack`** (Postgres/MariaDB/Mongo as needed), **`uv sync --extra nosql`**, SQL connectors, **[ADDING_CONNECTORS.md](../../docs/ADDING_CONNECTORS.md)** — align with **[TECH_GUIDE.md](../../docs/TECH_GUIDE.md)** database sections.
+
+1. **Filesystems:** Cover **local** and **remote** targets, **file extensions** and **filters** in YAML, **hidden** / **dotfile** paths where policy allows, **archives** and **compressed** trees per **[TECH_GUIDE.md](../../docs/TECH_GUIDE.md)** — use **private** scope CSV / YAML; **no** real PII in **public** commits.
+
+1. **POC / demo surfaces (verify vs shipped):** Maturity self-assessment **[SMOKE_MATURITY_ASSESSMENT_POC.md](../../docs/ops/SMOKE_MATURITY_ASSESSMENT_POC.md)** + **`scripts/smoke-maturity-assessment-poc.ps1`**; WebAuthn JSON RP **[SMOKE_WEBAUTHN_JSON.md](../../docs/ops/SMOKE_WEBAUTHN_JSON.md)**, **[SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md](../../docs/ops/SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md)**, **[0033-webauthn-open-relying-party-json-endpoints.md](../../docs/adr/0033-webauthn-open-relying-party-json-endpoints.md)**. **Secure-by-design** claims must match **[SECURITY.md](../../docs/SECURITY.md)** and runnable checks — **do not** assert FIDO2/dashboard **UX** beyond what **tests + smoke** prove.
+
+1. **ML / DL sensitivity:** Follow **[SENSITIVITY_DETECTION.md](../../docs/SENSITIVITY_DETECTION.md)** and **`tests/`** subsets noted in **[TESTING.md](../../docs/TESTING.md)** — lab completão **may** run targeted **pytest** slices on hosts when useful, but **does not** replace **`check-all`** for merge gates.
+
+1. **Outcome:** For each major theme, record **observed behaviour**, **doc drift**, and **gaps** in **`COMPLETAO_SESSION_*.md`** (private) and, when product bugs are confirmed, **issues** / **`PLANS_TODO.md`** with **redacted** repro steps.
 
 ## Related rules
 
@@ -78,4 +94,5 @@ When the operator asks for **completão** and expects the lab to behave like a *
 - **`operator-direct-execution.mdc`** — execute agreed completão without **idle** confirmation loops.
 - **`agent-autonomous-merge-and-lab-ops.mdc`** — when to run **`lab-op-sync-and-collect.ps1`** vs completão.
 - **`docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`** — non-destructive posture for the **primary** dev PC.
-- **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`** — scripts, slice order, what is out of scope.
+- **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`** — scripts, slice order, capability coverage.
+- **`docs/ops/LAB_EXTERNAL_CONNECTIVITY_EVAL.md`** — external eval smoke (complements lab LAN).
