@@ -1,5 +1,5 @@
 ---
-description: Lab completão — orchestrate -Privileged; SSH from dev PC; may remediate OS/deps/firewall/security (narrow lab-op least privilege) to unblock tests; on failure remind and re-run; no fake LAN denial.
+description: Lab completão — wrappers + -Privileged + narrow sudoers (LAB_OP_PRIVILEGED_COLLECTION); protect primary L-series dev PC (PRIMARY_WINDOWS_WORKSTATION_PROTECTION); disposable remote lab resync; token-aware scripted passes; no redundant permission pings; SSH from dev PC.
 globs: scripts/lab-completao*.ps1,scripts/lab-completao*.sh,docs/ops/LAB_COMPLETAO_RUNBOOK.md,docs/ops/LAB_SMOKE_MULTI_HOST.md
 alwaysApply: true
 ---
@@ -23,6 +23,24 @@ alwaysApply: true
 1. **Manifest:** **`docs/private/homelab/lab-op-hosts.manifest.json`** (same as **`lab-op-sync-and-collect.ps1`**). Optional per-host **`completaoHealthUrl`** for HTTP checks from the dev PC.
 
 1. **Read logs** under **`docs/private/homelab/reports/`** (`completao_*_allhosts.log`, per-host `*_completao_host_smoke.log`) and summarize pass/fail **without** pasting secrets, passwords, or unnecessary LAN identifiers into **public** issues/PRs.
+
+## Automation stack (wrappers, remote lab-op, **`sudo -n`**)
+
+1. **Prefer existing scripts** end-to-end instead of one-off ad-hoc SSH: **`lab-completao-orchestrate.ps1`**, **`lab-completao-host-smoke.sh`**, **`lab-op-repo-status.ps1`**, **`lab-op-git-align-main.ps1`**, **`lab-op-sync-and-collect.ps1`**, **`homelab-host-report.sh`** — see **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`**, **`docs/ops/LAB_OP_PRIVILEGED_COLLECTION.md`**, **`docs/ops/TOKEN_AWARE_SCRIPTS_HUB.md`**.
+
+1. **Completão default:** **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** from the repo root on the **Windows dev PC**. Remote hosts run the bash smoke **over SSH** as today; extend with **Ansible** under **`ops/automation/ansible/`** when a change should be **reproducible**.
+
+1. **Passwordless sudo for probes:** Align each Linux host with the **narrow** sudoers pattern — gitignored template **`docs/private/homelab/LABOP_COMPLETÃO_SUDOERS*.md`** and tracked guide **`docs/ops/LAB_OP_PRIVILEGED_COLLECTION.md`** (same spirit as **`homelab-host-report.sh`**). **Apply** / **extend** sudoers includes as needed for **`iptables-save`**, **`nft`**, **`ufw`**, and smoke-adjacent read-only commands — **never** commit real **`/etc/sudoers`** drops to **public** Git.
+
+1. **Token-aware operations:** Prefer **one scripted pass** + **logs under `docs/private/homelab/reports/`** over repeated manual micro-steps — this is the agreed way to **save cognition and tokens** on reruns.
+
+## Blast radius — primary dev workstation vs disposable lab-op
+
+1. **Protect the canonical clone on the primary Windows dev PC** (**L-series** **role** per **`docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**): do **not** run **destructive** repo operations there (**`git reset --hard`**, **`clean-slate`**, history rewrite, mass delete) unless the operator **explicitly** orders it and policy allows. That machine holds **continuity** of the **canonical** `data-boar` tree and local evidence.
+
+1. **Other lab-op hosts** (manifest **`sshHost`** targets that are **not** that primary workstation) and **pulled container images** are treated as **replaceable**: **`git fetch` / `reset --hard origin/main`**, **`docker pull`**, image prune, rebuild — **acceptable** to complete completão when the operator asked for it.
+
+1. **No redundant permission prompts** for the **already-agreed** completão contract (SSH from dev PC, **`-Privileged`**, sudoers alignment, disposable remote clones): **execute** and **report** — see **`operator-direct-execution.mdc`**. **Still stop** for true blockers (missing credentials, ambiguous **destructive** action on the **primary** workstation, or policy conflicts with **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**).
 
 ## Failure handling (no “excuses” loop — operator + assistant loop)
 
@@ -57,5 +75,7 @@ When the operator asks for **completão** and expects the lab to behave like a *
 ## Related rules
 
 - **`homelab-ssh-via-terminal.mdc`** — TTY vs SSH, `P:`, private `AGENT_LAB_ACCESS.md`.
+- **`operator-direct-execution.mdc`** — execute agreed completão without **idle** confirmation loops.
 - **`agent-autonomous-merge-and-lab-ops.mdc`** — when to run **`lab-op-sync-and-collect.ps1`** vs completão.
+- **`docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`** — non-destructive posture for the **primary** dev PC.
 - **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`** — scripts, slice order, what is out of scope.

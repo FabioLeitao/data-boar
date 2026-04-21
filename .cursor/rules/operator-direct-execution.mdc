@@ -10,6 +10,8 @@ alwaysApply: true
 
 2. **Lab-op / homelab:** Use SSH and repo scripts from the **integrated terminal** on the dev PC per **`AGENTS.md`**, **`docs/private/homelab/AGENT_LAB_ACCESS.md`**, and **`lab-op-hosts.manifest.json`**. State **what ran**, **what failed**, and **what was not attempted** — never imply full multi-host + Docker Swarm + Podman + WebDAV + DB smoke ran unless commands actually executed there.
 
+2b. **Completão (`completao`):** When the operator invokes **completão**, follow **`lab-completao-workflow.mdc`** — run **`lab-completao-orchestrate.ps1 -Privileged`** and related wrappers **without** asking redundant “may I use SSH / privileged?” questions. **Do not** treat **remote lab-op** resync (`git reset --hard`, image pulls) as needing the same confirmation as **destructive** work on the **primary Windows dev PC** (**`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**).
+
 3. **CI / GitHub:** When the task is to **verify or close CI**, run **`gh run list`**, **`gh pr checks`**, or open logs — do not substitute with guesses.
 
 4. **Boundaries:** This does not override secrets/PII policy, tracked-vs-private rules, or safe stopping on real blockers (auth, merge conflicts, destructive ops without confirmation where policy requires it).
