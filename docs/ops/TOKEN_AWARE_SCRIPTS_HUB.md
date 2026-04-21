@@ -18,6 +18,7 @@
 | `preview-commit.ps1`, `commit-or-pr.ps1`, `create-pr.ps1` | Commit / PR | Same + **`docs/ops/COMMIT_AND_PR.md`** |
 | `pr-merge-when-green.ps1` | Merge when CI green | **`.cursor/rules/agent-autonomous-merge-and-lab-ops.mdc`**, **`autonomous-merge-and-lab`** SKILL |
 | `safe-workspace-snapshot.ps1` | Pre-commit snapshot | Session **`safe-commit`** |
+| `smoke-maturity-assessment-poc.ps1` | Fast pytest subset (maturity POC gate 1) | [PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md](../plans/PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md), [SMOKE_MATURITY_ASSESSMENT_POC.md](SMOKE_MATURITY_ASSESSMENT_POC.md) |
 
 ---
 

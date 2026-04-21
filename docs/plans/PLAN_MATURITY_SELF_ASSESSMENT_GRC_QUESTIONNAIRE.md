@@ -1,6 +1,6 @@
 # PLAN: Organizational maturity self-assessment (GRC-style questionnaire)
 
-<!-- plans-hub-summary: POC on main: gated /{locale}/assessment + YAML rubric scores + SQLite + HMAC + post-submit summary + per-batch history table + GET /assessment/export (CSV/Markdown); RBAC (tenant-scoped history) + report-bundle still backlog—companion to technical scans; not legal audit. -->
+<!-- plans-hub-summary: POC on main: gated /{locale}/assessment + YAML rubric scores + SQLite + HMAC + post-submit summary + per-batch history table + GET /assessment/export (CSV/Markdown); evidence levels A/B/C (smoke vs full demo); SMOKE runbook; RBAC + report-bundle backlog; not legal audit. -->
 <!-- plans-hub-related: PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md, LICENSING_OPEN_CORE_AND_COMMERCIAL.md (future tier features), PLAN_SCOPE_IMPORT_FROM_EXPORTS.md (inventory bootstrap narrative) -->
 
 **Status:** **POC A shipped on `main`** — gated `GET`/`POST /{locale}/assessment`, optional **`api.maturity_assessment_pack_path`** (YAML with optional per-answer **`scores`**), **SQLite** table `maturity_assessment_answers`, optional **HMAC-SHA256 per row** (`row_hmac`) when **`DATA_BOAR_MATURITY_INTEGRITY_SECRET`** (or **`api.maturity_integrity_secret_from_env`**) is set at write time. **`GET /status`** and **`python main.py --export-audit-trail`** include **`maturity_assessment_integrity`** (counts: ok / mismatch / unsealed / unknown_sealed). **Not** encryption; deters casual DB edits and supports demo narrative. **Shipped on `main`:** rubric **total / percent** on post-submit summary; **`GET /{locale}/assessment`** lists **recent batches** (newest first, bounded); **`GET /{locale}/assessment/export`** (CSV or Markdown **attachment** — not an on-disk path under `report.output_dir`). **Declare “POC ready”** via **`scripts/smoke-maturity-assessment-poc.ps1`** + [SMOKE_MATURITY_ASSESSMENT_POC.md](../ops/SMOKE_MATURITY_ASSESSMENT_POC.md) §D (§E optional). **Still backlog:** consultant UX, legal one-pager, **tenant-scoped** history / **RBAC** ([#86](https://github.com/FabioLeitao/data-boar/issues/86)), report bundle annex export, **DOCX→YAML** per tenant when packaging. **JWT `dbtier` vs lab `effective_tier`:** API regression tests in `tests/test_api_assessment_poc.py` (**enforced** license + `dbtier` community vs pro) ✅.
@@ -22,6 +22,35 @@ Use this list to declare the **maturity POC “ready”** for demos, beta notes,
 | 5 | **Docs / ADR** | Operator-facing text in [USAGE.md](../USAGE.md) (+ pt-BR) for assessment + batch history; [ADR 0032](../adr/0032-maturity-assessment-batch-history-sqlite.md) for history behaviour. |
 
 **Checkpoint closed:** run **`smoke-maturity-assessment-poc.ps1`** + complete runbook §D (and §E if you need integrity demo). Then proceed to **[#86](https://github.com/FabioLeitao/data-boar/issues/86)** on a dedicated branch; **return** to maturity (DOCX→YAML per tenant, consultant UX) when packaging or customer needs require it — see § *Next steps* below.
+
+### POC ready — evidence levels (what agents vs operators sign off)
+
+| Level | What it proves | Typical evidence |
+| ----- | ---------------- | ---------------- |
+| **A — Automated gates** | Same pytest subset as checklist **gate 1** below — API, DB batch order, HMAC helpers, audit-export parity | `.\scripts\smoke-maturity-assessment-poc.ps1` exit **0** on current `main`; CI **Test** job green on the same files |
+| **B — Docs / ADR** | Operator can configure flags + pack path + tier from [USAGE.md](../USAGE.md); history behaviour documented | Checklist **gate 5** below; [ADR 0032](../adr/0032-maturity-assessment-batch-history-sqlite.md) |
+| **C — Full (demo / beta)** | Real browser UX: redirects, downloads, locale — **not** replaceable by pytest alone | [SMOKE_MATURITY_ASSESSMENT_POC.md](../ops/SMOKE_MATURITY_ASSESSMENT_POC.md) §D checkboxes (§E optional); record date + commit in **`docs/private/`** or a dated **today-mode** note if you want a paper trail **without** editing public plans |
+
+**Agent / CI:** Safe to claim **Level A + B** when smoke + USAGE + ADR match shipped code. **Level C** requires an **operator** pass — do not mark “full POC ready” in release prose without §D.
+
+### Autonomous vs operator — closure boundary
+
+Use this table so **agents / CI** do not promise what only a **human operator** can finish (browser session, lab config on disk).
+
+| POC ready gate | Fully autonomous? | What actually happens |
+| --- | --- | --- |
+| **1** CI / smoke subset | **Yes** | `scripts/smoke-maturity-assessment-poc.ps1` (or full `check-all.ps1` / CI) runs `tests/test_api_assessment_poc.py`, `tests/test_maturity_assessment_integrity.py`, `tests/test_database.py::test_maturity_assessment_batch_summaries_newest_first`, `tests/test_audit_export.py::test_build_audit_trail_maturity_integrity_matches_verify`. |
+| **2** Config documented | **Docs only** | [USAGE.md](../USAGE.md) (+ pt-BR) documents flags, pack path, tier; operator still applies a **local** `config.yaml` for manual §D. |
+| **3** Happy path (§D) | **No** | Browser steps in [SMOKE_MATURITY_ASSESSMENT_POC.md](../ops/SMOKE_MATURITY_ASSESSMENT_POC.md) — **required** to declare **full** “POC ready” for demos. |
+| **4** Integrity (§E) | **Partial** | HMAC + `/status` + audit export are **covered by tests**; **§E** remains the **live** lab check with env secret + running process. |
+| **5** Docs / ADR | **Yes** | USAGE, [ADR 0032](../adr/0032-maturity-assessment-batch-history-sqlite.md), this plan, runbook EN + pt-BR. |
+
+**Working definitions:**
+
+- **“POC ready — automated gates”** — gate **1** green on `main` + gate **5** satisfied (already true when docs match code). Safe for **release notes / CI** language.
+- **“POC ready — full (demo/beta)”** — above + operator completes runbook **§D** (and **§E** if the story includes integrity demo).
+
+**Mapping runbook §D to pytest:** see [SMOKE_MATURITY_ASSESSMENT_POC.md](../ops/SMOKE_MATURITY_ASSESSMENT_POC.md) § *Pytest coverage vs browser checklist* — API contract and templates are exercised without a browser; §D is still the **UX** gate.
 
 **Explicitly not required for “POC ready”:** GitHub **#86** (session / WebAuthn / RBAC), **tenant-scoped** batch lists, **`licensing.mode: enforced`** + JWT in production, **DOCX→YAML** private import, legal/commercial one-pager, report-bundle annex.
 
