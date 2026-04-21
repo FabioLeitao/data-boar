@@ -11,6 +11,8 @@
 - **Privileged probes:** **`sudo -n`** in the smoke script requires **narrow sudoers** on each Linux host (template under gitignored **`LABOP_COMPLETÃO_SUDOERS*.md`**). **`sudo -v` in tmux** warms sudo for **that TTY**, not automatically for **non-interactive** `ssh host 'sudo …'` — for reliable **`-Privileged`** runs, align sudoers with the template.
 - **On failure:** If **`sudo -n`** or SSH fails, the assistant **reminds** the operator to refresh sudoers / SSH agent / interactive sudo as needed, then **re-runs** the tests — see **`lab-completao-workflow.mdc`**.
 
+- **Lab-as-test-datacenter scope:** For **completão**, the assistant **may** install **missing deps**, fix **app/compose ports**, add **narrow** **lab-op-to-lab-op** firewall or **VLAN** rules (via **`ufw`**, **`nftables`**, **LAB-ROUTER-01** scripts when configured), and tune **SELinux**/**AppArmor**/**fail2ban**/**sshguard**/**USBGuard**/**AIDE**/**auditd** (etc.) **only** with **least privilege** and **reversible** intent — full policy: **`lab-completao-workflow.mdc`**. Record what changed in **`docs/private/homelab/`**; never ship **secrets** or **LAN specifics** to **public** Git.
+
 **Relationship:**
 
 | Layer | What it is | Typical command |
@@ -50,10 +52,11 @@
 5. **CLI completão** from the dev PC with a **private** YAML (DBs on a hub + synthetic FS under the repo) — see **`docs/ops/LAB_EXTERNAL_CONNECTIVITY_EVAL.md`** and private **`config.complete-eval.yaml`** pattern.
 6. **API / web:** start **`main.py --web`** on a host; **`curl http://<host>:8088/health`** from another LAN machine; then browser. Add **`completaoHealthUrl`** to the manifest for orchestrate to probe from Windows.
 
-## What this runbook does *not* automate
+## Automation boundary vs assistant-led remediation
 
-- Opening **firewall** holes, changing **AIDE**/**auditd**/**USBGuard**/**sshguard**/**fail2ban** policy: **operator decision**; document narrow test exceptions in **private** notes if you apply them.
-- **Production readiness** is an **iterative** outcome: repeat completão, file issues, patch code/docs, re-run.
+- **Built-in scripts** (`lab-completao-orchestrate`, host-smoke) **do not** by themselves open **firewalls** or relax **LSM**/**integrity** tools — they **probe** and **log**.
+- When the operator asks for **completão** and wants tests **unblocked**, the assistant **may apply** **narrow**, **lab-op-scoped**, **least-privilege** fixes (packages, ports, **`ufw`**/**nft**, UniFi via **`LAB-ROUTER-01.ps1`** when keys exist, container paths, NFS/SMB/SSHFS mounts per product support) per **`lab-completao-workflow.mdc`**. **Escalate** to the operator before **broad** or **irreversible** hardening changes.
+- **Production readiness** stays **iterative**: repeat completão, file issues, patch code/docs, re-run.
 
 ## Quick start
 

@@ -11,6 +11,8 @@
 - **Probes privilegiados:** **`sudo -n`** no script de smoke exige **sudoers estreito** em cada Linux (modelo em **`LABOP_COMPLETÃO_SUDOERS*.md`** gitignored). **`sudo -v` no tmux** aquece sudo **para aquele TTY**, não automaticamente para **`ssh host 'sudo …'`** não interactivo — para **`-Privileged`** fiável, alinha sudoers com o modelo.
 - **Em falha:** Se **`sudo -n`** ou SSH falhar, o assistente **lembra-te** de atualizar sudoers / agente SSH / sudo interactivo conforme preciso e **volta a correr** os testes — ver **`lab-completao-workflow.mdc`**.
 
+- **Âmbito “datacenter de testes” no lab:** Para **completão**, o assistente **pode** instalar **dependências em falta**, corrigir **portas** da app/compose, acrescentar regras **estreitas** **lab-op↔lab-op** no **firewall** ou **VLAN** (via **`ufw`**, **`nftables`**, **`LAB-ROUTER-01.ps1`** quando houver credenciais), e ajustar **SELinux**/**AppArmor**/**fail2ban**/**sshguard**/**USBGuard**/**AIDE**/**auditd** (etc.) só com **least privilege** e intenção **reversível** — política completa: **`lab-completao-workflow.mdc`**. Regista alterações em **`docs/private/homelab/`**; **nunca** commits públicos com **segredos** ou **detalhes LAN**.
+
 **Relação:**
 
 | Camada | O que é | Comando típico |
@@ -50,9 +52,11 @@
 5. **Completão CLI no PC dev** com YAML privado (BD no hub + FS sintético no repo) — ver **`docs/ops/LAB_EXTERNAL_CONNECTIVITY_EVAL.md`**.
 6. **API / web:** subir **`main.py --web`**; **`curl`** em **`/health`**; browser; opcional **`completaoHealthUrl`** no manifesto.
 
-## O que este runbook **não** automatiza
+## Limite de automação vs remediação assistida
 
-- Abrir **firewall**, alterar **AIDE**/**auditd**/**USBGuard**/**sshguard**/**fail2ban**: decisão do operador; exceções de teste ficam em notas **privadas**.
+- Os **scripts** (`lab-completao-orchestrate`, host-smoke) **por si** **não** abrem **firewalls** nem relaxam **LSM**/ferramentas de integridade — **só** **inspecionam** e **registam**.
+- Quando pedes **completão** e queres **desbloquear** testes, o assistente **pode aplicar** correcções **estreitas**, no **âmbito lab-op**, com **least privilege** (pacotes, portas, **`ufw`**/**nft**, UniFi via **`LAB-ROUTER-01.ps1`** se existir, contentores, mounts **NFS**/**SMB**/**SSHFS** conforme o produto) segundo **`lab-completao-workflow.mdc`**. **Pergunta ao operador** antes de mudanças **amplas** ou **irreversíveis** de hardening.
+- **Prontidão para produção** continua **iterativa**: repetir completão, issues, patches, re-correr.
 
 ## Arranque rápido
 

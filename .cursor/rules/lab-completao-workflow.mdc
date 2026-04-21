@@ -1,5 +1,5 @@
 ---
-description: Lab completão — assistant runs lab-completao-orchestrate.ps1 -Privileged from dev PC; SSH same LAN as operator; on sudo/SSH failure remind operator to fix sudoers/sessions and re-run; no "no access" excuses.
+description: Lab completão — orchestrate -Privileged; SSH from dev PC; may remediate OS/deps/firewall/security (narrow lab-op least privilege) to unblock tests; on failure remind and re-run; no fake LAN denial.
 globs: scripts/lab-completao*.ps1,scripts/lab-completao*.sh,docs/ops/LAB_COMPLETAO_RUNBOOK.md,docs/ops/LAB_SMOKE_MULTI_HOST.md
 alwaysApply: true
 ---
@@ -31,6 +31,28 @@ alwaysApply: true
 1. If **`sudo -n`** fails for privileged probes: **remind** the operator to (a) align **sudoers** with the narrow template for completão / host-report, and/or (b) refresh an interactive session on the host if they rely on password sudo for **manual** steps — then **re-run** **`lab-completao-orchestrate.ps1 -Privileged`**. **Do not** blame “the AI” for lack of network access when the failure is **permission denied** for **`sudo -n`**.
 
 1. If **`MISSING_SCRIPT`** or stale clone: **`lab-op-repo-status.ps1`** first; **`lab-op-git-align-main.ps1`** only when destructive reset is acceptable — see **`LAB_COMPLETAO_RUNBOOK.md`**.
+
+## Lab scope — dependencies, network, and security (assistant **may** remediate when asked)
+
+When the operator asks for **completão** and expects the lab to behave like a **test datacenter**, the assistant **may and should** unblock failures **in the lab-op footprint** using **least privilege**, **narrow** rules, and **reversible** changes where practical. **Do not** use this as a reason to weaken **non-lab** or **production** systems. **Never** put secrets, tokens, full firewall dumps, or LAN identifiers into **public** GitHub — record operator-only details under **`docs/private/homelab/`**.
+
+1. **Packages and build deps:** Install missing **OS packages** (headers, `-dev` libs, **`zlib`**, MariaDB/MySQL client dev files, etc.), run **`uv sync`** / **`uv sync --extra …`**, fix **`PATH`** for non-interactive SSH when safe — prefer **Ansible playbooks** or **`ops/automation/ansible/`** when the repo already models the change.
+
+1. **Application config:** Fix **wrong ports**, **`main.py` / env**, compose files, or **`deploy/lab-smoke-stack`** wiring when they block tests — commit **tracked** fixes when they are **product-correct**; keep **operator-specific** YAML only in **`docs/private/`**.
+
+1. **Host firewalls (`ufw`, `nftables`, `iptables`):** Add **allow** rules **only** for **lab-op source/destination pairs** and **ports the test needs** (e.g. Data Boar **8088**, DB lab ports). Prefer **temporary** or **documented** rules; avoid **wide open** LAN or `0.0.0.0/0` **except** when the operator explicitly accepts it for a **short** test window.
+
+1. **UniFi / LAB-ROUTER-01 (VLANs, firewall between VLANs):** Use existing operator scripts and credentials (e.g. **`scripts/LAB-ROUTER-01.ps1`**, private notes) when available. If API keys or the controller are **not** reachable from the terminal session, **report** that and ask the operator to apply the **same rule intent** in the UI — do **not** invent topology.
+
+1. **MAC / LSM / hardening (SELinux, AppArmor):** Prefer **narrow** booleans, **per-path** profiles, or **short** permissive modes **for test paths/containers only** — **escalate** (ask the operator) before **global** enforcing→permissive flips or **disabling** layers site-wide.
+
+1. **Bruteforce / abuse tools (fail2ban, sshguard):** Prefer **whitelist/jail tweaks** for **lab-op** sources, **time-boxed**, or **operator-approved** test IPs — not “turn off security” by default.
+
+1. **Integrity / USB / audit (AIDE, Tripwire, Samhain, USBGuard, auditd):** Expect **false positives** or **blocks** during scans; adjust **only** with **operator agreement** and **minimal** scope (paths, windows). **Do not** silently disable **audit** on systems that must stay compliant for **non-lab** reasons — **ask** if unsure.
+
+1. **Containers and orchestration:** Aim for **at least one** runnable Data Boar path per **major** lab **OS/runtime** the manifest covers — **Docker** / **Compose**, **Podman**, **Swarm** where used, **Kubernetes** (e.g. **Docker Desktop** on the primary dev laptop) **if** the operator has a cluster/context. Use **`deploy/`** and **`scripts/docker/`** patterns; do **not** commit operator kubeconfig.
+
+1. **Remote storage protocols:** Exercise **NFS**, **SSHFS**, **SMB/CIFS** (and similar) **when** the product supports them and mounts exist — follow **[TECH_GUIDE.md](../../docs/TECH_GUIDE.md)** extras; keep **credentials** in **`docs/private/`** only.
 
 ## Related rules
 
