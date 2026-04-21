@@ -74,6 +74,18 @@ python main.py --config config.yaml --web --allow-insecure-http --host 0.0.0.0 -
   python main.py --web --port 8088
   ```
 
+### Configuration file (first run)
+
+**Prefer YAML** (`.yaml` / `.yml`) for new projects: you can add comments, review diffs, and merge changes safely. **`--config`** defaults to **`config.yaml`** in the current working directory; that file name is **gitignored** at the repo root so you do not accidentally commit LAN paths or secrets — use a **copy** of a tracked sample in a private path or set **`CONFIG_PATH`**.
+
+| What to copy | Use when |
+| ------------ | -------- |
+| **[`deploy/samples/config.starter-lgpd-eval.yaml`](../deploy/samples/config.starter-lgpd-eval.yaml)** | **Recommended** first lab or evaluation: two fictional filesystem folders, one PostgreSQL-style target with `pass_from_env`, `scan.max_workers`, timeouts, **`rate_limit`**, minimal ML/DL terms, and **commented** optional blocks (compressed archives, `file_passwords`, `learned_patterns`, pattern files, `detection.cnpj_alphanumeric`, `connector_format_id_hint`, API key, jurisdiction hints). Replace paths and set env vars — values use **RFC 5737** documentation IPs and placeholder paths only. |
+| **[`deploy/config.example.yaml`](../deploy/config.example.yaml)** | **Smallest** valid file for Docker (`targets: []`, `/data` paths). |
+| **Legacy JSON** in [`config/config.json`](../config/README.md) | Loader still accepts the old **`databases`** + **`file_scan.directories`** shape; **new work should use YAML** — see [`config/README.md`](../config/README.md). |
+
+**Hub (same links from `docs/`):** [samples/README.md](samples/README.md) ([pt-BR](samples/README.pt_BR.md)). **Build targets from a spreadsheet:** [deploy/scope_import.example.csv](../deploy/scope_import.example.csv) and [ops/SCOPE_IMPORT_QUICKSTART.md](ops/SCOPE_IMPORT_QUICKSTART.md) ([pt-BR](ops/SCOPE_IMPORT_QUICKSTART.pt_BR.md)) — written for counsel, DPOs, and programme leads who are **not** full-time infra staff.
+
 ---
 
 ## 2. Deploying and accessing the web API
