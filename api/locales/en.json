@@ -205,6 +205,15 @@
     "more_li3": "docs/plans/completed/PLAN_SENSITIVE_CATEGORIES_ML_DL.md – sensitive categories (health, religion, political, etc.)",
     "more_tail": "These files live in the project repository and should be kept in sync with the behaviour you see here."
   },
+  "login": {
+    "page_title": "Sign in — Data Boar",
+    "h1": "Sign in",
+    "disabled": "WebAuthn is not enabled in this deployment. Set api.webauthn.enabled and the token secret environment variable before starting the process.",
+    "help_link": "Help & Docs",
+    "intro": "Use a passkey (WebAuthn) to access the dashboard after the first passkey is registered. If none exist yet, open this page and choose Register passkey.",
+    "button_placeholder": "…",
+    "hint_https": "WebAuthn requires HTTPS or localhost. Match api.webauthn.origin and rp_id to the browser URL."
+  },
   "js": {
     "chart_total": "Total findings",
     "chart_risk": "Risk score (0–100)",

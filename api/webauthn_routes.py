@@ -1,8 +1,8 @@
 """
 JSON endpoints for vendor-neutral WebAuthn (Phase 1). Mounted under ``/auth/webauthn``.
 
-Disabled unless ``api.webauthn.enabled`` is true. Does not gate HTML yet — session cookie is set
-for future RBAC work (#86).
+Disabled unless ``api.webauthn.enabled`` is true. Session cookie feeds the Phase 1b HTML gate when
+credentials exist (#86); RBAC remains future work.
 """
 
 from __future__ import annotations
