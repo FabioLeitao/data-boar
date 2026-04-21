@@ -52,7 +52,7 @@ python main.py --config config.yaml --tenant "Acme Corp" --technician "Alice Col
 
 ## REST API server (`--web`)
 
-**Transport:** you must either use **HTTPS** (PEM cert + key on the CLI or under `api` in config) or **explicitly** accept plaintext with **`--allow-insecure-http`** (or `api.allow_insecure_http: true`). Otherwise `main.py --web` exits with code **2** and an error on stderr. **`GET /status`** and **`GET /health`** include a `dashboard_transport` object (`mode`, `tls_active`, `summary`, etc.) and an **`enterprise_surface`** object (transport + license trust + global API-key posture; per-route RBAC is not implemented yet); plaintext mode shows a **banner** on dashboard pages.
+**Transport:** you must either use **HTTPS** (PEM cert + key on the CLI or under `api` in config) or **explicitly** accept plaintext with **`--allow-insecure-http`** (or `api.allow_insecure_http: true`). Otherwise `main.py --web` exits with code **2** and an error on stderr. **`GET /status`** and **`GET /health`** include a `dashboard_transport` object (`mode`, `tls_active`, `summary`, etc.) and an **`enterprise_surface`** object (transport + license trust + global API-key posture; optional per-route RBAC is summarized under **`enterprise_surface.access_surface.rbac`** — **`enabled`** when `api.rbac` is on and the tier allows **`dashboard_rbac`**, otherwise **`not_implemented`**); plaintext mode shows a **banner** on dashboard pages.
 
 ```bash
 # TLS (example paths; keep keys out of git)
