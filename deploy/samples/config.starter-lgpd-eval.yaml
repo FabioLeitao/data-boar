@@ -32,6 +32,41 @@ targets:
     user: demo_reader
     pass_from_env: DEMO_DB_PASSWORD
 
+# --- file_scan.extensions (filesystem / SMB / WebDAV / SharePoint) ---
+# This sample keeps a short LGPD-style pilot list below. For the full built-in suffix
+# union, see `connectors/filesystem_connector.py` (`SUPPORTED_EXTENSIONS` = text +
+# documents + structured data). If you omit `extensions` entirely, `config/loader.py`
+# applies its own default list (broad, but not identical to `SUPPORTED_EXTENSIONS`;
+# it still omits many code/markup suffixes). To widen this sample, copy dots from the
+# catalogue into the YAML list, or merge with your own allowlist.
+#
+# Optional pip extras (see `pyproject.toml`): `[richmedia]` for image/audio/video
+# metadata + OCR flags; `[dataformats]` for some columnar/binary helpers (e.g. heavy
+# parquet/avro paths). Enable rich-media scanning via `file_scan.scan_rich_media_metadata`
+# / `scan_image_ocr` in USAGE.md — those flags add the media suffixes below to the scan.
+#
+# Text / markup / config / code / subtitles (plain-text read path):
+#   .ass .bat .bib .c .cjs .cfg .conf .config .cpp .cs .csv .diff .env .go .graphql .gql
+#   .h .hpp .htm .html .ini .java .js .json .jsonl .kt .kts .log .mjs .md .markdown .n3
+#   .ndjson .owl .patch .php .pl .pm .properties .ps1 .py .r .R .rb .rdf .rst .rs .rtf .rtfd
+#   .scala .sh .sql .srt .ssa .svg .svgz .tab .tex .toml .ts .tsv .ttl .txt .vb .vue .vtt .xhtml .xml .yaml .yml
+#
+# Office and binary documents (dedicated extractors):
+#   .doc .docx .eml .epub .mht .mhtml .msg .odf .odg .odm .odb .odp .ods .odt .pdf .pps
+#   .ppsx .ppt .pptx .xls .xlsb .xlsm .xlsx
+#
+# Databases and structured/tabular (sample, path-only, or column samples):
+#   .accdb .avro .db .dbf .feather .mdb .orc .parquet .sqlite .sqlite3
+#
+# Image / audio / video (not in `SUPPORTED_EXTENSIONS` by default; add by setting
+# `file_scan.scan_rich_media_metadata` and/or `file_scan.scan_image_ocr`, optional `[richmedia]`):
+#   .aac .avi .bmp .flac .gif .heic .heif .jpeg .jpg .m4a .m4v .mkv .mov .mp3 .mp4 .mpeg
+#   .mpg .ogg .oga .opus .png .tif .tiff .wav .webm .webp .wmv .wma
+#
+# Archives (not file types for `extensions`; when `file_scan.scan_compressed: true`,
+# members inside these containers are scanned — see `core/archives.py`):
+#   .7z .bz2 .gz .tar .tar.bz2 .tar.gz .tar.xz .tbz2 .tgz .txz .xz .zip
+
 file_scan:
   extensions: [.txt, .csv, .pdf, .docx, .xlsx]
   recursive: true
