@@ -7,7 +7,7 @@ O arquivo **`config.json`** nesta pasta serve para mostrar o formato **legado** 
 - **`databases`** no topo: lista de ligações (mapeada para alvos `type: database`).
 - **`file_scan.directories`**: lista de pastas (cada uma vira um alvo `type: filesystem`).
 
-**Para trabalho novo, prefira YAML** — é mais simples de comentar, revisar e mesclar. Um **único modelo completo** (várias seções + blocos opcionais comentados) está em **`deploy/samples/config.starter-lgpd-eval.yaml`**. Quem entra por **`docs/`** pode seguir **[docs/samples/README.pt_BR.md](../docs/samples/README.pt_BR.md)** (mesmos links em um só lugar).
+**Para trabalho novo, prefira YAML** — é mais simples de comentar, revisar e mesclar. Um **único modelo completo** (várias seções + blocos opcionais comentados) está em **`deploy/samples/config.starter-lgpd-eval.yaml`**. Quem entra por **`docs/`** pode seguir **[docs/samples/README.pt_BR.md](../docs/samples/README.pt_BR.md)** (mesmos links em um só lugar). **Narrativa de primeira execução** (YAML vs JSON, tabela de amostras): [USAGE.pt_BR.md](../docs/USAGE.pt_BR.md#arquivo-de-configuração-primeira-execução) ([EN](../docs/USAGE.md#configuration-file-first-run)).
 
 O modelo mínimo para contêiner é **`deploy/config.example.yaml`** (`targets: []`).
 

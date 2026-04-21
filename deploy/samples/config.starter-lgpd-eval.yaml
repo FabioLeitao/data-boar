@@ -50,15 +50,23 @@ file_scan:
   # # Per-extension passwords for protected PDF/ZIP/PPTX; literals only (see USAGE).
   # use_content_type: false
   # # Magic-byte detection for renamed files (extra I/O); see SENSITIVITY_DETECTION.md.
+  # connector_format_id_hint: false
+  # # When true: declared VARCHAR length + ID-like column name may raise MEDIUM FORMAT_LENGTH_HINT_ID (see USAGE).
 
 report:
   output_dir: ./reports
+  # --- Optional: heuristic jurisdiction notes on Report info (not a legal conclusion) ---
+  # jurisdiction_hints:
+  #   enabled: true
 
 sqlite_path: ./data/audit_results.db
 
 api:
   port: 8088
   host: "127.0.0.1"
+  # --- Optional: require X-API-Key / Bearer on API and HTML (except /health) ---
+  # require_api_key: true
+  # api_key_from_env: "DATA_BOAR_API_KEY"
 
 # Parallelism across *targets* (separate connectors), not CPU threads per file.
 # 1 = sequential (safest default). Raise to 2–4 when you have many independent targets
