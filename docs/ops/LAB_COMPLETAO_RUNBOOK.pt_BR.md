@@ -4,6 +4,8 @@
 
 **Objetivo:** Definir o que é **completão** neste projeto: **rodar o produto** (CLI, API, web) nos **hosts do lab**, via **SSH**, com **registo** de resultados — não é a mesma coisa que só **`pytest`** ou **`.\scripts\check-all.ps1`** no PC de desenvolvimento.
 
+**Chat novo no Cursor / zero contexto:** Usa **[LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md](LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md)** — prompt copy-paste, pré-condições e o que um agente novo consegue ou não.
+
 ## Contrato assistente + operador (Cursor)
 
 - **Acesso:** O assistente corre **`ssh`**, scripts e **`curl`** no **terminal integrado do Cursor** no **PC Windows do operador** — **mesma LAN e configuração SSH** que o teu shell (ver **`homelab-ssh-via-terminal.mdc`**). Não tratar o “assistente” como rede separada.
