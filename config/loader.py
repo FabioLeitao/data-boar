@@ -366,6 +366,24 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
         str(out["api"].get("maturity_integrity_secret_from_env") or "").strip() or None
     )
 
+    wa_raw = out["api"].get("webauthn")
+    if not isinstance(wa_raw, dict):
+        wa_raw = {}
+    out["api"]["webauthn"] = {
+        "enabled": bool(wa_raw.get("enabled", False)),
+        "rp_id": str(wa_raw.get("rp_id") or "localhost").strip() or "localhost",
+        "rp_name": str(wa_raw.get("rp_name") or "Data Boar").strip() or "Data Boar",
+        "origin": str(wa_raw.get("origin") or "http://127.0.0.1:8088").strip(),
+        "user_display_name": str(wa_raw.get("user_display_name") or "operator").strip()
+        or "operator",
+        "token_secret_from_env": str(
+            wa_raw.get("token_secret_from_env") or "DATA_BOAR_WEBAUTHN_TOKEN_SECRET"
+        ).strip()
+        or "DATA_BOAR_WEBAUTHN_TOKEN_SECRET",
+        "user_id_hex": str(wa_raw.get("user_id_hex") or "").strip(),
+        "additional_origins": wa_raw.get("additional_origins"),
+    }
+
     # Optional external pattern files (ML/DL training terms: list of { text, label } with label "sensitive"|1 or "non_sensitive"|0)
     out["ml_patterns_file"] = data.get("ml_patterns_file") or ""
     out["regex_overrides_file"] = data.get("regex_overrides_file") or ""

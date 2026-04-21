@@ -12,6 +12,7 @@ from sqlalchemy import (
     Column,
     DateTime,
     Integer,
+    LargeBinary,
     String,
     Text,
     create_engine,
@@ -211,6 +212,21 @@ class DataSourceInventory(Base):
     created_at = Column(DateTime, default=_utc_now)
 
 
+class WebAuthnCredential(Base):
+    """
+    One registered WebAuthn passkey for dashboard session auth (Phase 1, vendor-neutral RP).
+    Single-operator deployments typically store one row; sign_count updates on each authentication.
+    """
+
+    __tablename__ = "webauthn_credentials"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(LargeBinary(64), nullable=False, index=True)
+    credential_id = Column(LargeBinary(512), nullable=False, unique=True)
+    public_key = Column(LargeBinary(2048), nullable=False)
+    sign_count = Column(Integer, nullable=False, default=0)
+    created_at = Column(DateTime, default=_utc_now)
+
+
 class MaturityAssessmentAnswer(Base):
     """
     One answer line for the organizational maturity self-assessment POC (GRC-style).
@@ -246,6 +262,7 @@ class LocalDBManager:
         self._ensure_notification_send_log_table()
         self._ensure_maturity_assessment_answers_table()
         self._ensure_maturity_row_hmac_column()
+        self._ensure_webauthn_credentials_table()
         self._session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
         self._current_session_id: str | None = None
 
@@ -346,6 +363,86 @@ class LocalDBManager:
                     )
                 )
                 conn.commit()
+
+    def _ensure_webauthn_credentials_table(self) -> None:
+        """Create webauthn_credentials table if missing (additive migration)."""
+        WebAuthnCredential.__table__.create(self.engine, checkfirst=True)
+
+    def webauthn_credential_count(self) -> int:
+        """Return number of registered WebAuthn credentials."""
+        session = self._session_factory()
+        try:
+            return int(session.query(func.count(WebAuthnCredential.id)).scalar() or 0)
+        finally:
+            session.close()
+
+    def webauthn_list_credentials(self) -> list[dict[str, object]]:
+        """Return all credentials for authentication allowCredentials."""
+        session = self._session_factory()
+        try:
+            rows = session.query(WebAuthnCredential).all()
+            out: list[dict[str, object]] = []
+            for r in rows:
+                out.append(
+                    {
+                        "credential_id": bytes(r.credential_id),
+                        "public_key": bytes(r.public_key),
+                        "sign_count": int(r.sign_count),
+                        "user_id": bytes(r.user_id),
+                    }
+                )
+            return out
+        finally:
+            session.close()
+
+    def webauthn_save_credential(
+        self,
+        *,
+        user_id: bytes,
+        credential_id: bytes,
+        public_key: bytes,
+        sign_count: int,
+    ) -> None:
+        """Persist a verified registration credential."""
+        uid = user_id[:64]
+        cid = credential_id[:512]
+        pk = public_key[:2048]
+        sc = int(sign_count)
+        session = self._session_factory()
+        try:
+            row = WebAuthnCredential(
+                user_id=uid,
+                credential_id=cid,
+                public_key=pk,
+                sign_count=sc,
+            )
+            session.add(row)
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+
+    def webauthn_update_sign_count(self, credential_id: bytes, new_count: int) -> None:
+        """Update sign_count after successful authentication."""
+        cid = credential_id[:512]
+        session = self._session_factory()
+        try:
+            row = (
+                session.query(WebAuthnCredential)
+                .filter(WebAuthnCredential.credential_id == cid)
+                .one_or_none()
+            )
+            if row is None:
+                return
+            row.sign_count = int(new_count)
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
 
     def save_maturity_assessment_answers(
         self,
@@ -1128,6 +1225,7 @@ class LocalDBManager:
             # Delete all scan session rows
             session.query(ScanSession).delete(synchronize_session=False)
             session.query(MaturityAssessmentAnswer).delete(synchronize_session=False)
+            session.query(WebAuthnCredential).delete(synchronize_session=False)
             # Record the wipe event itself
             session.add(DataWipeLog(reason=reason))
             session.commit()

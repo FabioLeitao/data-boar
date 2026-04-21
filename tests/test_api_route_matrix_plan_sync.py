@@ -29,6 +29,7 @@ def _registered_http_routes() -> list[str]:
 # Update this tuple when adding/removing/changing routes in api/routes.py (same PR as doc table).
 EXPECTED_HTTP_ROUTES: tuple[str, ...] = (
     "GET /about/json",
+    "GET /auth/webauthn/status",
     "GET /health",
     "GET /heatmap",
     "GET /heatmap/{session_id}",
@@ -49,6 +50,11 @@ EXPECTED_HTTP_ROUTES: tuple[str, ...] = (
     "MOUNT /static",
     "PATCH /sessions/{session_id}",
     "PATCH /sessions/{session_id}/technician",
+    "POST /auth/webauthn/authentication/options",
+    "POST /auth/webauthn/authentication/verify",
+    "POST /auth/webauthn/logout",
+    "POST /auth/webauthn/registration/options",
+    "POST /auth/webauthn/registration/verify",
     "POST /scan",
     "POST /scan_database",
     "POST /start",
