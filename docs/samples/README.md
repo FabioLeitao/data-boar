@@ -6,7 +6,7 @@
 
 | What you need | Where to go |
 | ------------- | ----------- |
-| **Full starter** (two folders + one database + rate limit + ML/DL terms; heavily commented optional blocks; for evaluators and operators alike) | [`deploy/samples/config.starter-lgpd-eval.yaml`](../deploy/samples/config.starter-lgpd-eval.yaml) |
+| **Full starter** (two folders + one database + rate limit + ML/DL terms; commented optional blocks + **built-in extension catalogue**; for evaluators and operators alike) | [`deploy/samples/config.starter-lgpd-eval.yaml`](../deploy/samples/config.starter-lgpd-eval.yaml) |
 | **Minimal Docker / container** (`targets: []`, `/data` paths) | [`deploy/config.example.yaml`](../deploy/config.example.yaml) |
 | **Spreadsheet → YAML targets** (scope import) | [`deploy/scope_import.example.csv`](../deploy/scope_import.example.csv) + [ops/SCOPE_IMPORT_QUICKSTART.md](../ops/SCOPE_IMPORT_QUICKSTART.md) |
 | **Why `config/config.json` still exists** | [`config/README.md`](../config/README.md) (legacy JSON layout only) |
