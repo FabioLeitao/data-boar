@@ -51,6 +51,7 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0030  | [Python dependency update closure (single pass)](0030-python-dependency-update-closure-single-pass.md) | Accepted |
 | 0031  | [PyPI packaging with Hatchling (flat layout)](0031-pypi-packaging-hatchling-flat-layout.md) | Accepted |
 | 0032  | [Maturity self-assessment — per-batch history on dashboard HTML](0032-maturity-assessment-batch-history-sqlite.md) | Accepted |
+| 0033  | [WebAuthn open Relying Party — JSON endpoints (Phase 1)](0033-webauthn-open-relying-party-json-endpoints.md) | Accepted |
 
 ## Related docs
 

@@ -1,6 +1,6 @@
 # Plan: Dashboard / reports access control (roles & permissions)
 
-**Status:** Phase **0 (D-WEB)** design snapshot ✅ (route matrix + middleware Mermaid + proxy pointers — § *Phase 0 deliverable* below); **implementation** Phases 1–3 ⬜ — [GitHub #86](https://github.com/FabioLeitao/data-boar/issues/86)
+**Status:** Phase **0 (D-WEB)** design snapshot ✅ (route matrix + middleware Mermaid + proxy pointers — § *Phase 0 deliverable* below); **Phase 1a** (vendor-neutral **WebAuthn JSON RP** + SQLite — § *Phase 1a deliverable* below) ✅ on `main`; **Phase 1b** (browser session gates **HTML** on `/{locale}/…` + CSRF) + **Phases 2–3** ⬜ — [GitHub #86](https://github.com/FabioLeitao/data-boar/issues/86)
 
 **Horizon / urgency:** `[H2]` / `[U2]` — after **Priority band A** and when multi-tenant / multi-user dashboard exposure is real, not before core scan stability.
 
@@ -55,6 +55,20 @@ See [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md), [TECH_GUIDE.md](../T
 
 **Non-goals for v1 of Phase 1–2:** Password **storage** as primary factor (passkeys first); full **SCIM** provisioning; replacing customer IdP — **SSO is additive in Phase 3**.
 
+### Phase 1a deliverable — WebAuthn JSON relying party (shipped)
+
+**Intent:** Ship **standards-aligned** registration/authentication **JSON** endpoints and credential persistence **without** a commercial passwordless SaaS SDK, so deployments stay **vendor-neutral** at the core ([ADR 0033](../adr/0033-webauthn-open-relying-party-json-endpoints.md)).
+
+| Item | Notes |
+| ---- | ----- |
+| Endpoints | `POST /auth/webauthn/registration/options|verify`, `POST /auth/webauthn/authentication/options|verify`, `GET /auth/webauthn/status`, `POST /auth/webauthn/logout` — **404** when `api.webauthn.enabled` is false |
+| Storage | SQLite table **`webauthn_credentials`**; cleared on `wipe_all_data` / `--reset-data` |
+| Session | Signed **httpOnly** cookie (`itsdangerous`); **`api.require_api_key`** does not apply to `/auth/webauthn/*` |
+| Limits | Challenge `state` is **in-memory** (single-worker); **one** registration while a credential row exists (**403** on second registration attempt) |
+| Tests + smoke | `tests/test_webauthn_rp.py`, `tests/test_webauthn_session_cookie.py`; operator pytest subset: [SMOKE_WEBAUTHN_JSON.md](../ops/SMOKE_WEBAUTHN_JSON.md) |
+
+**Explicitly not in 1a:** Gating **HTML** dashboard routes, **RBAC**, **CSRF** policy for locale-prefixed forms, **Bitwarden Passwordless.dev** adapter, **multi-worker** challenge store — those remain **Phase 1b+** / [#86](https://github.com/FabioLeitao/data-boar/issues/86).
+
 ### Phase 0 (D-WEB) — documentation-only slice (no WebAuthn yet)
 
 **Intent:** Ship **one PR** that is **design + operator docs + diagram(s)** only. **Out of scope for that PR:** WebAuthn handlers, Bitwarden Passwordless.dev SDK wiring, session cookies, and new RBAC middleware — those belong to **Phase 1+**.
@@ -87,6 +101,12 @@ See [SECURITY.md](../SECURITY.md), [USAGE.md](../USAGE.md), [TECH_GUIDE.md](../T
 | Method(s) | Path | Response | Notes (today) | Target route class (future) |
 | --------- | ---- | -------- | ------------- | ----------------------------- |
 | `GET` | `/health` | JSON | **Always unauthenticated** (no API key); liveness/readiness | `public` |
+| `POST` | `/auth/webauthn/registration/options` | JSON | **Phase 1 (optional):** WebAuthn creation options + `state` when `api.webauthn.enabled` — **404** when off; **no** global API key | `public` (handshake) |
+| `POST` | `/auth/webauthn/registration/verify` | JSON | Verify registration; SQLite `webauthn_credentials`; sets cookie — **404** when off | `public` (handshake) |
+| `POST` | `/auth/webauthn/authentication/options` | JSON | WebAuthn request options + `state` — **404** when off | `public` (handshake) |
+| `POST` | `/auth/webauthn/authentication/verify` | JSON | Verify authentication; refresh cookie — **404** when off | `public` (handshake) |
+| `GET` | `/auth/webauthn/status` | JSON | `{ enabled, registered_credentials, session_authenticated }` — **404** when off | `public` |
+| `POST` | `/auth/webauthn/logout` | JSON | Clear session cookie — **404** when off | `public` |
 | `GET` | `/{locale_slug}/help` | HTML | Help / doc links (`en`, `pt-br`, …) | `public` (or `authenticated` if product tightens) |
 | `GET` | `/{locale_slug}/about` | HTML | About page | `public` |
 | `GET` | `/{locale_slug}/assessment` | HTML | Optional POC placeholder (gated: `api.maturity_self_assessment_poc_enabled` + tier); **404** when off — [PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md](PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md). When answers exist in SQLite, HTML includes a **recent submissions** table (all batches in the DB file — **#86** should scope this list by role/tenant). | `authenticated` (TBD) |
@@ -212,10 +232,10 @@ Details and anti-footgun rules: **PLAN_DASHBOARD_I18N.md** § *Meshing with dash
 
 ## Completion checklist (when implementing)
 
-- [ ] USAGE + TECH_GUIDE + SECURITY (EN + pt-BR where paired) updated.
-- [ ] Tests for new middleware or route guards (`tests/test_api_key.py` or new module); **WebAuthn** flows covered (happy path + invalid assertion) if Phase 1 ships.
-- [ ] Session cookies: **httpOnly**, **Secure**, **SameSite** policy documented; CSRF strategy for mutating routes.
-- [ ] This file + [PLANS_TODO.md](PLANS_TODO.md) + [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) updated; close or update GitHub #86 when shipped.
+- [x] USAGE + TECH_GUIDE (EN + pt-BR) updated for **Phase 1a** WebAuthn JSON; SECURITY cross-links remain via USAGE / deployment runbooks.
+- [x] Tests: `tests/test_webauthn_rp.py`, `tests/test_webauthn_session_cookie.py` (disabled path, options+state, status, negative cases, startup without secret).
+- [ ] Session cookies: **CSRF** strategy for **locale-prefixed** mutating routes when **Phase 1b** gates HTML — pending.
+- [ ] This file + [PLANS_TODO.md](PLANS_TODO.md) + [SPRINTS_AND_MILESTONES.md](SPRINTS_AND_MILESTONES.md) refreshed; **close or narrow** GitHub #86 when **Phase 1b+** ships (1a alone does not close #86).
 
 ---
 
