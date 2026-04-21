@@ -29,7 +29,7 @@ When the task is **refresh inventory / homelab reports** and a manifest exists:
 
 **Escalate** when: SSH fails, `git pull` fails, manifest missing, or output suggests **host down** / **key** issues.
 
-**Lab completão (multi-host smoke):** When the operator asks for **completão** or session keyword **`completao`**, run **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** from repo root (unless they opt out), then read logs under **`docs/private/homelab/reports/`**. Full contract: **`lab-completao-workflow.mdc`** and **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`**. If **`sudo -n`** fails for privileged probes, **remind** the operator to align narrow sudoers / sessions and **re-run** — do not claim lack of LAN access.
+**Lab completão (multi-host smoke):** When the operator asks for **completão** or session keyword **`completao`**, run **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** from repo root (unless they opt out), then read logs under **`docs/private/homelab/reports/`**. **May remediate** lab-op **deps**, **ports**, **firewall/VLAN/LSM** blockers with **least privilege** per **`lab-completao-workflow.mdc`**. Full contract: **`lab-completao-workflow.mdc`** and **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`**. If **`sudo -n`** fails for privileged probes, **remind** the operator to align narrow sudoers / sessions and **re-run** — do not claim lack of LAN access.
 
 ## 3. Truth vs wish
 
