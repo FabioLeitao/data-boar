@@ -64,9 +64,14 @@
 - Quando pedes **completão** e queres **desbloquear** testes, o assistente **pode aplicar** correcções **estreitas**, no **âmbito lab-op**, com **least privilege** (pacotes, portas, **`ufw`**/**nft**, UniFi via **`LAB-ROUTER-01.ps1`** se existir, contentores, mounts **NFS**/**SMB**/**SSHFS** conforme o produto) segundo **`lab-completao-workflow.mdc`**. **Pergunta ao operador** antes de mudanças **amplas** ou **irreversíveis** de hardening.
 - **Prontidão para produção** continua **iterativa**: repetir completão, issues, patches, re-correr.
 
+## Reutilização de automação e registo de aprendizados
+
+- **Codificar o que repetir:** Quando um passo do completão for **repetível**, acrescentar ou alargar **`scripts/`**, **Ansible** em **`ops/automation/ansible/`**, ou campos no **manifesto** — hub: **[TOKEN_AWARE_SCRIPTS_HUB.md](TOKEN_AWARE_SCRIPTS_HUB.md)**; política: **`lab-completao-workflow.mdc`** (*Automation reuse + documented learnings*).
+- **Registar sinais** em notas **privadas** (`docs/private/homelab/`, modelo **`COMPLETAO_SESSION_TEMPLATE.pt_BR.md`**): **timeouts**, duração **de relógio**, **lentidão** inesperada, **FP/FN** face a **sintéticos** com verdade conhecida (relatório vs esperado), **confiança** em caminhos **reais** (ex.: árvores de log do sistema, amostras em diretório de utilizador), **latência** em **APIs públicas** / **SSH** / hosts **com poucos recursos** vs máquinas mais rápidas, e desvios **docs/defaults**. Isto alimenta **`PLANS_TODO.md`** / **issues** — **sem** PII cru no Git público.
+
 ## Arranque rápido
 
 1. Garantir clone + **`uv`** em cada host (muitas vezes **`~/.local/bin/uv`** — o smoke script antecede isso ao **`PATH`**); **`uv sync`** e **`uv sync --extra nosql`** se houver alvos Mongo; outros extras conforme [TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md).
 2. No manifest, opcionalmente **`completaoHealthUrl`** por host (ex.: `http://<host-lan>:8088/health`).
 3. Na raiz do repo no Windows: **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** (padrão para completão orientado pelo assistente; omite **`-Privileged`** só se precisares de evitar probes privilegiados).
-4. Preencher o template privado; abrir issues / planos quando houver lacunas de produto.
+4. Preencher o template privado (**timeouts**, **FP/FN**, **latência**, **confiança**); abrir issues / planos quando houver lacunas de produto.
