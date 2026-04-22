@@ -17,6 +17,8 @@
 
 - **Wrappers + sudoers + no idle prompts:** Prefer **`lab-completao-orchestrate.ps1 -Privileged`** and related repo scripts (see **`LAB_OP_PRIVILEGED_COLLECTION.md`**, gitignored **`LABOP_COMPLETÃO_SUDOERS*.md`**) so remote hosts use **passwordless narrow sudo** for probes. **Do not** re-ask permission for the agreed SSH/**`-Privileged`** flow. **Protect** the **primary Windows dev PC** (**L-series** role, **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**) and its **canonical** clone; **other** manifest hosts and **Docker** images may be **resynced** from **`origin`** / Hub for tests.
 
+- **LAB-OP inventory map (hardware + software):** Before interpreting host-smoke results, assistants should **`read_file`** the private master chart **`docs/private/homelab/OPERATOR_SYSTEM_MAP.md`** and software matrix **`docs/private/homelab/LAB_SOFTWARE_INVENTORY.md`** when present (**`docs-private-workspace-context.mdc`**). **`lab-completao-orchestrate.ps1`** runs **`scripts/lab-completao-inventory-preflight.ps1`** first (default **15-day** freshness): if either file is missing or older than the threshold, it runs **`lab-op-sync-and-collect.ps1`** to refresh **`homelab-host-report`** telemetry under **`docs/private/homelab/reports/`** — then **merge** findings into the markdown inventories and bump an explicit **as-of** date (see *Inventory freshness* below). Opt out: **`-SkipInventoryPreflight`**; tune age: **`-InventoryMaxAgeDays N`**.
+
 **Relationship:**
 
 | Layer | What it is | Typical command |
@@ -27,15 +29,24 @@
 
 **Canonical multi-host checklist** (manual steps A–M): [LAB_SMOKE_MULTI_HOST.md](LAB_SMOKE_MULTI_HOST.md).
 
+## Inventory freshness (before / during completão)
+
+**Why:** Hardware changes rarely; **software versions** (Python, Docker, distro packages) change often and affect decisions (e.g. container-only vs native **`uv`**, connector builds). Stale private inventories increase misinterpretation.
+
+1. **Tracked automation:** **`scripts/lab-completao-inventory-preflight.ps1`** checks **`docs/private/homelab/LAB_SOFTWARE_INVENTORY.md`** and **`OPERATOR_SYSTEM_MAP.md`**. For each file it uses, in order: a line **`<!-- lab-op-inventory-as-of: YYYY-MM-DD -->`** or **`**Lab inventory as-of:** YYYY-MM-DD`** (or Portuguese *Inventário … as-of*), else **file LastWriteTime**.
+2. **Default threshold:** **15 days** (`-MaxAgeDays` / **`-InventoryMaxAgeDays`** on the orchestrator). If **stale or missing**, **`lab-completao-orchestrate.ps1`** runs **`lab-op-sync-and-collect.ps1`** (same manifest) unless **`-SkipInventoryPreflight`**. Use **`-SkipGitPullOnInventoryRefresh`** on the orchestrator only if you want reports **without** **`git pull`** on lab clones.
+3. **After telemetry:** **`lab-op-sync-and-collect`** does **not** rewrite the inventories — **update** the matrices from the latest `*_labop_sync_collect.log`, then set **as-of** near the top of each file so the next run’s age check is accurate.
+4. **Manual preflight:** `.\scripts\lab-completao-inventory-preflight.ps1 -AutoRefresh` (same defaults).
+
 ## Capability coverage (documentation + code truth)
 
 **Goal:** Learn **observed** behaviour vs **documented** intent — **English** docs and **code** are canonical ([docs/README.md](../README.md)). Completão should **exercise** (where lab resources allow): **remote storage** (NFS, SSHFS, SMB/CIFS — OS mounts and/or connector paths per [TECH_GUIDE.md](../TECH_GUIDE.md)); **databases** ([deploy/lab-smoke-stack](../deploy/lab-smoke-stack/), connectors per [ADDING_CONNECTORS.md](../ADDING_CONNECTORS.md)); **file types**, **extensions**, **hidden/dot** paths, **archives**; **local vs remote** targets; **LGPD-oriented discoverables** as **detection language** ([COMPLIANCE_AND_LEGAL.md](../COMPLIANCE_AND_LEGAL.md) — not legal advice); **ML/DL sensitivity** ([SENSITIVITY_DETECTION.md](../SENSITIVITY_DETECTION.md), [TESTING.md](../TESTING.md)); **reports** and **dashboard** flows; **POC** paths — maturity questionnaire ([SMOKE_MATURITY_ASSESSMENT_POC.md](SMOKE_MATURITY_ASSESSMENT_POC.md)), **WebAuthn/FIDO2** JSON RP ([SMOKE_WEBAUTHN_JSON.md](SMOKE_WEBAUTHN_JSON.md), [SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md](SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md), [ADR 0033](../adr/0033-webauthn-open-relying-party-json-endpoints.md)). **Secure-by-design** claims must align with [SECURITY.md](../SECURITY.md) and **what actually ran**. Record **pass / gap / drift** in **private** session notes (`docs/private/homelab/`) — **policy:** **`.cursor/rules/lab-completao-workflow.mdc`** (capability matrix section).
 
 ## Scripts (tracked)
 
-1. **`scripts/lab-completao-host-smoke.sh`** (run **on each Linux lab host**, from repo root): `uv`, `docker` / `podman`, `deploy/lab-smoke-stack` compose `ps` if present, optional **`LAB_COMPLETAO_HEALTH_URL`** or **`--health-url`** for `/health`, quick **`import core.engine`**. **`--privileged`**: read-only snapshots via **`sudo -n`** (iptables/nft/ufw/fail2ban-related) — skips if sudo cannot run non-interactively.
+1. **`scripts/lab-completao-host-smoke.sh`** (run **on each Linux lab host**, from repo root): `uv`, `docker` / `podman`, `deploy/lab-smoke-stack` compose `ps` if present, optional **`LAB_COMPLETAO_HEALTH_URL`** or **`--health-url`** for `/health`, quick **`import core.engine`** unless **`--skip-engine-import`** (or **`LAB_COMPLETAO_SKIP_ENGINE_IMPORT=1`**) — see **Container-only lab hosts** below. **`--privileged`**: read-only snapshots via **`sudo -n`** (iptables/nft/ufw/fail2ban-related) — skips if sudo cannot run non-interactively.
 
-2. **`scripts/lab-completao-orchestrate.ps1`** (run **on the Windows dev PC**): reads **`docs/private/homelab/lab-op-hosts.manifest.json`** (same idea as **`lab-op-sync-and-collect.ps1`**); SSH to each **`sshHost`**, runs the bash script for each **`repoPaths`** entry; optional per-host **`completaoHealthUrl`**: after SSH smoke, **`Invoke-WebRequest`** from the dev PC (LAN client view); writes **`docs/private/homelab/reports/completao_<timestamp>_allhosts.log`** plus per-host `*_completao_host_smoke.log`.
+2. **`scripts/lab-completao-orchestrate.ps1`** (run **on the Windows dev PC**): reads **`docs/private/homelab/lab-op-hosts.manifest.json`** (same idea as **`lab-op-sync-and-collect.ps1`**); SSH to each **`sshHost`**, runs the bash script for each **`repoPaths`** entry; optional per-host **`completaoHealthUrl`**: after SSH smoke, **`Invoke-WebRequest`** from the dev PC (LAN client view); optional **`completaoEngineMode`:** **`container`** or **`completaoSkipEngineImport`:** **`true`** passes **`--skip-engine-import`** to the host smoke (Docker Swarm / Podman-only hosts with **no** bare-metal **`uv`**); writes **`docs/private/homelab/reports/completao_<timestamp>_allhosts.log`** plus per-host `*_completao_host_smoke.log`.
 
 3. **Passwordless sudo (narrow)** — same discipline as **`homelab-host-report.sh`**: template under **gitignored** **`docs/private/homelab/LABOP_COMPLETÃO_SUDOERS.pt_BR.md`**. Do **not** commit real sudoers content to GitHub.
 
@@ -51,10 +62,20 @@
 
 9. **MongoDB in completão:** connector **`driver: mongodb`**; install **`pymongo`** with **`uv sync --extra nosql`**. Bring up the optional stack: **`deploy/lab-smoke-stack`**: **`docker compose -f docker-compose.yml -f docker-compose.mongo.yml up -d`** (published port **27018** by default). If Mongo is down, the target fails as **unreachable**, not **unsupported**.
 
+## Container-only lab hosts (Docker Swarm, Podman stack, no bare-metal `uv`)
+
+Some lab machines are **orchestrator** or **policy** roles: the operator runs Data Boar **only** via **Docker** / **Podman** / **Docker Swarm** (stack or service), and **does not** rely on **`uv`** on the host for SSH-driven checks. That is a **valid** completão posture when recorded in the private manifest — assistants should **not** treat “`uv` not in PATH” on those hosts as a defect to “fix” by forcing a host Python env.
+
+1. In **`docs/private/homelab/lab-op-hosts.manifest.json`**, set **`completaoEngineMode`** to **`container`** **or** **`completaoSkipEngineImport`** to **`true`** for that **`sshHost`**. **`lab-completao-orchestrate.ps1`** then passes **`--skip-engine-import`**; the smoke logs an explicit **skipped** line for **`import core.engine`** instead of implying failure.
+2. **Success criteria** on those hosts: container runtime CLI healthy, optional **`deploy/lab-smoke-stack`** **`compose ps`** when compose is used there, and/or **`completaoHealthUrl`** (e.g. published **`8088`**) returning **200** from the dev PC.
+3. **Filesystem / CLI scans** against paths on that host still need **some** runtime (bind-mounted **`uv run`** inside a container, or another documented path). The host smoke **does not** replace that — note in private session files which approach you used.
+
+See **`docs/private.example/homelab/lab-op-hosts.manifest.example.json`** for optional fields.
+
 ## Recommended slice order (one host at a time)
 
 1. **Align clones:** **`lab-op-repo-status.ps1`** (inspect) then **`lab-op-git-align-main.ps1`** or manual merge only when you accept **destructive** reset on that clone.
-2. **Host smoke:** **`lab-completao-orchestrate.ps1`** (or **`lab-completao-host-smoke.sh`** over SSH) until **`MISSING_SCRIPT`** is gone and **`import core.engine`** succeeds.
+2. **Host smoke:** **`lab-completao-orchestrate.ps1`** (or **`lab-completao-host-smoke.sh`** over SSH) until **`MISSING_SCRIPT`** is gone and, for **native** hosts, **`import core.engine`** succeeds. **Container-only** hosts (manifest **`completaoEngineMode`:** **`container`** or **`completaoSkipEngineImport`:** **`true`**) **skip** bare-metal import; validate **Docker/Podman/Swarm** + **`completaoHealthUrl`** instead.
 3. **FS `/var/log`:** copy **`config.lab-fs-varlog.example.yaml`**, run **`uv run python main.py --config …`** **on that Linux host** (not from Windows unless paths are mounted).
 4. **FS home tree:** same with **`config.lab-fs-home-leitao.example.yaml`** (adjust username if not **`leitao`**).
 5. **CLI completão** from the dev PC with a **private** YAML (DBs on a hub + synthetic FS under the repo) — see **`docs/ops/LAB_EXTERNAL_CONNECTIVITY_EVAL.md`** and private **`config.complete-eval.yaml`** pattern.
@@ -73,7 +94,7 @@
 
 ## Quick start
 
-1. Ensure each lab host has the repo clone and **`uv`** (often **`~/.local/bin/uv`** — **`lab-completao-host-smoke.sh`** prepends that to **`PATH`**); run **`uv sync`** and **`uv sync --extra nosql`** if Mongo targets are in your YAML (and [TECH_GUIDE.md](../TECH_GUIDE.md) extras for compressed/shares as needed).
-2. Optional manifest fields: **`docs/private.example/homelab/lab-op-hosts.manifest.example.json`** (`completaoHealthUrl`).
+1. For hosts where you run the **product on bare metal**, ensure the repo clone and **`uv`** (often **`~/.local/bin/uv`** — **`lab-completao-host-smoke.sh`** prepends that to **`PATH`**); run **`uv sync`** and **`uv sync --extra nosql`** if Mongo targets are in your YAML (and [TECH_GUIDE.md](../TECH_GUIDE.md) extras for compressed/shares as needed). For **container-only** hosts (Swarm manager, Podman-only, etc.), set **`completaoEngineMode`:** **`container`** (or **`completaoSkipEngineImport`:** **`true`**) and rely on **HTTP** / compose / stack checks — do **not** assume **`uv`** on the host.
+2. Optional manifest fields: **`docs/private.example/homelab/lab-op-hosts.manifest.example.json`** (`completaoHealthUrl`, `completaoEngineMode`, `completaoSkipEngineImport`).
 3. From repo root on Windows: **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** (assistant-led completão default; omit **`-Privileged`** only if you must avoid privileged probes).
 4. Append lessons to the private template (**timeouts**, **FP/FN**, **latency**, **confidence**); link findings to **`PLANS_TODO.md`** / issues when product gaps appear.

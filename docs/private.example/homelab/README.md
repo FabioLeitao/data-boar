@@ -68,6 +68,16 @@ If you sync the same tree to **Linux** (`~/pCloudDrive`) and **Windows** (**`P:`
 
 Maintain **`LAB_SECURITY_POSTURE.md`** next to this README (copy from a filled `docs/private/homelab/` tree or create empty from scratch): WAN/NAT assumptions, **`sshd -T`** / **UFW** / **Fail2ban** / **`nft list ruleset`** snapshots per host, and a short **improvement backlog**. Tracked index: **`docs/ops/OPERATOR_LAB_DOCUMENT_MAP.md`** (LAB‑PB vs LAB‑OP).
 
+## Inventory “as-of” lines (`LAB_SOFTWARE_INVENTORY`, `OPERATOR_SYSTEM_MAP`)
+
+When you merge **`homelab-host-report`** output into those files, put a **single canonical date** near the **top** of each (or a shared HTML comment in one file you always touch):
+
+- `**Lab inventory as-of:** YYYY-MM-DD`
+- or `<!-- lab-op-inventory-as-of: YYYY-MM-DD -->`
+- Portuguese: `**Inventário LAB-OP as-of:** YYYY-MM-DD`
+
+**`scripts/lab-completao-inventory-preflight.ps1`** (and **`lab-completao-orchestrate.ps1`** before host smoke) uses that date if present; otherwise **file LastWriteTime**. Default staleness threshold: **15 days** — see **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`** (*Inventory freshness*).
+
 ## LAB-OP doc language pairs (policy)
 
 - **[I18N_LAB_OP.md](I18N_LAB_OP.md)** · [pt-BR](I18N_LAB_OP.pt_BR.md) — when to use **`File.md`** vs **`File.pt_BR.md`** under your private `homelab/` tree (gitignored).

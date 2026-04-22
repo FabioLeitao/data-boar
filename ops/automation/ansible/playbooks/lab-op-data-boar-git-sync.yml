@@ -11,6 +11,7 @@
 - name: LAB-OP Data Boar git align to origin/main
   hosts: lab_op_data_boar
   gather_facts: true
+  environment: "{{ labop_debian_unattended_apt_environment }}"
 
   tasks:
     - name: Fetch and hard-reset main to match origin

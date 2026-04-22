@@ -42,7 +42,8 @@
 | ------ | ---- | -------- |
 | `lab-op.ps1` | SSH report / sync-collect | **`docs/ops/LAB_OP_SHORTHANDS.md`**, **`lab-op-systems-context.mdc`** |
 | `lab-op-sync-and-collect.ps1` | Multi-host batch | **`autonomous-merge-and-lab`** SKILL, private manifest |
-| `lab-completao-orchestrate.ps1` | Lab “completão” (SSH smoke per host + optional HTTP) | **`LAB_COMPLETAO_RUNBOOK.md`**, private manifest **`completaoHealthUrl`** |
+| `lab-completao-inventory-preflight.ps1` | Staleness check on private **`LAB_SOFTWARE_INVENTORY.md`** / **`OPERATOR_SYSTEM_MAP.md`**; optional **`lab-op-sync-and-collect.ps1`** | **`LAB_COMPLETAO_RUNBOOK.md`** (*Inventory freshness*); invoked by **`lab-completao-orchestrate.ps1`** by default |
+| `lab-completao-orchestrate.ps1` | Lab “completão” (preflight + SSH smoke per host + optional HTTP) | **`LAB_COMPLETAO_RUNBOOK.md`**, private manifest **`completaoHealthUrl`**, optional **`completaoEngineMode`:** **`container`** / **`completaoSkipEngineImport`** (Swarm/Podman-only hosts) |
 | `collect-homelab-report-remote.ps1`, `run-homelab-host-report-all.ps1` | Remote reports | **`HOMELAB_VALIDATION.md`**, private manifest |
 | `lab-allow-data-boar-inbound.ps1`, `lab-allow-data-boar-inbound.sh` | Lab firewall allow for TCP 8088 (Windows / Linux) | **`DATA_BOAR_LAB_SECURITY_TOOLING.md`** |
 | `lab-env-load.ps1` | Dot-source env for probes | **`lab-op-systems-context.mdc`** §3 |

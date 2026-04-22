@@ -15,12 +15,15 @@ if [[ -d "${HOME}/.local/bin" ]]; then
 fi
 
 LC_PRIV=0
+LC_SKIP_ENGINE=0
+if [[ "${LAB_COMPLETAO_SKIP_ENGINE_IMPORT:-}" == "1" ]]; then LC_SKIP_ENGINE=1; fi
 LC_HEALTH_URL="${LAB_COMPLETAO_HEALTH_URL:-}"
 LC_REPO_ROOT=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --privileged) LC_PRIV=1 ;;
+    --skip-engine-import) LC_SKIP_ENGINE=1 ;;
     --health-url)
       LC_HEALTH_URL="${2:-}"
       shift
@@ -31,14 +34,16 @@ while [[ $# -gt 0 ]]; do
       ;;
     --help|-h)
       cat <<'EOF'
-Usage: bash scripts/lab-completao-host-smoke.sh [--privileged] [--health-url URL] [--repo-root PATH]
+Usage: bash scripts/lab-completao-host-smoke.sh [--privileged] [--skip-engine-import] [--health-url URL] [--repo-root PATH]
 
-  --privileged   Best-effort read-only probes via sudo -n (iptables/nft/ufw/fail2ban status).
-  --health-url   Override LAB_COMPLETAO_HEALTH_URL (e.g. http://127.0.0.1:8088/health).
-  --repo-root    Repo root (default: infer from script location).
+  --privileged          Best-effort read-only probes via sudo -n (iptables/nft/ufw/fail2ban status).
+  --skip-engine-import  Skip uv / import core.engine (hosts that run Data Boar only via Docker/Swarm/Podman).
+  --health-url          Override LAB_COMPLETAO_HEALTH_URL (e.g. http://127.0.0.1:8088/health).
+  --repo-root           Repo root (default: infer from script location).
 
 Environment:
-  LAB_COMPLETAO_HEALTH_URL   Optional URL for curl -sf (Data Boar /health or similar).
+  LAB_COMPLETAO_HEALTH_URL          Optional URL for curl -sf (Data Boar /health or similar).
+  LAB_COMPLETAO_SKIP_ENGINE_IMPORT  If set to 1, same as --skip-engine-import (manifest / container-only hosts).
 EOF
       exit 0
       ;;
@@ -81,7 +86,9 @@ else
 fi
 
 _lc_section "Python import (engine)"
-if [[ -f "$LC_REPO_ROOT/pyproject.toml" ]] && _lc_cmd uv; then
+if [[ "$LC_SKIP_ENGINE" == "1" ]]; then
+  echo "(skipped: container-only host — expect Data Boar via Docker / Podman / Swarm stack, not bare-metal uv; see docs/ops/LAB_COMPLETAO_RUNBOOK.md)"
+elif [[ -f "$LC_REPO_ROOT/pyproject.toml" ]] && _lc_cmd uv; then
   (cd "$LC_REPO_ROOT" && uv run python -c "import core.engine; print('import core.engine: OK')" 2>&1) || echo "import core.engine: FAILED"
 else
   echo "(skip: no uv or no pyproject.toml)"

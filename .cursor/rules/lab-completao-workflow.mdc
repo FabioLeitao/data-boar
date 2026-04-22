@@ -20,7 +20,9 @@ alwaysApply: true
    .\scripts\lab-completao-orchestrate.ps1 -Privileged
    ```
 
-1. **Manifest:** **`docs/private/homelab/lab-op-hosts.manifest.json`** (same as **`lab-op-sync-and-collect.ps1`**). Optional per-host **`completaoHealthUrl`** for HTTP checks from the dev PC.
+1. **Inventory map first (private):** **`read_file`** **`docs/private/homelab/OPERATOR_SYSTEM_MAP.md`** and **`LAB_SOFTWARE_INVENTORY.md`** when they exist — host roles and software versions **must** inform interpretation of host-smoke (see **`docs-private-workspace-context.mdc`**). The orchestrator runs **`lab-completao-inventory-preflight.ps1`** before SSH smoke by default (**15-day** staleness → **`lab-op-sync-and-collect.ps1`**); **`LAB_COMPLETAO_RUNBOOK.md`** *Inventory freshness*.
+
+1. **Manifest:** **`docs/private/homelab/lab-op-hosts.manifest.json`** (same as **`lab-op-sync-and-collect.ps1`**). Optional per-host **`completaoHealthUrl`** for HTTP checks from the dev PC. Optional **`completaoEngineMode`:** **`container`** or **`completaoSkipEngineImport`:** **`true`** when that host runs Data Boar **only** via **Docker / Swarm / Podman** (no bare-metal **`uv`** expected) — see **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`** (*Container-only lab hosts*).
 
 1. **Read logs** under **`docs/private/homelab/reports/`** (`completao_*_allhosts.log`, per-host `*_completao_host_smoke.log`) and summarize pass/fail **without** pasting secrets, passwords, or unnecessary LAN identifiers into **public** issues/PRs.
 
@@ -50,11 +52,13 @@ alwaysApply: true
 
 1. If **`MISSING_SCRIPT`** or stale clone: **`lab-op-repo-status.ps1`** first; **`lab-op-git-align-main.ps1`** only when destructive reset is acceptable — see **`LAB_COMPLETAO_RUNBOOK.md`**.
 
+1. If logs show **`uv` not in PATH** / skipped **`import core.engine`**: **read the manifest** (and **`LAB_COMPLETAO_RUNBOOK.md`**) — when **`completaoEngineMode`:** **`container`** (or **`completaoSkipEngineImport`:** **`true`**), that is **expected** for Swarm/Podman-only hosts; **do not** insist on installing **`uv`** on bare metal unless the operator wants native runtime there.
+
 ## Lab scope — dependencies, network, and security (assistant **may** remediate when asked)
 
 When the operator asks for **completão** and expects the lab to behave like a **test datacenter**, the assistant **may and should** unblock failures **in the lab-op footprint** using **least privilege**, **narrow** rules, and **reversible** changes where practical. **Do not** use this as a reason to weaken **non-lab** or **production** systems. **Never** put secrets, tokens, full firewall dumps, or LAN identifiers into **public** GitHub — record operator-only details under **`docs/private/homelab/`**.
 
-1. **Packages and build deps:** Install missing **OS packages** (headers, `-dev` libs, **`zlib`**, MariaDB/MySQL client dev files, etc.), run **`uv sync`** / **`uv sync --extra …`**, fix **`PATH`** for non-interactive SSH when safe — prefer **Ansible playbooks** or **`ops/automation/ansible/`** when the repo already models the change.
+1. **Packages and build deps (native-runtime hosts):** When the host is meant to run **`uv run`** on the clone, install missing **OS packages** (headers, `-dev` libs, **`zlib`**, MariaDB/MySQL client dev files, etc.), run **`uv sync`** / **`uv sync --extra …`**, fix **`PATH`** for non-interactive SSH when safe — prefer **Ansible playbooks** or **`ops/automation/ansible/`** when the repo already models the change. **Container-only** hosts (manifest **`completaoEngineMode`:** **`container`**) are out of scope for “install **`uv`** on the OS” unless the operator asks to add a native env.
 
 1. **Application config:** Fix **wrong ports**, **`main.py` / env**, compose files, or **`deploy/lab-smoke-stack`** wiring when they block tests — commit **tracked** fixes when they are **product-correct**; keep **operator-specific** YAML only in **`docs/private/`**.
 
