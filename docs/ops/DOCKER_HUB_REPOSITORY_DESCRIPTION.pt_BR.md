@@ -2,7 +2,7 @@
 
 **English (canônico):** [DOCKER_HUB_REPOSITORY_DESCRIPTION.md](DOCKER_HUB_REPOSITORY_DESCRIPTION.md)
 
-**Objetivo:** O texto curto e a descrição longa no [Docker Hub](https://hub.docker.com/r/fabioleitao/data_boar) **não** ficam versionados no Git. O documento em inglês [DOCKER_HUB_REPOSITORY_DESCRIPTION.md](DOCKER_HUB_REPOSITORY_DESCRIPTION.md) é a **fonte** para colar após cada release **estável** (**`X.Y.Z`** final), alinhada a **`pyproject.toml`** e a **`docs/releases/`**. Também use-o quando publicar **tags só de imagem** que clientes vão puxar (ex.: **`v1.7.2-safe`**) ou apagar tags no Hub — a UI **não** segue o Git; substitua a **Full description inteira** na mesma sessão do push.
+**Objetivo:** O texto curto e a descrição longa no [Docker Hub](https://hub.docker.com/r/fabioleitao/data_boar) **não** ficam versionados no Git. O documento em inglês [DOCKER_HUB_REPOSITORY_DESCRIPTION.md](DOCKER_HUB_REPOSITORY_DESCRIPTION.md) é a **fonte** para colar após cada release **estável** (**`X.Y.Z`** final), alinhada a **`pyproject.toml`** e a **`docs/releases/`**. Também use-o quando publicar **tags só de imagem** que clientes vão puxar (ex.: **`1.7.3`**) ou apagar tags no Hub — a UI **não** segue o Git; substitua a **Full description inteira** na mesma sessão do push.
 
 **Quando atualizar:** Logo após **`docker push`** de **`fabioleitao/data_boar:<semver>`** e **`latest`** para um release estável. No Hub: **Repository → General → Edit** — cole **Short** + **Full** inteiro (substitua a descrição longa por completo; blocos antigos como **## Tags** com **1.6.5** podem permanecer anos se você só editar um parágrafo). Atualize a versão no arquivo em inglês **antes** de colar.
 

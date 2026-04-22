@@ -60,11 +60,11 @@ docker run -d --name registry \
 
 ```bash
 # Tag for local registry
-docker tag fabioleitao/data_boar:latest localhost:5000/data-boar:v1.7.2-safe
-docker push localhost:5000/data-boar:v1.7.2-safe
+docker tag fabioleitao/data_boar:latest localhost:5000/data-boar:1.7.3
+docker push localhost:5000/data-boar:1.7.3
 
 # On other lab hosts, configure insecure registry (or use TLS) and pull
-docker pull <repo-host-ip>:5000/data-boar:v1.7.2-safe
+docker pull <repo-host-ip>:5000/data-boar:1.7.3
 ```
 
 **Security:** For **production-like** practice, add **TLS** (certificates) and **auth** (Harbor or registry with htpasswd). For **lab-only**, **insecure registry** on a **trusted VLAN** is acceptable.
@@ -113,7 +113,7 @@ SignWith: YOUR_GPG_KEY_ID
 EOF
 
 # Add your .deb
-reprepro includedeb stable /path/to/data-boar_1.7.2+safe_amd64.deb
+reprepro includedeb stable /path/to/data-boar_1.7.3_amd64.deb
 
 # Serve via nginx (or Apache)
 # Configure /srv/apt-repo as web root
@@ -150,7 +150,7 @@ sudo apt install data-boar
 - You want **offline** homelab validation (no internet during scans).
 - You want to **test** `.deb` packaging **before** public release.
 - You want **faster** pulls (LAN vs Docker Hub / apt mirrors).
-- You want **version pinning** (keep `data-boar:v1.7.2-safe` even if `:latest` updates).
+- You want **version pinning** (keep `data-boar:1.7.3` even if `:latest` updates).
 
 ## Skip if:
 

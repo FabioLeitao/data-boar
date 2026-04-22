@@ -16,16 +16,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 COPY requirements.txt /app/requirements.txt
+# `requirements.txt` begins with `-e .` (uv export); pip needs the project tree at /app before `pip install -r`.
+COPY . /app
 
 # Upgrade pip/wheel in builder before deps (Scout: pip<25.3, wheel<=0.46.1 had CVEs; image inherits site-packages).
-# Remove any stale wheel metadata first, then assert effective runtime version.
+# `uv export` emits `-e .` plus hashed wheels; pip refuses editable + hashes in one `install -r` pass — split installs.
+# Do not end this RUN with `; true` — it would mask a failed `pip install`.
 RUN pip uninstall -y wheel || true && \
     pip install --no-cache-dir --upgrade "pip>=25.3" && \
     pip install --no-cache-dir --force-reinstall "wheel>=0.46.2" && \
     python -c "import wheel; import sys; sys.exit(0 if tuple(map(int, wheel.__version__.split('.'))) >= (0,46,2) else 1)" && \
-    pip install --no-cache-dir -r /app/requirements.txt && \
-    find /usr/local/lib/python3.13/site-packages -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null; \
-    find /usr/local/lib/python3.13/site-packages -name "*.pyc" -delete 2>/dev/null; true
+    python -c "from pathlib import Path; s=Path('/app/requirements.txt').read_text(encoding='utf-8').splitlines(); Path('/app/requirements.docker.txt').write_text('\\n'.join(x for x in s if x.strip()!='-e .')+'\\n', encoding='utf-8')" && \
+    pip install --no-cache-dir -r /app/requirements.docker.txt && \
+    pip install --no-cache-dir --no-deps -e /app && \
+    (find /usr/local/lib/python3.13/site-packages -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true) && \
+    (find /usr/local/lib/python3.13/site-packages -name "*.pyc" -delete 2>/dev/null || true)
 
 # -----------------------------------------------------------------------------
 # Stage 2: minimal runtime (no build tools, only runtime libs + app)

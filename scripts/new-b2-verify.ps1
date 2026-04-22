@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Post-remediation audit: temp clone + git checks focused on non–public-identity leaks.
+    Post-remediation audit: temp clone + git checks focused on non-public-identity leaks.
 
 .DESCRIPTION
     Clones the repo under %TEMP%, then:
@@ -11,7 +11,7 @@
       with UTF-8 file output to avoid Windows console encoding failures.
     - Always: HEAD grep for the documented placeholder C:\Users\<username> (expected present in docs).
 
-    SAFE here means "no unexpected Windows username segment probe hits", not full PII coverage —
+    SAFE here means "no unexpected Windows username segment probe hits", not full PII coverage -
     use PII_LOCAL_SEEDS / pii-fresh-audit for third-party literals.
 
 .PARAMETER RepoUrl

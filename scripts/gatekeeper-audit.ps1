@@ -54,7 +54,7 @@ function Test-PublicIdentitySeedExcluded([string] $seed) {
     $t = $seed.Trim()
     if ($t.Length -eq 0) { return $true }
     $lower = $t.ToLowerInvariant()
-    # Whole-line identity tokens (public maintainer / lab path anchors — excluded from strict scan).
+    # Whole-line identity tokens (public maintainer / lab path anchors - excluded from strict scan).
     if ($lower -eq "fabioleitao") { return $true }
 
     $pathish = $lower -replace '/', '\'
@@ -72,7 +72,7 @@ if (-not (Test-Path -LiteralPath $SeedsPath)) {
         Write-GateFail "Copy from docs/private.example/security_audit/PII_LOCAL_SEEDS.example.txt"
         exit 1
     }
-    Write-GateSkip "SKIP (no seeds file). Not an error — enable by copying PII_LOCAL_SEEDS.example.txt to docs/private/security_audit/PII_LOCAL_SEEDS.txt"
+    Write-GateSkip "SKIP (no seeds file). Not an error - enable by copying PII_LOCAL_SEEDS.example.txt to docs/private/security_audit/PII_LOCAL_SEEDS.txt"
     exit 0
 }
 
@@ -149,7 +149,7 @@ try {
 
         if ($code -eq 0) {
             if ($text.Length -gt 0) {
-                Write-GateFail "HIT — staged content matches a strict PII seed (not public-identity allowlist):"
+                Write-GateFail "HIT - staged content matches a strict PII seed (not public-identity allowlist):"
                 Write-Host $text -ForegroundColor Red
                 Write-GateFail "ABORT: redact or unstage before commit/push."
                 exit 1

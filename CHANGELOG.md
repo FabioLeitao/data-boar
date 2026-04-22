@@ -4,7 +4,12 @@ Human-readable summary of user-facing changes. **Detailed release notes:** [docs
 
 ## Unreleased (`main`)
 
-- **Next working line:** **`1.7.3-beta`** (or next planned pre-release) on **`main`** per [VERSIONING.md](docs/VERSIONING.md) after publish choreography (maintainers: **release-publish-sequencing** rule in-repo).
+- **Next working line:** **`1.7.4-beta`** (or next planned pre-release) on **`main`** per [VERSIONING.md](docs/VERSIONING.md) after publish choreography (maintainers: **release-publish-sequencing** rule in-repo).
+
+## 1.7.3 (2026-04-22)
+
+- Maintenance release to establish stable versioning baseline post-sanitization.
+- **Stable semver baseline** after **`1.7.2+safe` / `v1.7.2-safe`**: normalised **PEP 440** **`1.7.3`** for PyPI, docs, and Docker **`1.7.3`** + **`latest`**. Checklist: [docs/releases/1.7.3.md](docs/releases/1.7.3.md).
 
 ## 1.7.2+safe (2026-04-22) — Security & Sanitization (Golden / Clean Slate)
 

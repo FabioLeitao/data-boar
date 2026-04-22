@@ -11,10 +11,10 @@
 | Campo | Valor |
 | ----- | ----- |
 | **Verificado** | **2026-04-22** |
-| **`pyproject.toml` em `main`** | **1.7.3-beta** (trabalho; **publicado** golden = **1.7.2+safe** / tag **`v1.7.2-safe`** conforme [VERSIONING.md](../VERSIONING.md)) |
-| **GitHub Release Latest** | [**v1.7.2-safe**](https://github.com/FabioLeitao/data-boar/releases/tag/v1.7.2-safe) (notas: **`docs/releases/1.7.2-safe.md`**, **`CHANGELOG.md`**) |
-| **Docker Hub** | **`fabioleitao/data_boar:v1.7.2-safe`** + **`latest`** (mesmo digest) — `sha256:8cb0d3ff549b46d2bbb519874790a8a43531b7da8b6801601f87ff0e1965cf95`; **descrição longa** de **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** |
-| **Próxima versão pública** (quando `main` tiver bundle novo) | **1.7.2** — seguir **`docs/VERSIONING.md`** + **`docs/releases/`** |
+| **`pyproject.toml` em `main`** | **1.7.3** no tag **`v1.7.3`**; após bump pós-release, esperar **`1.7.4-beta`** ([VERSIONING.md](../VERSIONING.md)) |
+| **GitHub Release Latest** | [**v1.7.3**](https://github.com/FabioLeitao/data-boar/releases/tag/v1.7.3) (notas: **`docs/releases/1.7.3.md`**, **`CHANGELOG.md`**) |
+| **Docker Hub** | **`fabioleitao/data_boar:1.7.3`** + **`latest`** (mesmo digest) — atualize `sha256:` após **`docker pull fabioleitao/data_boar:1.7.3`** e `docker image inspect … --format '{{index .RepoDigests 0}}'`; **descrição longa** de **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** |
+| **Próxima versão pública** (quando `main` tiver bundle novo) | **1.7.4** — seguir **`docs/VERSIONING.md`** + **`docs/releases/`** |
 
 ---
 
@@ -24,12 +24,12 @@ Na raiz do repo (precisa **`gh`** autenticado + rede):
 
 ```bash
 git fetch origin --tags
-git tag -l "v1.6.*" --sort=-version:refname | head -5
+git tag -l "v1.7.*" --sort=-version:refname | head -5
 grep -n '^version' pyproject.toml
 gh release list --repo FabioLeitao/data-boar --limit 5
 ```
 
-Docker Hub: confirma **`v1.7.2-safe`** e **`latest`** em [hub.docker.com/r/fabioleitao/data_boar/tags](https://hub.docker.com/r/fabioleitao/data_boar/tags) ou na API do registry; **descrição longa** alinhada a **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)**. **GitHub:** existe Release **`v1.7.2-safe`**.
+Docker Hub: confirma **`1.7.3`** e **`latest`** em [hub.docker.com/r/fabioleitao/data_boar/tags](https://hub.docker.com/r/fabioleitao/data_boar/tags) ou na API do registry; **descrição longa** alinhada a **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)**. **GitHub:** existe Release **`v1.7.3`**.
 
 ---
 

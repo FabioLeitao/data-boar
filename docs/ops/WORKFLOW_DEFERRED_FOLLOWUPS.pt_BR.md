@@ -34,9 +34,9 @@ Backlog **curto** de itens **úteis** falados em sessões de mantenedor mas **n�
 
 ---
 
-## Lembrete de release (golden v1.7.2-safe e próxima)
+## Lembrete de release (baseline estável v1.7.3 e próxima)
 
-- **Publicação golden** **`v1.7.2-safe`** / Python **`1.7.2+safe`**: **`pyproject.toml`**, **`docs/releases/1.7.2-safe.md`**, **`CHANGELOG.md`**. Notas **1.7.1** permanecem em **`docs/releases/1.7.1.md`** (histórico).
+- **Publicação estável** **`v1.7.3`** / Python **`1.7.3`**: **`pyproject.toml`**, **`docs/releases/1.7.3.md`**, **`CHANGELOG.md`**. Golden anterior **`v1.7.2-safe`** / **`1.7.2+safe`**: **`docs/releases/1.7.2-safe.md`**. Notas **1.7.1** permanecem em **`docs/releases/1.7.1.md`** (histórico).
 - Antes da **próxima** tag: **`.\scripts\check-all.ps1`**, atualizar **`plans-stats`** se **`PLANS_TODO.md`** mudou, confirmar Docker Hub / checklist em [DOCKER_IMAGE_RELEASE_ORDER.md](DOCKER_IMAGE_RELEASE_ORDER.md), e colar a **descrição do repositório** Hub a partir de [DOCKER_HUB_REPOSITORY_DESCRIPTION.md](DOCKER_HUB_REPOSITORY_DESCRIPTION.md) após cada push de imagem.
 - **Fila Dependabot (retirada 2026-03-30):** PR [**#147**](https://github.com/FabioLeitao/data-boar/pull/147) — grupo pip minor/patch (várias atualizações). PR [**#144**](https://github.com/FabioLeitao/data-boar/pull/144) — **Starlette** `0.52.1` → `1.0.0` (major; FastAPI **0.135.x** declara `starlette>=0.46.0`, então **1.0** é compatível no resolver — mesmo assim rodar **`check-all`** completo após o merge). PR [**#134**](https://github.com/FabioLeitao/data-boar/pull/134) — patch **pypdf**; pode repetir o **#147** — fechar se ficar redundante. Ordem sugerida: merge **#147** com CI verde, depois **#144** se o lock ainda não estiver em Starlette 1.x, reconciliar **#134**.
 
