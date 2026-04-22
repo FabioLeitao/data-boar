@@ -11,6 +11,10 @@
   - "main" or "origin/main" -> origin/main tip
   - Otherwise: tag or full SHA via rev-parse, else remote branch origin/<name>
 
+  Remote bash runs "git fetch origin --prune" first (required), then "git fetch origin --tags --prune"
+  as best-effort (|| true). Divergent local tags can make tag fetch exit non-zero; that must not
+  abort the Colleague-Nn before HEAD vs resolved ref — otherwise logs show SSH exit != 0 with no LABOP_REF_* line.
+
   When pinning to a release tag, run lab-completao-orchestrate.ps1 with -SkipGitPullOnInventoryRefresh so
   lab-op-sync-and-collect does not git pull to main before this step — see LAB_COMPLETAO_RUNBOOK.md.
 
@@ -80,7 +84,7 @@ function Build-RemoteCheckCmd {
     param([string]$RpEsc, [string]$RefEsc)
     $s = 'cd '''
     $s += $RpEsc
-    $s += ''' && git fetch origin --tags --prune && git fetch origin && R='''
+    $s += ''' && git fetch origin --prune && (git fetch origin --tags --prune || true) && R='''
     $s += $RefEsc
     $s += ''' && if [ "$R" = "main" ] || [ "$R" = "origin/main" ]; then W=$(git rev-parse "origin/main^{commit}"); elif W=$(git rev-parse "$R^{commit}" 2>/dev/null); then :; elif W=$(git rev-parse "origin/$R^{commit}" 2>/dev/null); then :; else echo "LABOP_REF_UNRESOLVED: $R"; exit 2; fi && G=$(git rev-parse HEAD) && if [ "$W" != "$G" ]; then echo "LABOP_REF_MISMATCH want=$W got=$G"; exit 1; else echo "LABOP_REF_OK $(git rev-parse --short HEAD)"; fi'
     return $s
@@ -90,7 +94,7 @@ function Build-RemoteResetCmd {
     param([string]$RpEsc, [string]$RefEsc)
     $s = 'cd '''
     $s += $RpEsc
-    $s += ''' && git fetch origin --tags --prune && git fetch origin && R='''
+    $s += ''' && git fetch origin --prune && (git fetch origin --tags --prune || true) && R='''
     $s += $RefEsc
     $s += ''' && if [ "$R" = "main" ] || [ "$R" = "origin/main" ]; then git reset --hard origin/main; elif git show-ref --verify --quiet "refs/tags/$R" 2>/dev/null; then git checkout -f --detach "$R"; elif git rev-parse -q --verify "$R^{commit}" >/dev/null 2>&1; then git checkout -f --detach "$R"; else git reset --hard "origin/$R"; fi && git rev-parse --short HEAD'
     return $s
