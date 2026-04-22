@@ -25,6 +25,10 @@
 
 Durante o trabalho na árvore privada, **espera-se** uma **unidade montada pelo VeraCrypt** para manter o fluxo de escrita e de **sync/backup** coerente. Se essa montagem **faltar quando era esperada**, trate como **anomalia** e recupere com runbooks **privados** e segredos no **cofre** — **nunca** cole credenciais de volume no chat nem em arquivos **tracked**.
 
+### Assistentes — espelhos de evidência (padrão)
+
+Quando o operador pedir **conferir alinhamento**, **drift**, **sync do histórico privado** ou higiene que claramente envolva **`docs/private/`**, trate **todos os espelhos não-GitHub alcançáveis** como **o mesmo trabalho** — remotos SSH **`lab-*`** **e** um **bare `notes-sync.git` no volume VeraCrypt** quando esse caminho existir na estação (**`scripts/private-git-sync.ps1 -Push`** sonda letras de montagem comuns). **Não** perguntar em redundância “quer também push pro backup?”; **relatar** falhas concretas (montagem em falta, SSH, **`safe.directory`** / *dubious ownership*). Regra canônica: **`.cursor/rules/operator-evidence-backup-no-rhetorical-asks.mdc`** · **[ADR 0040](../adr/0040-assistant-private-stack-evidence-mirrors-default.md)** (texto EN).
+
 ---
 
 ## Referências

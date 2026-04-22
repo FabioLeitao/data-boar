@@ -25,6 +25,10 @@
 
 During private-tree work, the operator may rely on a **VeraCrypt-mounted drive** staying available so the nested private tree remains writable and backup/sync routines stay valid. If that mount is **missing when expected**, treat it as a **workflow anomaly** and recover using **private** runbooks and vault-local secrets — **never** paste volume credentials into chat or into **tracked** files.
 
+### Assistants — evidence mirrors (default)
+
+When the operator asks to **verify alignment**, **check drift**, **sync private history**, or close hygiene that clearly touches **`docs/private/`**, treat **every reachable non-GitHub mirror** as **in the same job** — including SSH **`lab-*`** remotes **and** a **bare `notes-sync.git` on the VeraCrypt volume** when that path exists on the workstation (**`scripts/private-git-sync.ps1 -Push`** probes common mount letters). **Do not** ask redundant “should I also push to backup?” questions; **report** concrete failures (missing mount, SSH, **`safe.directory`** / dubious ownership) instead. Canonical rule: **`.cursor/rules/operator-evidence-backup-no-rhetorical-asks.mdc`** · **[ADR 0040](../adr/0040-assistant-private-stack-evidence-mirrors-default.md)**.
+
 ---
 
 ## References

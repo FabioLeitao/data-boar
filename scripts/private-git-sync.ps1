@@ -14,7 +14,7 @@
     Mensagem de commit (default: auto-gerada com timestamp).
 
 .PARAMETER Push
-    Se informado, faz push para o remote privado configurado em docs/private/.git.
+    Se informado, faz push para os remotes lab-* em docs/private/.git, depois tenta bare notes-sync.git em Y: ou Z: (VeraCrypt), e robocopy para P: se montado.
 
 .PARAMETER FeedbacksOnly
     Apenas sincroniza feedbacks (nao faz commit geral).
@@ -130,6 +130,28 @@ if ($Push) {
             $out = git push $r main 2>&1 | Select-Object -First 8
             if ($LASTEXITCODE -eq 0) { Write-Ok "Push OK: $r" }
             else { Write-Warn "Push FALHOU: $r -- $out" }
+        }
+    }
+    # Bare mirror on VeraCrypt volume (Windows): probe common mount letters; path name only (ADR 0040).
+    foreach ($dl in @("Y", "Z")) {
+        $bareWin = Join-Path ($dl + ":") "notes-sync.git"
+        if (-not (Test-Path $bareWin)) { continue }
+        $bareUri = "${dl}:/notes-sync.git"
+        Write-Info "Push bare (VC): $bareUri ..."
+        $pushOut = git push $bareUri main:main 2>&1 | Select-Object -First 12
+        if ($LASTEXITCODE -ne 0) {
+            $pushStr = "$pushOut"
+            if ($pushStr -match "dubious ownership" -and $pushStr -match "safe\.directory") {
+                $canon = ($bareWin -replace "\\", "/")
+                Write-Warn "Git safe.directory: registering $canon (one-time helper)"
+                git config --global --add safe.directory $canon 2>&1 | Out-Null
+                $pushOut = git push $bareUri main:main 2>&1 | Select-Object -First 12
+            }
+            if ($LASTEXITCODE -eq 0) { Write-Ok "Push OK (VC bare): $bareUri" }
+            else { Write-Warn "Push FALHOU (VC bare): $bareUri -- $pushOut" }
+        }
+        else {
+            Write-Ok "Push OK (VC bare): $bareUri"
         }
     }
     # pCloud via robocopy (se P: montado)
