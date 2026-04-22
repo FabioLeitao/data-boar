@@ -6,6 +6,8 @@
 
 This document holds details that used to clutter the legal/compliance summary: validation, encodings, API limits, timeouts, and where to automate scans.
 
+**POC vocabulary (technical / deck use):** **Data Sniffing** names the discovery and sampling pass; **Deep Boring** names the structured Excel / report depth—see [GLOSSARY.md](GLOSSARY.md#1-product-identity--data-landscape) and [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md#engine-vocabulary-poc-decks-and-technical-docs). The root [README](../README.md) decision-maker section stays in plainer language and does **not** require these labels.
+
 ---
 
 ## Security controls that support compliance programs
