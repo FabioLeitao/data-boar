@@ -95,7 +95,7 @@ Depois **leia** **`docs/private/homelab/reports/`** (`completao_*_allhosts.log`,
 
 Chat **novo** sem contexto (após pré-condições). O texto do bloco está em **inglês** para alinhar ao assistente; o cabeçalho **`Session mode: smoke-only`** referencia este arquivo.
 
-**Ref vs versão:** **`origin/main`** é a **ponta do branch** no remoto, não um semver. A **versão do produto** (ex.: **1.7.2-beta** em **`pyproject.toml`**) é o que o commit **`main`** aponta depois do **`git fetch`** — confirme no PC dev com **`git show origin/main:pyproject.toml`** se precisar. Uma **tag** Git **`v1.7.2-beta`** só coincide se existir; caso contrário use **`-LabGitRef origin/main`** para alinhar os clones LAB ao mesmo tip que o GitHub **`main`**.
+**Ref vs versão:** **`origin/main`** é a **ponta do branch** no remoto, não um semver. A **string de versão do produto** em **`pyproject.toml`** nessa ponta é a que o commit **`main`** referencia depois do **`git fetch`** — confirme no PC dev com **`git show <ref>:pyproject.toml`** (ex.: **`origin/main`**) quando precisar do valor exato. No **completão de rotina**, trate a **ponta do `main` no GitHub** como “atual”, salvo se você fixar um **release específico** com **`-LabGitRef vX.Y.Z`** (ou **`completaoTargetRef`** no manifesto). Uma **tag remota** só vale se existir; caso contrário use **`-LabGitRef origin/main`** para alinhar os clones LAB ao mesmo tip que o **`main`**.
 
 **Onde definir a ref:** mantenha a **linha 1** do bloco copy-paste **só** com **`completao`**. Altere o **passo 1** abaixo (valor de **`-LabGitRef`**), não a linha 1.
 
@@ -118,7 +118,7 @@ You are in the data-boar repo on my Windows dev PC. Read AGENTS.md (Quick index:
 
 Session mode: smoke-only (see docs/ops/LAB_COMPLETAO_FRESH_AGENT_BRIEF.md).
 
-LAB git target: match GitHub main — run orchestrator with -LabGitRef origin/main (runs lab-op-git-ensure-ref Check before host smoke). Expect pyproject.toml on that tip to read 1.7.2-beta for this test wave; if ensure-ref fails, LAB clones are not at origin/main (align per LAB_COMPLETAO_RUNBOOK.md).
+LAB git target: match GitHub main — run orchestrator with -LabGitRef origin/main (runs lab-op-git-ensure-ref Check before host smoke). The product version at that ref is whatever **`pyproject.toml`** declares there (confirm with **`git show origin/main:pyproject.toml`**); do not assume a fixed semver unless I pinned a release tag. If ensure-ref fails, LAB clones are not at origin/main (align per LAB_COMPLETAO_RUNBOOK.md).
 
 1) From repo root run: .\scripts\lab-completao-orchestrate.ps1 -Privileged -LabGitRef origin/main
 2) Summarize docs/private/homelab/reports/ logs (no secrets in chat if sensitive).
