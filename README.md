@@ -16,6 +16,8 @@ Your organization needs to know **where** personal and sensitive data lives—to
 
 **What we surface:** Beyond obvious PII (CPF, CNPJ – including the new alphanumeric format, email, phone), we use **AI** (ML and optional DL) to detect **sensitive categories** (health, religion, political opinion, biometric, genetic—LGPD Art. 5 II, GDPR Art. 9), **field combinations that can re-identify individuals in context** (LGPD Art. 5, GDPR Recital 26), and **possible minor data** (LGPD Art. 14, GDPR Art. 8). We recognise regional document names and flag ambiguous identifiers for manual confirmation, and reveal exposure across **legacy columns**, **exports**, **dashboards**, and **multiple sources** in one view—so you see gaps that manual checks or rule-only tools often miss. Findings carry **norm_tag** and the same risk vocabulary as the Excel output; when jargon piles up (**quasi-identifier**, categories, cross-border nuance), the [Glossary](docs/GLOSSARY.md#glossary-stakeholder-jargon) aligns engineering, compliance, and procurement on one lexicon.
 
+**Children's and minors' data — first-class, not a footnote:** Possible minor columns and values get **dedicated detector logic**, elevated report treatment (including optional deeper DB resampling and **cross-reference** with identifiers or health-like fields in the same table or path), and **compliance-sample YAML** vocabulary for US child-privacy contexts—always as **inventory and triage signals**, never as legal age verification. That is a deliberate **linguistic category** in the product: the same “boar” that digs through messy enterprise data is wired to **surface child-related exposure early** for DPO and security review. Technical limits and config keys: [MINOR_DETECTION.md](docs/MINOR_DETECTION.md) ([pt-BR](docs/MINOR_DETECTION.pt_BR.md)); concern-first map: [MAP.md](docs/MAP.md) ([pt-BR](docs/MAP.pt_BR.md)).
+
 The real risk—**shadow IT** and beyond—often hides in parallel spreadsheets, forgotten folders, legacy databases, lack of standardization, tangled flows, poorly documented applications, exceptions, and excessive data collection. Data Boar keeps sniffing through your data soup to uncover those hidden ingredients—including renamed or cloaked files and weaker transport or storage—so compliance and legal teams see what’s really there, not just how it’s presented. **Rich media today:** optional **metadata** scans, **image OCR**, and **subtitle** sidecars help surface ingredients that plain full-text search often misses. **On the horizon (phased, often opt-in):** stronger signals for **embedded trackers**, **steganography**, and **document-layer tricks** (microtext, Unicode cloaking, nested embedded objects)—without promising exhaustive detection until each slice ships.
 
 **Hungry for your data soup:** Like a **boar**, we dig into many sources and don't stop at the surface. Whatever the ingredients—**files**, **SQL**, **NoSQL**, **APIs**, **Power BI**, **Dataverse**, **SharePoint**, **SMB/NFS**, and more—we're built to ingest and digest it. We **do not store or exfiltrate** PII, only **metadata** (where found, pattern type, sensitivity), so you get visibility for remediation without moving data.
@@ -39,6 +41,29 @@ Multilingual and legacy encodings are supported; **configurable timeouts** and *
 
 ---
 
+## The Architect's Vault
+
+Investors, integration partners, and senior technical reviewers often skim the README and then ask: **where is the decision trail?** This section is the deliberate **front door** to narrative, positioning, and architecture records that sit beside the code—so the repository reads as a **governed product**, not “just another script.” Execution backlogs and PMO tables stay one hop away via [docs/README.md](docs/README.md) (*Internal and reference*); per [ADR 0004](docs/adr/0004-external-docs-no-markdown-links-to-plans.md), this README avoids one-click Markdown links into the **plans** subtree under **docs** from this pitch surface.
+
+| If you need… | Start here |
+| ------------- | ---------- |
+| **Value proposition** (boards, legal, compliance, procurement — concise brief) | [DECISION_MAKER_VALUE_BRIEF.md](docs/DECISION_MAKER_VALUE_BRIEF.md) · [pt-BR](docs/DECISION_MAKER_VALUE_BRIEF.pt_BR.md) |
+| **Architecture Decision Records** (context, decision, consequences — numbered series) | [docs/adr/README.md](docs/adr/README.md) · [pt-BR index](docs/adr/README.pt_BR.md) |
+| **Narrative and architecture history** (curated product story and stack evolution — placeholder until expanded) | [NARRATIVE_AND_ARCHITECTURE_HISTORY.md](docs/NARRATIVE_AND_ARCHITECTURE_HISTORY.md) · [pt-BR](docs/NARRATIVE_AND_ARCHITECTURE_HISTORY.pt_BR.md) |
+| **Governance of the auditor** (what the app can prove today about scans, exports, and operator evidence) | [ADR 0037](docs/adr/0037-data-boar-self-audit-log-governance.md) · [SRE framing](docs/OBSERVABILITY_SRE.md) ([pt-BR](docs/OBSERVABILITY_SRE.pt_BR.md)) |
+| **Concern-first navigation** (minors, jurisdiction hints, CISO-style paths) | [MAP.md](docs/MAP.md) · [pt-BR](docs/MAP.pt_BR.md) |
+| **Child / minor data** (thresholds, cross-reference, samples — dedicated operator guide) | [MINOR_DETECTION.md](docs/MINOR_DETECTION.md) · [pt-BR](docs/MINOR_DETECTION.pt_BR.md) |
+| **Full documentation index** (all topics; entry to internal reference in one place) | [docs/README.md](docs/README.md) · [pt-BR](docs/README.pt_BR.md) |
+| **Why evidence-first** (public philosophy — no personal history) | [THE_WHY.md](docs/philosophy/THE_WHY.md) · [pt-BR](docs/philosophy/THE_WHY.pt_BR.md) |
+
+---
+
+## Compliance methodology
+
+Data Boar is positioned as **technical inventory and triage**: it finds **where** categories of personal and sensitive data may live, assigns **technical** severity and norm-oriented hints, and leaves **lawful basis, purpose, and retention** choices with **DPO / counsel**. For **coursework (e.g. LGPD adequacy indices)**, we publish a concise **verification-module map** and a **ROPA-style column prioritisation** (what to automate first vs human-owned)—so the README is not only a feature list but a **bridge to compliance method**. Full detail: [COMPLIANCE_METHODOLOGY.md](docs/COMPLIANCE_METHODOLOGY.md) · [pt-BR](docs/COMPLIANCE_METHODOLOGY.pt_BR.md).
+
+---
+
 ## Technical overview
 
 Data Boar runs as a **one-shot CLI** audit or as a **REST API** (default port 8088) with a web dashboard. You configure **targets** (databases, filesystems, APIs, shares, Power BI, Dataverse) and **sensitivity detection** (regex + ML, optional DL) in a single **YAML or JSON** config file. It writes findings and session metadata to a local **SQLite** database and produces **Excel reports** and a **heatmap PNG** per session.
@@ -47,11 +72,14 @@ Data Boar runs as a **one-shot CLI** audit or as a **REST API** (default port 80
 | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Open core vs **Pro / Enterprise** subscription scope (draft; pricing TBD) | [LICENSING_OPEN_CORE_AND_COMMERCIAL.md](docs/LICENSING_OPEN_CORE_AND_COMMERCIAL.md) · [pt-BR](docs/LICENSING_OPEN_CORE_AND_COMMERCIAL.pt_BR.md) · [LICENSING_SPEC.md](docs/LICENSING_SPEC.md) (token technicalities, EN) |
 | Compliance frameworks, samples, legal summary (DPOs, procurement) | [COMPLIANCE_FRAMEWORKS.md](docs/COMPLIANCE_FRAMEWORKS.md) · [COMPLIANCE_AND_LEGAL.md](docs/COMPLIANCE_AND_LEGAL.md) · [compliance-samples/](docs/compliance-samples/) ([frameworks index](docs/COMPLIANCE_FRAMEWORKS.md#compliance-samples)) |
+| Compliance methodology (verification modules, ROPA-style automation priorities) | [COMPLIANCE_METHODOLOGY.md](docs/COMPLIANCE_METHODOLOGY.md) · [pt-BR](docs/COMPLIANCE_METHODOLOGY.pt_BR.md) |
+| Reports and compliance outputs (XLSX, heatmap, audit JSON, maturity export; PDF roadmap) | [REPORTS_AND_COMPLIANCE_OUTPUTS.md](docs/REPORTS_AND_COMPLIANCE_OUTPUTS.md) · [pt-BR](docs/REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md) |
 | Product direction and release cadence                             | [docs/releases/](docs/releases/) · [GitHub Releases](https://github.com/FabioLeitao/data-boar/releases)                                                                                                                                      |
 | Install, run, CLI/API reference, connectors, deploy               | [Technical guide (EN)](docs/TECH_GUIDE.md) · [Guia técnico (pt-BR)](docs/TECH_GUIDE.pt_BR.md)                                                                                                                                                |
 | Configuration schema, credentials, examples                       | [USAGE.md](docs/USAGE.md) · [USAGE.pt_BR.md](docs/USAGE.pt_BR.md)                                                                                                                                                                            |
 | Deploy (Docker, Compose, Kubernetes)                              | [deploy/DEPLOY.md](docs/deploy/DEPLOY.md) · [deploy/DEPLOY.pt_BR.md](docs/deploy/DEPLOY.pt_BR.md)                                                                                                                                            |
 | Sensitivity detection (ML/DL terms)                               | [SENSITIVITY_DETECTION.md](docs/SENSITIVITY_DETECTION.md) · [SENSITIVITY_DETECTION.pt_BR.md](docs/SENSITIVITY_DETECTION.pt_BR.md)                                                                                                            |
+| Minor / child-related data (thresholds, optional full scan, cross-ref, samples) | [MINOR_DETECTION.md](docs/MINOR_DETECTION.md) · [MINOR_DETECTION.pt_BR.md](docs/MINOR_DETECTION.pt_BR.md)                                                                                                                                   |
 | Testing, security, contributing                                   | [docs/TESTING.md](docs/TESTING.md) · [SECURITY.md](SECURITY.md) · [CONTRIBUTING.md](CONTRIBUTING.md)                                                                                                                                         |
 | **`pip` from PyPI                                                 | **`pip install data-boar`** when published; until then **git clone** + **`uv sync`** — see [CONTRIBUTING.md — Repository and install identity](CONTRIBUTING.md#repository-and-install-identity-data-boar).                                     |
 
