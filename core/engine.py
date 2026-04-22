@@ -222,10 +222,12 @@ class AuditEngine:
                                 # Best effort: logging failures must not interrupt worker cleanup.
                                 _ = str(log_err)
                             try:
+                                from core.validation import clean_error
+
                                 self.db_manager.save_failure(
                                     tname,
                                     "error",
-                                    f"Uncaught worker error: {e!s}",
+                                    f"Uncaught worker error: {clean_error(e)}",
                                 )
                             except Exception as save_err:
                                 # Best effort: persist failures when possible, but don't break session flow.
@@ -326,7 +328,11 @@ class AuditEngine:
         try:
             connector.run()
         except Exception as e:
-            self.db_manager.save_failure(target.get("name", "unknown"), "error", str(e))
+            from core.validation import clean_error
+
+            self.db_manager.save_failure(
+                target.get("name", "unknown"), "error", clean_error(e)
+            )
 
     def generate_final_reports(self, session_id: str | None = None) -> str | None:
         """

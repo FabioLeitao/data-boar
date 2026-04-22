@@ -645,11 +645,11 @@ class LocalDBManager:
         """
         Persist one outbound notification attempt. Safe to call from notify path; failures are swallowed.
         """
-        from core.validation import redact_secrets_for_log
+        from core.validation import sanitize_log_text
 
         err_stored: str | None = None
         if error_message:
-            err_stored = redact_secrets_for_log(error_message)[:500]
+            err_stored = sanitize_log_text(error_message)[:500]
 
         session = self._session_factory()
         try:
@@ -743,21 +743,22 @@ class LocalDBManager:
         sid = self._current_session_id
         if not sid:
             return
+        from core.validation import sanitize_log_text
+
+        # Same redaction for log line and SQLite (drivers/httpx may embed SQL or bodies in str(e)).
+        stored_details = sanitize_log_text((details or "").strip())[:10000]
         # Best-effort logging: mirror failures into the unified audit log so operators
         # can see which target was skipped and why.
         try:
             from utils.logger import get_logger
 
-            from core.validation import redact_secrets_for_log
-
             logger = get_logger()
-            safe_details = redact_secrets_for_log((details or "").strip())
             logger.error(
                 "Scan failure: session=%s target=%s reason=%s details=%s",
                 sid,
                 target_name,
                 reason,
-                safe_details,
+                stored_details,
             )
         except Exception:
             # Logging must not break persistence.
@@ -769,7 +770,7 @@ class LocalDBManager:
                     session_id=sid,
                     target_name=target_name,
                     reason=reason,
-                    details=details,
+                    details=stored_details,
                 )
             )
             session.commit()

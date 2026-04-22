@@ -54,6 +54,7 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0033  | [WebAuthn open Relying Party — JSON endpoints (Phase 1)](0033-webauthn-open-relying-party-json-endpoints.md) | Accepted |
 | 0034  | [Outbound HTTP User-Agent — `DataBoar-Prospector/<version>`](0034-outbound-http-user-agent-data-boar-prospector.md) | Accepted |
 | 0035  | [README stakeholder pitch vs optional deck vocabulary](0035-readme-stakeholder-pitch-vs-deck-vocabulary.md) | Accepted |
+| 0036  | [Exception and log PII redaction pipeline](0036-exception-and-log-pii-redaction-pipeline.md) | Accepted |
 
 ## Related docs
 

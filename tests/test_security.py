@@ -274,6 +274,50 @@ def test_redact_secrets_for_log_masks_passwords_and_urls():
     assert redact_secrets_for_log("no secrets here") == "no secrets here"
 
 
+def test_redact_pii_for_log_masks_detector_aligned_shapes():
+    """redact_pii_for_log strips CPF, email, and card-like runs from arbitrary text."""
+    from core.validation import redact_pii_for_log
+
+    raw = "contact leak@example.com and CPF 529.982.247-25 card 4111-1111-1111-1111"
+    out = redact_pii_for_log(raw)
+    assert "leak@example.com" not in out
+    assert "529.982.247-25" not in out
+    assert "4111-1111-1111-1111" not in out
+    assert "***REDACTED***" in out
+
+
+def test_sanitize_log_text_applies_secrets_then_pii():
+    from core.validation import sanitize_log_text
+
+    s = sanitize_log_text(
+        "postgresql://u:dbpass@db:5432/app and user@x.com CPF 111.444.777-35"
+    )
+    assert "dbpass" not in s
+    assert "user@x.com" not in s
+    assert "111.444.777-35" not in s
+
+
+def test_clean_error_walks_cause_Colleague-Nn_and_redacts():
+    from core.validation import clean_error
+
+    class Inner(Exception):
+        pass
+
+    class Outer(Exception):
+        pass
+
+    try:
+        try:
+            raise Inner("inner leak@inner.com")
+        except Inner as inner:
+            raise Outer("outer 52998224725") from inner
+    except Outer as outer:
+        msg = clean_error(outer)
+    assert "leak@inner.com" not in msg
+    assert "52998224725" not in msg
+    assert "outer" in msg or "***REDACTED***" in msg
+
+
 def test_request_body_size_limit_returns_413_when_content_length_exceeds_1mb():
     """API returns 413 when Content-Length exceeds 1 MB (DoS mitigation)."""
     from fastapi.testclient import TestClient
