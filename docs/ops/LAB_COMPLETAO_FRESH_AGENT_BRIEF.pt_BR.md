@@ -101,6 +101,8 @@ Chat **novo** sem contexto (após pré-condições). O texto do bloco está em *
 
 **Sanidade `git` / `gh` (PC dev antes do completão):** rode **`git fetch origin`**, depois **`git rev-parse HEAD`** e **`git rev-parse origin/main`** — devem coincidir se o teu **`main`** local está sincronizado com o GitHub. **`gh repo view`** serve para metadados (branch padrão, nome); **não** substitui o **`git`** para identidade de commit. Alterações locais **não commitadas** não mudam **`origin/main`**; os hosts LAB seguem a ref **remota**, não alterações unstaged no working tree.
 
+**Scripts vs GitHub:** depois de correções de workflow entrarem no **`main`**, corre **`git pull`** neste clone no PC dev antes de **`lab-completao-orchestrate.ps1`**, para o orchestrator usar a mesma revisão de **`scripts/*.ps1`** que **`origin/main`**. A saída do terminal no chat pode **cortar** em corridas longas; usa **`docs/private/homelab/reports/`** (`lab_op_git_ensure_ref_*.log`, `completao_*`) como fonte de verdade. Cada bloco de repo em **`lab_op_git_ensure_ref_*.log`** deve terminar com **`LABOP_REF_OK`** ou **`LABOP_REF_MISMATCH`** (ou **`LABOP_REF_UNRESOLVED`**); se não, lê as linhas git/SSH acima no mesmo arquivo.
+
 ### Bloco A — exemplos de `-LabGitRef` (editar só o passo 1)
 
 | Objetivo | Passo 1 |
