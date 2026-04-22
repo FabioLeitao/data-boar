@@ -69,6 +69,10 @@ def test_commit_or_pr_ps1_syntax():
         "$null = [System.Management.Automation.Language.Parser]::ParseFile($path, [ref]$null, [ref]$errors); "
         "exit ([int]($errors -and $errors.Count -gt 0))"
     )
+    # CI runners occasionally cold-start pwsh slowly; try both shells and allow
+    # a bit more time than a typical local parse.
+    timeout_s = 30
+    errors: list[str] = []
     for pw in ("pwsh", "powershell"):
         try:
             proc = subprocess.run(
@@ -76,14 +80,21 @@ def test_commit_or_pr_ps1_syntax():
                 cwd=str(root),
                 capture_output=True,
                 text=True,
-                timeout=10,
+                timeout=timeout_s,
             )
         except FileNotFoundError:
+            continue
+        except subprocess.TimeoutExpired:
+            errors.append(f"{pw}: timed out after {timeout_s}s")
             continue
         assert proc.returncode == 0, (
             f"commit-or-pr.ps1 parse failed with {pw}: {proc.stderr or proc.stdout}"
         )
         return
+    if errors:
+        raise AssertionError(
+            "commit-or-pr.ps1 parse check: " + "; ".join(errors),
+        )
 
 
 def test_commit_or_pr_ps1_has_param_block():

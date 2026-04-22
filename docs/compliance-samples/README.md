@@ -11,6 +11,7 @@ For operational governance (scope, minimization, retention, traceability), use [
 | File                                           | Purpose                                                                                                                                                             |
 | ------                                         | ---------                                                                                                                                                           |
 | **compliance-sample-lgpd.yaml**                | LGPD (Brazil): bilingual PT-BR + EN terms (e.g. documento oficial / official document, RG, CNH / Driver License); RG/CEP regex; for Brazilian deployments.          |
+| **compliance-sample-br_insurance_lgpd_anchor.yaml** | Brazil insurance sector: **skeleton** EN-header sample with generic insurance terms and LGPD-inventory **`norm_tag`** strings; **not** SUSEP/CNSP certification — see [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md#brazil-insurance-sector-lgpd-anchoring-prudential-references). |
 | **compliance-sample-uk_gdpr.yaml**             | UK GDPR (UK post-Brexit + EU-like): norm_tag and recommendation overrides aligned with ICO and UK provisions.                                                       |
 | **compliance-sample-eu_gdpr.yaml**             | EU GDPR (EEA): EU 2016/679 Art. 4(1), EDPB, member-state DPAs; optional EN + DE/FR terms.                                                                           |
 | **compliance-sample-benelux.yaml**             | Benelux (BE, NL, LU): EU GDPR base + national IDs (BSN, NISS, Luxembourg ID) and national DPA overrides; EN + NL/FR terms.                                          |
@@ -55,6 +56,7 @@ When choosing or authoring a sample, consider the **language(s)** of the target 
 | Regulation / region               | Recommended language(s) for terms and labels                                                                   |
 | -------------------               | ---------------------------------------------                                                                  |
 | **LGPD (Brazil)**                 | Portuguese (BR) and English (e.g. "documento oficial" and "official document", "CNH" and "Driver License").    |
+| **Brazil (insurance — LGPD skeleton)** | Portuguese (BR) and English for policy/claims/brokerage column names; merge with full LGPD sample for national IDs. |
 | **PIPEDA (Canada)**               | English and French (e.g. "personal information" and "renseignements personnels") where scanning Canadian data. |
 | **UK GDPR**                       | English.                                                                                                       |
 | **EU GDPR (EEA)**                 | English; optional German/French for multilingual EU data.                                                      |

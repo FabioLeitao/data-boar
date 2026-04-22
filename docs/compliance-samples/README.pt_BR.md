@@ -11,6 +11,7 @@ Para governança operacional (escopo, minimização, retenção e rastreabilidad
 | Arquivo                                        | Finalidade                                                                                                                                                                                          |
 | ---------                                      | ------------                                                                                                                                                                                        |
 | **compliance-sample-lgpd.yaml**                | LGPD (Brasil): termos bilíngues PT-BR + EN (ex.: documento oficial / official document, RG, CNH / Driver License); regex RG/CEP; para implantações brasileiras.                                     |
+| **compliance-sample-br_insurance_lgpd_anchor.yaml** | Setor segurador (Brasil): amostra **esqueleto** (cabeçalho EN) com termos genéricos e **`norm_tag`** de inventário ancorada na LGPD; **não** certifica SUSEP/CNSP — ver [COMPLIANCE_FRAMEWORKS.pt_BR.md](../COMPLIANCE_FRAMEWORKS.pt_BR.md#setor-segurador-brasil-lgpd-referencias-prudenciais). |
 | **compliance-sample-uk_gdpr.yaml**             | UK GDPR (Reino Unido pós-Brexit + semelhante à UE): norm_tag e recommendation overrides alinhados à ICO e disposições britânicas.                                                                   |
 | **compliance-sample-eu_gdpr.yaml**             | EU GDPR (EEE): Art. 4(1) Reg. UE 2016/679, EDPB, autoridades nacionais; termos opcionais EN + DE/FR.                                                                                                |
 | **compliance-sample-benelux.yaml**             | Benelux (BE, NL, LU): base EU GDPR + IDs nacionais (BSN, NISS, ID Luxemburgo) e overrides para DPAs nacionais; termos EN + NL/FR.                                                                   |
@@ -39,6 +40,7 @@ Ao escolher ou criar uma amostra, considere o(s) **idioma(s)** da região alvo p
 | Regulamento / região             | Idioma(s) recomendado(s) para termos e rótulos                                                             |
 | --------------------             | ------------------------------------------------                                                           |
 | **LGPD (Brasil)**                | Português (BR) e inglês (ex.: "documento oficial" e "official document", "CNH" e "Driver License").        |
+| **Brasil (seguros — esqueleto LGPD)** | Português (BR) e inglês para nomes de colunas de apólice/sinistro/corretagem; mescle com a amostra LGPD completa para identificadores nacionais. |
 | **PIPEDA (Canadá)**              | Inglês e francês (ex.: "personal information" e "renseignements personnels") ao varrer dados canadenses.   |
 | **UK GDPR**                      | Inglês.                                                                                                    |
 | **EU GDPR (EEE)**                | Inglês; opcional alemão/francês para dados multilingues na UE.                                             |
