@@ -22,7 +22,7 @@ A single product toggle that “discovers everything” would be **misleading**,
 
 2. **Do not** promise one **magic** control that enables all three; **stack** explicit flags / phases as each plan defines.
 
-3. **Marketing and hub copy** ([PLANS_TODO.md](../plans/PLANS_TODO.md) Integration / WIP, [PLANS_HUB.md](../plans/PLANS_HUB.md)) stay **product positioning** only — **not** legal, regulatory, or “completeness” guarantees.
+3. **Marketing and hub copy** ([PLANS_TODO.md](../plans/PLANS_TODO.md) Integration / active threads, [PLANS_HUB.md](../plans/PLANS_HUB.md)) stay **product positioning** only — **not** legal, regulatory, or “completeness” guarantees.
 
 4. **Narrative** (“hidden / legacy / forgotten ingredients”) lives in plan prose; it explains **intent**, not shipped behaviour for every bullet.
 
