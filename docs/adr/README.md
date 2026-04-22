@@ -53,6 +53,7 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0032  | [Maturity self-assessment — per-batch history on dashboard HTML](0032-maturity-assessment-batch-history-sqlite.md) | Accepted |
 | 0033  | [WebAuthn open Relying Party — JSON endpoints (Phase 1)](0033-webauthn-open-relying-party-json-endpoints.md) | Accepted |
 | 0034  | [Outbound HTTP User-Agent — `DataBoar-Prospector/<version>`](0034-outbound-http-user-agent-data-boar-prospector.md) | Accepted |
+| 0035  | [README stakeholder pitch vs optional deck vocabulary](0035-readme-stakeholder-pitch-vs-deck-vocabulary.md) | Accepted |
 
 ## Related docs
 
