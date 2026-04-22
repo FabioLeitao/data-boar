@@ -1,20 +1,20 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Block commits when any maintainer PII seed literal appears in staged file blobs (index).
+    Pre-push style gate: block staging when non-public PII seed literals appear in staged blobs.
 
 .DESCRIPTION
-    Reads docs/private/security_audit/PII_LOCAL_SEEDS.txt (same contract as run-pii-local-seeds-pickaxe.ps1):
-    one fixed string per non-comment line.
+    1. Load docs/private/security_audit/PII_LOCAL_SEEDS.txt (one fixed string per non-comment line).
 
-    Resolves paths with `git diff --cached --name-only` (staged add/modify/rename/copy/type-change only).
-    If there is nothing staged, exits 0 immediately.
+    2. Drop seeds classified as public maintainer identity (operator policy): FabioLeitao,
+       C:\Users\fabio (and c:/users/fabio), /home/leitao; those lines are not passed to git grep.
 
-    Runs `git grep -n -F -f <tempfile> --cached -- <paths...>` so only blobs that would be included in the
-    next commit are scanned — not the entire repository index for unrelated paths.
+    3. Staged paths only: git diff --cached --name-only --diff-filter=ACMRT, then
+       git grep -n -F -f <strict-seeds> --cached -- <paths> (fixed strings from file = git's -F -f; same intent as -Ff).
 
-    If the seeds file is missing (CI, fresh clone without docs/private/), exits 0 with a yellow skip message
-    unless -RequireSeeds is set.
+    4. Any remaining hit -> red error, exit 1.
+
+    If nothing staged, or no strict seeds after filtering, exits 0. Missing seeds file -> skip (CI) unless -RequireSeeds.
 
 .PARAMETER SeedsPath
     Override path to the seeds file (default: docs/private/security_audit/PII_LOCAL_SEEDS.txt).
@@ -50,6 +50,22 @@ function Write-GateSkip($msg) {
     Write-Host "GATEKEEPER-AUDIT: $msg" -ForegroundColor Yellow
 }
 
+function Test-PublicIdentitySeedExcluded([string] $seed) {
+    $t = $seed.Trim()
+    if ($t.Length -eq 0) { return $true }
+    $lower = $t.ToLowerInvariant()
+    # Whole-line identity tokens (public maintainer / lab path anchors — excluded from strict scan).
+    if ($lower -eq "fabioleitao") { return $true }
+
+    $pathish = $lower -replace '/', '\'
+    if ($pathish -eq 'c:\users\fabio' -or $pathish -eq 'c:\users\fabio\') { return $true }
+
+    if ($lower -eq '/home/leitao' -or $lower -eq '/home/leitao/') { return $true }
+    if ($pathish -eq '\home\leitao' -or $pathish -eq '\home\leitao\') { return $true }
+
+    return $false
+}
+
 if (-not (Test-Path -LiteralPath $SeedsPath)) {
     if ($RequireSeeds) {
         Write-GateFail "Seeds file required but missing: $SeedsPath"
@@ -61,21 +77,39 @@ if (-not (Test-Path -LiteralPath $SeedsPath)) {
 }
 
 $lines = Get-Content -LiteralPath $SeedsPath -Encoding UTF8
-$seeds = New-Object System.Collections.Generic.List[string]
+$allSeeds = New-Object System.Collections.Generic.List[string]
 foreach ($raw in $lines) {
     $t = $raw.Trim()
     if ($t.Length -eq 0) { continue }
     if ($t.StartsWith("#")) { continue }
-    $seeds.Add($t) | Out-Null
+    $allSeeds.Add($t) | Out-Null
 }
 
-if ($seeds.Count -eq 0) {
+if ($allSeeds.Count -eq 0) {
     Write-GateSkip "No active seed lines (only comments/blank). Nothing to scan."
     exit 0
 }
 
-Write-Host "=== gatekeeper-audit: PII seeds vs staged paths (--cached) ===" -ForegroundColor Cyan
-Write-Host "  Seeds file: $SeedsPath ($($seeds.Count) active line(s))" -ForegroundColor Gray
+$strictSeeds = New-Object System.Collections.Generic.List[string]
+$skippedPublic = 0
+foreach ($s in $allSeeds) {
+    if (Test-PublicIdentitySeedExcluded $s) {
+        $skippedPublic++
+        continue
+    }
+    $strictSeeds.Add($s) | Out-Null
+}
+
+Write-Host "=== gatekeeper-audit: PII seeds vs staged paths (--cached, strict seeds only) ===" -ForegroundColor Cyan
+Write-Host "  Seeds file: $SeedsPath ($($allSeeds.Count) active; $($strictSeeds.Count) after public-identity filter)" -ForegroundColor Gray
+if ($skippedPublic -gt 0) {
+    Write-Host "  Public-identity seeds excluded from scan: $skippedPublic (FabioLeitao, C:\Users\fabio, /home/leitao)" -ForegroundColor DarkGray
+}
+
+if ($strictSeeds.Count -eq 0) {
+    Write-Host "GATEKEEPER-AUDIT: OK (no strict seeds to scan)." -ForegroundColor Green
+    exit 0
+}
 
 $prevEap = $ErrorActionPreference
 $ErrorActionPreference = "Continue"
@@ -99,13 +133,14 @@ Write-Host "  Staged path(s): $($paths.Count)" -ForegroundColor Gray
 $tmp = [System.IO.Path]::GetTempFileName()
 try {
     $utf8NoBom = New-Object System.Text.UTF8Encoding $false
-    [System.IO.File]::WriteAllLines($tmp, [string[]]$seeds.ToArray(), $utf8NoBom)
+    [System.IO.File]::WriteAllLines($tmp, [string[]]$strictSeeds.ToArray(), $utf8NoBom)
 
     $batchSize = 60
     for ($i = 0; $i -lt $paths.Count; $i += $batchSize) {
         $end = [Math]::Min($i + $batchSize, $paths.Count) - 1
         $chunk = $paths[$i..$end]
         $ErrorActionPreference = "Continue"
+        # -F -f: fixed-string patterns from file (same as common -Ff intent for pickaxe-style literals).
         $grepArgs = @("-C", $repoRoot, "grep", "-n", "-F", "-f", $tmp, "--cached", "--") + $chunk
         $out = & git @grepArgs 2>&1
         $ErrorActionPreference = $prevEap
@@ -114,7 +149,7 @@ try {
 
         if ($code -eq 0) {
             if ($text.Length -gt 0) {
-                Write-GateFail "HIT — maintainer seed literal(s) found in staged content:"
+                Write-GateFail "HIT — staged content matches a strict PII seed (not public-identity allowlist):"
                 Write-Host $text -ForegroundColor Red
                 Write-GateFail "ABORT: redact or unstage before commit/push."
                 exit 1
@@ -138,5 +173,5 @@ finally {
     }
 }
 
-Write-Host "GATEKEEPER-AUDIT: OK (no seed hits in staged paths)." -ForegroundColor Green
+Write-Host "GATEKEEPER-AUDIT: OK (no strict seed hits in staged paths)." -ForegroundColor Green
 exit 0
