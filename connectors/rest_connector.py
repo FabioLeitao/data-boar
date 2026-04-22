@@ -9,6 +9,7 @@ import os
 from typing import Any
 import json
 
+from core.about import get_http_user_agent
 from core.connector_registry import register
 from core.suggested_review import (
     SUGGESTED_REVIEW_PATTERN,
@@ -71,7 +72,10 @@ def _build_auth(client: "httpx.Client", target: dict[str, Any]) -> None:
                     "client_secret": client_secret,
                     **({"scope": scope} if scope else {}),
                 },
-                headers={"Accept": "application/json"},
+                headers={
+                    "Accept": "application/json",
+                    "User-Agent": get_http_user_agent(),
+                },
                 timeout=30.0,
             )
             resp.raise_for_status()
@@ -197,12 +201,19 @@ class RESTConnector:
         read_s = float(self.config.get("read_timeout_seconds", 90))
         # Default (first arg) used for write/pool; connect and read set explicitly (httpx requires default or all four).
         timeout = httpx.Timeout(read_s, connect=connect_s, read=read_s)
-        self._client = httpx.Client(base_url=base_url, timeout=timeout)
+        cfg_headers = self.config.get("headers") or {}
+        has_ua = any(str(k).lower() == "user-agent" for k in cfg_headers)
+        default_headers: dict[str, str] = {}
+        if not has_ua:
+            default_headers["User-Agent"] = get_http_user_agent()
+        self._client = httpx.Client(
+            base_url=base_url, timeout=timeout, headers=default_headers or None
+        )
         _build_auth(self._client, self.config)
-        # Optional extra headers (e.g. API key, negotiated token)
-        for key, value in (self.config.get("headers") or {}).items():
-            if value is not None and key not in self._client.headers:
-                self._client.headers[key] = str(value)
+        # Optional extra headers (e.g. API key, negotiated token); may override User-Agent.
+        for key, value in cfg_headers.items():
+            if value is not None:
+                self._client.headers[str(key)] = str(value)
 
     def close(self) -> None:
         if self._client:

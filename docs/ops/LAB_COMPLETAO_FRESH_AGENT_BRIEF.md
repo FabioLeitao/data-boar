@@ -8,9 +8,9 @@
 
 | Where | Never (destructive Git / clean-slate on canonical tree) | Always OK for completão |
 | ----- | -------------------------------------------------------- | ------------------------- |
-| **Primary Windows dev PC** (ThinkPad **L14**, this repo in Cursor) | **`git reset --hard`**, **`git clean -fdx`**, **`clean-slate`**, history rewrite on the **main** working copy | **`git pull`**, merge, branch, stash; temp-only audits under **`%TEMP%`** |
+| **Primary Windows dev PC** (ThinkPad **L-series**, this repo in Cursor) | **`git reset --hard`**, **`git clean -fdx`**, **`clean-slate`**, history rewrite on the **main** working copy | **`git pull`**, merge, branch, stash; temp-only audits under **`%TEMP%`** |
 | **LAB-OP hosts** in **`lab-op-hosts.manifest.json`** (SSH `repoPaths`) | N/A — these clones are **meant** to track GitHub | **`git fetch` / `pull --ff-only`**, **`lab-op-git-align-main.ps1`**, **`lab-op-git-ensure-ref`**, **`-AlignLabClonesToLabGitRef`**, **`lab-op-repo-status.ps1 -PullFfOnly`** — run **autonomously** from the dev PC scripts; **do not** ask the operator to babysit per-host manual `git` unless SSH fails |
-| **Container images** (Docker / Swarm / Podman / Kubernetes) | N/A for L14 Git | **Re-pull** from **Docker Hub** (or configured registry); **`docker pull`**, stack update — **normal** |
+| **Container images** (Docker / Swarm / Podman / Kubernetes) | N/A for primary dev PC Git | **Re-pull** from **Docker Hub** (or configured registry); **`docker pull`**, stack update — **normal** |
 
 Full table: **`LAB_COMPLETAO_RUNBOOK.md`** (*Blast radius*). Primary workstation policy: **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**.
 
@@ -84,8 +84,8 @@ Follow **`LAB_COMPLETAO_RUNBOOK.md`** — **Recommended slice order**, **Capabil
 ## Do not
 
 - Claim the assistant **cannot** reach the lab via **SSH from this PC** when **`ssh`** works for the operator — see **`homelab-ssh-via-terminal.mdc`**.
-- Ask redundant **“may I use SSH / `-Privileged`?”** or **“should I align LAB clones?”** if the operator already asked for **completão** — LAB alignment scripts target **manifest hosts only**, not L14 — see **`operator-direct-execution.mdc`** and *Blast radius* above.
-- Run **`git reset --hard`**, **`clean-slate`**, or history rewrite on the **canonical** clone on the **primary Windows dev PC (L14)** — **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**. (Contrast: LAB **`repoPaths`** may use align scripts — that is **not** L14.)
+- Ask redundant **“may I use SSH / `-Privileged`?”** or **“should I align LAB clones?”** if the operator already asked for **completão** — LAB alignment scripts target **manifest hosts only**, not the primary Windows dev PC — see **`operator-direct-execution.mdc`** and *Blast radius* above.
+- Run **`git reset --hard`**, **`clean-slate`**, or history rewrite on the **canonical** clone on the **primary Windows dev PC** — **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**. (Contrast: LAB **`repoPaths`** may use align scripts — that is **not** the primary dev PC.)
 - Put **secrets**, **tokens**, or **LAN identifiers** in **public** GitHub; **private** notes only under **`docs/private/homelab/`**.
 - Promise **browser FIDO2**, **full JWT licensing**, or **production-grade** “secure by design” **proof** from scripts alone — document **what ran** vs **`SMOKE_*.md`** / **`SECURITY.md`**.
 

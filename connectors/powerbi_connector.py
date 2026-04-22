@@ -9,6 +9,7 @@ import os
 from typing import Any
 import json
 
+from core.about import get_http_user_agent
 from core.connector_registry import register
 from core.suggested_review import (
     SUGGESTED_REVIEW_PATTERN,
@@ -55,7 +56,10 @@ def _get_access_token(target: dict[str, Any]) -> str | None:
             "client_secret": client_secret,
             "scope": _PBI_SCOPE,
         },
-        headers={"Accept": "application/json"},
+        headers={
+            "Accept": "application/json",
+            "User-Agent": get_http_user_agent(),
+        },
         timeout=30.0,
     )
     resp.raise_for_status()
@@ -102,6 +106,7 @@ class PowerBIConnector:
         self._client = httpx.Client(
             base_url=_PBI_BASE,
             headers={
+                "User-Agent": get_http_user_agent(),
                 "Authorization": f"Bearer {self._token}",
                 "Content-Type": "application/json",
             },
