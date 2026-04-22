@@ -21,9 +21,10 @@ def _fallback_version_in_about_source() -> str:
     """String used when importlib.metadata has no distribution (see docs/VERSIONING.md)."""
     root = Path(__file__).resolve().parent.parent
     text = (root / "core" / "about.py").read_text(encoding="utf-8")
-    m = re.search(r"except Exception:\s*\n\s*ver = \"([^\"]+)\"", text)
+    m = re.search(r"except Exception:\s*\n\s*return \"([^\"]+)\"", text)
     assert m is not None, (
-        'expected fallback `ver = "..."` after `except Exception:` in core/about.py'
+        'expected fallback `return "..."` after `except Exception:` in core/about.py '
+        "(_package_version)"
     )
     return m.group(1)
 
@@ -40,6 +41,15 @@ def test_about_version_matches_pyproject() -> None:
 def test_about_fallback_string_matches_pyproject() -> None:
     """Bump checklist: `core/about.py` except-branch must track `pyproject.toml`."""
     assert _fallback_version_in_about_source() == _project_version_from_pyproject()
+
+
+def test_http_user_agent_is_data_boar_prospector() -> None:
+    """Outbound HTTP(S) from connectors identifies as DataBoar-Prospector/<version>."""
+    from core.about import get_about_info, get_http_user_agent
+
+    ua = get_http_user_agent()
+    assert ua.startswith("DataBoar-Prospector/")
+    assert get_about_info()["version"] in ua
 
 
 @pytest.mark.parametrize(
