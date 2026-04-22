@@ -18,10 +18,11 @@ Data Boar reaches third-party HTTP(S) endpoints when operators configure **REST/
 
 - **Positive:** Logs and dashboards on the remote side can filter on `DataBoar-Prospector`; aligns public identity with **Data Boar** without reusing the old repo name as a wire token.
 - **Neutral:** Operators who relied on the previous library-default UA string will see a change in their API logs (expected once per upgrade).
-- **Documentation:** TECH_GUIDE may mention optional `headers` for API targets; the default UA does not need duplicating in every example — this ADR plus `core/about.py` are the source of truth.
+- **Documentation:** [TECH_GUIDE.md](../TECH_GUIDE.md) (REST/API section) points operators at the default UA and the `headers` override; this ADR plus `core/about.py` remain the source of truth.
 
 ## References
 
 - `core/about.py` — `get_http_user_agent()`, `_package_version()`
 - `connectors/rest_connector.py`, `connectors/sharepoint_connector.py`, `connectors/powerbi_connector.py`, `connectors/dataverse_connector.py`
 - [ADR 0014](0014-rename-repo-and-package-python3-lgpd-crawler-to-data-boar.md)
+- [ADR 0035](0035-readme-stakeholder-pitch-vs-deck-vocabulary.md) — README executive pitch stays separate from optional deck vocabulary (**Data Sniffing** / **Deep Boring**); wire identity here vs prose boundaries there.
