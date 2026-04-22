@@ -1,0 +1,20 @@
+---
+# Minimal Podman install for T14 (LMDE / Debian) — use when full baseline is too heavy
+# or Docker CE is misconfigured but you need Podman for LAB completão.
+#
+# From T14 (inventory with localhost + connection=local):
+#   cd ~/Projects/dev/data-boar/ops/automation/ansible
+#   ansible-playbook -i inventory.local.ini --ask-become-pass playbooks/t14-podman.yml --diff
+#
+# From Windows (repo root):
+#   .\scripts\t14-ansible-baseline.ps1 -SshHost t14 -Apply -SkipCheck
+#   # then on T14 run only this play, or add a dedicated wrapper script if needed.
+- name: T14 Podman only (rootless stack)
+  hosts: t14
+  become: true
+  environment: "{{ labop_debian_unattended_apt_environment | combine(t14_play_apt_environment_extra | default({})) }}"
+  vars:
+    t14_play_apt_environment_extra: {}
+    t14_install_podman: true
+  roles:
+    - role: t14_podman

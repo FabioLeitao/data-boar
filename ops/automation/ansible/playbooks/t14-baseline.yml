@@ -78,10 +78,11 @@
     - role: t14_aide
     - role: t14_auditd
     - role: t14_zram
-    # --- Containers (Docker CE default; Podman / k3s opt-in) ---
+    # --- Containers: Podman before Docker CE so a partial Docker/apt failure still leaves Podman
+    # (LAB completão / variety path). Docker CE remains default for ctop/Swarm per play vars.
+    - role: t14_podman
     - role: t14_docker_ce
     - role: t14_operator_supplementary_groups
-    - role: t14_podman
     - role: t14_k3s
     # --- Observability (progressive opt-in) ---
     - role: t14_observability
