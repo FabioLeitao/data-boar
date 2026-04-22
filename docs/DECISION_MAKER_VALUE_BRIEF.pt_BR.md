@@ -50,6 +50,13 @@ Data Boar é uma plataforma técnica configurável de descoberta e suporte a evi
 - Caminho de integração com controles operacionais mais estritos e ambientes segmentados.
 - Modelo compatível com serviços profissionais e evolução por fases.
 
+## Dados de crianças e menores — profundidade deliberada de produto
+
+Exposição ligada a menores é uma **trilha de detecção de primeira classe**, não um detalhe de marketing: limiares de idade configuráveis, **re-amostragem** opcional mais profunda em banco quando a coluna parece DDN ou idade, **cruzamento** com achados de identificador ou saúde na mesma tabela ou caminho de filesystem, e recomendações com **norm tags** no Excel alinhadas ao **LGPD Art. 14** e ao **GDPR Art. 8**. **Amostras YAML** com vocabulário voltado aos EUA (ex.: contexto COPPA) apoiam **linguagem de inventário** para revisão jurídica — **não** fazem checagem de consentimento parental nem verificação legal de idade.
+
+- Guia do operador: [MINOR_DETECTION.pt_BR.md](MINOR_DETECTION.pt_BR.md) ([EN](MINOR_DETECTION.md))
+- Mapa por preocupação (bloco de menores é a primeira tabela): [MAP.pt_BR.md](MAP.pt_BR.md) ([EN](MAP.md))
+
 ## Perguntas mínimas para compra
 
 Antes de comprar, confirme:
@@ -73,6 +80,7 @@ Esses resultados apoiam governança e preparo de auditoria; isoladamente, não p
 
 ## Documentação relacionada
 
+- [MINOR_DETECTION.pt_BR.md](MINOR_DETECTION.pt_BR.md) ([EN](MINOR_DETECTION.md)) — limiares, cruzamento, amostras
 - [COMPLIANCE_AND_LEGAL.pt_BR.md](COMPLIANCE_AND_LEGAL.pt_BR.md) ([EN](COMPLIANCE_AND_LEGAL.md))
 - [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md) ([EN](COMPLIANCE_FRAMEWORKS.md))
 - [COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md](COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md) ([EN](COMPLIANCE_TECHNICAL_REFERENCE.md))

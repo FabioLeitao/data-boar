@@ -50,6 +50,13 @@ Data Boar is a configurable technical discovery and evidence-support platform th
 - Integration path with stricter operational controls and segmented environments.
 - Professional-services-friendly model for phased maturity programs.
 
+## Children's and minors' data — deliberate product depth
+
+Minor-related exposure is a **first-class detection lane**, not a marketing afterthought: configurable age thresholds, optional deeper database resampling when a column looks like DOB or age, **cross-reference** with identifier- or health-like findings in the same table or filesystem path, and norm-tagged Excel recommendations aligned with **LGPD Art. 14** and **GDPR Art. 8**. US-oriented **compliance-sample YAML** (e.g. COPPA-flavoured vocabulary) supports **inventory language** for counsel review—it does **not** perform parental consent checks or legal age verification.
+
+- Operator guide: [MINOR_DETECTION.md](MINOR_DETECTION.md) ([pt-BR](MINOR_DETECTION.pt_BR.md))
+- Concern-first map (minors block is the first table): [MAP.md](MAP.md) ([pt-BR](MAP.pt_BR.md))
+
 ## Minimum procurement questions
 
 Before purchase, confirm:
@@ -73,6 +80,7 @@ These outcomes support governance and audit preparation; they do not, by themsel
 
 ## Related documentation
 
+- [MINOR_DETECTION.md](MINOR_DETECTION.md) ([pt-BR](MINOR_DETECTION.pt_BR.md)) — thresholds, cross-reference, samples
 - [COMPLIANCE_AND_LEGAL.md](COMPLIANCE_AND_LEGAL.md) ([pt-BR](COMPLIANCE_AND_LEGAL.pt_BR.md))
 - [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md) ([pt-BR](COMPLIANCE_FRAMEWORKS.pt_BR.md))
 - [COMPLIANCE_TECHNICAL_REFERENCE.md](COMPLIANCE_TECHNICAL_REFERENCE.md) ([pt-BR](COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md))

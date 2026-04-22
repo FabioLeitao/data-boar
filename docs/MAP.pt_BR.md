@@ -2,7 +2,36 @@
 
 **English:** [MAP.md](MAP.md)
 
-Esta página é um **índice por preocupação**: liga perguntas de alto nível (o que importa para **CISO**, **DPO** ou **arquiteto de segurança**) aos guias onde comportamento, chaves de config e limites estão descritos. Use quando já souber o tema (ex.: menores, hints de jurisdição) e quiser o caminho mais curto sem vasculhar pastas. O índice plano completo continua em **[README.pt_BR.md](README.pt_BR.md)** ([EN](README.md)).
+Esta página é um **índice por preocupação**: liga perguntas de alto nível (o que importa para **CISO**, **DPO** ou **arquiteto de segurança**) aos guias onde comportamento, chaves de config e limites estão descritos. **Dados de crianças e menores** aparecem **em primeiro** de propósito: o produto trata essa **categoria linguística** como trilha dedicada (detector, prioridade no relatório, amostras — não como rodapé genérico de PII). Use este mapa quando já souber o tema (ex.: menores, hints de jurisdição) e quiser o caminho mais curto sem vasculhar pastas. O índice plano completo continua em **[README.pt_BR.md](README.pt_BR.md)** ([EN](README.md)).
+
+---
+
+## Espinha dorsal de documentação para POC (v1.7.x)
+
+Para **prova de conceito** ou ensaio com parceiro, leia nesta ordem para a documentação densa não esconder o que importa para postura:
+
+1. **[TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md)** ([EN](TECH_GUIDE.md)) — instalação, primeira varredura, portas, visão dos conectores.
+2. **Este MAPA** — percorra as tabelas abaixo (menores → jurisdição → pontes de detecção → governança do auditor). Para **tensão multinacional** (narrativa, não assessoria jurídica), leia **[JURISDICTION_COLLISION_HANDLING.pt_BR.md](JURISDICTION_COLLISION_HANDLING.pt_BR.md)** ([EN](JURISDICTION_COLLISION_HANDLING.md)) depois das linhas de jurisdição.
+3. **[USAGE.pt_BR.md](USAGE.pt_BR.md)** ([EN](USAGE.md)) — chaves `detection`, `report.jurisdiction_hints`, flags CLI/API/painel.
+4. **Governança do auditor (evidência hoje vs lacunas):** **[ADR 0037](adr/0037-data-boar-self-audit-log-governance.md)** (inglês).
+5. **Dicas de jurisdição (não são conclusões jurídicas):** **[ADR 0026](adr/0026-optional-jurisdiction-hints-dpo-facing-heuristic-metadata-only.md)** (inglês) mais a linha de jurisdição na tabela abaixo.
+
+**Planos de execução e PMO** ficam sob o caminho em texto ``docs/plans/`` no seu checkout; este mapa **não** linka daqui para planos em Markdown de camada de produto ([ADR 0004](adr/0004-external-docs-no-markdown-links-to-plans.md) — inglês). Use **[README.pt_BR.md](README.pt_BR.md)** — *Interno e referência* ([EN](README.md)) como entrada deliberada (PLANS_TODO, PLANS_HUB, planos concluídos).
+
+---
+
+## Ganchos de ADR (relevantes para POC, corpos em inglês)
+
+| ADR | Por que importa numa POC |
+| --- | ------------------------ |
+| [0000](adr/0000-project-origin-and-adr-baseline.md) | Linha de base: ADRs complementam código e planos; ordem de leitura. |
+| [0004](adr/0004-external-docs-no-markdown-links-to-plans.md) | Por que o pitch aponta para cá e para **docs/README**, e não direto para ``docs/plans/``. |
+| [0026](adr/0026-optional-jurisdiction-hints-dpo-facing-heuristic-metadata-only.md) | Jurisdiction hints: só metadados, voltado a DPO; limites de alegação jurídica. |
+| [0035](adr/0035-readme-stakeholder-pitch-vs-deck-vocabulary.md) | Tom do README para stakeholders vs vocabulário opcional de deck em outros docs. |
+| [0036](adr/0036-exception-and-log-pii-redaction-pipeline.md) | Redação de exceções/logs; evidência operacional mais segura em logs e texto no DB. |
+| [0037](adr/0037-data-boar-self-audit-log-governance.md) | Auto-auditoria: o que é comprovável hoje (sessões, trilha de export, wipes) vs lacunas explícitas. |
+
+Índice completo: [adr/README.pt_BR.md](adr/README.pt_BR.md) ([EN](adr/README.md)).
 
 ---
 
@@ -24,6 +53,7 @@ O histórico de desenho da detecção de menores está num plano **concluído** 
 | -------- | ------------- | ------------------------ | ------------- |
 | O que são **jurisdiction hints**, para quem são e como ativar (CLI, API, painel, YAML)? | **[USAGE.pt_BR.md](USAGE.pt_BR.md)** — busque **jurisdiction_hints** / **Report info** ([EN](USAGE.md)) | `report.jurisdiction_hints`, `--jurisdiction-hint`, corpo do `POST /scan` | [COMPLIANCE_AND_LEGAL.pt_BR.md](COMPLIANCE_AND_LEGAL.pt_BR.md) ([EN](COMPLIANCE_AND_LEGAL.md)) |
 | Por que não são conclusões jurídicas e o que o ADR fixou? | **[ADR 0026](adr/0026-optional-jurisdiction-hints-dpo-facing-heuristic-metadata-only.md)** (inglês) | Índice: [adr/README.pt_BR.md](adr/README.pt_BR.md) ([EN](adr/README.md)) | [COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md](COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md) ([EN](COMPLIANCE_TECHNICAL_REFERENCE.md)) |
+| **“Tempestade perfeita”** multinacional — regimes sobrepostos, âncora vs deriva, storyboard portuário? | **[JURISDICTION_COLLISION_HANDLING.pt_BR.md](JURISDICTION_COLLISION_HANDLING.pt_BR.md)** ([EN](JURISDICTION_COLLISION_HANDLING.md)) | Mesmas hints opt-in; **sem** score numérico de colisão no produto ainda | [ADR 0038](adr/0038-jurisdictional-ambiguity-alert-dont-decide.md), [use-cases/PORT_LOGISTICS_MULTINATIONAL_CREW.pt_BR.md](use-cases/PORT_LOGISTICS_MULTINATIONAL_CREW.pt_BR.md) ([EN](use-cases/PORT_LOGISTICS_MULTINATIONAL_CREW.md)) |
 
 ---
 
@@ -37,9 +67,27 @@ O histórico de desenho da detecção de menores está num plano **concluído** 
 
 ---
 
+## Governança do auditor (quem vigia o vigilante?)
+
+| Pergunta | Leia primeiro | Notas |
+| -------- | ------------- | ----- |
+| Que evidências existem **hoje** (atribuição de varredura, wipes, export, redação de logs)? O que **ainda não** está implementado? | **[ADR 0037](adr/0037-data-boar-self-audit-log-governance.md)** (inglês) | Linha de base honesta para narrativas **CISO / estilo SOC2**; evita prometer log imutável por download de relatório ou por cada POST de config. |
+| Alinhamento SRE (health, logs, métricas futuras) | **[OBSERVABILITY_SRE.pt_BR.md](OBSERVABILITY_SRE.pt_BR.md)** ([EN](OBSERVABILITY_SRE.md)) | Aponta para esse ADR no enquadramento “governança do auditor”. |
+
+---
+
+## Relatórios, exportações e saídas em formato GRC
+
+| Pergunta | Leia primeiro |
+| -------- | --------------- |
+| Como os achados no SQLite viram **Excel**, **heatmap**, **JSON de auditoria** e **CSV/MD de maturidade**? O que está **planeado** vs **entregue** para **PDF** ligado ao scan? | **[REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md](REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md)** ([EN](REPORTS_AND_COMPLIANCE_OUTPUTS.md)) |
+
+---
+
 ## Onde isso se encaixa
 
 - **Instalação e execução técnicas:** [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md) ([EN](TECH_GUIDE.md)) termina com um ponteiro **Topic map** de volta a esta página.
+- **Filosofia do produto (evidência em vez de teatro):** [philosophy/THE_WHY.pt_BR.md](philosophy/THE_WHY.pt_BR.md) ([EN](philosophy/THE_WHY.md)); limite de retenção em zonas sensíveis: [ADR 0039](adr/0039-retention-evidence-posture-bonded-customs-adjacent-contexts.md).
 - **Glossário (termos por tema):** [GLOSSARY.pt_BR.md](GLOSSARY.pt_BR.md) ([EN](GLOSSARY.md)).
 
 Se faltar um tema neste mapa, inclua uma linha em **MAP.md** e **MAP.pt_BR.md** no mesmo PR.
