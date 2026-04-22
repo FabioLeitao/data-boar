@@ -4,7 +4,7 @@ Human-readable summary of user-facing changes. **Detailed release notes:** [docs
 
 ## Unreleased (`main`)
 
-- **Next working line:** **`1.7.4-beta`** (or next planned pre-release) on **`main`** per [VERSIONING.md](docs/VERSIONING.md) after publish choreography (maintainers: **release-publish-sequencing** rule in-repo).
+- **Next working line:** **`1.7.4-beta`** (or next planned pre-release) on **`main`** per [VERSIONING.md](docs/VERSIONING.md) after publish choreography (maintainers: **release-publish-sequencing** rule in-repo). **Published** stable baseline remains **1.7.3** / tag **`v1.7.3`** until the next ship.
 
 ## 1.7.3 (2026-04-22)
 

@@ -11,9 +11,9 @@
 | Campo | Valor |
 | ----- | ----- |
 | **Verificado** | **2026-04-22** |
-| **`pyproject.toml` em `main`** | **1.7.3** no tag **`v1.7.3`**; após bump pós-release, esperar **`1.7.4-beta`** ([VERSIONING.md](../VERSIONING.md)) |
+| **`pyproject.toml` em `main`** | **1.7.4-beta** (trabalho; **publicado** estável = **1.7.3** / tag **`v1.7.3`** conforme [VERSIONING.md](../VERSIONING.md)) |
 | **GitHub Release Latest** | [**v1.7.3**](https://github.com/FabioLeitao/data-boar/releases/tag/v1.7.3) (notas: **`docs/releases/1.7.3.md`**, **`CHANGELOG.md`**) |
-| **Docker Hub** | **`fabioleitao/data_boar:1.7.3`** + **`latest`** (mesmo digest) — atualize `sha256:` após **`docker pull fabioleitao/data_boar:1.7.3`** e `docker image inspect … --format '{{index .RepoDigests 0}}'`; **descrição longa** de **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** |
+| **Docker Hub** | **`fabioleitao/data_boar:1.7.3`** + **`latest`** (mesmo digest) — `sha256:510a51b0dc89e79d084b515b5201c803328040dbda594744c96ee245efcc4866`; **descrição longa** de **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** |
 | **Próxima versão pública** (quando `main` tiver bundle novo) | **1.7.4** — seguir **`docs/VERSIONING.md`** + **`docs/releases/`** |
 
 ---
