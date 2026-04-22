@@ -1,4 +1,40 @@
+# =============================================================================
+# Docker build context — keep only what the runtime image needs (no Git
+# metadata, no operator-private tree, no PII seed lists). Content-based
+# filtering is not supported; we use path patterns + documented defaults below.
+# =============================================================================
+
+# Git history (entire .git directory must not enter the image context)
 .git
+.git/
+.git/**
+
+# Operator-private stacked repo and any seeds / notes there (gitignored on host)
+docs/private
+docs/private/
+docs/private/**
+
+# Tracked "copy-me" private layout: includes PII_LOCAL_SEEDS.example.txt and
+# other placeholders — not needed inside the container.
+docs/private.example
+docs/private.example/
+docs/private.example/**
+
+# PII seed files by name (any path)
+**/PII_LOCAL_SEEDS.txt
+**/PII_LOCAL_SEEDS.example.txt
+**/PII_LOCAL_SEEDS*.txt
+
+# Filter-repo literal tables (may list real substrings used in history hygiene)
+scripts/filter_repo_pii_replacements.txt
+scripts/filter_repo_upstream_tools_replacements.txt
+scripts/filter_repo_bash_localiza_danfe_replacements.txt
+
+# Local scratch that may contain pasted secrets or MCP blobs
+.tmp_*.txt
+.tmp_*.md
+
+# --- Existing context trims (unchanged intent) ---
 .gitignore
 .github
 .venv
@@ -20,6 +56,8 @@ audit_*.log
 config.local.yaml
 .env
 .env.*
+# Markdown: exclude from image (operator docs may embed paths/names). README
+# stays for OSS/legal surface; it must not carry PII_LOCAL_SEEDS-style literals.
 *.md
 !README.md
 docs/_build
