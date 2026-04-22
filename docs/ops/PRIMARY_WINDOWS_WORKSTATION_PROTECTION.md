@@ -2,7 +2,7 @@
 
 **Português (Brasil):** [PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md](PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md)
 
-**L-series** names a **role**: the operator’s **primary Windows dev PC** where the **canonical** `data-boar` clone, local evidence, and **Git history continuity** must be preserved. It is **not** a hostname to embed in commits or public docs. **Hardware anchor:** the operator’s main dev laptop is typically a ThinkPad **WORKSTATION** (or similar); **never** treat **LAB-OP** alignment scripts (`lab-op-git-align-main`, `lab-op-git-ensure-ref` **Reset**, etc.) as applying to **this** machine’s canonical tree — those scripts target **manifest SSH hosts**, not the Cursor workspace on WORKSTATION.
+**L-series** names a **role**: the operator’s **primary Windows dev PC** where the **canonical** `data-boar` clone, local evidence, and **Git history continuity** must be preserved. It is **not** a hostname to embed in commits or public docs. **Hardware anchor:** the operator’s main dev laptop is typically a ThinkPad **L-series** (or similar); **never** treat **LAB-OP** alignment scripts (`lab-op-git-align-main`, `lab-op-git-ensure-ref` **Reset**, etc.) as applying to **this** machine’s canonical tree — those scripts target **manifest SSH hosts**, not the Cursor workspace on the primary dev PC.
 
 ---
 
@@ -19,7 +19,7 @@
 | ----- | -------- |
 | **Destructive clean-slate** | Private **`clean-slate.sh`** / template flows that **`rm -rf`** the main working tree and re-clone (see **PII_PUBLIC_TREE_OPERATOR_GUIDE.md** H.9). Includes **WSL** if it targets the **same canonical tree**. |
 | **History rewrite without guard** | **`scripts/run-pii-history-rewrite.ps1`** — blocked unless **`DATA_BOAR_ALLOW_DESTRUCTIVE_REPO_OPS=1`** is set; **do not** set this on primary Windows dev PC for normal work. |
-| **Destructive Git on the canonical clone** | **`git reset --hard`**, **`git clean -fdx`**, branch **force** moves, or any operation that **throws away** unmerged work in the **main** working tree on **WORKSTATION** / primary Windows dev PC — use normal **`git pull`**, **`git merge`**, **`git stash`**, or **new branch** instead. (Contrast: **LAB-OP** hosts in **`lab-op-hosts.manifest.json`** may use hard reset / align scripts **on those hosts only** — see **`LAB_COMPLETAO_RUNBOOK.md`** *Blast radius*.) |
+| **Destructive Git on the canonical clone** | **`git reset --hard`**, **`git clean -fdx`**, branch **force** moves, or any operation that **throws away** unmerged work in the **main** working tree on the primary Windows dev PC — use normal **`git pull`**, **`git merge`**, **`git stash`**, or **new branch** instead. (Contrast: **LAB-OP** hosts in **`lab-op-hosts.manifest.json`** may use hard reset / align scripts **on those hosts only** — see **`LAB_COMPLETAO_RUNBOOK.md`** *Blast radius*.) |
 | **Fake narratives** | Claiming in chat that a destructive reset “ran” without real commands on an agreed host — see **`clean-slate-pii-self-audit.mdc`**. |
 
 ---
