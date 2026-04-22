@@ -28,6 +28,20 @@ For **slide banks, workshop handouts, and structured compliance technical docs**
 
 ---
 
+## Brazil insurance sector (LGPD anchoring + prudential references) {#brazil-insurance-sector-lgpd-anchoring-prudential-references}
+
+**Not legal advice.** This subsection orients technical and compliance readers who operate in **Brazilian private insurance** (SUSEP-supervised undertakings, brokers, and service providers). It is **not** a substitute for counsel, ANPD guidance, or prudential supervision practice.
+
+**What the product does here:** Data Boar supports **discovery, sampling, and metadata-oriented reporting** (including configurable **`norm_tag`** text). It does **not** certify **LGPD** compliance, **SUSEP/CNSP** compliance, solvency reporting, licensing, or any supervisory outcome.
+
+**LGPD as the primary data-protection anchor:** Personal and sensitive data processed in insurance workflows remain subject to the **Lei Geral de Proteção de Dados** (LGPD). Official text: [Planalto — Lei nº 13.709/2018](https://www.planalto.gov.br/ccivil_03/leis/2018/l13709.htm). The **ANPD** publishes guidance applicable across sectors: [gov.br — ANPD](https://www.gov.br/anpd/pt-br).
+
+**Prudential and market-conduct layer (sector, not a substitute for LGPD):** **SUSEP** supervises private insurance in Brazil; **CNSP** (within that policy ecosystem) issues resolutions that firms must operationalise alongside LGPD where personal data is involved. Official entry point for instruments and communications: [gov.br — SUSEP](https://www.gov.br/susep/pt-br). **Circular letters** and **CNSP** norms appear in SUSEP’s official **legislation / normative** channels on the same portal; always use the **current consolidated** text on **gov.br** before relying on any deep link.
+
+**Optional YAML skeleton:** For **generic** insurance-sector column names and document vocabulary with **LGPD-inventory-oriented** `norm_tag` strings (still **not** a regulatory certification), see [compliance-sample-br_insurance_lgpd_anchor.yaml](compliance-samples/compliance-sample-br_insurance_lgpd_anchor.yaml) in the table below. Pair it with the full **[compliance-sample-lgpd.yaml](compliance-samples/compliance-sample-lgpd.yaml)** profile when you need Brazilian identifier coverage (CPF, CNPJ, etc.).
+
+---
+
 ## Compliance samples
 
 Sample configuration files for **UK GDPR**, **EU GDPR**, **Benelux**, **PIPEDA**, **POPIA**, **APPI**, **PCI-DSS**, **Russia (152-FZ)**, and optional regional frameworks are in [compliance-samples/](compliance-samples/). Each file is self-contained (regex overrides, ML terms, recommendation overrides) so you can enable one framework by pointing your config at that file and merging its overrides.
@@ -39,6 +53,7 @@ Laws, guidance, and real-world identifier usage evolve in many sampled jurisdict
 | Regulation / region           | Sample file                                                                                                 | Purpose                                                                                             |
 | -------------------           | -----------                                                                                                 | -------                                                                                             |
 | **LGPD (Brazil)**             | [compliance-sample-lgpd.yaml](compliance-samples/compliance-sample-lgpd.yaml)                               | Bilingual PT-BR + EN terms; RG/CEP regex; Brazilian deployments.                                    |
+| **Brazil (insurance sector — LGPD inventory skeleton)** | [compliance-sample-br_insurance_lgpd_anchor.yaml](compliance-samples/compliance-sample-br_insurance_lgpd_anchor.yaml) | Generic insurance lexicon + LGPD-anchored **`norm_tag`** for inventory; **not** SUSEP/CNSP certification (see [insurance subsection](#brazil-insurance-sector-lgpd-anchoring-prudential-references)). |
 | **UK GDPR**                   | [compliance-sample-uk_gdpr.yaml](compliance-samples/compliance-sample-uk_gdpr.yaml)                         | UK post-Brexit, ICO-aligned; norm_tag and recommendation overrides.                                 |
 | **EU GDPR (EEA)**             | [compliance-sample-eu_gdpr.yaml](compliance-samples/compliance-sample-eu_gdpr.yaml)                         | EU 2016/679 Art. 4(1), EDPB, member-state DPAs; optional EN + DE/FR terms.                          |
 | **Benelux (BE, NL, LU)**      | [compliance-sample-benelux.yaml](compliance-samples/compliance-sample-benelux.yaml)                         | EU GDPR base + national IDs (BSN, NISS, LU); national DPA overrides; EN + NL/FR.                    |
