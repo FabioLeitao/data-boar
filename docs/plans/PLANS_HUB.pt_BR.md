@@ -26,6 +26,6 @@ python scripts/plans_hub_sync.py --write
 
 **Documentos meta** (papéis): ver a seção *Meta documents* no **PLANS_HUB.md** em inglês.
 
-**Narrativa WIP (sem valor jurídico):** metáfora **data soup** + ingredientes “esquecidos” e cheiros **opt-in** empilhados — ver parágrafo **WIP narrative** no [PLANS_HUB.md](PLANS_HUB.md) e bullet correspondente em [PLANS_TODO.md](PLANS_TODO.md) (*Integration / WIP*).
+**Narrativa de posicionamento (sem valor jurídico):** metáfora **data soup** + ingredientes “esquecidos” e descoberta **opt-in** empilhada — ver parágrafo **Positioning narrative** no [PLANS_HUB.md](PLANS_HUB.md) e bullet correspondente em [PLANS_TODO.md](PLANS_TODO.md) (**Integration / active threads**).
 
 **Ver também:** [README.md](../README.md) (índice, **Interno e referência**), [CONTRIBUTING.md](../../CONTRIBUTING.pt_BR.md), [AGENTS.md](../../AGENTS.md).

@@ -77,7 +77,7 @@ Before **either** implementation PR changes route shape:
 | **M-LOCALE-V1**   | **Locale v1 on `main`**          | Code          | ✅ **Done** (**2026-04**) — path-prefixed HTML; `en` + `pt-BR` JSON; cookie + `Accept-Language` + config fallback; switcher; tests; USAGE/TECH_GUIDE; CI key parity for shipped locales. |
 | **M-LOCALE-PLUS** | **Optional locales**             | Code          | `es` and/or `fr` and/or fifth market locale — same mechanics; still no gettext unless reprioritised.                                                               |
 
-**Sprint placement:** **D-WEB** ✅. **M-LOCALE-V1** ✅. **#86** Phase 1 is **next** in the dashboard web cluster (see [SPRINTS_AND_MILESTONES.md](../SPRINTS_AND_MILESTONES.md) §4.2). Tier / ordering in [PLANS_TODO.md](../PLANS_TODO.md) **Integration / WIP** may still list other fronts; within the **dashboard web surface cluster**, **locale prefix** is now on **`main`**; **in-app identity** (#86 Phase 1) follows.
+**Sprint placement:** **D-WEB** ✅. **M-LOCALE-V1** ✅. **#86** Phase 1 is **next** in the dashboard web cluster (see [SPRINTS_AND_MILESTONES.md](../SPRINTS_AND_MILESTONES.md) §4.2). Tier / ordering in [PLANS_TODO.md](../PLANS_TODO.md) **Integration / active threads** may still list other fronts; within the **dashboard web surface cluster**, **locale prefix** is now on **`main`**; **in-app identity** (#86 Phase 1) follows.
 
 ---
 

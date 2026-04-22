@@ -8,12 +8,12 @@ alwaysApply: true
 
 ## Problem
 
-Work can ship on `main` while a **`PLAN_*.md`** file still shows **`Status: Not started`** on line 1, or while **`PLANS_TODO.md`** *Integration / WIP* bullets lag (e.g. HTTPS phase table vs narrative). Humans and agents then **mis-prioritize** or **re-plan completed work**.
+Work can ship on `main` while a **`PLAN_*.md`** file still shows **`Status: Not started`** on line 1, or while **`PLANS_TODO.md`** *Integration / active threads* bullets lag (e.g. HTTPS phase table vs narrative). Humans and agents then **mis-prioritize** or **re-plan completed work**.
 
 ## When to reconcile (do)
 
 1. **After** merging a feature slice that maps to a named **`PLAN_*.md`**: update that plan’s **`**Status:**`** line, any **phase table**, and the **sequential to-do table** inside the same file.
-1. **Same pass:** update **`docs/plans/PLANS_TODO.md`** — at minimum the long **Plan status** paragraph and/or **Integration / WIP** if the theme moved; bump **last refreshed** date on **Integration / WIP** when you touch it.
+1. **Same pass:** update **`docs/plans/PLANS_TODO.md`** — at minimum the long **Plan status** paragraph and/or **Integration / active threads** if the theme moved; bump **last refreshed** date on **Integration / active threads** when you touch it.
 1. **Automation:** run **`python scripts/plans-stats.py --write`** when dashboard table rows in `PLANS_TODO.md` change; **`python scripts/plans_hub_sync.py --write`** when adding/renaming/archiving a `PLAN_*.md`.
 1. **Fully done:** move the **`PLAN_*.md`** to **`docs/plans/completed/`** (`git mv`, fix links) so **`docs/plans/`** lists **active** plans only — **`.cursor/rules/plans-archive-on-completion.mdc`**.
 1. **Shipped feature + version bump (`-beta` / `-rc` / final):** update the **relevant `PLAN_*.md`** (and **`PLANS_TODO.md`** if the theme moved) in the **same merge window** so testers and collaborators do not have to infer availability from `git pull` alone. Cross-link **`CHANGELOG.md`**, **`docs/releases/`** when applicable, and keep **README** “stable vs `main` pre-release” honest per **`docs/VERSIONING.md`**.
