@@ -42,7 +42,8 @@
 | ------ | ---- | -------- |
 | `lab-op.ps1` | SSH report / sync-collect | **`docs/ops/LAB_OP_SHORTHANDS.md`**, **`lab-op-systems-context.mdc`** |
 | `lab-op-sync-and-collect.ps1` | Batch multi-host | SKILL **`autonomous-merge-and-lab`**, manifest privado |
-| `lab-completao-orchestrate.ps1` | Completão no lab (smoke SSH por host + HTTP opcional) | **`LAB_COMPLETAO_RUNBOOK.pt_BR.md`**, manifest com **`completaoHealthUrl`** |
+| `lab-completao-inventory-preflight.ps1` | Verificação de idade dos privados **`LAB_SOFTWARE_INVENTORY.md`** / **`OPERATOR_SYSTEM_MAP.md`**; opcional **`lab-op-sync-and-collect.ps1`** | **`LAB_COMPLETAO_RUNBOOK.pt_BR.md`** (*Frescura do inventário*); o **`lab-completao-orchestrate.ps1`** chama por defeito |
+| `lab-completao-orchestrate.ps1` | Completão no lab (preflight + smoke SSH por host + HTTP opcional) | **`LAB_COMPLETAO_RUNBOOK.pt_BR.md`**, manifest com **`completaoHealthUrl`**, opcional **`completaoEngineMode`:** **`container`** / **`completaoSkipEngineImport`** (hosts só Swarm/Podman) |
 | `collect-homelab-report-remote.ps1`, `run-homelab-host-report-all.ps1` | Reports remotos | **`HOMELAB_VALIDATION.md`**, manifest privado |
 | `lab-allow-data-boar-inbound.ps1`, `lab-allow-data-boar-inbound.sh` | Liberar firewall de lab (TCP 8088) Windows / Linux | **`DATA_BOAR_LAB_SECURITY_TOOLING.pt_BR.md`** |
 | `lab-env-load.ps1` | Dot-source env para probes | **`lab-op-systems-context.mdc`** §3 |

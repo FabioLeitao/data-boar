@@ -7,7 +7,7 @@
 ## Preconditions (operator workstation)
 
 - **Same** Windows dev PC, **same** repo clone, **Cursor integrated terminal** (not a remote “AI datacenter”).
-- **`docs/private/homelab/lab-op-hosts.manifest.json`** present (copy from **`docs/private.example/homelab/lab-op-hosts.manifest.example.json`** when needed).
+- **`docs/private/homelab/lab-op-hosts.manifest.json`** present (copy from **`docs/private.example/homelab/lab-op-hosts.manifest.example.json`** when needed). For hosts that run Data Boar **only** via **Docker Swarm / Podman** (no bare-metal **`uv`**), set **`completaoEngineMode`:** **`container`** (or **`completaoSkipEngineImport`:** **`true`**) so the smoke does **not** treat missing **`uv`** as a failure — see **`LAB_COMPLETAO_RUNBOOK.md`** (*Container-only lab hosts*).
 - **`ssh`** to manifest hosts works from that terminal (keys / `~/.ssh/config`).
 - Optional: **narrow sudoers** for **`sudo -n`** on Linux hosts — see **`LAB_OP_PRIVILEGED_COLLECTION.md`** and gitignored **`LABOP_COMPLETÃO_SUDOERS*.md`**.
 
@@ -20,6 +20,40 @@
 ## Session token (English)
 
 Type **`completao`** in chat so the session scope matches **`session-mode-keywords.mdc`**.
+
+## Session modes (pick one)
+
+| Mode | Goal | What the **repo scripts** actually run in one go | What still needs **you** (config / services / secrets) |
+| ---- | ---- | ----------------------------------------------- | ------------------------------------------------------ |
+| **Smoke-only** | LAN + clone + runtime probes + logs | **`lab-completao-orchestrate.ps1 -Privileged`** (includes preflight → may run **`lab-op-sync-and-collect.ps1`**) | Manifest, SSH, optional **`completaoHealthUrl`**, optional sudoers for **`sudo -n`** |
+| **Extended** | Same as smoke + deeper validation (CLI, DBs, API, POC pytest slices) | **No single script** wraps everything — follow **slice order** in **`LAB_COMPLETAO_RUNBOOK.md`** across steps or chats | Private YAML (e.g. **`config.complete-eval.yaml`** pattern), **`lab-smoke-stack`** up where needed, env for API key / JWT / WebAuthn secrets, browser for manual FIDO2 UX |
+
+**Honest scope:** Slice 1 (orchestrator) **does not** by itself deploy full synthetic DBs, run comparative scans, or prove JWT/WebAuthn/browser ceremonies end-to-end. Those are **documented** in **`SMOKE_*.md`**, **`LAB_EXTERNAL_CONNECTIVITY_EVAL.md`**, **`TECH_GUIDE.md`**, **`SECURITY.md`** — assistant-led **steps**, not one magic command.
+
+## Optional checklists
+
+### Smoke-only (minimum useful first slice)
+
+- [ ] Manifest exists and **`sshHost`** / **`repoPaths`** are correct.
+- [ ] Container-only hosts have **`completaoEngineMode`:** **`container`** (or **`completaoSkipEngineImport`**) where applicable.
+- [ ] (Optional) **`completaoHealthUrl`** per host if **`main.py --web`** is up and reachable from the dev PC.
+- [ ] Run **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** from repo root; read **`docs/private/homelab/reports/`** logs.
+- [ ] Append material findings to **`docs/private/homelab/`** (e.g. **`COMPLETAO_SESSION_YYYY-MM-DD.md`** or template **`COMPLETAO_SESSION_TEMPLATE.pt_BR.md`**).
+
+### Extended (multi-step; same or follow-up chats)
+
+- [ ] Smoke-only checklist **done** (or explicitly skipped with reason in private notes).
+- [ ] **`lab-op-repo-status.ps1`** if clones may be behind / **`MISSING_SCRIPT`** appeared before.
+- [ ] Merge **fresh telemetry** into **`LAB_SOFTWARE_INVENTORY.md`** / **`OPERATOR_SYSTEM_MAP.md`** and bump **`Lab inventory as-of`** / **`<!-- lab-op-inventory-as-of: ... -->`** (see **`docs/private.example/homelab/README.md`**).
+- [ ] FS scans on Linux: **`config.lab-fs-*.example.yaml`** copies + **`main.py`** **on-host** per runbook — not from Windows unless paths are mounted.
+- [ ] CLI eval from dev PC: **`LAB_EXTERNAL_CONNECTIVITY_EVAL.md`** + **private** YAML (operator-owned paths).
+- [ ] API/web: process **`main.py --web`**, **`curl`** / **`completaoHealthUrl`**, browser as needed; **`SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md`** for TLS/API key posture.
+- [ ] On **dev PC**: **`.\scripts\smoke-maturity-assessment-poc.ps1`**, **`.\scripts\smoke-webauthn-json.ps1`** — **pytest subsets**; **not** a substitute for **`check-all.ps1`** or full FIDO2 browser proof.
+- [ ] Record **evidence** (timeouts, FP/FN vs synthetic, confidence on real paths) under **`docs/private/homelab/`**; link product gaps to **`PLANS_TODO.md`** / issues when relevant.
+
+## Before the orchestrator (automatic)
+
+**`lab-completao-orchestrate.ps1`** runs **`lab-completao-inventory-preflight.ps1`** first (default **15-day** freshness on private **`LAB_SOFTWARE_INVENTORY.md`** + **`OPERATOR_SYSTEM_MAP.md`**; triggers **`lab-op-sync-and-collect.ps1`** when stale). **Read** those private inventory files when present so host-smoke results align with **documented** roles and versions — **`LAB_COMPLETAO_RUNBOOK.md`** (*Inventory freshness*). Opt out: **`-SkipInventoryPreflight`**.
 
 ## First command (default)
 
@@ -41,28 +75,77 @@ Follow **`LAB_COMPLETAO_RUNBOOK.md`** — **Recommended slice order**, **Capabil
 - Ask redundant **“may I use SSH / `-Privileged`?”** if the operator already asked for **completão** — see **`operator-direct-execution.mdc`**.
 - Run **destructive** repo operations on the **primary Windows dev PC** (**L-series** role) — **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**.
 - Put **secrets**, **tokens**, or **LAN identifiers** in **public** GitHub; **private** notes only under **`docs/private/homelab/`**.
+- Promise **browser FIDO2**, **full JWT licensing**, or **production-grade** “secure by design” **proof** from scripts alone — document **what ran** vs **`SMOKE_*.md`** / **`SECURITY.md`**.
 
-## Copy-paste block (operator → new chat)
+---
+
+## Copy-paste block A — first slice (smoke + logs)
+
+Use in a **new chat** with **no context** (after preconditions).
 
 ```text
 completao
 
 You are in the data-boar repo on my Windows dev PC. Read AGENTS.md (Quick index: Lab completão), then docs/ops/LAB_COMPLETAO_RUNBOOK.md, and follow .cursor/rules/lab-completao-workflow.mdc. Use the integrated terminal — same SSH reachability as my shell.
 
+Session mode: smoke-only (see docs/ops/LAB_COMPLETAO_FRESH_AGENT_BRIEF.md).
+
 1) From repo root run: .\scripts\lab-completao-orchestrate.ps1 -Privileged
 2) Summarize docs/private/homelab/reports/ logs (no secrets in chat if sensitive).
-3) Continue the runbook slice order: repo alignment if needed, per-host FS smoke, CLI/API/web, then POC smokes (WebAuthn, maturity assessment, secure dashboard) per docs/ops/SMOKE_*.md and TECH_GUIDE as applicable.
+3) Read docs/private/homelab/OPERATOR_SYSTEM_MAP.md and LAB_SOFTWARE_INVENTORY.md when present; reconcile host-smoke with documented roles (container-only manifest hosts are not “missing uv” defects).
+4) Document material findings under docs/private/homelab/ (timeouts, latency, FP/FN vs synthetic, confidence on real paths). Do not expand to full CLI/DB/browser/API proof unless I ask in a follow-up.
 
-Do not ask redundant permission for SSH or -Privileged. Do not claim the lab is unreachable from this workspace. Protect my primary Windows dev workstation per docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md. Document material findings (timeouts, latency, FP/FN vs synthetic, confidence on real paths) under docs/private/homelab/.
+Do not ask redundant permission for SSH or -Privileged. Do not claim the lab is unreachable from this workspace. Protect my primary Windows dev workstation per docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md.
 
-If something fails, print the actual error and what I must fix (e.g. sudoers, manifest, missing uv), then stop — I will fix and ask you to retry.
+If something fails, print the actual error and what I must fix (e.g. sudoers, manifest, missing uv on native hosts), then stop — I will fix and ask you to retry. Do not demand bare-metal uv on container-only manifest hosts (completaoEngineMode: container).
+```
+
+---
+
+## Copy-paste block B — after slice A (repo alignment check, read-only)
+
+```text
+completao follow-up — repo alignment
+
+Same repo and terminal as before. Run .\scripts\lab-op-repo-status.ps1 from repo root. Summarize per-host git state vs origin/main. If MISSING_SCRIPT appeared in past completão logs, point to LAB_COMPLETAO_RUNBOOK.md (align clones). Do not run lab-op-git-align-main.ps1 unless I explicitly ask (destructive on lab clones). Document under docs/private/homelab/.
+```
+
+---
+
+## Copy-paste block C — extended: dev-PC pytest POC smokes (no LAN secrets)
+
+```text
+completao follow-up — Windows POC pytest smokes
+
+From repo root run: .\scripts\smoke-maturity-assessment-poc.ps1 then .\scripts\smoke-webauthn-json.ps1
+Summarize pass/fail. These are pytest subsets per docs/ops/SMOKE_MATURITY_ASSESSMENT_POC.md and SMOKE_WEBAUTHN_JSON.md — not a full browser FIDO2 demo and not a substitute for .\scripts\check-all.ps1.
+```
+
+---
+
+## Copy-paste block D — extended: CLI eval pattern (private config required)
+
+```text
+completao follow-up — CLI eval
+
+Read docs/ops/LAB_EXTERNAL_CONNECTIVITY_EVAL.md. If I have a private config path under docs/private/homelab/, run uv run python main.py --config <path> only after read_file confirms the YAML exists; redact secrets in chat. If no config exists, stop and list what I must provide. Document findings under docs/private/homelab/.
+```
+
+---
+
+## Copy-paste block E — evidence handoff (for documentation / next session)
+
+```text
+completao follow-up — evidence pack
+
+Consolidate what we proved this session: commands run, log paths under docs/private/homelab/reports/, inventory as-of dates, pass/fail matrix, gaps vs LAB_COMPLETAO_RUNBOOK.md slice order. Suggest one PLANS_TODO.md row or issue title only if a product gap is confirmed — no public PII.
 ```
 
 ## Will a fresh agent “get it”?
 
-**Mostly yes**, if: the **workspace** is this repo (so **`.cursor/rules/`** load), **`completao`** or the copy-paste block is used, and **preconditions** hold. **No** agent can **invent** SSH keys, **UDM** API access, or **sudoers** on hosts — those stay **operator-side**. The rules **reduce** mediocre “impossible LAN” answers; they **do not** replace **your** first-time setup or **secrets**.
+**Mostly yes** for **smoke-only** if the **workspace** is this repo, **`completao`** or block **A** is used, and **preconditions** hold. **Extended** work is **deliberately** multi-step — use blocks **B–E** or new chats so scope stays clear. **No** agent can **invent** SSH keys, **UDM** API access, or **sudoers** on hosts — those stay **operator-side**.
 
-## What could still improve
+## What you can still improve outside this file
 
 - Keep **`manifest.json`** and **private** YAML **up to date** as the lab grows.
 - After each completão, **one line** in **`PLANS_TODO.md`** or an issue when a **product gap** is confirmed — closes the loop from **session notes** to **roadmap**.

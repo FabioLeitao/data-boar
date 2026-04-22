@@ -6,6 +6,14 @@
         "/home/REPLACE_USER/Projects/dev/data-boar"
       ],
       "completaoHealthUrl": "http://REPLACE_HOST_LAN:8088/health"
+    },
+    {
+      "sshHost": "swarm-manager-example",
+      "repoPaths": [
+        "/home/REPLACE_USER/Projects/dev/data-boar"
+      ],
+      "completaoEngineMode": "container",
+      "completaoHealthUrl": "http://REPLACE_HOST_LAN:8088/health"
     }
   ],
   "outDir": "docs/private/homelab/reports"
