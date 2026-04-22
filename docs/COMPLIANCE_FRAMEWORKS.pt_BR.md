@@ -6,6 +6,12 @@ A aplicação auxilia times de DPO, segurança e **conformidade** a descobrir e 
 
 **Tomadores de decisão (jurídico / compliance):** Para visão executiva, evidências de relatório e serviços opcionais, veja primeiro [COMPLIANCE_AND_LEGAL.pt_BR.md](COMPLIANCE_AND_LEGAL.pt_BR.md). Detalhes técnicos (codificações, limites de API, timeouts) estão em [COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md](COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md).
 
+### Vocabulário do motor (POC, decks e docs técnicos)
+
+O [README.md](../README.md) na seção **“Para gestores e líderes de conformidade”** permanece em **linguagem executiva acessível** (por exemplo **farejando com critério** na metáfora da **sopa de dados**). **Não** é obrigatório usar os rótulos internos abaixo nesse bloco.
+
+Para **decks**, **apostilas de workshop** e **documentação técnica estruturada** de conformidade (esta página, [COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md](COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md), [GLOSSARY.pt_BR.md](GLOSSARY.pt_BR.md)), rótulos opcionais pareados — **Data Sniffing** (**passo de descoberta e amostragem**: conectores, leituras delimitadas, detecção de sensibilidade) e **Deep Boring** (**profundidade do artefato de relatório**: pastas Excel, alinhamento de **norm_tag**, **recommendation overrides**, heatmaps) — estabilizam o vocabulário. São **duas metades da mesma sessão**, não recursos concorrentes. Planos internos podem ainda dizer *“deep sniffing”* ou *“farejar mais”*; ao subir texto para **deck** ou **material técnico** para compras/DPO, você pode padronizar em **Data Sniffing** / **Deep Boring** conforme [GLOSSARY.pt_BR.md](GLOSSARY.pt_BR.md#1-identidade-do-produto-e-pano-de-dados) — **sem** tratar o pitch executivo do README como lugar para esses nomes.
+
 ## Regulamentações que já suportamos (embutidas e exemplos de config)
 
 **Embutidas (prontas para uso):** O detector e os relatórios referenciam explicitamente **LGPD** (Brasil), **GDPR** (UE), **CCPA** (Califórnia), **HIPAA** (saúde EUA) e **GLBA** (financeiro EUA). Os achados usam essas norm tags e textos de recomendação por padrão.

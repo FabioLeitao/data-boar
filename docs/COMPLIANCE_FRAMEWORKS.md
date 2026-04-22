@@ -6,6 +6,12 @@ The application helps DPO, security, and compliance teams discover and map perso
 
 **Português (Brasil):** [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md)
 
+### Engine vocabulary (POC decks and technical docs)
+
+The root [README](../README.md) **“For decision-makers”** section stays in **plain stakeholder language** (for example **sniffing with judgment** on the **data soup** metaphor). It does **not** require the internal deck labels below.
+
+For **slide banks, workshop handouts, and structured compliance technical docs** (this page, [COMPLIANCE_TECHNICAL_REFERENCE.md](COMPLIANCE_TECHNICAL_REFERENCE.md), [GLOSSARY.md](GLOSSARY.md)), optional paired labels **Data Sniffing** (the **discovery and sampling pass**: connectors, bounded reads, sensitivity detection) and **Deep Boring** (the **structured compliance-report depth**: Excel workbooks, **norm_tag** alignment, **recommendation overrides**, heatmaps) keep vocabulary stable. They are **two halves of one session**, not competing features. Internal plans may still say *“deep sniffing”* or *“sniffing harder”*; when you promote copy to **decks** or **technical** prose for procurement/DPO workshops, you may standardise on **Data Sniffing** / **Deep Boring** as defined in [GLOSSARY.md](GLOSSARY.md#1-product-identity--data-landscape)—without treating the README executive blurb as the place to introduce those names.
+
 ---
 
 ## Regulations we support today (built-in and config examples)
