@@ -55,6 +55,9 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0034  | [Outbound HTTP User-Agent — `DataBoar-Prospector/<version>`](0034-outbound-http-user-agent-data-boar-prospector.md) | Accepted |
 | 0035  | [README stakeholder pitch vs optional deck vocabulary](0035-readme-stakeholder-pitch-vs-deck-vocabulary.md) | Accepted |
 | 0036  | [Exception and log PII redaction pipeline](0036-exception-and-log-pii-redaction-pipeline.md) | Accepted |
+| 0037  | [Data Boar self-audit log and governance of the auditor](0037-data-boar-self-audit-log-governance.md) | Accepted |
+| 0038  | [Jurisdictional ambiguity — alert and inventory, do not decide law](0038-jurisdictional-ambiguity-alert-dont-decide.md) | Accepted |
+| 0039  | [Retention and evidence posture in bonded / customs-adjacent contexts](0039-retention-evidence-posture-bonded-customs-adjacent-contexts.md) | Accepted |
 
 ## Related docs
 

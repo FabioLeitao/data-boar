@@ -17,7 +17,7 @@ Raw cell values are **not** persisted in SQLite for findings in the default mode
 
 3. **Signal source:** Score from **concatenated metadata** for the session’s findings (column/table/file/path/pattern/norm_tag fields), not from stored PII payloads.
 
-4. **Documentation anchors:** Operator detail in **[USAGE.md](../USAGE.md)**; buyer/DPO ceiling in **[COMPLIANCE_AND_LEGAL.md](../COMPLIANCE_AND_LEGAL.md)**. **No** requirement for a separate **public** QA journal; optional **private** operator notes remain in gitignored `docs/private/` per **[PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)**.
+4. **Documentation anchors:** Operator detail in **[USAGE.md](../USAGE.md)**; buyer/DPO ceiling in **[COMPLIANCE_AND_LEGAL.md](../COMPLIANCE_AND_LEGAL.md)**; multinational **tension** narrative (not legal advice) in **[JURISDICTION_COLLISION_HANDLING.md](../JURISDICTION_COLLISION_HANDLING.md)** ([pt-BR](../JURISDICTION_COLLISION_HANDLING.pt_BR.md)) and **[ADR 0038](0038-jurisdictional-ambiguity-alert-dont-decide.md)**. **No** requirement for a separate **public** QA journal; optional **private** operator notes remain in gitignored `docs/private/` per **[PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)**.
 
 5. **Roadmap / pitch:** Mention as **evidence-supporting triage** for legal/compliance readers—not as a compliance guarantee—see repository **[README.md](../../README.md)** *Roadmap* and **Compliance and legal**.
 
@@ -29,5 +29,7 @@ Raw cell values are **not** persisted in SQLite for findings in the default mode
 ## References
 
 - [ADR 0025](0025-compliance-positioning-evidence-inventory-not-legal-conclusion-engine.md) — evidence and inventory, not legal-conclusion engine.
+- [ADR 0038](0038-jurisdictional-ambiguity-alert-dont-decide.md) — overlapping regimes: alert, do not decide applicable law.
 - [COMPLIANCE_AND_LEGAL.md](../COMPLIANCE_AND_LEGAL.md) — “What we surface”, “What we do not do”.
+- [JURISDICTION_COLLISION_HANDLING.md](../JURISDICTION_COLLISION_HANDLING.md) — DPO-facing narrative for multinational “perfect storms”.
 - [USAGE.md](../USAGE.md) — `report.jurisdiction_hints`, `--jurisdiction-hint`, API/dashboard opt-in.
