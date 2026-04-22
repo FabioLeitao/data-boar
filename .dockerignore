@@ -1,22 +1,16 @@
-# =============================================================================
-# Muralha de segurança — contexto Docker sem .git, sem árvore privada, sem
-# ficheiros de texto/log que possam carregar seeds ou ruído operacional.
-# O Dockerfile usa COPY requirements.txt na stage builder: manter exceção.
-# =============================================================================
+# --- Entradas obrigatorias (ticket / muralha) ---
+.git
 .git/
 docs/private/
-scripts/pii_history_guard.py
+docs/stacked_private_repo/
 *.txt
 !requirements.txt
 *.log
 
-# Tracked "copy-me" privado (ex.: PII_LOCAL_SEEDS.example.txt) — não entra na imagem
+# --- Contexto enxuto (sem isto, COPY . . herda .venv/tests e dispara tamanho ~GB) ---
+scripts/pii_history_guard.py
 docs/private.example/
 docs/private.example/**
-
-# --- Trims adicionais (tamanho / caches / segredos locais) ---
-.git
-.git/**
 .gitignore
 .github
 .venv
