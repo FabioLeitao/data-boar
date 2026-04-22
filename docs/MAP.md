@@ -91,3 +91,7 @@ Design history for minor detection lives in a **completed** plan file under `doc
 - **Glossary (terms by theme):** [GLOSSARY.md](GLOSSARY.md) ([pt-BR](GLOSSARY.pt_BR.md)).
 
 If a topic is missing from this map, add a row in **both** `MAP.md` and `MAP.pt_BR.md` in the same PR.
+
+## Keeping hubs aligned with repo truth
+
+**Plans sequencing and file inventory** are enforced by **`plans_hub_sync.py`** and **`plans-stats.py`** (see **CONTRIBUTING.md** and pre-commit). **This MAP** is curated: after you add or change hub rows, run **`.\scripts\check-all.ps1`** or **`.\scripts\lint-only.ps1`** when the diff is docs-only, and follow the **doc-hubs-plans-sync** Cursor skill (`.cursor/skills/doc-hubs-plans-sync/SKILL.md`) so **ADR index**, **AGENTS** last-ADR pointer, and **paired pt-BR** stay in sync.
