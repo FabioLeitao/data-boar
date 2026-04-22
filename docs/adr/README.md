@@ -58,6 +58,7 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0037  | [Data Boar self-audit log and governance of the auditor](0037-data-boar-self-audit-log-governance.md) | Accepted |
 | 0038  | [Jurisdictional ambiguity — alert and inventory, do not decide law](0038-jurisdictional-ambiguity-alert-dont-decide.md) | Accepted |
 | 0039  | [Retention and evidence posture in bonded / customs-adjacent contexts](0039-retention-evidence-posture-bonded-customs-adjacent-contexts.md) | Accepted |
+| 0040  | [Assistant default: private stack evidence mirrors without rhetorical asks](0040-assistant-private-stack-evidence-mirrors-default.md) | Accepted |
 
 ## Related docs
 

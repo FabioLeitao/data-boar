@@ -14,4 +14,6 @@ alwaysApply: true
 
 3. **CI / GitHub:** When the task is to **verify or close CI**, run **`gh run list`**, **`gh pr checks`**, or open logs — do not substitute with guesses.
 
-4. **Boundaries:** This does not override secrets/PII policy, tracked-vs-private rules, or safe stopping on real blockers (auth, merge conflicts, destructive ops without confirmation where policy requires it).
+4. **Private stack / evidence mirrors:** When the operator’s request clearly covers **alignment, drift check, hygiene, or sync** of **`docs/private/`** history, treat **all reachable non-public mirrors** (e.g. **`lab-*`** remotes **and** a **VeraCrypt bare** when present) as **in scope in the same pass** — see **`operator-evidence-backup-no-rhetorical-asks.mdc`** and **[ADR 0040](../../docs/adr/0040-assistant-private-stack-evidence-mirrors-default.md)**. **Do not** ask permission for backup steps whose answer is already implied.
+
+5. **Boundaries:** This does not override secrets/PII policy, tracked-vs-private rules, or safe stopping on real blockers (auth, merge conflicts, destructive ops without confirmation where policy requires it).

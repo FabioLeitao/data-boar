@@ -30,6 +30,7 @@ Esta página é a **fase B de consolidação**: o mesmo mapa **tema → primeiro
 | **Git empilhado em `docs/private/`** | [`PRIVATE_LOCAL_VERSIONING.md`](PRIVATE_LOCAL_VERSIONING.md) · mini-plano [`docs/private/ops/CURSOR_CONSOLIDATION_MINI_PLAN.pt_BR.md`](../private/ops/CURSOR_CONSOLIDATION_MINI_PLAN.pt_BR.md) |
 | **Risco / não destrutivo vs destrutivo** | Parágrafo **Risk posture** no [`AGENTS.md`](../../AGENTS.md) (logo abaixo da tabela Quick index) |
 | **Execução direta** (pedido claro de fechar — evitar confirmação redundante) | [`.cursor/rules/operator-direct-execution.mdc`](../../.cursor/rules/operator-direct-execution.mdc) |
+| **Histórico privado / espelhos de evidência** (conjunto completo de espelhos não-GitHub quando alinhar ou sync é óbvio) | [`.cursor/rules/operator-evidence-backup-no-rhetorical-asks.mdc`](../../.cursor/rules/operator-evidence-backup-no-rhetorical-asks.mdc) · [ADR 0040](../adr/0040-assistant-private-stack-evidence-mirrors-default.md) (EN) · [`PRIVATE_STACK_SYNC_RITUAL.md`](PRIVATE_STACK_SYNC_RITUAL.md) |
 | **Verdade em publicação** (sem inventar datas/fatos; **capturar permalinks** quando der) | [`.cursor/rules/publication-truthfulness-no-invented-facts.mdc`](../../.cursor/rules/publication-truthfulness-no-invented-facts.mdc) · [`docs/private/social_drafts/editorial/SOCIAL_HUB.md`](../private/social_drafts/editorial/SOCIAL_HUB.md) (*Política de data* + inventário) |
 
 ## Runbooks relacionados
