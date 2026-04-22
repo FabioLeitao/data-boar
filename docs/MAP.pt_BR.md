@@ -91,3 +91,7 @@ O histórico de desenho da detecção de menores está num plano **concluído** 
 - **Glossário (termos por tema):** [GLOSSARY.pt_BR.md](GLOSSARY.pt_BR.md) ([EN](GLOSSARY.md)).
 
 Se faltar um tema neste mapa, inclua uma linha em **MAP.md** e **MAP.pt_BR.md** no mesmo PR.
+
+## Manter hubs alinhados à verdade do repositório
+
+O **sequenciamento de planos** e o **inventário de arquivos de plano** são validados por **`plans_hub_sync.py`** e **`plans-stats.py`** (ver **CONTRIBUTING.md** e pre-commit). **Este MAP** é curado: depois de acrescentar ou alterar linhas do hub, corra **`.\scripts\check-all.ps1`** ou **`.\scripts\lint-only.ps1`** se o diff for só documentação, e siga a skill Cursor **doc-hubs-plans-sync** (`.cursor/skills/doc-hubs-plans-sync/SKILL.md`) para manter **índice de ADRs**, ponteiro de **último ADR** no **AGENTS.md** e **par pt-BR** sincronizados.
