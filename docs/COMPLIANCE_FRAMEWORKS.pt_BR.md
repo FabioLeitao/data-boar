@@ -26,6 +26,20 @@ Para **decks**, **apostilas de workshop** e **documentação técnica estruturad
 
 ---
 
+## Setor segurador no Brasil (ancoragem LGPD + referências prudenciais) {#setor-segurador-brasil-lgpd-referencias-prudenciais}
+
+**Não é aconselhamento jurídico.** Este trecho orienta leitores técnicos e de **conformidade** que atuam em **seguros privados** no Brasil (sociedades supervisionadas pela **SUSEP**, corretores e prestadores). **Não** substitui assessoria jurídica, orientações da **ANPD** ou prática perante o supervisor prudencial.
+
+**O que o produto faz aqui:** o Data Boar apoia **descoberta, amostragem e relatórios orientados a metadados** (incluindo texto configurável de **`norm_tag`**). **Não** certifica **conformidade** com a **LGPD**, com regras **SUSEP/CNSP**, com solvência, licenciamento ou qualquer resultado supervisionado.
+
+**LGPD como âncora principal de proteção de dados:** dados pessoais e sensíveis tratados em fluxos de seguro continuam sujeitos à **Lei Geral de Proteção de Dados**. Texto oficial: [Planalto — Lei nº 13.709/2018](https://www.planalto.gov.br/ccivil_03/leis/2018/l13709.htm). A **ANPD** publica orientações aplicáveis em setores cruzados: [gov.br — ANPD](https://www.gov.br/anpd/pt-br).
+
+**Camada prudencial e de conduta de mercado (setor, sem substituir a LGPD):** a **SUSEP** supervisiona os seguros privados no Brasil; o **CNSP** integra o arcabouço normativo com resoluções que as sociedades precisam operacionalizar **em conjunto** com a LGPD quando houver dados pessoais. Ponto de entrada oficial para instrumentos e comunicações: [gov.br — SUSEP](https://www.gov.br/susep/pt-br). **Circulares** e normas do **CNSP** aparecem nos canais oficiais de **legislação / normativos** do mesmo portal; use sempre o **texto consolidado atual** em **gov.br** antes de depender de qualquer link profundo.
+
+**Esqueleto YAML opcional:** para vocabulário **genérico** de colunas e documentos do **setor segurador** com strings de **`norm_tag`** orientadas a **inventário sob a LGPD** (ainda **sem** certificação regulatória), veja [compliance-sample-br_insurance_lgpd_anchor.yaml](compliance-samples/compliance-sample-br_insurance_lgpd_anchor.yaml) na tabela abaixo. Combine com o perfil completo **[compliance-sample-lgpd.yaml](compliance-samples/compliance-sample-lgpd.yaml)** quando precisar de cobertura de identificadores brasileiros (CPF, CNPJ, etc.).
+
+---
+
 ## Amostras de conformidade
 
 Arquivos de configuração de amostra para **UK GDPR**, **EU GDPR**, **Benelux**, **PIPEDA**, **POPIA**, **APPI**, **PCI-DSS**, **Rússia (152-FZ)** e frameworks regionais opcionais estão em [compliance-samples/](compliance-samples/). Cada arquivo é autocontido (regex overrides, termos ML, recommendation overrides) para você habilitar um framework apontando o config para esse arquivo e mesclando os overrides.
@@ -37,6 +51,7 @@ Lei, orientações de autoridade e o uso real de identificadores evoluem em muit
 | Regulamento / região            | Arquivo                                                                                                     | Finalidade                                                                                                                          |
 | --------------------            | -------                                                                                                     | ----------                                                                                                                          |
 | **LGPD (Brasil)**               | [compliance-sample-lgpd.yaml](compliance-samples/compliance-sample-lgpd.yaml)                               | Termos PT-BR + EN; regex RG/CEP; implantações brasileiras.                                                                          |
+| **Brasil (setor segurador — esqueleto inventário LGPD)** | [compliance-sample-br_insurance_lgpd_anchor.yaml](compliance-samples/compliance-sample-br_insurance_lgpd_anchor.yaml) | Léxico genérico de seguros + **`norm_tag`** ancorada em inventário LGPD; **não** é certificação SUSEP/CNSP (ver [subseção setor segurador](#setor-segurador-brasil-lgpd-referencias-prudenciais)). |
 | **UK GDPR**                     | [compliance-sample-uk_gdpr.yaml](compliance-samples/compliance-sample-uk_gdpr.yaml)                         | Pós-Brexit, ICO; norm_tag e recommendation overrides.                                                                               |
 | **EU GDPR (EEE)**               | [compliance-sample-eu_gdpr.yaml](compliance-samples/compliance-sample-eu_gdpr.yaml)                         | Regulamento 2016/679 Art. 4(1), EDPB, DPAs nacionais; EN + DE/FR opcionais.                                                         |
 | **Benelux (BE, NL, LU)**        | [compliance-sample-benelux.yaml](compliance-samples/compliance-sample-benelux.yaml)                         | Base EU GDPR + IDs nacionais (BSN, NISS, LU); overrides DPA nacionais; EN + NL/FR.                                                  |
