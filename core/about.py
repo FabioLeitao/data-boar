@@ -11,7 +11,7 @@ def _package_version() -> str:
 
         return version("data-boar")
     except Exception:
-        return "1.7.2+safe"
+        return "1.7.3-beta"
 
 
 def get_http_user_agent() -> str:

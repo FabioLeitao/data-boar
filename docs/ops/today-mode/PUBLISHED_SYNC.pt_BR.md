@@ -11,7 +11,7 @@
 | Campo | Valor |
 | ----- | ----- |
 | **Verificado** | **2026-04-22** |
-| **`pyproject.toml` em `main`** | **1.7.2+safe** (golden / tag **v1.7.2-safe**; próximo pré-release segue [VERSIONING.md](../VERSIONING.md)) |
+| **`pyproject.toml` em `main`** | **1.7.3-beta** (trabalho; **publicado** golden = **1.7.2+safe** / tag **`v1.7.2-safe`** conforme [VERSIONING.md](../VERSIONING.md)) |
 | **GitHub Release Latest** | [**v1.7.2-safe**](https://github.com/FabioLeitao/data-boar/releases/tag/v1.7.2-safe) (notas: **`docs/releases/1.7.2-safe.md`**, **`CHANGELOG.md`**) |
 | **Docker Hub** | **`fabioleitao/data_boar:v1.7.2-safe`** + **`latest`** (mesmo digest) — `sha256:8cb0d3ff549b46d2bbb519874790a8a43531b7da8b6801601f87ff0e1965cf95`; **descrição longa** de **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** |
 | **Próxima versão pública** (quando `main` tiver bundle novo) | **1.7.2** — seguir **`docs/VERSIONING.md`** + **`docs/releases/`** |
