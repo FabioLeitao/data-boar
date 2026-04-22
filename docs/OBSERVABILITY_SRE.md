@@ -75,6 +75,10 @@ SRE focuses on **reliability**, **toil reduction**, **error budgets**, and **ope
 
 **Recommendation:** Document your chosen SLO and how you measure it (e.g. “Health check 99.9% over 30 days”). Add a short “Operations” or “Runbooks” section to [docs/deploy/DEPLOY.md](deploy/DEPLOY.md) or keep pointers here so operators know where to look when something fails.
 
+### Governance of the auditor
+
+SRE framing: **who watches the watcher** — the scanner must be **audit-defensible**, not only the data it inspects. **[ADR 0037](adr/0037-data-boar-self-audit-log-governance.md)** records the **2026 baseline** (session attribution in SQLite, export audit trail, wipe log, notification send log, host logs with redaction) and **explicit gaps** (no immutable per-report download log or per-config POST row by default). Use it for honest **CISO / procurement** narratives and for [MAP.md](MAP.md) navigation.
+
 ---
 
 ## 5. What to add next (additive only)

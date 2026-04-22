@@ -2,6 +2,10 @@
 
 Branding images (colored and black & white, with white or transparent backgrounds). Used in the web app, README, and documentation. Assets live in **api/static/mascot/**.
 
+## Brand narrative: minors and the boar metaphor
+
+The **boar** stands for stubborn, deep search in messy “data soup.” That same metaphor maps to **child- and minor-related inventory**: the application elevates **possible minor** signals with dedicated detection and report language (not a buried checkbox next to generic PII), so governance teams see those rows **early**—aligned with LGPD Art. 14 / GDPR Art. 8-style urgency, without pretending to verify parental consent in software. Mascot surfaces (README hero, dashboard headers, Excel **Report info**) stay consistent with that positioning; technical limits live in [MINOR_DETECTION.md](MINOR_DETECTION.md) ([pt-BR](MINOR_DETECTION.pt_BR.md)).
+
 ## Copyright and license
 
 The Data Boar mascot assets in `api/static/mascot/` are **original artwork** created for this project (or commissioned with full rights assigned to the project). They are **copyright-safe** for use as the application logo and branding: no third-party clip art or unlicensed stock art is used. The assets are part of the repository and are covered by the same **BSD 3-Clause License** as the rest of the project (see the root [LICENSE](../LICENSE)). You may use, modify, and redistribute them in accordance with that license when distributing or deriving from this project.

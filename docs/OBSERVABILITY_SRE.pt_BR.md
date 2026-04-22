@@ -75,6 +75,10 @@ SRE foca em **confiabilidade**, **redução de toil**, **error budgets** e **ope
 
 **Recomendação:** Documente seu SLO escolhido e como você o mede (ex.: “Health check 99,9% em 30 dias”). Adicione uma seção curta “Operations” ou “Runbooks” em [docs/deploy/DEPLOY.md](deploy/DEPLOY.md) ou mantenha ponteiros aqui para o operador saber onde procurar quando algo falhar.
 
+### Governança do auditor
+
+Enquadramento SRE: **quem vigia o vigilante** — o scanner precisa ser **defensável em auditoria**, não só os dados que ele inspeciona. O **[ADR 0037](adr/0037-data-boar-self-audit-log-governance.md)** (inglês) registra a **linha de base 2026** (atribuição de sessão no SQLite, export audit trail, log de wipe, log de envio de notificação, logs no host com redação) e as **lacunas explícitas** (sem log imutável por download de relatório ou por cada POST de config por padrão). Use-o em narrativas honestas para **CISO / procurement** e no [MAP.pt_BR.md](MAP.pt_BR.md).
+
 ---
 
 ## 5. O que adicionar em seguida (apenas aditivo)

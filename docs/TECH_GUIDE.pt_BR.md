@@ -610,7 +610,7 @@ A aplicação referencia explicitamente **LGPD**, **GDPR**, **CCPA**, **HIPAA** 
 
 ## Mapa de tópicos (guias periféricos)
 
-Para trilhas de **CISO / DPO / arquiteto** que ligam postura a config concreta (menores, *jurisdiction hints*, amostras EUA sobre menores, posicionamento FELCA), use **[MAP.pt_BR.md](MAP.pt_BR.md)** ([EN](MAP.md)) em vez de vasculhar pasta a pasta. Ali estão **[MINOR_DETECTION.pt_BR.md](MINOR_DETECTION.pt_BR.md)** ([EN](MINOR_DETECTION.md)), a parte de **jurisdiction hints** em **[USAGE.pt_BR.md](USAGE.pt_BR.md)** ([EN](USAGE.md)), o **[ADR 0026](adr/0026-optional-jurisdiction-hints-dpo-facing-heuristic-metadata-only.md)** e as linhas relevantes de **COMPLIANCE_FRAMEWORKS** / **compliance-samples** num só lugar.
+Para trilhas de **CISO / DPO / arquiteto** que ligam postura a config concreta (menores, *jurisdiction hints*, amostras EUA sobre menores, posicionamento FELCA), use **[MAP.pt_BR.md](MAP.pt_BR.md)** ([EN](MAP.md)) em vez de vasculhar pasta a pasta. Ali estão **[MINOR_DETECTION.pt_BR.md](MINOR_DETECTION.pt_BR.md)** ([EN](MINOR_DETECTION.md)), a parte de **jurisdiction hints** em **[USAGE.pt_BR.md](USAGE.pt_BR.md)** ([EN](USAGE.md)), o **[ADR 0026](adr/0026-optional-jurisdiction-hints-dpo-facing-heuristic-metadata-only.md)**, **[JURISDICTION_COLLISION_HANDLING.pt_BR.md](JURISDICTION_COLLISION_HANDLING.pt_BR.md)** ([EN](JURISDICTION_COLLISION_HANDLING.md)), o **[ADR 0038](adr/0038-jurisdictional-ambiguity-alert-dont-decide.md)** e as linhas relevantes de **COMPLIANCE_FRAMEWORKS** / **compliance-samples** num só lugar.
 
 ## Licença e direitos autorais
 

@@ -610,7 +610,7 @@ The application explicitly references **LGPD**, **GDPR**, **CCPA**, **HIPAA**, a
 
 ## Topic map (peripheral guides)
 
-For **CISO / DPO / architect** paths that tie posture to concrete config (minors, jurisdiction hints, U.S. child-privacy samples, FELCA positioning), use **[MAP.md](MAP.md)** ([pt-BR](MAP.pt_BR.md)) instead of searching folder-by-folder. It links **[MINOR_DETECTION.md](MINOR_DETECTION.md)** ([pt-BR](MINOR_DETECTION.pt_BR.md)), the **jurisdiction hints** section of **[USAGE.md](USAGE.md)** ([pt-BR](USAGE.pt_BR.md)), **[ADR 0026](adr/0026-optional-jurisdiction-hints-dpo-facing-heuristic-metadata-only.md)**, and the relevant **COMPLIANCE_FRAMEWORKS** / **compliance-samples** rows in one place.
+For **CISO / DPO / architect** paths that tie posture to concrete config (minors, jurisdiction hints, U.S. child-privacy samples, FELCA positioning), use **[MAP.md](MAP.md)** ([pt-BR](MAP.pt_BR.md)) instead of searching folder-by-folder. It links **[MINOR_DETECTION.md](MINOR_DETECTION.md)** ([pt-BR](MINOR_DETECTION.pt_BR.md)), the **jurisdiction hints** section of **[USAGE.md](USAGE.md)** ([pt-BR](USAGE.pt_BR.md)), **[ADR 0026](adr/0026-optional-jurisdiction-hints-dpo-facing-heuristic-metadata-only.md)**, **[JURISDICTION_COLLISION_HANDLING.md](JURISDICTION_COLLISION_HANDLING.md)** ([pt-BR](JURISDICTION_COLLISION_HANDLING.pt_BR.md)), **[ADR 0038](adr/0038-jurisdictional-ambiguity-alert-dont-decide.md)**, and the relevant **COMPLIANCE_FRAMEWORKS** / **compliance-samples** rows in one place.
 
 ## License and copyright
 
