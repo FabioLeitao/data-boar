@@ -11,6 +11,7 @@ alwaysApply: true
 2. Se a sessão estiver **fria**: **tentar primeiro** autenticação com **Google / SSO** no próprio site (ex.: "Continuar com Google"), alinhado à conta do operador.
 3. Se SSO falhar, houver captcha, ou o site bloquear automação: **pedir ao operador** para fazer login manual **uma vez** ou deixar um separador **warm** para o próximo turno — **não** desistir na primeira sem tentar SSO.
 4. **Nunca** pedir password em chat; **nunca** assumir que gitignore de `docs/private/` impede browser (são caminhos diferentes).
+5. **Docker Hub, GitHub (UI web), e outros painéis do operador** (ex.: **Repository → General → Edit**, **Tags**, páginas que aceitam **Continuar com Google**): **mesma política** que nas redes — o operador **já concedeu** uso do **`cursor-ide-browser`** + **SSO Google** quando faz sentido para a tarefa. **Proibido** perguntar “posso autenticar?” / “tens permissão para abrir o Hub no browser?” **antes** de **`browser_navigate` + `browser_snapshot`** (e, se necessário, clicar **Continue with Google**). Isso evita **toil** de confirmações cujo default operador **já fixou**. Só escalar **depois** de tentar, com **um** resumo curto (login wall, captcha, ref MCP stale).
 
 ## Autenticação em sites de terceiros
 
