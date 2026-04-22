@@ -1,6 +1,6 @@
 ---
 description: Lab completão — wrappers + -Privileged + narrow sudoers; L-series protection; token-aware automation reuse; document timeouts, latency, FP/FN vs synthetic, real-path confidence; doc+code capability matrix; SSH from dev PC.
-globs: scripts/lab-completao*.ps1,scripts/lab-completao*.sh,docs/ops/LAB_COMPLETAO_RUNBOOK.md,docs/ops/LAB_SMOKE_MULTI_HOST.md
+globs: scripts/lab-completao*.ps1,scripts/lab-completao*.sh,scripts/stack-db.yml,docs/ops/LAB_COMPLETAO_RUNBOOK.md,docs/ops/LAB_SMOKE_MULTI_HOST.md
 alwaysApply: true
 ---
 
@@ -108,9 +108,19 @@ When the operator asks for **completão** to **learn what the product actually d
 
 1. **Feed improvements:** Turn recurring signals into **`PLANS_TODO.md`** rows or **GitHub issues** (product), or **script**/**runbook** edits (workflow) — **link** the private session date when triaging.
 
+## Heterogeneous lab runtime (Docker, Podman, Swarm) + strict agent rules (v1.7.3)
+
+1. **Config isolation (Rule 1):** Never commit a tracked **`config.yaml`** (or equivalent) that embeds **real operator paths** or other environment-specific secrets. Use **`.example`** suffixes, **private** gitignored copies, or **ephemeral** files generated under **`/tmp/`** on lab hosts (see **`scripts/lab-completao-orchestrate-hybrid-v173.ps1`** deploying **`/tmp/config_databoar.yaml`** via **`scp`**).
+
+1. **Heuristic validation (Rule 2):** When interpreting scan output rooted at **`/home/leitao/documents`** (Latitude lyrics / sheet-music corpus), the assistant must **explicitly** state whether a **Heuristic Miss** occurred: chord charts or lyrics lines mistaken for **PII** by high heuristics, and how that affects confidence in the run.
+
+1. **T14 context (Rule 3):** When the active context is host **T14** (Podman-first lab laptop), **do not** propose or run bare-metal **`python`**, **`pip`**, or **`uv`** for Data Boar work; use **Podman** (container image / `podman run`) per operator policy for that host class.
+
+1. **Swarm synthetic DB stack:** **`scripts/stack-db.yml`** defines **`postgres:15-alpine`** and **`mariadb:10.11`** on an **`overlay`** network (**`databoar-net`**) for **Docker Swarm** on Latitude-style managers — deploy with **`docker stack deploy`** (not a substitute for manifest-driven **`lab-completao-orchestrate.ps1`** defaults).
+
 ## Related rules
 
-- **`homelab-ssh-via-terminal.mdc`** — TTY vs SSH, `P:`, private `AGENT_LAB_ACCESS.md`.
+- **`homelab-ssh-via-terminal.mdc`** — TTY vs SSH, `P:`, private **`AGENT_LAB_ACCESS.md`**.
 - **`operator-direct-execution.mdc`** — execute agreed completão without **idle** confirmation loops.
 - **`agent-autonomous-merge-and-lab-ops.mdc`** — when to run **`lab-op-sync-and-collect.ps1`** vs completão.
 - **`docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`** — non-destructive posture for the **primary** dev PC.

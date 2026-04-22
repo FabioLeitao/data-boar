@@ -1,5 +1,12 @@
 # Completão no lab — brief para agente Cursor novo (copy-paste)
 
+### 🧠 REGRAS DE OURO PARA O AGENTE (v1.7.3)
+
+- **Zero Drift de Config:** Gere arquivos `config.yaml` efêmeros em `/tmp/` para cada nó, baseando-se estritamente em **`docs/TECH_GUIDE.md`** (referência técnica canônica no repo; não inventar chaves).
+- **Sudo Warmth:** Utilize a sessão `tmux` chamada **`completao`**, que já possui `sudo -v` ativo em todos os nós em que esse fluxo se aplica.
+- **T14 Restriction:** No host **T14**, não tente usar `python` ou `uv`. Use estritamente **`podman run`** para o runtime do produto.
+- **Data Soups:** No **Latitude**, suba a stack de bancos via **Swarm** antes de iniciar os scans de DB.
+
 **English:** [LAB_COMPLETAO_FRESH_AGENT_BRIEF.md](LAB_COMPLETAO_FRESH_AGENT_BRIEF.md)
 
 **Quando usar:** Quando você abre um **chat novo** **sem contexto** e **quer** que o assistente **execute** o **completão** como nos **contratos** do repo (`lab-completao-workflow.mdc`, `LAB_COMPLETAO_RUNBOOK.md`).

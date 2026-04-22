@@ -1,5 +1,12 @@
 # Lab completão — brief for a fresh Cursor agent (copy-paste)
 
+### 🧠 GOLDEN RULES FOR THE AGENT (v1.7.3)
+
+- **Zero config drift:** Generate ephemeral `config.yaml` files under **`/tmp/`** on each node, based strictly on **`docs/TECH_GUIDE.md`** (canonical technical reference; do not invent keys).
+- **Sudo warmth:** Use the **`tmux`** session named **`completao`**, which already has **`sudo -v`** warmed on all nodes where that workflow applies.
+- **T14 restriction:** On host **T14**, do **not** rely on host **`python`** or **`uv`** — use **`podman run`** only for the product runtime.
+- **Data soups:** On **Latitude**, bring up the **Swarm** DB stack **before** starting DB-target scans.
+
 **Português (Brasil):** [LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md](LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md)
 
 **Use when:** You open a **new chat** with **no prior context** and want the assistant to run **completão** the same way as the **repo contracts** (`lab-completao-workflow.mdc`, `LAB_COMPLETAO_RUNBOOK.md`).
