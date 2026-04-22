@@ -1,6 +1,6 @@
 ﻿# Plan: Additional "data soup" formats and rich media
 
-**Status:** Tier 3 **metadata + subtitles + magic-byte cloaking** — **merged to `main` when shipped** (see [PLANS_TODO.md](PLANS_TODO.md) **Integration / WIP** until then); **Tier 1** (`.epub`, `.parquet`/`.orc`/`.feather` via optional PyArrow, `.avro`, `.dbf`) and **stego hints** (`file_scan.scan_for_stego`, `--scan-stego`, dashboard) are **implemented** on `main` (optional `[dataformats]` extra for columnar/legacy binary types).
+**Status:** Tier 3 **metadata + subtitles + magic-byte cloaking** — **merged to `main` when shipped** (see [PLANS_TODO.md](PLANS_TODO.md) **Integration / active threads** until then); **Tier 1** (`.epub`, `.parquet`/`.orc`/`.feather` via optional PyArrow, `.avro`, `.dbf`) and **stego hints** (`file_scan.scan_for_stego`, `--scan-stego`, dashboard) are **implemented** on `main` (optional `[dataformats]` extra for columnar/legacy binary types).
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md)
 
 **Related plans:** [PLAN_COMPRESSED_FILES.md](completed/PLAN_COMPRESSED_FILES.md) (scan inside archives), [PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md](completed/PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md) (magic-byte/cloaking), [PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md](PLAN_CONTENT_TYPE_AND_CLOAKING_DETECTION.md#steganography-future--optional) (steganography as future phase).
@@ -12,6 +12,8 @@ This plan catalogues **additional file formats** that are often present in produ
 ## Narrative: hidden, cloaked, legacy, long-forgotten ingredients
 
 Production “soup” is not only obvious `.csv` and `.pdf` trees. It includes **misleading extensions** (cloaking), **legacy** stacks and one-off exports, **shares and paths nobody owns on paper**, and ingredients that were **never documented** at all. **Sniffing harder** means stacking **bounded** techniques—each with its own cost and opt-in—rather than one magic toggle:
+
+> **Doc alignment:** informal “sniff harder” / “deep sniffing” in this plan maps to the optional deck/technical label **Data Sniffing** (discovery motor); **Deep Boring** names the structured Excel / recommendation side—see [GLOSSARY.md](../GLOSSARY.md#1-product-identity--data-landscape) and [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md#engine-vocabulary-poc-decks-and-technical-docs). The root [README](../README.md) **decision-maker** pitch stays in plain language (**sniffing with judgment** / **farejando com critério**) and does **not** require those names.
 
 | Signal | Direction in this repo |
 | ------ | ------------------------ |

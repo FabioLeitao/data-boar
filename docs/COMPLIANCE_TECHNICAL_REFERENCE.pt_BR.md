@@ -6,6 +6,8 @@
 
 Aqui ficam detalhes que não pertencem ao resumo jurídico: validação, codificações, limites de API, timeouts e onde automatizar varreduras.
 
+**Vocabulário de POC (uso em material técnico / deck):** **Data Sniffing** nomeia o passo de descoberta e amostragem; **Deep Boring** nomeia a profundidade do Excel / relatório estruturado — veja [GLOSSARY.pt_BR.md](GLOSSARY.pt_BR.md#1-identidade-do-produto-e-pano-de-dados) e [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md#vocabulário-do-motor-poc-decks-e-docs-técnicos). O [README.md](../README.md) na parte para gestores permanece em linguagem mais direta e **não** exige esses rótulos.
+
 ---
 
 ## Controles de segurança que sustentam programas de conformidade

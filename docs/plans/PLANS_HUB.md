@@ -33,7 +33,7 @@ Then commit the updated hub. **CI / pre-commit** runs `python scripts/plans_hub_
 | [PYTHON_UPGRADE_PLAYBOOK.md](PYTHON_UPGRADE_PLAYBOOK.md)               | Runtime upgrade sequencing (EN; pt-BR companion available).                                                              |
 | [completed/NEXT_STEPS.md](completed/NEXT_STEPS.md)                     | Archived implementation checklist pointer (not a `PLAN_` file).                                                          |
 
-**WIP narrative (non-binding):** The **data soup** metaphor includes a doc-only **Narrative** on *hidden / cloaked / legacy / forgotten* ingredients and **stacked, opt-in** discovery paths in [PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md](PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md). For execution status and the same caveat (**not** a legal promise), see [PLANS_TODO.md](PLANS_TODO.md) → **Integration / WIP**.
+**Positioning narrative (non-binding):** The **data soup** metaphor includes a doc-only **Narrative** on *hidden / cloaked / legacy / forgotten* ingredients and **stacked, opt-in** discovery paths in [PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md](PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md). For execution status and the same caveat (**not** a legal promise), see [PLANS_TODO.md](PLANS_TODO.md) → **Integration / active threads**.
 
 ---
 
@@ -45,7 +45,7 @@ Do **not** edit the table manually; refresh with `python scripts/plans_hub_sync.
 | Status | Document | Title | Summary | Related plans |
 | ------ | -------- | ----- | ------- | -------------- |
 | **Open** | [PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md](PLAN_ADDITIONAL_DATA_SOUP_FORMATS.md) | Untitled | — | — |
-| **Open** | [PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md](PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md) | Plan: Additional detection techniques and false-negative reduction | **Status:** In progress (priorities 1–3 implemented; priority 4 ongoing: `connector_format_id_hint` + `FORMAT_LENGTH_HINT_ID` / `FORMAT_TYPE_HINT_ID_INT` / `FORMAT_LENGTH_HINT_EMAIL` (email lengths include 128/191/256 am | — |
+| **Open** | [PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md](PLAN_ADDITIONAL_DETECTION_TECHNIQUES_AND_FN_REDUCTION.md) | Plan: Additional detection techniques and false-negative reduction | POC detection baseline on main (priorities 1-5 shipped); priorities 6+ (aggregated modes, dictionaries, NER) stay optional backlog. | — |
 | **Open** | [PLAN_BANDIT_SECURITY_LINTER.md](PLAN_BANDIT_SECURITY_LINTER.md) | Plan: Bandit (Python security linter) | **Status:** Phase 1–2 done (dev dependency, `pyproject` config, optional CI gate **medium+**). **Phase 3** = tighten skips / per-line `# nosec`, expand paths, or fail on **low** when triaged. | — |
 | **Open** | [PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md](PLAN_BUILD_IDENTITY_RELEASE_INTEGRITY.md) | Plan: Build identity, runtime version display, and release integrity | **Status:** Not started **Related:** [PLAN_SELF_UPGRADE_AND_VERSION_CHECK.md](PLAN_SELF_UPGRADE_AND_VERSION_CHECK.md) (remote “latest” vs current; upgrade paths) | — |
 | **Open** | [PLAN_CNPJ_ALPHANUMERIC_FORMAT_VALIDATION.md](PLAN_CNPJ_ALPHANUMERIC_FORMAT_VALIDATION.md) | Plan: CNPJ alphanumeric format – understanding, validation, and compatibility | **Status:** Phase 4 done; Phase 5 (checksum validation) future. Phases 1–4 complete. | — |

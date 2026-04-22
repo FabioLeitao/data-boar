@@ -3,7 +3,7 @@
 **Status:** Active — cycle **2026-04-21 → 2026-05-04** (replace dates when you start the next wall-clock window)
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md)
 
-**Previous template cycles:** Earlier uses of this file without a dated closure are **superseded** by the [Integration / WIP](PLANS_TODO.md) narrative (S0 closed, **S1 – Lab proof** selected). Close each cycle with: green `main`, explicit carryover rows, and one release or demo note if you shipped user-visible slices.
+**Previous template cycles:** Earlier uses of this file without a dated closure are **superseded** by the [Integration / active threads](PLANS_TODO.md) narrative (S0 closed, **S1 – Lab proof** selected). Close each cycle with: green `main`, explicit carryover rows, and one release or demo note if you shipped user-visible slices.
 
 ### This cycle — focus (2026-04-21 → 2026-05-04)
 

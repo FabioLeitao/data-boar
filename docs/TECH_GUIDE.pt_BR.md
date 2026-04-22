@@ -320,6 +320,8 @@ Você pode varrer APIs HTTP(S) remotas em busca de dados pessoais ou sensíveis 
 
 **Obrigatório:** `name`, `base_url` (ou `url`). **Opcional:** `paths` ou `endpoints` (lista de paths, ex.: `["/users", "/orders"]`), `discover_url` (GET retorna lista de paths a varrer), `timeout`, `headers` e um bloco `auth`.
 
+**User-Agent HTTP(S) padrão de saída:** clientes de descoberta enviam **`DataBoar-Prospector/<versão>`** (mesma versão resolvida do pacote `data-boar` instalado — `core.about.get_http_user_agent()`). Use essa string em logs de WAF ou API gateway no destino para identificar o produto. Se o fornecedor exigir outro valor, defina **`User-Agent`** (chave case-insensitive) em `headers` no alvo; isso **substitui** o padrão em REST/API. Conectores SharePoint, Power BI e Dataverse aplicam o mesmo padrão. Veja [ADR 0034](adr/0034-outbound-http-user-agent-data-boar-prospector.md) (texto canônico em inglês).
+
 ### Tipos de auth
 
 | Tipo              | Caso de uso                                                            | Config                                                                                                                                                      |
