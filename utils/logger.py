@@ -6,7 +6,7 @@ import logging
 from datetime import datetime, timezone
 from typing import Any
 
-from core.validation import redact_secrets_for_log
+from core.validation import sanitize_log_text
 from utils.audit_log_display import sanitize_target_name_for_audit_log
 
 _LOGGER: logging.Logger | None = None
@@ -39,7 +39,7 @@ def setup_live_logger() -> logging.Logger:
 def log_connection(target_name: str, target_type: str, location: str) -> None:
     """Log successful connection to a database or path."""
     safe_name = sanitize_target_name_for_audit_log(target_name, default="target")
-    safe_loc = redact_secrets_for_log(location)
+    safe_loc = sanitize_log_text(location)
     get_logger().info("Connected: %s (%s) at %s", safe_name, target_type, safe_loc)
 
 
@@ -53,7 +53,7 @@ def log_finding(
     """Log a finding (possible violation). Also notifies operator on console."""
     logger = get_logger()
     safe_name = sanitize_target_name_for_audit_log(target_name, default="target")
-    safe_loc = redact_secrets_for_log(location)
+    safe_loc = sanitize_log_text(location)
     logger.warning(
         "Finding: %s | %s | %s | %s | %s",
         source_type,

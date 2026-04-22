@@ -467,6 +467,33 @@ def test_get_session_scan_summary_for_notification(tmp_path):
     assert s["status"] == "completed"
 
 
+def test_save_failure_persists_sanitized_details_no_raw_pii(tmp_path):
+    """scan_failures.details must not store raw CPF, emails, or URL passwords (SQLite audit)."""
+    from sqlalchemy import text
+
+    dbp = tmp_path / "scan_fail_redact.db"
+    mgr = LocalDBManager(str(dbp))
+    sid = "sess-redact-1"
+    mgr.set_current_session_id(sid)
+    mgr.create_session_record(sid, tenant_name="ACME", technician_name="op")
+    raw = (
+        "DriverException: row operator@client.com CPF 529.982.247-25 "
+        "postgresql://app:SuperSecret@db:5432/internals"
+    )
+    mgr.save_failure("target-a", "error", raw)
+    with mgr.engine.connect() as conn:
+        row = conn.execute(
+            text("SELECT details FROM scan_failures WHERE session_id=:sid"),
+            {"sid": sid},
+        ).fetchone()
+    assert row and row[0]
+    stored = row[0]
+    assert "529.982.247-25" not in stored
+    assert "operator@client.com" not in stored
+    assert "SuperSecret" not in stored
+    assert "***REDACTED***" in stored
+
+
 def test_notification_send_log_table(tmp_path):
     """notification_send_log is created and record_notification_send_log is append-only."""
     from sqlalchemy import text

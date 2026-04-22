@@ -21,7 +21,7 @@ This plan describes **technical capability** (config + optional consulting). It 
 | Broader health/clinical lexicon | `ml_patterns_file` / `dl_patterns_file`, inline `sensitivity_detection.*_terms`, [sensitivity_terms_sensitive_categories.example.yaml](../sensitivity_terms_sensitive_categories.example.yaml) | Additive; tune per tenant. |
 | PCI-style card data | Built-in patterns + [compliance-sample-pci_dss.yaml](../compliance-samples/compliance-sample-pci_dss.yaml) | Already documented. |
 | IP-ish column/content hints | ML/DL terms + optional narrow `regex` overrides | Expect false positives; scope with consulting. |
-| Secrets / tokens in **scanned data** | `regex_overrides` (e.g. JWT, AWS key shapes, PEM headers) + ML terms (“api_key”, “client_secret”) | Distinct from `redact_secrets_for_log` in `core/validation.py` (logging hygiene only). |
+| Secrets / tokens in **scanned data** | `regex_overrides` (e.g. JWT, AWS key shapes, PEM headers) + ML terms (“api_key”, “client_secret”) | Distinct from `sanitize_log_text` / `redact_secrets_for_log` in `core/validation.py` (logging and SQLite failure-row hygiene only). |
 | Report language | `report.recommendation_overrides` | Align wording to internal policy without forking code. |
 
 ## Professional services fit

@@ -1586,11 +1586,13 @@ async def config_save(request: Request, locale_slug: LocaleSlug):
         _merge_and_save_config_yaml(yaml_content)
         return RedirectResponse(url=f"/{ls}/config?saved=1", status_code=303)
     except ValueError as e:
+        from core.validation import clean_error
+
         ve_ctx = {
             "config_path": _get_config_path(),
             "config_yaml": yaml_content,
             "config_saved": False,
-            "config_save_error": str(e),
+            "config_save_error": clean_error(e),
         }
         ve_ctx.update(csrf_context_for_request(request))
         return templates.TemplateResponse(
