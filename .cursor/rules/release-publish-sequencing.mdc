@@ -33,7 +33,7 @@ Do **not** claim a version is **published** until **all** relevant steps for **t
    3. **Smoke on Docker Desktop (mandatory before `docker push` to Hub):** Run at least one **`docker run --rm`** against the local image (e.g. **`data_boar:lab`**) — e.g. `python main.py --version` / `--help` or **`/health`** per **`docs/DOCKER_SETUP.md`** §7. **Do not** push **`:X.Y.Z`** / **`:latest`** to **Docker Hub** if smoke fails. Saying “published” without a smoke run on the **same** machine used to push is an **incomplete** ritual unless the operator explicitly waives (CI-only build).
    4. **Push:** `docker login` + push **`fabioleitao/data_boar:X.Y.Z`** and **`latest`** per **`docs/ops/DOCKER_IMAGE_RELEASE_ORDER.md`** / **`docker-hub-publish.ps1`** when present.
    5. **Prune (same workstation):** **`.\scripts\docker-prune-local.ps1 -WhatIf`** then without **`-WhatIf`** — avoids **dozens** of stale **`data_boar:*`** tags cluttering Docker Desktop; align with **`docs/ops/BRANCH_AND_DOCKER_CLEANUP.md`** §4. Optional: `docker image prune -f` / `docker builder prune -f` when disk is tight — **confirm** with operator before aggressive prunes.
-   6. **Hub repository page:** Paste **Short + Full** from **`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`** (replace **entire** Full description). **Stable** releases only for this marketing refresh; **`-beta`** / **`-rc`** do not require Hub page text updates unless asked.
+   6. **Hub repository page:** Paste **Short + Full** from **`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`** (replace **entire** Full description). **Stable** releases only for this marketing refresh; **`-beta`** / **`-rc`** do not require Hub page text updates unless asked. **Same-session rule:** If you **push** any **customer-pullable** tag (including hygiene tags like **`v1.7.2-safe`**) or **delete** Hub tags, refresh Hub copy **in that session** so **Supported tags** / example **`docker tag`** lines match the **Tags** tab — never leave the overview citing **removed** tags (e.g. old **1.6.x**).
 6. **Reconciliation:** **`docs/ops/today-mode/PUBLISHED_SYNC.md`** (+ **`.pt_BR.md`**) aligned with **published** semver, Hub tags, and **`pyproject.toml` on `main`** (often **pre-release** after step 7).
 
 **Only after** the operator (or automation with credentials) has completed the publish steps they care about:
@@ -49,6 +49,7 @@ Do **not** claim a version is **published** until **all** relevant steps for **t
 - **Do not** tag **`vX.Y.Z`** on a commit whose **`pyproject.toml`** already says **`beta`** for the **next** line of work.
 - **Do not** treat **Docker Hub push** as complete for a **stable** release **without** a **local smoke** on the operator **Docker Desktop** (or an explicit waiver, e.g. CI-only image) — see step **5.3**.
 - **Do not** omit **prune** guidance after publish when many **`data_boar:*`** / **`fabioleitao/data_boar:*`** tags accumulate — use **`.\scripts\docker-prune-local.ps1`** per **`scripts/docker/README.md`**.
+- **Do not** finish a Hub **push** or **tag cleanup** without updating **Docker Hub → Repository → General → Full description** when the old text still lists **tags that no longer exist** on Hub — that confuses pullers more than a missing paragraph.
 
 ---
 
