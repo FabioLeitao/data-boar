@@ -6,7 +6,7 @@ All scripts assume the **repository root** is the parent of `scripts/` (run them
 
 | Script                                                                 | Purpose                                                                                                                                             |
 | ------                                                                 | -------                                                                                                                                             |
-| [../docker-hub-pull.ps1](../docker-hub-pull.ps1)                       | `docker pull` **fabioleitao/data_boar:latest**, **:\<semver from pyproject.toml\>**, and **previous patch** (e.g. 1.7.1 → 1.7.0) for cache and A/B. |
+| [../docker-hub-pull.ps1](../docker-hub-pull.ps1)                       | `docker pull` **fabioleitao/data_boar:latest**, **:\<semver from pyproject.toml\>**, and **previous patch** (e.g. 1.7.2+safe → 1.7.1) for cache and A/B. |
 | [../docker-lab-build.ps1](../docker-lab-build.ps1)                     | `docker build -t data_boar:lab`; optionally re-tags old **lab** → **lab-prev** before rebuild; optional **-TagSmoke** for A/B.                      |
 | [../docker-prune-local.ps1](../docker-prune-local.ps1)                 | `docker rmi` extra tags on **fabioleitao/data_boar** and **data_boar** repos; keeps a small allowlist. Use **-WhatIf** first.                       |
 | [../docker-scout-critical-gate.ps1](../docker-scout-critical-gate.ps1) | Scout CRITICAL gate: fails only when a **fixed** CRITICAL exists; warns/pass on upstream **not fixed** CVEs.                                        |
