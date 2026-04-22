@@ -2,7 +2,7 @@
 
 **Português (Brasil):** [COMPLIANCE_AND_LEGAL.pt_BR.md](COMPLIANCE_AND_LEGAL.pt_BR.md)
 
-**Primary audience:** **Legal**, **compliance leadership**, and **DPOs** assessing fit, risk, and evidence—not day-to-day IT configuration. For **YAML, API limits, encodings, and timeouts**, see [COMPLIANCE_TECHNICAL_REFERENCE.md](COMPLIANCE_TECHNICAL_REFERENCE.md); for **full config and commands**, see [USAGE.md](USAGE.md).
+**Primary audience:** **Legal**, **compliance leadership**, and **DPOs** assessing fit, risk, and evidence—not day-to-day IT configuration. For **YAML, API limits, encodings, and timeouts**, see [COMPLIANCE_TECHNICAL_REFERENCE.md](COMPLIANCE_TECHNICAL_REFERENCE.md); for **full config and commands**, see [USAGE.md](USAGE.md). For **verification modules** and **ROPA-style automation priorities** (method bridge for coursework and audits), see [COMPLIANCE_METHODOLOGY.md](COMPLIANCE_METHODOLOGY.md).
 
 This page states **what Data Boar reveals**, **what it does not do**, **which regulatory framings** you can align with, **what artifacts** support audits, and how **professional services** can help map your **data soup** before the product **ingests and digests** it.
 
