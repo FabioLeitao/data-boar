@@ -16,6 +16,9 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+# SSH target: use DATA_BOAR_LAB_SSH_USER (e.g. "you") if your ~/.ssh/config does not set User per Host; otherwise omit and pass host alias only.
+$LabSshUser = [string]$env:DATA_BOAR_LAB_SSH_USER
+if ([string]::IsNullOrWhiteSpace($LabSshUser)) { $LabSshUser = "" } else { $LabSshUser = $LabSshUser.Trim() }
 $RepoRoot = (Get-Item $PSScriptRoot).Parent.FullName
 if (-not $ManifestPath) {
     $ManifestPath = Join-Path $RepoRoot "docs\private\homelab\lab-op-hosts.manifest.json"
@@ -32,7 +35,8 @@ foreach ($h in $manifest.hosts) {
     foreach ($rp in $h.repoPaths) {
         $remotePath = ($rp -replace "\\", "/").Trim()
         $remoteCmd = "cd $remotePath && git fetch origin && git reset --hard origin/main && git rev-parse --short HEAD"
-        & ssh -o BatchMode=yes -o ConnectTimeout=30 "leitao@$alias" $remoteCmd
+        $sshTarget = if ($LabSshUser) { "${LabSshUser}@${alias}" } else { $alias }
+        & ssh -o BatchMode=yes -o ConnectTimeout=30 $sshTarget $remoteCmd
         if ($LASTEXITCODE -ne 0) {
             Write-Warning "git align failed on $alias $remotePath (exit $LASTEXITCODE)"
         }

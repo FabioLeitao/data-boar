@@ -12,7 +12,7 @@
 
 | Item | Source | Status | Next step / defer |
 | ---- | ------ | ------ | ----- |
-| **1.7.0 shipped; CI `ci.yml` Sonar `if` fix; beta testers (IDENTIDADE_COLABORADOR_A/IDENTIDADE_COLABORADOR_B) synthetic tests; lab-op smoke** | [OPERATOR_TODAY_MODE_2026-04-17.md](OPERATOR_TODAY_MODE_2026-04-17.md) | ⬜ Pending | **`gh run list --workflow ci.yml`** green on `main`; **`git pull`**; short tester brief; optional **`lab-op-sync-and-collect.ps1`** / **`docker pull`** `1.7.0` — [PUBLISHED_SYNC.md](PUBLISHED_SYNC.md) |
+| **1.7.0 shipped; CI `ci.yml` Sonar `if` fix; beta testers (IDENTIDADE_COLABORADOR_A / IDENTIDADE_COLABORADOR_B) synthetic tests; lab-op smoke** | [OPERATOR_TODAY_MODE_2026-04-17.md](OPERATOR_TODAY_MODE_2026-04-17.md) | ⬜ Pending | **`gh run list --workflow ci.yml`** green on `main`; **`git pull`**; short tester brief; optional **`lab-op-sync-and-collect.ps1`** / **`docker pull`** `1.7.0` — [PUBLISHED_SYNC.md](PUBLISHED_SYNC.md) |
 | **1.6.9 prep + Corporate-Entity-C-ready gates (Dependabot → CodeQL → Sonar? → Scout → check-all)** | [OPERATOR_TODAY_MODE_2026-04-16.md](OPERATOR_TODAY_MODE_2026-04-16.md) | ⬜ Superseded by 1.7.0 lane | Older checklist row — close or archive when **2026-04-17** items are done; **Corporate-Entity-C** still follows [Corporate-Entity-C_REVIEW_REQUEST_GUIDELINE.md](../Corporate-Entity-C_REVIEW_REQUEST_GUIDELINE.md) |
 | Close **1.6.8 release gate** (notes + tests + publish/defer decision) | 2026-04-02 | ⬜ Pending | Follow `OPERATOR_TODAY_MODE_2026-04-02.md` Block C; if deferred, write explicit target date |
 | New external round **WRB + Gemini** with "code is truth" framing | 2026-04-02 | ⬜ Pending | Send WRB with 3 time lenses and build Gemini bundle with `--verify`; triage in `PLAN_GEMINI_FEEDBACK_TRIAGE.md` |

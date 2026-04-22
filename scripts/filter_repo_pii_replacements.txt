@@ -13,8 +13,8 @@ regex:(?i)\bssh://[a-z0-9._-]+@==>ssh://USER_REDACTED@
 # Portuguese high-signal family phrase (tracked template leakage)
 regex:(?i)\btrabalho\s+da\s+esposa\b==>trabalho [redacted]
 
-# Windows user profile segment (non-system account names)
-regex:(?i)C:[/\\]+Users[/\\]+(?!(?:Public|Default|All Users|desktop\.ini)\b)([a-z0-9._-]+)[/\\]==>C:/Users/<redacted>/
+# Windows user profile segment (non-system account names; fabio = public maintainer identity — do not redact)
+regex:(?i)C:[/\\]+Users[/\\]+(?!(?:Public|Default|All Users|desktop\.ini|fabio)\b)([a-z0-9._-]+)[/\\]==>C:/Users/<redacted>/
 
-# Linux /home/ username segment
-regex:(?i)(?<![\w/])/home/(?!user/|you/|<user>/|replace_user/|\{\{)([a-z0-9._-]+)/==>/home/<redacted>/
+# Linux /home/ username segment (leitao = public maintainer home — do not redact)
+regex:(?i)(?<![\w/])/home/(?!user/|you/|<user>/|replace_user/|\{\{|leitao/)([a-z0-9._-]+)/==>/home/<redacted>/

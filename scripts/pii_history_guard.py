@@ -24,6 +24,7 @@ FORBIDDEN_LINE_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
         re.compile(
             r"(?i)\bc:\\users\\"
             r"(?!<username>|<you>|user(?:name)?\b|public\b|default\b|all users\b|\.\.\.)"
+            r"(?!fabio\\)"
             r"[a-z0-9._-]+\\"
         ),
     ),
@@ -31,7 +32,7 @@ FORBIDDEN_LINE_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
         "Linux absolute /home path (non-placeholder)",
         re.compile(
             r"(?i)(?<!\w)/home/"
-            r"(?!user/|you/|<user>/|replace_user/|\{\{)"
+            r"(?!user/|you/|<user>/|replace_user/|\{\{|leitao/)"
             r"[a-z0-9._-]+/"
         ),
     ),

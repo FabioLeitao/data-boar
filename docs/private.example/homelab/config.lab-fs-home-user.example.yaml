@@ -1,10 +1,10 @@
-# Example: scan operator home on the same Linux host (synthetic / operational text only).
-# Copy beside config.lab-fs-varlog.example.yaml; adjust path if username differs.
+# Example: scan a generic Linux user home on the same host (synthetic / operational text only).
+# Copy beside config.lab-fs-varlog.example.yaml; replace `user` with your lab username if needed.
 
 targets:
-  - name: FS_home_leitao_local
+  - name: FS_home_user_local
     type: filesystem
-    path: /home/leitao
+    path: /home/user/databoar-lab-scan
     recursive: true
 
 file_scan:

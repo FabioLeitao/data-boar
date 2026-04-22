@@ -6,6 +6,8 @@
 
 **Público:** Mantenedor / operador com permissão de push no repositório canônico no GitHub (substitui **`OWNER`** pelo usuário ou organização dono do repo — ex.: `OWNER/data-boar`).
 
+**Ritual sob demanda (HEAD + seeds privados, consciente de tokens):** Quando a equipe **decide** rever literais acidentais sem esperar pela próxima cadência de calendário, seguir **[PII_REMEDIATION_RITUAL.pt_BR.md](PII_REMEDIATION_RITUAL.pt_BR.md)** ([EN](PII_REMEDIATION_RITUAL.md)) — palavra-chave de sessão **`pii-remediation-ritual`**. Complementa a Parte I abaixo; **não** substitui o checklist **SAFE** nem **`pii-fresh-audit`** para prova nível release em clone fresco.
+
 ---
 
 ## 0. Trilha de evidencias (imutavel — nao reescreva o historico)

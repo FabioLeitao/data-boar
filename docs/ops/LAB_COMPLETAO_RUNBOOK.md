@@ -77,7 +77,7 @@ Host smoke runs `scripts/lab-completao-host-smoke.sh` from each `repoPaths` chec
 
 8. **Ansible (optional):** **`ops/automation/ansible/playbooks/lab-op-data-boar-git-sync.yml`** — alignment via group **`lab_op_data_boar`** in a local inventory (see **`inventory.example.ini`**). Reproducible when Ansible is already part of your operator workflow.
 
-9. **Filesystem templates (tracked, copy to private or `~` on Linux):** **`docs/private.example/homelab/config.lab-fs-varlog.example.yaml`**, **`config.lab-fs-home-leitao.example.yaml`** — run **`main.py`** **on the same host** as the paths (SSH + `export PATH=$HOME/.local/bin:$PATH`; **`mkdir -p`** report/sqlite dirs first). **`/var/log`** may emit **`permission_denied`** for non-root users on some files — expected.
+9. **Filesystem templates (tracked, copy to private or `~` on Linux):** **`docs/private.example/homelab/config.lab-fs-varlog.example.yaml`**, **`config.lab-fs-home-user.example.yaml`** — run **`main.py`** **on the same host** as the paths (SSH + `export PATH=$HOME/.local/bin:$PATH`; **`mkdir -p`** report/sqlite dirs first). **`/var/log`** may emit **`permission_denied`** for non-root users on some files — expected.
 
 10. **MongoDB in completão:** connector **`driver: mongodb`**; install **`pymongo`** with **`uv sync --extra nosql`**. Bring up the optional stack: **`deploy/lab-smoke-stack`**: **`docker compose -f docker-compose.yml -f docker-compose.mongo.yml up -d`** (published port **27018** by default). If Mongo is down, the target fails as **unreachable**, not **unsupported**.
 
@@ -96,7 +96,7 @@ See **`docs/private.example/homelab/lab-op-hosts.manifest.example.json`** for op
 1. **Target ref (recommended for comparable runs):** set **`completaoTargetRef`** (e.g. **`origin/main`** or **`vX.Y.Z`**) and/or **`-LabGitRef`** on **`lab-completao-orchestrate.ps1`**; use **`-SkipGitPullOnInventoryRefresh`** when pinning a **tag**. Optional: **`lab-op-repo-status.ps1`** (inspect) then **`lab-op-git-align-main.ps1`**, **`lab-op-git-ensure-ref.ps1`**, or **`git pull --ff-only`** when you accept **destructive** reset or fast-forward on LAB clones.
 2. **Host smoke:** **`lab-completao-orchestrate.ps1`** (or **`lab-completao-host-smoke.sh`** over SSH) until **`MISSING_SCRIPT`** is gone and, for **native** hosts, **`import core.engine`** succeeds. **Container-only** hosts (manifest **`completaoEngineMode`:** **`container`** or **`completaoSkipEngineImport`:** **`true`**) **skip** bare-metal import; validate **Docker/Podman/Swarm** + **`completaoHealthUrl`** instead.
 3. **FS `/var/log`:** copy **`config.lab-fs-varlog.example.yaml`**, run **`uv run python main.py --config …`** **on that Linux host** (not from Windows unless paths are mounted).
-4. **FS home tree:** same with **`config.lab-fs-home-leitao.example.yaml`** (adjust username if not **`leitao`**).
+4. **FS home tree:** same with **`config.lab-fs-home-user.example.yaml`** (adjust the `/home/user/...` path to your lab user if needed).
 5. **CLI completão** from the dev PC with a **private** YAML (DBs on a hub + synthetic FS under the repo) — see **`docs/ops/LAB_EXTERNAL_CONNECTIVITY_EVAL.md`** and private **`config.complete-eval.yaml`** pattern.
 6. **API / web:** start **`main.py --web`** on a host; **`curl http://<host>:8088/health`** from another LAN machine; then browser. Add **`completaoHealthUrl`** to the manifest for orchestrate to probe from Windows.
 

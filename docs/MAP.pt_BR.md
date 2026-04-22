@@ -76,6 +76,15 @@ O histórico de desenho da detecção de menores está num plano **concluído** 
 
 ---
 
+## Higiene de PII na árvore pública (ritual do operador)
+
+| Pergunta | Leia primeiro | Notas |
+| -------- | ------------- | ----- |
+| Passagem sob demanda: seeds privados, ordem de varredura no **HEAD**, padrões para impedir recorrência | **[PII_REMEDIATION_RITUAL.pt_BR.md](ops/PII_REMEDIATION_RITUAL.pt_BR.md)** ([EN](ops/PII_REMEDIATION_RITUAL.md)) | Palavra-chave de sessão **`pii-remediation-ritual`**; complementa — não substitui — a cadência abaixo. |
+| Cadência curta / média / longa, checklist **SAFE**, cuidados com reescrita de histórico | **[PII_PUBLIC_TREE_OPERATOR_GUIDE.pt_BR.md](ops/PII_PUBLIC_TREE_OPERATOR_GUIDE.pt_BR.md)** ([EN](ops/PII_PUBLIC_TREE_OPERATOR_GUIDE.md)) | Guia canônico; **`pii-fresh-audit`** no Windows para prova em clone fresco. |
+
+---
+
 ## Relatórios, exportações e saídas em formato GRC
 
 | Pergunta | Leia primeiro |

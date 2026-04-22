@@ -6,6 +6,8 @@
 
 **Audience:** Maintainer / operator with push access to the canonical repo on GitHub (replace **`OWNER`** below with the org or user that owns the repository — e.g. `OWNER/data-boar`).
 
+**On-demand ritual (HEAD + private seeds, token-aware):** When the team **chooses** to revisit accidental literals without waiting for the next calendar cadence, follow **[PII_REMEDIATION_RITUAL.md](PII_REMEDIATION_RITUAL.md)** ([pt-BR](PII_REMEDIATION_RITUAL.pt_BR.md)) — session keyword **`pii-remediation-ritual`**. It complements Part I below; it does **not** replace the **SAFE** checklist or **`pii-fresh-audit`** for release-grade fresh-clone proof.
+
 ---
 
 ## 0. Evidence trail (immutable — do not rewrite history)

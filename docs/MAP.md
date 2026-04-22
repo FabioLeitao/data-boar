@@ -76,6 +76,15 @@ Design history for minor detection lives in a **completed** plan file under `doc
 
 ---
 
+## Public tree PII hygiene (operator ritual)
+
+| Question | Read first | Notes |
+| -------- | ---------- | ----- |
+| On-demand pass: private seeds, **HEAD** scan order, leak prevention defaults | **[PII_REMEDIATION_RITUAL.md](ops/PII_REMEDIATION_RITUAL.md)** ([pt-BR](ops/PII_REMEDIATION_RITUAL.pt_BR.md)) | Session keyword **`pii-remediation-ritual`**; complements—not replaces—the cadence below. |
+| Short / mid / long cadence, **SAFE** checklist, history rewrite cautions | **[PII_PUBLIC_TREE_OPERATOR_GUIDE.md](ops/PII_PUBLIC_TREE_OPERATOR_GUIDE.md)** ([pt-BR](ops/PII_PUBLIC_TREE_OPERATOR_GUIDE.pt_BR.md)) | Canonical runbook; **`pii-fresh-audit`** for Windows fresh-clone proof. |
+
+---
+
 ## Reports, exports, and GRC-shaped outputs
 
 | Question | Read first |

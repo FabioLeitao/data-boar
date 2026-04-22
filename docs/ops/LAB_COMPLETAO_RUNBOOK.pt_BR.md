@@ -77,7 +77,7 @@ O smoke no host executa **`scripts/lab-completao-host-smoke.sh`** a partir de ca
 
 8. **Ansible (opcional):** **`ops/automation/ansible/playbooks/lab-op-data-boar-git-sync.yml`** — alinhamento com inventário **`[lab_op_data_boar]`**.
 
-9. **Modelos de filesystem (rastreados):** **`docs/private.example/homelab/config.lab-fs-varlog.example.yaml`**, **`config.lab-fs-home-leitao.example.yaml`** — executar **`main.py` no mesmo host** que os caminhos; criar pastas de relatório/SQLite antes; **`/var/log`** pode dar **permissão negada** em alguns arquivos.
+9. **Modelos de filesystem (rastreados):** **`docs/private.example/homelab/config.lab-fs-varlog.example.yaml`**, **`config.lab-fs-home-user.example.yaml`** — executar **`main.py` no mesmo host** que os caminhos; criar pastas de relatório/SQLite antes; **`/var/log`** pode dar **permissão negada** em alguns arquivos.
 
 10. **MongoDB:** **`driver: mongodb`**; **`pymongo`** com **`uv sync --extra nosql`**. Subir stack: **`docker compose -f docker-compose.yml -f docker-compose.mongo.yml up -d`** em **`deploy/lab-smoke-stack`** (porta típica **27018**). Se o Mongo estiver parado, o alvo falha como **unreachable**, não como **unsupported**.
 
@@ -96,7 +96,7 @@ Ver **`docs/private.example/homelab/lab-op-hosts.manifest.example.json`** para c
 1. **Ref alvo (recomendado para corridas comparáveis):** definir **`completaoTargetRef`** (ex.: **`origin/main`** ou **`vX.Y.Z`**) e/ou **`-LabGitRef`** em **`lab-completao-orchestrate.ps1`**; usar **`-SkipGitPullOnInventoryRefresh`** ao fixar uma **tag**. Opcional: **`lab-op-repo-status.ps1`** (inspecionar), depois **`lab-op-git-align-main.ps1`**, **`lab-op-git-ensure-ref.ps1`** ou **`git pull --ff-only`** quando aceitares reset **destrutivo** ou fast-forward nos clones LAB.
 2. **Smoke no host:** **`lab-completao-orchestrate.ps1`** até desaparecer **`MISSING_SCRIPT`** e, em hosts **nativos**, o import do motor funcionar. Hosts **só contêiner** (manifest **`completaoEngineMode`:** **`container`** ou **`completaoSkipEngineImport`:** **`true`**) **saltam** o import no metal; validar **Docker/Podman/Swarm** + **`completaoHealthUrl`**.
 3. **FS `/var/log`:** copiar o modelo, executar **`main.py`** **naquele Linux**.
-4. **FS home:** idem com **`config.lab-fs-home-leitao.example.yaml`** (ajustar usuário se preciso).
+4. **FS home:** idem com **`config.lab-fs-home-user.example.yaml`** (ajustar o caminho `/home/user/...` ao usuário de lab se preciso).
 5. **Completão CLI no PC dev** com YAML privado (BD no hub + FS sintético no repo) — ver **`docs/ops/LAB_EXTERNAL_CONNECTIVITY_EVAL.md`**.
 6. **API / web:** subir **`main.py --web`**; **`curl`** em **`/health`**; browser; opcional **`completaoHealthUrl`** no manifesto.
 
