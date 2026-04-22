@@ -29,6 +29,7 @@ Notas curtas e duradouras que registram **por que** o projeto escolheu um caminh
 ## Docs relacionados
 
 - [ADR 0034](0034-outbound-http-user-agent-data-boar-prospector.md) (EN) — User-Agent HTTP(S) de saída **`DataBoar-Prospector/<versão>`** para conectores de descoberta (REST/API, SharePoint, Power BI, Dataverse); override por `headers` no YAML do alvo.
+- [ADR 0035](0035-readme-stakeholder-pitch-vs-deck-vocabulary.md) (EN) — bloco executivo do README (pitch para gestores) separado de rótulos opcionais de deck (**Data Sniffing** / **Deep Boring**); contrato em `tests/test_readme_stakeholder_pitch_contract.py`.
 - [ADR 0032](0032-maturity-assessment-batch-history-sqlite.md) (EN) — histórico por **batch** do questionário de maturidade no HTML do dashboard (agregação SQLite + tabela; RBAC/tenant **não** — ver [#86](https://github.com/FabioLeitao/data-boar/issues/86)).
 - [ADR 0033](0033-webauthn-open-relying-party-json-endpoints.md) (EN) — WebAuthn **RP** aberto (biblioteca `webauthn`): endpoints JSON em `/auth/webauthn/` por trás de `api.webauthn.enabled`; sem lock-in de vendor; UI do dashboard ainda não exige login (fase **#86**).
 - [ADR 0030](0030-python-dependency-update-closure-single-pass.md) (EN) — fechamento de atualização Python num único passe (`pyproject.toml` → lock → `requirements.txt`, `uv sync`, gate completo, SBOM/ADR quando aplicável); qualquer origem (CI, bots, review) usa o mesmo fluxo.
