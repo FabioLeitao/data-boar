@@ -11,9 +11,9 @@
 | Field | Value |
 | ----- | ----- |
 | **Verified** | **2026-04-22** |
-| **`pyproject.toml` on `main`** | **1.7.2-beta** (pre-release; **GitHub Release Latest** still **v1.7.1** until the next formal ship) |
-| **GitHub Release Latest** | [**v1.7.1**](https://github.com/FabioLeitao/data-boar/releases/tag/v1.7.1) (notes: **`docs/releases/1.7.1.md`**) |
-| **Docker Hub** | **`fabioleitao/data_boar:v1.7.2-safe`** + **`latest`** (same digest) — `sha256:8cb0d3ff549b46d2bbb519874790a8a43531b7da8b6801601f87ff0e1965cf95`; **Full description** aligned to **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** (hygiene publish; legacy tags removed from Hub) |
+| **`pyproject.toml` on `main`** | **1.7.2+safe** (golden / **v1.7.2-safe** tag; next pre-release bump follows [VERSIONING.md](../VERSIONING.md)) |
+| **GitHub Release Latest** | [**v1.7.2-safe**](https://github.com/FabioLeitao/data-boar/releases/tag/v1.7.2-safe) (notes: **`docs/releases/1.7.2-safe.md`**, **`CHANGELOG.md`**) |
+| **Docker Hub** | **`fabioleitao/data_boar:v1.7.2-safe`** + **`latest`** (same digest) — `sha256:8cb0d3ff549b46d2bbb519874790a8a43531b7da8b6801601f87ff0e1965cf95`; **Full description** from **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** |
 | **Next public version** (when `main` has a new bundle) | **1.7.2** — follow **`docs/VERSIONING.md`** + **`docs/releases/`** |
 
 ---
@@ -29,7 +29,7 @@ grep -n '^version' pyproject.toml
 gh release list --repo FabioLeitao/data-boar --limit 5
 ```
 
-Docker Hub: confirm **`v1.7.2-safe`** and **`latest`** on [hub.docker.com/r/fabioleitao/data_boar/tags](https://hub.docker.com/r/fabioleitao/data_boar/tags) or the Registry API; **Full description** matches **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** (no orphan tag names in example **`docker tag`** lines).
+Docker Hub: confirm **`v1.7.2-safe`** and **`latest`** on [hub.docker.com/r/fabioleitao/data_boar/tags](https://hub.docker.com/r/fabioleitao/data_boar/tags) or the Registry API; **Full description** matches **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)**. **GitHub:** **`v1.7.2-safe`** Release exists.
 
 ---
 

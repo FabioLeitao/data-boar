@@ -29,7 +29,7 @@ Copy from the block below into **Repository → Edit** on Docker Hub.
 
 **Compliance-aware discovery** of personal and sensitive data across databases, files, APIs, and more — **data soup** in, structured findings out. Open-source Python stack with optional ML/DL; aligns with **LGPD**, **GDPR**, **CCPA**, and other frameworks via config.
 
-**Current Hub image tags:** **`latest`** and **`v1.7.2-safe`** resolve to the **same digest** (Linux/amd64 hygiene rebuild). Pin **`v1.7.2-safe`** for an immutable pull string until the next publish. Legacy Hub tags (e.g. older semvers) were **removed** in cleanup — do not document tags that no longer appear under **Tags** on Docker Hub. For **application** semver vs **image** tags, confirm **`pyproject.toml`** on the default branch and **[GitHub Releases](https://github.com/FabioLeitao/data-boar/releases)**.
+**Current Hub image tags:** **`latest`** and **`v1.7.2-safe`** resolve to the **same digest** (Linux/amd64 hygiene rebuild). Pin **`v1.7.2-safe`** for an immutable pull string until the next publish. Legacy Hub tags (e.g. older semvers) were **removed** in cleanup — do not document tags that no longer appear under **Tags** on Docker Hub. At Git tag **`v1.7.2-safe`**, Python package metadata is **`1.7.2+safe`** (PEP 440 local segment; hyphenated **`v1.7.2-safe`** is the Git/Docker identifier). Confirm **`pyproject.toml`** and **[GitHub Releases](https://github.com/FabioLeitao/data-boar/releases)** for the exact pairing.
 
 ### Copyright and maintainer
 

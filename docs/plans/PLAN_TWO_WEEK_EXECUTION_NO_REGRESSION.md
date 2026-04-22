@@ -10,7 +10,7 @@
 | Week | Theme | Outcomes |
 | ---- | ----- | -------- |
 | **1** | **Enterprise demo signal** | Transport + trust + global access surface exposed as **`enterprise_surface`** on **`GET /status`** / **`GET /health`** (paired slice; **not** full RBAC — see [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md)). Dashboard tinted banner when license trust is **degraded**/**untrusted** or API key is misconfigured. |
-| **2** | **Open-core POC / beta readiness** | **`1.7.1`** ✅ shipped — next patch **`1.7.2`**: pick **one** primary (**maturity POC ready** closure **or** first scope-import vendor adapter **or** small governance slice per [PLANS_TODO.md](PLANS_TODO.md)); optional **–1L** lab proof still operator-paced. |
+| **2** | **Open-core POC / beta readiness** | **`v1.7.2-safe`** ✅ golden — next patch **`1.7.3`**: pick **one** primary (**maturity POC ready** closure **or** first scope-import vendor adapter **or** small governance slice per [PLANS_TODO.md](PLANS_TODO.md)); optional **–1L** lab proof still operator-paced. |
 
 **Definition of done (this cycle):** At least one merged PR with tests for the governance bundle; **`check-all`** green; docs or plan rows updated; **no** silent deferral of **A3** Hub hygiene (operator) or **–1b** Scout if you touched deps/Docker.
 
