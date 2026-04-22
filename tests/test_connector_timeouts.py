@@ -66,6 +66,23 @@ def test_rest_connector_uses_httpx_timeout_from_config():
         assert timeout.read == 60
 
 
+def test_rest_connector_sets_prospector_user_agent():
+    """REST connector passes DataBoar-Prospector User-Agent unless target headers override."""
+    if not _has_module("httpx"):
+        pytest.skip("httpx not installed")
+    from connectors.rest_connector import RESTConnector
+
+    target = {"name": "api", "type": "api", "base_url": "http://example.com"}
+    target["connect_timeout_seconds"] = 25
+    target["read_timeout_seconds"] = 90
+    connector = RESTConnector(target, MagicMock(), MagicMock())
+    with patch("connectors.rest_connector.httpx.Client") as mock_client:
+        connector.connect()
+        headers = mock_client.call_args[1].get("headers") or {}
+        assert "User-Agent" in headers
+        assert str(headers["User-Agent"]).startswith("DataBoar-Prospector/")
+
+
 def test_rest_connector_timeout_defaults_when_not_in_config():
     """REST connector uses defaults 25/90 when timeout keys missing from target."""
     if not _has_module("httpx"):

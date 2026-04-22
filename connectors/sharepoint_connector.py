@@ -9,6 +9,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from core.about import get_http_user_agent
 from core.connector_registry import register
 from core.archives import (
     default_compressed_extensions,
@@ -138,6 +139,7 @@ class SharePointConnector:
         )
         verify_ssl = self.config.get("verify_ssl", True)
         session = requests.Session()
+        session.headers["User-Agent"] = get_http_user_agent()
         session.verify = verify_ssl
         if use_ntlm and user and password:
             session.auth = HttpNtlmAuth(user, password)
