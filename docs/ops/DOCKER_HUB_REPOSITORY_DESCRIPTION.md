@@ -2,7 +2,7 @@
 
 **Purpose:** The [Docker Hub UI](https://hub.docker.com/r/fabioleitao/data_boar) **Short description** and **Full description** are **not** stored in Git. This file is the **canonical text** to paste after each release so Hub stays aligned with **`pyproject.toml`**, [docs/deploy/DEPLOY.md](../deploy/DEPLOY.md), and [docs/releases/](../releases/).
 
-**When to update:** Immediately after you push **`fabioleitao/data_boar:<semver>`** and **`latest`** for a **stable** release (final **`X.Y.Z`**, not **`-beta`** / **`-rc`** images). Bump the **`Current release`** line and **Supported tags** below to match [CHANGELOG.md](../../CHANGELOG.md) / the published tag. **Docker Hub does not read this file** — you must open **Repository → General → Edit** and paste; otherwise the public page can stay stuck for years (e.g. old **## Tags** still showing **1.6.5**).
+**When to update:** Immediately after you push **`fabioleitao/data_boar:<semver>`** and **`latest`** for a **stable** release (final **`X.Y.Z`**, not **`-beta`** / **`-rc`** images). Bump the **Current release** line and **Supported tags** below to match [CHANGELOG.md](../../CHANGELOG.md) / the published tag. **Docker Hub does not read this file** — you must open **Repository → General → Edit** and paste; otherwise the public page can stay stuck for years (e.g. old **## Tags** still showing **1.6.5**).
 
 **Portuguese pointer:** [DOCKER_HUB_REPOSITORY_DESCRIPTION.pt_BR.md](DOCKER_HUB_REPOSITORY_DESCRIPTION.pt_BR.md)
 
@@ -22,9 +22,9 @@ Data Boar — PII/sensitive data discovery (LGPD/GDPR-aware). OSS by Fabio Leita
 
 Copy from the block below into **Repository → Edit** on Docker Hub.
 
-<!-- markdownlint-disable MD040 MD031 -->
 
-````markdown
+
+```markdown
 ## Data Boar
 
 **Compliance-aware discovery** of personal and sensitive data across databases, files, APIs, and more — **data soup** in, structured findings out. Open-source Python stack with optional ML/DL; aligns with **LGPD**, **GDPR**, **CCPA**, and other frameworks via config.
@@ -84,16 +84,17 @@ docker push fabioleitao/data_boar:1.7.3
 ```
 
 For the next formal release, bump **`pyproject.toml`** / **`core/about.py`** per [VERSIONING.md](https://github.com/FabioLeitao/data-boar/blob/main/docs/VERSIONING.md), publish semver tags per [DOCKER_IMAGE_RELEASE_ORDER.md](https://github.com/FabioLeitao/data-boar/blob/main/docs/ops/DOCKER_IMAGE_RELEASE_ORDER.md), then **replace the entire Full description** on Hub from this file so **Supported tags** and the **`docker tag`** lines stay in sync with the **Tags** tab (no partial edits).
-````
+```
 
-<!-- markdownlint-enable MD040 -->
+
 
 ---
 
 ## Maintainer checklist (anti-drift)
 
 1. Push image tags per [DOCKER_IMAGE_RELEASE_ORDER.md](DOCKER_IMAGE_RELEASE_ORDER.md) (**stable** semver only for this description refresh — **`-beta`** / **`-rc`** preview pushes do **not** require updating the public Hub marketing text).
-1. In Docker Hub **Repository → General → Edit**: paste **Short** (one line) + **Full** (entire fenced block from [Full description](#full-description-docker-hub--markdown) above). **Replace the whole Full description**, do not patch a paragraph in the middle — old custom sections (e.g. legacy **## Tags** listing **1.6.5**) survive otherwise.
-1. After paste, open the public repo page and **visually confirm** **Current release**, **Supported tags** / semver examples, and the **Short description** preview — no stale pinned version.
-1. Refresh [today-mode/PUBLISHED_SYNC.md](today-mode/PUBLISHED_SYNC.md) ([pt-BR](today-mode/PUBLISHED_SYNC.pt_BR.md)).
-1. Sweep **customer-facing** copy: [README.md](../../README.md) / [README.pt_BR.md](../../README.pt_BR.md) **Current release** line, [VERSIONING.md](../VERSIONING.md) checklist, milestone/social drafts that cite a version (see **§ Distribution** in VERSIONING).
+2. In Docker Hub **Repository → General → Edit**: paste **Short** (one line) + **Full** (entire fenced block from [Full description](#full-description-docker-hub--markdown) above). **Replace the whole Full description**, do not patch a paragraph in the middle — old custom sections (e.g. legacy **## Tags** listing **1.6.5**) survive otherwise.
+3. After paste, open the public repo page and **visually confirm** **Current release**, **Supported tags** / semver examples, and the **Short description** preview — no stale pinned version.
+4. Refresh [today-mode/PUBLISHED_SYNC.md](today-mode/PUBLISHED_SYNC.md) ([pt-BR](today-mode/PUBLISHED_SYNC.pt_BR.md)).
+5. Sweep **customer-facing** copy: [README.md](../../README.md) / [README.pt_BR.md](../../README.pt_BR.md) **Current release** line, [VERSIONING.md](../VERSIONING.md) checklist, milestone/social drafts that cite a version (see **§ Distribution** in VERSIONING).
+
