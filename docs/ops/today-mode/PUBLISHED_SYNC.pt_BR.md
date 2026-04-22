@@ -10,10 +10,10 @@
 
 | Campo | Valor |
 | ----- | ----- |
-| **Verificado** | **2026-04-08** |
-| **`pyproject.toml` em `main`** | **1.7.2-beta** (pré-release; **publicado** imagem/GitHub = **1.7.1**) |
+| **Verificado** | **2026-04-22** |
+| **`pyproject.toml` em `main`** | **1.7.2-beta** (pré-release; **GitHub Release Latest** ainda **v1.7.1** até o próximo ship formal) |
 | **GitHub Release Latest** | [**v1.7.1**](https://github.com/FabioLeitao/data-boar/releases/tag/v1.7.1) (notas: **`docs/releases/1.7.1.md`**) |
-| **Docker Hub** | **`fabioleitao/data_boar:1.7.1`** + **`latest`** — digest `sha256:03a4c0d3bbce6c8c901c53bc5f5c58d5e260af55fe226834d4e0c78ccbcdd707`; colar **Short** + **Full** de **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** |
+| **Docker Hub** | **`fabioleitao/data_boar:v1.7.2-safe`** + **`latest`** (mesmo digest) — `sha256:8cb0d3ff549b46d2bbb519874790a8a43531b7da8b6801601f87ff0e1965cf95`; **descrição longa** alinhada a **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** (publicação de higiene; tags legadas removidas no Hub) |
 | **Próxima versão pública** (quando `main` tiver bundle novo) | **1.7.2** — seguir **`docs/VERSIONING.md`** + **`docs/releases/`** |
 
 ---
@@ -29,7 +29,7 @@ grep -n '^version' pyproject.toml
 gh release list --repo FabioLeitao/data-boar --limit 5
 ```
 
-Docker Hub: confirma **`1.7.1`** e **`latest`** em [hub.docker.com/r/fabioleitao/data_boar/tags](https://hub.docker.com/r/fabioleitao/data_boar/tags) ou na API do registry; **descrição longa** alinhada a **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)**.
+Docker Hub: confirma **`v1.7.2-safe`** e **`latest`** em [hub.docker.com/r/fabioleitao/data_boar/tags](https://hub.docker.com/r/fabioleitao/data_boar/tags) ou na API do registry; **descrição longa** alinhada a **[`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`](../DOCKER_HUB_REPOSITORY_DESCRIPTION.md)** (sem nomes de tags órfãs nos exemplos de **`docker tag`**).
 
 ---
 
