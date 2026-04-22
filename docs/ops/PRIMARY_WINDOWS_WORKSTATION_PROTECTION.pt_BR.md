@@ -2,7 +2,7 @@
 
 **English:** [PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md](PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md)
 
-**L-series** é um **papel**: o **PC Windows principal** de desenvolvimento, onde o clone **canônico** do `data-boar`, evidências locais e a **continuidade do histórico Git** devem ser preservados. **Não** é um hostname para commits ou docs públicos.
+**L-series** é um **papel**: o **PC Windows principal** de desenvolvimento, onde o clone **canônico** do `data-boar`, evidências locais e a **continuidade do histórico Git** devem ser preservados. **Não** é um hostname para commits ou docs públicos. **Âncora de hardware:** o laptop principal do operador costuma ser um ThinkPad **L14** (ou similar); **nunca** confundir scripts de alinhamento **LAB-OP** (`lab-op-git-align-main`, `lab-op-git-ensure-ref` em **Reset**, etc.) com a árvore **canônica** nesta máquina — esses scripts atingem só hosts do **manifesto SSH**, não o workspace do Cursor no L14.
 
 ---
 
@@ -19,6 +19,7 @@
 | ----- | -------- |
 | **Clean-slate destrutivo** | Fluxos **`clean-slate.sh`** privados / modelo que fazem **`rm -rf`** na árvore principal e voltam a clonar (ver **PII_PUBLIC_TREE_OPERATOR_GUIDE.pt_BR.md** H.9). Inclui **WSL** se o alvo for a **mesma árvore canônica**. |
 | **Reescrita de histórico sem guard** | **`scripts/run-pii-history-rewrite.ps1`** — bloqueado sem **`DATA_BOAR_ALLOW_DESTRUCTIVE_REPO_OPS=1`**; **não** definir isto no PC Windows principal de desenvolvimento para trabalho normal. |
+| **Git destrutivo no clone canônico** | **`git reset --hard`**, **`git clean -fdx`**, **force** em branch ou qualquer operação que **descarte** trabalho não integrado na árvore **principal** no **L14** / PC Windows principal — use **`git pull`**, **`git merge`**, **`git stash`** ou **branch nova**. (Contraste: hosts **LAB-OP** no **`lab-op-hosts.manifest.json`** podem usar reset duro / scripts de alinhamento **só nesses hosts** — ver **`LAB_COMPLETAO_RUNBOOK.md`** *Blast radius*.) |
 | **Narrativas falsas** | Dizer no chat que um reset destrutivo “correu” sem comandos reais num host acordado — ver **`clean-slate-pii-self-audit.mdc`**. |
 
 ---

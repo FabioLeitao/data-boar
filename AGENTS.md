@@ -18,7 +18,7 @@ Use this table to jump to the **canonical bullet** or **rule** for each theme. D
 | **Investigation / recovery (“figure it out”)** | **`operator-investigation-before-blocking.mdc`** · **`.cursor/skills/operator-recovery-investigation/SKILL.md`** |
 | **Cursor browser / SSO / tabs** | **`cursor-browser-social-sso-hygiene.mdc`** · **`.cursor/skills/cursor-browser-social-session/SKILL.md`** |
 | **Homelab / SSH / LAN** | **`homelab-ssh-via-terminal.mdc`** · **`docs/private/homelab/AGENT_LAB_ACCESS.md`** (when present) |
-| **Lab completão** (SSH orchestrate from dev PC, **`-Privileged`**) | **`lab-completao-workflow.mdc`** · **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`** · session keyword **`completao`** |
+| **Lab completão** (SSH orchestrate from dev PC, **`-Privileged`**) | **`lab-completao-workflow.mdc`** · **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`** · session keyword **`completao`** — **never** destructive Git on **L14** canonical clone; **LAB manifest** hosts + **Docker Hub** images are **safe** to align / re-pull |
 | **Autonomous merge / LAB-OP** | **`agent-autonomous-merge-and-lab-ops.mdc`** |
 | **Assistant session ritual** (synced `main`, private stack, next steps) | **`AGENTS.md`** (*Assistant session ritual*) · **`.cursor/rules/agent-session-ritual-sync-main-and-private-stack.mdc`** · **`docs/ops/PRIVATE_STACK_SYNC_RITUAL.md`** |
 | **Situational “today”** (workstation clock, today-mode file anchor) | **`AGENTS.md`** (*Workstation calendar clock*) · **`docs/ops/today-mode/README.md`** (*For assistants*) · **`.cursor/rules/agent-session-ritual-sync-main-and-private-stack.mdc`** |

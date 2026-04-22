@@ -14,11 +14,18 @@
 
   "Completao" is NOT pytest - see docs/ops/LAB_COMPLETAO_RUNBOOK.md.
 
+  Optional -LabGitRef (or manifest "completaoTargetRef") runs lab-op-git-ensure-ref.ps1 before host smoke so LAB clones
+  match a known ref (release tag, origin/main, branch tip). Use -AlignLabClonesToLabGitRef to reset clones (destructive).
+  When pinning a tag, use -SkipGitPullOnInventoryRefresh so inventory refresh does not git pull clones to main first.
+
 .EXAMPLE
   .\scripts\lab-completao-orchestrate.ps1
 
 .EXAMPLE
   .\scripts\lab-completao-orchestrate.ps1 -Privileged
+
+.EXAMPLE
+  .\scripts\lab-completao-orchestrate.ps1 -Privileged -LabGitRef v1.2.0 -SkipGitPullOnInventoryRefresh
 #>
 param(
     [string] $ManifestPath = "",
@@ -27,7 +34,10 @@ param(
     [switch] $SkipFping,
     [int] $InventoryMaxAgeDays = 15,
     [switch] $SkipInventoryPreflight,
-    [switch] $SkipGitPullOnInventoryRefresh
+    [switch] $SkipGitPullOnInventoryRefresh,
+    [string] $LabGitRef = "",
+    [switch] $SkipLabGitRefCheck,
+    [switch] $AlignLabClonesToLabGitRef
 )
 
 $ErrorActionPreference = "Stop"
@@ -64,6 +74,26 @@ if ($manifest.outDir) {
     }
 }
 New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+
+$effectiveLabRef = $LabGitRef
+if (-not $effectiveLabRef -and $manifest.PSObject.Properties.Name -contains "completaoTargetRef" -and $manifest.completaoTargetRef) {
+    $effectiveLabRef = [string]$manifest.completaoTargetRef
+}
+if ($effectiveLabRef -and -not $SkipLabGitRefCheck) {
+    $ensureScript = Join-Path $RepoRoot "scripts\lab-op-git-ensure-ref.ps1"
+    if (-not (Test-Path -LiteralPath $ensureScript)) {
+        throw "Missing $ensureScript"
+    }
+    $ensureMode = "Check"
+    if ($AlignLabClonesToLabGitRef) {
+        $ensureMode = "Reset"
+    }
+    Write-Host "lab-completao-orchestrate: lab-op-git-ensure-ref ref=$effectiveLabRef mode=$ensureMode" -ForegroundColor Cyan
+    & $ensureScript -RepoRoot $RepoRoot -ManifestPath $ManifestPath -Ref $effectiveLabRef -Mode $ensureMode -SkipFping:$SkipFping
+    if ($LASTEXITCODE -ne 0) {
+        throw "lab-op-git-ensure-ref failed (ref=$effectiveLabRef mode=$ensureMode). Align LAB clones or use -SkipLabGitRefCheck. See docs/ops/LAB_COMPLETAO_RUNBOOK.md (Target git ref for reproducible completão)."
+    }
+}
 
 $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
 $fping = Get-Command fping -ErrorAction SilentlyContinue

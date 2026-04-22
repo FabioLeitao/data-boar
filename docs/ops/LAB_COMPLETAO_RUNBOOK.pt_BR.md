@@ -17,6 +17,14 @@
 
 - **Wrappers + sudoers + sem perguntas ociosas:** Preferir **`lab-completao-orchestrate.ps1 -Privileged`** e os restantes scripts do repo (ver **`LAB_OP_PRIVILEGED_COLLECTION.pt_BR.md`**, modelo gitignored **`LABOP_COMPLETÃO_SUDOERS*.md`**) para **sudo estreito sem senha** nos probes. **Não** voltar a pedir permissão para o fluxo acordado SSH/**`-Privileged`**. **Proteger** o **PC Windows principal de desenvolvimento** (papel **L-series**, **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md`**) e o clone **canônico**; **outros** hosts no manifesto e imagens **Docker** podem ser **resincronizados** com **`origin`** / Hub para testes.
 
+### Raio de explosão (contrato — não confundir alvos)
+
+| Alvo | Política Git / repo | Porquê |
+| ---- | -------------------- | ------ |
+| **PC dev principal** (ThinkPad **L14**, workspace Cursor, clone **canônico**) | **Nunca** **`git reset --hard`**, **`git clean -fdx`**, **`clean-slate`** ou reescrita de histórico na árvore **principal**. Fluxo normal: **`git pull`**, merge, branch, stash. | Continuidade de evidências — **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md`**. |
+| Hosts **LAB-OP** no **`lab-op-hosts.manifest.json`** (cada **`repoPaths`** por SSH) | **Seguro** alinhar com **`git fetch`**, **`git pull --ff-only`**, **`lab-op-git-align-main.ps1`**, **`lab-op-git-ensure-ref`**, **`-AlignLabClonesToLabGitRef`** — afeta **só** clones **remotos**, **não** a árvore do L14. | Clones de lab são **descartáveis** para teste; alinhar com o GitHub **não** é o mesmo risco do L14. |
+| **Imagens de contêiner** (Docker / **Swarm** / **Podman** / **Kubernetes**) | **Puxar de novo** do **Docker Hub** (ou registry configurado); **`docker pull`**, atualizar stack/serviço, prune — **normal** no lab. | Imagens são **reproduzíveis** a partir do registry — não equivalem a destruir o Git canônico no L14. |
+
 - **Mapa de inventário LAB-OP (hardware + software):** Antes de interpretar resultados do smoke, o assistente deve **`read_file`** no **`docs/private/homelab/OPERATOR_SYSTEM_MAP.md`** e na matriz **`LAB_SOFTWARE_INVENTORY.md`** quando existirem (**`docs-private-workspace-context.mdc`**). O **`lab-completao-orchestrate.ps1`** corre primeiro o **`scripts/lab-completao-inventory-preflight.ps1`** (frescura por defeito **15 dias**): se faltar arquivo ou estiver velho, corre **`lab-op-sync-and-collect.ps1`** para atualizar telemetria **`homelab-host-report`** em **`docs/private/homelab/reports/`** — depois **fundir** nos `.md` e atualizar data **as-of** (ver *Frescura do inventário* abaixo). Desligar: **`-SkipInventoryPreflight`**; ajustar dias: **`-InventoryMaxAgeDays N`**.
 
 **Relação:**
@@ -38,6 +46,15 @@
 3. **Depois da telemetria:** o **`lab-op-sync-and-collect`** **não** reescreve os inventários — **atualiza** as matrizes a partir do `*_labop_sync_collect.log` mais recente e define **as-of** no topo para o próximo check de idade.
 4. **Preflight manual:** `.\scripts\lab-completao-inventory-preflight.ps1 -AutoRefresh` (mesmos defaults).
 
+## Ref Git alvo para completão reproduzível (clones LAB-OP)
+
+O smoke no host executa **`scripts/lab-completao-host-smoke.sh`** a partir de cada checkout em **`repoPaths`**. Se esses clones estiverem em commits arbitrários, a corrida **não** é comparável ao CI, a um gate de release nem a outra sessão — estás a exercitar **o commit que estiver checked out**.
+
+1. **Declarar uma ref:** chave opcional na raiz do manifesto privado **`completaoTargetRef`** em **`docs/private/homelab/lab-op-hosts.manifest.json`** (ver **`docs/private.example/homelab/lab-op-hosts.manifest.example.json`**) e/ou passar **`-LabGitRef`** a **`lab-completao-orchestrate.ps1`**. O CLI **`-LabGitRef`** tem prioridade quando não está vazio; senão usa-se o valor do manifesto.
+2. **Verificar antes do smoke:** Quando há ref definida e **não** passas **`-SkipLabGitRefCheck`**, o orchestrator corre **`scripts/lab-op-git-ensure-ref.ps1`** em modo **Check** (depois do preflight de inventário, antes do smoke por SSH). Faz **`git fetch`** em cada clone e **falha** se **`HEAD`** não for o commit resolvido para essa ref (`main` / `origin/main` → ponta de **`origin/main`**; tags de release, nomes de branch e SHAs completos suportados). Registos: **`docs/private/homelab/reports/lab_op_git_ensure_ref_*.log`**.
+3. **Tags de release vs refresh de inventário:** **`lab-op-sync-and-collect.ps1`** (quando o markdown de inventário está velho) faz **`git pull --ff-only`** nos clones do lab, avançando-os para o **`main`** mais recente. Isso pode **quebrar** um pin em **`vX.Y.Z`**. Ao testar uma **tag**, passa **`-SkipGitPullOnInventoryRefresh`** em **`lab-completao-orchestrate.ps1`** para o refresh não mover os clones antes do **ensure-ref**; atualiza inventários privados manualmente se preciso.
+4. **Alinhar / reset só no LAB:** **`lab-op-git-ensure-ref.ps1 -Mode Reset`**, **`lab-op-git-align-main.ps1`**, ou **`lab-completao-orchestrate.ps1 -AlignLabClonesToLabGitRef`** com **`-LabGitRef`** (ou **`completaoTargetRef`**) aplicam-se **só** aos **`repoPaths`** nos hosts SSH do manifesto — **nunca** ao clone **canônico** no **PC principal (L14)**. Mesma classe de risco que **`lab-op-git-align-main.ps1`** nesses clones remotos (descarta commits locais no lab / **detached HEAD** em tag).
+
 ## Cobertura de capacidades (documentação + código como fonte de verdade)
 
 **Objetivo:** Aprender o comportamento **observado** em relação ao que está **documentado** — docs em **inglês** e **código** são canônicos ([README.md](../README.md)). O completão deve **exercitar** (conforme recursos do lab): **armazenamento remoto** (NFS, SSHFS, SMB/CIFS — mounts no SO e/ou caminhos de conector segundo [TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md)); **bases de dados** ([deploy/lab-smoke-stack](../deploy/lab-smoke-stack/), conectores em [ADDING_CONNECTORS.pt_BR.md](../ADDING_CONNECTORS.pt_BR.md)); **tipos/extensões de arquivo**, **arquivos ocultos** / nomes **dot**, **pacotes compactados**; **local vs remoto**; **“discoverables”** alinhados a LGPD como **linguagem de detecção** ([COMPLIANCE_AND_LEGAL.pt_BR.md](../COMPLIANCE_AND_LEGAL.pt_BR.md) — **não** é parecer jurídico); **sensibilidade ML/DL** ([SENSITIVITY_DETECTION.pt_BR.md](../SENSITIVITY_DETECTION.pt_BR.md), [TESTING.pt_BR.md](../TESTING.pt_BR.md)); **relatórios** e **dashboard**; **POC** — questionário de maturidade ([SMOKE_MATURITY_ASSESSMENT_POC.pt_BR.md](SMOKE_MATURITY_ASSESSMENT_POC.pt_BR.md)), **WebAuthn/FIDO2** JSON RP ([SMOKE_WEBAUTHN_JSON.pt_BR.md](SMOKE_WEBAUTHN_JSON.pt_BR.md), [SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.pt_BR.md](SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.pt_BR.md), [ADR 0033](../adr/0033-webauthn-open-relying-party-json-endpoints.md)). Afirmações **secure-by-design** devem alinhar com [SECURITY.pt_BR.md](../SECURITY.pt_BR.md) e o que **rodou na prática**. Anote **passo / lacuna / desvio** em notas **privadas** de sessão (`docs/private/homelab/`) — **política:** **`.cursor/rules/lab-completao-workflow.mdc`** (matriz de capacidades).
@@ -46,7 +63,7 @@
 
 1. **`scripts/lab-completao-host-smoke.sh`** (em **cada** host Linux, na raiz do clone) — `uv`, Docker/Podman, estado do compose em `deploy/lab-smoke-stack` se existir, HTTP opcional (`LAB_COMPLETAO_HEALTH_URL` / `--health-url`), import rápido do motor salvo **`--skip-engine-import`** (ou **`LAB_COMPLETAO_SKIP_ENGINE_IMPORT=1`**) — ver **Hosts só com contêiner** abaixo. **`--privileged`**: leitura com **`sudo -n`** (iptables/nft/ufw/fail2ban em modo snapshot).
 
-2. **`scripts/lab-completao-orchestrate.ps1`** (no **PC Windows** do operador) — lê o manifest em **`docs/private/homelab/lab-op-hosts.manifest.json`**, SSH por host, executa o bash em cada **`repoPaths`**. Campo opcional **`completaoHealthUrl`**: depois do smoke por SSH, pedido HTTP a partir do PC dev. Campos opcionais **`completaoEngineMode`:** **`container`** ou **`completaoSkipEngineImport`:** **`true`** passam **`--skip-engine-import`** ao smoke (hosts **Docker Swarm** / **só Podman** sem **`uv`** no metal); gera logs em **`docs/private/homelab/reports/`**.
+2. **`scripts/lab-completao-orchestrate.ps1`** (no **PC Windows** do operador) — lê o manifest em **`docs/private/homelab/lab-op-hosts.manifest.json`**; **`completaoTargetRef`** opcional na raiz ou CLI **`-LabGitRef`** dispara **`lab-op-git-ensure-ref.ps1`** antes do smoke salvo **`-SkipLabGitRefCheck`**; SSH por host, executa o bash em cada **`repoPaths`**. Campo opcional **`completaoHealthUrl`**: depois do smoke por SSH, pedido HTTP a partir do PC dev. Campos opcionais **`completaoEngineMode`:** **`container`** ou **`completaoSkipEngineImport`:** **`true`** passam **`--skip-engine-import`** ao smoke (hosts **Docker Swarm** / **só Podman** sem **`uv`** no metal); gera logs em **`docs/private/homelab/reports/`**.
 
 3. **Sudo sem senha (estreito)** — mesmo critério do **`homelab-host-report.sh`**: modelo em **`docs/private/homelab/LABOP_COMPLETÃO_SUDOERS.pt_BR.md`** (não commitar sudoers reais no GitHub).
 
@@ -54,13 +71,15 @@
 
 5. **`scripts/lab-op-repo-status.ps1`** — **`git fetch`** + **`git status -sb`** em cada **`repoPaths`** (sem reset). Opcional **`-PullFfOnly`** para **`git pull --ff-only`**. Use **antes** do orchestrate quando aparecer **`MISSING_SCRIPT`** (clone desatualizado vs **`main`**).
 
-6. **`scripts/lab-op-git-align-main.ps1`** — **`git fetch`** + **`git reset --hard origin/main`** em cada **`repoPaths`**. **Destrutivo** (descarta commits locais no clone).
+6. **`scripts/lab-op-git-ensure-ref.ps1`** — em cada host, **`git fetch`** em cada clone **`repoPaths`**, depois **Check** (falha se **`HEAD`** ≠ ref resolvida) ou **Reset** (checkout/reset destrutivo para coincidir com a ref). Usado automaticamente por **`lab-completao-orchestrate.ps1`** quando **`completaoTargetRef`** / **`-LabGitRef`** está definido — ver *Ref Git alvo para completão reproduzível* acima.
 
-7. **Ansible (opcional):** **`ops/automation/ansible/playbooks/lab-op-data-boar-git-sync.yml`** — alinhamento com inventário **`[lab_op_data_boar]`**.
+7. **`scripts/lab-op-git-align-main.ps1`** — **`git fetch`** + **`git reset --hard origin/main`** em cada **`repoPaths`**. **Destrutivo** (descarta commits locais no clone). Para refs que não sejam **`main`** (ex.: tags de release), preferir **`lab-op-git-ensure-ref.ps1 -Mode Reset`**.
 
-8. **Modelos de filesystem (rastreados):** **`docs/private.example/homelab/config.lab-fs-varlog.example.yaml`**, **`config.lab-fs-home-leitao.example.yaml`** — executar **`main.py` no mesmo host** que os caminhos; criar pastas de relatório/SQLite antes; **`/var/log`** pode dar **permissão negada** em alguns arquivos.
+8. **Ansible (opcional):** **`ops/automation/ansible/playbooks/lab-op-data-boar-git-sync.yml`** — alinhamento com inventário **`[lab_op_data_boar]`**.
 
-9. **MongoDB:** **`driver: mongodb`**; **`pymongo`** com **`uv sync --extra nosql`**. Subir stack: **`docker compose -f docker-compose.yml -f docker-compose.mongo.yml up -d`** em **`deploy/lab-smoke-stack`** (porta típica **27018**). Se o Mongo estiver parado, o alvo falha como **unreachable**, não como **unsupported**.
+9. **Modelos de filesystem (rastreados):** **`docs/private.example/homelab/config.lab-fs-varlog.example.yaml`**, **`config.lab-fs-home-leitao.example.yaml`** — executar **`main.py` no mesmo host** que os caminhos; criar pastas de relatório/SQLite antes; **`/var/log`** pode dar **permissão negada** em alguns arquivos.
+
+10. **MongoDB:** **`driver: mongodb`**; **`pymongo`** com **`uv sync --extra nosql`**. Subir stack: **`docker compose -f docker-compose.yml -f docker-compose.mongo.yml up -d`** em **`deploy/lab-smoke-stack`** (porta típica **27018**). Se o Mongo estiver parado, o alvo falha como **unreachable**, não como **unsupported**.
 
 ## Hosts só com contêiner (Docker Swarm, stack Podman, sem `uv` no metal)
 
@@ -74,7 +93,7 @@ Ver **`docs/private.example/homelab/lab-op-hosts.manifest.example.json`** para c
 
 ## Ordem de fatias recomendada (um host de cada vez)
 
-1. **Alinhar clones:** **`lab-op-repo-status.ps1`** (inspecionar), depois **`lab-op-git-align-main.ps1`** só se aceitar reset **destrutivo**.
+1. **Ref alvo (recomendado para corridas comparáveis):** definir **`completaoTargetRef`** (ex.: **`origin/main`** ou **`vX.Y.Z`**) e/ou **`-LabGitRef`** em **`lab-completao-orchestrate.ps1`**; usar **`-SkipGitPullOnInventoryRefresh`** ao fixar uma **tag**. Opcional: **`lab-op-repo-status.ps1`** (inspecionar), depois **`lab-op-git-align-main.ps1`**, **`lab-op-git-ensure-ref.ps1`** ou **`git pull --ff-only`** quando aceitares reset **destrutivo** ou fast-forward nos clones LAB.
 2. **Smoke no host:** **`lab-completao-orchestrate.ps1`** até desaparecer **`MISSING_SCRIPT`** e, em hosts **nativos**, o import do motor funcionar. Hosts **só contêiner** (manifest **`completaoEngineMode`:** **`container`** ou **`completaoSkipEngineImport`:** **`true`**) **saltam** o import no metal; validar **Docker/Podman/Swarm** + **`completaoHealthUrl`**.
 3. **FS `/var/log`:** copiar o modelo, executar **`main.py`** **naquele Linux**.
 4. **FS home:** idem com **`config.lab-fs-home-leitao.example.yaml`** (ajustar usuário se preciso).
@@ -95,6 +114,6 @@ Ver **`docs/private.example/homelab/lab-op-hosts.manifest.example.json`** para c
 ## Arranque rápido
 
 1. Em hosts onde você roda o produto **no metal**, garantir clone + **`uv`** (muitas vezes **`~/.local/bin/uv`** — o smoke antecede isso ao **`PATH`**); **`uv sync`** e **`uv sync --extra nosql`** se houver alvos Mongo; outros extras conforme [TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md). Em hosts **só contêiner** (gestor Swarm, só Podman, etc.), definir **`completaoEngineMode`:** **`container`** (ou **`completaoSkipEngineImport`:** **`true`**) e basear-se em HTTP / compose / stack — **não** assumir **`uv`** no host.
-2. No manifest, opcionalmente **`completaoHealthUrl`**, **`completaoEngineMode`**, **`completaoSkipEngineImport`** — ver exemplo em **`docs/private.example/homelab/lab-op-hosts.manifest.example.json`**.
+2. No manifest, opcionalmente **`completaoTargetRef`**, **`completaoHealthUrl`**, **`completaoEngineMode`**, **`completaoSkipEngineImport`** — ver exemplo em **`docs/private.example/homelab/lab-op-hosts.manifest.example.json`**.
 3. Na raiz do repo no Windows: **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** (padrão para completão orientado pelo assistente; omite **`-Privileged`** só se precisar evitar probes privilegiados).
 4. Preencher o template privado (**timeouts**, **FP/FN**, **latência**, **confiança**); abrir issues / planos quando houver lacunas de produto.
