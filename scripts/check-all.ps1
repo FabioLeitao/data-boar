@@ -14,6 +14,13 @@ $ErrorActionPreference = "Stop"
 $repoRoot = (Get-Item $PSScriptRoot).Parent.FullName
 Set-Location $repoRoot
 
+# PII gate: maintainer seeds vs staged paths only (see scripts/gatekeeper-audit.ps1).
+& "$repoRoot\scripts\gatekeeper-audit.ps1"
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "check-all: ABORTED by gatekeeper-audit (PII seed hit in staged files)." -ForegroundColor Red
+    exit $LASTEXITCODE
+}
+
 Write-Host "=== check-all: lint + tests ===" -ForegroundColor Cyan
 
 # Keep plan dashboard stats in sync before lint/tests.
