@@ -4,7 +4,7 @@
 
 **Objetivo:** Definir o que é **completão** neste projeto: **rodar o produto** (CLI, API, web) nos **hosts do lab**, via **SSH**, com **registro** de resultados — não é a mesma coisa que só **`pytest`** ou **`.\scripts\check-all.ps1`** no PC de desenvolvimento.
 
-**Chat novo no Cursor / zero contexto:** Use **[LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md](LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md)** — prompt copy-paste, pré-condições e o que um agente novo consegue ou não.
+**Chat novo no Cursor / zero contexto:** Use **[LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md](LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md)** — prompts copy-paste (**só smoke** vs **estendido**), checklists opcionais, blocos de follow-up **B–E**, pré-condições e âmbito honesto (o que os scripts fazem vs o que depende de config do operador).
 
 ## Contrato assistente + operador (Cursor)
 

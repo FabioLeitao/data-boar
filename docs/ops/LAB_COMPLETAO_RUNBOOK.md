@@ -4,7 +4,7 @@
 
 **Purpose:** Define what **completão** means in this project: **running the product** (CLI, API, web) on **lab hosts**, across **SSH**, with **documented** outcomes — not the same thing as **`pytest`** or **`.\scripts\check-all.ps1`** on the dev PC alone.
 
-**New Cursor chat / zero context:** Use **[LAB_COMPLETAO_FRESH_AGENT_BRIEF.md](LAB_COMPLETAO_FRESH_AGENT_BRIEF.md)** — copy-paste prompt, preconditions, and what a fresh agent can/cannot do.
+**New Cursor chat / zero context:** Use **[LAB_COMPLETAO_FRESH_AGENT_BRIEF.md](LAB_COMPLETAO_FRESH_AGENT_BRIEF.md)** — copy-paste prompts (**smoke-only** vs **extended**), optional checklists, follow-up blocks **B–E**, preconditions, and honest scope (what scripts run vs what needs operator config).
 
 ## Assistant and operator contract (Cursor)
 
