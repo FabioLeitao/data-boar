@@ -320,6 +320,8 @@ You can scan remote HTTP(S) APIs for personal or sensitive data by adding target
 
 **Required:** `name`, `base_url` (or `url`). **Optional:** `paths` or `endpoints` (list of path strings, e.g. `["/users", "/orders"]`), `discover_url` (GET returns a list of paths to scan), `timeout`, `headers`, and an `auth` block.
 
+**Default outbound User-Agent:** discovery HTTP(S) clients send **`DataBoar-Prospector/<version>`** (same resolved version as the installed `data-boar` package — `core.about.get_http_user_agent()`). Use this string in remote WAF or API-gateway logs to identify this product. If a vendor requires a different token, set **`User-Agent`** (case-insensitive key) under `headers` on the target; that value **overrides** the default for REST/API. SharePoint, Power BI, and Dataverse connectors apply the same default. See [ADR 0034](adr/0034-outbound-http-user-agent-data-boar-prospector.md).
+
 ### Auth types
 
 | Type              | Use case                                                             | Config                                                                                                                                                          |
