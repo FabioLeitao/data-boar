@@ -78,6 +78,10 @@ When you merge **`homelab-host-report`** output into those files, put a **single
 
 **`scripts/lab-completao-inventory-preflight.ps1`** (and **`lab-completao-orchestrate.ps1`** before host smoke) uses that date if present; otherwise **file LastWriteTime**. Default staleness threshold: **15 days** — see **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`** (*Inventory freshness*).
 
+## LAB-OP manifest (`lab-op-hosts.manifest.json`)
+
+Copy **`lab-op-hosts.manifest.example.json`** to **`docs/private/homelab/lab-op-hosts.manifest.json`** and set **`sshHost`** / **`repoPaths`**. Optional **root** key **`completaoTargetRef`** (e.g. **`origin/main`** or a release tag **`vX.Y.Z`**) makes **`lab-completao-orchestrate.ps1`** verify each LAB clone matches that ref **before** host smoke — see **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`** (*Target git ref for reproducible completão*). When pinning a **tag**, pass **`-SkipGitPullOnInventoryRefresh`** on the orchestrator so **`lab-op-sync-and-collect`** does not **`git pull`** clones to **`main`** first during inventory refresh.
+
 ## LAB-OP doc language pairs (policy)
 
 - **[I18N_LAB_OP.md](I18N_LAB_OP.md)** · [pt-BR](I18N_LAB_OP.pt_BR.md) — when to use **`File.md`** vs **`File.pt_BR.md`** under your private `homelab/` tree (gitignored).

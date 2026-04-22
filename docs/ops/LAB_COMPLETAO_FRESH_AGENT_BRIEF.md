@@ -4,10 +4,21 @@
 
 **Use when:** You open a **new chat** with **no prior context** and want the assistant to run **completão** the same way as the **repo contracts** (`lab-completao-workflow.mdc`, `LAB_COMPLETAO_RUNBOOK.md`).
 
+## Blast radius contract (non-negotiable — assistants must not “forget”)
+
+| Where | Never (destructive Git / clean-slate on canonical tree) | Always OK for completão |
+| ----- | -------------------------------------------------------- | ------------------------- |
+| **Primary Windows dev PC** (ThinkPad **WORKSTATION**, this repo in Cursor) | **`git reset --hard`**, **`git clean -fdx`**, **`clean-slate`**, history rewrite on the **main** working copy | **`git pull`**, merge, branch, stash; temp-only audits under **`%TEMP%`** |
+| **LAB-OP hosts** in **`lab-op-hosts.manifest.json`** (SSH `repoPaths`) | N/A — these clones are **meant** to track GitHub | **`git fetch` / `pull --ff-only`**, **`lab-op-git-align-main.ps1`**, **`lab-op-git-ensure-ref`**, **`-AlignLabClonesToLabGitRef`**, **`lab-op-repo-status.ps1 -PullFfOnly`** — run **autonomously** from the dev PC scripts; **do not** ask the operator to babysit per-host manual `git` unless SSH fails |
+| **Container images** (Docker / Swarm / Podman / Kubernetes) | N/A for WORKSTATION Git | **Re-pull** from **Docker Hub** (or configured registry); **`docker pull`**, stack update — **normal** |
+
+Full table: **`LAB_COMPLETAO_RUNBOOK.md`** (*Blast radius*). Primary workstation policy: **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**.
+
 ## Preconditions (operator workstation)
 
 - **Same** Windows dev PC, **same** repo clone, **Cursor integrated terminal** (not a remote “AI datacenter”).
 - **`docs/private/homelab/lab-op-hosts.manifest.json`** present (copy from **`docs/private.example/homelab/lab-op-hosts.manifest.example.json`** when needed). For hosts that run Data Boar **only** via **Docker Swarm / Podman** (no bare-metal **`uv`**), set **`completaoEngineMode`:** **`container`** (or **`completaoSkipEngineImport`:** **`true`**) so the smoke does **not** treat missing **`uv`** as a failure — see **`LAB_COMPLETAO_RUNBOOK.md`** (*Container-only lab hosts*).
+- **Reproducible LAB revision (recommended):** optional root **`completaoTargetRef`** in the manifest (e.g. **`origin/main`** or **`vX.Y.Z`**) and/or **`-LabGitRef`** on **`lab-completao-orchestrate.ps1`** so host smoke runs against a **known** commit — see **`LAB_COMPLETAO_RUNBOOK.md`** (*Target git ref for reproducible completão*). Use **`-SkipGitPullOnInventoryRefresh`** when pinning a **release tag** so inventory refresh does not **`git pull`** lab clones to **`main`** first.
 - **`ssh`** to manifest hosts works from that terminal (keys / `~/.ssh/config`).
 - Optional: **narrow sudoers** for **`sudo -n`** on Linux hosts — see **`LAB_OP_PRIVILEGED_COLLECTION.md`** and gitignored **`LABOP_COMPLETÃO_SUDOERS*.md`**.
 
@@ -19,13 +30,13 @@
 
 ## Session token (English)
 
-Type **`completao`** in chat so the session scope matches **`session-mode-keywords.mdc`**.
+Type **`completao`** in chat so the session scope matches **`session-mode-keywords.mdc`**. Put **only** that token on the first line of copy-paste blocks — do not append branch/version text to the same line (session taxonomy).
 
 ## Session modes (pick one)
 
 | Mode | Goal | What the **repo scripts** actually run in one go | What still needs **you** (config / services / secrets) |
 | ---- | ---- | ----------------------------------------------- | ------------------------------------------------------ |
-| **Smoke-only** | LAN + clone + runtime probes + logs | **`lab-completao-orchestrate.ps1 -Privileged`** (includes preflight → may run **`lab-op-sync-and-collect.ps1`**) | Manifest, SSH, optional **`completaoHealthUrl`**, optional sudoers for **`sudo -n`** |
+| **Smoke-only** | LAN + clone + runtime probes + logs | **`lab-completao-orchestrate.ps1 -Privileged`** (includes preflight → may run **`lab-op-sync-and-collect.ps1`**; optional **`completaoTargetRef`** / **`-LabGitRef`** → **`lab-op-git-ensure-ref`** before smoke) | Manifest, SSH, optional **`completaoTargetRef`**, optional **`completaoHealthUrl`**, optional sudoers for **`sudo -n`** |
 | **Extended** | Same as smoke + deeper validation (CLI, DBs, API, POC pytest slices) | **No single script** wraps everything — follow **slice order** in **`LAB_COMPLETAO_RUNBOOK.md`** across steps or chats | Private YAML (e.g. **`config.complete-eval.yaml`** pattern), **`lab-smoke-stack`** up where needed, env for API key / JWT / WebAuthn secrets, browser for manual FIDO2 UX |
 
 **Honest scope:** Slice 1 (orchestrator) **does not** by itself deploy full synthetic DBs, run comparative scans, or prove JWT/WebAuthn/browser ceremonies end-to-end. Those are **documented** in **`SMOKE_*.md`**, **`LAB_EXTERNAL_CONNECTIVITY_EVAL.md`**, **`TECH_GUIDE.md`**, **`SECURITY.md`** — assistant-led **steps**, not one magic command.
@@ -35,6 +46,7 @@ Type **`completao`** in chat so the session scope matches **`session-mode-keywor
 ### Smoke-only (minimum useful first slice)
 
 - [ ] Manifest exists and **`sshHost`** / **`repoPaths`** are correct.
+- [ ] (Recommended for comparable runs) Set **`completaoTargetRef`** (e.g. **`origin/main`** or release **`vX.Y.Z`**) and/or pass **`-LabGitRef`**; use **`-SkipGitPullOnInventoryRefresh`** when the ref is a **tag**.
 - [ ] Container-only hosts have **`completaoEngineMode`:** **`container`** (or **`completaoSkipEngineImport`**) where applicable.
 - [ ] (Optional) **`completaoHealthUrl`** per host if **`main.py --web`** is up and reachable from the dev PC.
 - [ ] Run **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** from repo root; read **`docs/private/homelab/reports/`** logs.
@@ -72,8 +84,8 @@ Follow **`LAB_COMPLETAO_RUNBOOK.md`** — **Recommended slice order**, **Capabil
 ## Do not
 
 - Claim the assistant **cannot** reach the lab via **SSH from this PC** when **`ssh`** works for the operator — see **`homelab-ssh-via-terminal.mdc`**.
-- Ask redundant **“may I use SSH / `-Privileged`?”** if the operator already asked for **completão** — see **`operator-direct-execution.mdc`**.
-- Run **destructive** repo operations on the **primary Windows dev PC** (**L-series** role) — **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**.
+- Ask redundant **“may I use SSH / `-Privileged`?”** or **“should I align LAB clones?”** if the operator already asked for **completão** — LAB alignment scripts target **manifest hosts only**, not WORKSTATION — see **`operator-direct-execution.mdc`** and *Blast radius* above.
+- Run **`git reset --hard`**, **`clean-slate`**, or history rewrite on the **canonical** clone on the **primary Windows dev PC (WORKSTATION)** — **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**. (Contrast: LAB **`repoPaths`** may use align scripts — that is **not** WORKSTATION.)
 - Put **secrets**, **tokens**, or **LAN identifiers** in **public** GitHub; **private** notes only under **`docs/private/homelab/`**.
 - Promise **browser FIDO2**, **full JWT licensing**, or **production-grade** “secure by design” **proof** from scripts alone — document **what ran** vs **`SMOKE_*.md`** / **`SECURITY.md`**.
 
@@ -83,6 +95,22 @@ Follow **`LAB_COMPLETAO_RUNBOOK.md`** — **Recommended slice order**, **Capabil
 
 Use in a **new chat** with **no context** (after preconditions).
 
+**Ref vs version:** **`origin/main`** is the **branch tip** on the remote, not a semver. The **product version** (e.g. **1.7.2-beta** in **`pyproject.toml`**) is whatever commit **`main`** points to after **`git fetch`** — confirm on the dev PC with **`git show origin/main:pyproject.toml`** if needed. A **git tag** like **`v1.7.2-beta`** is optional and only matches if you created it; otherwise use **`-LabGitRef origin/main`** to pin LAB clones to the same tip as GitHub **`main`**.
+
+**Where to set the ref:** keep **line 1** of the copy-paste block as **`completao` only**. Change **step 1** below (the **`-LabGitRef`** value), not line 1.
+
+**`git` / `gh` sanity (dev PC before completão):** run **`git fetch origin`**, then **`git rev-parse HEAD`** and **`git rev-parse origin/main`** — they should match if your local **`main`** is synced with GitHub. **`gh repo view`** is for metadata (default branch, name); it does not replace **`git`** for commit identity. Uncommitted local edits do not change **`origin/main`**; LAB hosts track the **remote** ref, not your unstaged files.
+
+### Block A — `-LabGitRef` examples (edit step 1 only)
+
+| Goal | Step 1 |
+| ---- | ------ |
+| LAB clones = **GitHub `main` tip** (default in block below) | `.\scripts\lab-completao-orchestrate.ps1 -Privileged -LabGitRef origin/main` |
+| LAB clones = **annotated/lightweight tag** `vX.Y.Z` (e.g. release smoke) | `.\scripts\lab-completao-orchestrate.ps1 -Privileged -LabGitRef vX.Y.Z -SkipGitPullOnInventoryRefresh` |
+| No ref check (smoke runs whatever is checked out on LAB) | `.\scripts\lab-completao-orchestrate.ps1 -Privileged` — omit **`-LabGitRef`** (or use **`-SkipLabGitRefCheck`** if the manifest sets **`completaoTargetRef`**) |
+
+For **tag** pins, **`-SkipGitPullOnInventoryRefresh`** avoids **`lab-op-sync-and-collect`** moving LAB clones to latest **`main`** during inventory refresh when markdown is stale — see **`LAB_COMPLETAO_RUNBOOK.md`** (*Target git ref*).
+
 ```text
 completao
 
@@ -90,14 +118,16 @@ You are in the data-boar repo on my Windows dev PC. Read AGENTS.md (Quick index:
 
 Session mode: smoke-only (see docs/ops/LAB_COMPLETAO_FRESH_AGENT_BRIEF.md).
 
-1) From repo root run: .\scripts\lab-completao-orchestrate.ps1 -Privileged
+LAB git target: match GitHub main — run orchestrator with -LabGitRef origin/main (runs lab-op-git-ensure-ref Check before host smoke). Expect pyproject.toml on that tip to read 1.7.2-beta for this test wave; if ensure-ref fails, LAB clones are not at origin/main (align per LAB_COMPLETAO_RUNBOOK.md).
+
+1) From repo root run: .\scripts\lab-completao-orchestrate.ps1 -Privileged -LabGitRef origin/main
 2) Summarize docs/private/homelab/reports/ logs (no secrets in chat if sensitive).
 3) Read docs/private/homelab/OPERATOR_SYSTEM_MAP.md and LAB_SOFTWARE_INVENTORY.md when present; reconcile host-smoke with documented roles (container-only manifest hosts are not “missing uv” defects).
 4) Document material findings under docs/private/homelab/ (timeouts, latency, FP/FN vs synthetic, confidence on real paths). Do not expand to full CLI/DB/browser/API proof unless I ask in a follow-up.
 
 Do not ask redundant permission for SSH or -Privileged. Do not claim the lab is unreachable from this workspace. Protect my primary Windows dev workstation per docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md.
 
-If something fails, print the actual error and what I must fix (e.g. sudoers, manifest, missing uv on native hosts), then stop — I will fix and ask you to retry. Do not demand bare-metal uv on container-only manifest hosts (completaoEngineMode: container).
+If something fails, print the actual error and what I must fix (e.g. sudoers, manifest, missing uv on native hosts, LAB clone behind origin/main), then stop — I will fix and ask you to retry. Do not demand bare-metal uv on container-only manifest hosts (completaoEngineMode: container).
 ```
 
 ---

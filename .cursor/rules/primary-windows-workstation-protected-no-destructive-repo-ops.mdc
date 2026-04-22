@@ -8,12 +8,13 @@ alwaysApply: true
 
 ## Scope
 
-- **L-series** means the operator’s **primary Windows dev workstation** where the **canonical** `data-boar` working tree, **evidence**, and **long-lived Git history** must stay intact. Tracked docs use the name **L-series** as a **role label** (not a hostname to paste into commits).
-- **lab-op** and other **lab hosts** are separate targets for **destructive validation** (isolated clone, `clean-slate`-class flows, history rewrite rehearsal) only when the operator chooses that host and accepts downtime — see **`docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**.
+- **L-series** means the operator’s **primary Windows dev workstation** (hardware: typically ThinkPad **WORKSTATION**) where the **canonical** `data-boar` working tree, **evidence**, and **long-lived Git history** must stay intact. Tracked docs use **L-series** as a **role label** (not a hostname to paste into commits).
+- **lab-op** and other **manifest SSH hosts** are **not** the WORKSTATION canonical tree: **`git reset --hard`**, **`lab-op-git-align-main`**, **`lab-op-git-ensure-ref -Mode Reset`**, and similar **only** apply to **`repoPaths`** on those remote hosts — **never** to the operator’s primary clone path opened in Cursor on Windows — see **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`** (*Blast radius*) and **`docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**.
+- **Container images** (Docker / Swarm / Podman / Kubernetes): re-pull from **Docker Hub** (or configured registry) is **normal** and **reversible** for lab work — not the same blast radius as rewriting Git history on WORKSTATION.
 
 ## Hard prohibitions (assistants + automation)
 
-1. **Do not run** on primary Windows dev PC (integrated terminal or scripted): **`clean-slate.sh`** / private **`clean-slate`**, **`git filter-repo`** against the **canonical** tree, **`scripts/run-pii-history-rewrite.ps1`** unless the script’s **documented opt-in guard** is satisfied **and** the operator explicitly asked for that flow on **this** machine (default: treat primary Windows dev PC as **never** for those).
+1. **Do not run** on primary Windows dev PC (integrated terminal or scripted): **`clean-slate.sh`** / private **`clean-slate`**, **`git filter-repo`** against the **canonical** tree, **`git reset --hard`** / **`git clean -fdx`** on the **canonical** clone, **`scripts/run-pii-history-rewrite.ps1`** unless the script’s **documented opt-in guard** is satisfied **and** the operator explicitly asked for that flow on **this** machine (default: treat primary Windows dev PC as **never** for those).
 2. **Do not narrate or “simulate”** a successful destructive reset, mirror rewrite, or “wiped and recloned” outcome for the **canonical** primary Windows dev PC tree in chat — that erodes auditability the same way fake clean-slate claims do (**`clean-slate-pii-self-audit.mdc`**).
 3. **Do not add** repo automation that **deletes or replaces** the operator’s main clone path **without** an explicit **off-by-default** guard (env var / remote-only doc) documented in **`docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**.
 
@@ -31,4 +32,5 @@ alwaysApply: true
 ## Cross-links
 
 - **`docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`** (EN) / **`.pt_BR.md`**
+- **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`** (*Blast radius* — LAB vs WORKSTATION)
 - **`clean-slate-pii-self-audit.mdc`**, **`private-pii-never-public.mdc`**

@@ -4,10 +4,21 @@
 
 **Quando usar:** Quando você abre um **chat novo** **sem contexto** e **quer** que o assistente **execute** o **completão** como nos **contratos** do repo (`lab-completao-workflow.mdc`, `LAB_COMPLETAO_RUNBOOK.md`).
 
+## Contrato de raio de explosão (não negociável — o assistente **não** “esquece”)
+
+| Onde | Nunca (Git destrutivo / clean-slate no clone canônico) | Sempre OK no completão |
+| ---- | -------------------------------------------------------- | ------------------------ |
+| **PC dev principal** (ThinkPad **WORKSTATION**, este repo no Cursor) | **`git reset --hard`**, **`git clean -fdx`**, **`clean-slate`**, reescrita de histórico na cópia de trabalho **principal** | **`git pull`**, merge, branch, stash; auditorias só em **`%TEMP%`** |
+| Hosts **LAB-OP** no **`lab-op-hosts.manifest.json`** (SSH **`repoPaths`**) | N/A — clones devem seguir o GitHub | **`git fetch` / `pull --ff-only`**, **`lab-op-git-align-main.ps1`**, **`lab-op-git-ensure-ref`**, **`-AlignLabClonesToLabGitRef`**, **`lab-op-repo-status.ps1 -PullFfOnly`** — rodar **de forma autónoma** a partir dos scripts no PC dev; **não** pedir ao operador para “ir host a host” à mão se o script já faz SSH |
+| **Imagens de contêiner** (Docker / Swarm / Podman / Kubernetes) | N/A para o Git do WORKSTATION | **Voltar a puxar** do **Docker Hub** (ou registry); **`docker pull`**, atualizar stack — **normal** |
+
+Tabela completa: **`LAB_COMPLETAO_RUNBOOK.md`** (*Raio de explosão* / *Blast radius*). Política do PC principal: **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md`**.
+
 ## Pré-condições (estação do operador)
 
 - **Mesmo** PC Windows de desenvolvimento, **mesmo** clone, **terminal integrado do Cursor** (não um “datacenter de IA” à parte).
 - **`docs/private/homelab/lab-op-hosts.manifest.json`** presente (cópia a partir de **`docs/private.example/homelab/lab-op-hosts.manifest.example.json`** quando preciso). Em hosts em que o Data Boar **roda** **só** via **Docker Swarm / Podman** (sem **`uv`** no metal), defina **`completaoEngineMode`:** **`container`** (ou **`completaoSkipEngineImport`:** **`true`**) para o smoke **não** tratar **`uv`** ausente como falha — ver **`LAB_COMPLETAO_RUNBOOK.md`** (*Hosts só com contêiner*).
+- **Revisão LAB reproduzível (recomendado):** chave opcional na raiz **`completaoTargetRef`** no manifesto (ex.: **`origin/main`** ou **`vX.Y.Z`**) e/ou **`-LabGitRef`** em **`lab-completao-orchestrate.ps1`** para o smoke no host rodar num commit **conhecido** — ver **`LAB_COMPLETAO_RUNBOOK.md`** (*Ref Git alvo para completão reproduzível*). Com **tag** de release, use **`-SkipGitPullOnInventoryRefresh`** para o refresh de inventário não dar **`git pull`** para **`main`** nos clones antes do **ensure-ref**.
 - **`ssh`** para os hosts do manifesto funciona nesse terminal (chaves / `~/.ssh/config`).
 - Opcional: **sudoers estreito** para **`sudo -n`** nos Linux — ver **`LAB_OP_PRIVILEGED_COLLECTION.pt_BR.md`** e **`LABOP_COMPLETÃO_SUDOERS*.md`** (gitignored).
 
@@ -19,13 +30,13 @@
 
 ## Token de sessão (inglês)
 
-**Escreva** **`completao`** no chat para alinhar o âmbito a **`session-mode-keywords.mdc`**.
+**Escreva** **`completao`** no chat para alinhar o âmbito a **`session-mode-keywords.mdc`**. Nos blocos copy-paste, deixe **só** esse token na **primeira linha** — não acrescente branch/versão na mesma linha (taxonomia de sessão).
 
 ## Modos de sessão (escolha um)
 
 | Modo | Objetivo | O que os **scripts do repo** executam de uma vez | O que ainda depende **de você** (config / serviços / segredos) |
 | ---- | -------- | ---------------------------------------------- | -------------------------------------------------------------- |
-| **Só smoke** | LAN + clone + probes de runtime + logs | **`lab-completao-orchestrate.ps1 -Privileged`** (inclui preflight → pode executar **`lab-op-sync-and-collect.ps1`**) | Manifesto, SSH, opcional **`completaoHealthUrl`**, opcional sudoers para **`sudo -n`** |
+| **Só smoke** | LAN + clone + probes de runtime + logs | **`lab-completao-orchestrate.ps1 -Privileged`** (inclui preflight → pode executar **`lab-op-sync-and-collect.ps1`**; opcional **`completaoTargetRef`** / **`-LabGitRef`** → **`lab-op-git-ensure-ref`** antes do smoke) | Manifesto, SSH, opcional **`completaoTargetRef`**, opcional **`completaoHealthUrl`**, opcional sudoers para **`sudo -n`** |
 | **Estendido** | Igual ao smoke + validação mais funda (CLI, BDs, API, fatias pytest POC) | **Não há** um único script que cubra tudo — seguir **ordem de fatias** em **`LAB_COMPLETAO_RUNBOOK.md`** em passos ou chats | YAML privado (ex. padrão **`config.complete-eval.yaml`**), **`lab-smoke-stack`** levantado onde precisar, env para API key / JWT / WebAuthn, browser para UX FIDO2 manual |
 
 **Âmbito honesto:** A fatia 1 (orchestrator) **por si** **não** faz deploy completo de sintéticos em BDs, scans comparativos nem prova ponta a ponta JWT/WebAuthn/browser. Isso está **documentado** em **`SMOKE_*.md`**, **`LAB_EXTERNAL_CONNECTIVITY_EVAL.md`**, **`TECH_GUIDE.md`**, **`SECURITY.md`** — passos **orientados pelo assistente**, não um comando mágico.
@@ -35,6 +46,7 @@
 ### Só smoke (primeira fatia útil mínima)
 
 - [ ] Manifesto existe e **`sshHost`** / **`repoPaths`** estão corretos.
+- [ ] (Recomendado para corridas comparáveis) Definir **`completaoTargetRef`** (ex.: **`origin/main`** ou release **`vX.Y.Z`**) e/ou passar **`-LabGitRef`**; usar **`-SkipGitPullOnInventoryRefresh`** quando a ref for uma **tag**.
 - [ ] Hosts só contêiner têm **`completaoEngineMode`:** **`container`** (ou **`completaoSkipEngineImport`**) onde aplicável.
 - [ ] (Opcional) **`completaoHealthUrl`** por host se **`main.py --web`** estiver no ar e acessível a partir do PC dev.
 - [ ] **Execute** **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** na raiz do repo; leia os logs em **`docs/private/homelab/reports/`**.
@@ -72,8 +84,8 @@ Depois **leia** **`docs/private/homelab/reports/`** (`completao_*_allhosts.log`,
 ## Não fazer
 
 - Dizer que o assistente **não** chega ao lab por **SSH a partir deste PC** quando o **`ssh`** funciona — ver **`homelab-ssh-via-terminal.mdc`**.
-- Pedir **de novo** permissão SSH / **`-Privileged`** se o operador já pediu **completao** — ver **`operator-direct-execution.mdc`**.
-- Operações **destrutivas** no **PC Windows principal** — **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md`**.
+- Pedir **de novo** permissão SSH / **`-Privileged`** ou **“devo alinhar os clones LAB?”** se o operador já pediu **completao** — scripts de alinhamento atingem **só** hosts do manifesto, não o WORKSTATION — ver **`operator-direct-execution.mdc`** e *Contrato de raio de explosão* acima.
+- Correr **`git reset --hard`**, **`clean-slate`** ou reescrita de histórico no clone **canônico** no **PC principal (WORKSTATION)** — **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md`**. (Contraste: **`repoPaths`** em LAB podem usar scripts de alinhamento — **não** é o WORKSTATION.)
 - **Segredos** ou identificadores LAN no **GitHub público**; notas só em **`docs/private/homelab/`**.
 - Prometer **FIDO2 no browser**, **JWT de licenciamento completo** ou prova **“secure by design”** só com scripts — documentar **o que foi executado** vs **`SMOKE_*.md`** / **`SECURITY.md`**.
 
@@ -83,6 +95,22 @@ Depois **leia** **`docs/private/homelab/reports/`** (`completao_*_allhosts.log`,
 
 Chat **novo** sem contexto (após pré-condições). O texto do bloco está em **inglês** para alinhar ao assistente; o cabeçalho **`Session mode: smoke-only`** referencia este arquivo.
 
+**Ref vs versão:** **`origin/main`** é a **ponta do branch** no remoto, não um semver. A **versão do produto** (ex.: **1.7.2-beta** em **`pyproject.toml`**) é o que o commit **`main`** aponta depois do **`git fetch`** — confirme no PC dev com **`git show origin/main:pyproject.toml`** se precisar. Uma **tag** Git **`v1.7.2-beta`** só coincide se existir; caso contrário use **`-LabGitRef origin/main`** para alinhar os clones LAB ao mesmo tip que o GitHub **`main`**.
+
+**Onde definir a ref:** mantenha a **linha 1** do bloco copy-paste **só** com **`completao`**. Altere o **passo 1** abaixo (valor de **`-LabGitRef`**), não a linha 1.
+
+**Sanidade `git` / `gh` (PC dev antes do completão):** rode **`git fetch origin`**, depois **`git rev-parse HEAD`** e **`git rev-parse origin/main`** — devem coincidir se o teu **`main`** local está sincronizado com o GitHub. **`gh repo view`** serve para metadados (branch padrão, nome); **não** substitui o **`git`** para identidade de commit. Alterações locais **não commitadas** não mudam **`origin/main`**; os hosts LAB seguem a ref **remota**, não alterações unstaged no working tree.
+
+### Bloco A — exemplos de `-LabGitRef` (editar só o passo 1)
+
+| Objetivo | Passo 1 |
+| -------- | ------- |
+| Clones LAB = **ponta do `main` no GitHub** (padrão no bloco abaixo) | `.\scripts\lab-completao-orchestrate.ps1 -Privileged -LabGitRef origin/main` |
+| Clones LAB = **tag** `vX.Y.Z` (ex.: smoke de release) | `.\scripts\lab-completao-orchestrate.ps1 -Privileged -LabGitRef vX.Y.Z -SkipGitPullOnInventoryRefresh` |
+| Sem verificação de ref (smoke no que estiver checkout nos LAB) | `.\scripts\lab-completao-orchestrate.ps1 -Privileged` — omitir **`-LabGitRef`** (ou **`-SkipLabGitRefCheck`** se o manifesto tiver **`completaoTargetRef`**) |
+
+Para **tag**, **`-SkipGitPullOnInventoryRefresh`** evita que o **`lab-op-sync-and-collect`** avance os clones LAB para o **`main`** mais recente durante o refresh de inventário — ver **`LAB_COMPLETAO_RUNBOOK.md`** (*Ref Git alvo*).
+
 ```text
 completao
 
@@ -90,14 +118,16 @@ You are in the data-boar repo on my Windows dev PC. Read AGENTS.md (Quick index:
 
 Session mode: smoke-only (see docs/ops/LAB_COMPLETAO_FRESH_AGENT_BRIEF.md).
 
-1) From repo root run: .\scripts\lab-completao-orchestrate.ps1 -Privileged
+LAB git target: match GitHub main — run orchestrator with -LabGitRef origin/main (runs lab-op-git-ensure-ref Check before host smoke). Expect pyproject.toml on that tip to read 1.7.2-beta for this test wave; if ensure-ref fails, LAB clones are not at origin/main (align per LAB_COMPLETAO_RUNBOOK.md).
+
+1) From repo root run: .\scripts\lab-completao-orchestrate.ps1 -Privileged -LabGitRef origin/main
 2) Summarize docs/private/homelab/reports/ logs (no secrets in chat if sensitive).
 3) Read docs/private/homelab/OPERATOR_SYSTEM_MAP.md and LAB_SOFTWARE_INVENTORY.md when present; reconcile host-smoke with documented roles (container-only manifest hosts are not "missing uv" defects).
 4) Document material findings under docs/private/homelab/ (timeouts, latency, FP/FN vs synthetic, confidence on real paths). Do not expand to full CLI/DB/browser/API proof unless I ask in a follow-up.
 
 Do not ask redundant permission for SSH or -Privileged. Do not claim the lab is unreachable from this workspace. Protect my primary Windows dev workstation per docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md.
 
-If something fails, print the actual error and what I must fix (e.g. sudoers, manifest, missing uv on native hosts), then stop — I will fix and ask you to retry. Do not demand bare-metal uv on container-only manifest hosts (completaoEngineMode: container).
+If something fails, print the actual error and what I must fix (e.g. sudoers, manifest, missing uv on native hosts, LAB clone behind origin/main), then stop — I will fix and ask you to retry. Do not demand bare-metal uv on container-only manifest hosts (completaoEngineMode: container).
 ```
 
 ---
