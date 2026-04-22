@@ -36,15 +36,15 @@ alwaysApply: true
 
 1. **Token-aware operations:** Prefer **one scripted pass** + **logs under `docs/private/homelab/reports/`** over repeated manual micro-steps — this is the agreed way to **save cognition and tokens** on reruns.
 
-## Blast radius — primary dev workstation (L14) vs LAB-OP hosts (contract — do not “forget”)
+## Blast radius — primary dev workstation vs LAB-OP hosts (contract — do not “forget”)
 
-1. **Primary Windows dev PC** (ThinkPad **L14** / **L-series** **role**, Cursor workspace): **never** run **`git reset --hard`**, **`git clean -fdx`**, **`clean-slate`**, or history rewrite on the **canonical** `data-boar` clone — **`docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**. Normal workflow: **`git pull`**, merge, branch, stash.
+1. **Primary Windows dev PC** (ThinkPad **L-series** **role**, Cursor workspace): **never** run **`git reset --hard`**, **`git clean -fdx`**, **`clean-slate`**, or history rewrite on the **canonical** `data-boar` clone — **`docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**. Normal workflow: **`git pull`**, merge, branch, stash.
 
-1. **LAB-OP manifest hosts** (**`lab-op-hosts.manifest.json`** — **`sshHost`** + **`repoPaths`**): **always safe** to align from GitHub — **`git fetch`**, **`git pull --ff-only`**, **`lab-op-repo-status.ps1 -PullFfOnly`**, **`lab-op-git-align-main.ps1`**, **`lab-op-git-ensure-ref -Mode Reset`**, **`lab-completao-orchestrate.ps1 -AlignLabClonesToLabGitRef`** target **only** those **remote** paths over SSH. This is **not** “destructive to the product” in the L14 sense — it is **expected** lab hygiene. **Do not** ask pointless “should I align?” questions when the operator already contracted completão; **do not** tell them to “SSH to each box by hand” if the script can do it.
+1. **LAB-OP manifest hosts** (**`lab-op-hosts.manifest.json`** — **`sshHost`** + **`repoPaths`**): **always safe** to align from GitHub — **`git fetch`**, **`git pull --ff-only`**, **`lab-op-repo-status.ps1 -PullFfOnly`**, **`lab-op-git-align-main.ps1`**, **`lab-op-git-ensure-ref -Mode Reset`**, **`lab-completao-orchestrate.ps1 -AlignLabClonesToLabGitRef`** target **only** those **remote** paths over SSH. This is **not** “destructive to the product” in the primary dev PC sense — it is **expected** lab hygiene. **Do not** ask pointless “should I align?” questions when the operator already contracted completão; **do not** tell them to “SSH to each box by hand” if the script can do it.
 
-1. **Container images** (Docker / **Swarm** / **Podman** / **Kubernetes**): images from **Docker Hub** (or the configured registry) are **re-pullable** — **`docker pull`**, service update, prune old tags on lab nodes is **normal** and **not** equivalent to destroying the canonical Git tree on L14.
+1. **Container images** (Docker / **Swarm** / **Podman** / **Kubernetes**): images from **Docker Hub** (or the configured registry) are **re-pullable** — **`docker pull`**, service update, prune old tags on lab nodes is **normal** and **not** equivalent to destroying the canonical Git tree on the primary dev PC.
 
-1. **No redundant permission prompts** for the **already-agreed** completão contract (SSH from dev PC, **`-Privileged`**, LAB clone alignment): **execute** and **report** — see **`operator-direct-execution.mdc`**. **Stop** only for real blockers (SSH/auth failure, missing manifest, ambiguous action that would hit the **L14** canonical tree).
+1. **No redundant permission prompts** for the **already-agreed** completão contract (SSH from dev PC, **`-Privileged`**, LAB clone alignment): **execute** and **report** — see **`operator-direct-execution.mdc`**. **Stop** only for real blockers (SSH/auth failure, missing manifest, ambiguous action that would hit the **primary Windows dev PC** canonical tree).
 
 ## Failure handling (no “excuses” loop — operator + assistant loop)
 
@@ -52,7 +52,7 @@ alwaysApply: true
 
 1. If **`sudo -n`** fails for privileged probes: **remind** the operator to (a) align **sudoers** with the narrow template for completão / host-report, and/or (b) refresh an interactive session on the host if they rely on password sudo for **manual** steps — then **re-run** **`lab-completao-orchestrate.ps1 -Privileged`**. **Do not** blame “the AI” for lack of network access when the failure is **permission denied** for **`sudo -n`**.
 
-1. If **`MISSING_SCRIPT`** or stale clone: run **`lab-op-repo-status.ps1`** / **`-PullFfOnly`** or align scripts against **manifest hosts only** — never against the L14 canonical tree — see **`LAB_COMPLETAO_RUNBOOK.md`** (*Blast radius*).
+1. If **`MISSING_SCRIPT`** or stale clone: run **`lab-op-repo-status.ps1`** / **`-PullFfOnly`** or align scripts against **manifest hosts only** — never against the primary dev PC canonical tree — see **`LAB_COMPLETAO_RUNBOOK.md`** (*Blast radius*).
 
 1. If logs show **`uv` not in PATH** / skipped **`import core.engine`**: **read the manifest** (and **`LAB_COMPLETAO_RUNBOOK.md`**) — when **`completaoEngineMode`:** **`container`** (or **`completaoSkipEngineImport`:** **`true`**), that is **expected** for Swarm/Podman-only hosts; **do not** insist on installing **`uv`** on bare metal unless the operator wants native runtime there.
 

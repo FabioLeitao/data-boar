@@ -4,8 +4,8 @@
   For each LAB-OP host: verify or reset each repoPaths clone to a specific git ref (tag, origin/main, branch tip, or SHA).
 
 .DESCRIPTION
-  Use -Mode Check to fail fast when lab clones are not at the resolved commit (reproducible completão).
-  Use -Mode Reset to align clones destructively (discard local commits / move HEAD) — same risk class as lab-op-git-align-main.ps1.
+  Use -Mode Check to fail fast when lab clones are not at the resolved commit (reproducible completao).
+  Use -Mode Reset to align clones destructively (discard local commits / move HEAD) - same risk class as lab-op-git-align-main.ps1.
 
   Ref resolution after git fetch:
   - "main" or "origin/main" -> origin/main tip
@@ -13,10 +13,10 @@
 
   Remote bash runs "git fetch origin --prune" first (required), then "git fetch origin --tags --prune"
   as best-effort (|| true). Divergent local tags can make tag fetch exit non-zero; that must not
-  abort the chain before HEAD vs resolved ref — otherwise logs show SSH exit != 0 with no LABOP_REF_* line.
+  abort the chain before HEAD vs resolved ref - otherwise logs show SSH exit != 0 with no LABOP_REF_* line.
 
   When pinning to a release tag, run lab-completao-orchestrate.ps1 with -SkipGitPullOnInventoryRefresh so
-  lab-op-sync-and-collect does not git pull to main before this step — see LAB_COMPLETAO_RUNBOOK.md.
+  lab-op-sync-and-collect does not git pull to main before this step - see LAB_COMPLETAO_RUNBOOK.md.
 
 .EXAMPLE
   .\scripts\lab-op-git-ensure-ref.ps1 -Ref origin/main -Mode Check

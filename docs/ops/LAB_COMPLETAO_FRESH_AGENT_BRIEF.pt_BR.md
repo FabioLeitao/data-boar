@@ -8,9 +8,9 @@
 
 | Onde | Nunca (Git destrutivo / clean-slate no clone canônico) | Sempre OK no completão |
 | ---- | -------------------------------------------------------- | ------------------------ |
-| **PC dev principal** (ThinkPad **L14**, este repo no Cursor) | **`git reset --hard`**, **`git clean -fdx`**, **`clean-slate`**, reescrita de histórico na cópia de trabalho **principal** | **`git pull`**, merge, branch, stash; auditorias só em **`%TEMP%`** |
+| **PC dev principal** (ThinkPad **L-series**, este repo no Cursor) | **`git reset --hard`**, **`git clean -fdx`**, **`clean-slate`**, reescrita de histórico na cópia de trabalho **principal** | **`git pull`**, merge, branch, stash; auditorias só em **`%TEMP%`** |
 | Hosts **LAB-OP** no **`lab-op-hosts.manifest.json`** (SSH **`repoPaths`**) | N/A — clones devem seguir o GitHub | **`git fetch` / `pull --ff-only`**, **`lab-op-git-align-main.ps1`**, **`lab-op-git-ensure-ref`**, **`-AlignLabClonesToLabGitRef`**, **`lab-op-repo-status.ps1 -PullFfOnly`** — rodar **de forma autónoma** a partir dos scripts no PC dev; **não** pedir ao operador para “ir host a host” à mão se o script já faz SSH |
-| **Imagens de contêiner** (Docker / Swarm / Podman / Kubernetes) | N/A para o Git do L14 | **Voltar a puxar** do **Docker Hub** (ou registry); **`docker pull`**, atualizar stack — **normal** |
+| **Imagens de contêiner** (Docker / Swarm / Podman / Kubernetes) | N/A para o Git do PC dev principal | **Voltar a puxar** do **Docker Hub** (ou registry); **`docker pull`**, atualizar stack — **normal** |
 
 Tabela completa: **`LAB_COMPLETAO_RUNBOOK.md`** (*Raio de explosão* / *Blast radius*). Política do PC principal: **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md`**.
 
@@ -84,8 +84,8 @@ Depois **leia** **`docs/private/homelab/reports/`** (`completao_*_allhosts.log`,
 ## Não fazer
 
 - Dizer que o assistente **não** chega ao lab por **SSH a partir deste PC** quando o **`ssh`** funciona — ver **`homelab-ssh-via-terminal.mdc`**.
-- Pedir **de novo** permissão SSH / **`-Privileged`** ou **“devo alinhar os clones LAB?”** se o operador já pediu **completao** — scripts de alinhamento atingem **só** hosts do manifesto, não o L14 — ver **`operator-direct-execution.mdc`** e *Contrato de raio de explosão* acima.
-- Correr **`git reset --hard`**, **`clean-slate`** ou reescrita de histórico no clone **canônico** no **PC principal (L14)** — **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md`**. (Contraste: **`repoPaths`** em LAB podem usar scripts de alinhamento — **não** é o L14.)
+- Pedir **de novo** permissão SSH / **`-Privileged`** ou **“devo alinhar os clones LAB?”** se o operador já pediu **completao** — scripts de alinhamento atingem **só** hosts do manifesto, não o PC Windows principal — ver **`operator-direct-execution.mdc`** e *Contrato de raio de explosão* acima.
+- Correr **`git reset --hard`**, **`clean-slate`** ou reescrita de histórico no clone **canônico** no **PC principal** — **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md`**. (Contraste: **`repoPaths`** em LAB podem usar scripts de alinhamento — **não** é o PC dev principal.)
 - **Segredos** ou identificadores LAN no **GitHub público**; notas só em **`docs/private/homelab/`**.
 - Prometer **FIDO2 no browser**, **JWT de licenciamento completo** ou prova **“secure by design”** só com scripts — documentar **o que foi executado** vs **`SMOKE_*.md`** / **`SECURITY.md`**.
 

@@ -91,7 +91,7 @@ if ($effectiveLabRef -and -not $SkipLabGitRefCheck) {
     Write-Host "lab-completao-orchestrate: lab-op-git-ensure-ref ref=$effectiveLabRef mode=$ensureMode" -ForegroundColor Cyan
     & $ensureScript -RepoRoot $RepoRoot -ManifestPath $ManifestPath -Ref $effectiveLabRef -Mode $ensureMode -SkipFping:$SkipFping
     if ($LASTEXITCODE -ne 0) {
-        throw "lab-op-git-ensure-ref failed (ref=$effectiveLabRef mode=$ensureMode). Align LAB clones or use -SkipLabGitRefCheck. See docs/ops/LAB_COMPLETAO_RUNBOOK.md (Target git ref for reproducible completão)."
+        throw "lab-op-git-ensure-ref failed (ref=$effectiveLabRef mode=$ensureMode). Align LAB clones or use -SkipLabGitRefCheck. See docs/ops/LAB_COMPLETAO_RUNBOOK.md (Target git ref for reproducible completao)."
     }
 }
 
