@@ -10,7 +10,7 @@ Separate **three layers** so you do not paste a wall of text every session:
 2. **Tier shorthand (line 2):** a **short code** this document defines — tells the assistant which slice and which script line to prefer.
 3. **Heavy prose (optional):** the full **copy-paste blocks A–E** in **[`LAB_COMPLETAO_FRESH_AGENT_BRIEF.md`](LAB_COMPLETAO_FRESH_AGENT_BRIEF.md)** — use when you change contracts or need a one-off deviation.
 
-**Automation:** from repo root, **`.\scripts\completao-chat-starter.ps1`** prints a **minimal** two-line starter (and optional command line) you can paste into Cursor. **`.\scripts\completao-chat-starter.ps1 -Help`** lists tiers.
+**Automation:** from repo root, **`.\scripts\completao-chat-starter.ps1`** prints a **minimal** starter ( **`completao`** + **`tier:`** lines, sometimes **`semver:`** / **`tag:`** on the next lines) and an optional suggested command. **`.\scripts\completao-chat-starter.ps1 -Help`** lists tiers. For arbitrary releases use **`-Tier release-master -ReleaseSemver 1.7.4`** (optional **`-GitTag`** when it is not **`v` + semver**).
 
 **Private custom prompt:** if your long narrative must mention real paths or preferences, keep a copy under **`docs/private/homelab/`** only — start from **[`../private.example/homelab/COMPLETAO_OPERATOR_PROMPT.example.md`](../private.example/homelab/COMPLETAO_OPERATOR_PROMPT.example.md)** (placeholders, safe to track).
 
@@ -25,9 +25,10 @@ Separate **three layers** so you do not paste a wall of text every session:
 | **`tier:followup-poc`** | Windows pytest POC slices | Match block **C** ( **`smoke-maturity-assessment-poc.ps1`**, **`smoke-webauthn-json.ps1`** ). |
 | **`tier:followup-cli`** | External eval / CLI | Match block **D** + **[`LAB_EXTERNAL_CONNECTIVITY_EVAL.md`](LAB_EXTERNAL_CONNECTIVITY_EVAL.md)**. |
 | **`tier:evidence`** | Close notes for next session | Match block **E**. |
-| **`tier:release-master-v1-7-3`** | Full **SRE / release 1.7.3** master checklist (phases 0–4) — **read** **[`COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md`](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md)** ([pt-BR](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md)) **before** running; align outputs to **private** `homelab/reports/` per that doc’s policy notes | Open the master prompt doc; follow **`LAB_COMPLETAO_RUNBOOK.md`** blast radius; orchestrator **`lab-completao-orchestrate.ps1 -Privileged`** when applicable; **do not** destructive Git on **primary** dev PC |
+| **`tier:release-master-v1-7-3`** | **Frozen** shorthand for the **1.7.3** master checklist (same intent as **`release-master`** with **`semver:1.7.3`**) — **read** **[`COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md`](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md)** ([pt-BR](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md)) **before** running | Same as **`tier:release-master`** for 1.7.3; kept for stable transcripts |
+| **`tier:release-master`** | **Parametric** SRE / release master checklist — **lines 3–4** carry **`semver:X.Y.Z`** and **`tag:vX.Y.Z`** (or non-semver tags such as **`v1.7.2-safe`** via explicit **`tag:`**). **Read** the doc **`completao-chat-starter.ps1` resolves:** prefer **`COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT_<semver>.md`** when that file exists, else fall back to **[`COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md`](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md)**; add **`.pt_BR.md`** with the same basename when you archive a new pair | Run **`.\scripts\completao-chat-starter.ps1 -Tier release-master -ReleaseSemver 1.7.4`** (optional **`-GitTag …`**) to print the same lines; align outputs to **private** `homelab/reports/` per policy notes in the doc you open |
 
-**Syntax:** line 2 is exactly one tier line, e.g. **`tier:smoke-main`**. Optional line 3+: extra constraints (**`token-aware`**, **`short`**, one-off flags). Do **not** append branch/version on **line 1** — taxonomy is **`session-mode-keywords.mdc`**.
+**Syntax:** line 2 is exactly one tier line, e.g. **`tier:smoke-main`**. For **`tier:release-master`**, lines **3–4** are **`semver:…`** and **`tag:…`** (printed by **`completao-chat-starter.ps1`**). Optional later lines: extra constraints (**`token-aware`**, **`short`**, one-off flags). Do **not** append branch/version on **line 1** — taxonomy is **`session-mode-keywords.mdc`**.
 
 ## Thin starter (example paste)
 
@@ -55,7 +56,7 @@ Use **[`LAB_COMPLETAO_FRESH_AGENT_BRIEF.md`](LAB_COMPLETAO_FRESH_AGENT_BRIEF.md)
 
 ## Cross-links
 
-- **Master release checklist prompt (1.7.3 archive):** [COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md) ([pt-BR](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md))
+- **Master release checklist prompt (1.7.3 archive + parametric tier):** [COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md) ([pt-BR](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md)); future semver-specific copies: **`COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT_<semver>.md`** (see **`completao-chat-starter.ps1 -Tier release-master`**)
 - **Cold-start ladder:** [OPERATOR_AGENT_COLD_START_LADDER.md](OPERATOR_AGENT_COLD_START_LADDER.md) ([pt-BR](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md))
 - **Personas (ENT / PRO / edge / bridge):** [LAB_OP_HOST_PERSONAS.md](LAB_OP_HOST_PERSONAS.md) ([pt-BR](LAB_OP_HOST_PERSONAS.pt_BR.md))
 - **Runbook:** [LAB_COMPLETAO_RUNBOOK.md](LAB_COMPLETAO_RUNBOOK.md) ([pt-BR](LAB_COMPLETAO_RUNBOOK.pt_BR.md))

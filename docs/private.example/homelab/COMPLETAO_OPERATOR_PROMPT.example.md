@@ -5,7 +5,7 @@
 ## How to use with taxonomy
 
 1. **Line 1 in chat:** `completao` (English token only).
-2. **Line 2:** a **`tier:…`** line from the library (e.g. **`tier:smoke-main`**). For the **full 1.7.3 SRE master checklist** (phases 0–4) archived in-repo, use **`tier:release-master-v1-7-3`** and read **[`../../ops/COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md`](../../ops/COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md)** ([pt-BR](../../ops/COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md)) before executing.
+2. **Line 2:** a **`tier:…`** line from the library (e.g. **`tier:smoke-main`**). For the **full SRE master checklist** (phases 0–4) archived in-repo: **frozen 1.7.3** → **`tier:release-master-v1-7-3`**; **other releases** → **`tier:release-master`** with **`semver:`** / **`tag:`** on the next lines (print via **`.\scripts\completao-chat-starter.ps1 -Tier release-master -ReleaseSemver X.Y.Z`**). Read the resolved **`COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT*.md`** under **[`../../ops/`](../../ops/)** before executing.
 3. **Optional:** paste a **short** paragraph below from *this* private file — only when the default assistant behaviour is not enough.
 
 ## Replaceable private notes (examples — redact before any public paste)
