@@ -47,6 +47,18 @@ Na raiz do repositório **data-boar**:
 - **`-ShowCommand`** imprime a linha exata do `es.exe` para copiar ou estender com flags **diretas** da CLI.
 - **`-FallbackPowerShell`** — se o **`es.exe`** **não** estiver instalado, executa uma busca recursiva **limitada** com **`Get-ChildItem`** no mesmo escopo padrão (raiz do repo ou **`-SearchRoot`**). **Mais lenta** e com mais I/O que o Everything. **Não** combina com **`-Regex`** ou **`-Global`** (esses casos precisam da CLI real).
 
+### pCloud (`P:`) e outras árvores de sincronização enormes
+
+No **Windows** do operador, o **pCloud** costuma montar como **`P:`** (ver **`AGENTS.md`** / **`docs/PRIVATE_OPERATOR_NOTES.pt_BR.md`**). Pastas como **`P:\Automatic Upload\...`** podem ter **dezenas de milhares** de arquivos — **não** começar com **`Get-ChildItem -Recurse`** sem limite a partir dessas raízes (lento, barulhento, péssimo custo em tokens).
+
+**Preferir:**
+
+```powershell
+.\scripts\es-find.ps1 -SearchRoot "P:\Automatic Upload" -Query "*.jpg" -MaxCount 20
+```
+
+Use o **`-SearchRoot` mais estreito** que o operador confirmar. Notas com subpastas reais: **`docs/private/WHAT_TO_SHARE_WITH_AGENT.md`**.
+
 ---
 
 ## Fallback quando o `es.exe` não existe (assistentes)

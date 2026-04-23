@@ -6,6 +6,8 @@ alwaysApply: true
 
 # Everything CLI (`es.exe`) — token-aware filename search (primary Windows dev PC)
 
+**Companion:** **`windows-pcloud-drive-search-discipline.mdc`** — assume **`P:`** for pCloud on Windows; **forbid** broad **`Get-ChildItem -Recurse`** on huge sync subtrees; always **`es-find.ps1 -SearchRoot`** + low **`-MaxCount`**.
+
 ## Platform
 
 - **`es.exe`** exists on **Windows** only (Voidtools Everything). The operator’s **L-series** workstation is the normal place to run **`.\scripts\es-find.ps1`**.

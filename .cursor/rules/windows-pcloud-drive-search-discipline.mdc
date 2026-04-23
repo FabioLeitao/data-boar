@@ -1,0 +1,28 @@
+---
+description: Windows dev PC — pCloud normally on P:; no broad Get-ChildItem -Recurse on huge sync trees; use scripts/es-find.ps1 (es.exe) with SearchRoot and low MaxCount
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# pCloud `P:` and filename search discipline (Windows, token-aware)
+
+## Defaults
+
+- On the **same Windows PC** as Cursor, **pCloud** is **normally** mounted as **`P:`** (sometimes **`Y:\`** via VeraCrypt — see **`AGENTS.md`**). If a path fails, **`Test-Path`** once and report **sync client likely offline**; do not silently assume another drive letter.
+
+## Never “torch tokens” on huge trees
+
+- **Do not** start with **`Get-ChildItem -Recurse`** from **`P:\`**, from **`P:\Automatic Upload`**, or from subtrees known to be **massive** (e.g. deep **iPhone** mirror folders). Same rule for any other **multi‑10k‑object** sync root unless the operator gave a **narrow** path and a **tight** filter.
+- **Do** use **`.\scripts\es-find.ps1`** with **`-SearchRoot`**, a **specific `-Query`**, and a **low `-MaxCount`** (raise only when the operator asked for exhaustive lists). Session keyword **`es-find`**; ladder and fallbacks in **`.cursor/rules/everything-es-cli.mdc`** and **`docs/ops/EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md`**.
+
+## Repo-first (unchanged)
+
+- Inside **`data-boar/`** workspace: prefer **`Glob`** / **`Grep`** when fast — **unless** the tree is huge or paths are **outside** the workspace; then **`es-find.ps1`** wins.
+
+## Where the operator records real `P:\...` bases
+
+- **`docs/private/WHAT_TO_SHARE_WITH_AGENT.md`** — iPhone → pCloud table (private only; never tracked GitHub paths).
+
+## Config / rule edits — rollback
+
+- Prefer **small slices** and **one coherent commit** per experiment; **revert** or **`git checkout -- <file>`** from **`main`** if a rule change hurts clarity — same habit as **`docs/ops/COMMIT_AND_PR.md`** and **`.cursor/rules/execution-priority-and-pr-batching.mdc`**.
