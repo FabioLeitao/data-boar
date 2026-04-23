@@ -1,10 +1,10 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Print a minimal Cursor chat starter for lab completão (token + tier shorthand).
+    Print a minimal Cursor chat starter for lab completao (token + tier shorthand).
 
 .DESCRIPTION
-    Pairs with docs/ops/COMPLETAO_OPERATOR_PROMPT_LIBRARY.md — line 1 must stay the
+    Pairs with docs/ops/COMPLETAO_OPERATOR_PROMPT_LIBRARY.md - line 1 must stay the
     English session token "completao" alone; line 2 is a tier:* shorthand so you
     rarely need the full LAB_COMPLETAO_FRESH_AGENT_BRIEF copy-paste blocks.
 
@@ -82,7 +82,7 @@ function Resolve-ReleaseMasterDocBasename([string]$semverNorm) {
 
 function Show-Help {
     @'
-completao-chat-starter.ps1 - print minimal chat lines for lab completão (UTF-8 docs; this help is ASCII-only)
+completao-chat-starter.ps1 - print minimal chat lines for lab completao (UTF-8 docs; this help is ASCII-only)
 
 Tiers (line 2 after completao):
   smoke           -> tier:smoke  -> lab-completao-orchestrate.ps1 -Privileged

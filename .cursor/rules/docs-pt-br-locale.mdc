@@ -6,6 +6,8 @@ alwaysApply: false
 
 # pt-BR locale (not pt-PT)
 
+**Always-on contract:** **`.cursor/rules/docs-locale-pt-br-contract.mdc`** — assistants must default to **pt-BR** for all Portuguese prose unless an exception there applies. This file is the **expanded** prefer/avoid table and workflow notes.
+
 **Audience:** Operators and prospects in **Brazil** first; **English** remains the global lingua franca for paths, commits, APIs, and many technical terms.
 
 **Operator chat:** When the operator writes in Portuguese, replies follow the **same** vocabulary and style bar — see **`.cursor/rules/operator-chat-language-pt-br.mdc`** (always applied) and **`.cursor/skills/operator-dialogue-pt-br/SKILL.md`**.

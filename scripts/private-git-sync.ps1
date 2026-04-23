@@ -127,7 +127,7 @@ if ($Push) {
     } else {
         foreach ($r in $labRemotes) {
             Write-Info "Pushing para $r ..."
-            # Capture stderr (SSH MOTD) without piping — pipeline resets $LASTEXITCODE on Windows PS 5.1
+            # Capture stderr (SSH MOTD) without piping - pipeline resets $LASTEXITCODE on Windows PS 5.1
             $out = git push $r main 2>&1
             $pushExit = $LASTEXITCODE
             $outPreview = $out | Select-Object -First 8

@@ -30,9 +30,21 @@ The repo already ships **`scripts/es-find.ps1`** as the token-aware wrapper (def
 - **Negative:** Everything must be installed and running on primary Windows dev PC for the fast path; fallback is slower.
 - **Watch:** Do not paste long path lists into **public** commits or issues; treat like any filesystem listing (**`private-pii-never-public.mdc`**).
 
+## Amendment (2026-04-23) — pCloud `P:` and huge sync trees
+
+This ADR already preferred **`es-find.ps1`** for **filename** discovery. **Clarification:** on the operator **Windows** workstation, **pCloud** is commonly **`P:\`** with subtrees (**e.g. auto-upload mirrors**) that contain **tens of thousands** of objects.
+
+- **Assistants** must **not** open investigations with unbounded **`Get-ChildItem -Recurse`** from **`P:\`** or other known-massive sync roots.
+- **Do** use **`.\scripts\es-find.ps1 -SearchRoot "<narrow folder>" -Query "<pattern>" -MaxCount N`** (Everything index, low **N** unless the operator asked for exhaustive output).
+- **Companion rule (always applied):** **`.cursor/rules/windows-pcloud-drive-search-discipline.mdc`**.
+
+## Amendment (2026-04-08) — `Get-ChildItem` is allowed; notify on `es` failure
+
+**`Get-ChildItem`** (including **`-Recurse`** under a **scoped** root) was **never** meant to be “forbidden.” The **default** on Windows for **filename/path** discovery remains **`.\scripts\es-find.ps1`** → **`es.exe`** (or wrappers that already call **`es`**); that default is **not** demoted. **`Get-ChildItem`** is **recovery** when **`es`** / IPC / PATH fails — **assistants tell the operator** in one line what broke, then **`-FallbackPowerShell`**, **`Glob`**, or native **`Get-ChildItem`**. Assistants should **not forget** existing **`scripts/`** wrappers (**token-aware** discipline).
+
 ## References
 
 - **`scripts/es-find.ps1`**
-- **`.cursor/rules/everything-es-cli.mdc`**, **`.cursor/skills/everything-es-search/SKILL.md`**
+- **`.cursor/rules/everything-es-cli.mdc`**, **`.cursor/rules/windows-pcloud-drive-search-discipline.mdc`**, **`.cursor/skills/everything-es-search/SKILL.md`**
 - **`docs/ops/EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md`**
 - **`docs/ops/TOKEN_AWARE_SCRIPTS_HUB.md`**

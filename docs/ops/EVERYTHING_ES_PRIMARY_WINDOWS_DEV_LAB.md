@@ -47,14 +47,26 @@ From the **data-boar** repo root:
 - **`-ShowCommand`** prints the exact `es.exe` invocation to copy or extend with **raw** CLI flags.
 - **`-FallbackPowerShell`** — if **`es.exe`** is **not** installed, run a **capped** recursive **`Get-ChildItem`** under the same **default scope** (repo root or **`-SearchRoot`**). **Slower** and more I/O than Everything. **Not** used with **`-Regex`** or **`-Global`** (those need the real CLI).
 
+### pCloud (`P:`) and other huge sync trees
+
+On the operator **Windows** workstation, **pCloud** is often **`P:`** (see **`AGENTS.md`** / **`docs/PRIVATE_OPERATOR_NOTES.md`**). Folders such as **`P:\Automatic Upload\...`** can hold **tens of thousands** of files — **default** = **`es-find.ps1`** / **`es.exe`** (Everything index); **`Get-ChildItem`** is **recovery** if **`es`** fails (**notify** IPC/PATH). Avoid **opening** with unbounded **`Get-ChildItem -Recurse`** from those roots alone (slow, noisy, poor token ROI).
+
+**Prefer:**
+
+```powershell
+.\scripts\es-find.ps1 -SearchRoot "P:\Automatic Upload" -Query "*.jpg" -MaxCount 20
+```
+
+Use the **narrowest** **`-SearchRoot`** the operator confirmed. Operator notes for exact subfolders: **`docs/private/WHAT_TO_SHARE_WITH_AGENT.md`**.
+
 ---
 
 ## Fallback when `es.exe` is missing (assistants)
 
 **Order:**
 
-1. **`.\scripts\es-find.ps1`** ( **`es.exe`** ) — **always try first** on **Windows primary dev PC** for **filename/path** search when a **fast index** beats **Glob** on a **large** tree.
-2. If **`es.exe`** is absent: same script with **`-FallbackPowerShell`**, or **Cursor `Glob`** for **in-repo** patterns, or a **narrow** **`Get-ChildItem`** path the operator named.
+1. **`.\scripts\es-find.ps1`** ( **`es.exe`** ) — **default** on **Windows primary dev PC** for **filename/path** search when a **fast index** beats **Glob** on a **large** tree; **do not skip** for ad-hoc **`Get-ChildItem`** when **`es`** should work.
+2. If **`es-find`** / **`es.exe`** fails: **notify the operator** briefly (exit code, IPC, PATH) so they can fix **Everything** or install — then same script with **`-FallbackPowerShell`**, or **Cursor `Glob`** for **in-repo** patterns, or a **narrow** **`Get-ChildItem`** path. **`Get-ChildItem`** is **recovery**, not co-equal default.
 3. **Do not** use **SemanticSearch** or huge **Grep** runs as a substitute for “find this **filename**” — wrong tool, higher token cost.
 4. **Linux SSH (lab-op):** **`find`** / **`fd`**, not **`es`**.
 

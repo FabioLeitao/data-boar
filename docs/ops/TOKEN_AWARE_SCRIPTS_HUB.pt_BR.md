@@ -6,6 +6,8 @@
 
 **Não substitui:** **`.cursor/skills/token-aware-automation/SKILL.md`** (comandos do dia a dia) nem **`.cursor/rules/session-mode-keywords.mdc`** (tokens de chat). Este arquivo responde: *“o que mais existe, e onde está documentado?”*
 
+**Ritual do assistente:** **`.cursor/rules/repo-scripts-wrapper-ritual.mdc`** (`alwaysApply: true`) — folhear este hub antes de reinventar shell longo; usar **`scripts/*.ps1`** acordados; se um wrapper falhar, **avisar o operador** (instalação/montagem/PATH) em vez de “esquecer” a automação em silêncio.
+
 **Chat novo / pouco contexto:** leia primeiro **[OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)** ([EN](OPERATOR_AGENT_COLD_START_LADDER.md)) — escada ordenada + router de tarefas para abrir *este* hub depois de saber qual família de scripts importa.
 
 ---
@@ -22,6 +24,14 @@
 | `safe-workspace-snapshot.ps1` | Snapshot pre-commit | Palavra-chave **`safe-commit`** |
 | `smoke-maturity-assessment-poc.ps1` | Subconjunto pytest rapido (gate 1 do POC de maturidade) | [PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md](../plans/PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md), [SMOKE_MATURITY_ASSESSMENT_POC.md](SMOKE_MATURITY_ASSESSMENT_POC.md) |
 
+### 1a. CLI rápida no Windows (conteúdo / tail / preview)
+
+| Script | Função | Ligado a |
+| ------ | ---- | -------- |
+| `repo-grep.ps1` | Busca em conteúdo: **`rg`**, opcional **`baregrep`** (`-PreferBareGrep`; também **`Downloads`**) | **`docs/ops/WINDOWS_FAST_CLI_WRAPPERS.pt_BR.md`**, **`.cursor/rules/repo-scripts-wrapper-ritual.mdc`** |
+| `repo-tail.ps1` | Ultimas **N** linhas: **`tail.exe`** do Git, senão **`Get-Content -Tail`** | Igual |
+| `repo-view.ps1` | Preview com teto: **`bat`** / **`batcat`**, senão **`Get-Content`** | Igual |
+
 ---
 
 ## 2. PII / árvore pública / estação principal de desenvolvimento
@@ -34,7 +44,7 @@
 | `run-pii-history-rewrite.ps1` | Reescrita de histórico (perigoso) | Guia PII Parte II — **não** rotina no PC Windows principal de desenvolvimento; **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`** |
 | `es-find.ps1` | Busca por nome (**`es.exe`**, opcional **`-FallbackPowerShell`**) | SKILL **`everything-es-search`**, **`docs/ops/EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md`**, **`es-find`** |
 | `social-x-pace-remind.ps1` | Linhas X em atraso vs `SOCIAL_HUB.md` (privado); Slack opcional | **`x-pace-check`**, **`x-posted`**; **`OPERATOR_NOTIFICATION_CHANNELS.md`** §6; privado **`OPERATOR_X_PACE_AND_VALIDATION.pt_BR.md`** |
-| `social_x_thread_lengths.py` | Valida blocos em crases sob `## Thread pronta` em `2026*_x_*.md` (máx. 279 por defeito) | Privado **`SOCIAL_HUB.md`**, **`X_PLATFORM_LIMITS_AND_PREMIUM.pt_BR.md`**; `uv run python scripts/social_x_thread_lengths.py` |
+| `social_x_thread_lengths.py` | Valida blocos em crases sob `## Thread pronta` em `2026*_x_*.md` (máx. 279 por padrão) | Privado **`SOCIAL_HUB.md`**, **`X_PLATFORM_LIMITS_AND_PREMIUM.pt_BR.md`**; `uv run python scripts/social_x_thread_lengths.py` |
 
 ---
 
