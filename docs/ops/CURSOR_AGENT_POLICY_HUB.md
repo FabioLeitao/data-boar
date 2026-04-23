@@ -4,10 +4,13 @@
 
 This page is **consolidation phase B**: the same **theme → first place to look** map as the **Quick index** in root [`AGENTS.md`](../../AGENTS.md), but with **clickable paths** into rules, skills, and operator docs. It does **not** replace narrative bullets in [`AGENTS.md`](../../AGENTS.md)—update **both** the Quick index table and this table when you add a new policy row.
 
+**Fresh chat / low context:** start at **[OPERATOR_AGENT_COLD_START_LADDER.md](OPERATOR_AGENT_COLD_START_LADDER.md)** ([pt-BR](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)) — one-screen ordered ladder, task router, and five non-negotiables; then this hub or [`AGENTS.md`](../../AGENTS.md) as needed.
+
 ## Quick index (linked)
 
 | Theme | Where to look first |
 | ----- | ------------------- |
+| **Cold start (fresh agent, token-aware)** — ladder + task router | [OPERATOR_AGENT_COLD_START_LADDER.md](OPERATOR_AGENT_COLD_START_LADDER.md) ([pt-BR](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)) |
 | **`.cursor/` / `.vscode/` / `.github/` / caches** — what is tracked vs gitignored | [CURSOR_AND_EDITOR_ARTIFACTS.md](CURSOR_AND_EDITOR_ARTIFACTS.md) |
 | **`docs/private/`** read access / never self-block | [First `AGENTS.md` bullet after the Quick index](../../AGENTS.md) · [`.cursor/rules/agent-docs-private-read-access.mdc`](../../.cursor/rules/agent-docs-private-read-access.mdc) · [`docs/PRIVATE_OPERATOR_NOTES.md`](../PRIVATE_OPERATOR_NOTES.md) |
 | Chat **pt-BR** / locale (private `docs/private/` Portuguese = pt-BR; explicit EN prose → `en-US`) | [`.cursor/rules/operator-chat-language.mdc`](../../.cursor/rules/operator-chat-language.mdc) · [`.cursor/rules/operator-chat-language-pt-br.mdc`](../../.cursor/rules/operator-chat-language-pt-br.mdc) · [`.cursor/rules/docs-pt-br-locale.mdc`](../../.cursor/rules/docs-pt-br-locale.mdc) · [`.cursor/skills/operator-dialogue-pt-br/SKILL.md`](../../.cursor/skills/operator-dialogue-pt-br/SKILL.md) |

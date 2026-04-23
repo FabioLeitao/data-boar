@@ -33,6 +33,7 @@ Quando o operador pedir **conferir alinhamento**, **drift**, **sync do históric
 
 ## Referências
 
+- **`docs/ops/OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md`** ([EN](OPERATOR_AGENT_COLD_START_LADDER.md)) — escada de arranque (inclui linha do stack privado no router).
 - **`docs/ops/PRIVATE_LOCAL_VERSIONING.md`**
 - **`scripts/private-git-sync.ps1`**
 - **`docs/PRIVATE_OPERATOR_NOTES.md`**

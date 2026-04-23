@@ -13,7 +13,7 @@ When you need **which calendar day** matters (today-mode checklist path, dated d
 2. On **Windows** (typical for this repo’s dev PC), run in the **integrated terminal**: **`Get-Date -Format "yyyy-MM-dd"`** (PowerShell) or **`date /t`** (cmd). Use that string to pick **`docs/ops/today-mode/OPERATOR_TODAY_MODE_YYYY-MM-DD.md`** unless the operator fixes the date in chat.
 3. On **Linux/macOS** shells, use **`date -I`** or **`date "+%Y-%m-%d"`** the same way.
 
-Canonical prose: **`AGENTS.md`** (*Workstation calendar clock*), **`docs/ops/today-mode/README.md`** (*For assistants*).
+Canonical prose: **`AGENTS.md`** (*Workstation calendar clock*), **`docs/ops/today-mode/README.md`** (*For assistants*). **Condensed cold-start ladder (token-aware / fresh chat):** **[`docs/ops/OPERATOR_AGENT_COLD_START_LADDER.md`](../../docs/ops/OPERATOR_AGENT_COLD_START_LADDER.md)** ([pt-BR](../../docs/ops/OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)) — read before re-loading the entire **`AGENTS.md`** table when context is empty.
 
 ## Public repo (`origin`)
 

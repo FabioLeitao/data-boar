@@ -93,6 +93,14 @@ Design history for minor detection lives in a **completed** plan file under `doc
 
 ---
 
+## Cursor agent cold start (token-aware)
+
+| Question | Read first | Notes |
+| -------- | ---------- | ----- |
+| New chat, **low context**, or operator typed **`short`** / **`token-aware`** — where do I start without re-reading all of **`AGENTS.md`**? | **[OPERATOR_AGENT_COLD_START_LADDER.md](ops/OPERATOR_AGENT_COLD_START_LADDER.md)** ([pt-BR](ops/OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)) | One-screen **ordered ladder**, task router, five non-negotiables; then **`CURSOR_AGENT_POLICY_HUB`** / **`TOKEN_AWARE_SCRIPTS_HUB`** as needed. |
+
+---
+
 ## Where this fits
 
 - **Technical install and run:** [TECH_GUIDE.md](TECH_GUIDE.md) ([pt-BR](TECH_GUIDE.pt_BR.md)) ends with a short **Topic map** pointer back here.

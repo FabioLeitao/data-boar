@@ -6,6 +6,8 @@
 
 **Não substitui:** **`.cursor/skills/token-aware-automation/SKILL.md`** (comandos do dia a dia) nem **`.cursor/rules/session-mode-keywords.mdc`** (tokens de chat). Este arquivo responde: *“o que mais existe, e onde está documentado?”*
 
+**Chat novo / pouco contexto:** leia primeiro **[OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)** ([EN](OPERATOR_AGENT_COLD_START_LADDER.md)) — escada ordenada + router de tarefas para abrir *este* hub depois de saber qual família de scripts importa.
+
 ---
 
 ## 1. Caminho de ouro (quase toda sessao)

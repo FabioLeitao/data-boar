@@ -31,6 +31,7 @@ Full table: **`LAB_COMPLETAO_RUNBOOK.md`** (*Blast radius*). Primary workstation
 
 ## Read first (order)
 
+0. **Optional (fresh chat / token-aware):** **[`OPERATOR_AGENT_COLD_START_LADDER.md`](OPERATOR_AGENT_COLD_START_LADDER.md)** ([pt-BR](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)) — one-screen ladder + task router; then **[`LAB_OP_HOST_PERSONAS.md`](LAB_OP_HOST_PERSONAS.md)** ([pt-BR](LAB_OP_HOST_PERSONAS.pt_BR.md)) for ENT / PRO / edge / bridge vs Ansible + manifest knobs.
 1. **[`AGENTS.md`](../../AGENTS.md)** — Quick index row **Lab completão** and session token **`completao`**.
 2. **[`LAB_COMPLETAO_RUNBOOK.md`](LAB_COMPLETAO_RUNBOOK.md)** — contracts, scripts, **slice order**, capability coverage, automation + learnings.
 3. **`.cursor/rules/lab-completao-workflow.mdc`** — always-on policy (SSH, **`-Privileged`**, no idle “may I SSH?” prompts, **L-series** protection, doc+code matrix, timeouts/FP-FN notes).

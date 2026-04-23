@@ -33,6 +33,7 @@ When the operator asks to **verify alignment**, **check drift**, **sync private 
 
 ## References
 
+- **`docs/ops/OPERATOR_AGENT_COLD_START_LADDER.md`** — fresh-agent ladder (includes private-stack row in task router).
 - **`docs/ops/PRIVATE_LOCAL_VERSIONING.md`** — nested Git pattern and safety.
 - **`scripts/private-git-sync.ps1`** — feedback inbox mirror + commit + optional push.
 - **`docs/PRIVATE_OPERATOR_NOTES.md`** — layout and confidentiality.

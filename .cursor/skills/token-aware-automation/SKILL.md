@@ -7,6 +7,8 @@ description: Use when deciding how to run lint, tests, commit/PR, or Docker home
 
 **Full script map (skills, rules, keywords, ops links):** **`docs/ops/TOKEN_AWARE_SCRIPTS_HUB.md`** · **pt-BR:** **`docs/ops/TOKEN_AWARE_SCRIPTS_HUB.pt_BR.md`**. Use it when the task is not only lint/PR/Docker (e.g. homelab, PII, talent, release) to avoid orphaned one-off rediscovery.
 
+**Fresh chat / low context:** read **`docs/ops/OPERATOR_AGENT_COLD_START_LADDER.md`** ([pt-BR](../../docs/ops/OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)) first — ordered ladder + task router; then this skill + the hub for script picks.
+
 **Public release order (do not invert):** Before bumping **`main`** to **`-beta`** after a shipped semver, follow **`.cursor/rules/release-publish-sequencing.mdc`** and **`docs/VERSIONING.md`** (*Assistant / automation*). Session keyword **`release-ritual`** = re-read that rule + **`docker-local-smoke-cleanup.mdc`**. Tag **`vX.Y.Z`** → GitHub Release → **Docker Desktop: `docker-lab-build.ps1` + smoke `docker run --rm`** → **then** Hub **`docker push`** → **`docker-prune-local.ps1`** → Hub description paste → **`PUBLISHED_SYNC`** — then a **separate** pre-release commit.
 
 When you need to **verify lint or tests**, or when the user asks to **commit, create a description, push, or create a PR**, use the repo scripts from the project root so behaviour is consistent and token use stays low.

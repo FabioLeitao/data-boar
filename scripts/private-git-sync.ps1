@@ -127,15 +127,20 @@ if ($Push) {
     } else {
         foreach ($r in $labRemotes) {
             Write-Info "Pushing para $r ..."
-            $out = git push $r main 2>&1 | Select-Object -First 8
-            if ($LASTEXITCODE -eq 0) { Write-Ok "Push OK: $r" }
-            else { Write-Warn "Push FALHOU: $r -- $out" }
+            # Capture stderr (SSH MOTD) without piping — pipeline resets $LASTEXITCODE on Windows PS 5.1
+            $out = git push $r main 2>&1
+            $pushExit = $LASTEXITCODE
+            $outPreview = $out | Select-Object -First 8
+            if ($pushExit -eq 0) { Write-Ok "Push OK: $r" }
+            else { Write-Warn "Push FALHOU: $r -- $outPreview" }
         }
     }
     # Bare mirror on VeraCrypt volume (Windows): probe common mount letters; path name only (ADR 0040).
     foreach ($dl in @("Y", "Z")) {
-        $bareWin = Join-Path ($dl + ":") "notes-sync.git"
-        if (-not (Test-Path $bareWin)) { continue }
+        $driveRoot = "${dl}:\"
+        if (-not (Test-Path -LiteralPath $driveRoot)) { continue }
+        $bareWin = Join-Path $driveRoot "notes-sync.git"
+        if (-not (Test-Path -LiteralPath $bareWin)) { continue }
         $bareUri = "${dl}:/notes-sync.git"
         Write-Info "Push bare (VC): $bareUri ..."
         $pushOut = git push $bareUri main:main 2>&1 | Select-Object -First 12

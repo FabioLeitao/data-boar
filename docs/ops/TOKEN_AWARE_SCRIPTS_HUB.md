@@ -6,6 +6,8 @@
 
 **Not a duplicate of:** **`.cursor/skills/token-aware-automation/SKILL.md`** (daily commands) or **`.cursor/rules/session-mode-keywords.mdc`** (chat tokens). This file answers: *“what else exists, and where is it documented?”*
 
+**Fresh chat / low context:** read **[OPERATOR_AGENT_COLD_START_LADDER.md](OPERATOR_AGENT_COLD_START_LADDER.md)** ([pt-BR](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)) first — ordered ladder + task router so you open this hub *after* you know which script family matters.
+
 ---
 
 ## 1. Golden path (every session)

@@ -40,6 +40,7 @@ Por sessão, acrescentar em **`docs/private/homelab/`** (template [COMPLETAO_SES
 
 ## Links
 
+- **Escada de arranque (agente novo / token-aware):** [OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md) ([EN](OPERATOR_AGENT_COLD_START_LADDER.md)).
 - **Contratos de completão:** [LAB_COMPLETAO_RUNBOOK.md](LAB_COMPLETAO_RUNBOOK.md) ([pt-BR](LAB_COMPLETAO_RUNBOOK.pt_BR.md)), [LAB_COMPLETAO_FRESH_AGENT_BRIEF.md](LAB_COMPLETAO_FRESH_AGENT_BRIEF.md).
 - **Sudo estreito + wrappers:** [LAB_OP_PRIVILEGED_COLLECTION.md](LAB_OP_PRIVILEGED_COLLECTION.md).
 - **Índice de scripts:** [TOKEN_AWARE_SCRIPTS_HUB.md](TOKEN_AWARE_SCRIPTS_HUB.md).

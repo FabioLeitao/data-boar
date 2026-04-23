@@ -31,6 +31,7 @@ Tabela completa: **`LAB_COMPLETAO_RUNBOOK.md`** (*Raio de explosão* / *Blast ra
 
 ## Ler primeiro (ordem)
 
+0. **Opcional (chat novo / token-aware):** **[`OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md`](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)** ([EN](OPERATOR_AGENT_COLD_START_LADDER.md)) — escada num ecrã + router de tarefas; depois **[`LAB_OP_HOST_PERSONAS.pt_BR.md`](LAB_OP_HOST_PERSONAS.pt_BR.md)** ([EN](LAB_OP_HOST_PERSONAS.md)) para ENT / PRO / edge / ponte vs Ansible + knobs do manifest.
 1. **[`AGENTS.md`](../../AGENTS.md)** — linha do Quick index **Completão no lab** e token **`completao`**.
 2. **[`LAB_COMPLETAO_RUNBOOK.md`](LAB_COMPLETAO_RUNBOOK.md)** — contratos, scripts, **ordem de fatias**, cobertura de capacidades, automação + aprendizados.
 3. **`.cursor/rules/lab-completao-workflow.mdc`** — política sempre ativa (SSH, **`-Privileged`**, sem perguntas ociosas sobre SSH, proteção **L-series**, matriz doc+código, timeouts/FP-FN).

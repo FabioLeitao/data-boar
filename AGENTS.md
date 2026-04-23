@@ -2,10 +2,11 @@
 
 ## Quick index (find the policy first)
 
-Use this table to jump to the **canonical bullet** or **rule** for each theme. Details stay in the bullets below and in linked files — this section is a **map only** (consolidation phase A). The same map with **clickable paths** is in **[`docs/ops/CURSOR_AGENT_POLICY_HUB.md`](docs/ops/CURSOR_AGENT_POLICY_HUB.md)** ([pt-BR](docs/ops/CURSOR_AGENT_POLICY_HUB.pt_BR.md)) (consolidation phase B).
+Use this table to jump to the **canonical bullet** or **rule** for each theme. Details stay in the bullets below and in linked files — this section is a **map only** (consolidation phase A). The same map with **clickable paths** is in **[`docs/ops/CURSOR_AGENT_POLICY_HUB.md`](docs/ops/CURSOR_AGENT_POLICY_HUB.md)** ([pt-BR](docs/ops/CURSOR_AGENT_POLICY_HUB.pt_BR.md)) (consolidation phase B). **Fresh chat / low context / token-aware:** read **[`docs/ops/OPERATOR_AGENT_COLD_START_LADDER.md`](docs/ops/OPERATOR_AGENT_COLD_START_LADDER.md)** ([pt-BR](docs/ops/OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)) first — ordered ladder + task router + five non-negotiables, then this table.
 
 | Theme | Where to look first |
 | ----- | ------------------- |
+| **Cold start (fresh agent, token-aware)** — ladder + task router before deep-reading this file | **`docs/ops/OPERATOR_AGENT_COLD_START_LADDER.md`** |
 | **`.cursor/` / `.vscode/` / `.github/` / caches** — tracked vs gitignored | **`docs/ops/CURSOR_AND_EDITOR_ARTIFACTS.md`** |
 | **`docs/private/`** read access / never self-block | First bullet below · **`.cursor/rules/agent-docs-private-read-access.mdc`** · **`docs/PRIVATE_OPERATOR_NOTES.md`** |
 | Chat **pt-BR** / locale (**private drafts = pt-BR**; **EN-only prose → `en-US`**) | **`operator-chat-language*.mdc`** · **`docs-pt-br-locale.mdc`** · **`.cursor/skills/operator-dialogue-pt-br/SKILL.md`** |
