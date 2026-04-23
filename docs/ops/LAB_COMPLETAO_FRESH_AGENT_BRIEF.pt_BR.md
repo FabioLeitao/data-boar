@@ -11,6 +11,8 @@
 
 **Quando usar:** Quando você abre um **chat novo** **sem contexto** e **quer** que o assistente **execute** o **completão** como nos **contratos** do repo (`lab-completao-workflow.mdc`, `LAB_COMPLETAO_RUNBOOK.md`).
 
+**Uso fino no dia a dia:** **[`COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md`](COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md)** ([EN](COMPLETAO_OPERATOR_PROMPT_LIBRARY.md)) — linha **`completao`** + atalho **`tier:…`** + **`scripts/completao-chat-starter.ps1`**; mantenha os blocos **A–E** deste arquivo para a prosa completa quando ajustar contratos.
+
 ## Contrato de raio de explosão (não negociável — o assistente **não** “esquece”)
 
 | Onde | Nunca (Git destrutivo / clean-slate no clone canônico) | Sempre OK no completão |

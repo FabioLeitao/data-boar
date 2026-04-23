@@ -8,6 +8,8 @@ A tabela de palavras-chave **só em inglês** está em **`.cursor/rules/session-
 
 **Mapa script ↔ skill / palavra-chave (mais amplo que só keywords):** **[TOKEN_AWARE_SCRIPTS_HUB.pt_BR.md](TOKEN_AWARE_SCRIPTS_HUB.pt_BR.md)** · [EN](TOKEN_AWARE_SCRIPTS_HUB.md).
 
+**Arranques de chat para completão (`completao` + `tier:…`):** **[COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md](COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md)** ([EN](COMPLETAO_OPERATOR_PROMPT_LIBRARY.md)) · **`scripts/completao-chat-starter.ps1`** (imprime bloco mínimo para colar; **`-Help`** lista os *tiers*).
+
 ## Exemplo de host SSH no LAB-OP
 
 Exemplos versionados e scripts usam o alias SSH **`lab-op`** para o servidor Linux do lab (Docker, reports). Configure **`Host lab-op`** no **`~/.ssh/config`** do PC de desenvolvimento para resolver na LAN (DNS ou mDNS) e usar chaves **ed25519** já autorizadas no host. Nomes reais de máquina ficam **só** em **`docs/private/homelab/`**. Ver **`docs/private.example/homelab/README.md`**.
@@ -20,3 +22,4 @@ Exemplos versionados e scripts usam o alias SSH **`lab-op`** para o servidor Lin
 - [EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.pt_BR.md](EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.pt_BR.md) · [EN](EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md) — **`es-find`** + `es-find.ps1` (Windows (PC principal de desenvolvimento); nao Linux **lab-op**)
 - [PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md](PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md) · [EN](PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md) — sem operações destrutivas no repo no PC principal; `es-find` / auditorias PII em temp só leitura ou só em `%TEMP%`
 - [TOKEN_AWARE_USAGE.md](../plans/TOKEN_AWARE_USAGE.md) — ritmo token-aware
+- [COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md](COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md) ([EN](COMPLETAO_OPERATOR_PROMPT_LIBRARY.md)) — taxonomia **`completao`** + **`tier:`** · **`completao-chat-starter.ps1`**

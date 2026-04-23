@@ -1,6 +1,6 @@
 ---
 description: Lab completão — wrappers + -Privileged + narrow sudoers; L-series protection; token-aware automation reuse; document timeouts, latency, FP/FN vs synthetic, real-path confidence; doc+code capability matrix; SSH from dev PC.
-globs: scripts/lab-completao*.ps1,scripts/lab-completao*.sh,scripts/stack-db.yml,docs/ops/LAB_COMPLETAO_RUNBOOK.md,docs/ops/LAB_OP_HOST_PERSONAS.md,docs/ops/LAB_SMOKE_MULTI_HOST.md
+globs: scripts/lab-completao*.ps1,scripts/lab-completao*.sh,scripts/completao-chat-starter.ps1,scripts/stack-db.yml,docs/ops/LAB_COMPLETAO_RUNBOOK.md,docs/ops/COMPLETAO_OPERATOR_PROMPT_LIBRARY.md,docs/ops/LAB_OP_HOST_PERSONAS.md,docs/ops/LAB_SMOKE_MULTI_HOST.md
 alwaysApply: true
 ---
 
@@ -13,6 +13,8 @@ alwaysApply: true
 1. **Non-interactive SSH is not the same TTY as tmux:** `sudo -v` in a **tmux** pane warms sudo for **that terminal**. A separate **`ssh user@host 'sudo …'`** from Cursor uses a **non-interactive** session; **`sudo -n`** for privileged probes succeeds when **sudoers** allows those commands **without a password** (see gitignored **`docs/private/homelab/LABOP_COMPLETÃO_SUDOERS*.md`** template referenced from **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`**). If **`sudo -n`** fails in logs, treat it as an **operator configuration** issue for that host, not an assistant limitation.
 
 ## When the operator asks for completão / session token **`completao`**
+
+1. **Tier shorthand (line 2):** If the message includes **`tier:…`** immediately after the token (see **`docs/ops/COMPLETAO_OPERATOR_PROMPT_LIBRARY.md`**), map that tier to the **documented** script / flags there — **`completao-chat-starter.ps1`** prints the same pairing for operators.
 
 1. **Default command** from repo root (unless the operator explicitly opts out, e.g. “without privileged”):
 

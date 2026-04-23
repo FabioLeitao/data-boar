@@ -23,7 +23,7 @@ Oferecer **um caminho ordenado** para um **chat novo** (sem memória do transcri
 | ------------------- | ----------------------------------------------- |
 | **Entregar código / corrigir CI** | **`TOKEN_AWARE_SCRIPTS_HUB`** §1 → **`check-all.ps1`**; bullets de merge/PR no **`AGENTS.md`** |
 | **Docs / hubs / MAP** | skill **`doc-hubs-plans-sync`** · **`docs/README.md`** *Interno e referência* · par **`*.pt_BR.md`** |
-| **Smoke de lab / completão** | **`LAB_COMPLETAO_FRESH_AGENT_BRIEF`** · **`lab-completao-workflow.mdc`** · **`LAB_COMPLETAO_RUNBOOK`** |
+| **Smoke de lab / completão** | **`COMPLETAO_OPERATOR_PROMPT_LIBRARY`** (**`completao`** + **`tier:…`**) · **`LAB_COMPLETAO_FRESH_AGENT_BRIEF`** · **`lab-completao-workflow.mdc`** · **`LAB_COMPLETAO_RUNBOOK`** · **`scripts/completao-chat-starter.ps1`** |
 | **Ansible / Podman / personas** | **`LAB_OP_HOST_PERSONAS`** · **`ops/automation/ansible/README.md`** |
 | **Inventário homelab / lote SSH** | **`lab-op-hosts.manifest.json`** em `docs/private/` (se existir) · **`LAB_OP_PRIVILEGED_COLLECTION.md`** · **`OPERATOR_LAB_DOCUMENT_MAP`** |
 | **Fecho do Git empilhado em `docs/private/`** | **`PRIVATE_STACK_SYNC_RITUAL`** · **`private-git-sync.ps1`** |
@@ -45,10 +45,11 @@ Perguntas de compliance e capacidade para **compradores / DPO / CISO** começam 
 
 | Artefato | Função |
 | -------- | ------ |
-| **`AGENTS.md`** | Contrato longo canónico do assistente |
+| **`AGENTS.md`** | Contrato longo canônico do assistente |
 | **`CURSOR_AGENT_POLICY_HUB`** | Fase B — mesmo índice, clicável |
 | **`TOKEN_AWARE_SCRIPTS_HUB`** | Mapa script ↔ keyword ↔ skill |
 | **`OPERATOR_LAB_DOCUMENT_MAP`** | Índice LAB-PB vs LAB-OP |
 | **`LAB_OP_HOST_PERSONAS`** | Intenção LAB-NODE-01 / LAB-NODE-02 / pi / LAB-NODE-03 vs automação |
+| **`COMPLETAO_OPERATOR_PROMPT_LIBRARY.md`** | Taxonomia de chat **`completao`** + **`tier:`** + **`completao-chat-starter.ps1`** |
 
 Ao acrescentar um **tema recorrente novo**, incluir **uma linha** no Quick index do **`AGENTS.md`** e no **`CURSOR_AGENT_POLICY_HUB`** na **mesma alteração**.

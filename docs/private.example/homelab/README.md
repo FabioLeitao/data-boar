@@ -53,6 +53,8 @@ If you sync the same tree to **Linux** (`~/pCloudDrive`) and **Windows** (**`P:`
 
 **Personas (coverage intent):** after you copy this tree, tag each row mentally with **[LAB_OP_HOST_PERSONAS.md](../../ops/LAB_OP_HOST_PERSONAS.md)** ([pt-BR](../../ops/LAB_OP_HOST_PERSONAS.pt_BR.md)) — e.g. LAB-NODE-01 **ENT-like** (Podman, thin metal), LAB-NODE-02 **PRO** (Swarm + `uv`), Pi **edge soup**, LAB-NODE-03 **bridge** (`completaoHealthUrl`, `curl`, light `--web`). Real aliases stay **only** here, not in public Markdown.
 
+**Completão chat prompt (private long form):** copy **[COMPLETAO_OPERATOR_PROMPT.example.md](COMPLETAO_OPERATOR_PROMPT.example.md)** to **`docs/private/homelab/COMPLETAO_OPERATOR_PROMPT.md`** (or similar) and edit; the **public** taxonomy + thin starters live in **[COMPLETAO_OPERATOR_PROMPT_LIBRARY.md](../../ops/COMPLETAO_OPERATOR_PROMPT_LIBRARY.md)** ([pt-BR](../../ops/COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md)); run **`scripts/completao-chat-starter.ps1`** from the product repo root to print a minimal **`completao`** + **`tier:`** block.
+
 | Role | Hostname (LAN)   | OS | Notes |
 | ---- | ---------------- | -- | ----- |
 | …    | …                | …  | …     |

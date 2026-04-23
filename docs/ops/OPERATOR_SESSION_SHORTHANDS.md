@@ -8,6 +8,8 @@ The **English-only** keyword table lives in **`.cursor/rules/session-mode-keywor
 
 **Script ↔ skill / keyword map (broader than keywords alone):** **[TOKEN_AWARE_SCRIPTS_HUB.md](TOKEN_AWARE_SCRIPTS_HUB.md)** ([pt-BR](TOKEN_AWARE_SCRIPTS_HUB.pt_BR.md)).
 
+**Completão chat starters (`completao` + `tier:…`):** **[COMPLETAO_OPERATOR_PROMPT_LIBRARY.md](COMPLETAO_OPERATOR_PROMPT_LIBRARY.md)** ([pt-BR](COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md)) · **`scripts/completao-chat-starter.ps1`** (prints a minimal paste block; **`-Help`** lists tiers).
+
 ## LAB-OP SSH example host
 
 Tracked examples and scripts use the SSH alias **`lab-op`** for the Linux lab server (Docker, reports). Configure **`Host lab-op`** in your dev PC’s **`~/.ssh/config`** so it resolves on your LAN (DNS or mDNS) and uses **ed25519** keys as pre-authorized on the host. Real machine names stay **only** under **`docs/private/homelab/`**. See **`docs/private.example/homelab/README.md`**.
@@ -20,3 +22,4 @@ Tracked examples and scripts use the SSH alias **`lab-op`** for the Linux lab se
 - [EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md](EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md) ([pt-BR](EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.pt_BR.md)) — **`es-find`** + `es-find.ps1` (Windows primary dev PC; not Linux **lab-op**)
 - [PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md](PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md) ([pt-BR](PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md)) — no destructive repo ops on primary dev PC; `es-find` / temp PII audits are read-only or temp-only
 - [TOKEN_AWARE_USAGE.md](../plans/TOKEN_AWARE_USAGE.md) — token-aware pacing
+- [COMPLETAO_OPERATOR_PROMPT_LIBRARY.md](COMPLETAO_OPERATOR_PROMPT_LIBRARY.md) ([pt-BR](COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md)) — **`completao`** + **`tier:`** taxonomy; **`completao-chat-starter.ps1`**

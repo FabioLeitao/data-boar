@@ -23,7 +23,7 @@ Give a **single ordered path** so a **fresh chat** (no transcript memory) can st
 | ------------------------ | -------------------------------------- |
 | **Ship code / fix CI** | **`TOKEN_AWARE_SCRIPTS_HUB`** §1 → **`check-all.ps1`**; **`AGENTS.md`** merge/PR bullets |
 | **Docs / hubs / MAP** | **`doc-hubs-plans-sync`** skill · **`docs/README.md`** *Internal and reference* · paired **`*.pt_BR.md`** |
-| **Lab smoke / completão** | **`LAB_COMPLETAO_FRESH_AGENT_BRIEF`** · **`lab-completao-workflow.mdc`** · **`LAB_COMPLETAO_RUNBOOK`** |
+| **Lab smoke / completão** | **`COMPLETAO_OPERATOR_PROMPT_LIBRARY`** ( **`completao`** + **`tier:…`** ) · **`LAB_COMPLETAO_FRESH_AGENT_BRIEF`** · **`lab-completao-workflow.mdc`** · **`LAB_COMPLETAO_RUNBOOK`** · **`scripts/completao-chat-starter.ps1`** |
 | **Ansible / Podman / personas** | **`LAB_OP_HOST_PERSONAS`** · **`ops/automation/ansible/README.md`** |
 | **Homelab inventory / SSH batch** | Private **`lab-op-hosts.manifest.json`** (when present) · **`LAB_OP_PRIVILEGED_COLLECTION.md`** · **`OPERATOR_LAB_DOCUMENT_MAP`** |
 | **Stacked private Git close** | **`PRIVATE_STACK_SYNC_RITUAL`** · **`private-git-sync.ps1`** |
@@ -50,5 +50,6 @@ Compliance and capability questions for **buyers / DPO / CISO** start at **[`MAP
 | **`TOKEN_AWARE_SCRIPTS_HUB.md`** | Script ↔ keyword ↔ skill map |
 | **`OPERATOR_LAB_DOCUMENT_MAP.md`** | LAB-PB vs LAB-OP index |
 | **`LAB_OP_HOST_PERSONAS.md`** | LAB-NODE-01 / LAB-NODE-02 / pi / LAB-NODE-03 **intent** vs automation |
+| **`COMPLETAO_OPERATOR_PROMPT_LIBRARY.md`** | **`completao`** + **`tier:`** chat taxonomy + **`completao-chat-starter.ps1`** |
 
 When you add a **new recurring theme**, add **one row** to **`AGENTS.md` Quick index** and **`CURSOR_AGENT_POLICY_HUB`** in the **same change**.

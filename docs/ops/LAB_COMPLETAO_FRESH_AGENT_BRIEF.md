@@ -11,6 +11,8 @@
 
 **Use when:** You open a **new chat** with **no prior context** and want the assistant to run **completão** the same way as the **repo contracts** (`lab-completao-workflow.mdc`, `LAB_COMPLETAO_RUNBOOK.md`).
 
+**Thin daily use:** **[`COMPLETAO_OPERATOR_PROMPT_LIBRARY.md`](COMPLETAO_OPERATOR_PROMPT_LIBRARY.md)** ([pt-BR](COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md)) — line **`completao`** + **`tier:…`** shorthand + **`scripts/completao-chat-starter.ps1`**; keep this file’s blocks **A–E** for full prose when you adjust contracts.
+
 ## Blast radius contract (non-negotiable — assistants must not “forget”)
 
 | Where | Never (destructive Git / clean-slate on canonical tree) | Always OK for completão |
