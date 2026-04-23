@@ -32,21 +32,21 @@ Confirme acesso via SSH e credenciais no ~/.ssh/config.
 
 Atenção: Consulte docs/ops/LAB_OP_HOST_PERSONAS.md para entender o papel de cada máquina antes de tocar nelas.
 
-Lembre-se: Path canônico no Linux é /home/leitao/Projects/dev/data-boar. No WORKSTATION (Windows), use WSL2.
+Lembre-se: Path canônico no Linux é /home/leitao/Projects/dev/data-boar. No Windows dev workstation (primary), use WSL2.
 
 Temos contratos de sudo passwordless ativos. Use-os.
 
 FASE 1a: Sincronização e Inventário (Anti-Drift)
 
-Git Sync Global: Em todos os nodes (WORKSTATION, LAB-NODE-02, LAB-NODE-01, LAB-NODE-03, LAB-NODE-04), execute: git fetch --all --tags && git checkout tags/v1.7.3.
+Git Sync Global: Em todos os nodes (Windows dev workstation, LAB-NODE-02, LAB-NODE-01, LAB-NODE-03, LAB-NODE-04), execute: git fetch --all --tags && git checkout tags/v1.7.3.
 
 Garanta branch main (ou tag v1.7.3) com git pull limpo. O comando git describe --tags deve retornar exatamente v1.7.3.
 
-Fallback de Rede: Se o LAB-NODE-04 ou outro falhar por timeout, use o WORKSTATION para enviar o repositório via scp -r ou rsync para o nó. Paridade total é mandatória.
+Fallback de Rede: Se o LAB-NODE-04 ou outro falhar por timeout, use o Windows dev workstation para enviar o repositório via scp -r ou rsync para o nó. Paridade total é mandatória.
 
 Confira no pyproject.toml se a versão descrita é a 1.7.3.
 
-Sincronia de Imagens: Garanta a imagem fabioleitao/data_boar:1.7.3. No LAB-NODE-01 (Podman) e WORKSTATION (Docker Swarm/WSL2), force o pull ou verifique o Digest da v1.7.3.
+Sincronia de Imagens: Garanta a imagem fabioleitao/data_boar:1.7.3. No LAB-NODE-01 (Podman) e no Windows dev workstation (Docker Swarm/WSL2), force o pull ou verifique o Digest da v1.7.3.
 
 Ajuste LAB-NODE-03: Tente xbps-install -S libmariadbclient-devel. Se falhar, documente e não tente testar o componente DB neste nó, pois o uv sync falhará.
 
@@ -60,7 +60,7 @@ Se detectar limitações (ex: falta de Python no LAB-NODE-01), autoajuste as fas
 
 FASE 2a: Setup da Infraestrutura e Dados Sintéticos
 
-Geração de PII (No WORKSTATION): Utilize o script tests/data/generate_synthetic_poc_corpus.py.
+Geração de PII (no Windows dev workstation): Utilize o script tests/data/generate_synthetic_poc_corpus.py.
 
 Plano A: uv run python scripts/generate_synthetic_poc_corpus.py --output ./samples
 
@@ -68,7 +68,7 @@ Plano B (Fallback): uv run --with pillow --with openpyxl --with python-docx --wi
 
 Plano C (Pip): pip install pillow openpyxl python-docx reportlab && python scripts/generate_synthetic_poc_corpus.py --output ./samples
 
-Distribuição: Assim que gerados no WORKSTATION, envie para /home/leitao/samples/ em todos os nodes via scp ou rsync.
+Distribuição: Assim que gerados no Windows dev workstation, envie para /home/leitao/samples/ em todos os nodes via scp ou rsync.
 
 Database Stack: No LAB-NODE-02, suba o Swarm (scripts/stack-db.yml) e confirme se os bancos estão prontos.
 
@@ -88,7 +88,7 @@ Node LAB-NODE-02 (Zorin 18 - Persona Pro): Execute via uv run (source) E via Doc
 
 Node LAB-NODE-04 (Trixie - Persona Legacy): Scan local (/var/log) via Python nativo. Monitore impacto de IO/RAM e colete dmesg/syslog pós-teste em busca de OOM Kills.
 
-Node WORKSTATION (Win11): Scan via WSL2 e via Windows nativo.
+Node Windows dev workstation (Win11): Scan via WSL2 e via Windows nativo.
 
 Node LAB-NODE-03 (Void): Scan local de arquivos; ignore DB se a lib-mysql falhou na Fase 1.
 
@@ -124,7 +124,7 @@ Gere config.yaml efêmeros em /tmp/ baseados no techguide.md. Inclua o próprio 
 
 Use sudo -v warm. Se o SSH falhar, tente 3x antes de reportar.
 
-Priorize a integridade do WORKSTATION; ele é sua base de comando. SRE coleta evidências e aprende com as falhas."
+Priorize a integridade do Windows dev workstation; ele é sua base de comando. SRE coleta evidências e aprende com as falhas."
 ```
 
 ---
