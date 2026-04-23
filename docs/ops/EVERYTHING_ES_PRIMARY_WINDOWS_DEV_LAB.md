@@ -47,6 +47,18 @@ From the **data-boar** repo root:
 - **`-ShowCommand`** prints the exact `es.exe` invocation to copy or extend with **raw** CLI flags.
 - **`-FallbackPowerShell`** — if **`es.exe`** is **not** installed, run a **capped** recursive **`Get-ChildItem`** under the same **default scope** (repo root or **`-SearchRoot`**). **Slower** and more I/O than Everything. **Not** used with **`-Regex`** or **`-Global`** (those need the real CLI).
 
+### pCloud (`P:`) and other huge sync trees
+
+On the operator **Windows** workstation, **pCloud** is often **`P:`** (see **`AGENTS.md`** / **`docs/PRIVATE_OPERATOR_NOTES.md`**). Folders such as **`P:\Automatic Upload\...`** can hold **tens of thousands** of files — **do not** start agent work with unbounded **`Get-ChildItem -Recurse`** from those roots (slow, noisy, poor token ROI).
+
+**Prefer:**
+
+```powershell
+.\scripts\es-find.ps1 -SearchRoot "P:\Automatic Upload" -Query "*.jpg" -MaxCount 20
+```
+
+Use the **narrowest** **`-SearchRoot`** the operator confirmed. Operator notes for exact subfolders: **`docs/private/WHAT_TO_SHARE_WITH_AGENT.md`**.
+
 ---
 
 ## Fallback when `es.exe` is missing (assistants)
