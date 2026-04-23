@@ -13,7 +13,11 @@ param(
 
   # Omit when sudo is NOPASSWD for this user (no BECOME password prompt).
   [Parameter(Mandatory = $false)]
-  [switch]$NoAskBecomePass
+  [switch]$NoAskBecomePass,
+
+  # Run only playbooks/t14-podman.yml (Podman + rootless deps) instead of the full baseline.
+  [Parameter(Mandatory = $false)]
+  [switch]$PodmanOnly
 )
 
 Set-StrictMode -Version Latest
@@ -51,10 +55,12 @@ function Invoke-T14Ssh {
   }
 }
 
-Write-Host "== T14 Ansible baseline ==" -ForegroundColor Cyan
+Write-Host "== T14 Ansible $(if ($PodmanOnly) { 'Podman-only' } else { 'baseline' }) ==" -ForegroundColor Cyan
 Write-Host "Host: $SshHost"
 Write-Host "Repo: $RepoPath"
 Write-Host "Mode: $(if ($Apply) { 'APPLY' } else { 'CHECK' })"
+$playbookRel = if ($PodmanOnly) { "playbooks/t14-podman.yml" } else { "playbooks/t14-baseline.yml" }
+Write-Host "Playbook: $playbookRel"
 
 $bashRepoRoot = Get-BashCdPath $RepoPath
 $bashAnsibleDir = Get-BashCdPath "$RepoPath/ops/automation/ansible"
@@ -84,10 +90,10 @@ $runLines = @(
   "perl -0777 -pe 's/^\[t14\]\n.*?\n\n/[t14]\nlocalhost ansible_connection=local\n\n/ms' -i inventory.local.ini"
 )
 if ($Apply -and -not $SkipCheck) {
-  $runLines += "ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini $becomePart playbooks/t14-baseline.yml --check --diff"
-  $runLines += "ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini $becomePart playbooks/t14-baseline.yml --diff"
+  $runLines += "ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini $becomePart $playbookRel --check --diff"
+  $runLines += "ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini $becomePart $playbookRel --diff"
 } else {
-  $runLines += "ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini $becomePart playbooks/t14-baseline.yml $runModeArgs"
+  $runLines += "ANSIBLE_ROLES_PATH=./roles ansible-playbook -i inventory.local.ini $becomePart $playbookRel $runModeArgs"
 }
 Invoke-T14Ssh ($runLines -join "`n") -AllocateTTY
 
