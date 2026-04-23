@@ -8,7 +8,7 @@ Oferecer **um caminho ordenado** para um **chat novo** (sem memória do transcri
 
 ## Ordem de leitura (profundidade conforme a tarefa)
 
-1. **Este arquivo** — router de tarefas + cinco regras abaixo.
+1. **Este arquivo** — router de tarefas + seis regras abaixo.
 2. **[`AGENTS.md`](../../AGENTS.md)** — tabela Quick index (tema → primeiro doc); os bullets longos são o contrato.
 3. **[`CURSOR_AGENT_POLICY_HUB.pt_BR.md`](CURSOR_AGENT_POLICY_HUB.pt_BR.md)** — os mesmos temas com caminhos **clicáveis** para `.cursor/rules`, `.cursor/skills` e `docs/ops/`.
 4. **[`TOKEN_AWARE_SCRIPTS_HUB.pt_BR.md`](TOKEN_AWARE_SCRIPTS_HUB.pt_BR.md)** — que **`scripts/*.ps1`** ligam a keywords, skills e runbooks.
@@ -22,20 +22,23 @@ Oferecer **um caminho ordenado** para um **chat novo** (sem memória do transcri
 | Se o operador quer… | Abrir primeiro (depois seguir links lá dentro) |
 | ------------------- | ----------------------------------------------- |
 | **Entregar código / corrigir CI** | **`TOKEN_AWARE_SCRIPTS_HUB`** §1 → **`check-all.ps1`**; bullets de merge/PR no **`AGENTS.md`** |
+| **Qual script / wrapper usar?** (evitar reinventar shell longo) | **`repo-scripts-wrapper-ritual.mdc`** · **`TOKEN_AWARE_SCRIPTS_HUB`** · **`check-all-gate.mdc`** · skill **`token-aware-automation`** |
 | **Docs / hubs / MAP** | skill **`doc-hubs-plans-sync`** · **`docs/README.md`** *Interno e referência* · par **`*.pt_BR.md`** |
 | **Smoke de lab / completão** | **`COMPLETAO_OPERATOR_PROMPT_LIBRARY`** (**`completao`** + **`tier:…`**) · **`LAB_COMPLETAO_FRESH_AGENT_BRIEF`** · **`lab-completao-workflow.mdc`** · **`LAB_COMPLETAO_RUNBOOK`** · **`scripts/completao-chat-starter.ps1`** |
 | **Ansible / Podman / personas** | **`LAB_OP_HOST_PERSONAS`** · **`ops/automation/ansible/README.md`** |
 | **Inventário homelab / lote SSH** | **`lab-op-hosts.manifest.json`** em `docs/private/` (se existir) · **`LAB_OP_PRIVILEGED_COLLECTION.md`** · **`OPERATOR_LAB_DOCUMENT_MAP`** |
 | **Fecho do Git empilhado em `docs/private/`** | **`PRIVATE_STACK_SYNC_RITUAL`** · **`private-git-sync.ps1`** |
 | **Recuperação / “descobre aí”** | **`operator-investigation-before-blocking.mdc`** · skill **`operator-recovery-investigation`** |
+| **Gmail / webmail / redes / caixa ou anexo** (mesmo PC que **SSH**; sessão quente ou fria + **SSO Google** quando o site oferecer) | **`cursor-browser-social-sso-hygiene.mdc`** (*Contrato único* + *Gmail e webmail*) · **`operator-browser-warm-session.mdc`** · **`operator-direct-execution.mdc`** §5 — **tentar** MCP e clique **SSO** antes de negar; **só depois** pedir interação humana uma vez; PDFs → **`docs/private/`** + **`read_file`** |
 
-## Cinco coisas inegociáveis (não “esquecer” em chat novo)
+## Seis coisas inegociáveis (não “esquecer” em chat novo)
 
 1. **`docs/private/`** existe no workspace → **`read_file` / `list_dir` é permitido**; **nunca** colar segredos ou identificadores de LAN em arquivos **versionados** ou PRs públicos (**`PRIVATE_OPERATOR_NOTES.md`**).
-2. **Clone canónico no PC dev Windows principal** — **sem** **`clean-slate`**, **`git filter-repo`** ou **`git reset --hard`** de rotina na árvore do produto (**`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**).
+2. **Clone canônico no PC dev Windows principal** — **sem** **`clean-slate`**, **`git filter-repo`** ou **`git reset --hard`** de rotina na árvore do produto (**`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**).
 3. **`completao`** — quando couber no âmbito, usar **`lab-completao-orchestrate.ps1 -Privileged`** na raiz do repo; o **manifest** define **`completaoEngineMode` / `completaoSkipEngineImport`** para hosts só contêiner (**`LAB_COMPLETAO_RUNBOOK`**).
 4. **Conselho sobre merge / PR / “o que segue”** — **`git fetch`** primeiro (**`git-pr-sync-before-advice.mdc`**).
 5. **Espelhos privados** — quando o sync é óbvio, correr **`private-git-sync.ps1 -Push`** e **reportar** erros concretos de SSH/mount (**ADR 0040**, **`operator-evidence-backup-no-rhetorical-asks.mdc`**).
+6. **Prosa em português = pt-BR por padrão** — **`*.pt_BR.md`**, Markdown em PT em **`docs/private/`** e parágrafos que o assistente escreve **não** podem ir para **pt-PT** “sem querer.” Exceções só conforme **`.cursor/rules/docs-locale-pt-br-contract.mdc`**. Depois de edições grandes em pt-BR, rodar **`uv run pytest tests/test_docs_pt_br_locale.py -v`**.
 
 ## Produto vs operador (por preocupação)
 

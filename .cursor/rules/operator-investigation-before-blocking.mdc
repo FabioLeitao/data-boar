@@ -17,12 +17,13 @@ alwaysApply: true
 
 | Layer | Action |
 | ----- | ------ |
+| **Agreed wrappers (do not skip)** | **`docs/ops/TOKEN_AWARE_SCRIPTS_HUB.md`** + **`.cursor/rules/repo-scripts-wrapper-ritual.mdc`** — before a long ad-hoc shell sequence, check whether **`scripts/*.ps1`** (or a linked skill) already encodes the flow; if a **documented** wrapper fails, **tell the operator** (often misconfiguration) then use that script’s **documented** fallback. |
 | **Workspace tree** | `read_file` / terminal `dir` / `Get-ChildItem` under plausible paths (`docs/private/**`, `author_info`, `team_info`, `legal_dossier`, `career`, `exports_*`). |
 | **Everything / fast filename search (Windows)** | When the filename or pattern is unknown, use **`scripts/es-find.ps1`** (or operator’s **`es.exe`**) — session keyword **`es-find`** in **`session-mode-keywords.mdc`**. |
 | **Stacked private Git** | `git -C docs/private log`, `git -C docs/private log --all --name-only -- "*.pdf"`, `git log -S"fragment" -- docs/private` — **`origin` does not index `docs/private`**; **nested repo does**. |
 | **Public repo history** | `git log -p`, `git log --diff-filter=D`, `git show rev:path` for **tracked** moves/deletes. |
 | **LinkedIn profile text** | Prefer **PDF export** on disk + **`scripts/operator-linkedin-profile-extract.ps1`** → JSON/text under **`author_info/career/`**; **then** `read_file`. |
-| **Browser MCP** | If the task needs the **live site** and MCP is available, **try** `browser_navigate` / `browser_tabs` **once** before claiming no access; warm session is **operator-dependent** (see **`.cursor/rules/cursor-browser-social-sso-hygiene.mdc`**). |
+| **Browser MCP** | If the task needs the **live site** (**Gmail**, **operator social**, **Docker Hub**, etc.) and MCP is available, **`browser_tabs` → `browser_navigate`** (and **Google SSO** click when the UI is cold but offers it) **before** claiming no access — **no public API required**; escalate to the operator **only after** a real failed attempt (see **`.cursor/rules/cursor-browser-social-sso-hygiene.mdc`**, *Contrato único* + § *Gmail e webmail*). |
 
 ## What not to do
 

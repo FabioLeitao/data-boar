@@ -97,7 +97,7 @@ O histórico de desenho da detecção de menores está num plano **concluído** 
 
 | Pergunta | Leia primeiro | Notas |
 | -------- | ------------- | ----- |
-| Chat novo, **pouco contexto**, ou o operador escreveu **`short`** / **`token-aware`** — por onde começar sem reler o **`AGENTS.md`** inteiro? | **[OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md](ops/OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)** ([EN](ops/OPERATOR_AGENT_COLD_START_LADDER.md)) | Escada **ordenada** num ecrã, router de tarefas, cinco regras inegociáveis; depois **`CURSOR_AGENT_POLICY_HUB`** / **`TOKEN_AWARE_SCRIPTS_HUB`** conforme a necessidade. |
+| Chat novo, **pouco contexto**, ou o operador escreveu **`short`** / **`token-aware`** — por onde começar sem reler o **`AGENTS.md`** inteiro? | **[OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md](ops/OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)** ([EN](ops/OPERATOR_AGENT_COLD_START_LADDER.md)) | Escada **ordenada** em uma tela, router de tarefas, seis regras inegociáveis; depois **`CURSOR_AGENT_POLICY_HUB`** / **`TOKEN_AWARE_SCRIPTS_HUB`** conforme a necessidade. |
 
 ---
 

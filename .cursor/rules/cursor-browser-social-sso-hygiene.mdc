@@ -1,17 +1,28 @@
 ---
-description: Cursor IDE browser — operator always grants social access when warm; SSO if cold; never self-block on API absence
+description: Cursor IDE browser — same workstation as SSH: all operator social + Gmail + dashboards; try MCP then Google SSO when cold; only escalate to operator after a real failed attempt
 alwaysApply: true
 ---
 
 # Cursor browser (redes, Patreon, pesquisa)
 
+## Contrato único (mesmo eixo que SSH e Gmail)
+
+O assistente corre no **PC de desenvolvimento do operador** (Cursor). **Não** há “servidor de IA” com outra identidade. **Homelab/SSH**, **Gmail/webmail** e **todas as redes sociais do operador** (LinkedIn, FacColleague-Sok, X, Threads, Instagram, YouTube onde couber, Patreon, etc.) **seguem o mesmo princípio:** **tentar o caminho local primeiro** (`browser_tabs` → `browser_navigate` → `browser_snapshot` / cliques) **antes** de dizer que **não há acesso**. Falta de **API JSON pública** **não** é desculpa — **UI + sessão** no browser embutido **é** acesso quando a tarefa exige.
+
 ## Acesso do assistente (política do operador)
 
-1. O operador **confirma** que o assistente **tem e terá** acesso às redes sociais relevantes via **MCP `cursor-ide-browser`** quando a **sessão estiver warm** (cookies / login já ativos no perfil embutido). **Não** dizer que "não há acesso" por falta de API JSON — **UI com sessão quente = acesso**.
-2. Se a sessão estiver **fria**: **tentar primeiro** autenticação com **Google / SSO** no próprio site (ex.: "Continuar com Google"), alinhado à conta do operador.
-3. Se SSO falhar, houver captcha, ou o site bloquear automação: **pedir ao operador** para fazer login manual **uma vez** ou deixar um separador **warm** para o próximo turno — **não** desistir na primeira sem tentar SSO.
+1. O operador **confirma** que o assistente **tem e terá** acesso às **redes sociais relevantes** via **MCP `cursor-ide-browser`** — **igual** ao Gmail e ao SSH no que toca a “**mesma máquina, mesma sessão de trabalho**”. Com sessão **quente** (cookies / login já ativos no perfil embutido), **não** dizer que "não há acesso" por falta de API — **UI com sessão quente = acesso**.
+2. Se a sessão estiver **fria** (como pode acontecer fora do Gmail): o assistente **deve** tentar **clicar** em **Continuar com Google** / **Sign in with Google** / SSO equivalente **quando o site oferecer** — **antes** de pedir ao operador para intervir. **Não** pedir “posso autenticar?” **antes** dessa tentativa (anti-toil).
+3. **Só depois** de SSO falhar, aparecer **captcha** / **MFA** que bloqueie automação, ou o site **não** expor controles na árvore a11y: **avisar o operador numa linha** (o que foi tentado + bloqueio) para ele **interagir uma vez** ou deixar um separador **warm** — **não** desistir na primeira **sem** ter tentado SSO.
 4. **Nunca** pedir password em chat; **nunca** assumir que gitignore de `docs/private/` impede browser (são caminhos diferentes).
 5. **Docker Hub, GitHub (UI web), e outros painéis do operador** (ex.: **Repository → General → Edit**, **Tags**, páginas que aceitam **Continuar com Google**): **mesma política** que nas redes — o operador **já concedeu** uso do **`cursor-ide-browser`** + **SSO Google** quando faz sentido para a tarefa. **Proibido** perguntar “posso autenticar?” / “tens permissão para abrir o Hub no browser?” **antes** de **`browser_navigate` + `browser_snapshot`** (e, se necessário, clicar **Continue with Google**). Isso evita **toil** de confirmações cujo default operador **já fixou**. Só escalar **depois** de tentar, com **um** resumo curto (login wall, captcha, ref MCP stale).
+
+## Gmail e webmail (Google Workspace, etc.)
+
+1. **Mesmo eixo que homelab/SSH:** o assistente corre no **PC de desenvolvimento do operador** (Cursor). **Não** existe “servidor de IA” separado com outra identidade de rede. Se o operador já está **autenticado** no **browser embutido** (sessão **quente**), **Gmail** / **Google Mail** e outros webmails são **alcançáveis** via MCP **`cursor-ide-browser`** — **não** substituem API de Gmail nem leem disco de `Maildir`; são **UI + sessão**, como redes sociais.
+2. **Antes de dizer “não tenho acesso ao Gmail”:** executar **`browser_tabs`** (`list`) e, se fizer sentido, **`browser_navigate`** para **`https://mail.google.com/`** (ou URL que o operador indicar) **uma vez**. Sessão **fria** → fluxo **Continuar com Google** / SSO como nas outras secções; se bloquear, **um** pedido claro ao operador (login manual ou separador quente).
+3. **Privacidade e higiene:** snapshots do MCP podem gravar **metadados** em logs locais do Cursor (`browser-logs`). **Não** despejar **corpo completo** de e-mail, PDF inteiro ou anexos na **narrativa de chat** nem em ficheiros **rastreados** no GitHub. Para revisão de texto ou certificado, preferir **guardar** o PDF em **`docs/private/`** e usar **`read_file`** no workspace (regra **`private-pii-never-public.mdc`**).
+4. **Fim da tarefa:** fechar separadores que sobrem só para esta verificação (**`browser_tabs`** → `close`), salvo pedido do operador para manter aberto — alinhar à secção *Depois da tarefa — RAM e sessões warm*.
 
 ## Autenticação em sites de terceiros
 
@@ -33,8 +44,8 @@ alwaysApply: true
 
 ## LinkedIn, FacColleague-Sok, X, Threads, Instagram e outras redes (operador Data Boar)
 
-1. O operador **autoriza** o assistente a abrir estas redes no **browser integrado** (revisão de perfil, privacidade, posts, ATS/SLI, etc.). **Não** usar API pública não significa "sem acesso": uso é **UI + sessão** (**warm** ou **Continuar com Google** / SSO).
-2. O assistente **não** deve dizer que "não consegue aceder" **só** porque não há API JSON. Sessão **fria** → tentar **SSO**; se bloquear, **pedir warm session** ao operador — **não** desistir com desculpa de API.
+1. O operador **autoriza** o assistente a abrir estas redes no **browser integrado** (revisão de perfil, privacidade, posts, ATS/SLI, etc.). **Não** usar API pública não significa "sem acesso": uso é **UI + sessão** (**warm** ou **Continuar com Google** / SSO). **Mesmo contrato** que **SSH** e **Gmail** no documento *Contrato único* acima.
+2. O assistente **não** deve dizer que "não consegue aceder" **só** porque não há API JSON. Sessão **fria** → **deve** tentar **clicar** **Continuar com Google** / SSO **quando existir**; **só depois** de falhar, **pedir** ao operador **uma** interação para **warm** — **não** desistir com desculpa de API.
 3. Documento privado (LinkedIn): **`docs/private/commercial/ats_sli_hub/LIVE_LINKEDIN_REFRESH_POLICY.pt_BR.md`**.
 
 ## SOCIAL_HUB — validar post publicado (Instagram, Threads, X, etc.)

@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Operator chat language (this workspace)
 
-1. **Default:** Reply in **concise Brazilian Portuguese (pt-BR)** for explanations—same register as **pt-BR docs** in this repo (e.g. **arquivo**, **compartilhar**, **seção**, **padrão** for software defaults). **Do not** default to **European Portuguese (pt-PT)** (e.g. *ficheiro*, *partilhar*, *tu* + *tens/fazes* as the usual address).
+1. **Default:** Reply in **concise Brazilian Portuguese (pt-BR)** for explanations—same register as **pt-BR docs** in this repo (e.g. **arquivo**, **compartilhar**, **seção**, **padrão** for software defaults). **Do not** default to **European Portuguese (pt-PT)** (e.g. *ficheiro*, *partilhar*, *tu* + *tens/fazes* as the usual address). Non-negotiable scope and exceptions: **`.cursor/rules/docs-locale-pt-br-contract.mdc`**.
 
 1. **English:** If the operator says they prefer **English** in this thread (e.g. to avoid mixed Portuguese variants), use **English** for narrative in that conversation until they switch back.
 
