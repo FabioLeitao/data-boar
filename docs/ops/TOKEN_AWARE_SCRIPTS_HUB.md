@@ -107,6 +107,7 @@
 | `external-review-pack.ps1` | Pack for external review | Pair with **`feedback-inbox`**, **`GEMINI_PUBLIC_BUNDLE_REVIEW.md`** |
 | `auto-mode-session-pack.ps1` | Session pack | Operator workflow experiments |
 | `t14-ansible-baseline.ps1` | Ansible baseline | Lab host provisioning (private details stay private) |
+| `t14-ansible-labop-podman-apply.sh` | Podman Ansible (sudoers-fixed args) | Invoked via `sudo -n` + narrow `LABOP_ANSIBLE_PODMAN`; see **LAB_OP_PRIVILEGED_COLLECTION.md** |
 | `unifi-ssh-deep-audit.ps1` | Deep UniFi SSH | High signal; LAN-specific — **private** notes only |
 | `linkedin-review-batch.ps1` | LinkedIn batch | Talent / social; keep outputs private |
 | `gh-ensure-default.ps1` | GitHub default branch | One-off setup |

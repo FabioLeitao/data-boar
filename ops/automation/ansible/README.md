@@ -70,6 +70,15 @@ From **Windows** (repo root, SSH to T14 with a TTY for BECOME):
 .\scripts\t14-ansible-baseline.ps1 -SshHost t14 -Apply -SkipCheck -PodmanOnly
 ```
 
+**Passwordless (narrow sudoers):** when **`LABOP_ANSIBLE_PODMAN`** is installed (see
+**`docs/ops/LAB_OP_PRIVILEGED_COLLECTION.md`** and role **`t14_labop_sudoers`**), run:
+
+```powershell
+.\scripts\t14-ansible-baseline.ps1 -SshHost t14 -Apply -SkipCheck -PodmanOnly -NoAskBecomePass
+```
+
+That path invokes **`sudo -n /bin/bash …/scripts/t14-ansible-labop-podman-apply.sh`** (`--apply` or `--check`) — no Ansible **`-K`** prompt.
+
 Role **`t14_podman`** installs **`podman`**, **`buildah`**, **`skopeo`**, rootless helpers (**`uidmap`**, **`slirp4netns`**, **`fuse-overlayfs`**), optional **`podman-compose`**, runs **`loginctl enable-linger`** for the resolved operator login (not `root`), then **`podman --version`**.
 
 ### Run order
