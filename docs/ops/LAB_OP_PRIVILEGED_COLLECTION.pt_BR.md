@@ -85,6 +85,37 @@ sudo -n /bin/bash "$HOME/Projects/dev/data-boar/scripts/homelab-host-report.sh" 
 .\scripts\lab-op-sync-and-collect.ps1 -SkipGitPull -Privileged -Deep
 ```
 
+## Ansible Podman apply (mesmo NOPASSWD estreito)
+
+Para evitar prompt de **BECOME** ao instalar **só** Podman via `playbooks/t14-podman.yml`,
+amplie o include do sudoers com comandos **fixos** para `scripts/t14-ansible-labop-podman-apply.sh`
+(mesmo critério do `homelab-host-report.sh`). O role **`t14_labop_sudoers`** grava
+**`LABOP_HOST_REPORT`** e **`LABOP_ANSIBLE_PODMAN`** juntos quando **`t14_labop_sudoers_enable: true`**.
+
+Exemplo (substitua `LEITAO_USER` / `REPO_PATH`):
+
+```text
+Cmnd_Alias LABOP_ANSIBLE_PODMAN = /bin/bash REPO_PATH/scripts/t14-ansible-labop-podman-apply.sh --apply, \
+                                  /bin/bash REPO_PATH/scripts/t14-ansible-labop-podman-apply.sh --check
+
+LEITAO_USER ALL=(root) NOPASSWD: LABOP_HOST_REPORT, LABOP_ANSIBLE_PODMAN
+```
+
+No host:
+
+```bash
+sudo -n /bin/bash "$HOME/Projects/dev/data-boar/scripts/t14-ansible-labop-podman-apply.sh" --check
+sudo -n /bin/bash "$HOME/Projects/dev/data-boar/scripts/t14-ansible-labop-podman-apply.sh" --apply
+```
+
+No Windows (SSH **sem** TTY para senha do Ansible):
+
+```powershell
+.\scripts\t14-ansible-baseline.ps1 -SshHost t14 -Apply -SkipCheck -PodmanOnly -NoAskBecomePass
+```
+
+Exige **`ansible-playbook`** no alvo e as linhas do sudoers acima.
+
 ## Guardrails
 
 - Se você não precisar disso no dia a dia, remova o arquivo do sudoers após a janela de coleta.

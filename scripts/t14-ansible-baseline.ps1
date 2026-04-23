@@ -74,6 +74,24 @@ $preflightLines = @(
 )
 Invoke-T14Ssh ($preflightLines -join "`n")
 
+# Passwordless path: narrow sudoers allows sudo -n /bin/bash .../t14-ansible-labop-podman-apply.sh {--apply|--check}
+# (see ops/automation/ansible/roles/t14_labop_sudoers and docs/ops/LAB_OP_PRIVILEGED_COLLECTION.md).
+if ($PodmanOnly -and $NoAskBecomePass) {
+  Write-Host "Using LAB-OP sudoers wrapper (sudo -n ... t14-ansible-labop-podman-apply.sh); no BECOME password prompt." -ForegroundColor Cyan
+  $wrapperLines = @('set -eu', "cd `"$bashRepoRoot`"")
+  if ($Apply -and -not $SkipCheck) {
+    $wrapperLines += 'sudo -n /bin/bash scripts/t14-ansible-labop-podman-apply.sh --check'
+    $wrapperLines += 'sudo -n /bin/bash scripts/t14-ansible-labop-podman-apply.sh --apply'
+  } elseif ($Apply) {
+    $wrapperLines += 'sudo -n /bin/bash scripts/t14-ansible-labop-podman-apply.sh --apply'
+  } else {
+    $wrapperLines += 'sudo -n /bin/bash scripts/t14-ansible-labop-podman-apply.sh --check'
+  }
+  Invoke-T14Ssh ($wrapperLines -join "`n")
+  Write-Host "Done." -ForegroundColor Green
+  return
+}
+
 # Ansible calls sudo non-interactively unless you pass --ask-become-pass (-K). A prior `sudo -v` does not satisfy that.
 $becomePart = if ($NoAskBecomePass) { "" } else { "--ask-become-pass" }
 if (-not $NoAskBecomePass) {

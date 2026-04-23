@@ -7,7 +7,9 @@
 #   ansible-playbook -i inventory.local.ini --ask-become-pass playbooks/t14-podman.yml --diff
 #
 # From Windows (repo root):
-#   .\scripts\t14-ansible-baseline.ps1 -SshHost t14 -Apply -SkipCheck
+#   .\scripts\t14-ansible-baseline.ps1 -SshHost t14 -Apply -SkipCheck -PodmanOnly
+# Non-interactive (narrow sudoers LABOP_ANSIBLE_PODMAN — see LAB_OP_PRIVILEGED_COLLECTION.md):
+#   .\scripts\t14-ansible-baseline.ps1 -SshHost t14 -Apply -SkipCheck -PodmanOnly -NoAskBecomePass
 #   # then on T14 run only this play, or add a dedicated wrapper script if needed.
 - name: T14 Podman only (rootless stack)
   hosts: t14

@@ -16,7 +16,13 @@
       #
       Cmnd_Alias LABOP_HOST_REPORT = /bin/bash {{ t14_labop_repo_path }}/scripts/homelab-host-report.sh --privileged, \
                                      /bin/bash {{ t14_labop_repo_path }}/scripts/homelab-host-report.sh --privileged --deep
-      {{ t14_labop_sudoers_user }} ALL=(root) NOPASSWD: LABOP_HOST_REPORT
+      #
+      # Narrow Ansible Podman apply (same path discipline as homelab-host-report).
+      # Invoked as: sudo -n /bin/bash {{ t14_labop_repo_path }}/scripts/t14-ansible-labop-podman-apply.sh --apply
+      #
+      Cmnd_Alias LABOP_ANSIBLE_PODMAN = /bin/bash {{ t14_labop_repo_path }}/scripts/t14-ansible-labop-podman-apply.sh --apply, \
+                                        /bin/bash {{ t14_labop_repo_path }}/scripts/t14-ansible-labop-podman-apply.sh --check
+      {{ t14_labop_sudoers_user }} ALL=(root) NOPASSWD: LABOP_HOST_REPORT, LABOP_ANSIBLE_PODMAN
   failed_when: false
 
 - name: Validate sudoers include syntax (visudo -c)
