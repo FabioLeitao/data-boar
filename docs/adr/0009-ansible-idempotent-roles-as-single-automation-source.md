@@ -50,7 +50,7 @@ configuration — not just hardening — within the same Ansible role model.
 | Role | Purpose | Default |
 |---|---|---|
 | `t14_docker_ce` | Docker CE from official repo + Compose plugin + Swarm opt-in | off |
-| `t14_podman` | Podman rootless + buildah + skopeo + podman-compose | off |
+| `t14_podman` | Podman rootless + buildah + skopeo + podman-compose + uidmap/slirp4netns/fuse-overlayfs | on (role default; override in inventory to skip) |
 | `t14_k3s` | k3s lightweight Kubernetes (installs from get.k3s.io) | off |
 | `t14_observability` | iotop, iftop, ctop, munin-node, monit, node_exporter, rsyslog forwarding, Wazuh agent | CLI tools on; services opt-in |
 

@@ -53,6 +53,25 @@ Run these **once** on the laptop (as `leitao`, with sudo):
    # Edit [t14] if you run from a different machine than localhost; for local runs use localhost as in the script.
    ```
 
+### Podman-only (fast path when Docker CE is broken or you want OCI without Swarm)
+
+The full **`playbooks/t14-baseline.yml`** installs **Podman before Docker CE** so a Docker/apt failure still leaves Podman on disk. If you only need **`podman`** for LAB completão:
+
+```bash
+cd ~/Projects/dev/data-boar/ops/automation/ansible
+cp -f inventory.example.ini inventory.local.ini
+# Pattern A from inventory.example.ini: [t14] → localhost + ansible_connection=local
+ansible-playbook -i inventory.local.ini --ask-become-pass playbooks/t14-podman.yml --diff
+```
+
+From **Windows** (repo root, SSH to T14 with a TTY for BECOME):
+
+```powershell
+.\scripts\t14-ansible-baseline.ps1 -SshHost t14 -Apply -SkipCheck -PodmanOnly
+```
+
+Role **`t14_podman`** installs **`podman`**, **`buildah`**, **`skopeo`**, rootless helpers (**`uidmap`**, **`slirp4netns`**, **`fuse-overlayfs`**), optional **`podman-compose`**, runs **`loginctl enable-linger`** for the resolved operator login (not `root`), then **`podman --version`**.
+
 ### Run order
 
 1) Create `inventory.local.ini` (see above).
@@ -107,6 +126,12 @@ To apply changes after a check pass:
 
 ```powershell
 .\scripts\t14-ansible-baseline.ps1 -SshHost t14 -Apply
+```
+
+Podman-only apply (one BECOME prompt when not NOPASSWD):
+
+```powershell
+.\scripts\t14-ansible-baseline.ps1 -SshHost t14 -Apply -SkipCheck -PodmanOnly
 ```
 
 ### Note (fewer prompts)
