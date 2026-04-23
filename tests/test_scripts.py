@@ -369,6 +369,27 @@ def test_lab-node-01_ansible_preflight_sh_syntax():
     assert proc.returncode == 0, f"bash -n failed: {proc.stderr or proc.stdout}"
 
 
+def test_lab-node-01_ansible_labop_podman_apply_sh_syntax():
+    """scripts/lab-node-01-ansible-labop-podman-apply.sh has valid bash syntax (bash -n). Skipped on Windows."""
+    if sys.platform == "win32":
+        return
+    root = _project_root()
+    script = root / "scripts" / "lab-node-01-ansible-labop-podman-apply.sh"
+    if not script.exists():
+        return
+    try:
+        proc = subprocess.run(
+            ["bash", "-n", str(script)],
+            cwd=str(root),
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except FileNotFoundError:
+        return
+    assert proc.returncode == 0, f"bash -n failed: {proc.stderr or proc.stdout}"
+
+
 def test_lab-node-01_session_warm_sh_syntax():
     """scripts/lab-node-01-session-warm.sh has valid bash syntax (bash -n). Skipped on Windows."""
     if sys.platform == "win32":

@@ -106,6 +106,7 @@
 | `external-review-pack.ps1` | Pacote para revisão externa | **`feedback-inbox`**, **`GEMINI_PUBLIC_BUNDLE_REVIEW.md`** |
 | `auto-mode-session-pack.ps1` | Pacote de sessao | Experimentos de workflow |
 | `lab-node-01-ansible-baseline.ps1` | Baseline Ansible | Provisionamento (detalhes privados) |
+| `lab-node-01-ansible-labop-podman-apply.sh` | Ansible só Podman (args fixos no sudoers) | Via `sudo -n` + `LABOP_ANSIBLE_PODMAN` estreito; ver **LAB_OP_PRIVILEGED_COLLECTION.pt_BR.md** |
 | `unifi-ssh-deep-audit.ps1` | SSH profundo UniFi | Alto sinal; LAN — só notas **privadas** |
 | `linkedin-review-batch.ps1` | Batch LinkedIn | Talent / social; saídas privadas |
 | `gh-ensure-default.ps1` | Branch default no GitHub | Setup pontual |
