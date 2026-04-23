@@ -78,10 +78,11 @@
     - role: lab-node-01_aide
     - role: lab-node-01_auditd
     - role: lab-node-01_zram
-    # --- Containers (Docker CE default; Podman / k3s opt-in) ---
+    # --- Containers: Podman before Docker CE so a partial Docker/apt failure still leaves Podman
+    # (LAB completão / variety path). Docker CE remains default for ctop/Swarm per play vars.
+    - role: lab-node-01_podman
     - role: lab-node-01_docker_ce
     - role: lab-node-01_operator_supplementary_groups
-    - role: lab-node-01_podman
     - role: lab-node-01_k3s
     # --- Observability (progressive opt-in) ---
     - role: lab-node-01_observability

@@ -1,8 +1,15 @@
 ---
-lab-node-01_install_podman: false
+# Align with playbooks/lab-node-01-baseline.yml (LAB-OP + completão). Override in inventory to skip.
+lab-node-01_install_podman: true
 
 # Install podman-compose for docker-compose.yml compatibility.
 lab-node-01_podman_install_compose: true
+
+# Rootless stack (Debian bookworm/trixie + LMDE): strongly recommended with podman.
+lab-node-01_podman_rootless_packages:
+  - uidmap
+  - slirp4netns
+  - fuse-overlayfs
 
 # Add optional docker CLI alias (alias docker=podman) to /etc/profile.d/.
 # Disabled by default — edge cases exist; enable consciously.

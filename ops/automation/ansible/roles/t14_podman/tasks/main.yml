@@ -7,7 +7,7 @@
 - name: Install Podman (rootless containers)
   when: lab-node-01_install_podman | bool
   block:
-    - name: Install podman
+    - name: Install podman and OCI tooling
       ansible.builtin.apt:
         name:
           - podman
@@ -16,15 +16,48 @@
         state: present
         update_cache: true
 
+    - name: Install rootless dependencies (uidmap, slirp4netns, fuse-overlayfs)
+      ansible.builtin.apt:
+        name: "{{ lab-node-01_podman_rootless_packages }}"
+        state: present
+
     - name: Install podman-compose
       when: lab-node-01_podman_install_compose | bool
       ansible.builtin.apt:
         name: podman-compose
         state: present
 
-    - name: Enable lingering for current user (rootless containers survive logout)
-      ansible.builtin.command: loginctl enable-linger "{{ ansible_user_id }}"
+    # loginctl enable-linger must target the human login, not root (become) nor a stale ansible_user_id.
+    - name: Resolve login for podman rootless linger
+      ansible.builtin.set_fact:
+        lab-node-01_podman_linger_login: "{{ _pl }}"
+      vars:
+        _override: "{{ lab-node-01_operator_target_user | default('') | trim }}"
+        _sudo_u: "{{ ansible_env.SUDO_USER | default('') | trim }}"
+        _fallback: "{{ ansible_user | default(ansible_user_id) }}"
+        _pl: "{{ _override if (_override | length > 0) else (_sudo_u if (_sudo_u | length > 0) else _fallback) }}"
+
+    - name: Hint when linger would target root (wrong for rootless podman)
+      ansible.builtin.debug:
+        msg: >-
+          Podman linger skipped: resolved login is root. Set lab-node-01_operator_target_user in inventory
+          (e.g. leitao) or run ansible-playbook as your normal user with --ask-become-pass
+          (avoid `sudo ansible-playbook` without that override).
+      when: lab-node-01_podman_linger_login == 'root'
+
+    - name: Enable lingering for operator user (rootless containers survive logout)
+      when: lab-node-01_podman_linger_login != 'root'
+      ansible.builtin.command: loginctl enable-linger "{{ lab-node-01_podman_linger_login }}"
       changed_when: false
+
+    - name: Verify podman binary (post-install)
+      ansible.builtin.command: podman --version
+      register: lab-node-01_podman_version_cmd
+      changed_when: false
+
+    - name: Report podman version
+      ansible.builtin.debug:
+        msg: "{{ lab-node-01_podman_version_cmd.stdout | default('') }}"
 
     - name: Write docker alias to profile.d (optional)
       when: lab-node-01_podman_docker_alias | bool

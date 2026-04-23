@@ -50,7 +50,7 @@ configuration — not just hardening — within the same Ansible role model.
 | Role | Purpose | Default |
 |---|---|---|
 | `lab-node-01_docker_ce` | Docker CE from official repo + Compose plugin + Swarm opt-in | off |
-| `lab-node-01_podman` | Podman rootless + buildah + skopeo + podman-compose | off |
+| `lab-node-01_podman` | Podman rootless + buildah + skopeo + podman-compose + uidmap/slirp4netns/fuse-overlayfs | on (role default; override in inventory to skip) |
 | `lab-node-01_k3s` | k3s lightweight Kubernetes (installs from get.k3s.io) | off |
 | `lab-node-01_observability` | iotop, iftop, ctop, munin-node, monit, node_exporter, rsyslog forwarding, Wazuh agent | CLI tools on; services opt-in |
 
