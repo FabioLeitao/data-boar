@@ -6,6 +6,8 @@
 
 **Not a duplicate of:** **`.cursor/skills/token-aware-automation/SKILL.md`** (daily commands) or **`.cursor/rules/session-mode-keywords.mdc`** (chat tokens). This file answers: *“what else exists, and where is it documented?”*
 
+**Assistant ritual:** **`.cursor/rules/repo-scripts-wrapper-ritual.mdc`** (`alwaysApply: true`) — skim this hub before reinventing long shell; use agreed **`scripts/*.ps1`** paths; if a wrapper fails, **notify the operator** (install/mount/PATH) instead of silently “forgetting” the automation.
+
 **Fresh chat / low context:** read **[OPERATOR_AGENT_COLD_START_LADDER.md](OPERATOR_AGENT_COLD_START_LADDER.md)** ([pt-BR](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)) first — ordered ladder + task router so you open this hub *after* you know which script family matters.
 
 ---
@@ -21,6 +23,14 @@
 | `pr-merge-when-green.ps1` | Merge when CI green | **`.cursor/rules/agent-autonomous-merge-and-lab-ops.mdc`**, **`autonomous-merge-and-lab`** SKILL |
 | `safe-workspace-snapshot.ps1` | Pre-commit snapshot | Session **`safe-commit`** |
 | `smoke-maturity-assessment-poc.ps1` | Fast pytest subset (maturity POC gate 1) | [PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md](../plans/PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md), [SMOKE_MATURITY_ASSESSMENT_POC.md](SMOKE_MATURITY_ASSESSMENT_POC.md) |
+
+### 1a. Windows fast CLI (content / tail / preview)
+
+| Script | Role | Wired to |
+| ------ | ---- | -------- |
+| `repo-grep.ps1` | Content search: **`rg`**, optional **`baregrep`** (`-PreferBareGrep`; also **`Downloads`**) | **`docs/ops/WINDOWS_FAST_CLI_WRAPPERS.md`**, **`.cursor/rules/repo-scripts-wrapper-ritual.mdc`** |
+| `repo-tail.ps1` | Last **N** lines: Git **`tail.exe`**, else **`Get-Content -Tail`** | Same |
+| `repo-view.ps1` | Capped preview: **`bat`** / **`batcat`**, else **`Get-Content`** | Same |
 
 ---
 
