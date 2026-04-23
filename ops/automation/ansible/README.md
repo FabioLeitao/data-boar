@@ -55,7 +55,7 @@ Run these **once** on the laptop (as `leitao`, with sudo):
 
 ### Podman-only (fast path when Docker CE is broken or you want OCI without Swarm)
 
-The full **`playbooks/t14-baseline.yml`** installs **Podman before Docker CE** so a Docker/apt failure still leaves Podman on disk. **`playbooks/t14-podman.yml`** supports **Debian family** (**`apt`**) and **Void Linux** (**`xbps-install`**). If you only need **`podman`** for LAB completão:
+The full **`playbooks/t14-baseline.yml`** installs **Podman before Docker CE** so a Docker/apt failure still leaves Podman on disk. **`playbooks/t14-podman.yml`** supports **Debian family** (**`apt`**) and **Void Linux** (**`xbps-install`**). **Constrained hosts** (low RAM/disk — e.g. **mini-bt**, **pi3b**): keep **Python/`uv`** on metal and **skip** the Podman package install by creating an empty **`<repo>/.labop-skip-t14-podman`** (gitignored) so **`scripts/t14-ansible-labop-podman-apply.sh`** passes **`-e t14_install_podman=false`** without widening **`LABOP_ANSIBLE_PODMAN`** sudoers beyond **`--check` / `--apply`**. Run OCI stacks on **T14** / **Latitude**. If you only need **`podman`** for LAB completão on capable machines:
 
 ```bash
 cd ~/Projects/dev/data-boar/ops/automation/ansible

@@ -17,6 +17,7 @@
   environment: "{{ labop_debian_unattended_apt_environment | combine(t14_play_apt_environment_extra | default({})) }}"
   vars:
     t14_play_apt_environment_extra: {}
-    t14_install_podman: true
+    # t14_install_podman: defaults to role `defaults/main.yml` (true). Override with `-e t14_install_podman=false`
+    # or repo-root marker `.labop-skip-t14-podman` (see `scripts/t14-ansible-labop-podman-apply.sh`) on constrained hosts.
   roles:
     - role: t14_podman

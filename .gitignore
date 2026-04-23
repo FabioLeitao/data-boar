@@ -31,6 +31,9 @@ docs/feedbacks, reviews, comments and criticism/
 docs/private/
 .cursor/private/
 
+# LAB-OP: skip t14-podman.yml package install on constrained hosts (see inventory.example.ini + t14-ansible-labop-podman-apply.sh)
+.labop-skip-t14-podman
+
 # Shallow clones of external GitHub repos (local README edits only; not part of Data Boar)
 _upstream_rust_sgad/
 _upstream_python_sgad/

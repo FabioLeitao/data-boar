@@ -35,6 +35,10 @@ Usage: bash scripts/t14-ansible-labop-podman-apply.sh --apply | --check
   --apply   Run playbooks/t14-podman.yml on this host (localhost inventory).
   --check   Ansible --check --diff (dry-run).
 
+Constrained hosts (mini-bt, pi3b — metal Python/uv only): create an empty
+  <repo>/.labop-skip-t14-podman
+so this wrapper passes -e t14_install_podman=false (NOPASSWD still only --apply/--check).
+
 Requires: ansible-playbook, perl. Passwordless sudo must match the exact
 /bin/bash or /usr/bin/bash + <repo>/scripts/t14-ansible-labop-podman-apply.sh + <flag> allowlist.
 EOF
@@ -119,6 +123,11 @@ if ! command -v ansible-playbook >/dev/null 2>&1; then
   exit 2
 fi
 
+ENGINE_EXTRA=()
+if [[ -f "$REPO_ROOT/.labop-skip-t14-podman" ]]; then
+  ENGINE_EXTRA=(-e "t14_install_podman=false")
+fi
+
 EXTRA_ARGS=()
 if [[ "$CHECK" == 1 ]]; then
   EXTRA_ARGS=(--check --diff)
@@ -128,4 +137,5 @@ fi
 
 exec ansible-playbook -i inventory.local.ini "${EXTRA_ARGS[@]}" \
   -e "ansible_user=$OPERATOR" \
+  "${ENGINE_EXTRA[@]}" \
   "$PLAYBOOK"
