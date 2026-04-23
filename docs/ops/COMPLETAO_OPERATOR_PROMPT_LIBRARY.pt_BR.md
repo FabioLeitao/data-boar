@@ -25,6 +25,7 @@ Separar **três camadas** para não colar um bloco enorme em toda sessão:
 | **`tier:followup-poc`** | Fatias pytest POC no Windows | Igual ao bloco **C**. |
 | **`tier:followup-cli`** | Avaliação externa / CLI | Igual ao bloco **D** + **[`LAB_EXTERNAL_CONNECTIVITY_EVAL.md`](LAB_EXTERNAL_CONNECTIVITY_EVAL.md)**. |
 | **`tier:evidence`** | Fechar notas para a próxima sessão | Igual ao bloco **E**. |
+| **`tier:release-master-v1-7-3`** | Checklist-mestre **SRE / release 1.7.3** (fases 0–4) — **ler** **[`COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md`](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md)** ([EN](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md)) **antes** de executar; alinhar saídas a **`docs/private/homelab/reports/`** conforme notas de política desse doc | Abrir o doc do prompt-mestre; seguir blast radius do **`LAB_COMPLETAO_RUNBOOK.md`**; **`lab-completao-orchestrate.ps1 -Privileged`** quando couber; **sem** Git destrutivo no PC dev **principal** |
 
 **Sintaxe:** linha 2 = uma linha de *tier*, ex. **`tier:smoke-main`**. Linhas 3+ opcionais: **`token-aware`**, **`short`**, flags pontuais. **Não** junte branch/versão na **linha 1** — a taxonomia de sessão está em **`session-mode-keywords.mdc`**.
 
@@ -54,6 +55,7 @@ Use os blocos literais do **[`LAB_COMPLETAO_FRESH_AGENT_BRIEF.md`](LAB_COMPLETAO
 
 ## Ligações
 
+- **Prompt-mestre de checklist de release (arquivo 1.7.3):** [COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md) ([EN](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md))
 - **Escada de arranque:** [OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md) ([EN](OPERATOR_AGENT_COLD_START_LADDER.md))
 - **Personas:** [LAB_OP_HOST_PERSONAS.pt_BR.md](LAB_OP_HOST_PERSONAS.pt_BR.md) ([EN](LAB_OP_HOST_PERSONAS.md))
 - **Runbook:** [LAB_COMPLETAO_RUNBOOK.pt_BR.md](LAB_COMPLETAO_RUNBOOK.pt_BR.md) ([EN](LAB_COMPLETAO_RUNBOOK.md))

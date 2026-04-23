@@ -25,6 +25,7 @@ Separate **three layers** so you do not paste a wall of text every session:
 | **`tier:followup-poc`** | Windows pytest POC slices | Match block **C** ( **`smoke-maturity-assessment-poc.ps1`**, **`smoke-webauthn-json.ps1`** ). |
 | **`tier:followup-cli`** | External eval / CLI | Match block **D** + **[`LAB_EXTERNAL_CONNECTIVITY_EVAL.md`](LAB_EXTERNAL_CONNECTIVITY_EVAL.md)**. |
 | **`tier:evidence`** | Close notes for next session | Match block **E**. |
+| **`tier:release-master-v1-7-3`** | Full **SRE / release 1.7.3** master checklist (phases 0–4) — **read** **[`COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md`](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md)** ([pt-BR](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md)) **before** running; align outputs to **private** `homelab/reports/` per that doc’s policy notes | Open the master prompt doc; follow **`LAB_COMPLETAO_RUNBOOK.md`** blast radius; orchestrator **`lab-completao-orchestrate.ps1 -Privileged`** when applicable; **do not** destructive Git on **primary** dev PC |
 
 **Syntax:** line 2 is exactly one tier line, e.g. **`tier:smoke-main`**. Optional line 3+: extra constraints (**`token-aware`**, **`short`**, one-off flags). Do **not** append branch/version on **line 1** — taxonomy is **`session-mode-keywords.mdc`**.
 
@@ -54,6 +55,7 @@ Use **[`LAB_COMPLETAO_FRESH_AGENT_BRIEF.md`](LAB_COMPLETAO_FRESH_AGENT_BRIEF.md)
 
 ## Cross-links
 
+- **Master release checklist prompt (1.7.3 archive):** [COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md) ([pt-BR](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md))
 - **Cold-start ladder:** [OPERATOR_AGENT_COLD_START_LADDER.md](OPERATOR_AGENT_COLD_START_LADDER.md) ([pt-BR](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md))
 - **Personas (ENT / PRO / edge / bridge):** [LAB_OP_HOST_PERSONAS.md](LAB_OP_HOST_PERSONAS.md) ([pt-BR](LAB_OP_HOST_PERSONAS.pt_BR.md))
 - **Runbook:** [LAB_COMPLETAO_RUNBOOK.md](LAB_COMPLETAO_RUNBOOK.md) ([pt-BR](LAB_COMPLETAO_RUNBOOK.pt_BR.md))
