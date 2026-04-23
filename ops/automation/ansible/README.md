@@ -55,7 +55,7 @@ Run these **once** on the laptop (as `leitao`, with sudo):
 
 ### Podman-only (fast path when Docker CE is broken or you want OCI without Swarm)
 
-The full **`playbooks/lab-node-01-baseline.yml`** installs **Podman before Docker CE** so a Docker/apt failure still leaves Podman on disk. **`playbooks/lab-node-01-podman.yml`** supports **Debian family** (**`apt`**) and **Void Linux** (**`xbps-install`**). If you only need **`podman`** for LAB completão:
+The full **`playbooks/lab-node-01-baseline.yml`** installs **Podman before Docker CE** so a Docker/apt failure still leaves Podman on disk. **`playbooks/lab-node-01-podman.yml`** supports **Debian family** (**`apt`**) and **Void Linux** (**`xbps-install`**). **Constrained hosts** (low RAM/disk — e.g. **LAB-NODE-03**, **LAB-NODE-04**): keep **Python/`uv`** on metal and **skip** the Podman package install by creating an empty **`<repo>/.labop-skip-lab-node-01-podman`** (gitignored) so **`scripts/lab-node-01-ansible-labop-podman-apply.sh`** passes **`-e lab-node-01_install_podman=false`** without widening **`LABOP_ANSIBLE_PODMAN`** sudoers beyond **`--check` / `--apply`**. Run OCI stacks on **LAB-NODE-01** / **LAB-NODE-02**. If you only need **`podman`** for LAB completão on capable machines:
 
 ```bash
 cd ~/Projects/dev/data-boar/ops/automation/ansible
