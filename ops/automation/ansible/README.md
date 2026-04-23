@@ -6,6 +6,7 @@ This folder provides **generic**, reviewable Ansible automation for workstation 
 
 - Keep **hostnames, IPs, usernames, SSH fingerprints, and secrets** out of tracked files.
 - Put real inventory in **gitignored** `docs/private/homelab/` (see repo policy).
+- **Which host gets Podman, Swarm, or metal `uv`** is a **persona** decision (ENT / PRO / edge / bridge), not a distro guess — see **[LAB_OP_HOST_PERSONAS.md](../../docs/ops/LAB_OP_HOST_PERSONAS.md)** ([pt-BR](../../docs/ops/LAB_OP_HOST_PERSONAS.pt_BR.md)) and the heterogeneous matrix in **[LAB_COMPLETAO_RUNBOOK.md](../../docs/ops/LAB_COMPLETAO_RUNBOOK.md)**.
 
 ## New playbooks (contributors)
 

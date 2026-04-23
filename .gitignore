@@ -34,6 +34,9 @@ docs/private/
 # LAB-OP: skip lab-node-01-podman.yml package install on constrained hosts (see inventory.example.ini + lab-node-01-ansible-labop-podman-apply.sh)
 .labop-skip-lab-node-01-podman
 
+# Ansible local inventory (hostnames / SSH targets — copy from inventory.example.ini)
+ops/automation/ansible/inventory.local.ini
+
 # Shallow clones of external GitHub repos (local README edits only; not part of Data Boar)
 _upstream_rust_sgad/
 _upstream_python_sgad/

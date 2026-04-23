@@ -152,13 +152,15 @@ During scans, the agent should watch:
 
 ### 🌐 Heterogeneous infrastructure matrix
 
-| Host               | OS                  | Runtime                | Role in testing                                            |
-| ------------------ | ------------------- | ---------------------- | ---------------------------------------------------------- |
-| **Primary dev PC** | Win11/WSL2 (Deb 13) | Docker Desktop         | Central orchestrator and Windows scan (`C:\Users\fabio`).  |
-| **LAB-NODE-02**       | Zorin OS 18 Pro     | **Docker Swarm + Git** | Chord-chart / PII scan (`/home/leitao/documents`) and DBs. |
-| **LAB-NODE-01**            | LMDE 7              | **Podman only**        | Container-only test (no local Python/`uv`). Share scans.   |
-| **LAB-NODE-03**        | Void Linux          | Docker                 | Performance stress on an alternate kernel.                 |
-| **LAB-NODE-04**           | Debian Trixie       | Docker                 | ARM edge case: constrained hardware and I/O-bound paths.   |
+Canonical **personas** (ENT / PRO / edge / bridge), Ansible entrypoints, and evidence live in **[LAB_OP_HOST_PERSONAS.md](LAB_OP_HOST_PERSONAS.md)** ([pt-BR](LAB_OP_HOST_PERSONAS.pt_BR.md)) — update that page when lab roles shift; keep this matrix as a **quick glance** only.
+
+| Host               | OS                  | Runtime (default intent) | Role in testing |
+| ------------------ | ------------------- | -------------------------- | --------------- |
+| **Primary dev PC** | Win11/WSL2 (Deb 13) | Docker Desktop             | Central orchestrator and Windows scan (`C:\Users\fabio`). |
+| **LAB-NODE-02**       | Zorin OS 18 Pro     | **Docker Swarm + Git**     | **PRO/partner:** local **`uv`**, chord-chart / PII scan (`/home/leitao/documents`), synthetic DBs on Swarm. |
+| **LAB-NODE-01**            | LMDE 7              | **Podman**                 | **ENT-like:** container-first validation **without** relying on metal **`uv`** for product truth; share scans. |
+| **LAB-NODE-03**        | Void Linux          | **Optional** Podman (often **`.labop-skip-lab-node-01-podman`**) | **Bridge:** **`curl`** / **`completaoHealthUrl`** / light **`--web`** latency; not a second Swarm manager by default. |
+| **LAB-NODE-04**           | Debian Trixie       | **None** on metal (NFS / paths as **target**) | **Edge / soup sink:** resilience and I/O-bound paths; optional minimal **`databoar`** CLI to measure “how bad” — see personas doc. |
 
 ### 🛠️ Dynamic configuration generation (agent)
 

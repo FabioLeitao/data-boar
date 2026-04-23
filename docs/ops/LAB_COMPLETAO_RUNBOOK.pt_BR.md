@@ -151,13 +151,15 @@ Durante o scan, o agente deve acompanhar:
 
 ### 🌐 Matriz de Infraestrutura Heterogênea
 
-| Host                 | SO                  | Runtime                | Papel no teste                                                 |
-| -------------------- | ------------------- | ---------------------- | -------------------------------------------------------------- |
-| **PC dev principal** | Win11/WSL2 (Deb 13) | Docker Desktop         | Orquestrador Central e Scan de Windows (C:\Users\fabio).       |
-| **LAB-NODE-02**         | Zorin OS 18 Pro     | **Docker Swarm + Git** | Scan de Cifras e PII (/home/leitao/documents) e DBs.           |
-| **LAB-NODE-01**              | LMDE 7              | **Podman Only**        | Teste de container-only (sem Python/UV local). Scan de shares. |
-| **LAB-NODE-03**          | Void Linux          | Docker                 | Stress de performance em kernel alternativo.                   |
-| **LAB-NODE-04**             | Debian Trixie       | Docker                 | Edge case ARM: Hardware restrito e I/O Bound.                  |
+**Personas** canônicas (ENT / PRO / edge / bridge), entrypoints Ansible e evidências estão em **[LAB_OP_HOST_PERSONAS.pt_BR.md](LAB_OP_HOST_PERSONAS.pt_BR.md)** ([EN](LAB_OP_HOST_PERSONAS.md)) — atualize essa página quando os papéis do lab mudarem; esta matriz é só **visão rápida**.
+
+| Host                 | SO                  | Runtime (intenção padrão) | Papel no teste |
+| -------------------- | ------------------- | ------------------------- | -------------- |
+| **PC dev principal** | Win11/WSL2 (Deb 13) | Docker Desktop            | Orquestrador central e scan Windows (`C:\Users\fabio`). |
+| **LAB-NODE-02**         | Zorin OS 18 Pro     | **Docker Swarm + Git**    | **PRO/parceiro:** **`uv`** no host, scan de cifras/PII (`/home/leitao/documents`), DBs sintéticas no Swarm. |
+| **LAB-NODE-01**              | LMDE 7              | **Podman**                | **Tipo ENT:** validação centrada em contêiner **sem** depender de **`uv`** no metal para “verdade” do produto; shares. |
+| **LAB-NODE-03**          | Void Linux          | Podman **opcional** (muitas vezes **`.labop-skip-lab-node-01-podman`**) | **Ponte:** **`curl`** / **`completaoHealthUrl`** / **`--web`** leve para latência; não é segundo gerente Swarm por padrão. |
+| **LAB-NODE-04**             | Debian Trixie       | **Nenhum** no metal (NFS/caminhos como **alvo**) | **Edge / sumidouro de sopas:** resiliência e I/O; CLI mínimo **`databoar`** opcional para medir “quão ruim” — ver doc de personas. |
 
 ### 🛠️ Geração de configurações dinâmicas (agente)
 

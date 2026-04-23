@@ -1,6 +1,6 @@
 ---
 description: Lab completão — wrappers + -Privileged + narrow sudoers; L-series protection; token-aware automation reuse; document timeouts, latency, FP/FN vs synthetic, real-path confidence; doc+code capability matrix; SSH from dev PC.
-globs: scripts/lab-completao*.ps1,scripts/lab-completao*.sh,scripts/stack-db.yml,docs/ops/LAB_COMPLETAO_RUNBOOK.md,docs/ops/LAB_SMOKE_MULTI_HOST.md
+globs: scripts/lab-completao*.ps1,scripts/lab-completao*.sh,scripts/stack-db.yml,docs/ops/LAB_COMPLETAO_RUNBOOK.md,docs/ops/LAB_OP_HOST_PERSONAS.md,docs/ops/LAB_SMOKE_MULTI_HOST.md
 alwaysApply: true
 ---
 
@@ -22,7 +22,7 @@ alwaysApply: true
 
 1. **Inventory map first (private):** **`read_file`** **`docs/private/homelab/OPERATOR_SYSTEM_MAP.md`** and **`LAB_SOFTWARE_INVENTORY.md`** when they exist — host roles and software versions **must** inform interpretation of host-smoke (see **`docs-private-workspace-context.mdc`**). The orchestrator runs **`lab-completao-inventory-preflight.ps1`** before SSH smoke by default (**15-day** staleness → **`lab-op-sync-and-collect.ps1`**); **`LAB_COMPLETAO_RUNBOOK.md`** *Inventory freshness*.
 
-1. **Manifest:** **`docs/private/homelab/lab-op-hosts.manifest.json`** (same as **`lab-op-sync-and-collect.ps1`**). Optional per-host **`completaoHealthUrl`** for HTTP checks from the dev PC. Optional **`completaoEngineMode`:** **`container`** or **`completaoSkipEngineImport`:** **`true`** when that host runs Data Boar **only** via **Docker / Swarm / Podman** (no bare-metal **`uv`** expected) — see **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`** (*Container-only lab hosts*).
+1. **Manifest:** **`docs/private/homelab/lab-op-hosts.manifest.json`** (same as **`lab-op-sync-and-collect.ps1`**). Optional per-host **`completaoHealthUrl`** for HTTP checks from the dev PC. Optional **`completaoEngineMode`:** **`container`** or **`completaoSkipEngineImport`:** **`true`** when that host runs Data Boar **only** via **Docker / Swarm / Podman** (no bare-metal **`uv`** expected) — see **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`** (*Container-only lab hosts*) and **`docs/ops/LAB_OP_HOST_PERSONAS.md`** (ENT / PRO / edge / bridge intent vs Ansible knobs).
 
 1. **Read logs** under **`docs/private/homelab/reports/`** (`completao_*_allhosts.log`, per-host `*_completao_host_smoke.log`) and summarize pass/fail **without** pasting secrets, passwords, or unnecessary LAN identifiers into **public** issues/PRs.
 
