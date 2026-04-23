@@ -49,7 +49,7 @@ Na raiz do repositório **data-boar**:
 
 ### pCloud (`P:`) e outras árvores de sincronização enormes
 
-No **Windows** do operador, o **pCloud** costuma montar como **`P:`** (ver **`AGENTS.md`** / **`docs/PRIVATE_OPERATOR_NOTES.pt_BR.md`**). Pastas como **`P:\Automatic Upload\...`** podem ter **dezenas de milhares** de arquivos — **não** começar com **`Get-ChildItem -Recurse`** sem limite a partir dessas raízes (lento, barulhento, péssimo custo em tokens).
+No **Windows** do operador, o **pCloud** costuma montar como **`P:`** (ver **`AGENTS.md`** / **`docs/PRIVATE_OPERATOR_NOTES.pt_BR.md`**). Pastas como **`P:\Automatic Upload\...`** podem ter **dezenas de milhares** de arquivos — **padrão** = **`es-find.ps1`** (índice do Everything / **`es.exe`**); **`Get-ChildItem`** só como **recuperação** se o **`es`** falhar (**avisar** IPC/PATH). Evitar **começar** só com **`Get-ChildItem -Recurse`** sem limite nessas raízes (lento, barulhento, péssimo custo em tokens).
 
 **Preferir:**
 
@@ -65,8 +65,8 @@ Use o **`-SearchRoot` mais estreito** que o operador confirmar. Notas com subpas
 
 **Ordem:**
 
-1. **`.\scripts\es-find.ps1`** (**`es.exe`**) — **sempre tentar primeiro** no **Windows (PC principal de desenvolvimento)** para achar arquivos por **nome/caminho** quando o índice rápido vence **Glob** em árvore **grande**.
-2. Se **`es.exe`** faltar: o mesmo script com **`-FallbackPowerShell`**, ou **`Glob`** do Cursor **no repo**, ou **`Get-ChildItem`** só numa pasta **estreita** que o operador indicou.
+1. **`.\scripts\es-find.ps1`** (**`es.exe`**) — **padrão** no **Windows (PC principal de desenvolvimento)** para achar arquivos por **nome/caminho** quando o índice rápido vence **Glob** em árvore **grande**; **não pular** para **`Get-ChildItem`** ad hoc quando o **`es`** devia funcionar.
+2. Se **`es-find`** / **`es.exe`** falhar: **avisar o operador** em uma linha (código de saída, IPC, PATH) para instalar/corrigir o **Everything** — depois o mesmo script com **`-FallbackPowerShell`**, ou **`Glob`** do Cursor **no repo**, ou **`Get-ChildItem`** numa pasta **estreita**. **`Get-ChildItem`** é **recuperação**, não padrão equivalente.
 3. **Não** usar **SemanticSearch** ou **Grep** enorme como substituto de “achar este **nome de arquivo**” — ferramenta errada e mais cara em tokens.
 4. **SSH Linux (lab-op):** **`find`** / **`fd`**, não **`es`**.
 

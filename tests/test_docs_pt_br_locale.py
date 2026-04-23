@@ -12,6 +12,8 @@ When adding copy for the private pitch (``docs/private/pitch/slides.yaml``) or f
 English-only until reviewed or run the same vocabulary checks by hand; if those files become tracked, extend
 ``_extra_locale_scan_paths`` below.
 
+Policy default for assistants: **``.cursor/rules/docs-locale-pt-br-contract.mdc``** (always applied).
+
 **Gitignored Portuguese drafts:** ``docs/private/social_drafts/drafts/*.md`` (and editorial notes) are not on GitHub CI. Drafts use a
 ``YYYY-MM-DD_`` filename prefix (publication or next planned date per private hub). For locale guard on
 Instagram copy, a **tracked mirror** lives under ``docs/private.example/social_drafts/drafts/`` — keep it in sync with
