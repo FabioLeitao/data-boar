@@ -4,7 +4,7 @@
 
 ## Objetivo
 
-Guardar o **prompt completo** de validação **1.7.3** (papel SRE / Lab-Op) **antes de qualquer execução** — como referência versionada para colar, comparar ou enxugar. **Atalho em chat novo:** linha 1 **`completao`**, linha 2 **`tier:release-master-v1-7-3`**, ou **`.\scripts\completao-chat-starter.ps1 -Tier release-master-v1-7-3`** — ver **[`COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md`](COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md)**.
+Guardar o **prompt completo** de validação **1.7.3** (papel SRE / Lab-Op) **antes de qualquer execução** — como referência versionada para colar, comparar ou enxugar. **Atalho em chat novo:** linha 1 **`completao`**, linha 2 **`tier:release-master-v1-7-3`**, ou **`.\scripts\completao-chat-starter.ps1 -Tier release-master-v1-7-3`**. Para **outras releases**, use **`.\scripts\completao-chat-starter.ps1 -Tier release-master -ReleaseSemver X.Y.Z`** (opcional **`-GitTag`**) e, ao arquivar, acrescente **`COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT_<semver>.md`** (+ **`.pt_BR.md`**) — o starter prefere esse arquivo quando existir. Ver **[`COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md`](COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md)**.
 
 ## Alinhamento de política (ler antes de executar)
 

@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Preserve the operator’s **full “SRE lead / release validation” chat prompt** for **Data Boar 1.7.3** lab completão **before any run** — as a **frozen reference** you can paste, diff, or trim over time. **Shorthand for fresh chats:** after the first line **`completao`**, use **`tier:release-master-v1-7-3`** (see **[`COMPLETAO_OPERATOR_PROMPT_LIBRARY.md`](COMPLETAO_OPERATOR_PROMPT_LIBRARY.md)**) or run **`.\scripts\completao-chat-starter.ps1 -Tier release-master-v1-7-3`**.
+Preserve the operator’s **full “SRE lead / release validation” chat prompt** for **Data Boar 1.7.3** lab completão **before any run** — as a **frozen reference** you can paste, diff, or trim over time. **Shorthand for fresh chats:** after the first line **`completao`**, use **`tier:release-master-v1-7-3`** (see **[`COMPLETAO_OPERATOR_PROMPT_LIBRARY.md`](COMPLETAO_OPERATOR_PROMPT_LIBRARY.md)**) or run **`.\scripts\completao-chat-starter.ps1 -Tier release-master-v1-7-3`**. For **other releases**, use **`.\scripts\completao-chat-starter.ps1 -Tier release-master -ReleaseSemver X.Y.Z`** (optional **`-GitTag`**) and, when you archive a new frozen pair, add **`docs/ops/COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT_<semver>.md`** (+ **`.pt_BR.md`**) — the starter prefers that file when it exists.
 
 ## Policy alignment (read before executing)
 

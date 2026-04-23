@@ -10,7 +10,7 @@ Separar **três camadas** para não colar um bloco enorme em toda sessão:
 2. **Atalho de *tier* (linha 2):** um **código curto** definido nesta página — diz ao assistente qual fatia e qual linha de comando preferir.
 3. **Prosa pesada (opcional):** os blocos **A–E** completos no **[`LAB_COMPLETAO_FRESH_AGENT_BRIEF.md`](LAB_COMPLETAO_FRESH_AGENT_BRIEF.md)** — use quando mudar contratos ou precisar de desvio pontual.
 
-**Automação:** na raiz do repo, **`.\scripts\completao-chat-starter.ps1`** imprime um arranque **mínimo** (duas linhas + comando opcional) para colar no Cursor. **`.\scripts\completao-chat-starter.ps1 -Help`** lista os *tiers*.
+**Automação:** na raiz do repo, **`.\scripts\completao-chat-starter.ps1`** imprime um arranque **mínimo** (**`completao`** + linhas **`tier:`** / às vezes **`semver:`** / **`tag:`**) e um comando sugerido opcional. **`.\scripts\completao-chat-starter.ps1 -Help`** lista os *tiers*. Para outras releases: **`-Tier release-master -ReleaseSemver 1.7.4`** (e **`-GitTag`**, se a tag não for **`v` + semver**).
 
 **Prompt longo privado:** se a narrativa tiver caminhos reais ou preferências, guarde só em **`docs/private/homelab/`** — modelo com placeholders: **[`../private.example/homelab/COMPLETAO_OPERATOR_PROMPT.example.md`](../private.example/homelab/COMPLETAO_OPERATOR_PROMPT.example.md)** (seguro para versionar).
 
@@ -25,9 +25,10 @@ Separar **três camadas** para não colar um bloco enorme em toda sessão:
 | **`tier:followup-poc`** | Fatias pytest POC no Windows | Igual ao bloco **C**. |
 | **`tier:followup-cli`** | Avaliação externa / CLI | Igual ao bloco **D** + **[`LAB_EXTERNAL_CONNECTIVITY_EVAL.md`](LAB_EXTERNAL_CONNECTIVITY_EVAL.md)**. |
 | **`tier:evidence`** | Fechar notas para a próxima sessão | Igual ao bloco **E**. |
-| **`tier:release-master-v1-7-3`** | Checklist-mestre **SRE / release 1.7.3** (fases 0–4) — **ler** **[`COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md`](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md)** ([EN](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md)) **antes** de executar; alinhar saídas a **`docs/private/homelab/reports/`** conforme notas de política desse doc | Abrir o doc do prompt-mestre; seguir blast radius do **`LAB_COMPLETAO_RUNBOOK.md`**; **`lab-completao-orchestrate.ps1 -Privileged`** quando couber; **sem** Git destrutivo no PC dev **principal** |
+| **`tier:release-master-v1-7-3`** | Atalho **congelado** para o checklist **1.7.3** (mesmo objetivo que **`release-master`** com **`semver:1.7.3`**) — **ler** **[`COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md`](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md)** ([EN](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md)) **antes** de executar | Igual a **`tier:release-master`** na 1.7.3; mantido para transcrições estáveis |
+| **`tier:release-master`** | Checklist-mestre **SRE / release** parametrizado — nas **linhas 3–4** use **`semver:X.Y.Z`** e **`tag:vX.Y.Z`** (ou **`tag:v1.7.2-safe`** quando a tag não for só **`v` + semver**). **Doc:** o starter resolve **`COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT_<semver>.md`** se existir, senão **[`COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md`](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md)**; ao arquivar release nova, acrescente o par **`.pt_BR.md`** com o mesmo nome base | Rode **`.\scripts\completao-chat-starter.ps1 -Tier release-master -ReleaseSemver 1.7.4`** (opcional **`-GitTag …`**); alinhe saídas a **`docs/private/homelab/reports/`** conforme o doc que abrir |
 
-**Sintaxe:** linha 2 = uma linha de *tier*, ex. **`tier:smoke-main`**. Linhas 3+ opcionais: **`token-aware`**, **`short`**, flags pontuais. **Não** junte branch/versão na **linha 1** — a taxonomia de sessão está em **`session-mode-keywords.mdc`**.
+**Sintaxe:** linha 2 = uma linha de *tier*, ex. **`tier:smoke-main`**. Com **`tier:release-master`**, as linhas **3–4** são **`semver:…`** e **`tag:…`** (o **`completao-chat-starter.ps1`** imprime isso). Linhas seguintes opcionais: **`token-aware`**, **`short`**, flags pontuais. **Não** junte branch/versão na **linha 1** — a taxonomia de sessão está em **`session-mode-keywords.mdc`**.
 
 ## Arranque fino (exemplo para colar)
 
@@ -55,7 +56,7 @@ Use os blocos literais do **[`LAB_COMPLETAO_FRESH_AGENT_BRIEF.md`](LAB_COMPLETAO
 
 ## Ligações
 
-- **Prompt-mestre de checklist de release (arquivo 1.7.3):** [COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md) ([EN](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md))
+- **Prompt-mestre de checklist de release (arquivo 1.7.3 + *tier* parametrizado):** [COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md) ([EN](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md)); cópias por semver: **`COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT_<semver>.md`** (ver **`completao-chat-starter.ps1 -Tier release-master`**)
 - **Escada de arranque:** [OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md) ([EN](OPERATOR_AGENT_COLD_START_LADDER.md))
 - **Personas:** [LAB_OP_HOST_PERSONAS.pt_BR.md](LAB_OP_HOST_PERSONAS.pt_BR.md) ([EN](LAB_OP_HOST_PERSONAS.md))
 - **Runbook:** [LAB_COMPLETAO_RUNBOOK.pt_BR.md](LAB_COMPLETAO_RUNBOOK.pt_BR.md) ([EN](LAB_COMPLETAO_RUNBOOK.md))
