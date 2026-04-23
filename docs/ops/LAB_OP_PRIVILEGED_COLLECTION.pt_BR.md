@@ -51,7 +51,9 @@ sudo visudo -f /etc/sudoers.d/labop-host-report
 # - REPO_PATH: path absoluto do clone do repo nesse host (evite espaços)
 
 Cmnd_Alias LABOP_HOST_REPORT = /bin/bash REPO_PATH/scripts/homelab-host-report.sh --privileged, \
-                               /bin/bash REPO_PATH/scripts/homelab-host-report.sh --privileged --deep
+                               /usr/bin/bash REPO_PATH/scripts/homelab-host-report.sh --privileged, \
+                               /bin/bash REPO_PATH/scripts/homelab-host-report.sh --privileged --deep, \
+                               /usr/bin/bash REPO_PATH/scripts/homelab-host-report.sh --privileged --deep
 
 LEITAO_USER ALL=(root) NOPASSWD: LABOP_HOST_REPORT
 ```
@@ -62,6 +64,10 @@ LEITAO_USER ALL=(root) NOPASSWD: LABOP_HOST_REPORT
 sudo -l
 sudo -n /bin/bash REPO_PATH/scripts/homelab-host-report.sh --privileged | head -20
 ```
+
+### Path do shell no sudoers (`/bin/bash` vs `/usr/bin/bash`)
+
+O **`sudo`** compara o **path do executável invocado literalmente**. Em alguns hosts, **`command -v bash`** devolve **`/usr/bin/bash`** (ex.: Void), enquanto você testa com **`/bin/bash`**. Se o NOPASSWD listar só um dos dois, a outra forma pede senha. **Liste os dois** no `Cmnd_Alias` (como no template acima e no role **`lab-node-01_labop_sudoers`**).
 
 ### Checklist de setup (uma vez por host)
 
@@ -96,7 +102,9 @@ Exemplo (substitua `LEITAO_USER` / `REPO_PATH`):
 
 ```text
 Cmnd_Alias LABOP_ANSIBLE_PODMAN = /bin/bash REPO_PATH/scripts/lab-node-01-ansible-labop-podman-apply.sh --apply, \
-                                  /bin/bash REPO_PATH/scripts/lab-node-01-ansible-labop-podman-apply.sh --check
+                                  /usr/bin/bash REPO_PATH/scripts/lab-node-01-ansible-labop-podman-apply.sh --apply, \
+                                  /bin/bash REPO_PATH/scripts/lab-node-01-ansible-labop-podman-apply.sh --check, \
+                                  /usr/bin/bash REPO_PATH/scripts/lab-node-01-ansible-labop-podman-apply.sh --check
 
 LEITAO_USER ALL=(root) NOPASSWD: LABOP_HOST_REPORT, LABOP_ANSIBLE_PODMAN
 ```
@@ -114,7 +122,15 @@ No Windows (SSH **sem** TTY para senha do Ansible):
 .\scripts\lab-node-01-ansible-baseline.ps1 -SshHost lab-node-01 -Apply -SkipCheck -PodmanOnly -NoAskBecomePass
 ```
 
-Exige **`ansible-playbook`** no alvo e as linhas do sudoers acima.
+Exige **`ansible-playbook`** no alvo e as linhas do sudoers acima. Sob **`sudo`**, o **`secure_path`** pode esconder o **`~/.local/bin`** do operador; o script **`lab-node-01-ansible-labop-podman-apply.sh`** antecede **`~/.local/bin`** / **`~/.cargo/bin`** (via **`getent passwd`** do **`SUDO_USER`**) quando possível. Se ainda faltar o binário, instale o pacote **`ansible`** no host (ex.: Debian: **`apt install ansible`**) para colocar **`ansible-playbook`** num path de sistema.
+
+### Ordem em `sudoers.d` vs `%wheel` (Void Linux)
+
+Os includes em **`/etc/sudoers.d/`** são lidos pela **ordem lexicográfica do nome do arquivo**. Se existir **`wheel`** com **`%wheel ALL=(ALL:ALL) ALL`** e o teu utilizador estiver no **`wheel`**, essa regra **ampla** pode ser aplicada **depois** de um arquivo tipo **`labop-host-report`**, e o **`sudo -n`** continua a pedir senha mesmo com **`NOPASSWD`** visível no **`sudo -l`**. Renomeia o include do LAB para ordenar **depois** de **`wheel`** — ex.: **`z-labop-host-report`**. **Não** contes com o prefixo **`99-`** para ser “o último”: **dígitos ordenam antes de letras**, logo **`99-…`** fica **antes** de **`wheel`**.
+
+### “Already up to date” no lab mas Void ainda cai em `apt` / `python3-apt` / `sshfs`
+
+Se **`git pull --ff-only origin main`** diz **up to date** mas **`lab-node-01-ansible-labop-podman-apply.sh --check`** ainda falha no **`ansible.builtin.apt`** (ou **`labop-share-client-install.sh`** ainda tenta o pacote **`sshfs`** no Void), as **correções canónicas ainda não estão no remoto Git** que o host segue — por exemplo, alterações só no **working tree do PC de desenvolvimento** até **commit + push**. Confirma no host: **`git log -1 --oneline`** igual ao **`main`** no GitHub e volta a fazer pull.
 
 ## Guardrails
 

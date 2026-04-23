@@ -5,9 +5,9 @@
 # scripts/homelab-host-report.sh --privileged). Do NOT widen NOPASSWD beyond
 # this script path + the flags listed in sudoers.
 #
-# Usage (as operator, with sudoers configured):
+# Usage (as operator, with sudoers configured — use the same bash path as in sudoers, often /bin/bash or /usr/bin/bash):
 #   sudo -n /bin/bash /home/USER/Projects/dev/data-boar/scripts/lab-node-01-ansible-labop-podman-apply.sh --apply
-#   sudo -n /bin/bash .../lab-node-01-ansible-labop-podman-apply.sh --check
+#   sudo -n /usr/bin/bash .../lab-node-01-ansible-labop-podman-apply.sh --check
 #
 # Without root: re-invokes via sudo -n when possible.
 #
@@ -17,6 +17,17 @@ set -euo pipefail
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin${PATH+:$PATH}"
 
+# Bash path for `sudo -n <bash> this-script …` must match sudoers literally; prefer /bin/bash, else /usr/bin/bash (Void, etc.).
+_labop_nopasswd_bash() {
+  if [[ -x /bin/bash ]]; then
+    printf '%s' /bin/bash
+  elif [[ -x /usr/bin/bash ]]; then
+    printf '%s' /usr/bin/bash
+  else
+    command -v bash || true
+  fi
+}
+
 usage() {
   cat <<'EOF'
 Usage: bash scripts/lab-node-01-ansible-labop-podman-apply.sh --apply | --check
@@ -25,7 +36,7 @@ Usage: bash scripts/lab-node-01-ansible-labop-podman-apply.sh --apply | --check
   --check   Ansible --check --diff (dry-run).
 
 Requires: ansible-playbook, perl. Passwordless sudo must match the exact
-/bin/bash <repo>/scripts/lab-node-01-ansible-labop-podman-apply.sh <flag> allowlist.
+/bin/bash or /usr/bin/bash + <repo>/scripts/lab-node-01-ansible-labop-podman-apply.sh + <flag> allowlist.
 EOF
 }
 
@@ -61,13 +72,18 @@ if [[ ! -d "$ANSIBLE_DIR" ]] || [[ ! -f "$PLAYBOOK" ]]; then
   exit 2
 fi
 
-# Re-exec as root with sudo -n when not root (NOPASSWD path must match /bin/bash + this script + flag).
+# Re-exec as root with sudo -n when not root (NOPASSWD path must match bash + this script + flag).
 if [[ "$(id -u)" -ne 0 ]]; then
   if ! command -v sudo >/dev/null 2>&1; then
     echo "sudo not available; run as root or install sudo." >&2
     exit 2
   fi
-  exec sudo -n /bin/bash "$SCRIPT_PATH" "$@"
+  _labop_bash="$(_labop_nopasswd_bash)"
+  if [[ -z "$_labop_bash" || ! -x "$_labop_bash" ]]; then
+    echo "No executable bash at /bin/bash or /usr/bin/bash (needed for narrow sudoers)." >&2
+    exit 2
+  fi
+  exec sudo -n "$_labop_bash" "$SCRIPT_PATH" "$@"
 fi
 
 cd "$ANSIBLE_DIR"
@@ -82,6 +98,24 @@ if [[ -z "$OPERATOR" || "$OPERATOR" == "root" ]]; then
 fi
 if [[ -z "$OPERATOR" || "$OPERATOR" == "root" ]]; then
   echo "Could not resolve operator login for Ansible facts (SUDO_USER or repo owner)." >&2
+  exit 2
+fi
+
+# sudo often resets PATH (secure_path); ansible-playbook may live only under the operator's ~/.local/bin.
+if command -v getent >/dev/null 2>&1; then
+  _op_home="$(getent passwd "$OPERATOR" | cut -d: -f6)"
+  if [[ -n "${_op_home:-}" ]]; then
+    for _p in "$_op_home/.local/bin" "$_op_home/.cargo/bin"; do
+      if [[ -d "$_p" ]]; then
+        PATH="${_p}:$PATH"
+      fi
+    done
+  fi
+fi
+export PATH
+
+if ! command -v ansible-playbook >/dev/null 2>&1; then
+  echo "ansible-playbook not in PATH for root (after adding ${_op_home:-~$OPERATOR}/.local/bin). Install ansible (e.g. apt install ansible) or pipx --global." >&2
   exit 2
 fi
 

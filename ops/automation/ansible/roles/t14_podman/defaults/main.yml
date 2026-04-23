@@ -11,6 +11,15 @@ lab-node-01_podman_rootless_packages:
   - slirp4netns
   - fuse-overlayfs
 
+# Void Linux: single xbps transaction (podman already pulls slirp4netns/fuse-overlayfs; extras are explicit).
+lab-node-01_podman_void_packages:
+  - podman
+  - buildah
+  - skopeo
+  - uidmap
+  - slirp4netns
+  - fuse-overlayfs
+
 # Add optional docker CLI alias (alias docker=podman) to /etc/profile.d/.
 # Disabled by default — edge cases exist; enable consciously.
 lab-node-01_podman_docker_alias: false

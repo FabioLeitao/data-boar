@@ -17,7 +17,8 @@ if command -v apt-get >/dev/null 2>&1; then
 fi
 
 if command -v xbps-install >/dev/null 2>&1; then
-  exec xbps-install -Sy cifs-utils nfs-utils sshfs fuse
+  # Void: sshfs is provided by fuse-sshfs (there is no top-level "sshfs" package name).
+  exec xbps-install -Sy cifs-utils nfs-utils fuse-sshfs fuse
 fi
 
 echo "labop-share-client-install: no apt-get or xbps-install found" >&2
