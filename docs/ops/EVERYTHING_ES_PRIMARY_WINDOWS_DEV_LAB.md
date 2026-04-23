@@ -49,7 +49,7 @@ From the **data-boar** repo root:
 
 ### pCloud (`P:`) and other huge sync trees
 
-On the operator **Windows** workstation, **pCloud** is often **`P:`** (see **`AGENTS.md`** / **`docs/PRIVATE_OPERATOR_NOTES.md`**). Folders such as **`P:\Automatic Upload\...`** can hold **tens of thousands** of files — **do not** start agent work with unbounded **`Get-ChildItem -Recurse`** from those roots (slow, noisy, poor token ROI).
+On the operator **Windows** workstation, **pCloud** is often **`P:`** (see **`AGENTS.md`** / **`docs/PRIVATE_OPERATOR_NOTES.md`**). Folders such as **`P:\Automatic Upload\...`** can hold **tens of thousands** of files — **default** = **`es-find.ps1`** / **`es.exe`** (Everything index); **`Get-ChildItem`** is **recovery** if **`es`** fails (**notify** IPC/PATH). Avoid **opening** with unbounded **`Get-ChildItem -Recurse`** from those roots alone (slow, noisy, poor token ROI).
 
 **Prefer:**
 
@@ -65,8 +65,8 @@ Use the **narrowest** **`-SearchRoot`** the operator confirmed. Operator notes f
 
 **Order:**
 
-1. **`.\scripts\es-find.ps1`** ( **`es.exe`** ) — **always try first** on **Windows primary dev PC** for **filename/path** search when a **fast index** beats **Glob** on a **large** tree.
-2. If **`es.exe`** is absent: same script with **`-FallbackPowerShell`**, or **Cursor `Glob`** for **in-repo** patterns, or a **narrow** **`Get-ChildItem`** path the operator named.
+1. **`.\scripts\es-find.ps1`** ( **`es.exe`** ) — **default** on **Windows primary dev PC** for **filename/path** search when a **fast index** beats **Glob** on a **large** tree; **do not skip** for ad-hoc **`Get-ChildItem`** when **`es`** should work.
+2. If **`es-find`** / **`es.exe`** fails: **notify the operator** briefly (exit code, IPC, PATH) so they can fix **Everything** or install — then same script with **`-FallbackPowerShell`**, or **Cursor `Glob`** for **in-repo** patterns, or a **narrow** **`Get-ChildItem`** path. **`Get-ChildItem`** is **recovery**, not co-equal default.
 3. **Do not** use **SemanticSearch** or huge **Grep** runs as a substitute for “find this **filename**” — wrong tool, higher token cost.
 4. **Linux SSH (lab-op):** **`find`** / **`fd`**, not **`es`**.
 

@@ -38,6 +38,10 @@ This ADR already preferred **`es-find.ps1`** for **filename** discovery. **Clari
 - **Do** use **`.\scripts\es-find.ps1 -SearchRoot "<narrow folder>" -Query "<pattern>" -MaxCount N`** (Everything index, low **N** unless the operator asked for exhaustive output).
 - **Companion rule (always applied):** **`.cursor/rules/windows-pcloud-drive-search-discipline.mdc`**.
 
+## Amendment (2026-04-08) — `Get-ChildItem` is allowed; notify on `es` failure
+
+**`Get-ChildItem`** (including **`-Recurse`** under a **scoped** root) was **never** meant to be “forbidden.” The **default** on Windows for **filename/path** discovery remains **`.\scripts\es-find.ps1`** → **`es.exe`** (or wrappers that already call **`es`**); that default is **not** demoted. **`Get-ChildItem`** is **recovery** when **`es`** / IPC / PATH fails — **assistants tell the operator** in one line what broke, then **`-FallbackPowerShell`**, **`Glob`**, or native **`Get-ChildItem`**. Assistants should **not forget** existing **`scripts/`** wrappers (**token-aware** discipline).
+
 ## References
 
 - **`scripts/es-find.ps1`**
