@@ -7,6 +7,10 @@ description: Apply when creating or updating user-facing documentation. Ensures 
 
 Use this skill when **creating or editing** user-facing documentation (docs/, README, SECURITY, CONTRIBUTING, deploy, testing, observability, etc.) so that docs stay in sync, both languages are covered, and operators can navigate and learn how to use the app and what it is capable of doing.
 
+## Before you type Portuguese (non-negotiable)
+
+Read **`.cursor/rules/docs-locale-pt-br-contract.mdc`** (always on). Every line of **`*.pt_BR.md`** and any Portuguese paragraph in tracked ops docs must read **Brazilian (pt-BR)**, not European (pt-PT), unless the operator explicitly scoped a different regional register. There is no built-in “locale sub-agent” — this skill + that rule + **`tests/test_docs_pt_br_locale.py`** are the stack; for a human-style second pass, spawn a **Task** whose sole job is “diff pt-BR mirror vs EN for locale markers only.”
+
 ## Source of truth (order)
 
 1. **Code and application behaviour** – Config, API, CLI, and capabilities are the deepest source of truth. Docs must describe what the app actually does.

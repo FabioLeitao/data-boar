@@ -20,4 +20,6 @@ alwaysApply: true
 
 1. **Prefer running repo scripts over pasting one-liners** when the operator has configured SSH and a manifest: **`scripts/lab-op-sync-and-collect.ps1`**, **`scripts/collect-homelab-report-remote.ps1`** — see **`agent-autonomous-merge-and-lab-ops.mdc`**.
 
+**Same-PC symmetry (browser MCP):** on the **operator dev PC**, **`cursor-ide-browser`** reaches **Gmail**, **operator social sites**, and other web dashboards with the same **try before refusing** rule and **Google SSO** when the session is cold — see **`.cursor/rules/cursor-browser-social-sso-hygiene.mdc`** (*Contrato único*).
+
 See **`docs/PRIVATE_OPERATOR_NOTES.md`** §4–§5, **`AGENTS.md`** (homelab + `P:`).

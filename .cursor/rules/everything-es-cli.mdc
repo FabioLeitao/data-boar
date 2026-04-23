@@ -6,7 +6,11 @@ alwaysApply: true
 
 # Everything CLI (`es.exe`) — token-aware filename search (primary Windows dev PC)
 
-**Companion:** **`windows-pcloud-drive-search-discipline.mdc`** — assume **`P:`** for pCloud on Windows; **forbid** broad **`Get-ChildItem -Recurse`** on huge sync subtrees; always **`es-find.ps1 -SearchRoot`** + low **`-MaxCount`**.
+**Companion:** **`windows-pcloud-drive-search-discipline.mdc`** — assume **`P:`** for pCloud on Windows; **default** = **`es-find.ps1`** / **`es.exe`** on huge sync subtrees; **`Get-ChildItem`** only as **recovery** after **`es`** fails (see Fallback) — avoid **unbounded** **`-Recurse`** from massive roots as the **opening** move.
+
+## Default (stable — do not regress)
+
+- On **Windows primary dev PC**, for **filename/path** discovery, the **default** is **`.\scripts\es-find.ps1`** (calls **`es.exe`**) or **any other `scripts/*.ps1` wrapper that already invokes `es.exe`**. Clarifying fallbacks does **not** demote **`es`** — **`Get-ChildItem`** is **not** an equal default for the same job; use it only when the **`es`** path failed (notify operator) or is **inapplicable** (e.g. **Linux lab-op**).
 
 ## Platform
 
@@ -16,16 +20,18 @@ alwaysApply: true
 ## When to use
 
 - **Use `.\scripts\es-find.ps1`** when the task is **find files by name or path** across a **large tree**, **outside the repo**, or when **Cursor `Glob` would be huge or slow**, and you need **fast** results from the **Everything index**.
-- **On Windows primary dev PC, `es.exe` is the default tool** for **filename/path** discovery (via the wrapper). **Always invoke `es-find.ps1` first** when the task is “where is this file named like X” — not **`SemanticSearch`** and not broad content **Grep** as a stand-in for filename search.
+- **On Windows primary dev PC, `es.exe` via `es-find.ps1` is the default tool** for **filename/path** discovery. **Do not skip** the wrapper in favour of ad-hoc **`Get-ChildItem`** when **`es`** should work — use **`es-find.ps1`** for “where is this file named like X” — not **`SemanticSearch`** and not broad content **Grep** as a stand-in for filename search.
 - **Prefer repo tools first** for normal work **inside `data-boar/`**: **`Glob`**, **`Grep`**, **`SemanticSearch`** — they respect workspace scope and avoid leaking unrelated paths into the transcript — **unless** the operator or task clearly needs **Everything** (huge tree, path outside workspace, index speed).
+- **Do not “forget” wrappers:** **`es-find.ps1`** is one agreed script among many — see **`.cursor/rules/repo-scripts-wrapper-ritual.mdc`** and **`docs/ops/TOKEN_AWARE_SCRIPTS_HUB.md`** / **`check-all-gate.mdc`** before inventing long one-off shell.
 
-## Fallback (if `es.exe` unavailable, timeout, or catastrophic failure)
+## Fallback (if `es.exe` / IPC / wrapper fails — notify, then native tools)
 
-1. Re-run **`.\scripts\es-find.ps1 -Query "..." -FallbackPowerShell`** (same scope; **no** `-Regex`/`-Global` with fallback).
-2. **`Glob`** in the workspace for **in-repo** filename patterns.
-3. **`Get-ChildItem -Recurse`** only under a **narrow** root the user specified (high token/IO cost — last resort).
-4. **Never** use **`SemanticSearch`** as the primary way to locate a file **by name**.
-5. **lab-op (Linux):** **`find`**, **`fd`**, **`locate`** — **not** `es.exe`.
+1. **Notify the operator** briefly (exit code, “IPC not found”, `es.exe` not on PATH, etc.) so they can fix Everything or PATH — do not silently pretend the fast path worked.
+2. Re-run **`.\scripts\es-find.ps1 -Query "..." -FallbackPowerShell`** (same scope; **no** `-Regex`/`-Global` with fallback).
+3. **`Glob`** in the workspace for **in-repo** filename patterns.
+4. **`Get-ChildItem`** (with **`-Recurse`** only when the root is **narrow** or the operator confirmed scope) — **native OS tools are fine**; they are the usual fallback when **`es`** is down. High token/IO cost on huge trees — prefer **capped** depth or **`-MaxCount`**-style discipline when you script it yourself.
+5. **Never** use **`SemanticSearch`** as the primary way to locate a file **by name**.
+6. **lab-op (Linux):** **`find`**, **`fd`**, **`locate`** — **not** `es.exe`.
 
 ## When not to use
 

@@ -17,7 +17,7 @@ description: Use when finding files by name/path on Windows primary dev PC via v
 
 ## Default workflow
 
-1. From the **repo root**, run **`.\scripts\es-find.ps1`** with **`-Query`** and keep **`-MaxCount`** small (default **50** unless the user asked for full lists). **This is the normal path** — wrapper calls **`es.exe`** (not “ex.exe”; the binary is **`es`** / **`es.exe`**).
+1. From the **repo root**, run **`.\scripts\es-find.ps1`** with **`-Query`** and keep **`-MaxCount`** small (default **50** unless the user asked for full lists). **This is the default path** — wrapper calls **`es.exe`** (not “ex.exe”; the binary is **`es`** / **`es.exe`**). **Do not** skip it for ad-hoc **`Get-ChildItem`** when **`es`** should work on Windows.
 2. **Scope:** omit **`-Global`** to search under the **repo root** only; use **`-Global`** only when the user needs the **full indexed volume** set.
 3. Use **`-ShowCommand`** to print the exact **`es.exe`** line — copy it to add **raw** CLI flags not wrapped by the script.
 4. Use **`-Help`** for a short usage string embedded in the script.
@@ -25,8 +25,9 @@ description: Use when finding files by name/path on Windows primary dev PC via v
 ## If `es` is missing or fails
 
 - Exit code **127** means **`es.exe`** not on **PATH**. Install **voidtools Everything CLI**; ensure **Everything** is running (**IPC**). See **`docs/ops/EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md`**.
+- **Tell the operator** what failed (IPC, PATH, stderr) so they can fix the machine — then fall back.
 - **Fallback:** **`.\scripts\es-find.ps1 -Query "..." -FallbackPowerShell`** — capped **PowerShell** filename search under the same default scope (**slower**). **Not** with **`-Regex`** or **`-Global`**.
-- **Assistants (Cursor):** if **`es-find`** cannot run, use **`Glob`** for **in-repo** names; avoid **`SemanticSearch`** as a substitute for “find this **filename**”.
+- **Assistants (Cursor):** if **`es-find`** still cannot run, use **`Glob`** for **in-repo** names, or **`Get-ChildItem`** on a **narrow** root — **`Get-ChildItem` is allowed**; avoid **`SemanticSearch`** as a substitute for “find this **filename**”. Do not “forget” that **`es-find.ps1`** exists for the next similar task.
 
 ## primary Windows dev PC (primary dev workstation)
 
