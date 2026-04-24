@@ -59,7 +59,12 @@ Or: **`uv build`** then **`uv publish dist/*`** with **`UV_PUBLISH_TOKEN`** set.
 
    This runs the same checks as the **CI** **Lint (pre-commit)** job on every `git commit` (Ruff, **plans-stats** and **plans-hub** freshness, markdown lint, pt-BR locale, commercial guard). Run **`uv run pre-commit run --all-files`** before a PR if you skip hooks.
 
-1. **Run tests**
+1. **Run the full local gate (recommended before a PR)** — one command:
+
+   - **Windows:** `.\scripts\check-all.ps1` from the repo root.
+   - **Linux / macOS:** `./scripts/check-all.sh` (make executable: `chmod +x scripts/check-all.sh`). Install [PowerShell (`pwsh`)](https://learn.microsoft.com/powershell/scripting/install/installing-powershell) if you want the same PII **gatekeeper-audit** step as on Windows; otherwise the script continues with a clear warning.
+
+1. **Run tests** (or use the full gate above)
 
    ```bash
    uv run pytest -v -W error

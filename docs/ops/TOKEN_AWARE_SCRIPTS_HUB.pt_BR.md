@@ -16,7 +16,8 @@
 
 | Script | Função | Ligado a |
 | ------ | ---- | -------- |
-| `check-all.ps1` | Gate completo | SKILL **`token-aware-automation`**, **`.cursor/rules/check-all-gate.mdc`**, `CONTRIBUTING.md` |
+| `check-all.ps1` | Gate completo (Windows) | SKILL **`token-aware-automation`**, **`.cursor/rules/check-all-gate.mdc`**, `CONTRIBUTING.md` |
+| `check-all.sh` | Gate completo (Linux / macOS; bash) — mesmos passos de **`check-all.ps1`**; **`pwsh`** opcional para `gatekeeper-audit.ps1` | Igual a **`check-all.ps1`** |
 | `lint-only.ps1` | So lint/format | Igual |
 | `quick-test.ps1` | Pytest focado | Igual |
 | `preview-commit.ps1`, `commit-or-pr.ps1`, `create-pr.ps1` | Commit / PR | Igual + **`docs/ops/COMMIT_AND_PR.md`** |

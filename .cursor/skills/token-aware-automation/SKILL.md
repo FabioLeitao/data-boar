@@ -29,8 +29,8 @@ If not added, state a short reason (for example runtime too high, flaky signal, 
 
 | Goal                       | Script                                                                          | When it saves tokens                                      |
 | ------                     | --------                                                                        | ----------------------                                    |
-| Full gate before commit/PR | `.\scripts\check-all.ps1`                                                       | Single command = one round-trip                           |
-| Tests only (no pre-commit) | `.\scripts\check-all.ps1 -SkipPreCommit`                                        | Skips Ruff/markdown when you only care about tests        |
+| Full gate before commit/PR | `.\scripts\check-all.ps1` (Windows) or `./scripts/check-all.sh` (Linux / macOS)  | Single command = one round-trip                           |
+| Tests only (no pre-commit) | `.\scripts\check-all.ps1 -SkipPreCommit` or `./scripts/check-all.sh --skip-pre-commit` | Skips Ruff/markdown when you only care about tests        |
 | Lint/format only           | `.\scripts\lint-only.ps1`                                                       | No pytest when you only changed docs, templates, or style |
 | One test file or keyword   | `.\scripts\quick-test.ps1 -Path tests/test_foo.py` or `-Keyword "content_type"` | Fewer tests = faster feedback and fewer tokens            |
 | PII fresh-clone self-audit (Windows; not full `check-all`) | `.\scripts\pii-fresh-clone-audit.ps1` (optional `-IncludeTalentGuards`) | Temp **full** clone + `pii_history_guard --full-history` + `test_pii_guard` (**primary-dev-workstation-safe**). See **`docs/ops/PII_FRESH_CLONE_AUDIT.md`**, **`docs/ops/PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**; session **`pii-fresh-audit`**. |

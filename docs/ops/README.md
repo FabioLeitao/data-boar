@@ -6,7 +6,7 @@ This folder groups **maintainer / operator** procedural docs. **Product usage** 
 
 ## Before you open a PR (operators)
 
-1. Run **`.\scripts\check-all.ps1`** from the repo root on Windows (refreshes the plans dashboard, runs pre-commit, then full pytest). On Linux/macOS, run the same steps manually: `python scripts/plans-stats.py --write`, `uv run pre-commit run --all-files`, `uv run pytest -v -W error`.
+1. From the repo root: **Windows:** **`.\scripts\check-all.ps1`** (refreshes the plans dashboard, runs pre-commit, then full pytest). **Linux / macOS:** **`./scripts/check-all.sh`** (same flow; install **`pwsh`** on PATH for **gatekeeper-audit** parity). Alternatively, run the same steps manually: `python3 scripts/plans-stats.py --write` (or `python`), `uv run pre-commit run --all-files`, `uv run pytest -v -W error`.
 1. **Do not** commit **`docs/private/`** (real homelab inventory; gitignored) or **`git add -f config.yaml`**. Use the tracked template **`docs/private.example/`** and policy **[PRIVATE_OPERATOR_NOTES.md](../PRIVATE_OPERATOR_NOTES.md)**.
 
 ### Chat shorthand: `pmo-view` (plan / PMO docs, Markdown preview)

@@ -16,7 +16,8 @@
 
 | Script | Role | Wired to |
 | ------ | ---- | -------- |
-| `check-all.ps1` | Full gate | **`token-aware-automation`** SKILL, **`.cursor/rules/check-all-gate.mdc`**, `CONTRIBUTING.md` |
+| `check-all.ps1` | Full gate (Windows) | **`token-aware-automation`** SKILL, **`.cursor/rules/check-all-gate.mdc`**, `CONTRIBUTING.md` |
+| `check-all.sh` | Full gate (Linux / macOS; bash) — same steps as `check-all.ps1`; **optional `pwsh`** for `gatekeeper-audit.ps1` | Same as **`check-all.ps1`** |
 | `lint-only.ps1` | Docs/style only | Same |
 | `quick-test.ps1` | Narrow pytest | Same |
 | `preview-commit.ps1`, `commit-or-pr.ps1`, `create-pr.ps1` | Commit / PR | Same + **`docs/ops/COMMIT_AND_PR.md`** |
