@@ -31,6 +31,15 @@ Give a **single ordered path** so a **fresh chat** (no transcript memory) can st
 | **Recovery / “figure it out”** | **`operator-investigation-before-blocking.mdc`** · **`operator-recovery-investigation`** skill |
 | **Gmail / webmail / social / inbox or attachment** (same dev PC as SSH; warm or cold + **Google SSO** when offered) | **`cursor-browser-social-sso-hygiene.mdc`** (*Contrato único* + *Gmail e webmail*) · **`operator-browser-warm-session.mdc`** · **`operator-direct-execution.mdc`** §5 — **try** MCP then **SSO click** before refusing; **only then** ask the operator to interact once; PDFs → **`docs/private/`** + **`read_file`** |
 
+### Token → rule → wrapper latch (**`completao`**)
+
+Use this **first message shape** so a **situational** **`lab-completao-workflow.mdc`** still binds (globs **or** explicit `@`), without re-loading it on every unrelated chat:
+
+1. Line 1: English token **`completao`** (optional same message: **`short`** / **`token-aware`** for terse narration).
+2. Line 2: **`tier:…`** exactly as in **`COMPLETAO_OPERATOR_PROMPT_LIBRARY.md`** (tiers, smoke vs release-master, evidence). Paste block: **`.\scripts\completao-chat-starter.ps1 -Help`** or run with **`-Tier …`** to print lines to copy.
+3. If the thread is **not** already touching **`scripts/lab-completao*`** or **`docs/ops/LAB_COMPLETAO*`**, **attach** **`.cursor/rules/lab-completao-workflow.mdc`** via **`@`** so the full workflow rule is in context.
+4. **Default automation (operator runs, assistant interprets logs):** from repo root **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** — then **`read_file`** / summarize under **`docs/private/homelab/reports/`** per **`LAB_COMPLETAO_RUNBOOK.md`**. Do **not** replace the orchestrator with ad-hoc one-off **`ssh`** unless the operator explicitly opts out.
+
 ## Seven non-negotiables (do not “forget” on fresh chats)
 
 1. **`docs/private/`** exists in workspace → **`read_file` / `list_dir` is allowed**; **never** paste secrets or LAN identifiers into **tracked** files or public PRs (**`PRIVATE_OPERATOR_NOTES.md`**).

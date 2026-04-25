@@ -31,6 +31,15 @@ Oferecer **um caminho ordenado** para um **chat novo** (sem memória do transcri
 | **Recuperação / “descobre aí”** | **`operator-investigation-before-blocking.mdc`** · skill **`operator-recovery-investigation`** |
 | **Gmail / webmail / redes / caixa ou anexo** (mesmo PC que **SSH**; sessão quente ou fria + **SSO Google** quando o site oferecer) | **`cursor-browser-social-sso-hygiene.mdc`** (*Contrato único* + *Gmail e webmail*) · **`operator-browser-warm-session.mdc`** · **`operator-direct-execution.mdc`** §5 — **tentar** MCP e clique **SSO** antes de negar; **só depois** pedir interação humana uma vez; PDFs → **`docs/private/`** + **`read_file`** |
 
+### Presilha token → regra → wrapper (**`completao`**)
+
+Use este **formato da primeira mensagem** para que um **`lab-completao-workflow.mdc`** **situacional** ainda “pegue” (via **globs** ou **`@`** explícito), sem recarregar a regra em todo chat irrelevante:
+
+1. Linha 1: token em inglês **`completao`** (opcional na mesma mensagem: **`short`** / **`token-aware`** para narrativa curta).
+2. Linha 2: **`tier:…`** exatamente como em **`COMPLETAO_OPERATOR_PROMPT_LIBRARY.md`**. Bloco para colar: **`.\scripts\completao-chat-starter.ps1 -Help`** ou correr com **`-Tier …`** para imprimir linhas copiáveis.
+3. Se o fio **não** estiver a mexer em **`scripts/lab-completao*`** nem **`docs/ops/LAB_COMPLETAO*`**, **anexar** **`.cursor/rules/lab-completao-workflow.mdc`** com **`@`** para trazer a regra completa para o contexto.
+4. **Automação por omissão (operador corre, assistente interpreta logs):** na raiz do repo **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** — depois **`read_file`** / resumir em **`docs/private/homelab/reports/`** conforme **`LAB_COMPLETAO_RUNBOOK.md`**. **Não** substituir o orquestrador por **`ssh`** ad hoc salvo se o operador optar explicitamente por isso.
+
 ## Sete coisas inegociáveis (não “esquecer” em chat novo)
 
 1. **`docs/private/`** existe no workspace → **`read_file` / `list_dir` é permitido**; **nunca** colar segredos ou identificadores de LAN em arquivos **versionados** ou PRs públicos (**`PRIVATE_OPERATOR_NOTES.md`**).
