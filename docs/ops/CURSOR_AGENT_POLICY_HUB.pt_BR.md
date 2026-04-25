@@ -6,6 +6,8 @@ Esta página é a **fase B de consolidação**: o mesmo mapa **tema → primeiro
 
 **Chat novo / pouco contexto:** começar em **[OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)** ([EN](OPERATOR_AGENT_COLD_START_LADDER.md)) — escada ordenada em uma tela, router de tarefas e **sete** regras inegociáveis (homelab **`ssh`** = item 7); depois este hub ou o [`AGENTS.md`](../../AGENTS.md) conforme a necessidade.
 
+**Programa fase 2 (por que regras situacionais, exceções locale/smoke, backlog Tier B/C, ritual reproduzível):** **[CURSOR_RULES_PHASE2_SITUATIONALIZATION.pt_BR.md](CURSOR_RULES_PHASE2_SITUATIONALIZATION.pt_BR.md)** ([EN](CURSOR_RULES_PHASE2_SITUATIONALIZATION.md)).
+
 ## Quick index (com links)
 
 | Tema | Onde olhar primeiro |
