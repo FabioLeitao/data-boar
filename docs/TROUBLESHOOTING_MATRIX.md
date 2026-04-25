@@ -33,7 +33,7 @@ uv run python scripts/run_poc_error_scenarios.py --output reports/poc_error_metr
 
 **Cause:** Server not running.
 
-**Fix:**
+**Fix (connection refused):**
 
 ```ash
 uv run python main.py --config config.yaml --web --port 8088
@@ -150,7 +150,7 @@ FLUSH PRIVILEGES;
 
 **Cause:** Path does not exist at runtime (especially in Docker without volume mount).
 
-**Fix:**
+**Fix (path not found):**
 
 ```ash
 docker run -v /your/data:/scan/data ... # then use path: /scan/data in config
@@ -187,7 +187,7 @@ file_scan:
 
 ### D-001: Blank or 500 page
 
-**Fix:**
+**Fix (blank or 500 page):**
 
 ```ash
 docker logs data_boar 2>&1 | tail -50
@@ -208,7 +208,7 @@ curl http://localhost:8088/health
 
 ### E-001: Scan very slow
 
-**Fix:**
+**Fix (scan very slow):**
 
 ```yaml
 scan:
@@ -221,7 +221,7 @@ scan:
 
 ### E-002: API unresponsive under load
 
-**Fix:**
+**Fix (API unresponsive):**
 
 ```yaml
 api:

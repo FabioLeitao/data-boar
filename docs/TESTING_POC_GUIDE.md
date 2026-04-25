@@ -251,7 +251,7 @@ never committed. This prevents test data bloat and keeps the repo clean.
 
 ## 8. Stress and load testing (Scenario 8)
 
-**Generate:**
+**Generate (stress and load):**
 
 ```bash
 uv run python scripts/generate_synthetic_poc_corpus.py --scenario stress_load
@@ -279,7 +279,7 @@ Measure-Command { uv run python main.py --config config.yaml --scan --target tes
 
 Tests 8 intentional misconfigs to evaluate error message quality and troubleshooting UX.
 
-**Generate:**
+**Generate (config error QA):**
 
 ```bash
 uv run python scripts/generate_synthetic_poc_corpus.py --scenario config_errors
