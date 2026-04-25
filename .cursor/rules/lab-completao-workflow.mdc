@@ -1,7 +1,9 @@
 ---
 description: Lab completão — wrappers + -Privileged + narrow sudoers; L-series protection; token-aware automation reuse; document timeouts, latency, FP/FN vs synthetic, real-path confidence; doc+code capability matrix; SSH from dev PC.
-globs: scripts/lab-completao*.ps1,scripts/lab-completao*.sh,scripts/completao-chat-starter.ps1,scripts/stack-db.yml,docs/ops/LAB_COMPLETAO_RUNBOOK.md,docs/ops/COMPLETAO_OPERATOR_PROMPT_LIBRARY.md,docs/ops/COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md,docs/ops/LAB_OP_HOST_PERSONAS.md,docs/ops/LAB_SMOKE_MULTI_HOST.md
-alwaysApply: true
+globs:
+  - scripts/lab-completao*
+  - docs/ops/LAB_COMPLETAO*
+alwaysApply: false
 ---
 
 # Lab completão — assistant / operator workflow (SSH from dev PC)
