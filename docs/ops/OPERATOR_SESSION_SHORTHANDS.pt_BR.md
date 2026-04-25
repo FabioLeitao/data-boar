@@ -10,6 +10,8 @@ A tabela de palavras-chave **só em inglês** está em **`.cursor/rules/session-
 
 **Arranques de chat para completão (`completao` + `tier:…`):** **[COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md](COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md)** ([EN](COMPLETAO_OPERATOR_PROMPT_LIBRARY.md)) · **`scripts/completao-chat-starter.ps1`** (imprime bloco mínimo para colar; **`-Help`** lista os *tiers*).
 
+**Publicação pública completa (semver, GitHub Release, Docker Hub):** **`release-ritual`** — **`release-publish-sequencing.mdc`** **situacional** ( **`@release-publish-sequencing.mdc`** em chat novo se nenhum caminho coberto pelos **globs** de release estiver aberto no editor); **`docker-local-smoke-cleanup.mdc`** continua **sempre ligada**. Ver **[OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)** § *Presilha token → regra (`release-ritual`)*.
+
 ## Exemplo de host SSH no LAB-OP
 
 Exemplos versionados e scripts usam o alias SSH **`lab-op`** para o servidor Linux do lab (Docker, reports). Configure **`Host lab-op`** no **`~/.ssh/config`** do PC de desenvolvimento para resolver na LAN (DNS ou mDNS) e usar chaves **ed25519** já autorizadas no host. Nomes reais de máquina ficam **só** em **`docs/private/homelab/`**. Ver **`docs/private.example/homelab/README.md`**.

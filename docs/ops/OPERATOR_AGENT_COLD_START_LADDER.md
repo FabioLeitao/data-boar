@@ -15,13 +15,14 @@ Give a **single ordered path** so a **fresh chat** (no transcript memory) can st
 5. **Lab / completão only:** **[`LAB_COMPLETAO_FRESH_AGENT_BRIEF.md`](LAB_COMPLETAO_FRESH_AGENT_BRIEF.md)** → **[`LAB_COMPLETAO_RUNBOOK.md`](LAB_COMPLETAO_RUNBOOK.md)** → **[`LAB_OP_HOST_PERSONAS.md`](LAB_OP_HOST_PERSONAS.md)** (ENT / PRO / edge / bridge + Ansible knobs).
 6. **Private stack only:** **[`PRIVATE_STACK_SYNC_RITUAL.md`](PRIVATE_STACK_SYNC_RITUAL.md)** · **`scripts/private-git-sync.ps1`** (**`-Push`** when mirrors must align) · **[ADR 0040](../adr/0040-assistant-private-stack-evidence-mirrors-default.md)**.
 7. **Where docs live (LAB-PB vs LAB-OP):** **[`OPERATOR_LAB_DOCUMENT_MAP.md`](OPERATOR_LAB_DOCUMENT_MAP.md)**.
-8. **Session English tokens:** [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) — type tokens **exactly** (e.g. **`homelab`**, **`completao`**, **`legal-dossier-update`**, **`private-stack-sync`**, **`es-find`**, **`short`** / **`token-aware`**).
+8. **Session English tokens:** [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) — type tokens **exactly** (e.g. **`homelab`**, **`completao`**, **`legal-dossier-update`**, **`private-stack-sync`**, **`es-find`**, **`release-ritual`**, **`short`** / **`token-aware`**).
 
 ## Task router (one hop)
 
 | If the operator wants… | Open first (then follow links inside) |
 | ------------------------ | -------------------------------------- |
 | **Ship code / fix CI** | **`TOKEN_AWARE_SCRIPTS_HUB`** §1 → **`check-all.ps1`**; **`AGENTS.md`** merge/PR bullets |
+| **Public semver / Docker Hub / GitHub Release (full publish)** | Session **`release-ritual`** · **`.cursor/rules/release-publish-sequencing.mdc`** (**situational** — globs or **`@release-publish-sequencing.mdc`**) · **`docs/VERSIONING.md`** · **`docker-local-smoke-cleanup.mdc`** (**always-on**) · § *Token → rule latch (`release-ritual`)* below |
 | **Which script / wrapper for this?** (avoid reinventing long shell) | **`repo-scripts-wrapper-ritual.mdc`** · **`TOKEN_AWARE_SCRIPTS_HUB`** · **`check-all-gate.mdc`** · **`token-aware-automation`** skill |
 | **Docs / hubs / MAP** | **`doc-hubs-plans-sync`** skill · **`docs/README.md`** *Internal and reference* · paired **`*.pt_BR.md`** |
 | **Lab smoke / completão** | **`COMPLETAO_OPERATOR_PROMPT_LIBRARY`** ( **`completao`** + **`tier:…`** ) · **`LAB_COMPLETAO_FRESH_AGENT_BRIEF`** · **`lab-completao-workflow.mdc`** · **`LAB_COMPLETAO_RUNBOOK`** · **`scripts/completao-chat-starter.ps1`** |
@@ -76,6 +77,14 @@ For **Voidtools Everything** / **`es-find.ps1`** semantics on the **primary Wind
 1. Line 1: English token **`es-find`** (optional **`short`** / **`token-aware`**).
 2. **`read_file`** **`.cursor/rules/everything-es-cli.mdc`** — use **`@everything-es-cli.mdc`** if globs did not attach it (paths outside the rule globs will not auto-load it).
 3. From repo root run **`.\scripts\es-find.ps1`** per that rule (**`-MaxCount`** capped unless exhaustive is required). **`windows-pcloud-drive-search-discipline.mdc`** stays **always-on** for **`P:`** / **unbounded** **`Get-ChildItem`** avoidance.
+
+### Token → rule latch (**`release-ritual`**)
+
+For **tag → GitHub Release → Docker (smoke before Hub push) → prune → Hub description → `PUBLISHED_SYNC`**, keep **`release-publish-sequencing.mdc`** **situational** but **binding** when you are **shipping** or advising a **full** publish:
+
+1. Line 1: English token **`release-ritual`** (optional **`short`** / **`token-aware`**).
+2. **`read_file`** **`.cursor/rules/release-publish-sequencing.mdc`** — use **`@release-publish-sequencing.mdc`** if globs did not attach it (e.g. only **`pyproject.toml`** is open). **`docker-local-smoke-cleanup.mdc`** stays **always-on** for **smoke / prune / disk** on the dev PC.
+3. **`read_file`** **`docs/VERSIONING.md`** (*Assistant / automation*) and follow the **ordered** checklist in the rule — **do not** put **`-beta`** on **`main`** before tag + Release + Hub steps the operator asked for are **done**, unless they explicitly split workflow and name the **SHA** to tag.
 
 ## Seven non-negotiables (do not “forget” on fresh chats)
 

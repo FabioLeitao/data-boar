@@ -15,13 +15,14 @@ Oferecer **um caminho ordenado** para um **chat novo** (sem memória do transcri
 5. **Só lab / completão:** **[`LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md`](LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md)** → **[`LAB_COMPLETAO_RUNBOOK.pt_BR.md`](LAB_COMPLETAO_RUNBOOK.pt_BR.md)** → **[`LAB_OP_HOST_PERSONAS.pt_BR.md`](LAB_OP_HOST_PERSONAS.pt_BR.md)** (ENT / PRO / edge / ponte + knobs Ansible).
 6. **Só stack privado:** **[`PRIVATE_STACK_SYNC_RITUAL.pt_BR.md`](PRIVATE_STACK_SYNC_RITUAL.pt_BR.md)** · **`scripts/private-git-sync.ps1`** (**`-Push`** quando os espelhos têm de alinhar) · **[ADR 0040](../adr/0040-assistant-private-stack-evidence-mirrors-default.md)** (EN).
 7. **Onde vivem os docs (LAB-PB vs LAB-OP):** **[`OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md`](OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md)**.
-8. **Tokens de sessão em inglês:** [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) — escrever os tokens **exatamente** (ex.: **`homelab`**, **`completao`**, **`legal-dossier-update`**, **`private-stack-sync`**, **`es-find`**, **`short`** / **`token-aware`**).
+8. **Tokens de sessão em inglês:** [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) — escrever os tokens **exatamente** (ex.: **`homelab`**, **`completao`**, **`legal-dossier-update`**, **`private-stack-sync`**, **`es-find`**, **`release-ritual`**, **`short`** / **`token-aware`**).
 
 ## Router de tarefas (um salto)
 
 | Se o operador quer… | Abrir primeiro (depois seguir links lá dentro) |
 | ------------------- | ----------------------------------------------- |
 | **Entregar código / corrigir CI** | **`TOKEN_AWARE_SCRIPTS_HUB`** §1 → **`check-all.ps1`**; bullets de merge/PR no **`AGENTS.md`** |
+| **Semver público / Docker Hub / GitHub Release (publicação completa)** | Sessão **`release-ritual`** · **`.cursor/rules/release-publish-sequencing.mdc`** (**situacional** — **globs** ou **`@release-publish-sequencing.mdc`**) · **`docs/VERSIONING.md`** · **`docker-local-smoke-cleanup.mdc`** (**sempre ligada**) · § *Presilha token → regra (`release-ritual`)* abaixo |
 | **Qual script / wrapper usar?** (evitar reinventar shell longo) | **`repo-scripts-wrapper-ritual.mdc`** · **`TOKEN_AWARE_SCRIPTS_HUB`** · **`check-all-gate.mdc`** · skill **`token-aware-automation`** |
 | **Docs / hubs / MAP** | skill **`doc-hubs-plans-sync`** · **`docs/README.md`** *Interno e referência* · par **`*.pt_BR.md`** |
 | **Smoke de lab / completão** | **`COMPLETAO_OPERATOR_PROMPT_LIBRARY`** (**`completao`** + **`tier:…`**) · **`LAB_COMPLETAO_FRESH_AGENT_BRIEF`** · **`lab-completao-workflow.mdc`** · **`LAB_COMPLETAO_RUNBOOK`** · **`scripts/completao-chat-starter.ps1`** |
@@ -76,6 +77,14 @@ Para semântica de **Voidtools Everything** / **`es-find.ps1`** no **PC dev Wind
 1. Linha 1: token em inglês **`es-find`** (opcional **`short`** / **`token-aware`**).
 2. **`read_file`** em **`.cursor/rules/everything-es-cli.mdc`** — usar **`@everything-es-cli.mdc`** se os **globs** não anexaram a regra (caminhos fora dos **globs** não carregam sozinhos).
 3. Na raiz do repo correr **`.\scripts\es-find.ps1`** conforme essa regra (**`-MaxCount`** baixo salvo precisares de lista exaustiva). **`windows-pcloud-drive-search-discipline.mdc`** continua **sempre ligada** para **`P:`** / evitar **`Get-ChildItem`** **sem limite**.
+
+### Presilha token → regra (**`release-ritual`**)
+
+Para **tag → GitHub Release → Docker (smoke antes do push no Hub) → prune → descrição no Hub → `PUBLISHED_SYNC`**, mantém **`release-publish-sequencing.mdc`** **situacional**, mas **vinculante** quando estás a **publicar** ou a aconselhar publicação **completa**:
+
+1. Linha 1: token em inglês **`release-ritual`** (opcional **`short`** / **`token-aware`**).
+2. **`read_file`** em **`.cursor/rules/release-publish-sequencing.mdc`** — usar **`@release-publish-sequencing.mdc`** se os **globs** não anexaram a regra (ex.: só **`pyproject.toml`** aberto). **`docker-local-smoke-cleanup.mdc`** continua **sempre ligada** para **smoke / prune / disco** no PC de dev.
+3. **`read_file`** em **`docs/VERSIONING.md`** (*Assistant / automação*) e seguir a **checklist ordenada** na regra — **não** colocar **`-beta`** no **`main`** antes de tag + Release + passos no Hub que o operador pediu estarem **feitos**, salvo fluxo explícito com **SHA** a taguear.
 
 ## Sete coisas inegociáveis (não “esquecer” em chat novo)
 

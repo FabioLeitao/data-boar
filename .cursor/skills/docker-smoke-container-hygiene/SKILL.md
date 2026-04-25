@@ -17,7 +17,7 @@ When the operator (or **`release-ritual`**) is cutting a **published** **`X.Y.Z`
 2. **Smoke before push:** After **`.\scripts\docker-lab-build.ps1`**, run at least one **`docker run --rm`** against **`data_boar:lab`** — **`python main.py --version`** or **`/health`** per **`docs/DOCKER_SETUP.md`** §7. **Do not** advise **`docker push`** to **`fabioleitao/data_boar`** if smoke failed (unless CI-only waiver is explicit).
 3. **After push:** **`.\scripts\docker-prune-local.ps1 -WhatIf`** then without **`-WhatIf`** on the **same** machine — see **`docs/ops/DOCKER_IMAGE_RELEASE_ORDER.md`**.
 
-Authoritative order: **`.cursor/rules/release-publish-sequencing.mdc`**.
+Authoritative order: **`.cursor/rules/release-publish-sequencing.mdc`** (**situational** — **`release-ritual`** / **`@release-publish-sequencing.mdc`**); this skill and **`docker-local-smoke-cleanup.mdc`** stay **always-on** for hygiene.
 
 ## When to use
 

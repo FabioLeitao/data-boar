@@ -1,14 +1,34 @@
 ---
-description: Mandatory order for shipping a semver — merge final X.Y.Z, tag vX.Y.Z, GitHub Release, Docker Desktop smoke before Hub push, prune, Hub UI + description, PUBLISHED_SYNC; only then pre-release bump on main.
-globs: ["**/*"]
-alwaysApply: true
+description: Mandatory order for shipping a semver — tag vX.Y.Z, GitHub Release, Docker Desktop smoke before Hub push, prune, Hub UI + PUBLISHED_SYNC; only then pre-release bump on main. Situational — session release-ritual or @ when globs miss.
+globs:
+  - docs/VERSIONING.md
+  - docs/VERSIONING.pt_BR.md
+  - docs/releases/**
+  - docs/ops/DOCKER_IMAGE_RELEASE_ORDER.md
+  - docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md
+  - docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.pt_BR.md
+  - docs/ops/today-mode/PUBLISHED_SYNC.md
+  - docs/ops/today-mode/PUBLISHED_SYNC.pt_BR.md
+  - scripts/docker-lab-build.ps1
+  - scripts/docker-prune-local.ps1
+  - scripts/docker/README.md
+  - .cursor/skills/docker-smoke-container-hygiene/SKILL.md
+alwaysApply: false
 ---
 
 # Release publish sequencing (do not invert)
 
+## When this rule attaches (Cursor)
+
+**Context:** **`alwaysApply: false`** — loads when a path matches the **`globs`** above **or** the operator types the English session token **`release-ritual`** **or** attaches **`@release-publish-sequencing.mdc`**. **`docker-local-smoke-cleanup.mdc`** stays **`alwaysApply: true`** for **smoke / prune / disk** hygiene on the dev workstation; this rule carries the **full** **tag → GitHub → Docker → Hub copy → `PUBLISHED_SYNC`** order.
+
+**Companion:** Session **`release-ritual`** (see **`session-mode-keywords.mdc`**) and **`docs/ops/OPERATOR_AGENT_COLD_START_LADDER.md`** § *Token → rule latch (`release-ritual`)* — use **`@release-publish-sequencing.mdc`** in **fresh** threads when you are **shipping a semver** but no globbed file is open yet.
+
+**Rollback:** `git revert` the commit that flipped this rule or `git show <parent>:.cursor/rules/release-publish-sequencing.mdc`.
+
 **Problem:** Assistants (and rushed humans) stack a **pre-release** bump (`X.Y.Z-beta`) or the **next** dev version on `main` **before** **Git tag**, **GitHub Release**, and **Docker Hub** are real. That makes **`vX.Y.Z`** ambiguous, breaks “tag this commit,” and confuses **published** vs **working** version across **GitHub**, **Hub**, and **README**. A second failure mode is **pushing Hub images without a local smoke** on **Docker Desktop** (or without **disk headroom**), then **never pruning** — leaving **many** `data_boar:*` / `fabioleitao/data_boar:*` tags and stopped containers on the **primary Windows dev workstation**.
 
-**Canonical prose + checklist:** **`docs/VERSIONING.md`** (working vs published, bump list, distribution). **Per-release commands:** **`docs/releases/X.Y.Z.md`**, **`docs/ops/DOCKER_IMAGE_RELEASE_ORDER.md`**, **`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`**. **Local Docker hygiene:** **`.cursor/rules/docker-local-smoke-cleanup.mdc`**, **`.cursor/skills/docker-smoke-container-hygiene/SKILL.md`**, **`scripts/docker/README.md`**.
+**Canonical prose + checklist:** **`docs/VERSIONING.md`** (working vs published, bump list, distribution). **Per-release commands:** **`docs/releases/X.Y.Z.md`**, **`docs/ops/DOCKER_IMAGE_RELEASE_ORDER.md`**, **`docs/ops/DOCKER_HUB_REPOSITORY_DESCRIPTION.md`**. **Local Docker hygiene:** **`.cursor/rules/docker-local-smoke-cleanup.mdc`** (**always-on**), **`.cursor/skills/docker-smoke-container-hygiene/SKILL.md`**, **`scripts/docker/README.md`**.
 
 ---
 
@@ -57,4 +77,4 @@ Do **not** claim a version is **published** until **all** relevant steps for **t
 
 **Published = tag + GitHub Release + Docker Hub image (+ local smoke before push) + Hub page copy + prune habit; working = what `pyproject.toml` says on `main` after you intentionally move forward.**
 
-Session keyword **`release-ritual`**: re-read this rule, **`docs/VERSIONING.md`**, and **`.cursor/rules/docker-local-smoke-cleanup.mdc`** before editing versions, release docs, or advising Docker publish.
+Session keyword **`release-ritual`**: **`read_file`** this rule (or **`@release-publish-sequencing.mdc`** if situational globs did not attach it), **`docs/VERSIONING.md`**, and **`.cursor/rules/docker-local-smoke-cleanup.mdc`** before editing versions, release docs, or advising Docker publish.

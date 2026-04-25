@@ -54,7 +54,7 @@ Use sufixos em minúsculo de forma consistente:
 
 ### Assistente / automação (ordem obrigatória)
 
-**Cursor / agentes:** seguir **`.cursor/rules/release-publish-sequencing.mdc`** — criar tag Git **`vX.Y.Z`**, GitHub Release e passos de publicação no Docker Hub **antes** de avançar o `main` para o próximo bump **`-beta`** (ou próximo dev). A palavra de sessão **`release-ritual`** significa reler essa regra e este arquivo antes de editar semver ou notas de release.
+**Cursor / agentes:** seguir **`.cursor/rules/release-publish-sequencing.mdc`** (**situacional** — sessão **`release-ritual`** ou **`@release-publish-sequencing.mdc`** quando os **globs** não carregam; **`docker-local-smoke-cleanup.mdc`** continua **sempre ligada** para smoke/prune) — criar tag Git **`vX.Y.Z`**, GitHub Release e passos de publicação no Docker Hub **antes** de avançar o `main` para o próximo bump **`-beta`** (ou próximo dev). A palavra de sessão **`release-ritual`** significa **`read_file`** nessa regra (ou **`@`**) e neste arquivo antes de editar semver ou notas de release.
 
 ---
 
