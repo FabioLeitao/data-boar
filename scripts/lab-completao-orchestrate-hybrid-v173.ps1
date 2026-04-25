@@ -7,7 +7,7 @@
   Manifest-driven orchestration remains the default: .\\scripts\\lab-completao-orchestrate.ps1 (no -HybridLabOpHighDensity173).
   Resolves SSH targets from **docs/private/homelab/lab-op-hosts.manifest.json** (`sshHost` + first `repoPaths` entry), same family as **lab-completao-orchestrate.ps1**.
   **LAB-NODE-02 scan path:** uses **`/home/leitao/Documents`** if present, else **`/home/leitao/documents`** (Zorin/GNOME vs lowercase checklist path).
-  **Containers (LAB-NODE-01 / LAB-NODE-03 / lab-node-02):** runs **`podman run`** or **`docker run`** via **non-interactive** `ssh … bash -lc '…'` — **no tmux**. Narrow **sudoers** / **-Privileged** in **lab-completao-host-smoke** is for **read-only host probes** (iptables/nft/ufw); it does not require tmux and was never a substitute for an interactive pane.
+  **Containers (LAB-NODE-01 / LAB-NODE-03 / lab-node-02):** if **`tmux has-session -t completao`** succeeds on the host, sends **`tmux send-keys -t completao '…' Enter`** (container runs **asynchronously** in that pane). Otherwise runs **`podman`/`docker`** via **`ssh … bash -lc '…'`** (one-shot, no tmux required). Narrow **sudoers** / **-Privileged** in **lab-completao-host-smoke** is for **read-only host probes** only.
   **LAB-NODE-04:** passive SSH uses the manifest **repo** path so **`.venv/bin/python3`** is the clone venv under **`Projects/dev/data-boar`**, not **`~/.venv`**.
   Requires OpenSSH **scp**/**ssh** on the dev PC and non-interactive SSH.
 
@@ -73,6 +73,9 @@ function Get-HybridNodesFromManifest {
 }
 
 $Nodes = Get-HybridNodesFromManifest -ManifestPath $manifestPath
+
+# Optional tmux target (operator may `tmux new -s completao` on a node); detected per host before container step.
+$TmuxSessionName = "completao"
 
 # Docker Hub semver tag (see docs/releases/1.7.3.md); avoid :v1.7.3 unless that tag exists on Hub.
 $ImageRef = "fabioleitao/data_boar:1.7.3"
@@ -144,18 +147,39 @@ function Resolve-LAB-NODE-02ScanPath {
     return $null
 }
 
+function Test-HybridTmuxSession {
+    param(
+        [Parameter(Mandatory = $true)][string] $Target,
+        [Parameter(Mandatory = $true)][string] $SessionName
+    )
+    $sn = $SessionName -replace "'", "'\''"
+    $out = & ssh.exe -o BatchMode=yes -o ConnectTimeout=15 $Target "tmux has-session -t '$sn' 2>/dev/null && echo HYBRID_TMUX_OK || echo HYBRID_TMUX_NO" 2>&1 | Out-String
+    return ($out -match "HYBRID_TMUX_OK")
+}
+
 function Invoke-HybridContainerRun {
     param(
         [Parameter(Mandatory = $true)][string] $Target,
         [Parameter(Mandatory = $true)][string] $Engine,
         [Parameter(Mandatory = $true)][string] $Image,
+        [Parameter(Mandatory = $true)][string] $NodeLabel,
         [int]$ConnectTimeoutSec = 300
     )
     if ($Engine -eq "podman") {
-        $inner = "podman run --rm -v /tmp/config_databoar.yaml:/app/config.yaml:Z $Image"
+        $runLine = "podman run --rm -v /tmp/config_databoar.yaml:/app/config.yaml:Z $Image"
     } else {
-        $inner = "docker run --rm -v /tmp/config_databoar.yaml:/app/config.yaml $Image"
+        $runLine = "docker run --rm -v /tmp/config_databoar.yaml:/app/config.yaml $Image"
     }
+
+    if (Test-HybridTmuxSession -Target $Target -SessionName $TmuxSessionName) {
+        Write-Host "Hybrid ${NodeLabel}: tmux session '$TmuxSessionName' found — send-keys (run continues in pane)." -ForegroundColor DarkCyan
+        $remote = "tmux send-keys -t $TmuxSessionName '$runLine' Enter"
+        & ssh.exe -o BatchMode=yes -o ConnectTimeout=30 $Target $remote
+        return $LASTEXITCODE
+    }
+
+    Write-Host "Hybrid ${NodeLabel}: no tmux session '$TmuxSessionName' — direct run (bash -lc)." -ForegroundColor DarkGray
+    $inner = $runLine
     $remote = "bash -lc '$inner'"
     & ssh.exe -o BatchMode=yes -o ConnectTimeout=$ConnectTimeoutSec -o ServerAliveInterval=15 -o ServerAliveCountMax=20 $Target $remote
     return $LASTEXITCODE
@@ -201,7 +225,7 @@ foreach ($n in $Nodes) {
     Deploy-Config -Node $n -Path $scanPath
 
     $engine = if ($n.Type -eq "podman") { "podman" } else { "docker" }
-    $rc = Invoke-HybridContainerRun -Target $target -Engine $engine -Image $ImageRef
+    $rc = Invoke-HybridContainerRun -Target $target -Engine $engine -Image $ImageRef -NodeLabel $n.Name
     if ($rc -ne 0) {
         Write-Warning "Hybrid: $engine run failed on $($n.Name) ($target) exit=$rc - skip-on-failure."
     }
