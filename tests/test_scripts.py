@@ -825,6 +825,35 @@ def test_lab_allow_data_boar_inbound_sh_syntax():
     assert proc.returncode == 0, f"bash -n failed: {proc.stderr or proc.stdout}"
 
 
+def test_paired_dev_gate_shell_scripts_bash_syntax():
+    """Paired Linux/macOS gate scripts (check-all, lint-only, quick-test, pre-commit-and-tests)."""
+    if sys.platform == "win32":
+        return
+    root = _project_root()
+    rels = (
+        "scripts/check-all.sh",
+        "scripts/lint-only.sh",
+        "scripts/quick-test.sh",
+        "scripts/pre-commit-and-tests.sh",
+    )
+    for rel in rels:
+        script = root / rel
+        assert script.is_file(), f"expected tracked script: {rel}"
+        try:
+            proc = subprocess.run(
+                ["bash", "-n", str(script)],
+                cwd=str(root),
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+        except FileNotFoundError:
+            return
+        assert proc.returncode == 0, (
+            f"bash -n failed for {rel}: {proc.stderr or proc.stdout}"
+        )
+
+
 def test_es_find_ps1_syntax():
     """scripts/es-find.ps1 has valid PowerShell syntax (parse-only)."""
     root = _project_root()

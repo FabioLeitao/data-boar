@@ -1,5 +1,6 @@
 #!/usr/bin/env pwsh
 # Run pre-commit (Ruff + plans-stats --check + markdown + pt-BR + commercial guard) and full pytest via uv.
+# Linux/macOS twin: scripts/pre-commit-and-tests.sh
 # Usage (from repo root):
 #   .\scripts\pre-commit-and-tests.ps1
 #   .\scripts\pre-commit-and-tests.ps1 -SkipPreCommit   # only pytest

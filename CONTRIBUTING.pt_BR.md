@@ -63,6 +63,7 @@ Ou **`uv build`** e **`uv publish dist/*`** com **`UV_PUBLISH_TOKEN`** definido.
 
    - **Windows:** `.\scripts\check-all.ps1` na raiz do repositório.
    - **Linux / macOS:** `./scripts/check-all.sh` (torne executável: `chmod +x scripts/check-all.sh`). Instale [PowerShell (`pwsh`)](https://learn.microsoft.com/powershell/scripting/install/installing-powershell) se quiser o mesmo passo de PII **gatekeeper-audit** que no Windows; senão o script segue com aviso explícito.
+   - **Atalhos em par:** `./scripts/lint-only.sh`, `./scripts/quick-test.sh`, `./scripts/pre-commit-and-tests.sh` espelham os **`.ps1`** — ver **[docs/ops/SCRIPTS_CROSS_PLATFORM_PAIRING.pt_BR.md](docs/ops/SCRIPTS_CROSS_PLATFORM_PAIRING.pt_BR.md)** ([EN](docs/ops/SCRIPTS_CROSS_PLATFORM_PAIRING.md)).
 
 1. **Execute os testes** (ou use o gate completo acima)
 

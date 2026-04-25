@@ -2,7 +2,7 @@
 
 **Português (Brasil):** [TOKEN_AWARE_SCRIPTS_HUB.pt_BR.md](TOKEN_AWARE_SCRIPTS_HUB.pt_BR.md)
 
-**Purpose:** One index of **PowerShell automation** under **`scripts/`** and how each area connects to **skills**, **rules**, **session keywords**, and **ops runbooks** — so we reuse prior work instead of re-discovering scripts each session.
+**Purpose:** One index of **repo automation** under **`scripts/`** (mostly **`.ps1`** on Windows; **paired `.sh`** for Linux/macOS gates — see **[`SCRIPTS_CROSS_PLATFORM_PAIRING.md`](SCRIPTS_CROSS_PLATFORM_PAIRING.md)**) and how each area connects to **skills**, **rules**, **session keywords**, and **ops runbooks** — so we reuse prior work instead of re-discovering scripts each session.
 
 **Not a duplicate of:** **`.cursor/skills/token-aware-automation/SKILL.md`** (daily commands) or **`.cursor/rules/session-mode-keywords.mdc`** (chat tokens). This file answers: *“what else exists, and where is it documented?”*
 
@@ -16,10 +16,14 @@
 
 | Script | Role | Wired to |
 | ------ | ---- | -------- |
-| `check-all.ps1` | Full gate (Windows) | **`token-aware-automation`** SKILL, **`.cursor/rules/check-all-gate.mdc`**, `CONTRIBUTING.md` |
+| `check-all.ps1` | Full gate (Windows) | **`token-aware-automation`** SKILL, **`.cursor/rules/check-all-gate.mdc`**, `CONTRIBUTING.md`, **[`SCRIPTS_CROSS_PLATFORM_PAIRING.md`](SCRIPTS_CROSS_PLATFORM_PAIRING.md)** |
 | `check-all.sh` | Full gate (Linux / macOS; bash) — same steps as `check-all.ps1`; **optional `pwsh`** for `gatekeeper-audit.ps1` | Same as **`check-all.ps1`** |
-| `lint-only.ps1` | Docs/style only | Same |
-| `quick-test.ps1` | Narrow pytest | Same |
+| `lint-only.ps1` | Docs/style only | Same + pairing doc |
+| `lint-only.sh` | Same (Linux / macOS) | Same |
+| `quick-test.ps1` | Narrow pytest | Same + pairing doc |
+| `quick-test.sh` | Same (Linux / macOS) | Same |
+| `pre-commit-and-tests.ps1` | Pre-commit + full pytest (thin; no gatekeeper) | **`check-all.ps1`** delegates here |
+| `pre-commit-and-tests.sh` | Same (Linux / macOS) | Pairing doc |
 | `preview-commit.ps1`, `commit-or-pr.ps1`, `create-pr.ps1` | Commit / PR | Same + **`docs/ops/COMMIT_AND_PR.md`** |
 | `pr-merge-when-green.ps1` | Merge when CI green | **`.cursor/rules/agent-autonomous-merge-and-lab-ops.mdc`**, **`autonomous-merge-and-lab`** SKILL |
 | `safe-workspace-snapshot.ps1` | Pre-commit snapshot | Session **`safe-commit`** |

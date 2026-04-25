@@ -1,6 +1,7 @@
 #!/usr/bin/env pwsh
 # Lint and format only (no tests). Use when you changed docs, templates, or style and want fast feedback without full pytest.
 # Saves tokens: run this instead of check-all when only lint/format matters.
+# Linux/macOS twin: scripts/lint-only.sh
 # Usage (from repo root): .\scripts\lint-only.ps1
 
 $ErrorActionPreference = "Stop"

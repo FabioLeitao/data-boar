@@ -1,5 +1,6 @@
 #!/usr/bin/env pwsh
 # Run a subset of tests (by path or keyword). Use when iterating on one area to save tokens vs full pytest.
+# Linux/macOS twin: scripts/quick-test.sh
 # Usage (from repo root):
 #   .\scripts\quick-test.ps1                           # runs all tests (same as check-all -SkipPreCommit)
 #   .\scripts\quick-test.ps1 -Path tests/test_foo.py    # single file
