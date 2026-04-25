@@ -15,7 +15,7 @@ Oferecer **um caminho ordenado** para um **chat novo** (sem memória do transcri
 5. **Só lab / completão:** **[`LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md`](LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md)** → **[`LAB_COMPLETAO_RUNBOOK.pt_BR.md`](LAB_COMPLETAO_RUNBOOK.pt_BR.md)** → **[`LAB_OP_HOST_PERSONAS.pt_BR.md`](LAB_OP_HOST_PERSONAS.pt_BR.md)** (ENT / PRO / edge / ponte + knobs Ansible).
 6. **Só stack privado:** **[`PRIVATE_STACK_SYNC_RITUAL.pt_BR.md`](PRIVATE_STACK_SYNC_RITUAL.pt_BR.md)** · **`scripts/private-git-sync.ps1`** (**`-Push`** quando os espelhos têm de alinhar) · **[ADR 0040](../adr/0040-assistant-private-stack-evidence-mirrors-default.md)** (EN).
 7. **Onde vivem os docs (LAB-PB vs LAB-OP):** **[`OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md`](OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md)**.
-8. **Tokens de sessão em inglês:** [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) — escrever os tokens **exatamente** (ex.: **`homelab`**, **`completao`**, **`legal-dossier-update`**, **`private-stack-sync`**, **`es-find`**, **`release-ritual`**, **`short`** / **`token-aware`**).
+8. **Tokens de sessão em inglês:** [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) — escrever os tokens **exatamente** (ex.: **`homelab`**, **`completao`**, **`legal-dossier-update`**, **`private-stack-sync`**, **`es-find`**, **`release-ritual`**, **`sonar-mcp`**, **`study-check`**, **`short`** / **`token-aware`**).
 
 ## Router de tarefas (um salto)
 
@@ -23,6 +23,10 @@ Oferecer **um caminho ordenado** para um **chat novo** (sem memória do transcri
 | ------------------- | ----------------------------------------------- |
 | **Entregar código / corrigir CI** | **`TOKEN_AWARE_SCRIPTS_HUB`** §1 → **`check-all.ps1`**; bullets de merge/PR no **`AGENTS.md`** |
 | **Semver público / Docker Hub / GitHub Release (publicação completa)** | Sessão **`release-ritual`** · **`.cursor/rules/release-publish-sequencing.mdc`** (**situacional** — **globs** ou **`@release-publish-sequencing.mdc`**) · **`docs/VERSIONING.md`** · **`docker-local-smoke-cleanup.mdc`** (**sempre ligada**) · § *Presilha token → regra (`release-ritual`)* abaixo |
+| **Deriva em `PLANS_TODO` / `PLAN_*`** (cabeçalhos, painel, tabelas no corpo) | **`docs`** / **`feature`** / **`houseclean`** / **`backlog`** (âmbito) · **`plans-status-pl-sync.mdc`** (**situacional** — **globs** de planos ou **`@plans-status-pl-sync.mdc`**) · § *Presilha token → regra (planos — sincronização de status)* abaixo |
+| **Arquivar um `PLAN_*.md` concluído** | **`plans-archive-on-completion.mdc`** (**situacional** — caminhos de planos, **`plans_hub_sync`**, **`plans-stats`**, ou **`@plans-archive-on-completion.mdc`**) · **`docs-plans.mdc`** · § *Presilha token → regra (planos — arquivo)* abaixo |
+| **SonarQube MCP no Cursor** | **`sonar-mcp`** · **`sonarqube_mcp_instructions.mdc`** (**situacional** — **globs** Sonar ou **`@sonarqube_mcp_instructions.mdc`**) · **`SONARQUBE_HOME_LAB.md`** · **`quality-sonarqube-codeql.mdc`** (barra de qualidade no repo) · § *Presilha token → regra (`sonar-mcp`)* abaixo |
+| **Cadência de estudo / lembretes** | **`study-check`** · **`study-cadence-reminders.mdc`** (**situacional** — **globs** de portfólio/sprints/manual do operador ou **`@study-cadence-reminders.mdc`**) · § *Presilha token → regra (`study-check`)* abaixo |
 | **Qual script / wrapper usar?** (evitar reinventar shell longo) | **`repo-scripts-wrapper-ritual.mdc`** · **`TOKEN_AWARE_SCRIPTS_HUB`** · **`check-all-gate.mdc`** · skill **`token-aware-automation`** |
 | **Docs / hubs / MAP** | skill **`doc-hubs-plans-sync`** · **`docs/README.md`** *Interno e referência* · par **`*.pt_BR.md`** |
 | **Smoke de lab / completão** | **`COMPLETAO_OPERATOR_PROMPT_LIBRARY`** (**`completao`** + **`tier:…`**) · **`LAB_COMPLETAO_FRESH_AGENT_BRIEF`** · **`lab-completao-workflow.mdc`** · **`LAB_COMPLETAO_RUNBOOK`** · **`scripts/completao-chat-starter.ps1`** |
@@ -85,6 +89,35 @@ Para **tag → GitHub Release → Docker (smoke antes do push no Hub) → prune 
 1. Linha 1: token em inglês **`release-ritual`** (opcional **`short`** / **`token-aware`**).
 2. **`read_file`** em **`.cursor/rules/release-publish-sequencing.mdc`** — usar **`@release-publish-sequencing.mdc`** se os **globs** não anexaram a regra (ex.: só **`pyproject.toml`** aberto). **`docker-local-smoke-cleanup.mdc`** continua **sempre ligada** para **smoke / prune / disco** no PC de dev.
 3. **`read_file`** em **`docs/VERSIONING.md`** (*Assistant / automação*) e seguir a **checklist ordenada** na regra — **não** colocar **`-beta`** no **`main`** antes de tag + Release + passos no Hub que o operador pediu estarem **feitos**, salvo fluxo explícito com **SHA** a taguear.
+
+### Presilha token → regra (planos — **sincronização de status**)
+
+Para **anti-deriva** em **`PLAN_*.md`** / **`PLANS_TODO.md`** (linha **Status**, tabelas de fase, narrativa de integração), mantém **`plans-status-pl-sync.mdc`** **situacional**, mas **vinculante** quando o trabalho de planos está no âmbito:
+
+1. Abrir quase qualquer caminho em **`docs/plans/**`** costuma anexar a regra via **globs**. Num fio **novo** sobre deriva **sem** arquivo de plano aberto, usar em inglês **`docs`**, **`feature`**, **`houseclean`** ou **`backlog`** (âmbito) e **`read_file`** em **`.cursor/rules/plans-status-pl-sync.mdc`** — ou **`@plans-status-pl-sync.mdc`**.
+2. Correr **`plans-stats.py --write`** / **`plans_hub_sync.py --write`** quando a regra pedir.
+
+### Presilha token → regra (planos — **arquivo**)
+
+Ao fazer **`git mv`** de um **`PLAN_*.md`** **concluído** para **`docs/plans/completed/`**, mantém **`plans-archive-on-completion.mdc`** **situacional**, mas **vinculante**:
+
+1. **`read_file`** em **`.cursor/rules/plans-archive-on-completion.mdc`** — usar **`@plans-archive-on-completion.mdc`** se os **globs** não anexaram (ex.: só a discutir arquivo no chat).
+2. Seguir **`.cursor/rules/docs-plans.mdc`** para sincronizar o hub e corrigir links; reconciliar **`plans-status-pl-sync`** se **`PLANS_TODO`** mudou.
+
+### Presilha token → regra (**`sonar-mcp`**)
+
+Para chamadas **SonarQube MCP** (toggles de análise, chaves de projeto, tokens **USER**), mantém **`sonarqube_mcp_instructions.mdc`** **situacional**, mas **vinculante**:
+
+1. Linha 1: token em inglês **`sonar-mcp`** (opcional **`short`** / **`token-aware`**).
+2. **`read_file`** em **`.cursor/rules/sonarqube_mcp_instructions.mdc`** — usar **`@sonarqube_mcp_instructions.mdc`** se os **globs** não anexaram.
+3. **`read_file`** em **`docs/ops/SONARQUBE_HOME_LAB.md`** (+ **`.pt_BR.md`** quando preciso) para **alcance** e política de tokens. **`quality-sonarqube-codeql.mdc`** = testes de qualidade **no repo** — não substitui a etiqueta do MCP.
+
+### Presilha token → regra (**`study-check`**)
+
+Para recapitular **cadência de estudo** e **lembretes opcionais** em pontos de paragem, mantém **`study-cadence-reminders.mdc`** **situacional**:
+
+1. A pedido: token em inglês **`study-check`** — depois **`read_file`** em **`.cursor/rules/study-cadence-reminders.mdc`** (ou **`@study-cadence-reminders.mdc`** se os **globs** falharem).
+2. **Proativo** sem **`study-check`**: só quando esta regra **já** está no contexto (**globs** de portfólio / sprints / manual do operador ou **`@`** anterior). **Não** inventar parágrafos longos de estudo em fios não relacionados.
 
 ## Sete coisas inegociáveis (não “esquecer” em chat novo)
 
