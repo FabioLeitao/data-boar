@@ -6,7 +6,7 @@ alwaysApply: true
 
 # Local Docker smoke tests — container and image hygiene
 
-**Release context:** Before **Docker Hub** push for a **stable** semver, **`release-publish-sequencing.mdc`** requires **smoke** + **prune** on the **primary dev workstation** — read that rule first.
+**Release context:** Before **Docker Hub** push for a **stable** semver, **`release-publish-sequencing.mdc`** (**situational** — session **`release-ritual`** or **`@release-publish-sequencing.mdc`** when globs miss) requires **smoke** + **prune** on the **primary dev workstation** — read that rule when publishing; this rule stays **always-on** for day-to-day container hygiene.
 
 When creating or advising **local** `data_boar` / **data-boar** containers for smoke tests, builds, or lab validation:
 

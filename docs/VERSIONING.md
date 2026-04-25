@@ -54,7 +54,7 @@ Use lowercase suffixes consistently:
 
 ### Assistant / automation (ordering guardrail)
 
-**Cursor / agents:** follow **`.cursor/rules/release-publish-sequencing.mdc`** — create Git tag **`vX.Y.Z`**, GitHub Release, and Docker Hub publish steps **before** moving `main` to the next **`-beta`** (or next dev) bump. Session keyword **`release-ritual`** means re-read that rule and this file before editing semver or release docs.
+**Cursor / agents:** follow **`.cursor/rules/release-publish-sequencing.mdc`** (**situational** — session **`release-ritual`** or **`@release-publish-sequencing.mdc`** when globs miss; **`docker-local-smoke-cleanup.mdc`** stays **always-on** for smoke/prune) — create Git tag **`vX.Y.Z`**, GitHub Release, and Docker Hub publish steps **before** moving `main` to the next **`-beta`** (or next dev) bump. Session keyword **`release-ritual`** means **`read_file`** that rule (or **`@`**) and this file before editing semver or release docs.
 
 ---
 

@@ -10,6 +10,8 @@ The **English-only** keyword table lives in **`.cursor/rules/session-mode-keywor
 
 **Completão chat starters (`completao` + `tier:…`):** **[COMPLETAO_OPERATOR_PROMPT_LIBRARY.md](COMPLETAO_OPERATOR_PROMPT_LIBRARY.md)** ([pt-BR](COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md)) · **`scripts/completao-chat-starter.ps1`** (prints a minimal paste block; **`-Help`** lists tiers).
 
+**Full public publish (semver, GitHub Release, Docker Hub):** **`release-ritual`** — situational **`release-publish-sequencing.mdc`** ( **`@release-publish-sequencing.mdc`** in fresh threads if no release doc globs are open); **`docker-local-smoke-cleanup.mdc`** stays **always-on**. See **[OPERATOR_AGENT_COLD_START_LADDER.md](OPERATOR_AGENT_COLD_START_LADDER.md)** § *Token → rule latch (`release-ritual`)*.
+
 ## LAB-OP SSH example host
 
 Tracked examples and scripts use the SSH alias **`lab-op`** for the Linux lab server (Docker, reports). Configure **`Host lab-op`** in your dev PC’s **`~/.ssh/config`** so it resolves on your LAN (DNS or mDNS) and uses **ed25519** keys as pre-authorized on the host. Real machine names stay **only** under **`docs/private/homelab/`**. See **`docs/private.example/homelab/README.md`**.
