@@ -8,7 +8,7 @@ alwaysApply: true
 
 ## Defaults
 
-- On the **same Windows PC** as Cursor, **pCloud** is **normally** mounted as **`P:`** (sometimes **`Y:\`** via VeraCrypt — see **`AGENTS.md`**). If a path fails, **`Test-Path`** once and report **sync client likely offline**; do not silently assume another drive letter.
+- On the **same Windows PC** as Cursor, **pCloud** is **normally** mounted as **`P:`** (encrypted mirror via VeraCrypt is **`Z:\`** by operator default — **`Y:\`** only if remapped; see **`AGENTS.md`**). If a path fails, **`Test-Path`** once and report **sync client likely offline**; do not silently assume another drive letter.
 
 ## Default: `es-find.ps1` / `es.exe` — `Get-ChildItem` is recovery, not the default
 
