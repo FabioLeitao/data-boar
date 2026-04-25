@@ -15,7 +15,7 @@ Oferecer **um caminho ordenado** para um **chat novo** (sem memória do transcri
 5. **Só lab / completão:** **[`LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md`](LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md)** → **[`LAB_COMPLETAO_RUNBOOK.pt_BR.md`](LAB_COMPLETAO_RUNBOOK.pt_BR.md)** → **[`LAB_OP_HOST_PERSONAS.pt_BR.md`](LAB_OP_HOST_PERSONAS.pt_BR.md)** (ENT / PRO / edge / ponte + knobs Ansible).
 6. **Só stack privado:** **[`PRIVATE_STACK_SYNC_RITUAL.pt_BR.md`](PRIVATE_STACK_SYNC_RITUAL.pt_BR.md)** · **`scripts/private-git-sync.ps1`** (**`-Push`** quando os espelhos têm de alinhar) · **[ADR 0040](../adr/0040-assistant-private-stack-evidence-mirrors-default.md)** (EN).
 7. **Onde vivem os docs (LAB-PB vs LAB-OP):** **[`OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md`](OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md)**.
-8. **Tokens de sessão em inglês:** [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) — escrever os tokens **exatamente** (ex.: **`homelab`**, **`completao`**, **`legal-dossier-update`**, **`private-stack-sync`**, **`short`** / **`token-aware`**).
+8. **Tokens de sessão em inglês:** [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) — escrever os tokens **exatamente** (ex.: **`homelab`**, **`completao`**, **`legal-dossier-update`**, **`private-stack-sync`**, **`es-find`**, **`short`** / **`token-aware`**).
 
 ## Router de tarefas (um salto)
 
@@ -30,6 +30,7 @@ Oferecer **um caminho ordenado** para um **chat novo** (sem memória do transcri
 | **Fecho do Git empilhado em `docs/private/`** | Sessão **`private-stack-sync`** · **`docs-private-workspace-context.mdc`** · **`PRIVATE_STACK_SYNC_RITUAL`** · **`private-git-sync.ps1`** · § *Presilha token → regra (`private-stack-sync`)* abaixo |
 | **Evidência jurídica / trabalhista privada** (importação, atualizações tipo CAT/INSS, novo paste) | Token de sessão **`legal-dossier-update`** · **`dossier-update-on-evidence.mdc`** · **`legal_dossier/`** + **`raw_pastes/`** em `docs/private/` · § *Presilha token → regra (dossiê jurídico)* abaixo |
 | **Recuperação / “descobre aí”** | **`operator-investigation-before-blocking.mdc`** · skill **`operator-recovery-investigation`** |
+| **Busca de nome/caminho no Windows (Everything, árvores enormes, `P:\`)** | Sessão **`es-find`** · **`.cursor/rules/everything-es-cli.mdc`** (**situacional** — **globs** ou **`@everything-es-cli.mdc`**) · **`.cursor/rules/windows-pcloud-drive-search-discipline.mdc`** (**sempre ligada** para disciplina em **`P:`**) · **`EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md`** · § *Presilha token → regra (`es-find`)* abaixo |
 | **Gmail / webmail / redes / caixa ou anexo** (mesmo PC que **SSH**; sessão quente ou fria + **SSO Google** quando o site oferecer) | **`cursor-browser-social-sso-hygiene.mdc`** (*Contrato único* + *Gmail e webmail*) · **`operator-browser-warm-session.mdc`** · **`operator-direct-execution.mdc`** §5 — **tentar** MCP e clique **SSO** antes de negar; **só depois** pedir interação humana uma vez; PDFs → **`docs/private/`** + **`read_file`** |
 
 ### Presilha token → regra → wrapper (**`completao`**)
@@ -67,6 +68,14 @@ Para **Git privado empilhado** e higiene em **`docs/private/`**, mantém **`docs
 2. **`read_file`** em **`.cursor/rules/docs-private-workspace-context.mdc`** — usar **`@docs-private-workspace-context.mdc`** se os **globs** não carregaram a regra (**`agent-docs-private-read-access.mdc`** continua **sempre ligada** para **nunca auto-bloquear**).
 3. **`read_file`** em **`docs/ops/PRIVATE_STACK_SYNC_RITUAL.md`** (+ **`.pt_BR.md`** se usares), depois **`.\scripts\private-git-sync.ps1`** (**`-Push`** quando os espelhos têm de alinhar) conforme **ADR 0040** / **`operator-evidence-backup-no-rhetorical-asks.mdc`**.
 4. **Nunca** colar passphrases, keyfiles ou caminhos privados em arquivos **versionados** ou PRs públicos.
+
+### Presilha token → regra (**`es-find`**)
+
+Para semântica de **Voidtools Everything** / **`es-find.ps1`** no **PC dev Windows principal**, mantém **`everything-es-cli.mdc`** **situacional**, mas **vinculante** quando precisas do texto completo (fallbacks, **lab-op** = sem **`es`**, higiene):
+
+1. Linha 1: token em inglês **`es-find`** (opcional **`short`** / **`token-aware`**).
+2. **`read_file`** em **`.cursor/rules/everything-es-cli.mdc`** — usar **`@everything-es-cli.mdc`** se os **globs** não anexaram a regra (caminhos fora dos **globs** não carregam sozinhos).
+3. Na raiz do repo correr **`.\scripts\es-find.ps1`** conforme essa regra (**`-MaxCount`** baixo salvo precisares de lista exaustiva). **`windows-pcloud-drive-search-discipline.mdc`** continua **sempre ligada** para **`P:`** / evitar **`Get-ChildItem`** **sem limite**.
 
 ## Sete coisas inegociáveis (não “esquecer” em chat novo)
 
