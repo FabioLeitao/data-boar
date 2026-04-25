@@ -15,7 +15,7 @@ Oferecer **um caminho ordenado** para um **chat novo** (sem memória do transcri
 5. **Só lab / completão:** **[`LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md`](LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md)** → **[`LAB_COMPLETAO_RUNBOOK.pt_BR.md`](LAB_COMPLETAO_RUNBOOK.pt_BR.md)** → **[`LAB_OP_HOST_PERSONAS.pt_BR.md`](LAB_OP_HOST_PERSONAS.pt_BR.md)** (ENT / PRO / edge / ponte + knobs Ansible).
 6. **Só stack privado:** **[`PRIVATE_STACK_SYNC_RITUAL.pt_BR.md`](PRIVATE_STACK_SYNC_RITUAL.pt_BR.md)** · **`scripts/private-git-sync.ps1`** (**`-Push`** quando os espelhos têm de alinhar) · **[ADR 0040](../adr/0040-assistant-private-stack-evidence-mirrors-default.md)** (EN).
 7. **Onde vivem os docs (LAB-PB vs LAB-OP):** **[`OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md`](OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md)**.
-8. **Tokens de sessão em inglês:** [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) — escrever os tokens **exatamente** (ex.: **`completao`**, **`legal-dossier-update`**, **`private-stack-sync`**, **`short`** / **`token-aware`**).
+8. **Tokens de sessão em inglês:** [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) — escrever os tokens **exatamente** (ex.: **`homelab`**, **`completao`**, **`legal-dossier-update`**, **`private-stack-sync`**, **`short`** / **`token-aware`**).
 
 ## Router de tarefas (um salto)
 
@@ -26,7 +26,7 @@ Oferecer **um caminho ordenado** para um **chat novo** (sem memória do transcri
 | **Docs / hubs / MAP** | skill **`doc-hubs-plans-sync`** · **`docs/README.md`** *Interno e referência* · par **`*.pt_BR.md`** |
 | **Smoke de lab / completão** | **`COMPLETAO_OPERATOR_PROMPT_LIBRARY`** (**`completao`** + **`tier:…`**) · **`LAB_COMPLETAO_FRESH_AGENT_BRIEF`** · **`lab-completao-workflow.mdc`** · **`LAB_COMPLETAO_RUNBOOK`** · **`scripts/completao-chat-starter.ps1`** |
 | **Ansible / Podman / personas** | **`LAB_OP_HOST_PERSONAS`** · **`ops/automation/ansible/README.md`** |
-| **Inventário homelab / lote SSH** | **`lab-op-hosts.manifest.json`** em `docs/private/` (se existir) · **`LAB_OP_PRIVILEGED_COLLECTION.md`** · **`OPERATOR_LAB_DOCUMENT_MAP`** |
+| **Inventário homelab / lote SSH** | Token de sessão **`homelab`** · **`homelab-ssh-via-terminal.mdc`** · **`lab-op-hosts.manifest.json`** em `docs/private/` (se existir) · **`LAB_OP_PRIVILEGED_COLLECTION.md`** · **`OPERATOR_LAB_DOCUMENT_MAP`** · § *Presilha token → regra (`homelab`)* abaixo |
 | **Fecho do Git empilhado em `docs/private/`** | **`PRIVATE_STACK_SYNC_RITUAL`** · **`private-git-sync.ps1`** |
 | **Evidência jurídica / trabalhista privada** (importação, atualizações tipo CAT/INSS, novo paste) | Token de sessão **`legal-dossier-update`** · **`dossier-update-on-evidence.mdc`** · **`legal_dossier/`** + **`raw_pastes/`** em `docs/private/` · § *Presilha token → regra (dossiê jurídico)* abaixo |
 | **Recuperação / “descobre aí”** | **`operator-investigation-before-blocking.mdc`** · skill **`operator-recovery-investigation`** |
@@ -39,7 +39,16 @@ Use este **formato da primeira mensagem** para que um **`lab-completao-workflow.
 1. Linha 1: token em inglês **`completao`** (opcional na mesma mensagem: **`short`** / **`token-aware`** para narrativa curta).
 2. Linha 2: **`tier:…`** exatamente como em **`COMPLETAO_OPERATOR_PROMPT_LIBRARY.md`**. Bloco para colar: **`.\scripts\completao-chat-starter.ps1 -Help`** ou correr com **`-Tier …`** para imprimir linhas copiáveis.
 3. Se o fio **não** estiver a mexer em **`scripts/lab-completao*`** nem **`docs/ops/LAB_COMPLETAO*`**, **anexar** **`.cursor/rules/lab-completao-workflow.mdc`** com **`@`** para trazer a regra completa para o contexto.
+3a. Quando o bloqueio for **`ssh` / LAN / `sudo -n` vs tmux`** e não só flags do orquestrador, **`read_file`** em **`.cursor/rules/homelab-ssh-via-terminal.mdc`** (ou **`@homelab-ssh-via-terminal.mdc`**) mesmo que **`lab-completao-workflow.mdc`** já esteja aberto.
 4. **Automação por omissão (operador corre, assistente interpreta logs):** na raiz do repo **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** — depois **`read_file`** / resumir em **`docs/private/homelab/reports/`** conforme **`LAB_COMPLETAO_RUNBOOK.md`**. **Não** substituir o orquestrador por **`ssh`** ad hoc salvo se o operador optar explicitamente por isso.
+
+### Presilha token → regra (**`homelab`**)
+
+Manter **`homelab-ssh-via-terminal.mdc`** **situacional**, mas **vinculante** para semântica de **LAN / `ssh` / mesmo PC que o operador**:
+
+1. Linha 1: token em inglês **`homelab`** (opcional **`short`** / **`token-aware`**).
+2. **`read_file`** em **`.cursor/rules/homelab-ssh-via-terminal.mdc`** — usar **`@homelab-ssh-via-terminal.mdc`** se o editor ainda não anexou a regra (caminhos fora dos **globs** não carregam sozinhos).
+3. Depois **`docs/ops/HOMELAB_VALIDATION.md`** (+ **`.pt_BR.md`** quando preciso) e **`docs/private/homelab/AGENT_LAB_ACCESS.md`** em privado quando existir — **nunca** colar hostnames reais ou identificadores de LAN em arquivos **versionados** ou PRs públicos.
 
 ### Presilha token → regra (**`legal-dossier-update`**)
 

@@ -18,6 +18,7 @@ Tracked examples and scripts use the SSH alias **`lab-op`** for the Linux lab se
 
 - [LAB_EXTERNAL_CONNECTIVITY_EVAL.md](LAB_EXTERNAL_CONNECTIVITY_EVAL.md) ([pt-BR](LAB_EXTERNAL_CONNECTIVITY_EVAL.pt_BR.md)) — **`external-eval`**, `lab-external-smoke.ps1`, public API / read-only DB lab (no secrets in git)
 - [LAB_OP_SHORTHANDS.md](LAB_OP_SHORTHANDS.md) ([pt-BR](LAB_OP_SHORTHANDS.pt_BR.md)) — `lab-op.ps1` actions
+- **Homelab / SSH / LAN** — session **`homelab`** + **`.cursor/rules/homelab-ssh-via-terminal.mdc`** (situational) + [OPERATOR_AGENT_COLD_START_LADDER.md](OPERATOR_AGENT_COLD_START_LADDER.md) § *Token → rule latch (`homelab`)* ([pt-BR](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md))
 - [PII_FRESH_CLONE_AUDIT.md](PII_FRESH_CLONE_AUDIT.md) ([pt-BR](PII_FRESH_CLONE_AUDIT.pt_BR.md)) — **`pii-fresh-audit`** + `pii-fresh-clone-audit.ps1`
 - **Private legal / labour dossier** — **`legal-dossier-update`** (session token) + **`.cursor/rules/dossier-update-on-evidence.mdc`** + [OPERATOR_AGENT_COLD_START_LADDER.md](OPERATOR_AGENT_COLD_START_LADDER.md) § *Token → rule latch (legal dossier)* ([pt-BR](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)); paths **`docs/private/legal_dossier/`**, **`docs/private/raw_pastes/`**
 - [EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md](EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md) ([pt-BR](EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.pt_BR.md)) — **`es-find`** + `es-find.ps1` (Windows primary dev PC; not Linux **lab-op**)

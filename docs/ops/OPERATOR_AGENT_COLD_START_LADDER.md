@@ -15,7 +15,7 @@ Give a **single ordered path** so a **fresh chat** (no transcript memory) can st
 5. **Lab / completão only:** **[`LAB_COMPLETAO_FRESH_AGENT_BRIEF.md`](LAB_COMPLETAO_FRESH_AGENT_BRIEF.md)** → **[`LAB_COMPLETAO_RUNBOOK.md`](LAB_COMPLETAO_RUNBOOK.md)** → **[`LAB_OP_HOST_PERSONAS.md`](LAB_OP_HOST_PERSONAS.md)** (ENT / PRO / edge / bridge + Ansible knobs).
 6. **Private stack only:** **[`PRIVATE_STACK_SYNC_RITUAL.md`](PRIVATE_STACK_SYNC_RITUAL.md)** · **`scripts/private-git-sync.ps1`** (**`-Push`** when mirrors must align) · **[ADR 0040](../adr/0040-assistant-private-stack-evidence-mirrors-default.md)**.
 7. **Where docs live (LAB-PB vs LAB-OP):** **[`OPERATOR_LAB_DOCUMENT_MAP.md`](OPERATOR_LAB_DOCUMENT_MAP.md)**.
-8. **Session English tokens:** [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) — type tokens **exactly** (e.g. **`completao`**, **`legal-dossier-update`**, **`private-stack-sync`**, **`short`** / **`token-aware`**).
+8. **Session English tokens:** [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) — type tokens **exactly** (e.g. **`homelab`**, **`completao`**, **`legal-dossier-update`**, **`private-stack-sync`**, **`short`** / **`token-aware`**).
 
 ## Task router (one hop)
 
@@ -26,7 +26,7 @@ Give a **single ordered path** so a **fresh chat** (no transcript memory) can st
 | **Docs / hubs / MAP** | **`doc-hubs-plans-sync`** skill · **`docs/README.md`** *Internal and reference* · paired **`*.pt_BR.md`** |
 | **Lab smoke / completão** | **`COMPLETAO_OPERATOR_PROMPT_LIBRARY`** ( **`completao`** + **`tier:…`** ) · **`LAB_COMPLETAO_FRESH_AGENT_BRIEF`** · **`lab-completao-workflow.mdc`** · **`LAB_COMPLETAO_RUNBOOK`** · **`scripts/completao-chat-starter.ps1`** |
 | **Ansible / Podman / personas** | **`LAB_OP_HOST_PERSONAS`** · **`ops/automation/ansible/README.md`** |
-| **Homelab inventory / SSH batch** | Private **`lab-op-hosts.manifest.json`** (when present) · **`LAB_OP_PRIVILEGED_COLLECTION.md`** · **`OPERATOR_LAB_DOCUMENT_MAP`** |
+| **Homelab inventory / SSH batch** | Session token **`homelab`** · **`homelab-ssh-via-terminal.mdc`** · private **`lab-op-hosts.manifest.json`** (when present) · **`LAB_OP_PRIVILEGED_COLLECTION.md`** · **`OPERATOR_LAB_DOCUMENT_MAP`** · § *Token → rule latch (`homelab`)* below |
 | **Stacked private Git close** | **`PRIVATE_STACK_SYNC_RITUAL`** · **`private-git-sync.ps1`** |
 | **Private legal / labour evidence** (import, CAT/INSS-style updates, new paste) | Session token **`legal-dossier-update`** · **`dossier-update-on-evidence.mdc`** · private **`legal_dossier/`** + **`raw_pastes/`** · § *Token → rule latch (legal dossier)* below |
 | **Recovery / “figure it out”** | **`operator-investigation-before-blocking.mdc`** · **`operator-recovery-investigation`** skill |
@@ -39,7 +39,16 @@ Use this **first message shape** so a **situational** **`lab-completao-workflow.
 1. Line 1: English token **`completao`** (optional same message: **`short`** / **`token-aware`** for terse narration).
 2. Line 2: **`tier:…`** exactly as in **`COMPLETAO_OPERATOR_PROMPT_LIBRARY.md`** (tiers, smoke vs release-master, evidence). Paste block: **`.\scripts\completao-chat-starter.ps1 -Help`** or run with **`-Tier …`** to print lines to copy.
 3. If the thread is **not** already touching **`scripts/lab-completao*`** or **`docs/ops/LAB_COMPLETAO*`**, **attach** **`.cursor/rules/lab-completao-workflow.mdc`** via **`@`** so the full workflow rule is in context.
+3a. When the blocker is **`ssh` / LAN reachability / `sudo -n` vs tmux`** rather than orchestrator flags alone, **`read_file`** **`.cursor/rules/homelab-ssh-via-terminal.mdc`** (or **`@homelab-ssh-via-terminal.mdc`**) even if **`lab-completao-workflow.mdc`** is already open.
 4. **Default automation (operator runs, assistant interprets logs):** from repo root **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** — then **`read_file`** / summarize under **`docs/private/homelab/reports/`** per **`LAB_COMPLETAO_RUNBOOK.md`**. Do **not** replace the orchestrator with ad-hoc one-off **`ssh`** unless the operator explicitly opts out.
+
+### Token → rule latch (**`homelab`**)
+
+Keep **`homelab-ssh-via-terminal.mdc`** **situational** but **binding** for **LAN / `ssh` / same-PC-as-operator** semantics:
+
+1. Line 1: English token **`homelab`** (optional **`short`** / **`token-aware`**).
+2. **`read_file`** **`.cursor/rules/homelab-ssh-via-terminal.mdc`** — use **`@homelab-ssh-via-terminal.mdc`** if the editor has not already attached it (paths outside the rule globs will not auto-load it).
+3. Then **`docs/ops/HOMELAB_VALIDATION.md`** (+ **`.pt_BR.md`** when needed) and private **`docs/private/homelab/AGENT_LAB_ACCESS.md`** when present — **never** paste real hostnames or LAN identifiers into **tracked** files or public PRs.
 
 ### Token → rule latch (**`legal-dossier-update`**)
 

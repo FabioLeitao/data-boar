@@ -17,6 +17,7 @@ Exemplos versionados e scripts usam o alias SSH **`lab-op`** para o servidor Lin
 ## Relacionado
 
 - [LAB_OP_SHORTHANDS.pt_BR.md](LAB_OP_SHORTHANDS.pt_BR.md) · [EN](LAB_OP_SHORTHANDS.md) — ações do `lab-op.ps1`
+- **Homelab / SSH / LAN** — sessão **`homelab`** + **`.cursor/rules/homelab-ssh-via-terminal.mdc`** (situacional) + [OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md) § *Presilha token → regra (`homelab`)* ([EN](OPERATOR_AGENT_COLD_START_LADDER.md))
 - [LAB_EXTERNAL_CONNECTIVITY_EVAL.pt_BR.md](LAB_EXTERNAL_CONNECTIVITY_EVAL.pt_BR.md) · [EN](LAB_EXTERNAL_CONNECTIVITY_EVAL.md) — **`external-eval`** + `lab-external-smoke.ps1` + playbook de APIs/datasets públicos (sem segredos no GitHub)
 - [PII_FRESH_CLONE_AUDIT.pt_BR.md](PII_FRESH_CLONE_AUDIT.pt_BR.md) · [EN](PII_FRESH_CLONE_AUDIT.md) — **`pii-fresh-audit`** + `pii-fresh-clone-audit.ps1`
 - **Dossiê jurídico / trabalhista privado** — **`legal-dossier-update`** (token de sessão) + **`.cursor/rules/dossier-update-on-evidence.mdc`** + [OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md) § *Presilha token → regra (dossiê jurídico)* ([EN](OPERATOR_AGENT_COLD_START_LADDER.md)); caminhos **`docs/private/legal_dossier/`**, **`docs/private/raw_pastes/`**

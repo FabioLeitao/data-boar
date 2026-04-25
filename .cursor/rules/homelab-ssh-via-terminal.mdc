@@ -1,14 +1,24 @@
 ---
-description: Homelab reachability via operator dev PC terminal (ssh, scp, curl to LAN); specifics in gitignored docs/private/homelab/AGENT_LAB_ACCESS.md; never put real hosts in tracked files.
-globs: docs/private.example/homelab/**,docs/PRIVATE_OPERATOR_NOTES.md,docs/ops/HOMELAB_VALIDATION.md
-alwaysApply: true
+description: Homelab reachability via operator dev PC terminal (ssh, scp, curl to LAN); specifics in gitignored docs/private/homelab/AGENT_LAB_ACCESS.md; never put real hosts in tracked files. Situational — session token homelab or @homelab-ssh-via-terminal.mdc when globs miss.
+globs:
+  - docs/private.example/homelab/**
+  - docs/PRIVATE_OPERATOR_NOTES.md
+  - docs/ops/HOMELAB*
+  - scripts/lab-op*
+  - scripts/collect-homelab*
+  - scripts/homelab*
+alwaysApply: false
 ---
 
 # Homelab access — via operator workstation (SSH, HTTP/API, `P:`)
 
+## When this rule attaches (Cursor)
+
+**Context:** **`alwaysApply: false`** — Cursor loads this rule when a path matches the **`globs`** above **or** the operator uses the English session token **`homelab`** **or** attaches **`@homelab-ssh-via-terminal.mdc`**. For **completão** orchestration, **`lab-completao-workflow.mdc`** is the primary latch; still **`read_file`** this rule when **`ssh` / LAN / `sudo -n` vs tmux`** behaviour is the question.
+
 1. **How traffic moves:** The assistant runs commands in the **Cursor integrated terminal** on the **operator’s dev PC**. That PC is on the **lab LAN** (per **`docs/private/homelab/AGENT_LAB_ACCESS.md`** when present). There is **no separate “AI server”** dialing the house — **same effective access** as the operator’s shell: **`ssh`**, **`scp`/`sftp`**, **`curl`** to **`http://<host>:8088/`** (Data Boar default web port when applicable), etc.
 
-1. **`read_file`** these when homelab / operator context applies (**no `@` required**; **`docs/private/`** ≠ GitHub):
+1. **`read_file`** these when homelab / operator context applies (once this rule is in context from **globs** or **`homelab`** / **`@homelab-ssh-via-terminal.mdc`**; **`docs/private/`** ≠ GitHub):
 
    **`docs/private/homelab/AGENT_LAB_ACCESS.md`**, then **`docs/private/homelab/OPERATOR_SYSTEM_MAP.md`** (hardware + access + software chart), then **`docs/private/homelab/OPERATOR_RETEACH.md`**, then **`docs/private/homelab/HARDWARE_CATALOG.md`** if needed. Prefer **`ssh <linux-user>@<hostname>`** or **`Host` aliases** from **`~/.ssh/config`** (see **`docs/private.example/homelab/README.md`**). **Never** paste **passwords** or **private keys** into chat or **tracked** files.
 
