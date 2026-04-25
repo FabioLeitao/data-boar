@@ -1,6 +1,7 @@
 #!/usr/bin/env pwsh
 # Single gate script: run lint/format (via pre-commit) + full pytest suite.
 # Regression hooks include tests/test_detector_entertainment_regression.py (ML vs lyrics/OSS Markdown).
+# Linux/macOS twin: scripts/check-all.sh
 # Usage (from repo root):
 #   .\scripts\check-all.ps1
 #   .\scripts\check-all.ps1 -SkipPreCommit   # only pytest (e.g. when iterating quickly)

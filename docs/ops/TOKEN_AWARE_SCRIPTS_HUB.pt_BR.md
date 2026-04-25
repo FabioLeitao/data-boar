@@ -2,7 +2,7 @@
 
 **English:** [TOKEN_AWARE_SCRIPTS_HUB.md](TOKEN_AWARE_SCRIPTS_HUB.md)
 
-**Objetivo:** Um índice da **automação PowerShell** em **`scripts/`** e como cada área liga a **skills**, **regras**, **palavras-chave de sessão** e **runbooks** — para reutilizar trabalho anterior em vez de redescobrir scripts a cada sessão.
+**Objetivo:** Um índice da **automação do repositório** em **`scripts/`** (sobretudo **`.ps1`** no Windows; **`.sh` em par** para *gates* no Linux/macOS — ver **[`SCRIPTS_CROSS_PLATFORM_PAIRING.pt_BR.md`](SCRIPTS_CROSS_PLATFORM_PAIRING.pt_BR.md)**) e como cada área liga a **skills**, **regras**, **palavras-chave de sessão** e **runbooks** — para reutilizar trabalho anterior em vez de redescobrir scripts a cada sessão.
 
 **Não substitui:** **`.cursor/skills/token-aware-automation/SKILL.md`** (comandos do dia a dia) nem **`.cursor/rules/session-mode-keywords.mdc`** (tokens de chat). Este arquivo responde: *“o que mais existe, e onde está documentado?”*
 
@@ -16,10 +16,14 @@
 
 | Script | Função | Ligado a |
 | ------ | ---- | -------- |
-| `check-all.ps1` | Gate completo (Windows) | SKILL **`token-aware-automation`**, **`.cursor/rules/check-all-gate.mdc`**, `CONTRIBUTING.md` |
+| `check-all.ps1` | Gate completo (Windows) | SKILL **`token-aware-automation`**, **`.cursor/rules/check-all-gate.mdc`**, `CONTRIBUTING.md`, **[`SCRIPTS_CROSS_PLATFORM_PAIRING.pt_BR.md`](SCRIPTS_CROSS_PLATFORM_PAIRING.pt_BR.md)** |
 | `check-all.sh` | Gate completo (Linux / macOS; bash) — mesmos passos de **`check-all.ps1`**; **`pwsh`** opcional para `gatekeeper-audit.ps1` | Igual a **`check-all.ps1`** |
-| `lint-only.ps1` | So lint/format | Igual |
-| `quick-test.ps1` | Pytest focado | Igual |
+| `lint-only.ps1` | So lint/format | Igual + doc de pares |
+| `lint-only.sh` | Igual (Linux / macOS) | Igual |
+| `quick-test.ps1` | Pytest focado | Igual + doc de pares |
+| `quick-test.sh` | Igual (Linux / macOS) | Igual |
+| `pre-commit-and-tests.ps1` | *Pre-commit* + *pytest* completo (fino; sem *gatekeeper*) | **`check-all.ps1`** delega aqui |
+| `pre-commit-and-tests.sh` | Igual (Linux / macOS) | Doc de pares |
 | `preview-commit.ps1`, `commit-or-pr.ps1`, `create-pr.ps1` | Commit / PR | Igual + **`docs/ops/COMMIT_AND_PR.md`** |
 | `pr-merge-when-green.ps1` | Merge com CI verde | **`.cursor/rules/agent-autonomous-merge-and-lab-ops.mdc`**, SKILL **`autonomous-merge-and-lab`** |
 | `safe-workspace-snapshot.ps1` | Snapshot pre-commit | Palavra-chave **`safe-commit`** |
