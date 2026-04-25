@@ -1,14 +1,15 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-  Optional high-density Lab-Op path: ephemeral config via scp + container run on capable nodes only.
+  Optional high-density Lab-Op path: ephemeral config via scp + one-shot container run on capable nodes only.
 
 .DESCRIPTION
   Manifest-driven orchestration remains the default: .\\scripts\\lab-completao-orchestrate.ps1 (no -HybridLabOpHighDensity173).
-  Resolves SSH targets from **docs/private/homelab/lab-op-hosts.manifest.json** (`sshHost` aliases — same as the main orchestrator), not `*.local` DNS names.
-  Pi3B has no Docker (hardware-bound): this script never runs containers there; only SSH passive collect (python/venv try + logs).
-  DB/Swarm-heavy scans belong on Latitude and T14; mini-bt stays on Docker image scan only (no host uv).
-  Requires OpenSSH scp/ssh on the dev PC, non-interactive SSH, and a warmed tmux target pane for container nodes.
+  Resolves SSH targets from **docs/private/homelab/lab-op-hosts.manifest.json** (`sshHost` + first `repoPaths` entry), same family as **lab-completao-orchestrate.ps1**.
+  **Latitude scan path:** uses **`/home/leitao/Documents`** if present, else **`/home/leitao/documents`** (Zorin/GNOME vs lowercase checklist path).
+  **Containers (T14 / mini-bt / latitude):** runs **`podman run`** or **`docker run`** via **non-interactive** `ssh … bash -lc '…'` — **no tmux**. Narrow **sudoers** / **-Privileged** in **lab-completao-host-smoke** is for **read-only host probes** (iptables/nft/ufw); it does not require tmux and was never a substitute for an interactive pane.
+  **Pi3B:** passive SSH uses the manifest **repo** path so **`.venv/bin/python3`** is the clone venv under **`Projects/dev/data-boar`**, not **`~/.venv`**.
+  Requires OpenSSH **scp**/**ssh** on the dev PC and non-interactive SSH.
 
 .NOTES
   Orquestrador v1.7.3 - Lab-Op High-Density Test (ASCII-only for Windows PowerShell 5.1).
@@ -24,34 +25,45 @@ function Get-HybridNodesFromManifest {
         throw "Hybrid v1.7.3 requires $ManifestPath (same manifest as lab-completao-orchestrate.ps1). Copy from docs/private.example/homelab/lab-op-hosts.manifest.example.json"
     }
     $m = Get-Content -LiteralPath $ManifestPath -Raw -Encoding utf8 | ConvertFrom-Json
-    $aliases = @($m.hosts | ForEach-Object { $_.sshHost } | Where-Object { $_ })
 
-    function Find-FirstSshHost {
-        param([string]$Regex)
-        foreach ($a in $aliases) {
-            if ($a -match $Regex) {
-                return $a
-            }
+    function Get-FirstRepoPath {
+        param($HostEntry)
+        if (-not $HostEntry) {
+            return $null
         }
-        return $null
+        if ($HostEntry.PSObject.Properties.Name -notcontains "repoPaths" -or -not $HostEntry.repoPaths) {
+            return $null
+        }
+        $arr = @($HostEntry.repoPaths)
+        if ($arr.Count -lt 1) {
+            return $null
+        }
+        return [string]$arr[0]
     }
 
     $ordered = [System.Collections.Generic.List[object]]::new()
-    $lat = Find-FirstSshHost '(?i)^latitude$'
-    if ($lat) {
-        $ordered.Add(@{ Name = "latitude"; SshHost = $lat; Type = "swarm" })
-    }
-    $t14 = Find-FirstSshHost '(?i)t14'
-    if ($t14) {
-        $ordered.Add(@{ Name = "t14"; SshHost = $t14; Type = "podman" })
-    }
-    $mb = Find-FirstSshHost '(?i)mini-bt|^minibt$'
-    if ($mb) {
-        $ordered.Add(@{ Name = "mini-bt"; SshHost = $mb; Type = "docker" })
-    }
-    $pi = Find-FirstSshHost '(?i)pi3b'
-    if ($pi) {
-        $ordered.Add(@{ Name = "pi3b"; SshHost = $pi; Type = "passive" })
+    $roleDefs = @(
+        @{ Name = "latitude"; Regex = '(?i)^latitude$'; Type = "swarm" },
+        @{ Name = "t14"; Regex = '(?i)t14'; Type = "podman" },
+        @{ Name = "mini-bt"; Regex = '(?i)mini-bt|^minibt$'; Type = "docker" },
+        @{ Name = "pi3b"; Regex = '(?i)pi3b'; Type = "passive" }
+    )
+
+    foreach ($rd in $roleDefs) {
+        foreach ($h in $m.hosts) {
+            if (-not $h.sshHost) {
+                continue
+            }
+            if ([string]$h.sshHost -match $rd.Regex) {
+                $ordered.Add(@{
+                    Name     = $rd.Name
+                    SshHost  = [string]$h.sshHost
+                    Type     = $rd.Type
+                    RepoPath = (Get-FirstRepoPath $h)
+                })
+                break
+            }
+        }
     }
 
     if ($ordered.Count -eq 0) {
@@ -62,7 +74,8 @@ function Get-HybridNodesFromManifest {
 
 $Nodes = Get-HybridNodesFromManifest -ManifestPath $manifestPath
 
-$ImageRef = "fabioleitao/data_boar:v1.7.3"
+# Docker Hub semver tag (see docs/releases/1.7.3.md); avoid :v1.7.3 unless that tag exists on Hub.
+$ImageRef = "fabioleitao/data_boar:1.7.3"
 
 function Deploy-Config {
     param(
@@ -95,10 +108,10 @@ targets:
 function Invoke-Pi3bPassiveSsh {
     param(
         [Parameter(Mandatory = $true)] $Node,
-        [Parameter(Mandatory = $true)][string] $ScanPath
+        [Parameter(Mandatory = $true)][string] $RepoPath
     )
-    $e = $ScanPath -replace "'", "'\''"
-    $inner = "cd '$e' && { echo '=== pi3b passive (no Docker) ==='; if [ -x .venv/bin/python3 ]; then .venv/bin/python3 -m databoar --help 2>&1 | head -n 40 || true; elif command -v python3 >/dev/null 2>&1; then python3 -m databoar --help 2>&1 | head -n 40 || true; else echo 'SKIP_NO_PYTHON_OR_VENV'; fi; echo '=== logs ==='; journalctl -n 100 --no-pager 2>/dev/null || true; df -h 2>/dev/null | head -n 16 || true; } 2>&1"
+    $e = $RepoPath -replace "'", "'\''"
+    $inner = "cd '$e' && { echo '=== pi3b passive (repo .venv under clone) ==='; if [ -x .venv/bin/python3 ]; then echo 'using .venv/bin/python3 -m databoar'; .venv/bin/python3 -m databoar --help 2>&1 | head -n 40 || true; elif command -v python3 >/dev/null 2>&1; then echo 'fallback: python3 -m databoar'; python3 -m databoar --help 2>&1 | head -n 40 || true; else echo 'SKIP_NO_PYTHON_OR_VENV'; fi; echo '=== logs ==='; journalctl -n 100 --no-pager 2>/dev/null || true; df -h 2>/dev/null | head -n 16 || true; } 2>&1"
     $innerEsc = $inner.Replace('"', '\"')
     $target = $Node.SshHost
     & ssh.exe -o BatchMode=yes -o ConnectTimeout=30 $target $innerEsc
@@ -120,6 +133,34 @@ function Test-HybridRemoteDir {
     return ($out -match "HYBRID_DIR_OK")
 }
 
+function Resolve-LatitudeScanPath {
+    param([string]$Target)
+    foreach ($cand in @("/home/leitao/Documents", "/home/leitao/documents")) {
+        if (Test-HybridRemoteDir -Target $Target -DirPath $cand) {
+            Write-Host "Hybrid latitude: using scan path $cand" -ForegroundColor DarkGray
+            return $cand
+        }
+    }
+    return $null
+}
+
+function Invoke-HybridContainerRun {
+    param(
+        [Parameter(Mandatory = $true)][string] $Target,
+        [Parameter(Mandatory = $true)][string] $Engine,
+        [Parameter(Mandatory = $true)][string] $Image,
+        [int]$ConnectTimeoutSec = 300
+    )
+    if ($Engine -eq "podman") {
+        $inner = "podman run --rm -v /tmp/config_databoar.yaml:/app/config.yaml:Z $Image"
+    } else {
+        $inner = "docker run --rm -v /tmp/config_databoar.yaml:/app/config.yaml $Image"
+    }
+    $remote = "bash -lc '$inner'"
+    & ssh.exe -o BatchMode=yes -o ConnectTimeout=$ConnectTimeoutSec -o ServerAliveInterval=15 -o ServerAliveCountMax=20 $Target $remote
+    return $LASTEXITCODE
+}
+
 foreach ($n in $Nodes) {
     Write-Host ">>> Preparando No: $($n.Name) ($($n.SshHost))" -ForegroundColor Cyan
     $target = $n.SshHost
@@ -128,15 +169,28 @@ foreach ($n in $Nodes) {
         continue
     }
 
-    $scanPath = if ($n.Name -eq "latitude") { "/home/leitao/documents" } else { "/home/leitao" }
-
     if ($n.Type -eq "passive") {
-        if (-not (Test-HybridRemoteDir -Target $target -DirPath $scanPath)) {
-            Write-Warning "Hybrid health: scan path missing on $($n.Name): $scanPath - skip passive (skip-on-failure)."
+        $repoPath = $n.RepoPath
+        if (-not $repoPath) {
+            Write-Warning "Hybrid: pi3b has no repoPaths[0] in manifest - skip passive (skip-on-failure)."
             continue
         }
-        Invoke-Pi3bPassiveSsh -Node $n -ScanPath $scanPath
+        if (-not (Test-HybridRemoteDir -Target $target -DirPath $repoPath)) {
+            Write-Warning "Hybrid health: repo path missing on $($n.Name): $repoPath - skip passive (skip-on-failure)."
+            continue
+        }
+        Invoke-Pi3bPassiveSsh -Node $n -RepoPath $repoPath
         continue
+    }
+
+    if ($n.Name -eq "latitude") {
+        $scanPath = Resolve-LatitudeScanPath -Target $target
+        if (-not $scanPath) {
+            Write-Warning "Hybrid: latitude has neither /home/leitao/Documents nor /home/leitao/documents - skip container step (skip-on-failure)."
+            continue
+        }
+    } else {
+        $scanPath = "/home/leitao"
     }
 
     if (-not (Test-HybridRemoteDir -Target $target -DirPath $scanPath)) {
@@ -146,17 +200,10 @@ foreach ($n in $Nodes) {
 
     Deploy-Config -Node $n -Path $scanPath
 
-    if ($n.Type -eq "podman") {
-        $runCmd = "podman run --rm -v /tmp/config_databoar.yaml:/app/config.yaml:Z $ImageRef"
-    } else {
-        $runCmd = "docker run --rm -v /tmp/config_databoar.yaml:/app/config.yaml $ImageRef"
-    }
-
-    $remote = "tmux send-keys -t completao '$runCmd' Enter"
-    & ssh.exe -o BatchMode=yes -o ConnectTimeout=30 $target $remote
-    if ($LASTEXITCODE -ne 0) {
-        Write-Warning "ssh/tmux send failed for $($n.Name) ($target) - skip-on-failure."
-        continue
+    $engine = if ($n.Type -eq "podman") { "podman" } else { "docker" }
+    $rc = Invoke-HybridContainerRun -Target $target -Engine $engine -Image $ImageRef
+    if ($rc -ne 0) {
+        Write-Warning "Hybrid: $engine run failed on $($n.Name) ($target) exit=$rc - skip-on-failure."
     }
 }
 
