@@ -8,7 +8,7 @@ Oferecer **um caminho ordenado** para um **chat novo** (sem memória do transcri
 
 ## Ordem de leitura (profundidade conforme a tarefa)
 
-1. **Este arquivo** — router de tarefas + seis regras abaixo.
+1. **Este arquivo** — router de tarefas + sete regras inegociáveis abaixo.
 2. **[`AGENTS.md`](../../AGENTS.md)** — tabela Quick index (tema → primeiro doc); os bullets longos são o contrato.
 3. **[`CURSOR_AGENT_POLICY_HUB.pt_BR.md`](CURSOR_AGENT_POLICY_HUB.pt_BR.md)** — os mesmos temas com caminhos **clicáveis** para `.cursor/rules`, `.cursor/skills` e `docs/ops/`.
 4. **[`TOKEN_AWARE_SCRIPTS_HUB.pt_BR.md`](TOKEN_AWARE_SCRIPTS_HUB.pt_BR.md)** — que **`scripts/*.ps1`** ligam a keywords, skills e runbooks.
@@ -31,7 +31,7 @@ Oferecer **um caminho ordenado** para um **chat novo** (sem memória do transcri
 | **Recuperação / “descobre aí”** | **`operator-investigation-before-blocking.mdc`** · skill **`operator-recovery-investigation`** |
 | **Gmail / webmail / redes / caixa ou anexo** (mesmo PC que **SSH**; sessão quente ou fria + **SSO Google** quando o site oferecer) | **`cursor-browser-social-sso-hygiene.mdc`** (*Contrato único* + *Gmail e webmail*) · **`operator-browser-warm-session.mdc`** · **`operator-direct-execution.mdc`** §5 — **tentar** MCP e clique **SSO** antes de negar; **só depois** pedir interação humana uma vez; PDFs → **`docs/private/`** + **`read_file`** |
 
-## Seis coisas inegociáveis (não “esquecer” em chat novo)
+## Sete coisas inegociáveis (não “esquecer” em chat novo)
 
 1. **`docs/private/`** existe no workspace → **`read_file` / `list_dir` é permitido**; **nunca** colar segredos ou identificadores de LAN em arquivos **versionados** ou PRs públicos (**`PRIVATE_OPERATOR_NOTES.md`**).
 2. **Clone canônico no PC dev Windows principal** — **sem** **`clean-slate`**, **`git filter-repo`** ou **`git reset --hard`** de rotina na árvore do produto (**`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**).
@@ -39,6 +39,7 @@ Oferecer **um caminho ordenado** para um **chat novo** (sem memória do transcri
 4. **Conselho sobre merge / PR / “o que segue”** — **`git fetch`** primeiro (**`git-pr-sync-before-advice.mdc`**).
 5. **Espelhos privados** — quando o sync é óbvio, correr **`private-git-sync.ps1 -Push`** e **reportar** erros concretos de SSH/mount (**ADR 0040**, **`operator-evidence-backup-no-rhetorical-asks.mdc`**).
 6. **Prosa em português = pt-BR por padrão** — **`*.pt_BR.md`**, Markdown em PT em **`docs/private/`** e parágrafos que o assistente escreve **não** podem ir para **pt-PT** “sem querer.” Exceções só conforme **`.cursor/rules/docs-locale-pt-br-contract.mdc`**. Depois de edições grandes em pt-BR, rodar **`uv run pytest tests/test_docs_pt_br_locale.py -v`**.
+7. **Alcance homelab / LAB-OP a partir do terminal integrado** — no **PC de dev**, o terminal integrado do Cursor é a **mesma máquina e LAN** que o teu shell habitual para **`ssh`**, **`scp`**, **`curl` HTTP no lab**, etc. (**`homelab-ssh-via-terminal.mdc`**). Antes de dizer **“sem acesso remoto”** ou **“não consigo chegar nos hosts do lab”**, usar **`read_file`** em **`docs/private/homelab/AGENT_LAB_ACCESS.md`** (se existir) e seguir **aliases `Host` do SSH / caminhos do manifest** nos docs privados — **não** inventar hostnames reais, IPs nem caminhos de `$HOME` em arquivos **versionados**. Um prompt de notebook tipo **`usuario@Latitude-…` no chat** **não** prova que o assistente **não** possa usar **`ssh`** para hosts do manifest a partir deste workspace.
 
 ## Produto vs operador (por preocupação)
 
