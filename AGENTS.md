@@ -8,7 +8,7 @@ Use this table to jump to the **canonical bullet** or **rule** for each theme. D
 | ----- | ------------------- |
 | **Cold start (fresh agent, token-aware)** — ladder + task router before deep-reading this file | **`docs/ops/OPERATOR_AGENT_COLD_START_LADDER.md`** |
 | **`.cursor/` / `.vscode/` / `.github/` / caches** — tracked vs gitignored | **`docs/ops/CURSOR_AND_EDITOR_ARTIFACTS.md`** |
-| **`docs/private/`** read access / never self-block | First bullet below · **`.cursor/rules/agent-docs-private-read-access.mdc`** · **`docs/PRIVATE_OPERATOR_NOTES.md`** |
+| **`docs/private/`** read access / never self-block | **`.cursor/rules/agent-docs-private-read-access.mdc`** (**always-on**) · situational **`docs-private-workspace-context.mdc`** ( **`private-stack-sync`** or **`@docs-private-workspace-context.mdc`** ) · First bullet below · **`docs/PRIVATE_OPERATOR_NOTES.md`** · **`docs/ops/OPERATOR_AGENT_COLD_START_LADDER.md`** § *Token → rule latch (`private-stack-sync`)* |
 | Chat **pt-BR** / locale (**private drafts = pt-BR**; **EN-only prose → `en-US`**) | **`docs-locale-pt-br-contract.mdc`** (always) · **`operator-chat-language*.mdc`** · **`docs-pt-br-locale.mdc`** · **`.cursor/skills/operator-dialogue-pt-br/SKILL.md`** · **`.cursor/skills/documentation-en-pt-br/SKILL.md`** |
 | **Session keywords** (deps, feature, `es-find`, …) | **`.cursor/rules/session-mode-keywords.mdc`** |
 | **Agreed scripts / wrapper ritual** (hub + `scripts/*.ps1` before long ad-hoc shell) | **`.cursor/rules/repo-scripts-wrapper-ritual.mdc`** · **`docs/ops/TOKEN_AWARE_SCRIPTS_HUB.md`** · **`check-all-gate.mdc`** · **`.cursor/skills/token-aware-automation/SKILL.md`** |

@@ -27,7 +27,7 @@ Oferecer **um caminho ordenado** para um **chat novo** (sem memória do transcri
 | **Smoke de lab / completão** | **`COMPLETAO_OPERATOR_PROMPT_LIBRARY`** (**`completao`** + **`tier:…`**) · **`LAB_COMPLETAO_FRESH_AGENT_BRIEF`** · **`lab-completao-workflow.mdc`** · **`LAB_COMPLETAO_RUNBOOK`** · **`scripts/completao-chat-starter.ps1`** |
 | **Ansible / Podman / personas** | **`LAB_OP_HOST_PERSONAS`** · **`ops/automation/ansible/README.md`** |
 | **Inventário homelab / lote SSH** | Token de sessão **`homelab`** · **`homelab-ssh-via-terminal.mdc`** · **`lab-op-hosts.manifest.json`** em `docs/private/` (se existir) · **`LAB_OP_PRIVILEGED_COLLECTION.md`** · **`OPERATOR_LAB_DOCUMENT_MAP`** · § *Presilha token → regra (`homelab`)* abaixo |
-| **Fecho do Git empilhado em `docs/private/`** | **`PRIVATE_STACK_SYNC_RITUAL`** · **`private-git-sync.ps1`** |
+| **Fecho do Git empilhado em `docs/private/`** | Sessão **`private-stack-sync`** · **`docs-private-workspace-context.mdc`** · **`PRIVATE_STACK_SYNC_RITUAL`** · **`private-git-sync.ps1`** · § *Presilha token → regra (`private-stack-sync`)* abaixo |
 | **Evidência jurídica / trabalhista privada** (importação, atualizações tipo CAT/INSS, novo paste) | Token de sessão **`legal-dossier-update`** · **`dossier-update-on-evidence.mdc`** · **`legal_dossier/`** + **`raw_pastes/`** em `docs/private/` · § *Presilha token → regra (dossiê jurídico)* abaixo |
 | **Recuperação / “descobre aí”** | **`operator-investigation-before-blocking.mdc`** · skill **`operator-recovery-investigation`** |
 | **Gmail / webmail / redes / caixa ou anexo** (mesmo PC que **SSH**; sessão quente ou fria + **SSO Google** quando o site oferecer) | **`cursor-browser-social-sso-hygiene.mdc`** (*Contrato único* + *Gmail e webmail*) · **`operator-browser-warm-session.mdc`** · **`operator-direct-execution.mdc`** §5 — **tentar** MCP e clique **SSO** antes de negar; **só depois** pedir interação humana uma vez; PDFs → **`docs/private/`** + **`read_file`** |
@@ -59,9 +59,18 @@ Para **evidência jurídica / trabalhista** em **`docs/private/legal_dossier/`**
 3. Executar a **checklist ordenada** dentro dessa regra (índice → sumário executivo → risco se aplicável → **`OPERATOR_RETEACH.md`** → Git empilhado em **`docs/private/`** + **`private-git-sync.ps1`** quando a política pedir).
 4. **Nunca** colocar nomes de partes, números de autos ou identificadores de LAN em **docs versionados**, issues ou PRs públicos.
 
+### Presilha token → regra (**`private-stack-sync`** + cadência de leitura em **`docs/private/`**)
+
+Para **Git privado empilhado** e higiene em **`docs/private/`**, mantém **`docs-private-workspace-context.mdc`** **situacional**, mas **vinculante** no ritual de fecho:
+
+1. Linha 1: token em inglês **`private-stack-sync`** (opcional **`short`** / **`token-aware`**).
+2. **`read_file`** em **`.cursor/rules/docs-private-workspace-context.mdc`** — usar **`@docs-private-workspace-context.mdc`** se os **globs** não carregaram a regra (**`agent-docs-private-read-access.mdc`** continua **sempre ligada** para **nunca auto-bloquear**).
+3. **`read_file`** em **`docs/ops/PRIVATE_STACK_SYNC_RITUAL.md`** (+ **`.pt_BR.md`** se usares), depois **`.\scripts\private-git-sync.ps1`** (**`-Push`** quando os espelhos têm de alinhar) conforme **ADR 0040** / **`operator-evidence-backup-no-rhetorical-asks.mdc`**.
+4. **Nunca** colar passphrases, keyfiles ou caminhos privados em arquivos **versionados** ou PRs públicos.
+
 ## Sete coisas inegociáveis (não “esquecer” em chat novo)
 
-1. **`docs/private/`** existe no workspace → **`read_file` / `list_dir` é permitido**; **nunca** colar segredos ou identificadores de LAN em arquivos **versionados** ou PRs públicos (**`PRIVATE_OPERATOR_NOTES.md`**).
+1. **`docs/private/`** existe no workspace → **`read_file` / `list_dir` é permitido**; **nunca** colar segredos ou identificadores de LAN em arquivos **versionados** ou PRs públicos (**`PRIVATE_OPERATOR_NOTES.md`**). Cadência de leitura + **`.cursorignore`**: situacional **`docs-private-workspace-context.mdc`** — usar **`private-stack-sync`** ou **`@docs-private-workspace-context.mdc`** em chats **novos**; **nunca auto-bloquear** continua em **`agent-docs-private-read-access.mdc`** (**sempre ligada**).
 2. **Clone canônico no PC dev Windows principal** — **sem** **`clean-slate`**, **`git filter-repo`** ou **`git reset --hard`** de rotina na árvore do produto (**`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**).
 3. **`completao`** — quando couber no âmbito, usar **`lab-completao-orchestrate.ps1 -Privileged`** na raiz do repo; o **manifest** define **`completaoEngineMode` / `completaoSkipEngineImport`** para hosts só contêiner (**`LAB_COMPLETAO_RUNBOOK`**).
 4. **Conselho sobre merge / PR / “o que segue”** — **`git fetch`** primeiro (**`git-pr-sync-before-advice.mdc`**).

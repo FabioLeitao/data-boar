@@ -27,7 +27,7 @@ Give a **single ordered path** so a **fresh chat** (no transcript memory) can st
 | **Lab smoke / completão** | **`COMPLETAO_OPERATOR_PROMPT_LIBRARY`** ( **`completao`** + **`tier:…`** ) · **`LAB_COMPLETAO_FRESH_AGENT_BRIEF`** · **`lab-completao-workflow.mdc`** · **`LAB_COMPLETAO_RUNBOOK`** · **`scripts/completao-chat-starter.ps1`** |
 | **Ansible / Podman / personas** | **`LAB_OP_HOST_PERSONAS`** · **`ops/automation/ansible/README.md`** |
 | **Homelab inventory / SSH batch** | Session token **`homelab`** · **`homelab-ssh-via-terminal.mdc`** · private **`lab-op-hosts.manifest.json`** (when present) · **`LAB_OP_PRIVILEGED_COLLECTION.md`** · **`OPERATOR_LAB_DOCUMENT_MAP`** · § *Token → rule latch (`homelab`)* below |
-| **Stacked private Git close** | **`PRIVATE_STACK_SYNC_RITUAL`** · **`private-git-sync.ps1`** |
+| **Stacked private Git close** | Session **`private-stack-sync`** · **`docs-private-workspace-context.mdc`** · **`PRIVATE_STACK_SYNC_RITUAL`** · **`private-git-sync.ps1`** · § *Token → rule latch (`private-stack-sync`)* below |
 | **Private legal / labour evidence** (import, CAT/INSS-style updates, new paste) | Session token **`legal-dossier-update`** · **`dossier-update-on-evidence.mdc`** · private **`legal_dossier/`** + **`raw_pastes/`** · § *Token → rule latch (legal dossier)* below |
 | **Recovery / “figure it out”** | **`operator-investigation-before-blocking.mdc`** · **`operator-recovery-investigation`** skill |
 | **Gmail / webmail / social / inbox or attachment** (same dev PC as SSH; warm or cold + **Google SSO** when offered) | **`cursor-browser-social-sso-hygiene.mdc`** (*Contrato único* + *Gmail e webmail*) · **`operator-browser-warm-session.mdc`** · **`operator-direct-execution.mdc`** §5 — **try** MCP then **SSO click** before refusing; **only then** ask the operator to interact once; PDFs → **`docs/private/`** + **`read_file`** |
@@ -59,9 +59,18 @@ For **private legal / labour evidence** under **`docs/private/legal_dossier/`** 
 3. Execute the **ordered** checklist inside that rule (index → executive summary → risk doc if applicable → **`OPERATOR_RETEACH.md`** → stacked **`docs/private/`** git + **`private-git-sync.ps1`** when policy says so).
 4. **Never** put party names, docket numbers, or LAN identifiers into **tracked** product docs, issues, or PRs.
 
+### Token → rule latch (**`private-stack-sync`** + **`docs/private/`** read cadence)
+
+For **stacked private Git** and **`docs/private/`** hygiene, keep **`docs-private-workspace-context.mdc`** **situational** but **binding** when you run the close ritual:
+
+1. Line 1: English token **`private-stack-sync`** (optional **`short`** / **`token-aware`**).
+2. **`read_file`** **`.cursor/rules/docs-private-workspace-context.mdc`** — use **`@docs-private-workspace-context.mdc`** if globs did not load it ( **`agent-docs-private-read-access.mdc`** is still **always-on** for **never self-block** ).
+3. **`read_file`** **`docs/ops/PRIVATE_STACK_SYNC_RITUAL.md`** (+ **`.pt_BR.md`** when used), then **`.\scripts\private-git-sync.ps1`** (**`-Push`** when mirrors must align) per **ADR 0040** / **`operator-evidence-backup-no-rhetorical-asks.mdc`**.
+4. **Never** paste passphrases, keyfiles, or private paths into **tracked** files or public PRs.
+
 ## Seven non-negotiables (do not “forget” on fresh chats)
 
-1. **`docs/private/`** exists in workspace → **`read_file` / `list_dir` is allowed**; **never** paste secrets or LAN identifiers into **tracked** files or public PRs (**`PRIVATE_OPERATOR_NOTES.md`**).
+1. **`docs/private/`** exists in workspace → **`read_file` / `list_dir` is allowed**; **never** paste secrets or LAN identifiers into **tracked** files or public PRs (**`PRIVATE_OPERATOR_NOTES.md`**). Expanded read-order + **`.cursorignore`** opt-out: situational **`docs-private-workspace-context.mdc`** — use **`private-stack-sync`** or **`@docs-private-workspace-context.mdc`** in **fresh** threads; **never self-block** remains **`agent-docs-private-read-access.mdc`** (**always-on**).
 2. **Primary Windows dev PC canonical clone** — **no** routine **`clean-slate`**, **`git filter-repo`**, or **`git reset --hard`** on the product tree (**`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**).
 3. **`completao`** — use **`lab-completao-orchestrate.ps1 -Privileged`** from repo root when in scope; **manifest** sets **`completaoEngineMode` / `completaoSkipEngineImport`** for container-only hosts (**`LAB_COMPLETAO_RUNBOOK`**).
 4. **Advice on merge / PR / “what’s next”** — **`git fetch`** first (**`git-pr-sync-before-advice.mdc`**).
