@@ -8,7 +8,7 @@ Give a **single ordered path** so a **fresh chat** (no transcript memory) can st
 
 ## Read in this order (pick depth by task)
 
-1. **This file** — task router + six rules below.
+1. **This file** — task router + seven non-negotiables below.
 2. **[`AGENTS.md`](../../AGENTS.md)** — Quick index table (theme → first doc); long bullets are the contract.
 3. **[`CURSOR_AGENT_POLICY_HUB.md`](CURSOR_AGENT_POLICY_HUB.md)** — same themes with **clickable** paths into `.cursor/rules`, `.cursor/skills`, and `docs/ops/`.
 4. **[`TOKEN_AWARE_SCRIPTS_HUB.md`](TOKEN_AWARE_SCRIPTS_HUB.md)** — which **`scripts/*.ps1`** map to keywords, skills, and runbooks.
@@ -31,7 +31,7 @@ Give a **single ordered path** so a **fresh chat** (no transcript memory) can st
 | **Recovery / “figure it out”** | **`operator-investigation-before-blocking.mdc`** · **`operator-recovery-investigation`** skill |
 | **Gmail / webmail / social / inbox or attachment** (same dev PC as SSH; warm or cold + **Google SSO** when offered) | **`cursor-browser-social-sso-hygiene.mdc`** (*Contrato único* + *Gmail e webmail*) · **`operator-browser-warm-session.mdc`** · **`operator-direct-execution.mdc`** §5 — **try** MCP then **SSO click** before refusing; **only then** ask the operator to interact once; PDFs → **`docs/private/`** + **`read_file`** |
 
-## Six non-negotiables (do not “forget” on fresh chats)
+## Seven non-negotiables (do not “forget” on fresh chats)
 
 1. **`docs/private/`** exists in workspace → **`read_file` / `list_dir` is allowed**; **never** paste secrets or LAN identifiers into **tracked** files or public PRs (**`PRIVATE_OPERATOR_NOTES.md`**).
 2. **Primary Windows dev PC canonical clone** — **no** routine **`clean-slate`**, **`git filter-repo`**, or **`git reset --hard`** on the product tree (**`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`**).
@@ -39,6 +39,7 @@ Give a **single ordered path** so a **fresh chat** (no transcript memory) can st
 4. **Advice on merge / PR / “what’s next”** — **`git fetch`** first (**`git-pr-sync-before-advice.mdc`**).
 5. **Private mirrors** — when sync is obvious, run **`private-git-sync.ps1 -Push`** and **report** concrete SSH/mount errors (**ADR 0040**, **`operator-evidence-backup-no-rhetorical-asks.mdc`**).
 6. **Portuguese prose defaults to pt-BR** — tracked **`*.pt_BR.md`**, private Portuguese Markdown under **`docs/private/`**, and assistant-authored PT paragraphs must **not** drift to **pt-PT** “by accident.” Exceptions only per **`.cursor/rules/docs-locale-pt-br-contract.mdc`**. Run **`uv run pytest tests/test_docs_pt_br_locale.py -v`** after substantive pt-BR doc edits.
+7. **Homelab / LAB-OP reachability from the integrated terminal** — on the **operator dev PC**, Cursor’s integrated terminal is the **same machine and LAN** as your normal shell for **`ssh`**, **`scp`**, **`curl` to lab HTTP**, etc. (**`homelab-ssh-via-terminal.mdc`**). Before claiming **“no remote access”** or **“I cannot reach lab hosts”**, **`read_file`** **`docs/private/homelab/AGENT_LAB_ACCESS.md`** (when present) and use **SSH `Host` aliases / manifest paths** from private docs — do **not** invent real hostnames, IPs, or home paths in **tracked** files. A laptop prompt like **`user@LAB-NODE-02-…` in chat** is **not** proof the assistant lacks **`ssh`** to manifest hosts from this workspace.
 
 ## Product vs operator map (concern-first)
 
