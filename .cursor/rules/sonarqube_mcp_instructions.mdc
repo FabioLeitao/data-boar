@@ -1,7 +1,23 @@
 ---
-description: SonarQube MCP Server usage guidelines
+description: SonarQube MCP Server usage guidelines in Cursor. Situational — sonar home-lab docs, sonar-project.properties, quality rule/skill, or session sonar-mcp / @.
 globs:
-alwaysApply: true
+  - docs/ops/SONARQUBE_HOME_LAB.md
+  - docs/ops/SONARQUBE_HOME_LAB.pt_BR.md
+  - sonar-project.properties
+  - .cursor/rules/quality-sonarqube-codeql.mdc
+  - .cursor/skills/quality-sonarqube-codeql/SKILL.md
+  - tests/test_sonarqube_python.py
+alwaysApply: false
+---
+
+## When this rule attaches (Cursor)
+
+**Context:** **`alwaysApply: false`** — loads when a path matches the **`globs`** above **or** the operator types **`sonar-mcp`** **or** attaches **`@sonarqube_mcp_instructions.mdc`**. **`.cursor/rules/quality-sonarqube-codeql.mdc`** stays the **in-repo** Python/markdown quality bar; this file is **MCP tool etiquette** + home-lab reachability.
+
+**Companion:** **`docs/ops/OPERATOR_AGENT_COLD_START_LADDER.md`** § *Token → rule latch (`sonar-mcp`)*.
+
+**Rollback:** `git revert` the commit or `git show <parent>:.cursor/rules/sonarqube_mcp_instructions.mdc`.
+
 ---
 
 These are guidelines when using the **SonarQube MCP** server in Cursor. **Deploying** your own SonarQube (home lab, Docker, CI networking, tokens) is documented in **[docs/ops/SONARQUBE_HOME_LAB.md](../../docs/ops/SONARQUBE_HOME_LAB.md)** ([pt-BR](../../docs/ops/SONARQUBE_HOME_LAB.pt_BR.md)).

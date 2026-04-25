@@ -1,9 +1,23 @@
 ---
-description: Study cadence reminders — operator calendar alignment vs deep code; surface nudge at natural stopping points.
-alwaysApply: true
+description: Study cadence reminders — calendar vs deep code; nudge at natural stopping points. Situational — portfolio/sprints/operator manual docs or study-check / @.
+globs:
+  - docs/plans/PORTFOLIO_AND_EVIDENCE_SOURCES.md
+  - docs/plans/SPRINTS_AND_MILESTONES.md
+  - docs/plans/SPRINTS_AND_MILESTONES.pt_BR.md
+  - docs/ops/OPERATOR_MANUAL_ACTIONS.md
+  - docs/ops/OPERATOR_MANUAL_ACTIONS.pt_BR.md
+alwaysApply: false
 ---
 
 # Study cadence reminders (operator calendar vs deep code focus)
+
+## When this rule attaches (Cursor)
+
+**Context:** **`alwaysApply: false`** — loads when a path matches the **`globs`** above **or** the operator types **`study-check`** **or** attaches **`@study-cadence-reminders.mdc`**. Proactive nudges (without **`study-check`**) apply only when this rule is **already** in context from globs or **`@`** — do **not** spam study text in unrelated threads.
+
+**Companion:** **`.cursor/rules/session-mode-keywords.mdc`** · **`docs/ops/OPERATOR_AGENT_COLD_START_LADDER.md`** § *Token → rule latch (`study-check`)*.
+
+**Rollback:** `git revert` the commit or `git show <parent>:.cursor/rules/study-cadence-reminders.mdc`.
 
 The operator wants to **complete the study path** (paid **CWL** cyber lane + **alternating** AI + **other** subjects) but tends to **hyperfocus on repo work** and forget calendar study. The assistant should **gently surface** the agreed rhythm **only when appropriate**—supporting balance, not spam.
 

@@ -12,6 +12,12 @@ The **English-only** keyword table lives in **`.cursor/rules/session-mode-keywor
 
 **Full public publish (semver, GitHub Release, Docker Hub):** **`release-ritual`** — situational **`release-publish-sequencing.mdc`** ( **`@release-publish-sequencing.mdc`** in fresh threads if no release doc globs are open); **`docker-local-smoke-cleanup.mdc`** stays **always-on**. See **[OPERATOR_AGENT_COLD_START_LADDER.md](OPERATOR_AGENT_COLD_START_LADDER.md)** § *Token → rule latch (`release-ritual`)*.
 
+**Plans (`PLANS_TODO` / `PLAN_*`):** scope **`docs`** / **`feature`** / **`houseclean`** / **`backlog`** — situational **`plans-status-pl-sync.mdc`** + **`plans-archive-on-completion.mdc`**; ladder § *plans — status sync* + *plans — archive*.
+
+**SonarQube MCP:** **`sonar-mcp`** — situational **`sonarqube_mcp_instructions.mdc`**; ladder § *`sonar-mcp`*.
+
+**Study cadence:** **`study-check`** — situational **`study-cadence-reminders.mdc`**; ladder § *`study-check`*.
+
 ## LAB-OP SSH example host
 
 Tracked examples and scripts use the SSH alias **`lab-op`** for the Linux lab server (Docker, reports). Configure **`Host lab-op`** in your dev PC’s **`~/.ssh/config`** so it resolves on your LAN (DNS or mDNS) and uses **ed25519** keys as pre-authorized on the host. Real machine names stay **only** under **`docs/private/homelab/`**. See **`docs/private.example/homelab/README.md`**.
@@ -24,6 +30,9 @@ Tracked examples and scripts use the SSH alias **`lab-op`** for the Linux lab se
 - **Stacked private Git (`docs/private/.git`)** — **`private-stack-sync`** + situational **`docs-private-workspace-context.mdc`** ( **`agent-docs-private-read-access.mdc`** always-on) + [OPERATOR_AGENT_COLD_START_LADDER.md](OPERATOR_AGENT_COLD_START_LADDER.md) § *Token → rule latch (`private-stack-sync`)* ([pt-BR](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md))
 - [PII_FRESH_CLONE_AUDIT.md](PII_FRESH_CLONE_AUDIT.md) ([pt-BR](PII_FRESH_CLONE_AUDIT.pt_BR.md)) — **`pii-fresh-audit`** + `pii-fresh-clone-audit.ps1`
 - **Private legal / labour dossier** — **`legal-dossier-update`** (session token) + **`.cursor/rules/dossier-update-on-evidence.mdc`** + [OPERATOR_AGENT_COLD_START_LADDER.md](OPERATOR_AGENT_COLD_START_LADDER.md) § *Token → rule latch (legal dossier)* ([pt-BR](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)); paths **`docs/private/legal_dossier/`**, **`docs/private/raw_pastes/`**
+- **Plans drift + archive** — **`docs`** / **`feature`** / **`houseclean`** / **`backlog`** + situational **`plans-status-pl-sync.mdc`** / **`plans-archive-on-completion.mdc`** + [OPERATOR_AGENT_COLD_START_LADDER.md](OPERATOR_AGENT_COLD_START_LADDER.md) § *plans — status sync* / *plans — archive* ([pt-BR](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md))
+- **SonarQube MCP** — **`sonar-mcp`** + situational **`sonarqube_mcp_instructions.mdc`** + ladder § *`sonar-mcp`* ([pt-BR](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md))
+- **Study cadence** — **`study-check`** + situational **`study-cadence-reminders.mdc`** + ladder § *`study-check`* ([pt-BR](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md))
 - [EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md](EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md) ([pt-BR](EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.pt_BR.md)) — **`es-find`** + `es-find.ps1` (Windows primary dev PC; not Linux **lab-op**); **token latch (fresh chat):** **`es-find`** or **`@everything-es-cli.mdc`** (**`everything-es-cli.mdc`** is situational; **`windows-pcloud-drive-search-discipline.mdc`** stays **always-on** for **`P:`**)
 - [PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md](PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md) ([pt-BR](PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md)) — no destructive repo ops on primary dev PC; `es-find` / temp PII audits are read-only or temp-only
 - [TOKEN_AWARE_USAGE.md](../plans/TOKEN_AWARE_USAGE.md) — token-aware pacing

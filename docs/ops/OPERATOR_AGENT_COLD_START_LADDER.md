@@ -15,7 +15,7 @@ Give a **single ordered path** so a **fresh chat** (no transcript memory) can st
 5. **Lab / completão only:** **[`LAB_COMPLETAO_FRESH_AGENT_BRIEF.md`](LAB_COMPLETAO_FRESH_AGENT_BRIEF.md)** → **[`LAB_COMPLETAO_RUNBOOK.md`](LAB_COMPLETAO_RUNBOOK.md)** → **[`LAB_OP_HOST_PERSONAS.md`](LAB_OP_HOST_PERSONAS.md)** (ENT / PRO / edge / bridge + Ansible knobs).
 6. **Private stack only:** **[`PRIVATE_STACK_SYNC_RITUAL.md`](PRIVATE_STACK_SYNC_RITUAL.md)** · **`scripts/private-git-sync.ps1`** (**`-Push`** when mirrors must align) · **[ADR 0040](../adr/0040-assistant-private-stack-evidence-mirrors-default.md)**.
 7. **Where docs live (LAB-PB vs LAB-OP):** **[`OPERATOR_LAB_DOCUMENT_MAP.md`](OPERATOR_LAB_DOCUMENT_MAP.md)**.
-8. **Session English tokens:** [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) — type tokens **exactly** (e.g. **`homelab`**, **`completao`**, **`legal-dossier-update`**, **`private-stack-sync`**, **`es-find`**, **`release-ritual`**, **`short`** / **`token-aware`**).
+8. **Session English tokens:** [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) — type tokens **exactly** (e.g. **`homelab`**, **`completao`**, **`legal-dossier-update`**, **`private-stack-sync`**, **`es-find`**, **`release-ritual`**, **`sonar-mcp`**, **`study-check`**, **`short`** / **`token-aware`**).
 
 ## Task router (one hop)
 
@@ -23,6 +23,10 @@ Give a **single ordered path** so a **fresh chat** (no transcript memory) can st
 | ------------------------ | -------------------------------------- |
 | **Ship code / fix CI** | **`TOKEN_AWARE_SCRIPTS_HUB`** §1 → **`check-all.ps1`**; **`AGENTS.md`** merge/PR bullets |
 | **Public semver / Docker Hub / GitHub Release (full publish)** | Session **`release-ritual`** · **`.cursor/rules/release-publish-sequencing.mdc`** (**situational** — globs or **`@release-publish-sequencing.mdc`**) · **`docs/VERSIONING.md`** · **`docker-local-smoke-cleanup.mdc`** (**always-on**) · § *Token → rule latch (`release-ritual`)* below |
+| **`PLANS_TODO` / `PLAN_*` drift (headers, dashboard, body tables)** | **`docs`** / **`feature`** / **`houseclean`** / **`backlog`** (scope) · **`plans-status-pl-sync.mdc`** (**situational** — plan globs or **`@plans-status-pl-sync.mdc`**) · § *Token → rule latch (plans — status sync)* below |
+| **Archive a completed `PLAN_*.md`** | **`plans-archive-on-completion.mdc`** (**situational** — plan paths, **`plans_hub_sync`**, **`plans-stats`**, or **`@plans-archive-on-completion.mdc`**) · **`docs-plans.mdc`** · § *Token → rule latch (plans — archive)* below |
+| **SonarQube MCP in Cursor** | **`sonar-mcp`** · **`sonarqube_mcp_instructions.mdc`** (**situational** — Sonar globs or **`@sonarqube_mcp_instructions.mdc`**) · **`SONARQUBE_HOME_LAB.md`** · **`quality-sonarqube-codeql.mdc`** (repo quality bar) · § *Token → rule latch (`sonar-mcp`)* below |
+| **Study cadence recap / nudges** | **`study-check`** · **`study-cadence-reminders.mdc`** (**situational** — portfolio/sprints/operator-manual globs or **`@study-cadence-reminders.mdc`**) · § *Token → rule latch (`study-check`)* below |
 | **Which script / wrapper for this?** (avoid reinventing long shell) | **`repo-scripts-wrapper-ritual.mdc`** · **`TOKEN_AWARE_SCRIPTS_HUB`** · **`check-all-gate.mdc`** · **`token-aware-automation`** skill |
 | **Docs / hubs / MAP** | **`doc-hubs-plans-sync`** skill · **`docs/README.md`** *Internal and reference* · paired **`*.pt_BR.md`** |
 | **Lab smoke / completão** | **`COMPLETAO_OPERATOR_PROMPT_LIBRARY`** ( **`completao`** + **`tier:…`** ) · **`LAB_COMPLETAO_FRESH_AGENT_BRIEF`** · **`lab-completao-workflow.mdc`** · **`LAB_COMPLETAO_RUNBOOK`** · **`scripts/completao-chat-starter.ps1`** |
@@ -85,6 +89,35 @@ For **tag → GitHub Release → Docker (smoke before Hub push) → prune → Hu
 1. Line 1: English token **`release-ritual`** (optional **`short`** / **`token-aware`**).
 2. **`read_file`** **`.cursor/rules/release-publish-sequencing.mdc`** — use **`@release-publish-sequencing.mdc`** if globs did not attach it (e.g. only **`pyproject.toml`** is open). **`docker-local-smoke-cleanup.mdc`** stays **always-on** for **smoke / prune / disk** on the dev PC.
 3. **`read_file`** **`docs/VERSIONING.md`** (*Assistant / automation*) and follow the **ordered** checklist in the rule — **do not** put **`-beta`** on **`main`** before tag + Release + Hub steps the operator asked for are **done**, unless they explicitly split workflow and name the **SHA** to tag.
+
+### Token → rule latch (plans — **status sync**)
+
+For **`PLAN_*.md`** / **`PLANS_TODO.md`** **anti-drift** (Status line, phase tables, Integration narrative), keep **`plans-status-pl-sync.mdc`** **situational** but **binding** when plan work is in scope:
+
+1. Opening almost any **`docs/plans/**`** path usually attaches the rule via **globs**. In a **fresh** thread about drift with **no** plan file open yet, use English **`docs`**, **`feature`**, **`houseclean`**, or **`backlog`** (scope) and **`read_file`** **`.cursor/rules/plans-status-pl-sync.mdc`** — or **`@plans-status-pl-sync.mdc`**.
+2. Run **`plans-stats.py --write`** / **`plans_hub_sync.py --write`** when the rule says so.
+
+### Token → rule latch (plans — **archive**)
+
+When **`git mv`**-ing a **done** **`PLAN_*.md`** to **`docs/plans/completed/`**, keep **`plans-archive-on-completion.mdc`** **situational** but **binding**:
+
+1. **`read_file`** **`.cursor/rules/plans-archive-on-completion.mdc`** — use **`@plans-archive-on-completion.mdc`** if globs did not attach (e.g. only discussing archive in chat).
+2. Follow **`.cursor/rules/docs-plans.mdc`** for hub sync and link fixes; reconcile **`plans-status-pl-sync`** if **`PLANS_TODO`** moved.
+
+### Token → rule latch (**`sonar-mcp`**)
+
+For **SonarQube MCP** tool calls (analysis toggles, project keys, **USER** tokens), keep **`sonarqube_mcp_instructions.mdc`** **situational** but **binding**:
+
+1. Line 1: English token **`sonar-mcp`** (optional **`short`** / **`token-aware`**).
+2. **`read_file`** **`.cursor/rules/sonarqube_mcp_instructions.mdc`** — use **`@sonarqube_mcp_instructions.mdc`** if globs did not attach.
+3. **`read_file`** **`docs/ops/SONARQUBE_HOME_LAB.md`** (+ **`.pt_BR.md`** when needed) for **reachability** and token policy. **`quality-sonarqube-codeql.mdc`** = **in-repo** quality tests — not a substitute for MCP etiquette.
+
+### Token → rule latch (**`study-check`**)
+
+For **study cadence** recaps and **optional** nudges at stop points, keep **`study-cadence-reminders.mdc`** **situational**:
+
+1. On-demand: English token **`study-check`** — then **`read_file`** **`.cursor/rules/study-cadence-reminders.mdc`** (or **`@study-cadence-reminders.mdc`** if globs miss).
+2. **Proactive** nudges **without** **`study-check`**: only when this rule is **already** in context (portfolio / sprints / operator-manual **globs** or prior **`@`**). Do **not** invent long study paragraphs in unrelated threads.
 
 ## Seven non-negotiables (do not “forget” on fresh chats)
 

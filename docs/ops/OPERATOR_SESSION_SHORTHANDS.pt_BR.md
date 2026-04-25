@@ -12,12 +12,21 @@ A tabela de palavras-chave **só em inglês** está em **`.cursor/rules/session-
 
 **Publicação pública completa (semver, GitHub Release, Docker Hub):** **`release-ritual`** — **`release-publish-sequencing.mdc`** **situacional** ( **`@release-publish-sequencing.mdc`** em chat novo se nenhum caminho coberto pelos **globs** de release estiver aberto no editor); **`docker-local-smoke-cleanup.mdc`** continua **sempre ligada**. Ver **[OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)** § *Presilha token → regra (`release-ritual`)*.
 
+**Planos (`PLANS_TODO` / `PLAN_*`):** âmbito **`docs`** / **`feature`** / **`houseclean`** / **`backlog`** — **`plans-status-pl-sync.mdc`** + **`plans-archive-on-completion.mdc`** **situacionais**; escada § *planos — sincronização de status* + *planos — arquivo*.
+
+**SonarQube MCP:** **`sonar-mcp`** — **`sonarqube_mcp_instructions.mdc`** **situacional**; escada § *`sonar-mcp`*.
+
+**Cadência de estudo:** **`study-check`** — **`study-cadence-reminders.mdc`** **situacional**; escada § *`study-check`*.
+
 ## Exemplo de host SSH no LAB-OP
 
 Exemplos versionados e scripts usam o alias SSH **`lab-op`** para o servidor Linux do lab (Docker, reports). Configure **`Host lab-op`** no **`~/.ssh/config`** do PC de desenvolvimento para resolver na LAN (DNS ou mDNS) e usar chaves **ed25519** já autorizadas no host. Nomes reais de máquina ficam **só** em **`docs/private/homelab/`**. Ver **`docs/private.example/homelab/README.md`**.
 
 ## Relacionado
 
+- **Deriva + arquivo de planos** — **`docs`** / **`feature`** / **`houseclean`** / **`backlog`** + **`plans-status-pl-sync.mdc`** / **`plans-archive-on-completion.mdc`** **situacionais** + [OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md) § *planos — sincronização de status* / *planos — arquivo* ([EN](OPERATOR_AGENT_COLD_START_LADDER.md))
+- **SonarQube MCP** — **`sonar-mcp`** + **`sonarqube_mcp_instructions.mdc`** **situacional** + escada § *`sonar-mcp`* ([EN](OPERATOR_AGENT_COLD_START_LADDER.md))
+- **Cadência de estudo** — **`study-check`** + **`study-cadence-reminders.mdc`** **situacional** + escada § *`study-check`* ([EN](OPERATOR_AGENT_COLD_START_LADDER.md))
 - [LAB_OP_SHORTHANDS.pt_BR.md](LAB_OP_SHORTHANDS.pt_BR.md) · [EN](LAB_OP_SHORTHANDS.md) — ações do `lab-op.ps1`
 - **Homelab / SSH / LAN** — sessão **`homelab`** + **`.cursor/rules/homelab-ssh-via-terminal.mdc`** (situacional) + [OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md) § *Presilha token → regra (`homelab`)* ([EN](OPERATOR_AGENT_COLD_START_LADDER.md))
 - **Git privado empilhado (`docs/private/.git`)** — **`private-stack-sync`** + situacional **`docs-private-workspace-context.mdc`** (**`agent-docs-private-read-access.mdc`** sempre ligada) + [OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md) § *Presilha token → regra (`private-stack-sync`)* ([EN](OPERATOR_AGENT_COLD_START_LADDER.md))
