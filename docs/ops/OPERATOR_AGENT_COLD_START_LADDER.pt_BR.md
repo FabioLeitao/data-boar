@@ -139,6 +139,7 @@ Perguntas de compliance e capacidade para **compradores / DPO / CISO** começam 
 | -------- | ------ |
 | **`AGENTS.md`** | Contrato longo canônico do assistente |
 | **`CURSOR_AGENT_POLICY_HUB`** | Fase B — mesmo índice, clicável |
+| **`CURSOR_RULES_PHASE2_SITUATIONALIZATION`** | Fase 2 — narrativa Tier A/B/C + ritual reproduzível |
 | **`TOKEN_AWARE_SCRIPTS_HUB`** | Mapa script ↔ keyword ↔ skill |
 | **`OPERATOR_LAB_DOCUMENT_MAP`** | Índice LAB-PB vs LAB-OP |
 | **`LAB_OP_HOST_PERSONAS`** | Intenção T14 / Latitude / pi / mini-bt vs automação |

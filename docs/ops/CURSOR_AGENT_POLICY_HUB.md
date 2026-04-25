@@ -6,6 +6,8 @@ This page is **consolidation phase B**: the same **theme → first place to look
 
 **Fresh chat / low context:** start at **[OPERATOR_AGENT_COLD_START_LADDER.md](OPERATOR_AGENT_COLD_START_LADDER.md)** ([pt-BR](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md)) — one-screen ordered ladder, task router, and **seven** non-negotiables (homelab **`ssh`** = #7); then this hub or [`AGENTS.md`](../../AGENTS.md) as needed.
 
+**Phase 2 program (why situational rules, locale/smoke exceptions, Tier B/C backlog, reproducible ritual):** **[CURSOR_RULES_PHASE2_SITUATIONALIZATION.md](CURSOR_RULES_PHASE2_SITUATIONALIZATION.md)** ([pt-BR](CURSOR_RULES_PHASE2_SITUATIONALIZATION.pt_BR.md)).
+
 ## Quick index (linked)
 
 | Theme | Where to look first |

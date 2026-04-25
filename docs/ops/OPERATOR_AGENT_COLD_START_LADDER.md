@@ -139,6 +139,7 @@ Compliance and capability questions for **buyers / DPO / CISO** start at **[`MAP
 | -------- | ---- |
 | **`AGENTS.md`** | Canonical long-form assistant contract |
 | **`CURSOR_AGENT_POLICY_HUB.md`** | Phase B — same index, clickable |
+| **`CURSOR_RULES_PHASE2_SITUATIONALIZATION.md`** | Phase 2 — Tier A/B/C narrative + reproducible ritual |
 | **`TOKEN_AWARE_SCRIPTS_HUB.md`** | Script ↔ keyword ↔ skill map |
 | **`OPERATOR_LAB_DOCUMENT_MAP.md`** | LAB-PB vs LAB-OP index |
 | **`LAB_OP_HOST_PERSONAS.md`** | T14 / Latitude / pi / mini-bt **intent** vs automation |
