@@ -1,10 +1,20 @@
 ---
-description: Windows primary dev PC — voidtools Everything (es.exe) via scripts/es-find.ps1 for token-aware filename/path search; not on Linux lab-op (use find/fd over SSH)
-globs: ["**/*"]
-alwaysApply: true
+description: Windows primary dev PC — voidtools Everything (es.exe) via scripts/es-find.ps1 for token-aware filename/path search; not on Linux lab-op (use find/fd over SSH). Situational — session es-find or @everything-es-cli.mdc when globs miss.
+globs:
+  - scripts/es-find.ps1
+  - docs/ops/EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.md
+  - docs/ops/EVERYTHING_ES_PRIMARY_WINDOWS_DEV_LAB.pt_BR.md
+  - docs/ops/WINDOWS_FAST_CLI_WRAPPERS.md
+  - docs/ops/WINDOWS_FAST_CLI_WRAPPERS.pt_BR.md
+  - .cursor/skills/everything-es-search/SKILL.md
+alwaysApply: false
 ---
 
 # Everything CLI (`es.exe`) — token-aware filename search (primary Windows dev PC)
+
+## When this rule attaches (Cursor)
+
+**Context:** **`alwaysApply: false`** — loads when a path matches the **`globs`** above **or** the operator types the English session token **`es-find`** **or** attaches **`@everything-es-cli.mdc`**. **`windows-pcloud-drive-search-discipline.mdc`** stays **always-on** for **`P:`** / huge-tree **discipline**; this rule carries the **full** **`es.exe`** / fallback / **lab-op** nuance.
 
 **Companion:** **`windows-pcloud-drive-search-discipline.mdc`** — assume **`P:`** for pCloud on Windows; **default** = **`es-find.ps1`** / **`es.exe`** on huge sync subtrees; **`Get-ChildItem`** only as **recovery** after **`es`** fails (see Fallback) — avoid **unbounded** **`-Recurse`** from massive roots as the **opening** move.
 
