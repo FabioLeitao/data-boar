@@ -14,7 +14,7 @@
     Mensagem de commit (default: auto-gerada com timestamp).
 
 .PARAMETER Push
-    Se informado, faz push para os remotes lab-* em docs/private/.git, depois tenta bare notes-sync.git em Y: ou Z: (VeraCrypt), e robocopy para P: se montado.
+    Se informado, faz push para os remotes lab-* em docs/private/.git, depois tenta bare notes-sync.git em Z: ou Y: (VeraCrypt; Z: e o padrao do operador; Y: apenas como fallback se remapeado), e robocopy para P: se montado.
 
 .PARAMETER FeedbacksOnly
     Apenas sincroniza feedbacks (nao faz commit geral).
@@ -135,8 +135,8 @@ if ($Push) {
             else { Write-Warn "Push FALHOU: $r -- $outPreview" }
         }
     }
-    # Bare mirror on VeraCrypt volume (Windows): probe common mount letters; path name only (ADR 0040).
-    foreach ($dl in @("Y", "Z")) {
+    # Bare mirror on VeraCrypt volume (Windows): probe Z: first (operator default), then Y: fallback; path name only (ADR 0040).
+    foreach ($dl in @("Z", "Y")) {
         $driveRoot = "${dl}:\"
         if (-not (Test-Path -LiteralPath $driveRoot)) { continue }
         $bareWin = Join-Path $driveRoot "notes-sync.git"
