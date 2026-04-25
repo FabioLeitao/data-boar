@@ -51,6 +51,8 @@ Or: **`uv build`** then **`uv publish dist/*`** with **`UV_PUBLISH_TOKEN`** set.
 
    Or with pip inside a virtualenv: `pip install -e .`
 
+   **PowerShell (`pwsh`) — manual venv activation:** when `.\.venv\Scripts\Activate.ps1` exists, run it from the repo root. Do **not** invoke the extensionless `activate` shim inside `.venv\Scripts\` by full path — PowerShell only runs **`Activate.ps1`** as a script (running `…\Scripts\activate` without `.ps1` errors with *not recognized*). If that `.ps1` is missing after **`uv sync`**, rely on **`uv run …`** or recreate the env (remove `.venv` and **`uv sync`** again). Prefer **`uv run …`** day-to-day.
+
 1. **Install pre-commit hooks (recommended, once per clone)**
 
    ```bash

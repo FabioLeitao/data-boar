@@ -64,6 +64,7 @@ uv run pytest -v -W error --include-private
 | **test_security.py**                          | Resistência a injeção SQL, validação de session_id (path traversal), uso apenas ORM para session_id, YAML safe_load. Veja [SECURITY.md](../SECURITY.md).                                                                                                                                                                                                |
 | **test_sonarqube_python.py**                  | Guardas estilo SonarQube: regex session_id, constantes de resposta/relatório, helpers de refatoração, sem except nu em módulos chave.                                                                                                                                                                                                                   |
 | **test_sql_connector.py**                     | Conector SQL: skip de schemas (Oracle vs padrão), should_skip_schema, discover (fallback SQLite).                                                                                                                                                                                                                                                       |
+| **test_pwsh_venv_activate_docs.py**           | **Guarda de docs:** `.md` / `.mdc` rastreados não devem grafar o caminho contíguo **`.venv`…`Scripts`…`activate` sem extensão** para PowerShell (*not recognized* no pwsh). Prefira **`Activate.ps1`** ou **`uv run`** — ver **CONTRIBUTING.md**.                                                                                                      |
 | **test_webauthn_rp.py**                       | WebAuthn fase 1a (JSON neutro de fornecedor): `/auth/webauthn/*` com `api.webauthn.enabled`, opções e verificação, status, logout; caminhos negativos (sem credencial, registro duplicado, state inválido); falha de startup sem segredo; config desabilitada retorna 404. Subconjunto: `scripts/smoke-webauthn-json.ps1`. Veja ADR 0033.              |
 | **test_webauthn_session_cookie.py**           | Helpers de cookie de sessão pós-verificação assinado (`itsdangerous`) usados pelo fluxo JSON WebAuthn.                                                                                                                                                                                                                                                  |
 
@@ -72,6 +73,8 @@ uv run pytest -v -W error --include-private
 Esses testes codificam regras **SonarQube** ou de **contrato da API** para que regressões sejam detectadas no CI. A suíte já cobre o **backend via HTTP** (`test_api_scan.py`, `test_routes_responses.py`, …). **Playwright** ou **Selenium** para E2E no browser são opcionais no futuro; prefira ampliar testes de API enquanto o fluxo crítico for exposto por endpoints.
 
 Ao adicionar ou alterar comportamento da API, esquema de config ou regras de qualidade, atualize o módulo de teste relevante e mantenha este documento em sincronia.
+
+- **test_pwsh_venv_activate_docs.py** – Evita que a documentação volte a sugerir ativar o venv no **pwsh** com o caminho sem **`.ps1`** (ver **CONTRIBUTING.md**).
 
 ### Testes de scripts
 
