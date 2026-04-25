@@ -4,6 +4,7 @@ Human-readable summary of user-facing changes. **Detailed release notes:** [docs
 
 ## Unreleased (`main`)
 
+- **Lab hybrid completão:** **`scripts/lab-completao-orchestrate-hybrid-v173.ps1`** resolves **`sshHost`** from **`docs/private/homelab/lab-op-hosts.manifest.json`** (same as **`lab-completao-orchestrate.ps1`**) instead of **`user@*.local`**, so **`scp`**/**`ssh`** use the operator’s SSH config aliases.
 - **Docs / quality gates:** **`docs/TESTING_POC_GUIDE.md`** and **`docs/TROUBLESHOOTING_MATRIX.md`** — unique pseudo-headings (MD024); **`.cursor/rules/public-tracked-pii-zero-tolerance.mdc`** — LinkedIn placeholder uses **`<placeholder-slug>`** so **`tests/test_pii_guard.py`** does not treat the comma-terminated **`/in/example`** sample as a real slug.
 - **Developer ergonomics (Windows / PowerShell):** **`CONTRIBUTING`** (EN + pt-BR) documents correct **`Activate.ps1`** venv activation and the *not recognized* failure when invoking **`Scripts\activate`** without **`.ps1`**; **`tests/test_pwsh_venv_activate_docs.py`** guards tracked **`.md` / `.mdc`** from reintroducing the bad **`.venv…Scripts…activate`** path pattern.
 - **Ops docs:** **[`docs/ops/CURSOR_RULES_PHASE2_SITUATIONALIZATION.md`](docs/ops/CURSOR_RULES_PHASE2_SITUATIONALIZATION.md)** (+ pt-BR) — Tier A inventory, Tier B/C backlog, why locale + **`docker-local-smoke-cleanup`** stay strong always-on, pros/cons, and a **13-step reproducible ritual** for the next situationalization batch (token-aware follow-up).
