@@ -55,6 +55,8 @@ If you sync the same tree to **Linux** (`~/pCloudDrive`) and **Windows** (**`P:`
 
 **Completão chat prompt (private long form):** copy **[COMPLETAO_OPERATOR_PROMPT.example.md](COMPLETAO_OPERATOR_PROMPT.example.md)** to **`docs/private/homelab/COMPLETAO_OPERATOR_PROMPT.md`** (or similar) and edit; the **public** taxonomy + thin starters live in **[COMPLETAO_OPERATOR_PROMPT_LIBRARY.md](../../ops/COMPLETAO_OPERATOR_PROMPT_LIBRARY.md)** ([pt-BR](../../ops/COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md)); run **`scripts/completao-chat-starter.ps1`** from the product repo root to print a minimal **`completao`** + **`tier:`** block.
 
+**Completão data contracts (optional):** copy **[completao_data_contracts.example.yaml](completao_data_contracts.example.yaml)** to **`docs/private/homelab/completao_data_contracts.yaml`**, fill **`checks`** with **`url_from_env`** + required columns, then set root **`completaoDataContractsPath`** in **`lab-op-hosts.manifest.json`** so **`lab-completao-orchestrate.ps1`** runs **`scripts/lab_completao_data_contract_check.py`** before host smoke — see **[LAB_COMPLETAO_RUNBOOK.md](../../ops/LAB_COMPLETAO_RUNBOOK.md)** (*Data contract preflight*).
+
 | Role | Hostname (LAN)   | OS | Notes |
 | ---- | ---------------- | -- | ----- |
 | …    | …                | …  | …     |

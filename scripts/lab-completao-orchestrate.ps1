@@ -13,6 +13,23 @@
   Optional "completaoHardwareProfile":"mini-bt-void" (or sshHost matching mini-bt): forces skip-engine-import and logs
   Void xbps hint for mysqlclient build deps; keep DB/Swarm-heavy work on Latitude and T14.
 
+  Optional root "completaoDataContractsPath": YAML for scripts/lab_completao_data_contract_check.py (column contract
+  preflight). Runs after lab-op-git-ensure-ref when present and the file exists. See docs/private.example/homelab/completao_data_contracts.example.yaml.
+
+  Optional root "completaoImageRefs": JSON array of image refs (e.g. fabioleitao/data_boar:lab). When set and
+  -SkipImagePreflight is not used, probes completaoImageProbeSshHost or the first manifest sshHost with docker/podman
+  image inspect (read-only) before host smoke; fails fast if an image is missing (idempotent: no pull/create).
+
+  Writes docs/private/homelab/reports/completao_<stamp>_orchestrate_events.jsonl (one JSON object per line) for tooling.
+
+  Idempotent agent-facing JSON: each run overwrites lab_result.json and lab_status.json (same payload) via a temp
+  file then move, so agents never read a half-written file. Stamped copies per run_stamp remain history artifacts.
+
+  Exit code contract DATA_BOAR_COMPLETAO_EXIT_v1 (success path process exit): 0 = all hosts completed without degraded
+  connectivity; 1 = completed_with_skips or degraded (SSH/repo skip patterns). Uncaught throws still use PowerShell
+  defaults (often 1). JSON includes exit_code_semantic and audit_trail (USERNAME, COMPUTERNAME, optional env
+  DATA_BOAR_COMPLETAO_INVOKER for agent or ticket correlation) for ISO 27001 / LGPD-oriented traceability.
+
   By default, runs scripts/lab-completao-inventory-preflight.ps1 (15-day freshness) and lab-op-sync-and-collect.ps1
   when private LAB_SOFTWARE_INVENTORY.md / OPERATOR_SYSTEM_MAP.md are missing or stale - see LAB_COMPLETAO_RUNBOOK.md.
 
@@ -46,7 +63,9 @@ param(
     [switch] $SkipGitPullOnInventoryRefresh,
     [string] $LabGitRef = "",
     [switch] $SkipLabGitRefCheck,
-    [switch] $AlignLabClonesToLabGitRef
+    [switch] $AlignLabClonesToLabGitRef,
+    [switch] $SkipDataContractPreflight,
+    [switch] $SkipImagePreflight
 )
 
 $ErrorActionPreference = "Stop"
@@ -61,62 +80,6 @@ if ($HybridLabOpHighDensity173) {
 if (-not $RepoRoot) {
     $RepoRoot = (Get-Item $PSScriptRoot).Parent.FullName
 }
-$primaryManifest = Join-Path $RepoRoot "docs\private\homelab\lab-op-hosts.manifest.json"
-$fallbackManifest = Join-Path $RepoRoot "docs\private\homelab\lab-op-hosts.manifest.example.json"
-if (-not $ManifestPath) {
-    if (Test-Path -LiteralPath $primaryManifest) {
-        $ManifestPath = $primaryManifest
-    } elseif (Test-Path -LiteralPath $fallbackManifest) {
-        $ManifestPath = $fallbackManifest
-        Write-Warning "Using example manifest; copy to lab-op-hosts.manifest.json for real hosts."
-    }
-}
-if (-not $ManifestPath -or -not (Test-Path -LiteralPath $ManifestPath)) {
-    throw "Missing manifest: copy docs/private.example/homelab/lab-op-hosts.manifest.example.json to docs/private/homelab/lab-op-hosts.manifest.json"
-}
-
-if (-not $SkipInventoryPreflight) {
-    $preflight = Join-Path $RepoRoot "scripts\lab-completao-inventory-preflight.ps1"
-    if (Test-Path -LiteralPath $preflight) {
-        & $preflight -RepoRoot $RepoRoot -ManifestPath $ManifestPath -MaxAgeDays $InventoryMaxAgeDays -AutoRefresh -SkipFping:$SkipFping -SkipGitPullOnRefresh:$SkipGitPullOnInventoryRefresh
-    }
-}
-
-$manifest = Get-Content -LiteralPath $ManifestPath -Raw -Encoding utf8 | ConvertFrom-Json
-$outDir = Join-Path $RepoRoot "docs\private\homelab\reports"
-if ($manifest.outDir) {
-    $outDir = $manifest.outDir -replace "/", [IO.Path]::DirectorySeparatorChar
-    if (-not [IO.Path]::IsPathRooted($outDir)) {
-        $outDir = Join-Path $RepoRoot $outDir
-    }
-}
-New-Item -ItemType Directory -Force -Path $outDir | Out-Null
-
-$effectiveLabRef = $LabGitRef
-if (-not $effectiveLabRef -and $manifest.PSObject.Properties.Name -contains "completaoTargetRef" -and $manifest.completaoTargetRef) {
-    $effectiveLabRef = [string]$manifest.completaoTargetRef
-}
-if ($effectiveLabRef -and -not $SkipLabGitRefCheck) {
-    $ensureScript = Join-Path $RepoRoot "scripts\lab-op-git-ensure-ref.ps1"
-    if (-not (Test-Path -LiteralPath $ensureScript)) {
-        throw "Missing $ensureScript"
-    }
-    $ensureMode = "Check"
-    if ($AlignLabClonesToLabGitRef) {
-        $ensureMode = "Reset"
-    }
-    Write-Host "lab-completao-orchestrate: lab-op-git-ensure-ref ref=$effectiveLabRef mode=$ensureMode" -ForegroundColor Cyan
-    & $ensureScript -RepoRoot $RepoRoot -ManifestPath $ManifestPath -Ref $effectiveLabRef -Mode $ensureMode -SkipFping:$SkipFping
-    if ($LASTEXITCODE -ne 0) {
-        throw "lab-op-git-ensure-ref failed (ref=$effectiveLabRef mode=$ensureMode). Align LAB clones or use -SkipLabGitRefCheck. See docs/ops/LAB_COMPLETAO_RUNBOOK.md (Target git ref for reproducible completao)."
-    }
-}
-
-$stamp = Get-Date -Format "yyyyMMdd_HHmmss"
-$fping = Get-Command fping -ErrorAction SilentlyContinue
-
-$privArg = ""
-if ($Privileged) { $privArg = " --privileged" }
 
 function Get-SshHostname {
     param([string]$Alias)
@@ -171,13 +134,339 @@ function Build-Pi3bPassiveRemoteCmd {
     return "cd '$RepoPathEsc' && { echo '=== pi3b passive path (hardware: no Docker) ==='; if [ -x .venv/bin/python3 ]; then echo 'using .venv/bin/python3 -m databoar --help'; .venv/bin/python3 -m databoar --help 2>&1 | head -n 50 || true; elif command -v python3 >/dev/null 2>&1; then echo 'no .venv; trying python3 -m databoar --help'; python3 -m databoar --help 2>&1 | head -n 50 || true; else echo 'SKIP_NO_PYTHON_OR_VENV'; fi; echo '=== recent logs (journal/syslog) ==='; journalctl -n 120 --no-pager 2>/dev/null || true; test -r /var/log/syslog && tail -n 80 /var/log/syslog 2>/dev/null || true; test -r /var/log/messages && tail -n 80 /var/log/messages 2>/dev/null || true; df -h 2>/dev/null | head -n 24 || true; } 2>&1"
 }
 
+function Write-CompletaoOrchestrateEvent {
+    param(
+        [Parameter(Mandatory = $true)][string]$ReportPath,
+        [Parameter(Mandatory = $true)][string]$Phase,
+        [Parameter(Mandatory = $true)][string]$Status,
+        [string]$Message = "",
+        [string]$HostAlias = "",
+        [int]$ExitCode = 0,
+        [hashtable]$Detail = $null
+    )
+    $o = [ordered]@{
+        v        = 1
+        ts       = (Get-Date).ToUniversalTime().ToString("o")
+        phase    = $Phase
+        status   = $Status
+        message  = $Message
+        host     = $HostAlias
+        exitCode = $ExitCode
+    }
+    if ($null -ne $Detail -and $Detail.Count -gt 0) {
+        $o.detail = $Detail
+    }
+    $json = ($o | ConvertTo-Json -Compress -Depth 8)
+    $enc = New-Object System.Text.UTF8Encoding $false
+    [System.IO.File]::AppendAllText($ReportPath, $json + [Environment]::NewLine, $enc)
+}
+
+function Add-CompletaoHostConnectivityRecord {
+    param(
+        [Parameter(Mandatory = $true)][System.Collections.Generic.List[object]]$Records,
+        [Parameter(Mandatory = $true)][string]$Alias,
+        [bool]$SshProbeOk,
+        [Parameter(Mandatory = $true)][string]$Outcome,
+        [string]$LogFileName = "",
+        [double]$ElapsedSec = 0.0
+    )
+    $row = [ordered]@{
+        sshHost         = $Alias
+        ssh_probe_ok    = $SshProbeOk
+        outcome         = $Outcome
+        host_log        = $LogFileName
+        seconds_elapsed = [math]::Round([double]$ElapsedSec, 2)
+    }
+    [void]$Records.Add($row)
+}
+
+function Write-CompletaoLabResultJsonFiles {
+    param(
+        [Parameter(Mandatory = $true)][string]$OutDir,
+        [Parameter(Mandatory = $true)][string]$Stamp,
+        [Parameter(Mandatory = $true)][object]$Payload
+    )
+    $json = $Payload | ConvertTo-Json -Depth 14
+    $enc = New-Object System.Text.UTF8Encoding $false
+    $latest = Join-Path $OutDir "lab_result.json"
+    $stamped = Join-Path $OutDir "completao_${Stamp}_lab_result.json"
+    $statusAlias = Join-Path $OutDir "lab_status.json"
+    $tmpName = "lab_result." + [Guid]::NewGuid().ToString("n") + ".tmp"
+    $tmp = Join-Path $OutDir $tmpName
+    try {
+        [System.IO.File]::WriteAllText($tmp, $json, $enc)
+        if (Test-Path -LiteralPath $latest) {
+            Remove-Item -LiteralPath $latest -Force
+        }
+        Move-Item -LiteralPath $tmp -Destination $latest -Force
+    } catch {
+        if (Test-Path -LiteralPath $tmp) {
+            Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
+        }
+        throw
+    }
+    Copy-Item -LiteralPath $latest -Destination $stamped -Force
+    Copy-Item -LiteralPath $latest -Destination $statusAlias -Force
+}
+
+function Test-CompletaoSshProbe {
+    param([Parameter(Mandatory = $true)][string]$Alias)
+    $probeCmd = "ssh.exe -o BatchMode=yes -o ConnectTimeout=12 $Alias `"echo LABOP_SSH_OK`" 2>&1"
+    $probeText = Invoke-CmdCapture -CmdLine $probeCmd
+    return ($LASTEXITCODE -eq 0 -and $probeText -match "LABOP_SSH_OK")
+}
+
+function Get-CompletaoImageRefsFromManifest {
+    param($ManifestObj)
+    $list = New-Object System.Collections.Generic.List[string]
+    if (-not $ManifestObj) {
+        return ,$list.ToArray()
+    }
+    if ($ManifestObj.PSObject.Properties.Name -notcontains "completaoImageRefs") {
+        return ,$list.ToArray()
+    }
+    $raw = $ManifestObj.completaoImageRefs
+    if ($null -eq $raw) {
+        return ,$list.ToArray()
+    }
+    foreach ($x in @($raw)) {
+        $s = [string]$x
+        if ($s) {
+            $list.Add($s)
+        }
+    }
+    return ,$list.ToArray()
+}
+
+function Get-CompletaoImageProbeAlias {
+    param($ManifestObj)
+    if (-not $ManifestObj) {
+        return ""
+    }
+    if ($ManifestObj.PSObject.Properties.Name -contains "completaoImageProbeSshHost" -and $ManifestObj.completaoImageProbeSshHost) {
+        return [string]$ManifestObj.completaoImageProbeSshHost
+    }
+    foreach ($h2 in $ManifestObj.hosts) {
+        if ($h2.sshHost) {
+            return [string]$h2.sshHost
+        }
+    }
+    return ""
+}
+
+function Test-CompletaoRemoteDockerImage {
+    param(
+        [Parameter(Mandatory = $true)][string]$Alias,
+        [Parameter(Mandatory = $true)][string]$ImageRef
+    )
+    if ($ImageRef -notmatch '^[a-zA-Z0-9_.\/:@-]+$') {
+        return $false
+    }
+    $ir = $ImageRef -replace "'", "'\''"
+    $inner = "if command -v docker >/dev/null 2>&1 && docker image inspect '$ir' >/dev/null 2>&1; then echo COMPLETAO_IMG_OK; elif command -v podman >/dev/null 2>&1 && podman image inspect '$ir' >/dev/null 2>&1; then echo COMPLETAO_IMG_OK; else echo COMPLETAO_IMG_MISSING; fi"
+    $innerEsc = $inner.Replace('"', '\"')
+    $remoteLine = "ssh.exe -o BatchMode=yes -o ConnectTimeout=45 $Alias `"$innerEsc`" 2>&1"
+    $out = Invoke-CmdCapture -CmdLine $remoteLine
+    return ($LASTEXITCODE -eq 0 -and $out -match "COMPLETAO_IMG_OK")
+}
+
+$primaryManifest = Join-Path $RepoRoot "docs\private\homelab\lab-op-hosts.manifest.json"
+$fallbackManifest = Join-Path $RepoRoot "docs\private\homelab\lab-op-hosts.manifest.example.json"
+if (-not $ManifestPath) {
+    if (Test-Path -LiteralPath $primaryManifest) {
+        $ManifestPath = $primaryManifest
+    } elseif (Test-Path -LiteralPath $fallbackManifest) {
+        $ManifestPath = $fallbackManifest
+        Write-Warning "Using example manifest; copy to lab-op-hosts.manifest.json for real hosts."
+    }
+}
+if (-not $ManifestPath -or -not (Test-Path -LiteralPath $ManifestPath)) {
+    throw "Missing manifest: copy docs/private.example/homelab/lab-op-hosts.manifest.example.json to docs/private/homelab/lab-op-hosts.manifest.json"
+}
+
+try {
+    $manifest = Get-Content -LiteralPath $ManifestPath -Raw -Encoding utf8 | ConvertFrom-Json
+} catch {
+    throw "Invalid lab manifest JSON: $($_.Exception.Message)"
+}
+
+$outDir = Join-Path $RepoRoot "docs\private\homelab\reports"
+if ($manifest.outDir) {
+    $outDir = $manifest.outDir -replace "/", [IO.Path]::DirectorySeparatorChar
+    if (-not [IO.Path]::IsPathRooted($outDir)) {
+        $outDir = Join-Path $RepoRoot $outDir
+    }
+}
+New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+$stamp = Get-Date -Format "yyyyMMdd_HHmmss"
+$eventsPath = Join-Path $outDir "completao_${stamp}_orchestrate_events.jsonl"
+Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "orchestrate" -Status "ok" -Message "start"
+
+$labResultStarted = Get-Date
+$LabHostRecords = New-Object System.Collections.Generic.List[object]
+$LabResultPhases = [ordered]@{
+    inventory_preflight     = "not_run"
+    lab_git_ensure_ref      = "not_run"
+    data_contract_preflight = "not_run"
+    image_preflight         = "not_run"
+    host_smoke_loop        = "pending"
+}
+
+if (-not $SkipInventoryPreflight) {
+    $preflight = Join-Path $RepoRoot "scripts\lab-completao-inventory-preflight.ps1"
+    if (Test-Path -LiteralPath $preflight) {
+        try {
+            & $preflight -RepoRoot $RepoRoot -ManifestPath $ManifestPath -MaxAgeDays $InventoryMaxAgeDays -AutoRefresh -SkipFping:$SkipFping -SkipGitPullOnRefresh:$SkipGitPullOnInventoryRefresh
+            Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "inventory_preflight" -Status "ok" -Message "completed"
+            $LabResultPhases.inventory_preflight = "ok"
+        } catch {
+            Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "inventory_preflight" -Status "failed" -Message $_.Exception.Message
+            $LabResultPhases.inventory_preflight = "failed"
+            throw
+        }
+    } else {
+        Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "inventory_preflight" -Status "skipped" -Message "script_missing"
+        $LabResultPhases.inventory_preflight = "skipped_missing_script"
+    }
+} else {
+    Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "inventory_preflight" -Status "skipped" -Message "SkipInventoryPreflight_switch"
+    $LabResultPhases.inventory_preflight = "skipped_switch"
+}
+
+$effectiveLabRef = $LabGitRef
+if (-not $effectiveLabRef -and $manifest.PSObject.Properties.Name -contains "completaoTargetRef" -and $manifest.completaoTargetRef) {
+    $effectiveLabRef = [string]$manifest.completaoTargetRef
+}
+if ($effectiveLabRef -and -not $SkipLabGitRefCheck) {
+    $ensureScript = Join-Path $RepoRoot "scripts\lab-op-git-ensure-ref.ps1"
+    if (-not (Test-Path -LiteralPath $ensureScript)) {
+        throw "Missing $ensureScript"
+    }
+    $ensureMode = "Check"
+    if ($AlignLabClonesToLabGitRef) {
+        $ensureMode = "Reset"
+    }
+    Write-Host "lab-completao-orchestrate: lab-op-git-ensure-ref ref=$effectiveLabRef mode=$ensureMode" -ForegroundColor Cyan
+    try {
+        & $ensureScript -RepoRoot $RepoRoot -ManifestPath $ManifestPath -Ref $effectiveLabRef -Mode $ensureMode -SkipFping:$SkipFping
+        if ($LASTEXITCODE -ne 0) {
+            throw "lab-op-git-ensure-ref failed (ref=$effectiveLabRef mode=$ensureMode). Align LAB clones or use -SkipLabGitRefCheck. See docs/ops/LAB_COMPLETAO_RUNBOOK.md (Target git ref for reproducible completao)."
+        }
+        Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "lab_git_ensure_ref" -Status "ok" -Message "completed" -Detail @{ ref = $effectiveLabRef; mode = $ensureMode }
+        $LabResultPhases.lab_git_ensure_ref = "ok"
+    } catch {
+        Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "lab_git_ensure_ref" -Status "failed" -Message $_.Exception.Message -Detail @{ ref = $effectiveLabRef; mode = $ensureMode }
+        $LabResultPhases.lab_git_ensure_ref = "failed"
+        throw
+    }
+} elseif ($effectiveLabRef -and $SkipLabGitRefCheck) {
+    Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "lab_git_ensure_ref" -Status "skipped" -Message "SkipLabGitRefCheck_switch"
+    $LabResultPhases.lab_git_ensure_ref = "skipped_switch"
+} else {
+    $LabResultPhases.lab_git_ensure_ref = "not_configured"
+}
+
+if (-not $SkipDataContractPreflight) {
+    $contractsRel = ""
+    if ($manifest.PSObject.Properties.Name -contains "completaoDataContractsPath" -and $manifest.completaoDataContractsPath) {
+        $contractsRel = [string]$manifest.completaoDataContractsPath
+    }
+    if (-not $contractsRel) {
+        $LabResultPhases.data_contract_preflight = "skipped_no_yaml_configured"
+    }
+    if ($contractsRel) {
+        $contractsPath = if ([IO.Path]::IsPathRooted($contractsRel)) {
+            $contractsRel
+        } else {
+            Join-Path $RepoRoot ($contractsRel -replace "/", [IO.Path]::DirectorySeparatorChar)
+        }
+        if (-not (Test-Path -LiteralPath $contractsPath)) {
+            throw "completaoDataContractsPath is set but file not found: $contractsPath. Create the YAML under docs/private/homelab/ or remove the manifest key. See docs/private.example/homelab/completao_data_contracts.example.yaml"
+        }
+        $checker = Join-Path $RepoRoot "scripts\lab_completao_data_contract_check.py"
+        if (-not (Test-Path -LiteralPath $checker)) {
+            throw "Missing $checker"
+        }
+        Write-Host "lab-completao-orchestrate: data contract preflight -> $contractsPath" -ForegroundColor Cyan
+        try {
+            Push-Location $RepoRoot
+            try {
+                & uv run python $checker --contracts $contractsPath
+            } finally {
+                Pop-Location
+            }
+            if ($LASTEXITCODE -ne 0) {
+                throw "Data contract check failed (exit $LASTEXITCODE). Fix lab schema or env URLs, or use -SkipDataContractPreflight to bypass."
+            }
+            Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "data_contract_preflight" -Status "ok" -Message "completed" -Detail @{ contractsPath = $contractsPath }
+            $LabResultPhases.data_contract_preflight = "ok"
+        } catch {
+            Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "data_contract_preflight" -Status "failed" -Message $_.Exception.Message -Detail @{ contractsPath = $contractsPath }
+            $LabResultPhases.data_contract_preflight = "failed"
+            throw
+        }
+    }
+} else {
+    Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "data_contract_preflight" -Status "skipped" -Message "SkipDataContractPreflight_switch"
+    $LabResultPhases.data_contract_preflight = "skipped_switch"
+}
+
+if (-not $SkipImagePreflight) {
+    $imgRefs = @(Get-CompletaoImageRefsFromManifest -ManifestObj $manifest)
+    $hasImageRefsKey = ($manifest.PSObject.Properties.Name -contains "completaoImageRefs")
+    if ($hasImageRefsKey -and $imgRefs.Count -eq 0) {
+        Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "skipped" -Message "completaoImageRefs_empty_array"
+        $LabResultPhases.image_preflight = "skipped_empty_array"
+    }
+    if ($imgRefs.Count -gt 0) {
+        $probeHost = Get-CompletaoImageProbeAlias -ManifestObj $manifest
+        if (-not $probeHost) {
+            Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "failed" -Message "no_ssh_host_for_image_probe"
+            $LabResultPhases.image_preflight = "failed"
+            throw "completaoImageRefs is set but manifest has no sshHost. Add manifest key completaoImageProbeSshHost or sshHost entries."
+        }
+        if (-not (Test-CompletaoSshProbe -Alias $probeHost)) {
+            Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "failed" -Message "ssh_probe_failed" -HostAlias $probeHost
+            $LabResultPhases.image_preflight = "failed"
+            throw "completaoImageRefs: SSH probe failed for image preflight host $probeHost"
+        }
+        foreach ($ir in $imgRefs) {
+            if (-not (Test-CompletaoRemoteDockerImage -Alias $probeHost -ImageRef $ir)) {
+                Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "failed" -Message "image_missing" -HostAlias $probeHost -Detail @{ image = $ir }
+                $LabResultPhases.image_preflight = "failed"
+                throw "completaoImageRefs: image not present on ${probeHost}: $ir (docker/podman image inspect). Pull on lab or use -SkipImagePreflight."
+            }
+        }
+        Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "ok" -Message "all_images_present" -HostAlias $probeHost -Detail @{ images = ($imgRefs -join ",") }
+        $LabResultPhases.image_preflight = "ok"
+    }
+    if ($LabResultPhases.image_preflight -eq "not_run") {
+        $LabResultPhases.image_preflight = "not_configured"
+    }
+} else {
+    Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "skipped" -Message "SkipImagePreflight_switch"
+    $LabResultPhases.image_preflight = "skipped_switch"
+}
+
+$fping = Get-Command fping -ErrorAction SilentlyContinue
+
+$privArg = ""
+if ($Privileged) { $privArg = " --privileged" }
+
 $master = [System.Text.StringBuilder]::new()
 [void]$master.AppendLine("=== lab-completao-orchestrate $stamp ===")
 [void]$master.AppendLine("repo: $RepoRoot")
 
+$hostLoopStarted = Get-Date
+$LabResultPhases.host_smoke_loop = "running"
+
 foreach ($h in $manifest.hosts) {
     $alias = $h.sshHost
     if (-not $alias) { continue }
+
+    try {
+    $HostRecordAdded = $false
+    $hostStopwatch = [Diagnostics.Stopwatch]::StartNew()
 
     $healthUrl = ""
     if ($h.PSObject.Properties.Name -contains "completaoHealthUrl" -and $h.completaoHealthUrl) {
@@ -214,14 +503,16 @@ foreach ($h in $manifest.hosts) {
         }
     }
 
-    $probeCmd = "ssh.exe -o BatchMode=yes -o ConnectTimeout=12 $alias `"echo LABOP_SSH_OK`" 2>&1"
-    $probeText = Invoke-CmdCapture -CmdLine $probeCmd
-    if ($LASTEXITCODE -ne 0 -or $probeText -notmatch "LABOP_SSH_OK") {
+    if (-not (Test-CompletaoSshProbe -Alias $alias)) {
         Write-Warning "SSH probe failed for $alias - skip (skip-on-failure)."
         [void]$master.AppendLine("SSH probe FAILED (skip-on-failure)")
         [void]$hostLogSb.AppendLine("SSH probe FAILED (skip-on-failure)")
         $safe = ($alias -replace '[^\w\-\.]', '_')
-        Set-Content -LiteralPath (Join-Path $outDir "${safe}_${stamp}_completao_host_smoke.log") -Value $hostLogSb.ToString() -Encoding utf8
+        $logfn = "${safe}_${stamp}_completao_host_smoke.log"
+        Set-Content -LiteralPath (Join-Path $outDir $logfn) -Value $hostLogSb.ToString() -Encoding utf8
+        $hostStopwatch.Stop()
+        Add-CompletaoHostConnectivityRecord -Records $LabHostRecords -Alias $alias -SshProbeOk $false -Outcome "ssh_unreachable" -LogFileName $logfn -ElapsedSec $hostStopwatch.Elapsed.TotalSeconds
+        $HostRecordAdded = $true
         continue
     }
 
@@ -237,7 +528,11 @@ foreach ($h in $manifest.hosts) {
         [void]$master.AppendLine("REPO_HEALTH_FAIL skip-on-failure firstRepo=$firstRepo")
         [void]$hostLogSb.AppendLine("REPO_HEALTH_FAIL skip-on-failure firstRepo=$firstRepo")
         $safe = ($alias -replace '[^\w\-\.]', '_')
-        Set-Content -LiteralPath (Join-Path $outDir "${safe}_${stamp}_completao_host_smoke.log") -Value $hostLogSb.ToString() -Encoding utf8
+        $logfn = "${safe}_${stamp}_completao_host_smoke.log"
+        Set-Content -LiteralPath (Join-Path $outDir $logfn) -Value $hostLogSb.ToString() -Encoding utf8
+        $hostStopwatch.Stop()
+        Add-CompletaoHostConnectivityRecord -Records $LabHostRecords -Alias $alias -SshProbeOk $true -Outcome "repo_path_unreachable" -LogFileName $logfn -ElapsedSec $hostStopwatch.Elapsed.TotalSeconds
+        $HostRecordAdded = $true
         continue
     }
 
@@ -262,7 +557,11 @@ foreach ($h in $manifest.hosts) {
             [void]$master.AppendLine("PI3B_HEALTH_FAIL skip-on-failure path=$piRp")
             [void]$hostLogSb.AppendLine("PI3B_HEALTH_FAIL skip-on-failure path=$piRp")
             $safe = ($alias -replace '[^\w\-\.]', '_')
-            Set-Content -LiteralPath (Join-Path $outDir "${safe}_${stamp}_completao_host_smoke.log") -Value $hostLogSb.ToString() -Encoding utf8
+            $logfn = "${safe}_${stamp}_completao_host_smoke.log"
+            Set-Content -LiteralPath (Join-Path $outDir $logfn) -Value $hostLogSb.ToString() -Encoding utf8
+            $hostStopwatch.Stop()
+            Add-CompletaoHostConnectivityRecord -Records $LabHostRecords -Alias $alias -SshProbeOk $true -Outcome "pi3b_base_unreachable" -LogFileName $logfn -ElapsedSec $hostStopwatch.Elapsed.TotalSeconds
+            $HostRecordAdded = $true
             continue
         }
         $rpEsc = $piRp -replace "'", "'\''"
@@ -290,6 +589,10 @@ foreach ($h in $manifest.hosts) {
         $oneFile = Join-Path $outDir "${safe}_${stamp}_completao_host_smoke.log"
         Set-Content -LiteralPath $oneFile -Value $hostLogSb.ToString() -Encoding utf8
         Write-Host "Wrote $oneFile (pi3b passive path)" -ForegroundColor Green
+        $hostStopwatch.Stop()
+        $logfn = "${safe}_${stamp}_completao_host_smoke.log"
+        Add-CompletaoHostConnectivityRecord -Records $LabHostRecords -Alias $alias -SshProbeOk $true -Outcome "pi3b_passive_completed" -LogFileName $logfn -ElapsedSec $hostStopwatch.Elapsed.TotalSeconds
+        $HostRecordAdded = $true
         continue
     }
 
@@ -304,7 +607,7 @@ foreach ($h in $manifest.hosts) {
         $skipEsc = ""
         if ($skipEngineImport) { $skipEsc = " --skip-engine-import" }
         # Require an up-to-date clone (script ships on main); clear message if missing after git sync.
-        $remoteCmd = "cd '$rpEsc' && if [ ! -f scripts/lab-completao-host-smoke.sh ]; then echo 'MISSING_SCRIPT: scripts/lab-completao-host-smoke.sh not in clone - on the host: cd to repo, git fetch origin && integrate origin/main (see docs/ops/LAB_COMPLETAO_RUNBOOK.md)'; exit 3; fi && bash scripts/lab-completao-host-smoke.sh$privArg$healthEsc$skipEsc 2>&1"
+        $remoteCmd = "cd '$rpEsc' && if [ ! -f scripts/lab-completao-host-smoke.sh ]; then echo 'MISSING_SCRIPT: scripts/lab-completao-host-smoke.sh not in clone - on the host: cd to repo, git fetch origin && integrate origin/main (see docs/ops/LAB_COMPLETAO_RUNBOOK.md)'; exit 2; fi && bash scripts/lab-completao-host-smoke.sh$privArg$healthEsc$skipEsc 2>&1"
         $remoteCmdEsc = $remoteCmd.Replace('"', '\"')
         $remoteLine = "ssh.exe -o BatchMode=yes -o ConnectTimeout=180 $alias `"$remoteCmdEsc`" 2>&1"
         $remoteOut = Invoke-CmdCapture -CmdLine $remoteLine
@@ -331,9 +634,258 @@ foreach ($h in $manifest.hosts) {
     $oneFile = Join-Path $outDir "${safe}_${stamp}_completao_host_smoke.log"
     Set-Content -LiteralPath $oneFile -Value $hostLogSb.ToString() -Encoding utf8
     Write-Host "Wrote $oneFile" -ForegroundColor Green
+    Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "host_smoke" -Status "ok" -Message "host_log_written" -HostAlias $alias
+    $hostStopwatch.Stop()
+    $logfn = "${safe}_${stamp}_completao_host_smoke.log"
+    Add-CompletaoHostConnectivityRecord -Records $LabHostRecords -Alias $alias -SshProbeOk $true -Outcome "smoke_log_written" -LogFileName $logfn -ElapsedSec $hostStopwatch.Elapsed.TotalSeconds
+    $HostRecordAdded = $true
+
+    } catch {
+        if (-not $HostRecordAdded) {
+            $hostStopwatch.Stop()
+            Add-CompletaoHostConnectivityRecord -Records $LabHostRecords -Alias $alias -SshProbeOk $false -Outcome "host_exception" -LogFileName "" -ElapsedSec $hostStopwatch.Elapsed.TotalSeconds
+        }
+        Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "host_smoke" -Status "failed" -Message $_.Exception.Message -HostAlias $alias
+        Write-Warning "lab-completao-orchestrate: unexpected error for host $alias : $($_.Exception.Message)"
+        [void]$master.AppendLine("HOST_EXCEPTION $alias : $($_.Exception.Message)")
+    }
 }
+
+$manifestHostCount = 0
+if ($manifest.hosts) {
+    $manifestHostCount = @($manifest.hosts).Count
+}
+Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "summary" -Status "ok" -Message "orchestrate_host_loop_finished" -Detail @{ hostsInManifest = $manifestHostCount; eventsPath = $eventsPath }
 
 $allFile = Join-Path $outDir "completao_${stamp}_allhosts.log"
 Set-Content -LiteralPath $allFile -Value $master.ToString() -Encoding utf8
 Write-Host "Wrote consolidated $allFile" -ForegroundColor Green
+
+$hostLoopSec = [math]::Round(((Get-Date) - $hostLoopStarted).TotalSeconds, 2)
+$LabResultPhases.host_smoke_loop = "completed"
+$withSkips = @($LabHostRecords | Where-Object { $_.outcome -ne "smoke_log_written" -and $_.outcome -ne "pi3b_passive_completed" })
+if ($withSkips.Count -gt 0) {
+    $LabResultPhases.host_smoke_loop = "completed_with_skips"
+}
+
+$connSummary = "no_host_records"
+if ($LabHostRecords.Count -gt 0) {
+    $bad = @($LabHostRecords | Where-Object { $_.outcome -match "unreachable|exception|repo_path|base_unreachable" })
+    if ($bad.Count -eq 0) {
+        $connSummary = "all_hosts_completed_paths_ok"
+    } else {
+        $connSummary = "degraded"
+    }
+}
+
+$perHostSec = [ordered]@{}
+foreach ($rec in $LabHostRecords) {
+    if ($rec.sshHost) {
+        $perHostSec[$rec.sshHost] = $rec.seconds_elapsed
+    }
+}
+
+$wallAll = [math]::Round(((Get-Date) - $labResultStarted).TotalSeconds, 2)
+
+$orchestrationChecks = New-Object System.Collections.Generic.List[object]
+foreach ($stepName in @(
+        "inventory_preflight",
+        "lab_git_ensure_ref",
+        "data_contract_preflight",
+        "image_preflight",
+        "host_smoke_loop"
+    )) {
+    $stepResult = [string]$LabResultPhases[$stepName]
+    [void]$orchestrationChecks.Add([ordered]@{ step = $stepName; result = $stepResult })
+}
+
+$overallStatus = "completed"
+if ($connSummary -eq "degraded") {
+    $overallStatus = "degraded"
+} elseif ($LabResultPhases.host_smoke_loop -eq "completed_with_skips") {
+    $overallStatus = "completed_with_skips"
+}
+
+$semanticExit = 0
+$semanticReason = "all_hosts_ok_no_degraded_connectivity"
+if ($overallStatus -eq "degraded") {
+    $semanticExit = 1
+    $semanticReason = "connectivity_degraded_or_host_path_failure"
+} elseif ($overallStatus -eq "completed_with_skips") {
+    $semanticExit = 1
+    $semanticReason = "completed_with_unreachable_or_skipped_hosts"
+}
+
+$invokerCorrelation = ""
+if ($env:DATA_BOAR_COMPLETAO_INVOKER) {
+    $invokerCorrelation = [string]$env:DATA_BOAR_COMPLETAO_INVOKER
+}
+
+$auditTrail = [ordered]@{
+    schema                  = "DATA_BOAR_LAB_AUDIT_TRAIL_v1"
+    recorded_at_utc         = (Get-Date).ToUniversalTime().ToString("o")
+    windows_session_user    = $env:USERNAME
+    windows_computer_name   = $env:COMPUTERNAME
+    powershell_pid          = $PID
+    invoker_correlation     = $invokerCorrelation
+    invoker_correlation_env = "DATA_BOAR_COMPLETAO_INVOKER"
+    note                    = "Lab orchestration traceability; not a legal attestation. Set DATA_BOAR_COMPLETAO_INVOKER for agent or ticket id when automating."
+}
+
+$exitSemantic = [ordered]@{
+    contract = "DATA_BOAR_COMPLETAO_EXIT_v1"
+    value    = $semanticExit
+    reason   = $semanticReason
+    meanings = [ordered]@{
+        "0" = "full_success"
+        "1" = "infrastructure_reachability_permission_or_partial_lab_skip"
+        "2" = "data_contract_schema_repo_clone_or_config_shape"
+        "3" = "compliance_violation_signal_reserved_for_scanners"
+    }
+}
+
+$labPayload = [ordered]@{
+    schemaVersion          = 1
+    kind                   = "data_boar_lab_completao_orchestrate"
+    run_stamp              = $stamp
+    generated_at_utc       = (Get-Date).ToUniversalTime().ToString("o")
+    repo_folder_name       = (Split-Path $RepoRoot -Leaf)
+    manifest_file_name     = (Split-Path $ManifestPath -Leaf)
+    audit_trail            = $auditTrail
+    exit_code_semantic     = $exitSemantic
+    overall_status         = $overallStatus
+    phases                 = $LabResultPhases
+    orchestration_checks   = @($orchestrationChecks.ToArray())
+        idempotency            = @{
+        latest_json_atomically_overwritten = @("lab_result.json", "lab_status.json", "GRC_EXECUTIVE_REPORT.json", "GRC_EXECUTIVE_REPORT_remediation.xlsx", "GRC_EXECUTIVE_REPORT_executive.pdf")
+        stamped_artifacts_per_run            = @("completao_<stamp>_orchestrate_events.jsonl", "completao_<stamp>_allhosts.log", "completao_<stamp>_lab_result.json", "completao_<stamp>_GRC_EXECUTIVE_REPORT.json", "completao_<stamp>_GRC_EXECUTIVE_REPORT_remediation.xlsx", "completao_<stamp>_GRC_EXECUTIVE_REPORT_executive.pdf", "<host>_<stamp>_completao_host_smoke.log")
+        note                                 = "Re-running with the same LAB state and flags yields the same phase keys; timestamps and stamped filenames always change. GRC JSON is best-effort after lab_result (see scripts/generate_grc_report.py). When GRC succeeds, scripts/export_reports.py writes GRC_EXECUTIVE_REPORT_remediation.xlsx and GRC_EXECUTIVE_REPORT_executive.pdf (stamped copies alongside). Remote git/inspect side effects are outside this script."
+    }
+    connectivity_status    = @{
+        summary      = $connSummary
+        host_records = @($LabHostRecords.ToArray())
+    }
+    vulnerabilities_found    = @()
+    vulnerability_scan       = @{
+        source = "not_run_by_orchestrator"
+        note   = "No CVE scanner or product vulnerability aggregate in this orchestrator; extend with offline tools or future hooks."
+    }
+    performance_metrics      = @{
+        orchestrate_wall_clock_sec       = $wallAll
+        host_smoke_loop_wall_clock_sec   = $hostLoopSec
+        per_host_seconds                 = [hashtable]$perHostSec
+        privileged                       = [bool]$Privileged
+    }
+    run_flags                = [ordered]@{
+        SkipInventoryPreflight     = [bool]$SkipInventoryPreflight
+        SkipDataContractPreflight    = [bool]$SkipDataContractPreflight
+        SkipImagePreflight           = [bool]$SkipImagePreflight
+        SkipLabGitRefCheck           = [bool]$SkipLabGitRefCheck
+        SkipFping                    = [bool]$SkipFping
+        AlignLabClonesToLabGitRef    = [bool]$AlignLabClonesToLabGitRef
+    }
+    artifacts                = [ordered]@{
+        orchestrate_events_jsonl = (Split-Path $eventsPath -Leaf)
+        allhosts_log             = (Split-Path $allFile -Leaf)
+        lab_result_latest        = "lab_result.json"
+        lab_status_latest        = "lab_status.json"
+        lab_result_stamped       = "completao_${stamp}_lab_result.json"
+        grc_executive_latest     = "GRC_EXECUTIVE_REPORT.json"
+        grc_executive_stamped    = "completao_${stamp}_GRC_EXECUTIVE_REPORT.json"
+    }
+    agent_readable_hint      = "Compare this file to a prior copy under docs/private/homelab/reports/; see docs/ops/LAB_COMPLETAO_RUNBOOK.md."
+}
+
+Write-CompletaoLabResultJsonFiles -OutDir $outDir -Stamp $stamp -Payload $labPayload
+Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "lab_result" -Status "ok" -Message "wrote_lab_result_json" -Detail @{ lab_result_latest = "lab_result.json"; lab_status_latest = "lab_status.json"; lab_result_stamped = "completao_${stamp}_lab_result.json" }
+
+Write-Host "[>] Generating GRC executive report..." -ForegroundColor Yellow
+$scanResultsPrivate = Join-Path $RepoRoot "docs\private\homelab\data\raw_scan_results.json"
+$grcReportLatest = Join-Path $outDir "GRC_EXECUTIVE_REPORT.json"
+$grcReportStamped = Join-Path $outDir "completao_${stamp}_GRC_EXECUTIVE_REPORT.json"
+$labResultLatest = Join-Path $outDir "lab_result.json"
+$genScript = Join-Path $RepoRoot "scripts\generate_grc_report.py"
+$dataDirPrivate = Join-Path $RepoRoot "docs\private\homelab\data"
+if (-not (Test-Path -LiteralPath $dataDirPrivate)) {
+    New-Item -ItemType Directory -Force -Path $dataDirPrivate | Out-Null
+}
+try {
+    Push-Location $RepoRoot
+    try {
+        $pyArgs = @(
+            $genScript,
+            "--output",
+            $grcReportLatest,
+            "--lab-result",
+            $labResultLatest
+        )
+        if (Test-Path -LiteralPath $scanResultsPrivate) {
+            $pyArgs = @(
+                $genScript,
+                "--input",
+                $scanResultsPrivate,
+                "--output",
+                $grcReportLatest,
+                "--lab-result",
+                $labResultLatest
+            )
+        }
+        & uv run python @pyArgs
+        if ($LASTEXITCODE -ne 0) {
+            throw "generate_grc_report.py failed exit=$LASTEXITCODE"
+        }
+    } finally {
+        Pop-Location
+    }
+    if (Test-Path -LiteralPath $grcReportLatest) {
+        Copy-Item -LiteralPath $grcReportLatest -Destination $grcReportStamped -Force
+    }
+    Write-Host "[OK] GRC executive report generated." -ForegroundColor Green
+    Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "grc_executive_report" -Status "ok" -Message "written" -Detail @{ latest = (Split-Path $grcReportLatest -Leaf); stamped = (Split-Path $grcReportStamped -Leaf) }
+
+    if (Test-Path -LiteralPath $grcReportLatest) {
+        try {
+            $exportScript = Join-Path $RepoRoot "scripts\export_reports.py"
+            Write-Host "[>] Exporting PDF and XLSX artifacts from GRC JSON..." -ForegroundColor Cyan
+            Push-Location $RepoRoot
+            try {
+                & uv run python $exportScript --input $grcReportLatest
+                if ($LASTEXITCODE -ne 0) {
+                    throw "export_reports.py failed exit=$LASTEXITCODE"
+                }
+            } finally {
+                Pop-Location
+            }
+            $grcXlsxLatest = Join-Path $outDir "GRC_EXECUTIVE_REPORT_remediation.xlsx"
+            $grcPdfLatest = Join-Path $outDir "GRC_EXECUTIVE_REPORT_executive.pdf"
+            $grcXlsxStamped = Join-Path $outDir "completao_${stamp}_GRC_EXECUTIVE_REPORT_remediation.xlsx"
+            $grcPdfStamped = Join-Path $outDir "completao_${stamp}_GRC_EXECUTIVE_REPORT_executive.pdf"
+            if (Test-Path -LiteralPath $grcXlsxLatest) {
+                Copy-Item -LiteralPath $grcXlsxLatest -Destination $grcXlsxStamped -Force
+            }
+            if (Test-Path -LiteralPath $grcPdfLatest) {
+                Copy-Item -LiteralPath $grcPdfLatest -Destination $grcPdfStamped -Force
+            }
+            Write-Host "[OK] GRC PDF and XLSX export finished." -ForegroundColor Green
+            Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "grc_export_artifacts" -Status "ok" -Message "written" -Detail @{
+                xlsx_latest  = (Split-Path $grcXlsxLatest -Leaf)
+                pdf_latest   = (Split-Path $grcPdfLatest -Leaf)
+                xlsx_stamped = (Split-Path $grcXlsxStamped -Leaf)
+                pdf_stamped  = (Split-Path $grcPdfStamped -Leaf)
+            }
+        } catch {
+            Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "grc_export_artifacts" -Status "failed" -Message $_.Exception.Message
+            Write-Warning "GRC PDF/XLSX export skipped or failed: $($_.Exception.Message)"
+        }
+    }
+
+    Write-Host "[i] Optional DashBOARd: set DATA_BOAR_GRC_JSON to the GRC JSON path, then streamlit run app\dashboard.py (uv sync --extra grc-dashboard)." -ForegroundColor Magenta
+} catch {
+    Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "grc_executive_report" -Status "failed" -Message $_.Exception.Message
+    Write-Warning "GRC executive report skipped or failed: $($_.Exception.Message)"
+}
+Write-Host "[FINISH] Completao cycle closed. Review reports (including GRC JSON) before commit." -ForegroundColor Cyan
+
 Write-Host "Append lessons learned using docs/private/homelab/COMPLETAO_SESSION_TEMPLATE.pt_BR.md" -ForegroundColor DarkGray
+
+exit $semanticExit

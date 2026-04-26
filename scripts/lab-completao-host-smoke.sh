@@ -4,6 +4,12 @@
 # Run from repo root: bash scripts/lab-completao-host-smoke.sh [--privileged] [--health-url URL]
 # See docs/ops/LAB_COMPLETAO_RUNBOOK.md and docs/ops/LAB_SMOKE_MULTI_HOST.md.
 #
+# Exit codes (DATA_BOAR_COMPLETAO_EXIT_v1 — same contract as docs/ops/LAB_COMPLETAO_RUNBOOK.md):
+#   0 — completed diagnostic bundle (success; individual steps may log FAILED inside the transcript).
+#   1 — reserved for future infra-hard-fail fast-path (network/tool missing when a gate requires it).
+#   2 — invalid invocation / unknown CLI argument (contract violation).
+#   3 — reserved for compliance-violation signals when a scanner hook is wired to this script.
+#
 # Privileged mode uses sudo -n for read-only snapshots (firewall/security tools) when available.
 # For non-interactive SSH, configure NOPASSWD narrowly — docs/private/homelab/LABOP_COMPLETÃO_SUDOERS.pt_BR.md
 
@@ -151,3 +157,4 @@ if [[ "$LC_PRIV" == "1" ]]; then
 fi
 
 echo "=== lab-completao-host-smoke END ==="
+exit 0
