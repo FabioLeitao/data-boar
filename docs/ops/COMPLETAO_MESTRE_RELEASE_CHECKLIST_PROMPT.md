@@ -14,6 +14,19 @@ Preserve the operator’s **full “SRE lead / release validation” chat prompt
 4. **Cold start + personas:** **[`OPERATOR_AGENT_COLD_START_LADDER.md`](OPERATOR_AGENT_COLD_START_LADDER.md)** · **[`LAB_OP_HOST_PERSONAS.md`](LAB_OP_HOST_PERSONAS.md)** stay the mental map for ENT / PRO / edge / bridge.
 5. **Session token:** first chat line remains **`completao`** (English-only taxonomy). This document is **not** a substitute for **`session-mode-keywords.mdc`**.
 
+## Lab telemetry and exit codes (`DATA_BOAR_COMPLETAO_EXIT_v1`)
+
+When interpreting **`lab-completao-orchestrate.ps1`** (or companion bash) results **without** re-reading full logs:
+
+| Exit code | Meaning (lab / release gate) |
+| --- | --- |
+| **0** | Full success for the success-path contract (orchestrator: all hosts completed and connectivity summary is not **degraded**). |
+| **1** | Infrastructure / reachability / permission class (SSH probe failure, image pull path blocked, empty DB URL env, DB TCP/auth errors from **`lab_completao_data_contract_check.py`**, orchestrator **degraded** or **completed_with_skips**). |
+| **2** | Data or contract shape (YAML/JSON manifest errors, missing required DB columns, clone missing **`lab-completao-host-smoke.sh`** — repo integration drift). |
+| **3** | Reserved for **compliance violation** signals when a scanner or policy hook reports a governed breach (not emitted by baseline host smoke today). |
+
+**Machine-readable fields:** **`docs/private/homelab/reports/lab_result.json`** (and **`lab_status.json`**) include **`exit_code_semantic`** (contract id + value + reason + meaning table) and **`audit_trail`** (Windows session user, computer name, PID, optional **`DATA_BOAR_COMPLETAO_INVOKER`** for agent or ticket correlation). See **[`LAB_COMPLETAO_RUNBOOK.md`](LAB_COMPLETAO_RUNBOOK.md)**.
+
 ---
 
 ## Verbatim operator prompt (v1.7.3 — 2026 archive)

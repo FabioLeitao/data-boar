@@ -10,6 +10,19 @@ Guardar o **prompt completo** de validação **1.7.3** (papel SRE / Lab-Op) **an
 
 As notas de **caminhos versionados vs privados**, **clone principal Windows**, e **caminho canônico do script de corpus** estão na seção **Policy alignment** da versão em inglês (fonte bilingue para estes avisos técnicos): [COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md).
 
+## Telemetria de lab e *exit codes* (`DATA_BOAR_COMPLETAO_EXIT_v1`)
+
+Ao interpretar **`lab-completao-orchestrate.ps1`** (ou bash companheiro) **sem** reler logs completos:
+
+| Código | Significado (lab / gate de release) |
+| --- | --- |
+| **0** | Sucesso no contrato de caminho feliz (orquestrador: todos os hosts concluídos e o resumo de conectividade **não** está **degraded**). |
+| **1** | Infra / alcance / permissão (falha de *probe* SSH, bloqueio de rede, variável de URL de BD vazia, erros TCP/auth vindos de **`lab_completao_data_contract_check.py`**, orquestrador em **degraded** ou **completed_with_skips**). |
+| **2** | Dados ou forma de contrato (erros de YAML/JSON no manifesto, colunas obrigatórias em falta, clone sem **`lab-completao-host-smoke.sh`** — *drift* de integração do repo). |
+| **3** | Reservado a sinal de **violação de compliance** quando um *scanner* ou *hook* de política reportar infração governada (o smoke de host base **não** emite isto hoje). |
+
+**Campos legíveis por máquina:** **`docs/private/homelab/reports/lab_result.json`** (e **`lab_status.json`**) incluem **`exit_code_semantic`** (id de contrato + valor + razão + tabela de significados) e **`audit_trail`** (usuário da sessão Windows, nome do computador, PID, opcional **`DATA_BOAR_COMPLETAO_INVOKER`** para correlação com agente ou ticket). Ver **[`LAB_COMPLETAO_RUNBOOK.pt_BR.md`](LAB_COMPLETAO_RUNBOOK.pt_BR.md)**.
+
 ## Texto-mestre verbatim (v1.7.3 — arquivo 2026)
 
 ```text

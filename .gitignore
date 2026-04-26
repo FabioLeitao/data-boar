@@ -7,10 +7,18 @@ requirements-sbom.txt
 audit_results.db
 audit_results.db-journal
 *.db-journal
+# Ephemeral scan state at repo root (BoarStateTracker / local runs)
+.data_boar_state.json
+# Local completão QA SQLite + checkpoints (generate via scripts/setup_lab_db.py / lab runs)
+data/qa_completao_*.db
+data/qa_completao_*.json
+data/lab_completao_benchmark.db
 Relatorio_Auditoria_*.xlsx
 heatmap*.png
 config.yaml
 config.local.yaml
+# Ephemeral LAB completão filesystem scan configs (soup paths); keep local only
+tmp_completao_*.yaml
 *.vault
 .env.local
 .env.*.local

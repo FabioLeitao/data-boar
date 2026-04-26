@@ -599,6 +599,7 @@ A aplicação referencia explicitamente **LGPD**, **GDPR**, **CCPA**, **HIPAA** 
 
 - Nenhum conteúdo amostrado bruto é persistido; apenas metadados (localização, padrão, sensibilidade, norm tag).
 - A API web adiciona cabeçalhos de segurança por padrão (X-Content-Type-Options, X-Frame-Options, Content-Security-Policy, Referrer-Policy, Permissions-Policy e HSTS quando servido via HTTPS). Veja [SECURITY.md](../SECURITY.md).
+- **Verificação opcional de integridade (especificação de desenho):** cross-check de hash em runtime de artefatos críticos, comportamento em estado *tinted* e log de auditoria — veja [ops/INTEGRITY_CHECK_ALPHA_LOGIC.pt_BR.md](ops/INTEGRITY_CHECK_ALPHA_LOGIC.pt_BR.md) ([EN](ops/INTEGRITY_CHECK_ALPHA_LOGIC.md)).
 - Use versões recentes e com CVE corrigidas do interpretador e das dependências (`uv sync` / `pip install -e .`).
 - Mantenha credenciais em arquivos de config ou em variáveis de ambiente; evite commitar segredos.
 - **Atrás de proxy reverso (nginx, Traefik, Caddy):** Defina `X-Forwarded-Proto: https` para tráfego com TLS encerrado para que HSTS e detecção de esquema funcionem corretamente.

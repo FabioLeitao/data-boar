@@ -59,8 +59,10 @@
 | ------ | ---- | -------- |
 | `lab-op.ps1` | SSH report / sync-collect | **`docs/ops/LAB_OP_SHORTHANDS.md`**, **`lab-op-systems-context.mdc`** |
 | `lab-op-sync-and-collect.ps1` | Batch multi-host | SKILL **`autonomous-merge-and-lab`**, manifest privado |
-| `lab-completao-inventory-preflight.ps1` | Verificação de idade dos privados **`LAB_SOFTWARE_INVENTORY.md`** / **`OPERATOR_SYSTEM_MAP.md`**; opcional **`lab-op-sync-and-collect.ps1`** | **`LAB_COMPLETAO_RUNBOOK.pt_BR.md`** (*Frescura do inventário*); o **`lab-completao-orchestrate.ps1`** chama por defeito |
-| `lab-completao-orchestrate.ps1` | Completão no lab (preflight + opcional **`lab-op-git-ensure-ref`** quando **`completaoTargetRef`** / **`-LabGitRef`** + smoke SSH por host + HTTP opcional) | **`LAB_COMPLETAO_RUNBOOK.pt_BR.md`** (*Ref Git alvo*), manifest com **`completaoTargetRef`**, **`completaoHealthUrl`**, opcional **`completaoEngineMode`:** **`container`** / **`completaoSkipEngineImport`** (hosts só Swarm/Podman) |
+| `lab-completao-inventory-preflight.ps1` | Verificação de idade dos privados **`LAB_SOFTWARE_INVENTORY.md`** / **`OPERATOR_SYSTEM_MAP.md`**; opcional **`lab-op-sync-and-collect.ps1`** | **`LAB_COMPLETAO_RUNBOOK.pt_BR.md`** (*Frescura do inventário*); o **`lab-completao-orchestrate.ps1`** chama por padrão |
+| `lab-completao-orchestrate.ps1` | Completão no lab (preflight + opcional **`lab-op-git-ensure-ref`** quando **`completaoTargetRef`** / **`-LabGitRef`** + YAML opcional de **contrato de dados** quando **`completaoDataContractsPath`** + preflight só de leitura **`docker`/`podman` `image inspect`** quando **`completaoImageRefs`** + smoke SSH por host + HTTP opcional; gera **`completao_*_orchestrate_events.jsonl`**, **`lab_result.json`** com **`audit_trail`** + **`exit_code_semantic`**, opcional **`GRC_EXECUTIVE_REPORT.json`** via **`scripts/generate_grc_report.py`**, **`exit`** semântico **0**/**1** no caminho feliz) | **`LAB_COMPLETAO_RUNBOOK.pt_BR.md`** (*Eventos estruturados*, *Preflight de contrato de dados*, *Telemetria por exit code*), **[ADR 0041](../adr/0041-lab-completao-data-contract-preflight.md)**, manifest **`completaoTargetRef`**, **`completaoHealthUrl`**, **`completaoDataContractsPath`**, **`completaoImageRefs`**, **`completaoImageProbeSshHost`**, **`-SkipImagePreflight`**, opcional **`completaoEngineMode`:** **`container`** / **`completaoSkipEngineImport`** |
+| `lab-completao-orchestrate-hybrid-v173.ps1` | Caminho opcional alta densidade (config efêmera + **`docker`/`podman` run`**); **salta o run** se a imagem não existir no nó; **`completao_hybrid_*_events.jsonl`** | **`LAB_COMPLETAO_RUNBOOK.pt_BR.md`** (*Eventos estruturados*); invocado por **`lab-completao-orchestrate.ps1 -HybridLabOpHighDensity173`** |
+| `lab_completao_data_contract_check.py` | Valida colunas obrigatórias na BD a partir de contrato YAML (URL SQLAlchemy só via variável de ambiente); falha rápido antes do smoke SSH por host; códigos de saída **`DATA_BOAR_COMPLETAO_EXIT_v1`** (**0** ok, **1** infra/alcance à BD, **2** esquema/YAML, **3** reservado) | **`LAB_COMPLETAO_RUNBOOK.pt_BR.md`** (*Data contract preflight*, *Telemetria por exit code*), **`docs/private.example/homelab/completao_data_contracts.example.yaml`**; **`uv run python scripts/lab_completao_data_contract_check.py --contracts <caminho>`** |
 | `completao-chat-starter.ps1` | Imprime linhas mínimas para o chat (**`completao`** + **`tier:…`**, mais **`semver:`** / **`tag:`** no *tier* **`release-master`**) + comando sugerido; **`release-master -ReleaseSemver X.Y.Z`** para outras tags | **`COMPLETAO_OPERATOR_PROMPT_LIBRARY.pt_BR.md`**, **`COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT*.md`**, **`LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md`** (blocos A–E completos quando a prosa muda) |
 | `lab-op-git-ensure-ref.ps1` | Verificar ou alinhar clones LAB a tag / **`origin/main`** / ponta de branch | **`LAB_COMPLETAO_RUNBOOK.pt_BR.md`**; invocado por **`lab-completao-orchestrate.ps1`** quando há ref alvo |
 | `collect-homelab-report-remote.ps1`, `run-homelab-host-report-all.ps1` | Reports remotos | **`HOMELAB_VALIDATION.md`**, manifest privado |
@@ -70,6 +72,13 @@
 | `growatt-session-collect.ps1`, `enel-session-collect.ps1` | Janela de sessão | SKILL **`session-aware-collect`**, **`session-collect`** |
 | `udm.ps1`, `snmp-udm-lab-probe*.ps1`, `udm-api-*.ps1` | UniFi / UDM | SKILL **`homelab-lab-op-data`**, **`udm-scan`** |
 | `windows-dev-report.ps1` | Inventário do PC dev | Matriz homelab em **`docs/ops/`** |
+
+### JSON executivo GRC (CLIs Python)
+
+| Script | Função | Ligado a |
+| ------ | ------ | -------- |
+| `generate_grc_report.py` | Monta JSON ``data_boar_grc_executive_report_v1`` (*hook* de lab; *raw scan* opcional + ``lab_result.json``) | **`LAB_COMPLETAO_RUNBOOK.md`**, **[`REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md`](../REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md)**, **[`GRC_EXECUTIVE_REPORT_SCHEMA.pt_BR.md`](../GRC_EXECUTIVE_REPORT_SCHEMA.pt_BR.md)** |
+| `export_reports.py` | Planilha XLSX de remediação + PDF executivo a partir do mesmo JSON v1 | **`report/grc_export_multiformat.py`**, esquema + exemplo em **`schemas/`** |
 
 ---
 

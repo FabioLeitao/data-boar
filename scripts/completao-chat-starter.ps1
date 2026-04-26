@@ -9,7 +9,8 @@
     rarely need the full LAB_COMPLETAO_FRESH_AGENT_BRIEF copy-paste blocks.
 
 .PARAMETER Tier
-    smoke | smoke-main | smoke-tag | followup-repo | followup-poc | followup-cli | evidence |
+    smoke | smoke-main | smoke-tag | followup-repo | followup-poc | followup-cli |
+    closure-min | coverage-plus | evidence |
     release-master (use -ReleaseSemver; optional -GitTag) | release-master-v1-7-3 (frozen alias)
 
 .PARAMETER LabGitRef
@@ -39,6 +40,8 @@ param(
         "followup-repo",
         "followup-poc",
         "followup-cli",
+        "closure-min",
+        "coverage-plus",
         "evidence",
         "release-master",
         "release-master-v1-7-3"
@@ -91,6 +94,8 @@ Tiers (line 2 after completao):
   followup-repo   -> tier:followup-repo -> lab-op-repo-status.ps1
   followup-poc    -> tier:followup-poc -> smoke-maturity + smoke-webauthn scripts
   followup-cli    -> tier:followup-cli -> LAB_EXTERNAL_CONNECTIVITY_EVAL
+  closure-min     -> tier:closure-min -> close 3 minimum pending items (extra host CLI + API/dashboard + private lessons)
+  coverage-plus   -> tier:coverage-plus -> expanded host/target matrix + severity map + rerun plan
   evidence        -> tier:evidence -> consolidate session notes
   release-master  -> tier:release-master + semver:/tag: lines -> read versioned COMPLETAO_MESTRE_* doc (requires -ReleaseSemver)
   release-master-v1-7-3 -> frozen alias for 1.7.3 (same docs as today)
@@ -134,6 +139,8 @@ $line2 = switch ($Tier) {
     "followup-repo" { "tier:followup-repo" }
     "followup-poc" { "tier:followup-poc" }
     "followup-cli" { "tier:followup-cli" }
+    "closure-min" { "tier:closure-min" }
+    "coverage-plus" { "tier:coverage-plus" }
     "evidence" { "tier:evidence" }
     "release-master" { "tier:release-master" }
     "release-master-v1-7-3" { "tier:release-master-v1-7-3" }
@@ -156,6 +163,8 @@ $cmd = switch ($Tier) {
     "followup-repo" { ".\scripts\lab-op-repo-status.ps1" }
     "followup-poc" { ".\scripts\smoke-maturity-assessment-poc.ps1; .\scripts\smoke-webauthn-json.ps1" }
     "followup-cli" { "# Read docs/ops/LAB_EXTERNAL_CONNECTIVITY_EVAL.md then run main.py with private config if present" }
+    "closure-min" { "# Execute minimum closure: (1) soup CLI on >=1 extra host; (2) API/dashboard checks (/health + /); (3) update private session lessons under docs/private/homelab/" }
+    "coverage-plus" { "# Execute expanded coverage matrix (FS/DB/API/connectors per host), classify failures by severity, and prepare rerun slice after fixes" }
     "evidence" { "# Consolidate session notes under docs/private/homelab/ per LAB_COMPLETAO_FRESH_AGENT_BRIEF block E" }
     "release-master" {
         $en = "docs/ops/$releaseMasterDocBase"
