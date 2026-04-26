@@ -31,6 +31,8 @@ alwaysApply: false
 
 1. **Read logs** under **`docs/private/homelab/reports/`** (`completao_*_allhosts.log`, per-host `*_completao_host_smoke.log`) and summarize pass/fail **without** pasting secrets, passwords, or unnecessary LAN identifiers into **public** issues/PRs.
 
+1. **Public lessons + plan bridge (when the slice ends):** If repeatable lab findings need a **tracked** narrative, close with **`lab-lessons`**: follow **`lab-lessons-learned-archive.mdc`**, **ADR 0042**, and **`docs/ops/lab_lessons_learned/README.md`** — snapshot the hub to a dated file **before** rewriting **`LAB_LESSONS_LEARNED.md`**; promote actionable gaps to **`docs/plans/PLANS_TODO.md`**. Keep long narrative + LAN context in **`docs/private/homelab/COMPLETAO_SESSION_*.md`** (private git only).
+
 ## Automation stack (wrappers, remote lab-op, **`sudo -n`**)
 
 1. **Prefer existing scripts** end-to-end instead of one-off ad-hoc SSH: **`lab-completao-orchestrate.ps1`**, **`lab-completao-host-smoke.sh`**, **`lab-op-repo-status.ps1`**, **`lab-op-git-align-main.ps1`**, **`lab-op-sync-and-collect.ps1`**, **`homelab-host-report.sh`** — see **`docs/ops/LAB_COMPLETAO_RUNBOOK.md`**, **`docs/ops/LAB_OP_PRIVILEGED_COLLECTION.md`**, **`docs/ops/TOKEN_AWARE_SCRIPTS_HUB.md`**.

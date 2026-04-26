@@ -8,6 +8,8 @@
 
 **Where to read this topic:** This file is the **single planning source** for dashboard **access control**, **RBAC**, and **identity sequencing** (passwordless WebAuthn first, enterprise **SSO/OIDC** later). Related operator runbooks: [SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md](../ops/SECURE_DASHBOARD_AUTH_AND_HTTPS_HOWTO.md) (API key + TLS today), [PLAN_OPERATOR_API_KEY_FIRST_AUTH_UX.md](PLAN_OPERATOR_API_KEY_FIRST_AUTH_UX.md) (ergonomics spike).
 
+**Sprint pairing (S2a):** When closing [PLAN_DASHBOARD_HTTPS_BY_DEFAULT_AND_HTTP_EXPLICIT_RISK.md](PLAN_DASHBOARD_HTTPS_BY_DEFAULT_AND_HTTP_EXPLICIT_RISK.md) **Phase 7**, keep **`/status`**, audit export, and **middleware order** (§ *Phase 0 deliverable*) **aligned** with the **trust-state** contract in [PLAN_GRC_INSPIRED_ENTERPRISE_TRUST_ACCELERATORS.md](PLAN_GRC_INSPIRED_ENTERPRISE_TRUST_ACCELERATORS.md) so enterprise demos show **one** coherent story (transport + access posture). Prefer **doc-first** delta unless code already exposes the needed fields.
+
 **Synced with:** [PLANS_TODO.md](PLANS_TODO.md) (GitHub issues queue + recommended sequence).
 
 **Cluster (same code paths, different goals):** This plan is the **authorisation / exposure** slice for the HTML app. **[PLAN_DASHBOARD_I18N.md](completed/PLAN_DASHBOARD_I18N.md)** is the **locale** slice. They are **not duplicates**: merging them into one document would blur acceptance criteria (security vs translation). Do **entangle sequencing**: any work that changes **route layout** (e.g. `/{locale}/reports`) or **middleware stack** should consider both plans in the same sprint **design** pass—even if implementation stays in separate PRs. See **§ Relationship to other plans** below.

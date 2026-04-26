@@ -15,7 +15,7 @@ Give a **single ordered path** so a **fresh chat** (no transcript memory) can st
 5. **Lab / completão only:** **[`LAB_COMPLETAO_FRESH_AGENT_BRIEF.md`](LAB_COMPLETAO_FRESH_AGENT_BRIEF.md)** → **[`LAB_COMPLETAO_RUNBOOK.md`](LAB_COMPLETAO_RUNBOOK.md)** → **[`LAB_OP_HOST_PERSONAS.md`](LAB_OP_HOST_PERSONAS.md)** (ENT / PRO / edge / bridge + Ansible knobs).
 6. **Private stack only:** **[`PRIVATE_STACK_SYNC_RITUAL.md`](PRIVATE_STACK_SYNC_RITUAL.md)** · **`scripts/private-git-sync.ps1`** (**`-Push`** when mirrors must align) · **[ADR 0040](../adr/0040-assistant-private-stack-evidence-mirrors-default.md)**.
 7. **Where docs live (LAB-PB vs LAB-OP):** **[`OPERATOR_LAB_DOCUMENT_MAP.md`](OPERATOR_LAB_DOCUMENT_MAP.md)**.
-8. **Session English tokens:** [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) — type tokens **exactly** (e.g. **`homelab`**, **`completao`**, **`legal-dossier-update`**, **`private-stack-sync`**, **`es-find`**, **`release-ritual`**, **`sonar-mcp`**, **`study-check`**, **`short`** / **`token-aware`**).
+8. **Session English tokens:** [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) — type tokens **exactly** (e.g. **`homelab`**, **`completao`**, **`lab-lessons`**, **`legal-dossier-update`**, **`private-stack-sync`**, **`es-find`**, **`release-ritual`**, **`sonar-mcp`**, **`study-check`**, **`short`** / **`token-aware`**).
 
 ## Task router (one hop)
 
@@ -30,6 +30,7 @@ Give a **single ordered path** so a **fresh chat** (no transcript memory) can st
 | **Which script / wrapper for this?** (avoid reinventing long shell) | **`repo-scripts-wrapper-ritual.mdc`** · **`TOKEN_AWARE_SCRIPTS_HUB`** · **`check-all-gate.mdc`** · **`token-aware-automation`** skill |
 | **Docs / hubs / MAP** | **`doc-hubs-plans-sync`** skill · **`docs/README.md`** *Internal and reference* · paired **`*.pt_BR.md`** |
 | **Lab smoke / completão** | **`COMPLETAO_OPERATOR_PROMPT_LIBRARY`** ( **`completao`** + **`tier:…`** ) · **`LAB_COMPLETAO_FRESH_AGENT_BRIEF`** · **`lab-completao-workflow.mdc`** · **`LAB_COMPLETAO_RUNBOOK`** · **`scripts/completao-chat-starter.ps1`** |
+| **Lab lessons archive (public)** | **`lab-lessons`** · **`lab-lessons-learned-archive.mdc`** · **`docs/ops/LAB_LESSONS_LEARNED.md`** · **`docs/ops/lab_lessons_learned/`** · [ADR 0042](../adr/0042-lab-lessons-learned-archive-contract.md) |
 | **Ansible / Podman / personas** | **`LAB_OP_HOST_PERSONAS`** · **`ops/automation/ansible/README.md`** |
 | **Homelab inventory / SSH batch** | Session token **`homelab`** · **`homelab-ssh-via-terminal.mdc`** · private **`lab-op-hosts.manifest.json`** (when present) · **`LAB_OP_PRIVILEGED_COLLECTION.md`** · **`OPERATOR_LAB_DOCUMENT_MAP`** · § *Token → rule latch (`homelab`)* below |
 | **Stacked private Git close** | Session **`private-stack-sync`** · **`docs-private-workspace-context.mdc`** · **`PRIVATE_STACK_SYNC_RITUAL`** · **`private-git-sync.ps1`** · § *Token → rule latch (`private-stack-sync`)* below |
@@ -47,6 +48,15 @@ Use this **first message shape** so a **situational** **`lab-completao-workflow.
 3. If the thread is **not** already touching **`scripts/lab-completao*`** or **`docs/ops/LAB_COMPLETAO*`**, **attach** **`.cursor/rules/lab-completao-workflow.mdc`** via **`@`** so the full workflow rule is in context.
 3a. When the blocker is **`ssh` / LAN reachability / `sudo -n` vs tmux`** rather than orchestrator flags alone, **`read_file`** **`.cursor/rules/homelab-ssh-via-terminal.mdc`** (or **`@homelab-ssh-via-terminal.mdc`**) even if **`lab-completao-workflow.mdc`** is already open.
 4. **Default automation (operator runs, assistant interprets logs):** from repo root **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** — then **`read_file`** / summarize under **`docs/private/homelab/reports/`** per **`LAB_COMPLETAO_RUNBOOK.md`**. Do **not** replace the orchestrator with ad-hoc one-off **`ssh`** unless the operator explicitly opts out.
+
+### Token → rule latch (**`lab-lessons`**)
+
+For **public** lab QA / SRE evidence hygiene (dated snapshots + hub + plan bridges), keep **`lab-lessons-learned-archive.mdc`** **situational** but **binding** when you close a lab block:
+
+1. Line 1: English token **`lab-lessons`** (optional **`short`** / **`token-aware`**).
+2. **`read_file`** **`.cursor/rules/lab-lessons-learned-archive.mdc`** — use **`@lab-lessons-learned-archive.mdc`** if the editor has not already attached it.
+3. Follow **ADR 0042** + **`docs/ops/lab_lessons_learned/README.md`**: snapshot the hub into **`lab_lessons_learned/LAB_LESSONS_LEARNED_YYYY_MM_DD.md`** before rewriting **`docs/ops/LAB_LESSONS_LEARNED.md`** for a new session; promote real work into **`docs/plans/PLANS_TODO.md`** and run **`python scripts/plans-stats.py --write`** when rows change.
+4. Pair private **`docs/private/homelab/COMPLETAO_SESSION_*.md`** with **public** numbers only — never paste LAN secrets into **tracked** archives.
 
 ### Token → rule latch (**`homelab`**)
 

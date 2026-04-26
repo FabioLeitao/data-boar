@@ -6,7 +6,7 @@ Esta nota separa **evidência verificada** de **metas aspiracionais de laborató
 
 ## Verificado nesta sessão do repositório (com evidência)
 
-Fonte: [LAB_LESSONS_LEARNED.md](LAB_LESSONS_LEARNED.md), `tests/benchmarks/official_benchmark_200k.json`, arquivo de checkpoint do teste de kill.
+Fonte: [LAB_LESSONS_LEARNED.md](LAB_LESSONS_LEARNED.md) (hub; snapshot datado: [lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md](lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md)), `tests/benchmarks/official_benchmark_200k.json`, arquivo de checkpoint do teste de kill.
 
 | Tópico | Resultado |
 | ------ | --------- |

@@ -25,6 +25,7 @@ These rules now load from **`globs`** and/or explicit **`@…`** / session token
 | Rule file | Role (short) | Typical latch |
 | --------- | ------------ | ------------- |
 | **`lab-completao-workflow.mdc`** | Lab completão orchestration, SSH, evidence | **`completao`**, `scripts/lab-completao*`, `docs/ops/LAB_COMPLETAO*` |
+| **`lab-lessons-learned-archive.mdc`** | Public lab lessons dated snapshots + hub + plan bridges | **`lab-lessons`**, `docs/ops/LAB_LESSONS*`, `docs/ops/lab_lessons_learned/**`, `docs/ops/SPRINT_*POSTMORTEM*` |
 | **`dossier-update-on-evidence.mdc`** | Private legal / labour evidence | **`legal-dossier-update`**, `docs/private/legal_dossier/**`, `raw_pastes/**` |
 | **`homelab-ssh-via-terminal.mdc`** | LAN / SSH / same-PC-as-operator | **`homelab`**, `docs/ops/HOMELAB*`, `scripts/lab-op*`, etc. |
 | **`docs-private-workspace-context.mdc`** | Stacked private Git + `docs/private/` cadence | **`private-stack-sync`**, private ritual paths |

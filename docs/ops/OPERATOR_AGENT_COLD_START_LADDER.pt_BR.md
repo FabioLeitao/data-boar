@@ -15,7 +15,7 @@ Oferecer **um caminho ordenado** para um **chat novo** (sem memória do transcri
 5. **Só lab / completão:** **[`LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md`](LAB_COMPLETAO_FRESH_AGENT_BRIEF.pt_BR.md)** → **[`LAB_COMPLETAO_RUNBOOK.pt_BR.md`](LAB_COMPLETAO_RUNBOOK.pt_BR.md)** → **[`LAB_OP_HOST_PERSONAS.pt_BR.md`](LAB_OP_HOST_PERSONAS.pt_BR.md)** (ENT / PRO / edge / ponte + knobs Ansible).
 6. **Só stack privado:** **[`PRIVATE_STACK_SYNC_RITUAL.pt_BR.md`](PRIVATE_STACK_SYNC_RITUAL.pt_BR.md)** · **`scripts/private-git-sync.ps1`** (**`-Push`** quando os espelhos têm de alinhar) · **[ADR 0040](../adr/0040-assistant-private-stack-evidence-mirrors-default.md)** (EN).
 7. **Onde vivem os docs (LAB-PB vs LAB-OP):** **[`OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md`](OPERATOR_LAB_DOCUMENT_MAP.pt_BR.md)**.
-8. **Tokens de sessão em inglês:** [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) — escrever os tokens **exatamente** (ex.: **`homelab`**, **`completao`**, **`legal-dossier-update`**, **`private-stack-sync`**, **`es-find`**, **`release-ritual`**, **`sonar-mcp`**, **`study-check`**, **`short`** / **`token-aware`**).
+8. **Tokens de sessão em inglês:** [`.cursor/rules/session-mode-keywords.mdc`](../../.cursor/rules/session-mode-keywords.mdc) — escrever os tokens **exatamente** (ex.: **`homelab`**, **`completao`**, **`lab-lessons`**, **`legal-dossier-update`**, **`private-stack-sync`**, **`es-find`**, **`release-ritual`**, **`sonar-mcp`**, **`study-check`**, **`short`** / **`token-aware`**).
 
 ## Router de tarefas (um salto)
 
@@ -30,6 +30,7 @@ Oferecer **um caminho ordenado** para um **chat novo** (sem memória do transcri
 | **Qual script / wrapper usar?** (evitar reinventar shell longo) | **`repo-scripts-wrapper-ritual.mdc`** · **`TOKEN_AWARE_SCRIPTS_HUB`** · **`check-all-gate.mdc`** · skill **`token-aware-automation`** |
 | **Docs / hubs / MAP** | skill **`doc-hubs-plans-sync`** · **`docs/README.md`** *Interno e referência* · par **`*.pt_BR.md`** |
 | **Smoke de lab / completão** | **`COMPLETAO_OPERATOR_PROMPT_LIBRARY`** (**`completao`** + **`tier:…`**) · **`LAB_COMPLETAO_FRESH_AGENT_BRIEF`** · **`lab-completao-workflow.mdc`** · **`LAB_COMPLETAO_RUNBOOK`** · **`scripts/completao-chat-starter.ps1`** |
+| **Arquivo de lições de lab (público)** | **`lab-lessons`** · **`lab-lessons-learned-archive.mdc`** · **`docs/ops/LAB_LESSONS_LEARNED.md`** · **`docs/ops/lab_lessons_learned/`** · [ADR 0042](../adr/0042-lab-lessons-learned-archive-contract.md) |
 | **Ansible / Podman / personas** | **`LAB_OP_HOST_PERSONAS`** · **`ops/automation/ansible/README.md`** |
 | **Inventário homelab / lote SSH** | Token de sessão **`homelab`** · **`homelab-ssh-via-terminal.mdc`** · **`lab-op-hosts.manifest.json`** em `docs/private/` (se existir) · **`LAB_OP_PRIVILEGED_COLLECTION.md`** · **`OPERATOR_LAB_DOCUMENT_MAP`** · § *Presilha token → regra (`homelab`)* abaixo |
 | **Fecho do Git empilhado em `docs/private/`** | Sessão **`private-stack-sync`** · **`docs-private-workspace-context.mdc`** · **`PRIVATE_STACK_SYNC_RITUAL`** · **`private-git-sync.ps1`** · § *Presilha token → regra (`private-stack-sync`)* abaixo |
@@ -47,6 +48,15 @@ Use este **formato da primeira mensagem** para que um **`lab-completao-workflow.
 3. Se o fio **não** estiver a mexer em **`scripts/lab-completao*`** nem **`docs/ops/LAB_COMPLETAO*`**, **anexar** **`.cursor/rules/lab-completao-workflow.mdc`** com **`@`** para trazer a regra completa para o contexto.
 3a. Quando o bloqueio for **`ssh` / LAN / `sudo -n` vs tmux`** e não só flags do orquestrador, **`read_file`** em **`.cursor/rules/homelab-ssh-via-terminal.mdc`** (ou **`@homelab-ssh-via-terminal.mdc`**) mesmo que **`lab-completao-workflow.mdc`** já esteja aberto.
 4. **Automação por omissão (operador corre, assistente interpreta logs):** na raiz do repo **`.\scripts\lab-completao-orchestrate.ps1 -Privileged`** — depois **`read_file`** / resumir em **`docs/private/homelab/reports/`** conforme **`LAB_COMPLETAO_RUNBOOK.md`**. **Não** substituir o orquestrador por **`ssh`** ad hoc salvo se o operador optar explicitamente por isso.
+
+### Presilha token → regra (**`lab-lessons`**)
+
+Para **higiene de evidência** de QA/SRE de lab no **Git público** (snapshots datados + hub + ligação a planos), manter **`lab-lessons-learned-archive.mdc`** **situacional**, mas **obrigatório** quando fechas um bloco de lab:
+
+1. Linha 1: token em inglês **`lab-lessons`** (opcional **`short`** / **`token-aware`**).
+2. **`read_file`** em **`.cursor/rules/lab-lessons-learned-archive.mdc`** — usar **`@lab-lessons-learned-archive.mdc`** se o editor ainda não tiver anexado.
+3. Seguir o **ADR 0042** + **`docs/ops/lab_lessons_learned/README.md`**: copiar o hub para **`lab_lessons_learned/LAB_LESSONS_LEARNED_YYYY_MM_DD.md`** antes de reescrever **`docs/ops/LAB_LESSONS_LEARNED.md`** para uma sessão nova; promover trabalho real para **`docs/plans/PLANS_TODO.md`** e correr **`python scripts/plans-stats.py --write`** quando linhas mudarem.
+4. Emparelhar **`docs/private/homelab/COMPLETAO_SESSION_*.md`** (privado) com **números públicos** só — nunca colar segredos de LAN em arquivo rastreado.
 
 ### Presilha token → regra (**`homelab`**)
 

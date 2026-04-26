@@ -35,6 +35,16 @@
 | **Gate no PC dev**          | Pre-commit + testes antes do merge                    | `**.\scripts\check-all.ps1`**                                                              |
 | **Completão no lab**        | Produto + runtime + LAN + BD opcional + HTTP opcional | `**lab-completao-host-smoke.sh`** por host; `**lab-completao-orchestrate.ps1`** no Windows |
 
+## Evidência de lab: público vs privado (lições aprendidas)
+
+| Camada | Local | Conteúdo |
+| ------ | ----- | --------- |
+| **Privado** | `docs/private/homelab/COMPLETAO_SESSION_*.md`, `docs/private/homelab/reports/` | Narrativa completa, LAN, credenciais, notas do operador — **nunca** colar literalmente no Git público. |
+| **Hub público** | [`docs/ops/LAB_LESSONS_LEARNED.md`](LAB_LESSONS_LEARNED.md) | Resumo vivo + índice de arquivo + **follow-ups** para **`docs/plans/PLANS_TODO.md`**. |
+| **Arquivo público datado** | [`docs/ops/lab_lessons_learned/`](lab_lessons_learned/README.pt_BR.md) | Snapshots imutáveis: **`LAB_LESSONS_LEARNED_YYYY_MM_DD.md`** (ritual no README). |
+
+**Contrato:** [ADR 0042](../adr/0042-lab-lessons-learned-archive-contract.md). **Token de sessão:** **`lab-lessons`** carrega **`.cursor/rules/lab-lessons-learned-archive.mdc`** quando os globs não prendem — [OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md) § *Token → rule latch (`lab-lessons`)*.
+
 **Checklist multi-host** (passos manuais A–M): [LAB_SMOKE_MULTI_HOST.pt_BR.md](LAB_SMOKE_MULTI_HOST.pt_BR.md).
 
 ## Frescura do inventário (antes / durante completão)
