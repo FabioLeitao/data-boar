@@ -579,7 +579,7 @@ def _save_config_yaml(yaml_content: str) -> None:
         data = yaml.safe_load(yaml_content)
         if not isinstance(data, dict):
             raise ValueError("Config must be a YAML object")
-        normalize_config(data)
+        normalize_config(data, config_path=p)
     except Exception as e:
         raise ValueError(f"Invalid YAML or config: {e}") from e
     p.parent.mkdir(parents=True, exist_ok=True)

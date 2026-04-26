@@ -44,6 +44,213 @@ def _notification_env_value(val: Any) -> str | None:
     return t
 
 
+def _normalize_sql_sampling(raw: Any) -> dict[str, Any]:
+    """
+    Optional ``sql_sampling`` block: hierarchical ``sample_limit`` overrides for SQL targets.
+
+    Shape::
+
+        sql_sampling:
+          overrides:
+            targets:
+              <target_name>:
+                sample_limit: 5
+                tables:
+                  "schema.table": 50
+                  bare_table: 20
+            patterns:
+              "*_audit": 100
+    """
+    if not isinstance(raw, dict):
+        return {"overrides": {"targets": {}, "patterns": {}}}
+    ov = raw.get("overrides") or {}
+    if not isinstance(ov, dict):
+        return {"overrides": {"targets": {}, "patterns": {}}}
+    targets_raw = ov.get("targets") or {}
+    if not isinstance(targets_raw, dict):
+        targets_raw = {}
+    patterns_raw = ov.get("patterns") or {}
+    if not isinstance(patterns_raw, dict):
+        patterns_raw = {}
+
+    def _lim(val: Any) -> int | None:
+        try:
+            n = int(val)
+        except (TypeError, ValueError):
+            return None
+        if n < 1:
+            return None
+        return min(n, 10_000)
+
+    targets_norm: dict[str, dict[str, Any]] = {}
+    for tname, tcfg in targets_raw.items():
+        if not isinstance(tcfg, dict):
+            continue
+        name = str(tname).strip()
+        if not name:
+            continue
+        entry: dict[str, Any] = {}
+        sl = _lim(tcfg.get("sample_limit"))
+        if sl is not None:
+            entry["sample_limit"] = sl
+        tbls = tcfg.get("tables") or {}
+        if isinstance(tbls, dict):
+            te: dict[str, int] = {}
+            for k, v in tbls.items():
+                key = str(k).strip()
+                if not key:
+                    continue
+                lim = _lim(v)
+                if lim is not None:
+                    te[key] = lim
+            if te:
+                entry["tables"] = te
+        if entry:
+            targets_norm[name] = entry
+
+    patterns_norm: dict[str, int] = {}
+    for pat, v in patterns_raw.items():
+        p = str(pat).strip()
+        if not p:
+            continue
+        lim = _lim(v)
+        if lim is not None:
+            patterns_norm[p] = lim
+
+    return {"overrides": {"targets": targets_norm, "patterns": patterns_norm}}
+
+
+def _resolve_path_relative_to_config(base_dir: Path, rel: str) -> Path:
+    """Resolve a config-relative path; reject ``..`` escapes for relative paths."""
+    raw = Path(rel.strip())
+    if raw.is_absolute():
+        return raw.resolve()
+    combined = (base_dir / raw).resolve()
+    try:
+        combined.relative_to(base_dir.resolve())
+    except ValueError as e:
+        raise ValueError(f"sql_sampling path escapes config directory: {rel!r}") from e
+    return combined
+
+
+def _load_yaml_mapping(path: Path) -> dict[str, Any]:
+    text = read_text_auto_encoding(path)
+    suffix = path.suffix.lower()
+    if suffix in (".yaml", ".yml"):
+        loaded = yaml.safe_load(text)
+    elif suffix == ".json":
+        if json is None:
+            raise RuntimeError("JSON fragment requires stdlib json")
+        loaded = json.loads(text)
+    else:
+        raise ValueError(f"Unsupported sql_sampling fragment format: {path}")
+    if loaded is None:
+        return {}
+    if not isinstance(loaded, dict):
+        raise ValueError(f"sql_sampling fragment must be a mapping: {path}")
+    return loaded
+
+
+def _extract_sql_sampling_fragment(root: dict[str, Any]) -> dict[str, Any]:
+    """Accept ``sql_sampling:`` wrapper or bare ``overrides:`` at file root."""
+    if "sql_sampling" in root and isinstance(root["sql_sampling"], dict):
+        return dict(root["sql_sampling"])
+    if "overrides" in root and isinstance(root["overrides"], dict):
+        return {"overrides": dict(root["overrides"])}
+    return {}
+
+
+def _merge_target_override_blocks(
+    base: dict[str, Any], overlay: dict[str, Any]
+) -> dict[str, Any]:
+    """Deep-merge one target overrides block; ``overlay`` wins on conflicts."""
+    out = dict(base)
+    for k, v in overlay.items():
+        if k == "tables" and isinstance(v, dict):
+            prev = out.get("tables")
+            if isinstance(prev, dict):
+                out["tables"] = {**prev, **v}
+            else:
+                out["tables"] = dict(v)
+        else:
+            out[k] = v
+    return out
+
+
+def _deep_merge_sql_sampling_blocks(
+    base: dict[str, Any], overlay: dict[str, Any]
+) -> dict[str, Any]:
+    """Merge two raw ``sql_sampling`` dicts (pre-``_normalize_sql_sampling``); ``overlay`` wins."""
+    if not base:
+        return dict(overlay) if overlay else {}
+    if not overlay:
+        return dict(base)
+    bo = base.get("overrides") or {}
+    oo = overlay.get("overrides") or {}
+    if not isinstance(bo, dict):
+        bo = {}
+    if not isinstance(oo, dict):
+        oo = {}
+    bt = bo.get("targets") or {}
+    ot = oo.get("targets") or {}
+    if not isinstance(bt, dict):
+        bt = {}
+    if not isinstance(ot, dict):
+        ot = {}
+    merged_targets: dict[str, Any] = dict(bt)
+    for name, tcfg in ot.items():
+        if not isinstance(tcfg, dict):
+            merged_targets[name] = tcfg
+            continue
+        if name in merged_targets and isinstance(merged_targets[name], dict):
+            merged_targets[name] = _merge_target_override_blocks(
+                merged_targets[name], tcfg
+            )
+        else:
+            merged_targets[name] = dict(tcfg)
+    bp = bo.get("patterns") or {}
+    op = oo.get("patterns") or {}
+    if not isinstance(bp, dict):
+        bp = {}
+    if not isinstance(op, dict):
+        op = {}
+    merged_patterns = {**bp, **op}
+    return {"overrides": {"targets": merged_targets, "patterns": merged_patterns}}
+
+
+def _merge_sql_sampling_from_files(data: dict[str, Any], config_path: Path) -> None:
+    """
+    Merge optional ``sql_sampling_file`` / ``sql_sampling_files`` fragments into ``data['sql_sampling']``.
+
+    Later sources win: files in order, then inline ``sql_sampling`` in the root config.
+    Mutates ``data`` in place.
+    """
+    paths: list[str] = []
+    s1 = data.get("sql_sampling_file")
+    if isinstance(s1, str) and s1.strip():
+        paths.append(s1.strip())
+    s2 = data.get("sql_sampling_files")
+    if isinstance(s2, list):
+        for x in s2:
+            if isinstance(x, str) and x.strip():
+                paths.append(x.strip())
+    if not paths:
+        return
+    base_dir = config_path.parent
+    merged: dict[str, Any] = {}
+    for rel in paths:
+        frag_path = _resolve_path_relative_to_config(base_dir, rel)
+        frag_root = _load_yaml_mapping(frag_path)
+        block = _extract_sql_sampling_fragment(frag_root)
+        if block:
+            merged = _deep_merge_sql_sampling_blocks(merged, block)
+    existing = data.get("sql_sampling")
+    if isinstance(existing, dict) and existing:
+        data["sql_sampling"] = _deep_merge_sql_sampling_blocks(merged, existing)
+    elif merged:
+        data["sql_sampling"] = merged
+
+
 def _normalize_operator_channel_block(d: dict[str, Any]) -> dict[str, Any]:
     """One webhook target: Slack, Teams, Telegram pair, or generic URL."""
     return {
@@ -58,7 +265,7 @@ def _normalize_operator_channel_block(d: dict[str, Any]) -> dict[str, Any]:
 def load_config(path: str | Path) -> dict[str, Any]:
     """
     Load configuration from a YAML or JSON file.
-    Supports unified schema: targets[], file_scan, report, api, sqlite_path, scan, ml_patterns_file, dl_patterns_file, regex_overrides_file, sensitivity_detection, learned_patterns.
+    Supports unified schema: targets[], file_scan, report, api, sqlite_path, scan, ml_patterns_file, dl_patterns_file, regex_overrides_file, sensitivity_detection, learned_patterns, optional sql_sampling_file / sql_sampling_files (YAML fragments merged into sql_sampling before normalize).
     """
     path = Path(path)
     if not path.exists():
@@ -79,13 +286,24 @@ def load_config(path: str | Path) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise ValueError("Config root must be a dict")
 
-    return normalize_config(data)
+    return normalize_config(data, config_path=path)
 
 
-def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
+def normalize_config(
+    data: dict[str, Any], *, config_path: str | Path | None = None
+) -> dict[str, Any]:
     """
     Normalize config to unified schema. Accepts legacy shapes (e.g. databases[] from config.json).
+
+    When ``config_path`` is set, optional ``sql_sampling_file`` / ``sql_sampling_files`` entries
+    are loaded relative to that file's directory and merged into ``sql_sampling`` (inline wins).
     """
+    if not isinstance(data, dict):
+        raise ValueError("Config root must be a dict")
+    data = dict(data)
+    if config_path is not None:
+        _merge_sql_sampling_from_files(data, Path(config_path))
+
     out: dict[str, Any] = {}
 
     # Targets: prefer 'targets'; fallback: build from 'databases' + file_scan
@@ -242,6 +460,8 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
     out["file_scan"]["extensions"] = [
         e if e.startswith(".") else f".{e.lstrip('*')}" for e in exts
     ]
+
+    out["sql_sampling"] = _normalize_sql_sampling(data.get("sql_sampling"))
 
     # Resolve credential-from-env for targets (Phase A: secrets in env, not in config)
     for t in out.get("targets") or []:
@@ -410,6 +630,14 @@ def normalize_config(data: dict[str, Any]) -> dict[str, Any]:
     out["ml_patterns_file"] = data.get("ml_patterns_file") or ""
     out["regex_overrides_file"] = data.get("regex_overrides_file") or ""
     out["dl_patterns_file"] = data.get("dl_patterns_file") or ""
+    _raw_sf = data.get("sql_sampling_file")
+    out["sql_sampling_file"] = _raw_sf.strip() if isinstance(_raw_sf, str) else ""
+    _sfl = data.get("sql_sampling_files")
+    out["sql_sampling_files"] = (
+        [str(x).strip() for x in _sfl if isinstance(x, str) and str(x).strip()]
+        if isinstance(_sfl, list)
+        else []
+    )
 
     # Encoding for pattern files (regex_overrides_file, ml_patterns_file, dl_patterns_file). Default utf-8.
     # Use utf-8, utf-8-sig, cp1252, latin_1, or iso-8859-1 for legacy/multilingual environments.

@@ -5,12 +5,20 @@ run detector, save_finding. Supports PostgreSQL, MySQL, MariaDB, SQLite, MSSQL, 
 
 from collections.abc import Set
 import json
+import os
+import time
 from typing import Any
 from urllib.parse import quote
 
 from sqlalchemy import create_engine, inspect, text
 
+from connectors.sql_sampling import (
+    SamplingManager,
+    TableSamplingMetadata,
+    resolve_sql_sample_limit,
+)
 from core.connector_registry import register
+from core.sampling import SamplingPolicy
 from core.suggested_review import (
     SUGGESTED_REVIEW_PATTERN,
     augment_low_id_like_for_persist,
@@ -59,26 +67,60 @@ ORACLE_SYSTEM_SCHEMAS = frozenset(
     }
 )
 
-_DEFAULT_SKIP_SCHEMAS = {
-    "information_schema",
-    "sys",
-    "pg_catalog",
-    "performance_schema",
-}
+_DEFAULT_SKIP_SCHEMAS: frozenset[str] = frozenset(
+    {
+        "information_schema",
+        "sys",
+        "pg_catalog",
+        "performance_schema",
+        # MySQL system schema (catalog noise in PoCs)
+        "mysql",
+    }
+)
+
+# SQL Server: system / pseudo-schemas (NOLOCK sampling targets user tables only).
+_MSSQL_SKIP_SCHEMAS: frozenset[str] = frozenset(
+    {
+        "SYS",
+        "INFORMATION_SCHEMA",
+        "GUEST",
+    }
+)
+
+# Snowflake account-level noise (uppercase match in _should_skip_schema).
+_SNOWFLAKE_SKIP_SCHEMAS: frozenset[str] = frozenset(
+    {
+        "INFORMATION_SCHEMA",
+        "ACCOUNT_USAGE",
+        "READER_ACCOUNT_USAGE",
+        "SNOWFLAKE",
+    }
+)
 
 
-def _get_skip_schemas(dialect: str) -> Set[str]:
-    """Return the set of schema names to skip when discovering (dialect-specific)."""
-    return ORACLE_SYSTEM_SCHEMAS if dialect == "oracle" else _DEFAULT_SKIP_SCHEMAS
+def _get_skip_schemas(dialect: str) -> frozenset[str]:
+    """Return schema names to skip when discovering (dialect-specific blacklist)."""
+    d = (dialect or "").lower()
+    if d == "oracle":
+        return ORACLE_SYSTEM_SCHEMAS
+    if d in ("mssql", "microsoft sql server"):
+        return _MSSQL_SKIP_SCHEMAS
+    if d == "snowflake":
+        return _SNOWFLAKE_SKIP_SCHEMAS
+    return _DEFAULT_SKIP_SCHEMAS
 
 
 def _should_skip_schema(
-    schema: str | None, dialect: str, skip_schemas: Set[str]
+    schema: str | None, dialect: str, skip_schemas: Set[str] | frozenset[str]
 ) -> bool:
     """True if schema should be skipped (empty or in skip_schemas)."""
     if not schema:
         return True
-    key = schema.upper() if dialect == "oracle" else schema
+    d = (dialect or "").lower()
+    if d in ("oracle", "mssql", "microsoft sql server", "snowflake"):
+        key = schema.upper()
+    else:
+        key = schema.lower()
     return key in skip_schemas
 
 
@@ -177,6 +219,29 @@ def _connect_args_from_target(target: dict[str, Any]) -> dict[str, Any]:
     return {"connect_timeout": connect_s}
 
 
+def _resolve_sample_statement_timeout_ms(target: dict[str, Any]) -> int | None:
+    """
+    Per-target sampling statement budget (ms). Env overrides YAML.
+
+    ``<= 0`` disables hints / ``SET LOCAL`` for that target (operator choice).
+    Default when unset: **5000** ms.
+    """
+    raw_env = os.environ.get("DATA_BOAR_SAMPLE_STATEMENT_TIMEOUT_MS", "").strip()
+    if raw_env:
+        try:
+            v = int(raw_env)
+            return None if v <= 0 else max(250, min(v, 60_000))
+        except ValueError:
+            pass
+    v = target.get("sample_statement_timeout_ms")
+    if v is None and target.get("sample_statement_timeout_seconds") is not None:
+        v = int(float(target["sample_statement_timeout_seconds"])) * 1000
+    if v is None:
+        return 5000
+    vi = int(v)
+    return None if vi <= 0 else max(250, min(vi, 60_000))
+
+
 class SQLConnector:
     """
     Connect to a SQL database, discover tables/columns, sample content, run sensitivity detection,
@@ -190,20 +255,31 @@ class SQLConnector:
         db_manager: Any,
         sample_limit: int = 5,
         detection_config: dict[str, Any] | None = None,
+        sampling_policy: SamplingPolicy | None = None,
     ):
         self.config = target_config
         self.scanner = scanner
         self.db_manager = db_manager
         self.sample_limit = sample_limit
+        self.sampling_policy = sampling_policy
         self.detection_config = detection_config or {}
         self.engine = None
         self._connection = None
+        self._sql_sampling_audit_key: str | None = None
+        self._table_row_cache: dict[tuple[str, str], int | None] = {}
+        self._sample_statement_timeout_ms = _resolve_sample_statement_timeout_ms(
+            self.config
+        )
+        self._inter_query_delay_s = max(
+            0.0, float(self.config.get("inter_query_delay_ms", 0) or 0) / 1000.0
+        )
 
     def connect(self) -> None:
         url = _build_url(self.config)
         connect_args = _connect_args_from_target(self.config)
         self.engine = create_engine(url, pool_pre_ping=True, connect_args=connect_args)
         self._connection = self.engine.connect()
+        self._table_row_cache = {}
 
     def close(self) -> None:
         if self._connection:
@@ -243,6 +319,8 @@ class SQLConnector:
         audit_log_name: str | None = None,
     ) -> None:
         """Sample column, run detection, optionally full-scan for minor; save finding and log."""
+        if self._inter_query_delay_s > 0:
+            time.sleep(self._inter_query_delay_s)
         sample = self.sample(schema, table, cname)
         res = self.scanner.scan_column(cname, sample, connector_data_type=ctype)
         res = augment_low_id_like_for_persist(res, cname, self.detection_config)
@@ -298,7 +376,18 @@ class SQLConnector:
         self, schema: str, table: str, column_name: str, limit: int | None = None
     ) -> str:
         """Fetch up to limit (or sample_limit) values from column; return concatenated string for detection (not stored)."""
-        use_limit = limit if limit is not None else self.sample_limit
+        if limit is not None:
+            use_limit = resolve_sql_sample_limit(limit)
+        else:
+            base = int(self.sample_limit)
+            if self.sampling_policy is not None:
+                base = self.sampling_policy.get_effective_sample_limit(
+                    target_name=str(self.config.get("name") or "database"),
+                    schema=schema or "",
+                    table=table,
+                    global_limit=base,
+                )
+            use_limit = resolve_sql_sample_limit(base)
         dialect = self.engine.dialect.name if self.engine else ""
         # Escape identifier per dialect to prevent SQL injection (identifiers come from discover(), not user input).
         # Double-quote for SQLite/Postgres/Oracle; backtick for MySQL.
@@ -306,32 +395,66 @@ class SQLConnector:
         safe_table = table.replace('"', '""')
         safe_schema = (schema or "").replace('"', '""')
         try:
-            if dialect == "sqlite":
-                q = text(f'SELECT "{safe_col}" FROM "{safe_table}" LIMIT {use_limit}')
-            elif dialect == "mysql":
-                # MySQL uses backticks; escape backtick inside identifiers to prevent injection.
-                def _bk(s: str) -> str:
-                    return s.replace("`", "``")
+            tkey = (schema or "", table)
+            if tkey not in self._table_row_cache:
+                from connectors.sql_table_row_estimate import estimate_table_rows
 
-                t = (
-                    f"`{_bk(safe_schema)}`.`{_bk(safe_table)}`"
-                    if schema
-                    else f"`{_bk(safe_table)}`"
+                self._table_row_cache[tkey] = estimate_table_rows(
+                    self._connection, dialect, schema or "", table
                 )
-                q = text(f"SELECT `{_bk(safe_col)}` FROM {t} LIMIT {use_limit}")
-            elif dialect == "oracle":
-                # Oracle: quoted identifiers; use ROWNUM for limit (no LIMIT)
-                t = f'"{safe_schema}"."{safe_table}"' if schema else f'"{safe_table}"'
-                q = text(
-                    f'SELECT "{safe_col}" FROM {t} WHERE ROWNUM <= :lim'
-                ).bindparams(lim=use_limit)
-            else:
-                t = f'"{safe_schema}"."{safe_table}"' if schema else f'"{safe_table}"'
-                q = text(f'SELECT "{safe_col}" FROM {t} LIMIT {use_limit}')
-            rows = self._connection.execute(q).fetchall()
+            est = self._table_row_cache[tkey]
+            table_meta = TableSamplingMetadata(estimated_row_count=est)
+            to = self._sample_statement_timeout_ms
+            plan = SamplingManager.build_column_sample(
+                dialect,
+                safe_col=safe_col,
+                safe_table=safe_table,
+                safe_schema=safe_schema,
+                schema=schema,
+                limit=use_limit,
+                table_metadata=table_meta,
+                statement_timeout_ms=to,
+            )
+            audit_key = f"{schema or ''}.{table}"
+            if self._sql_sampling_audit_key != audit_key:
+                self._sql_sampling_audit_key = audit_key
+                try:
+                    from utils.logger import get_logger
+
+                    human = plan.human_strategy or plan.strategy_label
+                    msg = "Sampling %s using %s strategy (label=%s dialect=%s)" % (
+                        audit_key,
+                        human,
+                        plan.strategy_label,
+                        dialect,
+                    )
+                    if plan.audit_notes:
+                        msg += " notes=%s" % (plan.audit_notes,)
+                    get_logger().info(msg)
+                except Exception:
+                    pass
+            with self._connection.begin():
+                if dialect in ("postgresql", "postgres") and to:
+                    self._connection.execute(
+                        text("SET LOCAL statement_timeout = :mt").bindparams(mt=int(to))
+                    )
+                rows = self._connection.execute(plan.query).fetchall()
             parts = [str(r[0])[:200] for r in rows if r[0] is not None]
             return " ".join(parts)
-        except Exception:
+        except Exception as e:
+            try:
+                from utils.logger import get_logger
+
+                get_logger().warning(
+                    "sample_skipped schema=%s table=%s col=%s dialect=%s err=%s",
+                    schema or "",
+                    table,
+                    column_name,
+                    dialect,
+                    str(e)[:200],
+                )
+            except Exception:
+                pass
             return ""
 
     def run(self) -> None:
