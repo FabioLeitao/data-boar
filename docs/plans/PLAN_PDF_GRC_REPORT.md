@@ -9,6 +9,8 @@
 
 ## Context
 
+**Stable JSON contract (risk matrix, CISO/DPO):** tracked specification **[`docs/GRC_EXECUTIVE_REPORT_SCHEMA.md`](../GRC_EXECUTIVE_REPORT_SCHEMA.md)** (+ pt-BR pair) and example **[`schemas/grc_executive_report.v1.example.json`](../../schemas/grc_executive_report.v1.example.json)** — implement PDF/export against that shape where possible.
+
 Data Boar currently generates XLSX reports ("em verso" — tabular, column-per-finding).
 A companion PDF report ("em prosa") is needed for enterprise/GRC audiences who share
 reports with legal, compliance, and C-suite stakeholders.

@@ -490,6 +490,8 @@ A aplicação já inclui estes padrões; não é preciso redefini-los a menos qu
 | `CCPA_SSN`    | SSN EUA (XXX-XX-XXXX)                              | CCPA                  |
 | `DATE_DMY`    | Data d/m/a (ex.: 31/12/2024)                       | Personal data context |
 
+**Dígitos verificadores do CPF (opcional):** a validação **Módulo 11** para valores que já coincidem com a *forma* ``LGPD_CPF`` está em ``core.brazilian_cpf`` (``cpf_checksum_valid``, ``normalize_cpf_digits``, ``PIIValidator``) para contratos de laboratório, relatórios personalizados ou *hooks* futuros do *pipeline*. Mantenha ``CPF_SHAPE_PATTERN`` nesse módulo **idêntico** ao *regex* ``LGPD_CPF`` em ``core.detector.DEFAULT_PATTERNS``. Só o *match* por regex **não** prova os dígitos verificadores.
+
 ### Exemplos de padrões adicionais úteis
 
 - **RG (Brasil):** formato varia por estado; uma forma comum é dígitos com pontos opcionais e dígito ou X no final:

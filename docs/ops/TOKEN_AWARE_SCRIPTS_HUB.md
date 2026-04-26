@@ -60,7 +60,9 @@
 | `lab-op.ps1` | SSH report / sync-collect | **`docs/ops/LAB_OP_SHORTHANDS.md`**, **`lab-op-systems-context.mdc`** |
 | `lab-op-sync-and-collect.ps1` | Multi-host batch | **`autonomous-merge-and-lab`** SKILL, private manifest |
 | `lab-completao-inventory-preflight.ps1` | Staleness check on private **`LAB_SOFTWARE_INVENTORY.md`** / **`OPERATOR_SYSTEM_MAP.md`**; optional **`lab-op-sync-and-collect.ps1`** | **`LAB_COMPLETAO_RUNBOOK.md`** (*Inventory freshness*); invoked by **`lab-completao-orchestrate.ps1`** by default |
-| `lab-completao-orchestrate.ps1` | Lab “completão” (preflight + optional **`lab-op-git-ensure-ref`** when **`completaoTargetRef`** / **`-LabGitRef`** + SSH smoke per host + optional HTTP) | **`LAB_COMPLETAO_RUNBOOK.md`** (*Target git ref*), private manifest **`completaoTargetRef`**, **`completaoHealthUrl`**, optional **`completaoEngineMode`:** **`container`** / **`completaoSkipEngineImport`** (Swarm/Podman-only hosts) |
+| `lab-completao-orchestrate.ps1` | Lab “completão” (preflight + optional **`lab-op-git-ensure-ref`** when **`completaoTargetRef`** / **`-LabGitRef`** + optional **data contract** YAML when **`completaoDataContractsPath`** + optional **read-only** **`docker`/`podman` `image inspect`** preflight when **`completaoImageRefs`** + SSH smoke per host + optional HTTP; writes **`completao_*_orchestrate_events.jsonl`**, **`lab_result.json`** with **`audit_trail`** + **`exit_code_semantic`**, optional **`GRC_EXECUTIVE_REPORT.json`** via **`scripts/generate_grc_report.py`**, **`exit`** **0**/**1** on the success path per **`DATA_BOAR_COMPLETAO_EXIT_v1`**) | **`LAB_COMPLETAO_RUNBOOK.md`** (*Structured orchestration events*, *Data contract preflight*, *Telemetry-first exit codes*), **[ADR 0041](../adr/0041-lab-completao-data-contract-preflight.md)**, manifest **`completaoTargetRef`**, **`completaoHealthUrl`**, **`completaoDataContractsPath`**, **`completaoImageRefs`**, **`completaoImageProbeSshHost`**, **`-SkiColleague-KagePreflight`**, optional **`completaoEngineMode`:** **`container`** / **`completaoSkipEngineImport`** |
+| `lab-completao-orchestrate-hybrid-v173.ps1` | Optional high-density path (scp ephemeral config + **`docker`/`podman` run**); **skips run** when image missing on node; **`completao_hybrid_*_events.jsonl`** | **`LAB_COMPLETAO_RUNBOOK.md`** (*Structured orchestration events*); invoked from **`lab-completao-orchestrate.ps1 -HybridLabOpHighDensity173`** |
+| `lab_completao_data_contract_check.py` | Validates required DB columns from a YAML contract (SQLAlchemy URL via env var only); fails fast before host smoke; process exits **`DATA_BOAR_COMPLETAO_EXIT_v1`** (**0** ok, **1** infra/DB reachability, **2** schema/YAML shape, **3** reserved) | **`LAB_COMPLETAO_RUNBOOK.md`** (*Data contract preflight*, *Telemetry-first exit codes*), **`docs/private.example/homelab/completao_data_contracts.example.yaml`**; **`uv run python scripts/lab_completao_data_contract_check.py --contracts <path>`** |
 | `completao-chat-starter.ps1` | Print minimal Cursor chat lines (**`completao`** + **`tier:…`**, plus **`semver:`** / **`tag:`** for **`release-master`**) + suggested command; **`release-master -ReleaseSemver X.Y.Z`** for future tags | **`COMPLETAO_OPERATOR_PROMPT_LIBRARY.md`**, **`COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT*.md`**, **`LAB_COMPLETAO_FRESH_AGENT_BRIEF.md`** (full blocks A–E when prose changes) |
 | `lab-op-git-ensure-ref.ps1` | Check or reset LAB clones to a tag / **`origin/main`** / branch tip | **`LAB_COMPLETAO_RUNBOOK.md`**; invoked by **`lab-completao-orchestrate.ps1`** when a target ref is set |
 | `lab-op-pre-big-bang.ps1` | Pre-Big-Bang gate: tag-aware inventory warmup, **`lab-op-git-ensure-ref`**, operator firewall/fail2ban checklist, optional read-only probes | **`LAB_COMPLETAO_RUNBOOK.md`** (*Pre-Big-Bang gate*) |
@@ -71,6 +73,13 @@
 | `growatt-session-collect.ps1`, `enel-session-collect.ps1` | Session window refresh | **`session-aware-collect`** SKILL, **`session-collect`** keyword |
 | `LAB-ROUTER-01.ps1`, `snmp-LAB-ROUTER-01-lab-probe*.ps1`, `LAB-ROUTER-01-api-*.ps1` | UniFi / LAB-ROUTER-01 | **`homelab-lab-op-data`** SKILL, **`LAB-ROUTER-01-scan`** |
 | `windows-dev-report.ps1` | Dev PC inventory | **`docs/ops/`** homelab matrix docs |
+
+### GRC executive JSON (Python CLIs)
+
+| Script | Role | Wired to |
+| ------ | ---- | -------- |
+| `generate_grc_report.py` | Build ``data_boar_grc_executive_report_v1`` JSON (lab hook; optional raw scan + ``lab_result.json``) | **`LAB_COMPLETAO_RUNBOOK.md`**, **[`REPORTS_AND_COMPLIANCE_OUTPUTS.md`](../REPORTS_AND_COMPLIANCE_OUTPUTS.md)**, **[`GRC_EXECUTIVE_REPORT_SCHEMA.md`](../GRC_EXECUTIVE_REPORT_SCHEMA.md)** |
+| `export_reports.py` | XLSX remediation table + executive PDF from the same v1 JSON | **`report/grc_export_multiformat.py`**, schema + example under **`schemas/`** |
 
 ---
 

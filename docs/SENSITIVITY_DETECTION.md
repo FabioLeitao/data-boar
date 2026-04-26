@@ -492,6 +492,8 @@ The application already includes these patterns; you do not need to redefine the
 | `CCPA_SSN`    | US SSN (XXX-XX-XXXX)                            | CCPA                  |
 | `DATE_DMY`    | Date d/m/y (e.g. 31/12/2024)                    | Personal data context |
 
+**CPF checksum (optional):** Modulo-11 validation for values that already match the ``LGPD_CPF`` *shape* lives in ``core.brazilian_cpf`` (``cpf_checksum_valid``, ``normalize_cpf_digits``, ``PIIValidator``) for lab contracts, custom reports, or future pipeline hooks. Keep ``CPF_SHAPE_PATTERN`` in that module **identical** to the ``LGPD_CPF`` regex string in ``core.detector.DEFAULT_PATTERNS``. A regex hit alone does **not** prove check digits.
+
 ### Examples of useful additional patterns
 
 - **RG (Brazil):** format varies by state; a common form is digits with optional dots and a trailing digit or X:
