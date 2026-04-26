@@ -112,6 +112,8 @@ richmedia = [
 ]
 # Parquet/ORC/Feather (pyarrow), Avro (fastavro), dBase (dbfread) — Tier-1 data soup formats.
 dataformats = ["pyarrow>=14.0.0", "fastavro>=1.9.0", "dbfread>=2.0.7"]
+# GRC executive JSON dashboard (Streamlit + Plotly). Run: ``streamlit run app/dashboard.py``.
+grc-dashboard = ["streamlit>=1.40.0", "plotly>=5.24.0"]
 
 [tool.pytest.ini_options]
 # Fail on any warning (DeprecationWarning, ResourceWarning, etc.) so the suite stays clean
@@ -127,6 +129,8 @@ extend-exclude = ["db", "scanners", "utils", "logging_custom"]
 [tool.ruff.lint.per-file-ignores]
 # Connectors must register before we import connector_for_target; optional deps in try/except
 "core/engine.py" = ["E402"]
+# Streamlit entry: repo root must be on ``sys.path`` before ``app.*`` imports.
+"app/dashboard.py" = ["E402"]
 # Legacy complexity: these functions are I/O-heavy and have large dispatch tables.
 # Tracked in docs/plans/PLAN_LAB_OP_CAPEX_OPEX_PROCUREMENT.md and SonarQube; refactor when safe.
 # New code in these files must NOT add complexity violations — only existing ones are exempted.
@@ -177,6 +181,7 @@ show_error_codes = true
 
 [tool.hatch.build.targets.wheel]
 packages = [
+    "app",
     "analysis",
     "api",
     "config",
@@ -186,6 +191,7 @@ packages = [
     "db",
     "file_scan",
     "logging_custom",
+    "pro",
     "report",
     "scanners",
     "utils",
