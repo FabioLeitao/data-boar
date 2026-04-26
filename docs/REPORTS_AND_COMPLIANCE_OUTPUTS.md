@@ -18,6 +18,7 @@
 | **Audit trail JSON** (`--export-audit-trail`) | **Shipped** | Machine-readable governance snapshot (sessions summary, wipe log, runtime trust, dashboard transport, **maturity integrity counts**). Schema version field: see `core/audit_export.py` and [ADR 0037](adr/0037-data-boar-self-audit-log-governance.md). |
 | **Maturity self-assessment POC** (dashboard questionnaire) | **Shipped (gated)** | When `api.maturity_self_assessment_poc_enabled` and tier allow it: answers stored in SQLite with optional row HMAC; **CSV and Markdown download** via `GET /{locale}/assessment/export?format=csv|md`—not a combined scan PDF. |
 | **Executive PDF (“GRC-like” from scan findings)** | **Planned** | Registered as a **Pro-tier** feature name in `core/licensing/tier_features.py` (`report_pdf`); generator module is **not** present under `report/` yet. Maintainers trace scope via the internal plans tree (plain-text path `docs/plans/`, entry filename **`PLAN_PDF_GRC_REPORT.md`**) from **docs/README** — *Internal and reference*; this doc does **not** link there per [ADR 0004](adr/0004-external-docs-no-markdown-links-to-plans.md). |
+| **GRC executive JSON (risk matrix contract)** | **Partial (Python)** | Spec + example: [GRC_EXECUTIVE_REPORT_SCHEMA.md](GRC_EXECUTIVE_REPORT_SCHEMA.md) ([pt-BR](GRC_EXECUTIVE_REPORT_SCHEMA.pt_BR.md)), [../schemas/grc_executive_report.v1.example.json](../schemas/grc_executive_report.v1.example.json). Consolidator class **`report.grc_reporter.GRCReporter`** builds the payload from caller-supplied rows; optional LGPD-aligned **density** uses **`core.intelligence`** (`calculate_risk`, `PII_MAPPING`) plus **`report.grc_risk_taxonomy`** (`LgpdDensityRiskConfig`, full SQLite ingest still roadmap). Optional **Streamlit** executive viewer: install with ``uv sync --extra grc-dashboard``, then ``streamlit run app/dashboard.py`` (path override: env ``DATA_BOAR_GRC_JSON``). **XLSX + PDF export** from the same JSON: ``uv run python scripts/export_reports.py --input <path-to-v1.json>`` (writes ``*_remediation.xlsx`` and ``*_executive.pdf`` beside the input unless ``--xlsx`` / ``--pdf`` are set); implementation **`report.grc_export_multiformat`**. |
 
 ---
 
@@ -43,6 +44,8 @@ Integrity summaries for those answers can also appear inside **`--export-audit-t
 ---
 
 ## Future “single PDF” and JSON feeding it (design direction)
+
+**GRC JSON contract (CISO/DPO matrix):** before or alongside PDF, use the **risk-matrix** payload described in [GRC_EXECUTIVE_REPORT_SCHEMA.md](GRC_EXECUTIVE_REPORT_SCHEMA.md) so React/Streamlit/report engines share one **audit-ready** shape (`report_metadata`, `executive_summary`, `compliance_mapping` hints, `detailed_findings`, `recommendations`).
 
 When a **scan-linked PDF** ships, a sensible **data contract** is likely to merge:
 

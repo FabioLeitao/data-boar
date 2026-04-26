@@ -89,7 +89,7 @@ O histórico de desenho da detecção de menores está num plano **concluído** 
 
 | Pergunta | Leia primeiro |
 | -------- | --------------- |
-| Como os achados no SQLite viram **Excel**, **heatmap**, **JSON de auditoria** e **CSV/MD de maturidade**? O que está **planeado** vs **entregue** para **PDF** ligado ao scan? | **[REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md](REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md)** ([EN](REPORTS_AND_COMPLIANCE_OUTPUTS.md)) |
+| Como os achados no SQLite viram **Excel**, **heatmap**, **JSON de auditoria** e **CSV/MD de maturidade**? O que está **planeado** vs **entregue** para **PDF** ligado ao scan? Onde está o contrato **JSON GRC** da matriz de risco? | **[REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md](REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md)** ([EN](REPORTS_AND_COMPLIANCE_OUTPUTS.md)) · **[GRC_EXECUTIVE_REPORT_SCHEMA.pt_BR.md](GRC_EXECUTIVE_REPORT_SCHEMA.pt_BR.md)** ([EN](GRC_EXECUTIVE_REPORT_SCHEMA.md)) |
 
 ---
 

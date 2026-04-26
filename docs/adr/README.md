@@ -59,6 +59,7 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0038  | [Jurisdictional ambiguity — alert and inventory, do not decide law](0038-jurisdictional-ambiguity-alert-dont-decide.md) | Accepted |
 | 0039  | [Retention and evidence posture in bonded / customs-adjacent contexts](0039-retention-evidence-posture-bonded-customs-adjacent-contexts.md) | Accepted |
 | 0040  | [Assistant default: private stack evidence mirrors without rhetorical asks](0040-assistant-private-stack-evidence-mirrors-default.md) | Accepted |
+| 0041  | [Lab completão optional data contract preflight before host smoke](0041-lab-completao-data-contract-preflight.md) | Accepted |
 
 ## Related docs
 
