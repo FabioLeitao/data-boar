@@ -88,6 +88,7 @@ except ImportError:
 from core.connector_registry import connector_for_target
 from core.crypto_audit import StrongCryptoSignal, summarize_crypto_from_connection_info
 from core.database import LocalDBManager
+from core.sampling import SamplingPolicy
 from core.scanner import DataScanner
 from core.session import new_session_id
 
@@ -95,6 +96,7 @@ from core.session import new_session_id
 class AuditEngine:
     def __init__(self, config: dict[str, Any], db_path: str | None = None):
         self.config = config
+        self._sampling_policy = SamplingPolicy.from_config(config)
         self.db_path = db_path or config.get("sqlite_path", "audit_results.db")
         self.db_manager = LocalDBManager(self.db_path)
         sens = config.get("sensitivity_detection") or {}
@@ -303,12 +305,16 @@ class AuditEngine:
         else:
             # Database targets (postgresql, mysql, sqlite, mssql, oracle, mongodb, etc.): pass
             # sample_limit from file_scan (row/doc caps) and detection config for optional probes.
+            extra_kw: dict[str, Any] = {}
+            if connector_class.__name__ in ("SQLConnector", "SnowflakeConnector"):
+                extra_kw["sampling_policy"] = self._sampling_policy
             connector = connector_class(
                 target,
                 self.scanner,
                 self.db_manager,
                 sample_limit=sample_limit,
                 detection_config=self.config.get("detection"),
+                **extra_kw,
             )
             # Phase 1: inspect connection info to collect coarse crypto/transport hints.
             name = (target.get("name") or "").strip() or "database"

@@ -18,6 +18,8 @@ The **English-only** keyword table lives in **`.cursor/rules/session-mode-keywor
 
 **Study cadence:** **`study-check`** — situational **`study-cadence-reminders.mdc`**; ladder § *`study-check`*.
 
+**Lab lessons (public archive):** **`lab-lessons`** — situational **`lab-lessons-learned-archive.mdc`**; hub **`LAB_LESSONS_LEARNED.md`** + dated **`lab_lessons_learned/`** per **ADR 0042**; ladder § *Token → rule latch (`lab-lessons`)*.
+
 ## LAB-OP SSH example host
 
 Tracked examples and scripts use the SSH alias **`lab-op`** for the Linux lab server (Docker, reports). Configure **`Host lab-op`** in your dev PC’s **`~/.ssh/config`** so it resolves on your LAN (DNS or mDNS) and uses **ed25519** keys as pre-authorized on the host. Real machine names stay **only** under **`docs/private/homelab/`**. See **`docs/private.example/homelab/README.md`**.

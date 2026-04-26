@@ -26,8 +26,17 @@ Este é um **storyboard em documentação** para oficinas e narrativas de POC. *
 - **Sinaliza** possível relevância de regime via **hints** (quando habilitadas) — sempre com ressalvas de **falso positivo/negativo**.
 - **Não substitui** normas de segurança/aduana nem um DMS completo de fluxo jurídico.
 
+## Oportunidade para parceiros
+
+Integradores e consultorias de compliance usam esta narrativa para compradores **adjacentes a porto** ou **hub logístico** que já falam em “manifesto + lista de tripulação” e precisam de um **primeiro mapa de colisão** antes de financiar um programa GRC multi-anual.
+
+## Alinhamento de produto (maintainers)
+
+Teste de carga para **hints de jurisdição**, texto de **colisão** nos relatórios e superfícies **multilíngues** — sem implicar completude para alfândega. Sequenciamento: [docs/README.pt_BR.md](../README.pt_BR.md) *Internal and reference*.
+
 ## Documentação relacionada
 
+- [use-cases/README.pt_BR.md](README.pt_BR.md) ([EN](README.md)) — hub com outros storyboards de médio porte (advocacia, contabilidade, pharma).
 - [THE_WHY.pt_BR.md](../philosophy/THE_WHY.pt_BR.md) ([EN](../philosophy/THE_WHY.md)) — posicionamento evidência em vez de teatro (seguro para público).
 - [ADR 0039](../adr/0039-retention-evidence-posture-bonded-customs-adjacent-contexts.md) — limite de retenção/evidência em contextos adjacentes à alfândega.
 - [JURISDICTION_COLLISION_HANDLING.pt_BR.md](../JURISDICTION_COLLISION_HANDLING.pt_BR.md) ([EN](../JURISDICTION_COLLISION_HANDLING.md))

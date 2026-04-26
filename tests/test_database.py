@@ -14,6 +14,37 @@ def test_normalize_config_empty():
     assert out["targets"] == []
     assert "file_scan" in out
     assert out["api"].get("port") == 8088
+    assert out.get("sql_sampling") == {
+        "overrides": {"targets": {}, "patterns": {}},
+    }
+    assert out.get("sql_sampling_file") == ""
+    assert out.get("sql_sampling_files") == []
+
+
+def test_normalize_config_sql_sampling_overrides():
+    out = normalize_config(
+        {
+            "targets": [],
+            "report": {"output_dir": "."},
+            "sql_sampling": {
+                "overrides": {
+                    "targets": {
+                        "legacy_oracle": {
+                            "sample_limit": 5,
+                            "tables": {"PROD.USERS": 99},
+                        }
+                    },
+                    "patterns": {"*_audit": 100, "bad": -1, "nope": "x"},
+                },
+            },
+        }
+    )
+    sql = out["sql_sampling"]
+    assert sql["overrides"]["targets"]["legacy_oracle"]["sample_limit"] == 5
+    assert sql["overrides"]["targets"]["legacy_oracle"]["tables"]["PROD.USERS"] == 99
+    assert sql["overrides"]["patterns"]["*_audit"] == 100
+    assert "bad" not in sql["overrides"]["patterns"]
+    assert "nope" not in sql["overrides"]["patterns"]
 
 
 def test_normalize_config_sets_unique_audit_log_names():

@@ -26,8 +26,17 @@ This is a **documentation storyboard** for workshops and POC narratives. It is *
 - **Flags** possible regime relevance via **hints** (when enabled)—always with **false positive/negative** caveats.
 - **Does not** replace customs/security legal frameworks or DPO workflow software.
 
+## Partner opportunity
+
+Integrators and compliance consultancies use this narrative for **port-adjacent** or **logistics hub** buyers who already speak “manifest + crew list” language and need a **first collision map** before funding a multi-year GRC programme.
+
+## Product alignment (maintainers)
+
+Stress-test **jurisdiction hints**, **collision** copy in reports, and **multilingual** token surfaces—without implying customs filing completeness. Maintainer sequencing: [docs/README.md](../README.md) *Internal and reference*.
+
 ## Related docs
 
+- [use-cases/README.md](README.md) ([pt-BR](README.pt_BR.md)) — hub with other mid-market storyboards (law, accounting, pharma).
 - [THE_WHY.md](../philosophy/THE_WHY.md) ([pt-BR](../philosophy/THE_WHY.pt_BR.md)) — evidence-over-theatre positioning (public-safe).
 - [ADR 0039](../adr/0039-retention-evidence-posture-bonded-customs-adjacent-contexts.md) — retention/evidence boundary in customs-adjacent contexts.
 - [JURISDICTION_COLLISION_HANDLING.md](../JURISDICTION_COLLISION_HANDLING.md) ([pt-BR](../JURISDICTION_COLLISION_HANDLING.pt_BR.md))

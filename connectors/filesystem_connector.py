@@ -387,7 +387,9 @@ def _scan_sqlite_file_as_db(
     Returns list of findings (dicts for save_finding source_type=filesystem); file_name encodes table.column.
     No raw content stored.
     """
-    from sqlalchemy import create_engine, inspect, text
+    from sqlalchemy import create_engine, inspect
+
+    from connectors.sql_sampling import SamplingManager, resolve_sql_sample_limit
 
     findings = []
     try:
@@ -396,6 +398,8 @@ def _scan_sqlite_file_as_db(
         return []
     try:
         inspector = inspect(engine)
+        eff_limit = resolve_sql_sample_limit(sample_limit)
+        sqlite_logged: set[str] = set()
         with engine.connect() as conn:
             for table in inspector.get_table_names():
                 try:
@@ -409,11 +413,29 @@ def _scan_sqlite_file_as_db(
                     try:
                         safe_table = table.replace('"', '""')
                         safe_col = cname.replace('"', '""')
-                        row = conn.execute(
-                            text(
-                                f'SELECT "{safe_col}" FROM "{safe_table}" LIMIT {sample_limit}'
-                            )
+                        plan = SamplingManager.build_column_sample(
+                            "sqlite",
+                            safe_col=safe_col,
+                            safe_table=safe_table,
+                            safe_schema="",
+                            schema=None,
+                            limit=eff_limit,
+                            table_metadata=None,
                         )
+                        log_key = f"{file_path.name}:{table}"
+                        if log_key not in sqlite_logged:
+                            sqlite_logged.add(log_key)
+                            try:
+                                from utils.logger import get_logger
+
+                                get_logger().info(
+                                    "sql_sampling table=%s strategy=%s dialect=sqlite",
+                                    log_key,
+                                    plan.strategy_label,
+                                )
+                            except Exception:
+                                pass
+                        row = conn.execute(plan.query)
                         for r in row:
                             if r[0] is not None:
                                 sample_parts.append(str(r[0])[:200])

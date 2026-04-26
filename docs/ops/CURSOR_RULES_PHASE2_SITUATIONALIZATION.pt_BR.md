@@ -25,6 +25,7 @@ Estas regras passam a carregar por **`globs`** e/ou **`@…`** / tokens de sess�
 | Arquivo de regra | Função (resumo) | Presilha típica |
 | ---------------- | --------------- | --------------- |
 | **`lab-completao-workflow.mdc`** | Completão no lab, SSH, evidência | **`completao`**, `scripts/lab-completao*`, `docs/ops/LAB_COMPLETAO*` |
+| **`lab-lessons-learned-archive.mdc`** | Arquivo público de lições de lab (snapshots datados + hub + planos) | **`lab-lessons`**, `docs/ops/LAB_LESSONS*`, `docs/ops/lab_lessons_learned/**`, `docs/ops/SPRINT_*POSTMORTEM*` |
 | **`dossier-update-on-evidence.mdc`** | Evidência jurídica / trabalhista privada | **`legal-dossier-update`**, `docs/private/legal_dossier/**`, `raw_pastes/**` |
 | **`homelab-ssh-via-terminal.mdc`** | LAN / SSH / mesmo PC que o operador | **`homelab`**, `docs/ops/HOMELAB*`, `scripts/lab-op*`, etc. |
 | **`docs-private-workspace-context.mdc`** | Git privado empilhado + cadência em `docs/private/` | **`private-stack-sync`**, caminhos do ritual privado |

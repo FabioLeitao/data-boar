@@ -6,7 +6,7 @@ This note separates **verified evidence** from **aspirational lab targets**. Onl
 
 ## Verified in this repository session (evidence-backed)
 
-Source of truth: [LAB_LESSONS_LEARNED.md](LAB_LESSONS_LEARNED.md), `tests/benchmarks/official_benchmark_200k.json`, checkpoint file from kill test.
+Source of truth: [LAB_LESSONS_LEARNED.md](LAB_LESSONS_LEARNED.md) (hub; dated snapshot: [lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md](lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md)), `tests/benchmarks/official_benchmark_200k.json`, checkpoint file from kill test.
 
 | Topic | Result |
 | ----- | ------ |

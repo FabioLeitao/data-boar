@@ -18,6 +18,8 @@ A tabela de palavras-chave **só em inglês** está em **`.cursor/rules/session-
 
 **Cadência de estudo:** **`study-check`** — **`study-cadence-reminders.mdc`** **situacional**; escada § *`study-check`*.
 
+**Lições de lab (arquivo público):** **`lab-lessons`** — **`lab-lessons-learned-archive.mdc`** **situacional**; hub **`LAB_LESSONS_LEARNED.md`** + **`lab_lessons_learned/`** datados conforme **ADR 0042**; escada § *Presilha token → regra (`lab-lessons`)*.
+
 ## Exemplo de host SSH no LAB-OP
 
 Exemplos versionados e scripts usam o alias SSH **`lab-op`** para o servidor Linux do lab (Docker, reports). Configure **`Host lab-op`** no **`~/.ssh/config`** do PC de desenvolvimento para resolver na LAN (DNS ou mDNS) e usar chaves **ed25519** já autorizadas no host. Nomes reais de máquina ficam **só** em **`docs/private/homelab/`**. Ver **`docs/private.example/homelab/README.md`**.

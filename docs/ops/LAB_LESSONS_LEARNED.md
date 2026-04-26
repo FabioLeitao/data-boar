@@ -1,74 +1,42 @@
-# LAB Lessons Learned (QA/SRE)
+# LAB Lessons Learned (QA/SRE) — hub
 
-Date: 2026-04-25 (UTC-3 session)
+**Português (Brasil):** this page is English-only by convention (same as ADRs and plan prose); the archive folder has **[`lab_lessons_learned/README.pt_BR.md`](lab_lessons_learned/README.pt_BR.md)**.
 
-## Scope Executed
+## What this file is
 
-- Rust extension accessibility check (`boar_fast_filter` import in project `.venv`).
-- Official benchmark run (`tests/benchmarks/run_official_bench.py`).
-- Kill-and-resume checkpoint validation using `ProOrchestrator` + `BoarStateTracker`.
-- Throttler behavior observation during scan.
+- **Rolling hub** for the latest lab QA / SRE cycle: scope, verdict, and pointers to **evidence files** (benchmark JSON, checkpoint behaviour, etc.).
+- **Immutable history** lives under **`docs/ops/lab_lessons_learned/`** as dated snapshots — see **[`lab_lessons_learned/README.md`](lab_lessons_learned/README.md)** for the contract and ritual.
 
-## 1) Performance (OpenCore vs Pro+)
+## Latest session (summary)
 
-Source: `tests/benchmarks/official_benchmark_200k.json`
+**Date:** 2026-04-25 (UTC−3).
 
-- Rows: `200,000`
-- Workers: `8`
-- OpenCore time: `0.252242s`
-- Pro+ time: `0.439419s`
-- Performance gain: `0.574x` (Pro+ slower in this benchmark profile)
-- Findings parity: `100,000` hits in both paths
+**Verdict (short):** Rust `boar_fast_filter` import **OK**; checkpoint + kill-resume **OK**; throttler ramp to max workers **OK**; official 200k benchmark shows Pro path **slower** than OpenCore in the tested profile (**0.574x** — not a business-case speedup yet).
 
-QA note:
+**Full narrative (frozen):** [`lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md`](lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md)
 
-- This benchmark shape is pre-filter dominated and includes multiprocessing overhead.
-- Result is valid but not yet a "Pro+ speedup" business-case profile.
-- Next tuning target: larger payload/chunk calibration + heavier downstream scan stage.
+**Evidence paths (repo):**
 
-## 2) Checkpoint Efficacy (Kill Test)
+- `tests/benchmarks/official_benchmark_200k.json`
+- Kill/resume scenario uses gitignored local DB + state — see `.gitignore` (`data/qa_completao_*`).
 
-Scenario:
+## Archived sessions (public)
 
-- Dataset: `data/qa_completao_300k.db` (`300,000` rows).
-- Checkpoint file: `data/qa_completao_state.json`.
-- Process force-killed mid-run.
+| Session date | Snapshot |
+| ------------ | -------- |
+| 2026-04-25 | [`lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md`](lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md) |
 
-Observed state after kill:
+## Follow-ups → plans (tracked)
 
-- `last_processed_id`: `104000`
-- `status`: `IN_PROGRESS`
+When a lesson becomes engineering work, promote it to **`docs/plans/PLANS_TODO.md`** (and refresh `python scripts/plans-stats.py --write`). Current bridge from the 2026-04-25 session:
 
-Resume run outcome:
+| Topic | Bridge |
+| ----- | ------ |
+| Pro+ benchmark / executive claims | Verified vs aspirational table: [`docs/ops/SPRINT_GREAT_LEAP_POSTMORTEM.md`](SPRINT_GREAT_LEAP_POSTMORTEM.md); production-like benchmark profile before uplift narrative. |
+| Integrity / tamper posture | [`docs/ops/INTEGRITY_CHECK_ALPHA_LOGIC.md`](INTEGRITY_CHECK_ALPHA_LOGIC.md), [`docs/ops/RELEASE_INTEGRITY.md`](RELEASE_INTEGRITY.md), plan row **Build identity & release integrity** in `PLANS_TODO.md`. |
+| Completão narrative (private) | Use `docs/private/homelab/COMPLETAO_SESSION_*.md` per [`docs/ops/LAB_COMPLETAO_RUNBOOK.md`](LAB_COMPLETAO_RUNBOOK.md); mirror **numbers and pass/fail** here only. |
 
-- Final state: `last_processed_id=300000`, `status=COMPLETED`.
-- Resume findings count: `147000`.
-- Consistency check: remaining rows = `300000 - 104000 = 196000`; with 3/4 flagged pattern => `147000` expected.
-- Conclusion: resume continued from the saved offset without evidence of reset-to-zero.
+## Automation / assistant latch
 
-## 3) Throttling Behavior
-
-Observed during resumed scan:
-
-- `BoarThrottler.current_workers` reached `8` (configured max).
-- Starting baseline is `1`; reaching `8` confirms adaptive concurrency adjustments occurred while scan progressed.
-
-SRE conclusion:
-
-- Throttler path is active in runtime and reacts by increasing concurrency in stable latency conditions.
-
-## Final QA/SRE Verdict (this cycle)
-
-- Rust bridge: **OK** (built and importable in `.venv`).
-- Checkpoint + resume after forced termination: **OK**.
-- Throttler adjustment during scan: **OK**.
-- Official benchmark business-case speedup: **NOT MET YET** in current profile (`0.574x`).
-
-Recommended next step:
-
-- Run benchmark with production-like workload (larger chunks + heavier post-filter stage) before claiming Pro+ performance uplift in executive material.
-
-## Related governance notes
-
-- Verified vs aspirational metrics: [docs/ops/SPRINT_GREAT_LEAP_POSTMORTEM.md](docs/ops/SPRINT_GREAT_LEAP_POSTMORTEM.md) ([pt-BR](docs/ops/SPRINT_GREAT_LEAP_POSTMORTEM.pt_BR.md)).
-- Integrity defense design spec: [docs/ops/INTEGRITY_CHECK_ALPHA_LOGIC.md](docs/ops/INTEGRITY_CHECK_ALPHA_LOGIC.md) ([pt-BR](docs/ops/INTEGRITY_CHECK_ALPHA_LOGIC.pt_BR.md)).
+- **Session token:** **`lab-lessons`** (English-only) loads **`.cursor/rules/lab-lessons-learned-archive.mdc`** when globs do not attach it — see [`docs/ops/OPERATOR_AGENT_COLD_START_LADDER.md`](OPERATOR_AGENT_COLD_START_LADDER.md) § *Token → rule latch (`lab-lessons`)`.
+- **ADR:** [`docs/adr/0042-lab-lessons-learned-archive-contract.md`](../adr/0042-lab-lessons-learned-archive-contract.md).
