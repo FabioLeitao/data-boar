@@ -12,9 +12,20 @@ from connectors.sql_connector import (
     _connect_args_from_target,
     _discover_fallback_no_schemas,
     _get_skip_schemas,
+    _resolve_sample_statement_timeout_ms,
     _should_skip_schema,
 )
 from sqlalchemy import create_engine, inspect
+
+
+def test_resolve_sample_statement_timeout_ms_default():
+    assert _resolve_sample_statement_timeout_ms({}) == 5000
+
+
+def test_resolve_sample_statement_timeout_ms_explicit_zero_disables():
+    assert (
+        _resolve_sample_statement_timeout_ms({"sample_statement_timeout_ms": 0}) is None
+    )
 
 
 def test_get_skip_schemas_oracle_uses_system_schemas():
@@ -29,6 +40,20 @@ def test_get_skip_schemas_non_oracle_uses_default():
     skip = _get_skip_schemas("postgresql")
     assert "information_schema" in skip
     assert "pg_catalog" in skip
+    assert "mysql" in skip
+
+
+def test_get_skip_schemas_mssql_system_schemas():
+    skip = _get_skip_schemas("mssql")
+    assert "SYS" in skip
+    assert "GUEST" in skip
+    assert "INFORMATION_SCHEMA" in skip
+
+
+def test_get_skip_schemas_snowflake_account_noise():
+    skip = _get_skip_schemas("snowflake")
+    assert "INFORMATION_SCHEMA" in skip
+    assert "ACCOUNT_USAGE" in skip
 
 
 def test_should_skip_schema_empty():
@@ -49,6 +74,15 @@ def test_should_skip_schema_when_in_set():
 def test_should_skip_schema_oracle_uppercase():
     """Oracle dialect: comparison uses schema.upper()."""
     assert _should_skip_schema("sys", "oracle", {"SYS"}) is True
+
+
+def test_should_skip_schema_mssql_guest_case_insensitive():
+    assert _should_skip_schema("guest", "mssql", _get_skip_schemas("mssql")) is True
+
+
+def test_should_skip_schema_postgresql_information_schema_mixed_case():
+    skip = _get_skip_schemas("postgresql")
+    assert _should_skip_schema("Information_Schema", "postgresql", skip) is True
 
 
 def test_sql_connector_discover_sqlite_in_memory(tmp_path):
@@ -178,3 +212,30 @@ def test_connect_args_from_target_clamped():
     }
     args = _connect_args_from_target(target)
     assert args["connect_timeout"] >= 1
+
+
+def test_sql_connector_sample_sparse_column_prefers_non_null(tmp_path):
+    """Many leading NULLs then a value: IS NOT NULL in SQL still returns the value within LIMIT."""
+    db_path = tmp_path / "sparse_sample.db"
+    conn = sqlite3.connect(str(db_path))
+    conn.execute("CREATE TABLE sparse_t (c TEXT)")
+    for _ in range(25):
+        conn.execute("INSERT INTO sparse_t (c) VALUES (NULL)")
+    conn.execute("INSERT INTO sparse_t (c) VALUES ('marker_value')")
+    conn.commit()
+    conn.close()
+
+    target = {
+        "type": "database",
+        "driver": "sqlite",
+        "database": str(db_path),
+        "name": "SparseDB",
+    }
+    connector = SQLConnector(target, MagicMock(), MagicMock(), sample_limit=5)
+    connector.connect()
+    try:
+        sample = connector.sample("", "sparse_t", "c")
+    finally:
+        connector.close()
+
+    assert "marker_value" in sample

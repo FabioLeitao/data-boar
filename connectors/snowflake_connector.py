@@ -17,9 +17,20 @@ Target config (type: database, driver: snowflake):
     role: "ANALYST"           # optional
 """
 
+import time
 from typing import Any
 
+from connectors.sql_connector import (
+    _get_skip_schemas,
+    _resolve_sample_statement_timeout_ms,
+    _should_skip_schema,
+)
+from connectors.sql_sampling import (
+    column_sample_sql_for_cursor,
+    resolve_sql_sample_limit,
+)
 from core.connector_registry import register
+from core.sampling import SamplingPolicy
 from core.suggested_review import (
     SUGGESTED_REVIEW_PATTERN,
     augment_low_id_like_for_persist,
@@ -47,13 +58,22 @@ class SnowflakeConnector:
         db_manager: Any,
         sample_limit: int = 5,
         detection_config: dict[str, Any] | None = None,
+        sampling_policy: SamplingPolicy | None = None,
     ):
         self.config = target_config
         self.scanner = scanner
         self.db_manager = db_manager
         self.sample_limit = max(int(sample_limit or 5), 1)
+        self.sampling_policy = sampling_policy
         self.detection_config = detection_config or {}
         self._conn = None
+        self._sql_sampling_audit_key: str | None = None
+        self._sample_statement_timeout_ms = _resolve_sample_statement_timeout_ms(
+            self.config
+        )
+        self._inter_query_delay_s = max(
+            0.0, float(self.config.get("inter_query_delay_ms", 0) or 0) / 1000.0
+        )
 
     def connect(self) -> None:
         if not _SNOWFLAKE_AVAILABLE:
@@ -121,9 +141,13 @@ class SnowflakeConnector:
             ORDER BY table_schema, table_name
             """
         )
+        skip = _get_skip_schemas("snowflake")
         out: list[dict[str, str]] = []
         for schema, table in rows:
-            out.append({"schema": str(schema or ""), "table": str(table or "")})
+            s = str(schema or "")
+            if _should_skip_schema(s, "snowflake", skip):
+                continue
+            out.append({"schema": s, "table": str(table or "")})
         return out
 
     def _get_columns(self, schema: str, table: str) -> list[dict[str, str]]:
@@ -152,18 +176,48 @@ class SnowflakeConnector:
         if self._conn is None:
             return ""
 
-        # Simple identifier quoting; names come from information_schema, not user input.
-        def _q(identifier: str) -> str:
-            return '"' + identifier.replace('"', '""') + '"'
+        # Identifier escaping matches SamplingManager / SQLAlchemy path (names from information_schema).
+        safe_col = column.replace('"', '""')
+        safe_table = table.replace('"', '""')
+        safe_schema = (schema or "").replace('"', '""')
+        base = int(self.sample_limit)
+        if self.sampling_policy is not None:
+            base = self.sampling_policy.get_effective_sample_limit(
+                target_name=str(self.config.get("name") or "database"),
+                schema=schema or "",
+                table=table,
+                global_limit=base,
+            )
+        lim = resolve_sql_sample_limit(base)
+        sql, _binds, strategy_label, _notes, human = column_sample_sql_for_cursor(
+            "snowflake",
+            safe_col=safe_col,
+            safe_table=safe_table,
+            safe_schema=safe_schema,
+            schema=schema or None,
+            limit=lim,
+            table_metadata=None,
+            statement_timeout_ms=self._sample_statement_timeout_ms,
+        )
+        audit_key = f"{schema}.{table}"
+        if self._sql_sampling_audit_key != audit_key:
+            self._sql_sampling_audit_key = audit_key
+            try:
+                from utils.logger import get_logger
 
-        full_table = f"{_q(schema)}.{_q(table)}" if schema else _q(table)
-        col = _q(column)
-        sql = f"SELECT {col} FROM {full_table} LIMIT {self.sample_limit}"
+                get_logger().info(
+                    "Sampling %s using %s strategy (label=%s dialect=snowflake)",
+                    audit_key,
+                    human,
+                    strategy_label,
+                )
+            except Exception:
+                pass
         cur = self._conn.cursor()
         parts: list[str] = []
         try:
             cur.execute(sql)
-            for row in cur.fetchmany(self.sample_limit):
+            for row in cur.fetchmany(lim):
                 if row and row[0] is not None:
                     parts.append(str(row[0])[:200])
         except Exception:
@@ -199,6 +253,8 @@ class SnowflakeConnector:
                 table = t["table"]
                 columns = self._get_columns(schema, table)
                 for col in columns:
+                    if self._inter_query_delay_s > 0:
+                        time.sleep(self._inter_query_delay_s)
                     cname = col["name"]
                     ctype = col["type"]
                     sample = self._sample_column(schema, table, cname)

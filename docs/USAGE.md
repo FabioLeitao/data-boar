@@ -388,7 +388,7 @@ CLI uses the path you pass with `--config` (e.g. `config.yaml`). For the **web s
 ### Config file location and shape
 
 - **Location:** Any path; typical names: `config.yaml`, `config/config.json`. Legacy `config/config.json` with `databases` and `file_scan.directories` is normalized automatically.
-- **Root keys:** `targets`, `file_scan`, `report`, `api`, `sqlite_path`, `scan`, **`rate_limit`**, **`timeouts`**, optional `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection`, `learned_patterns`, **`pattern_files_encoding`**.
+- **Root keys:** `targets`, `file_scan`, `report`, `api`, `sqlite_path`, `scan`, **`rate_limit`**, **`timeouts`**, optional **`sql_sampling`** (hierarchical row caps for SQL/Snowflake targets), optional `ml_patterns_file`, `dl_patterns_file`, `regex_overrides_file`, `sensitivity_detection`, `learned_patterns`, **`pattern_files_encoding`**.
 
 ### Starter config (copy-paste) and where to look first {#starter-config-samples}
 
@@ -856,6 +856,26 @@ file_scan:
   #   ".pptx": "presentation-pass"
   #   default: "fallback-for-any-encrypted"
 
+```
+
+**Relational database sampling (SQLAlchemy SQL targets + Snowflake connector):** Per-column reads apply `WHERE <column> IS NOT NULL` before the row cap so sparse columns still yield non-empty samples for the detector when non-null values exist. Optional process environment variable **`DATA_BOAR_SQL_SAMPLE_LIMIT`** (integer, clamped to **1** through **10000**) **replaces** `file_scan.sample_limit` for those connectors when set—useful for production break-glass without editing YAML. Optional YAML **`sql_sampling.overrides`** tightens or loosens the default **per target name** (must match `targets[].name`), **per table** under that target (`schema.table` or bare `table`), then **per table name pattern** (`fnmatch`, e.g. `*_audit`) before falling back to `file_scan.sample_limit`. You may split overrides into a separate file (same schema as the `sql_sampling` block or bare `overrides:`) and reference it with root keys **`sql_sampling_file`** (single path) and/or **`sql_sampling_files`** (list, merged in order; later files override earlier ones). Inline `sql_sampling` in the main config **wins** over fragments when the same key is set. Paths are relative to the main config file’s directory; relative paths must not escape that directory (`..` is rejected). **`load_config`** and **`normalize_config(..., config_path=...)`** expand fragments; calling **`normalize_config(dict)`** without `config_path` does **not** read external files. Implementation: `core/sampling.py` / `core/sampling_policy.py` + `connectors/sql_sampling.py` — `SamplingManager` picks a **strategy label** per dialect (and optional table metadata); `SQLConnector` / Snowflake / embedded SQLite-as-DB log that label **once per table** at INFO for a short audit trail. Legacy entry point: `SqlColumnSampleQueryBuilder.build` → same SQL.
+
+**SRE sampling knobs (database targets):** Generated sampling statements start with the line comment **`-- Data Boar Compliance Scan`** so operators can attribute activity in engine views. On each **database** target you may set **`sample_statement_timeout_ms`** or **`sample_statement_timeout_seconds`** (use **`0`** to disable); when unset the connector defaults to **5000 ms** for short reads. That budget drives SQL Server **`OPTION (MAX_EXECUTION_TIME=…)`**, a MySQL **`MAX_EXECUTION_TIME`** hint, and a per-sample PostgreSQL **`SET LOCAL statement_timeout`** (wrapped in a short transaction). **`DATA_BOAR_SAMPLE_STATEMENT_TIMEOUT_MS`** overrides the budget from the process environment. Optional **`inter_query_delay_ms`** adds a sleep between column samples to reduce burst load. Approximate table sizes for “large table” sampling strategies come from **catalog statistics** (`connectors/sql_table_row_estimate.py`), never **`COUNT(*)`** on the heap.
+
+```yaml
+# Optional: convention-over-config row caps for SQL + Snowflake (still clamped by DATA_BOAR_SQL_SAMPLE_LIMIT when set).
+# sql_sampling_file: configs/sampling_overrides.yaml   # optional fragment (YAML) merged before inline block below
+# sql_sampling_files: [configs/team_a.yaml, configs/team_b.yaml]
+sql_sampling:
+  overrides:
+    targets:
+      legacy_oracle_db:
+        sample_limit: 5
+        tables:
+          "HR.PAYROLL": 2
+    patterns:
+      "*_audit": 100
+      "*_logs": 50
 ```
 
 **Scan inside compressed files (`scan_compressed`, `max_inner_size`):** Enabling **`scan_compressed: true`** may **significantly increase run time, disk I/O and temporary space**. Use it only when you need to inspect contents of archives; when first enabling it, consider a smaller target scope (e.g. one directory or a limited set of paths). The **`max_inner_size`** value is validated and clamped to 1 MB–500 MB; if invalid or omitted, a safe default (10 MB) is used so that very large inner members are skipped.
