@@ -7,12 +7,12 @@
   Manifest-driven orchestration remains the default: .\\scripts\\lab-completao-orchestrate.ps1 (no -HybridLabOpHighDensity173).
   Resolves SSH targets from **docs/private/homelab/lab-op-hosts.manifest.json** (`sshHost` + first `repoPaths` entry), same family as **lab-completao-orchestrate.ps1**.
   **LAB-NODE-02 scan path:** uses **`/home/leitao/Documents`** if present, else **`/home/leitao/documents`** (Zorin/GNOME vs lowercase checklist path).
-  **Containers (LAB-NODE-01 / LAB-NODE-03 / lab-node-02):** if **`tmux has-session -t completao`** succeeds on the host, sends **`tmux send-keys -t completao '…' Enter`** (container runs **asynchronously** in that pane). Otherwise runs **`podman`/`docker`** via **`ssh … bash -lc '…'`** (one-shot, no tmux required). Narrow **sudoers** / **-Privileged** in **lab-completao-host-smoke** is for **read-only host probes** only.
+  **Containers (LAB-NODE-01 / LAB-NODE-03 / lab-node-02):** if **`tmux has-session -t completao`** succeeds on the host, sends **`tmux send-keys -t completao '...' Enter`** (container runs **asynchronously** in that pane). Otherwise runs **`podman`/`docker`** via **`ssh ... bash -lc '...'`** (one-shot, no tmux required). Narrow **sudoers** / **-Privileged** in **lab-completao-host-smoke** is for **read-only host probes** only.
   **LAB-NODE-04:** passive SSH uses the manifest **repo** path so **`.venv/bin/python3`** is the clone venv under **`Projects/dev/data-boar`**, not **`~/.venv`**.
   Requires OpenSSH **scp**/**ssh** on the dev PC and non-interactive SSH.
 
 .NOTES
-  Orquestrador v1.7.3 - Lab-Op High-Density Test (ASCII-only for Windows PowerShell 5.1).
+  Hybrid orchestrator v1.7.3 - Lab-Op High-Density Test (ASCII-only for Windows PowerShell 5.1).
 #>
 $ErrorActionPreference = "Stop"
 
@@ -79,6 +79,63 @@ $TmuxSessionName = "completao"
 
 # Docker Hub semver tag (see docs/releases/1.7.3.md); avoid :v1.7.3 unless that tag exists on Hub.
 $ImageRef = "fabioleitao/data_boar:1.7.3"
+
+$outDirHybrid = Join-Path $RepoRoot "docs\private\homelab\reports"
+New-Item -ItemType Directory -Force -Path $outDirHybrid | Out-Null
+$stampHybrid = Get-Date -Format "yyyyMMdd_HHmmss"
+$eventsPathHybrid = Join-Path $outDirHybrid "completao_hybrid_${stampHybrid}_events.jsonl"
+
+function Invoke-HybridCmdCapture {
+    param([Parameter(Mandatory = $true)][string]$CmdLine)
+    return (& cmd.exe /c $CmdLine | Out-String)
+}
+
+function Write-HybridCompletaoEvent {
+    param(
+        [Parameter(Mandatory = $true)][string]$Phase,
+        [Parameter(Mandatory = $true)][string]$Status,
+        [string]$Message = "",
+        [string]$HostLabel = "",
+        [hashtable]$Detail = $null
+    )
+    $o = [ordered]@{
+        v       = 1
+        ts      = (Get-Date).ToUniversalTime().ToString("o")
+        phase   = $Phase
+        status  = $Status
+        message = $Message
+        host    = $HostLabel
+    }
+    if ($null -ne $Detail -and $Detail.Count -gt 0) {
+        $o.detail = $Detail
+    }
+    $json = ($o | ConvertTo-Json -Compress -Depth 6)
+    $enc = New-Object System.Text.UTF8Encoding $false
+    [System.IO.File]::AppendAllText($eventsPathHybrid, $json + [Environment]::NewLine, $enc)
+}
+
+function Test-HybridRemoteDockerImage {
+    param(
+        [Parameter(Mandatory = $true)][string]$Target,
+        [Parameter(Mandatory = $true)][string]$Engine,
+        [Parameter(Mandatory = $true)][string]$Image
+    )
+    if ($Image -notmatch '^[a-zA-Z0-9_.\/:@-]+$') {
+        return $false
+    }
+    $ir = $Image -replace "'", "'\''"
+    if ($Engine -eq "podman") {
+        $inner = "podman image inspect '$ir' >/dev/null 2>&1 && echo HYBRID_IMG_OK || echo HYBRID_IMG_MISSING"
+    } else {
+        $inner = "docker image inspect '$ir' >/dev/null 2>&1 && echo HYBRID_IMG_OK || echo HYBRID_IMG_MISSING"
+    }
+    $innerEsc = $inner.Replace('"', '\"')
+    $remoteLine = "ssh.exe -o BatchMode=yes -o ConnectTimeout=45 $Target `"$innerEsc`" 2>&1"
+    $out = Invoke-HybridCmdCapture -CmdLine $remoteLine
+    return ($LASTEXITCODE -eq 0 -and $out -match "HYBRID_IMG_OK")
+}
+
+Write-HybridCompletaoEvent -Phase "hybrid_orchestrate" -Status "ok" -Message "start" -Detail @{ image = $ImageRef }
 
 function Deploy-Config {
     param(
@@ -172,13 +229,13 @@ function Invoke-HybridContainerRun {
     }
 
     if (Test-HybridTmuxSession -Target $Target -SessionName $TmuxSessionName) {
-        Write-Host "Hybrid ${NodeLabel}: tmux session '$TmuxSessionName' found — send-keys (run continues in pane)." -ForegroundColor DarkCyan
+        Write-Host "Hybrid ${NodeLabel}: tmux session '$TmuxSessionName' found - send-keys (run continues in pane)." -ForegroundColor DarkCyan
         $remote = "tmux send-keys -t $TmuxSessionName '$runLine' Enter"
         & ssh.exe -o BatchMode=yes -o ConnectTimeout=30 $Target $remote
         return $LASTEXITCODE
     }
 
-    Write-Host "Hybrid ${NodeLabel}: no tmux session '$TmuxSessionName' — direct run (bash -lc)." -ForegroundColor DarkGray
+    Write-Host "Hybrid ${NodeLabel}: no tmux session '$TmuxSessionName' - direct run (bash -lc)." -ForegroundColor DarkGray
     $inner = $runLine
     $remote = "bash -lc '$inner'"
     & ssh.exe -o BatchMode=yes -o ConnectTimeout=$ConnectTimeoutSec -o ServerAliveInterval=15 -o ServerAliveCountMax=20 $Target $remote
@@ -186,7 +243,7 @@ function Invoke-HybridContainerRun {
 }
 
 foreach ($n in $Nodes) {
-    Write-Host ">>> Preparando No: $($n.Name) ($($n.SshHost))" -ForegroundColor Cyan
+    Write-Host ">>> Hybrid node: $($n.Name) ($($n.SshHost))" -ForegroundColor Cyan
     $target = $n.SshHost
     if (-not (Test-HybridSshOk -Target $target)) {
         Write-Warning "Hybrid health: SSH probe failed for $($n.Name) ($target) - skip (skip-on-failure)."
@@ -222,14 +279,28 @@ foreach ($n in $Nodes) {
         continue
     }
 
-    Deploy-Config -Node $n -Path $scanPath
-
     $engine = if ($n.Type -eq "podman") { "podman" } else { "docker" }
-    $rc = Invoke-HybridContainerRun -Target $target -Engine $engine -Image $ImageRef -NodeLabel $n.Name
-    if ($rc -ne 0) {
-        Write-Warning "Hybrid: $engine run failed on $($n.Name) ($target) exit=$rc - skip-on-failure."
+    try {
+        Deploy-Config -Node $n -Path $scanPath
+        if (-not (Test-HybridRemoteDockerImage -Target $target -Engine $engine -Image $ImageRef)) {
+            Write-HybridCompletaoEvent -Phase "image_preflight" -Status "skipped" -Message "image_missing_skip_container_run" -HostLabel $n.Name -Detail @{ image = $ImageRef; engine = $engine }
+            Write-Warning "Hybrid: image $ImageRef not present on $($n.Name) ($target) - skip container run (idempotent preflight)."
+            continue
+        }
+        Write-HybridCompletaoEvent -Phase "image_preflight" -Status "ok" -Message "image_present" -HostLabel $n.Name -Detail @{ image = $ImageRef }
+        $rc = Invoke-HybridContainerRun -Target $target -Engine $engine -Image $ImageRef -NodeLabel $n.Name
+        if ($rc -ne 0) {
+            Write-HybridCompletaoEvent -Phase "container_run" -Status "failed" -Message "nonzero_exit" -HostLabel $n.Name -Detail @{ exitCode = $rc; engine = $engine }
+            Write-Warning "Hybrid: $engine run failed on $($n.Name) ($target) exit=$rc - skip-on-failure."
+        } else {
+            Write-HybridCompletaoEvent -Phase "container_run" -Status "ok" -Message "completed_or_dispatched_tmux" -HostLabel $n.Name -Detail @{ exitCode = $rc }
+        }
+    } catch {
+        Write-HybridCompletaoEvent -Phase "hybrid_node" -Status "failed" -Message $_.Exception.Message -HostLabel $n.Name
+        Write-Warning "Hybrid: node $($n.Name) ($target) error: $($_.Exception.Message) - skip-on-failure."
     }
 }
 
+Write-HybridCompletaoEvent -Phase "summary" -Status "ok" -Message "hybrid_pass_finished" -Detail @{ eventsPath = $eventsPathHybrid }
 Write-Host "Hybrid v1.7.3 orchestration pass completed (per-node skip-on-failure where noted)." -ForegroundColor Green
 exit 0
