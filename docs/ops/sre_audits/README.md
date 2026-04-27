@@ -20,3 +20,4 @@ audit pass against open PRs and/or the `main` branch.
 | Date       | File                                                       | Scope                                       |
 | ---------- | ---------------------------------------------------------- | ------------------------------------------- |
 | 2026-04-27 | [PR_SECURITY_AUDIT_2026-04-27.md](PR_SECURITY_AUDIT_2026-04-27.md) | All five open PRs (1 cargo, 4 pip Dependabot). |
+
