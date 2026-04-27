@@ -75,7 +75,12 @@ _ENV_SQL_SAMPLE_LIMIT = "DATA_BOAR_SQL_SAMPLE_LIMIT"
 _ENV_PG_TABLESAMPLE_SYSTEM_PERCENT = "DATA_BOAR_PG_TABLESAMPLE_SYSTEM_PERCENT"
 # SQL Server TABLESAMPLE SYSTEM percentage when metadata marks a huge table.
 _ENV_MSSQL_TABLESAMPLE_PERCENT = "DATA_BOAR_MSSQL_TABLESAMPLE_SYSTEM_PERCENT"
-# Optional per-statement cap hint (MSSQL OPTION / MySQL hint); connector sets ms.
+# Optional per-statement cap hint. Currently emitted only on **MySQL/MariaDB**
+# (``/*+ MAX_EXECUTION_TIME(N) */``) and as ``SET LOCAL statement_timeout`` on
+# **PostgreSQL** (applied at the connector layer, not the SQL string). SQL
+# Server has no equivalent query-level time hint, so the value is recorded in
+# the audit log but **not** inlined into MSSQL sample SQL — see ADR / RCA in
+# this module's history.
 _ENV_SAMPLE_STMT_TIMEOUT_MS = "DATA_BOAR_SAMPLE_STATEMENT_TIMEOUT_MS"
 _HARD_MAX_SAMPLE = 10_000
 
@@ -349,15 +354,23 @@ def _plan_mssql_column_sample(
     audit_notes: str,
     statement_timeout_ms: int | None,
 ) -> ColumnSamplePlan:
+    # SQL Server has **no** query-level execution-time hint equivalent to
+    # MySQL's ``/*+ MAX_EXECUTION_TIME(N) */``; ``OPTION (MAX_EXECUTION_TIME = …)``
+    # is *not* valid T-SQL and emitting it makes every sample fail with a
+    # syntax error -- which the connector's broad ``except Exception`` then
+    # swallows, returning empty samples and producing **silent zero-finding
+    # scans** on every SQL Server target. Statement-time bounds for MSSQL
+    # come from the SQLAlchemy connection-level ``connect_timeout`` (set via
+    # ``_connect_args_from_target``); for finer per-statement budgets a
+    # dedicated ADR + driver-level ``LOCK_TIMEOUT`` or session option is the
+    # right surface, never an invented OPTION clause.
+    _ = statement_timeout_ms  # accepted for API parity; not emitted into SQL
     t = _ansi_quoted_table(safe_schema, safe_table, schema)
     ts_clause = ""
     if large:
         pct = _mssql_tablesample_system_percent()
         pct_s = f"{pct:g}"
         ts_clause = f" TABLESAMPLE SYSTEM ({pct_s} PERCENT)"
-    opt = ""
-    if statement_timeout_ms and statement_timeout_ms > 0:
-        opt = f" OPTION (MAX_EXECUTION_TIME = {int(statement_timeout_ms)})"
     base_label = (
         "non_null_top_nolock_tablesample_mssql"
         if large
@@ -367,7 +380,7 @@ def _plan_mssql_column_sample(
     q = text(
         _tag_sql(
             f'SELECT TOP ({lim}) "{safe_col}" FROM {t}{ts_clause} WITH (NOLOCK) '
-            f'WHERE "{safe_col}" IS NOT NULL{opt}'
+            f'WHERE "{safe_col}" IS NOT NULL'
         )
     )
     return ColumnSamplePlan(
