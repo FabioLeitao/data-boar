@@ -62,6 +62,7 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0041  | [Lab completão optional data contract preflight before host smoke](0041-lab-completao-data-contract-preflight.md) | Accepted |
 | 0042  | [Public LAB lessons archive + hub (dated snapshots)](0042-lab-lessons-learned-archive-contract.md) | Accepted |
 | 0043  | [SQL column sampling — non-null filter and strategy hook](0043-sql-column-sampling-non-null-and-strategy-hook.md) | Accepted |
+| 0044  | [Opt-in algorithmic checksum gate for CPF and credit-card shapes](0044-opt-in-checksum-validation-cpf-credit-card.md) | Accepted |
 
 ## Related docs
 
