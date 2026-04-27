@@ -149,7 +149,7 @@ foreach ($h in $manifest.hosts) {
         # Do not route the remote bash through cmd.exe /c: cmd treats ^ as escape, which breaks
         # git's "ref^{commit}" syntax (becomes "ref{commit}" and rev-parse fails).
         # Do not merge stderr (2>&1): git fetch progress on stderr becomes ErrorRecord under $ErrorActionPreference Stop.
-        $remoteOut = & ssh.exe -q -o BatchMode=yes -o ConnectTimeout=180 $alias $remoteCmd 2>$null | Out-String
+        $remoteOut = ( & ssh.exe -q -o BatchMode=yes -o ConnectTimeout=180 $alias $remoteCmd 2>$null ) | Out-String
         $exitCode = $LASTEXITCODE
         Write-Host "--- repo: $rp ---"
         Write-Host $remoteOut
