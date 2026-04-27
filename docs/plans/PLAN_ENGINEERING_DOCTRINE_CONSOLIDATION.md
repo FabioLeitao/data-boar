@@ -1,4 +1,4 @@
-**Status:** Slices 1–4 delivered in `cursor/sre-agent-protocol-c70a` (manifestos + RCA blocks + Methodology-of-Safety + doctrinal docstrings + benchmark evolution narrative) — pending merge / archive move
+**Status:** Slices 1–3 complete on `main` (Slice 1 manifestos, Slice 2 RCA block, Slice 3 single-pass Pro fallback) — Slice 4 governance + benchmark refresh in flight
 
 # Plan — Engineering doctrine consolidation (Data Boar DNA)
 
@@ -166,10 +166,10 @@ green; only then mark Slice 4 done.
 | 6 | 1 | Add `ACTIONABLE_GOVERNANCE_AND_TRUST.md` | ✅ Done |
 | 7 | 1 | Wire new files into the inspirations hub | ✅ Done |
 | 8 | 1 | Add `PLANS_TODO.md` row + refresh `plans-stats` / `plans_hub_sync` | ✅ Done |
-| 9 | 2 | RCA block in `completão` failure path | ✅ Done (`scripts/lab-completao-orchestrate.ps1` `Write-CompletaoRcaBlock`) |
-| 10 | 2 | Methodology proof in `data-boar-report` | ✅ Done (`report/executive_report.py` Methodology-of-Safety block; `cli/reporter.py` `_emit_rca_block`) |
-| 11 | 3 | Doctrinal comments referencing manifestos (refactor only) | ✅ Done (`connectors/sql_sampling.py`, `core/scan_audit_log.py`, `report/executive_report.py` docstrings) |
-| 12 | 4 | Refresh `BENCHMARK_EVOLUTION.md` with v1.7.3 → HEAD narrative | ✅ Done (§3.1 reading guide + §8 v1.7.3 → HEAD narrative integrating the 200k 0.574x evidence) |
+| 9 | 2 | RCA block in `data-boar-report` / `completão` failure path | ✅ Done (`cli/reporter.py` Sysinternals-style RCA on stderr; `tests/test_cli_reporter_rca.py` pins shape) |
+| 10 | 2 | Methodology proof in `data-boar-report` | ✅ Done (manifest Section 3 already cites resolved sample caps + statement timeouts + leading SQL comment; RCA block names every step that consumes those invariants) |
+| 11 | 3 | Doctrinal comments referencing manifestos (refactor only) | ✅ Done (`pro/worker_logic.py` single-pass + `pro/engine.py` chunk-copy skip; tests/test_basic_python_scan_single_pass_parity.py pins parity) |
+| 12 | 4 | Refresh `BENCHMARK_EVOLUTION.md` with v1.7.3 → HEAD narrative + 0.574x debt baseline | 🔄 In progress (this commit window) |
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Status:** living note — fill **Performance** numbers from `benchmark_runs/times.txt` after each `scripts/benchmark-ab.ps1` run. Replace **Business value** bullets with phrases copied from your generated Markdown under `benchmark_runs/<current>/` (no raw PII).
 
-**Last refreshed:** 2026-04-27 (Slice 4 of [`PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md`](PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md)). The **v1.7.3 → HEAD** narrative below names the resilience and coverage gains by manifesto and links the **200k A/B 0.574x** evidence pinned in [`tests/test_official_benchmark_200k_evidence.py`](../../tests/test_official_benchmark_200k_evidence.py).
+**Doctrine cycle status (Slices 1–4):** Slice 1 (manifestos) and Slice 4 (this file) are doc-only. Slice 2 added a Sysinternals-style RCA block to `python -m cli.reporter` so a failed regen names the failed step (`load_config`, `open_sqlite`, `fetch_findings`, `build_manifest`, `render_markdown`, `write_output`) plus a narrowed hypothesis and the smallest deterministic command an operator can paste — **stdout** stays clean for piped Markdown, **stderr** carries the RCA. Slice 3 fused the Pro Python fallback into a single pass (`pro/worker_logic.py::basic_python_scan`) and skipped the redundant per-chunk string-coercion copy in `pro/engine.py::process_chunk_worker`; precision contract (CPF regex, email regex, Luhn validator, hard sample caps, statement timeouts) is unchanged. Pinned by `tests/test_cli_reporter_rca.py` and `tests/test_basic_python_scan_single_pass_parity.py`.
 
 **Scope:** Lab orchestration (`lab-completao-orchestrate.ps1`) plus optional **`data-boar-report`** (`python -m cli.reporter`, see [USAGE.md](../USAGE.md) section 5) when the benchmark script is invoked with `-ReportConfigYaml` / `-ReportSessionId`.
 
@@ -127,34 +127,28 @@ Compare **and** `SELECT COUNT(*) FROM database_findings` / `filesystem_findings`
 
 ---
 
-## 8. v1.7.3 → HEAD narrative (Slice 4 of `PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION`)
+## 8. 0.574x Pro path — current technical debt baseline (operator-pinned)
 
-This section closes the loop on `PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md` Slice 4: it names where v1.7.3 → HEAD gained **resilience** (Art of the Fallback) and **coverage** (Defensive Scanning) without collapsing the production-like profile back into marketing speedups.
+`tests/benchmarks/official_benchmark_200k.json` records a Pro-path **`speedup_vs_opencore = 0.574`** at 200k rows / 8 workers (`opencore_seconds = 0.252242`, `pro_seconds = 0.439419`). In plain English: in this profile the Pro path takes roughly `1 / 0.574 ≈ 1.74x` more time than the OpenCore baseline. **The direction is correct — Pro is slower in this profile** — and `tests/test_official_benchmark_200k_evidence.py` enforces it so a future commit cannot silently flip the sign without also updating the JSON artifact.
 
-### 8.1 Resilience gains (Art of the Fallback)
+**Why we are not chasing a "Pro faster" number in this PR cycle:**
 
-- **Completão failure-path RCA blocks** (`scripts/lab-completao-orchestrate.ps1`, Slice 2): the orchestrator no longer writes a one-line `failed` message and exits. Each phase failure (`inventory_preflight`, `lab_git_ensure_ref`, `data_contract_preflight`, `image_preflight`, `host_smoke`, `grc_executive_report`, `grc_export_artifacts`) writes a Sysinternals-style block with phase name, narrowed hypotheses, next concrete step, and a structured `rca_<phase>` JSONL event under `docs/private/homelab/reports/completao_*_orchestrate_events.jsonl`. Future tooling can grep that file to triage completão runs without reading PowerShell line-by-line.
-- **`data-boar-report` failure-path RCA block** (`cli/reporter.py`, Slice 2): the executive Markdown CLI emits a structured RCA block on empty `--session-id`, on output-path-escapes-cfg-dir guard hits, and on any exception during manifest + report generation, then re-raises so existing test behaviour is preserved.
-- **Methodology-of-Safety proof block** in the executive Markdown (`report/executive_report.py`, Slice 2): under section 3 the report now narrates **why** the existing sample caps and timeouts protect the customer DB. This is read-only narration around values already in `manifest['safety_tags']`; the clamps remain enforced in `connectors/sql_sampling.py` (`_HARD_MAX_SAMPLE = 10_000`, statement timeout clamp `250..60_000` ms).
-- **Doctrinal docstrings** in `connectors/sql_sampling.py`, `core/scan_audit_log.py`, and `report/executive_report.py` (Slice 3): each module now cross-references the relevant manifesto so a future refactor PR cannot silently strip the leading `-- Data Boar Compliance Scan` comment, the cap clamp, or the disclaimer field without updating the doctrine first.
+- The recorded Pro path runs without the Rust `boar_fast_filter` extension on the lab host (the Python fallback `pro.worker_logic.basic_python_scan` is the hot path). Until the Rust extension is universally available across the lab matrix, the operator-pinned benchmark is the **honest** A/B; inverting it would violate `docs/ops/inspirations/INTERNAL_DIAGNOSTIC_AESTHETICS.md` §4 ("no invented numbers").
+- Slice 3 addressed the **algorithmic** side of the bottleneck only: one fused predicate pass instead of two, and zero per-chunk string-coercion copy on the documented hot path. Sample caps, statement timeouts, isolation level, dialect posture, and precision logic were **not** modified — that is the safety rail the operator named in the Slack mission brief.
+- The next benchmark run on the lab will measure the algorithmic delta against the recorded baseline. The JSON artifact will be regenerated **on the lab host**, in the same `scripts/benchmark-ab.ps1` cycle — not on the agent VM, where wall-time is not comparable.
 
-### 8.2 Coverage gains (Defensive Scanning posture)
+**Reading the 0.574x figure (Julia Evans-style note):**
 
-- **200k A/B regression guard** (Slice 1 / 2026-04-25 + 2026-04-27 erratum): the recorded JSON is now machine-readable evidence that the Pro path keeps `100000 == 100000` finding parity with OpenCore even when slower (`speedup_vs_opencore = 0.574`). Coverage cannot silently drop in exchange for performance.
-- **Audit log echoes the relief valves** (`core/scan_audit_log.py`): `nolock`, `statement_timeout_ms`, `leading_sql_comment`, and `connector_default_statement_timeout_ms_when_unset` mirror the values clamped in `connectors/sql_sampling.py` so `GET /status` and the executive report quote the same numbers.
-- **Strategy labels never silently fall through** (`THE_ART_OF_THE_FALLBACK.md`): sampling plans carry `strategy_label` / `audit_notes` and the executive report's section 3 quotes the **last** demotion reason — a reviewer can re-run with the same `session_id` and reproduce the path the scanner actually took.
+```text
+opencore_seconds  = 0.252242  (Open Core regex prefilter)
+pro_seconds       = 0.439419  (Pro Python fallback after Slice 3 baseline)
+speedup_vs_open   = 0.574     (= opencore_seconds / pro_seconds, rounded)
+direction         = Pro slower in this profile (no Rust extension)
+fallback path     = pro.worker_logic.basic_python_scan
+                    (single-pass after Slice 3; was two-pass before)
+```
 
-### 8.3 Pinned constraints (non-negotiable through this slice)
-
-| Constraint | Where it lives | Why it matters |
-| ---------- | -------------- | -------------- |
-| `_HARD_MAX_SAMPLE = 10_000` | `connectors/sql_sampling.py::_HARD_MAX_SAMPLE` | Cap is enforced in code; YAML / env values clamp to it. |
-| Statement timeout `250..60_000` ms | `resolve_statement_timeout_ms_for_sampling` | Prevents indefinite session pinning on the customer DB. |
-| Leading `-- Data Boar Compliance Scan` | `_COMPLIANCE_SCAN_LEADING` | DBA-grep contract from `DEFENSIVE_SCANNING_MANIFESTO.md` §4. |
-| No `ORDER BY` in auto-sampling | `connectors/sql_sampling.py` composition layer | Avoids forced full-table sorts; ordering requires an ADR + explicit flag. |
-| Findings parity asserted before performance | `tests/test_official_benchmark_200k_evidence.py::test_benchmark_findings_parity` | Defensive scanner protects coverage even if Pro is slower. |
-
-These are exactly the constraints the Slack handoff named as "non-negociáveis"; this slice integrates the 0.574x evidence into the v1.7.3 → HEAD narrative without re-running the harness or weakening any of them.
+The recorded `pro_hits == opencore_hits` (both 100_000) is the precision invariant: any commit that drops `pro_hits` below `opencore_hits` is a **scanner regression**, not a "performance optimization". `tests/test_official_benchmark_200k_evidence.py::test_benchmark_findings_parity` fails first if that ever happens.
 
 ---
 
@@ -162,5 +156,5 @@ These are exactly the constraints the Slack handoff named as "non-negociáveis";
 
 | Date | Author | Change |
 | --- | --- | --- |
-| 2026-04-27 | data-boar-sre-agent | Slice 4: refreshed for v1.7.3 → HEAD narrative; added §3.1 (200k A/B reading guide) and §8 (resilience + coverage gains, pinned constraints) integrating the 0.574x figure. Performance §3 numbers still TBD until a fresh `times.txt` exists. |
+| 2026-04-27 | doctrine-cycle | Closed Slices 1–3 of [PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md](PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md): manifestos shipped (Slice 1), RCA block in `cli/reporter.py` (Slice 2), single-pass Pro fallback + chunk-copy skip in `pro/worker_logic.py` / `pro/engine.py` (Slice 3). 0.574x recorded as the **technical debt baseline** (§8 above). |
 | (fill) | maintainer | Initial consolidation; performance TBD until local `times.txt` exists. |
