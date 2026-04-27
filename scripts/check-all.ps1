@@ -16,7 +16,7 @@ $repoRoot = (Get-Item $PSScriptRoot).Parent.FullName
 Set-Location $repoRoot
 
 # PII gate: maintainer seeds vs staged paths only (see scripts/gatekeeper-audit.ps1).
-& "$repoRoot\scripts\gatekeeper-audit.ps1"
+& (Join-Path (Join-Path $repoRoot "scripts") "gatekeeper-audit.ps1")
 if ($LASTEXITCODE -ne 0) {
     Write-Host "check-all: ABORTED by gatekeeper-audit (PII seed hit in staged files)." -ForegroundColor Red
     exit $LASTEXITCODE
@@ -26,7 +26,7 @@ Write-Host "=== check-all: lint + tests ===" -ForegroundColor Cyan
 
 # Keep plan dashboard stats in sync before lint/tests.
 Write-Host "Refreshing plans status dashboard..." -ForegroundColor Yellow
-& python "$repoRoot\scripts\plans-stats.py" --write
+& python (Join-Path (Join-Path $repoRoot "scripts") "plans-stats.py") --write
 if ($LASTEXITCODE -ne 0) {
     Write-Host "check-all: FAILED to refresh plans dashboard." -ForegroundColor Red
     exit $LASTEXITCODE
@@ -38,11 +38,11 @@ if ($SkipPreCommit) {
     $argsList += "-SkipPreCommit"
 }
 
-& "$repoRoot\scripts\pre-commit-and-tests.ps1" @argsList
+& (Join-Path (Join-Path $repoRoot "scripts") "pre-commit-and-tests.ps1") @argsList
 $exitCode = $LASTEXITCODE
 
 if ($exitCode -eq 0 -and $IncludeVersionSmoke) {
-    $smokeScript = "$repoRoot\scripts\version-readiness-smoke.ps1"
+    $smokeScript = Join-Path (Join-Path $repoRoot "scripts") "version-readiness-smoke.ps1"
     if (Test-Path -LiteralPath $smokeScript) {
         Write-Host "Running version readiness smoke..." -ForegroundColor Yellow
         & $smokeScript
