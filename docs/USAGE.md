@@ -1042,7 +1042,7 @@ Failing to write these files is **non-fatal**: Excel and heatmap generation stil
 uv run data-boar-report --config config.yaml --session-id <session_id>
 ```
 
-Write to a file instead of stdout:
+When **`-o` / `--output` is omitted**, the CLI writes **`executive_report_<safe_prefix>.md`** next to the config file (avoids streaming the full report to stdout in CI logs). Use **`-o`** for an explicit path:
 
 ```bash
 uv run data-boar-report --config config.yaml --session-id <session_id> -o Executive_summary.md

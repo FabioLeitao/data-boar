@@ -25,6 +25,7 @@ from core.sampling import SamplingProvider
 from report.evidence_collector import EvidenceCollector
 from report.executive_report import generate_executive_report
 from report.recommendation_engine import RecommendationEngine, apg_row_for_pattern
+from report.safe_prefix import safe_session_prefix
 
 # Env keys (documented in USAGE.md).
 _ENV_SQL_SAMPLE_LIMIT = "DATA_BOAR_SQL_SAMPLE_LIMIT"
@@ -342,8 +343,8 @@ def write_scan_evidence_artifacts(
     Returns ``(manifest_path, poc_summary_md_path)``.
     """
     cfg = config if isinstance(config, dict) else {}
-    prefix = session_id[:16]
-    out = Path(output_dir)
+    prefix = safe_session_prefix(session_id, max_len=16)
+    out = Path(output_dir).expanduser().resolve()
     out.mkdir(parents=True, exist_ok=True)
 
     manifest = _build_manifest(
@@ -359,8 +360,15 @@ def write_scan_evidence_artifacts(
     apg_rows = _aggregate_apg(db_rows, fs_rows)
     manifest["apg_phase_a"] = apg_rows
 
-    man_path = out / f"scan_manifest_{prefix}.yaml"
-    poc_path = out / f"POC_SUMMARY_{prefix}.md"
+    man_path = (out / f"scan_manifest_{prefix}.yaml").resolve()
+    poc_path = (out / f"POC_SUMMARY_{prefix}.md").resolve()
+    try:
+        man_path.relative_to(out)
+        poc_path.relative_to(out)
+    except ValueError as exc:
+        raise ValueError(
+            "output_dir resolves outside allowed base after artifact join"
+        ) from exc
 
     man_path.write_text(
         yaml.safe_dump(

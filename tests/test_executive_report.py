@@ -112,8 +112,9 @@ def test_top3_credit_card_before_email_same_mock_counts() -> None:
     assert pos_cc < pos_em
 
 
-def test_cli_reporter_stdout(tmp_path, capsys) -> None:
+def test_cli_reporter_default_output_md(tmp_path) -> None:
     from cli.reporter import main
+    from report.safe_prefix import safe_session_prefix
 
     db_path = str(tmp_path / "audit.db")
     cfg_path = tmp_path / "cfg.yaml"
@@ -152,7 +153,8 @@ def test_cli_reporter_stdout(tmp_path, capsys) -> None:
     finally:
         mgr.dispose()
     assert rc == 0
-    out = capsys.readouterr().out
+    out_path = tmp_path / f"executive_report_{safe_session_prefix(sid, max_len=8)}.md"
+    out = out_path.read_text(encoding="utf-8")
     assert "inteligência e governança de risco" in out
     assert "Metodologia e segurança" in out
     assert "t_user" not in out

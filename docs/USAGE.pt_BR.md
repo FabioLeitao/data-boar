@@ -334,7 +334,7 @@ Se a gravação desses artefatos falhar, o fluxo **não** invalida o Excel nem o
 uv run data-boar-report --config config.yaml --session-id <session_id>
 ```
 
-Gravar em arquivo em vez de imprimir no stdout:
+Sem **`-o` / `--output`**, o CLI grava **`executive_report_<prefixo_seguro>.md`** ao lado do YAML de configuração (evita despejar o relatório completo no stdout em logs de CI). Com **`-o`**, define o caminho explicitamente:
 
 ```bash
 uv run data-boar-report --config config.yaml --session-id <session_id> -o Resumo_executivo.md

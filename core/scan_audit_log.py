@@ -69,7 +69,6 @@ def _first_database_statement_timeout_explicit_ms(
                     return int(v)
                 except (TypeError, ValueError):
                     continue
-            break
     return None
 
 
