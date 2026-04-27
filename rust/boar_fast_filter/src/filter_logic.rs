@@ -64,7 +64,11 @@ pub fn check_luhn(card_number: &str) -> bool {
         .map(|(i, &digit)| {
             if i % 2 == 1 {
                 let d = digit * 2;
-                if d > 9 { d - 9 } else { d }
+                if d > 9 {
+                    d - 9
+                } else {
+                    d
+                }
             } else {
                 digit
             }
@@ -129,6 +133,109 @@ mod tests {
     fn suspect_indices_no_match_innocuous_text() {
         let p = patterns();
         let batch = vec!["hello world no pii".to_string()];
+        assert!(p.suspect_indices(&batch).is_empty());
+    }
+
+    // -----------------------------------------------------------------
+    // Additional regression-class tests. Each one pins a contract that
+    // would otherwise only surface after a refactor lands in production.
+    // -----------------------------------------------------------------
+
+    #[test]
+    fn new_compiles_all_patterns() {
+        // No-panic guard: the constructor must accept every shipped regex.
+        // If a future maintainer mistypes a pattern, this fails *before*
+        // the PyO3 bridge is even loaded.
+        assert!(CompiledPatterns::new().is_ok());
+    }
+
+    #[test]
+    fn suspect_indices_empty_batch_is_empty() {
+        // Boundary: empty input must produce empty output, not panic on
+        // the unused `mut suspects` vector.
+        let p = patterns();
+        let empty: Vec<String> = Vec::new();
+        assert!(p.suspect_indices(&empty).is_empty());
+    }
+
+    #[test]
+    fn suspect_indices_is_idempotent() {
+        // Pure function contract: same input -> same output across calls.
+        // Pins the absence of hidden state inside CompiledPatterns.
+        let p = patterns();
+        let batch = vec![
+            "limpo".to_string(),
+            "390.533.447-05".to_string(),
+            "contato@empresa.com".to_string(),
+        ];
+        let first = p.suspect_indices(&batch);
+        let second = p.suspect_indices(&batch);
+        assert_eq!(first, second);
+        assert_eq!(first, vec![1, 2]);
+    }
+
+    #[test]
+    fn suspect_indices_reports_each_row_once() {
+        // A row that matches multiple patterns (CPF + email) must still be
+        // reported once. Locks the "report once per item" contract from
+        // the regex tier of the fallback hierarchy
+        // (docs/ops/inspirations/THE_ART_OF_THE_FALLBACK.md §2).
+        let p = patterns();
+        let batch = vec!["390.533.447-05 e contato@empresa.com juntos".to_string()];
+        assert_eq!(p.suspect_indices(&batch), vec![0]);
+    }
+
+    #[test]
+    fn suspect_indices_dashed_pan_layout() {
+        // Dashed credit-card layout used by some exports. Luhn must accept
+        // the digits regardless of separator characters.
+        let p = patterns();
+        let batch = vec!["pan=4111-1111-1111-1111".to_string()];
+        assert_eq!(p.suspect_indices(&batch), vec![0]);
+    }
+
+    #[test]
+    fn suspect_indices_email_with_plus_tag_and_subdomain() {
+        // Plus-tag local part plus multi-level subdomain. The email regex
+        // anchors must accept both without backtracking pathologies.
+        let p = patterns();
+        let batch = vec!["alerts+test_tag@mail.example.co.uk says hi".to_string()];
+        assert_eq!(p.suspect_indices(&batch), vec![0]);
+    }
+
+    #[test]
+    fn suspect_indices_preserves_input_order() {
+        // The output is monotone in input order: positions appear in
+        // increasing order so callers can pair them with the original
+        // batch without re-sorting.
+        let p = patterns();
+        let batch = vec![
+            "limpo".to_string(),                        // 0 — clean
+            "contato@empresa.com".to_string(),          // 1 — email
+            "outra linha limpa".to_string(),            // 2 — clean
+            "390.533.447-05".to_string(),               // 3 — CPF
+            "ainda limpo".to_string(),                  // 4 — clean
+            "4111 1111 1111 1111 cobranca".to_string(), // 5 — Luhn-valid PAN
+        ];
+        assert_eq!(p.suspect_indices(&batch), vec![1, 3, 5]);
+    }
+
+    #[test]
+    fn check_luhn_rejects_letters_only() {
+        // Defensive: non-digit input degrades to an empty digit vec, which
+        // is shorter than 13 and must return false without panicking.
+        assert!(!check_luhn("not-a-card-number"));
+    }
+
+    #[test]
+    fn suspect_indices_does_not_panic_on_unicode() {
+        // Customer payloads carry non-ASCII text. The matchers must walk
+        // the string without panicking on multi-byte boundaries.
+        let p = patterns();
+        let batch = vec![
+            "olá, sem pii aqui — apenas acentos".to_string(),
+            "endereço: 中文 sem cartão".to_string(),
+        ];
         assert!(p.suspect_indices(&batch).is_empty());
     }
 }
