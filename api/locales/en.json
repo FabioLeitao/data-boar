@@ -158,8 +158,8 @@
   "help": {
     "page_title": "Help & Docs — Data Boar",
     "h1": "Help & documentation",
-    "what_h2": "What this app does",
-    "what_p1": "This application scans configured data sources (databases, filesystems, APIs and shares) for personal and sensitive data, stores only metadata in a local SQLite database, and generates Excel reports plus a sensitivity/risk heatmap PNG.",
+    "what_h2": "What Data Boar does",
+    "what_p1": "Data Boar is an enterprise data discovery and risk governance engine: it scans configured data sources (databases, filesystems, APIs and shares) for personal and sensitive data, stores only metadata in a local SQLite database, and generates Excel reports, heatmaps, executive Markdown (APG + evidence), and optional GRC-oriented exports.",
     "what_p2": "Each run is a scan session with optional tenant / customer and technician / operator tags, so you can attribute results.",
     "run_h2": "How to run a scan",
     "run_web_h3": "From the web dashboard",

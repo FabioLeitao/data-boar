@@ -6,8 +6,9 @@ optional JSON /auth/webauthn/* when ``api.webauthn.enabled`` (Phase 1 passkeys);
 when at least one passkey exists (Phase 1b, GitHub #86); optional per-route RBAC when ``api.rbac.enabled``
 (Phase 2, Pro+ ``dashboard_rbac``);
 unprefixed /, /config, … redirect to the
-negotiated locale prefix. API: POST /scan and /start (optional tenant/technician tags), GET /status,
-/report, /list, GET /reports/{session_id}, POST /scan_database (optional tenant/technician),
+negotiated locale prefix. API: POST /scan and /start (optional tenant/technician tags), GET /status
+(JSON includes ``audit_log`` sampling posture), /report, /list, GET /reports/{session_id},
+POST /scan_database (optional tenant/technician),
 PATCH /sessions/{session_id} and /sessions/{session_id}/technician for metadata updates. On startup load
 config (config.yaml or CONFIG_PATH) and create a singleton AuditEngine.
 
@@ -1172,7 +1173,7 @@ async def start_scan(
 
 @app.get("/status")
 async def get_status():
-    """Return running, current_session_id, findings_count."""
+    """Return running, current_session_id, findings_count, and declarative ``audit_log`` (sampling posture)."""
     engine = _get_engine()
     runtime_trust = get_runtime_trust_snapshot(_get_config())
     cfg = _get_config()
@@ -1182,6 +1183,7 @@ async def get_status():
         "running": engine.is_running,
         "current_session_id": engine.db_manager.current_session_id,
         "findings_count": engine.get_current_findings_count(),
+        "audit_log": engine.get_scan_audit_log(),
         "runtime_trust": runtime_trust,
         "dashboard_transport": get_dashboard_transport_snapshot(),
         "enterprise_surface": get_enterprise_surface_posture(cfg),

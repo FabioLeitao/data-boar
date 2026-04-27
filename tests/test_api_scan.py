@@ -63,8 +63,13 @@ scan:
         # Status should be idle after scan completes (background task ran)
         status_resp = client.get("/status")
         assert status_resp.status_code == 200
-        assert status_resp.json().get("running") is False
-        runtime_trust = status_resp.json().get("runtime_trust") or {}
+        body = status_resp.json()
+        assert body.get("running") is False
+        audit = body.get("audit_log") or {}
+        assert audit.get("strategy") == "sampling"
+        assert audit.get("sampling_row_cap_per_column") == 2
+        assert audit.get("nolock") is False
+        runtime_trust = body.get("runtime_trust") or {}
         assert runtime_trust.get("trust_state") in {"trusted", "degraded", "untrusted"}
         dt = status_resp.json().get("dashboard_transport") or {}
         assert dt.get("mode") == "not_configured"
