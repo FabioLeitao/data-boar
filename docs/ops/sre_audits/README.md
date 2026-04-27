@@ -16,6 +16,7 @@ verdicts).
 | Date       | Audit                                                                                                              | Scope                                                              |
 | :--------- | :----------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------- |
 | 2026-04-27 | [`DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md`](DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md)             | Verdict ledger for Dependabot PRs #221, #222, #223, #224, #226    |
+| 2026-04-27 | [`RUST_MEMORY_SAFETY_AND_CI_ADDENDUM_2026-04-27.md`](RUST_MEMORY_SAFETY_AND_CI_ADDENDUM_2026-04-27.md)             | Addendum — Rust memory-safety + CI sequencing re-audit (PR #226)  |
 
 ## When to add a new file here
 
