@@ -36,14 +36,25 @@ def _heatmap_path_under_output_dir(heatmap_path: str, output_dir: str) -> Path |
     """
     Return resolved heatmap path only if it lies under output_dir (guards path injection
     for embedded images). Caller must pass the same output_dir used to build the heatmap.
+
+    Uses ``Path.is_relative_to`` (Python ≥3.9) as an explicit containment check so
+    static analysers (CodeQL ``py/path-injection``) recognise the sanitizer; both
+    sides are first ``resolve()``-d so symlink escapes (``..`` segments, junctions
+    on Windows) cannot bypass the boundary. Defence in depth: even though the
+    caller currently constructs ``heatmap_path`` from a trusted ``output_dir``,
+    this function is the single sink for embedding the PNG into the workbook
+    (see ADR-0019: report integrity is a PII-pipeline guarantee).
     """
     try:
-        base = Path(output_dir).resolve()
-        candidate = Path(heatmap_path).resolve()
-        candidate.relative_to(base)
-    except (ValueError, OSError):
+        base = Path(output_dir).resolve(strict=False)
+        candidate = Path(heatmap_path).resolve(strict=False)
+    except (OSError, RuntimeError):
         return None
-    return candidate if candidate.is_file() else None
+    if not candidate.is_relative_to(base):
+        return None
+    if not candidate.is_file():
+        return None
+    return candidate
 
 
 # Cross-ref aggregated sheet: first row explains sampling limits (FN-first; incomplete-data transparency).

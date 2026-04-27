@@ -114,6 +114,47 @@ def test_heatmap_embed_only_accepts_path_under_output_dir(tmp_path):
     assert _heatmap_path_under_output_dir(str(bad), str(out)) is None
 
 
+def test_heatmap_embed_rejects_dotdot_traversal(tmp_path):
+    """`..` segments must not escape output_dir even when the literal string parents up and back."""
+    out = tmp_path / "report_out"
+    out.mkdir()
+    sibling = tmp_path / "sibling"
+    sibling.mkdir()
+    rogue = sibling / "rogue.png"
+    rogue.write_bytes(b"\x89PNG\r\n\x1a\n")
+    # Construct a literal traversal path that resolves outside output_dir.
+    traversal = out / ".." / "sibling" / "rogue.png"
+    assert _heatmap_path_under_output_dir(str(traversal), str(out)) is None
+
+
+def test_heatmap_embed_rejects_symlink_escape(tmp_path):
+    """A symlink inside output_dir pointing outside it must not bypass containment."""
+    import os
+
+    out = tmp_path / "report_out"
+    out.mkdir()
+    target = tmp_path / "secret.png"
+    target.write_bytes(b"\x89PNG\r\n\x1a\n")
+    link = out / "heatmap_link.png"
+    try:
+        os.symlink(target, link)
+    except (OSError, NotImplementedError):
+        # Symlinks may be unavailable (e.g. Windows without privilege); skip silently.
+        return
+    assert _heatmap_path_under_output_dir(str(link), str(out)) is None
+
+
+def test_heatmap_embed_rejects_directory_and_missing(tmp_path):
+    """Non-file paths (directory, missing) inside output_dir are rejected."""
+    out = tmp_path / "report_out"
+    out.mkdir()
+    subdir = out / "subdir"
+    subdir.mkdir()
+    assert _heatmap_path_under_output_dir(str(subdir), str(out)) is None
+    missing = out / "does_not_exist.png"
+    assert _heatmap_path_under_output_dir(str(missing), str(out)) is None
+
+
 def test_report_excel_and_heatmap_data_sheet_no_regression(tmp_path):
     """Regression: generate_report produces Excel with Heatmap data sheet; heatmap PNG in output_dir when findings exist."""
     db_path = str(tmp_path / "audit_hm.db")
