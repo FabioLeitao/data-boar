@@ -39,7 +39,7 @@ def test_slack_ci_failure_notify_workflow_present_and_valid() -> None:
     assert "workflow_run" in on
     wr = on["workflow_run"]
     assert isinstance(wr, dict)
-    assert wr.get("workflows") == ["CI", "Semgrep", "SBOM"]
+    assert wr.get("workflows") == ["CI", "Rust CI", "Semgrep", "SBOM"]
     assert "notify" in (data.get("jobs") or {})
 
 
@@ -242,3 +242,34 @@ def test_ci_lint_job_runs_pre_commit_all_files() -> None:
     )
     runs = "\n".join(_ci_step_run_texts(lint))
     assert "pre-commit run --all-files" in runs
+
+
+def test_rust_ci_workflow_present_and_valid() -> None:
+    """Rust prefilter crate (boar_fast_filter): check, test, clippy on main/master."""
+    data = _load_workflow("rust-ci.yml")
+    assert data.get("name") == "Rust CI"
+    on = data.get("on") or {}
+    assert "push" in on
+    assert "pull_request" in on
+    jobs = data.get("jobs") or {}
+    assert "rust" in jobs
+    rust = jobs["rust"]
+    assert isinstance(rust, dict)
+    assert "cargo" in str(rust.get("name", "")).lower()
+
+
+def test_rust_ci_yml_pins_actions_to_shas() -> None:
+    """Third-party Actions in rust-ci.yml use full commit SHAs (same bar as ci.yml)."""
+    text = (WORKFLOWS / "rust-ci.yml").read_text(encoding="utf-8")
+    sha_40 = re.compile(r"@[0-9a-f]{40}")
+    for line in text.splitlines():
+        code = line.split("#", 1)[0]
+        if "uses:" not in code or "docker://" in code:
+            continue
+        if not any(
+            p in code for p in ("actions/", "github/", "astral-sh/", "dtolnay/")
+        ):
+            continue
+        assert sha_40.search(code), (
+            f"expected full commit SHA in uses line: {line.strip()!r}"
+        )
