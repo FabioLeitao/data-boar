@@ -457,13 +457,20 @@ if (-not $SkiColleague-KagePreflight) {
             throw "completaoImageRefs: SSH probe failed for image preflight host $probeHost"
         }
         foreach ($ir in $imgRefs) {
-            if (-not (Test-CompletaoRemoteDockerImage -Alias $probeHost -ImageRef $ir)) {
-                Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "failed" -Message "image_missing" -HostAlias $probeHost -Detail @{ image = $ir }
+            if ($null -eq $ir) {
+                continue
+            }
+            $imageRef = [Convert]::ToString($ir, [System.Globalization.CultureInfo]::InvariantCulture).Trim()
+            if (-not $imageRef) {
+                continue
+            }
+            if (-not (Test-CompletaoRemoteDockerImage -Alias $probeHost -ImageRef $imageRef)) {
+                Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "failed" -Message "image_missing" -HostAlias $probeHost -Detail @{ image = $imageRef }
                 $LabResultPhases.image_preflight = "failed"
-                throw "completaoImageRefs: image not present on ${probeHost}: $ir (docker/podman image inspect). Pull on lab or use -SkiColleague-KagePreflight."
+                throw "completaoImageRefs: image not present on ${probeHost}: $imageRef (docker/podman image inspect). Pull on lab or use -SkiColleague-KagePreflight."
             }
         }
-        Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "ok" -Message "all_images_present" -HostAlias $probeHost -Detail @{ images = ($imgRefs -join ",") }
+        Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "ok" -Message "all_images_present" -HostAlias $probeHost -Detail @{ images = (($imgRefs | ForEach-Object { [Convert]::ToString($_, [System.Globalization.CultureInfo]::InvariantCulture) }) -join ",") }
         $LabResultPhases.image_preflight = "ok"
     }
     if ($LabResultPhases.image_preflight -eq "not_run") {
