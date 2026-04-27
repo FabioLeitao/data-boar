@@ -16,6 +16,7 @@ verdicts).
 | Date       | Audit                                                                                                              | Scope                                                              |
 | :--------- | :----------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------- |
 | 2026-04-27 | [`DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md`](DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md)             | Verdict ledger for Dependabot PRs #221, #222, #223, #224, #226    |
+| 2026-04-27 | [`DEPENDABOT_31_RECONCILIATION_PYO3_RUSTSEC_2025_0020_2026-04-27.md`](DEPENDABOT_31_RECONCILIATION_PYO3_RUSTSEC_2025_0020_2026-04-27.md) | Reconciles Slack-cited Dependabot alert #31 to RUSTSEC-2025-0020 (`pyo3 < 0.24.1`); reverses prior "fabricated" verdict in PR #267 / #268 |
 
 ## When to add a new file here
 
