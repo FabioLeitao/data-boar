@@ -1,8 +1,8 @@
 # PLAN: Product Tiers and Open-Core Boundary Definition
 
-**Status:** Draft — not yet legal-reviewed
+**Status:** Draft — not yet legal-reviewed; runtime gate facade landed (Phase 2 done, ADR 0044)
 **Priority:** [H2][U1] — near-term before partner onboarding
-**Related:** `docs/LICENSING_OPEN_CORE_AND_COMMERCIAL.md`, `docs/LICENSING_SPEC.md`, `docs/plans/PLANS_TODO.md`
+**Related:** `docs/LICENSING_OPEN_CORE_AND_COMMERCIAL.md`, `docs/LICENSING_SPEC.md`, `docs/plans/PLANS_TODO.md`, `docs/adr/0044-runtime-feature-gate-facade-for-open-core-boundary.md`
 
 > This plan defines **which capabilities belong to each tier** of the Data Boar product.
 > Final pricing, contract terms, and JWT claim enforcement require legal review first.
@@ -184,9 +184,9 @@ All features, SLA, dedicated support, white-label rights as an add-on.
 | Phase | What to implement | Status |
 |---|---|---|
 | 0 (done) | `dbtier` planned in LICENSING_SPEC.md; JWT infra exists | ✅ Done |
-| 1 | Add `dbtier` and `dbfeatures` claims to issued tokens | Not started |
-| 2 | `LicenseGuard.check_feature(feature_name)` helper | Not started |
-| 3 | Gate Pro features behind `check_feature()` in connectors/reports | Not started |
+| 1 | Add `dbtier` and `dbfeatures` claims to issued tokens | Partial — `dbtier` already parsed by `LicenseGuard`; `dbfeatures` deferred |
+| 2 | `LicenseGuard.check_feature(feature_name)` helper | ✅ Done — see `core/licensing/feature_gate.py` (`evaluate_feature`, `require_feature`, `snapshot_gate_state`); ADR 0044 |
+| 3 | Gate Pro features behind `check_feature()` in connectors/reports | Not started — call sites still need migration |
 | 4 | Gate Partner rights (multi-client, co-brand) via `dbtier` check | Not started |
 | 5 | Gate Enterprise features (white-label, SSO, RBAC) | Not started |
 | 6 | `dbextras_profile` drives `uv` install profiles for heavy deps | Not started |
