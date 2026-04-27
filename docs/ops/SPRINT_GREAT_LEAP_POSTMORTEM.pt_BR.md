@@ -11,7 +11,7 @@ Fonte: [LAB_LESSONS_LEARNED.md](LAB_LESSONS_LEARNED.md) (hub; snapshot datado: [
 | Tópico | Resultado |
 | ------ | --------- |
 | Extensão Rust `boar_fast_filter` | Compilada e importável na `.venv` do projeto (PyO3 ajustado para CPython 3.13). |
-| Benchmark oficial (200k linhas, 8 workers) | OpenCore `0,252242s`, caminho Pro `0,439419s`, ganho `0,574x` (Pro mais lento neste perfil). |
+| Benchmark oficial (200k linhas, 8 workers) | OpenCore `0,252242s`, caminho Pro `0,439419s`, `speedup_vs_opencore = 0,574` (Pro tem **0,574x a velocidade** do OpenCore neste perfil, isto é, ~`1,74x` o tempo de relógio — Pro **mais lento**). |
 | Checkpoint + retomada após kill | `last_processed_id` avançou de `104000` até o fim da tabela; segunda execução completou com contagem de achados consistente. |
 | Throttling | `BoarThrottler` aumentou concorrência em direção ao máximo configurado durante o scan. |
 
@@ -30,6 +30,7 @@ Os números abaixo são **exemplos de meta** para uma campanha futura em lab-op.
 
 - **Checkpointing e throttling** são os ganhos mais sólidos capturados aqui para postura “missão crítica”.
 - **Marketing de performance** precisa de perfil de benchmark alinhado à carga real (tamanho de chunk, custo de ML downstream, I/O realista) antes de citar speedups.
+- **Direção vs razão (não inverta duas vezes).** O campo `speedup_vs_opencore = 0,574` no JSON e a frase do operador **"0,574x mais lento"** apontam para o **mesmo** resultado (Pro mais lento); a razão guardada é `tempo_OpenCore / tempo_Pro`. O Pro leva cerca de **`1 / 0,574 ≈ 1,74x`** o tempo de relógio do OpenCore neste perfil. O guard de regressão [`tests/test_official_benchmark_200k_evidence.py`](../../tests/test_official_benchmark_200k_evidence.py) trava essa direção e a paridade OpenCore ↔ Pro de achados (`100.000` em cada caminho), para que copy executiva ou manifestos não se descolem do artefato gravado em silêncio.
 
 ## Próximos passos de verificação
 
