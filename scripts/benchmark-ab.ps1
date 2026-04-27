@@ -50,11 +50,15 @@ $ErrorActionPreference = "Stop"
 
 function Resolve-RepoRoot {
     param([string] $Root)
-    if ([string]::IsNullOrWhiteSpace($Root)) {
-        $here = Split-Path -Parent $MyInvocation.MyCommand.Path
-        return (Resolve-Path (Join-Path $here "..")).Path
+    if (-not [string]::IsNullOrWhiteSpace($Root)) {
+        return (Resolve-Path $Root).Path
     }
-    return (Resolve-Path $Root).Path
+    # Inside a function, $MyInvocation.MyCommand is the function, not this .ps1 (no .Path).
+    if (-not [string]::IsNullOrWhiteSpace($PSScriptRoot)) {
+        return (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+    }
+    $parent = Split-Path -Parent $PSCommandPath
+    return (Resolve-Path (Join-Path $parent "..")).Path
 }
 
 function Get-GitPorcelain {
