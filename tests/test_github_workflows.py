@@ -76,7 +76,17 @@ def test_slack_ops_digest_workflow_present_and_valid() -> None:
 
 
 def test_slack_post_workflows_guard_webhook_secret() -> None:
-    """Slack workflows that POST must skip the ubuntu job when SLACK_WEBHOOK_URL is empty."""
+    """Slack workflows that POST must skip cleanly when SLACK_WEBHOOK_URL is empty.
+
+    Regression guard for the "phantom failed run" class of bug: putting
+    ``${{ secrets.SLACK_WEBHOOK_URL != '' }}`` in a *job-level* ``if:``
+    expression makes GitHub Actions record a failed workflow run with zero
+    jobs ("This run likely failed because of a workflow file issue"). The
+    correct pattern is to read the secret in a step's ``env:`` block, write a
+    detection output (``present=true|false``), and gate downstream steps with
+    ``if: steps.<id>.outputs.present == 'true'``. Same posture as the
+    ``sonar`` job in ``ci.yml``.
+    """
     names = (
         "slack-operator-ping.yml",
         "slack-ci-failure-notify.yml",
@@ -94,12 +104,58 @@ def test_slack_post_workflows_guard_webhook_secret() -> None:
                 continue
             if "steps" not in job:
                 continue
-            job_if = job.get("if")
-            assert job_if is not None, (
-                f"{name} job {job_id}: expected job-level if (webhook guard)"
+
+            job_if = str(job.get("if") or "")
+            assert "secrets." not in job_if, (
+                f"{name} job {job_id}: do not reference secrets.* in a "
+                f"job-level `if:` (causes phantom failed runs); detect the "
+                f"webhook in a step and gate downstream steps on its output."
             )
-            assert "SLACK_WEBHOOK_URL" in str(job_if), (
-                f"{name} job {job_id}: if must reference SLACK_WEBHOOK_URL"
+            assert "SLACK_WEBHOOK_URL" not in job_if, (
+                f"{name} job {job_id}: SLACK_WEBHOOK_URL must not appear in "
+                f"the job-level `if:` — guard at step level instead."
+            )
+
+            steps = job.get("steps") or []
+            assert isinstance(steps, list) and steps, (
+                f"{name} job {job_id}: expected at least one step"
+            )
+
+            detect_step = None
+            for step in steps:
+                if not isinstance(step, dict):
+                    continue
+                env = step.get("env") or {}
+                if "SLACK_WEBHOOK_URL" in env:
+                    run_text = str(step.get("run") or "")
+                    if (
+                        "present=true" in run_text
+                        and "present=false" in run_text
+                        and "GITHUB_OUTPUT" in run_text
+                    ):
+                        detect_step = step
+                        break
+            assert detect_step is not None, (
+                f"{name} job {job_id}: expected a step that reads "
+                f"SLACK_WEBHOOK_URL via env and writes present=true/false "
+                f"to $GITHUB_OUTPUT (step-level webhook detection)."
+            )
+            detect_id = detect_step.get("id")
+            assert detect_id, (
+                f"{name} job {job_id}: webhook detection step must have an `id:` "
+                f"so downstream steps can gate on its output."
+            )
+
+            gated = [
+                step
+                for step in steps
+                if isinstance(step, dict)
+                and isinstance(step.get("if"), str)
+                and f"steps.{detect_id}.outputs.present" in step["if"]
+            ]
+            assert gated, (
+                f"{name} job {job_id}: at least one downstream step must be "
+                f"gated by `if: steps.{detect_id}.outputs.present == 'true'`."
             )
 
 
