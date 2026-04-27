@@ -14,13 +14,25 @@ permissions:
 jobs:
   notify:
     runs-on: ubuntu-latest
-    if: >-
-      ${{
-        github.event.workflow_run.conclusion == 'failure' &&
-        secrets.SLACK_WEBHOOK_URL != ''
-      }}
+    # Only the upstream-conclusion check is at job level (no secrets context).
+    # Webhook presence is detected at step level — placing `secrets.*` in a
+    # job-level `if:` can produce a phantom failed run with 0 jobs.
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     steps:
+      - name: Detect Slack webhook
+        id: webhook
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -n "$SLACK_WEBHOOK_URL" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "SLACK_WEBHOOK_URL is unset; downstream steps will skip cleanly."
+          fi
+
       - name: Post CI failure summary to Slack
+        if: steps.webhook.outputs.present == 'true'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_MENTION_USER_ID: ${{ vars.SLACK_MENTION_USER_ID }}

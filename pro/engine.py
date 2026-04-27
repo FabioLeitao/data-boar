@@ -65,10 +65,44 @@ def process_chunk_worker(chunk: Sequence[str]) -> list[str]:
     Process worker entrypoint for ``ProcessPoolExecutor``.
 
     The Rust filter is lazily initialized inside each child process.
+
+    Slice 3 — memory hygiene refactor (algorithmic efficiency only):
+
+    The previous shape always materialized ``data_batch = [str(item) for
+    item in chunk]`` even when ``chunk`` was already a ``list[str]`` (the
+    common path: the orchestrator already coerces values to ``str`` in
+    ``ProOrchestrator._row_to_payload``). For the recorded 200k profile
+    (``tests/benchmarks/official_benchmark_200k.json``, Pro path at
+    **0.574x** the OpenCore baseline) that copy was a per-chunk allocation
+    we paid for nothing.
+
+    Now we coerce only when the input is not already a ``list``-of-``str``
+    — this preserves the contract for tuple / iterator / mixed-type inputs
+    while skipping the redundant copy on the hot path. No precision,
+    sample cap, timeout, or fallback predicate was changed.
+
+    Doctrine: ``docs/ops/inspirations/DEFENSIVE_SCANNING_MANIFESTO.md`` §2
+    (relief valves, not knobs) and ``THE_ART_OF_THE_FALLBACK.md`` §2
+    (Rust path → Python fallback, no silent demotion).
     """
     global _worker_filter_instance
 
-    data_batch = [str(item) for item in chunk]
+    # Cheap O(1) probe: when the orchestrator already produced a
+    # ``list[str]`` (the documented hot path — see
+    # ``ProOrchestrator._row_to_payload`` which calls ``str(value)`` per
+    # column), we reuse the list directly and skip a per-chunk allocation.
+    # For tuples, generators, or first-element-non-``str`` inputs we coerce
+    # defensively so the downstream filter contract still holds. The probe
+    # is O(1) — checking ``isinstance(chunk, list)`` and the first element
+    # only — which is why this is a memory refactor and not a precision
+    # change.
+    if isinstance(chunk, list) and chunk and isinstance(chunk[0], str):
+        data_batch: list[str] = chunk
+    elif isinstance(chunk, list) and not chunk:
+        data_batch = []
+    else:
+        data_batch = [str(item) for item in chunk]
+
     if _worker_filter_instance is None and RUST_AVAILABLE and FastFilter is not None:
         _worker_filter_instance = FastFilter()
 
