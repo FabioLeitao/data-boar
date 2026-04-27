@@ -85,7 +85,7 @@ jobs:
         run: uv run pre-commit run --all-files
 
   bandit:
-    name: Bandit (medium+)
+    name: Bandit (low+)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -106,10 +106,12 @@ jobs:
       - name: Install dependencies
         run: uv sync --extra shares
 
-      # -ll = medium and high only; [tool.bandit] in pyproject.toml (skips, exclude_dirs). See PLAN_BANDIT_SECURITY_LINTER.md.
+      # -l = low + medium + high (Phase 3 of PLAN_BANDIT_SECURITY_LINTER.md: triaged with per-line `# nosec`
+      # justifications anchored to DEFENSIVE_SCANNING_MANIFESTO.md and THE_ART_OF_THE_FALLBACK.md).
+      # tests/test_bandit_low_clean.py is the regression guard so silent re-introductions trip locally too.
       - name: Run Bandit
         run: >-
-          uv run bandit -c pyproject.toml -r api core config connectors database file_scan report main.py -ll -q
+          uv run bandit -c pyproject.toml -r api core config connectors database file_scan report main.py -l -q
 
   audit:
     name: Dependency audit
