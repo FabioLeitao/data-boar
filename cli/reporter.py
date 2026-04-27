@@ -15,6 +15,7 @@ from config.loader import load_config
 from core.about import get_about_info
 from core.database import LocalDBManager
 from report.executive_report import generate_executive_report
+from report.safe_prefix import safe_session_prefix
 from report.scan_evidence import _aggregate_apg, _build_manifest
 
 
@@ -62,7 +63,10 @@ def main(argv: list[str] | None = None) -> int:
         "-o",
         "--output",
         default="",
-        help="Arquivo .md de saída; se omitido, imprime no stdout.",
+        help=(
+            "Arquivo .md de saída. Se omitido, grava ao lado do YAML de config: "
+            "`executive_report_<prefix>.md` (evita expor relatório em stdout/logs de CI)."
+        ),
     )
     p.add_argument(
         "--sqlite",
@@ -115,10 +119,15 @@ def main(argv: list[str] | None = None) -> int:
         out_arg = (args.output or "").strip()
         if out_arg:
             out = Path(out_arg).expanduser().resolve()
-            out.parent.mkdir(parents=True, exist_ok=True)
-            out.write_text(md, encoding="utf-8")
         else:
-            sys.stdout.write(md)
+            prefix = safe_session_prefix(sid, max_len=8)
+            base = cfg_path.parent.resolve()
+            out = (base / f"executive_report_{prefix}.md").resolve()
+            if not out.is_relative_to(base):
+                print("refuse output path outside config directory", file=sys.stderr)
+                return 2
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(md, encoding="utf-8")
         return 0
     finally:
         mgr.dispose()

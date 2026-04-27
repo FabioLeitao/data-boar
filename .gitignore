@@ -13,6 +13,8 @@ audit_results.db-journal
 data/qa_completao_*.db
 data/qa_completao_*.json
 data/lab_completao_benchmark.db
+# Local A/B completão benchmark harness (scripts/run-benchmark.ps1)
+bench/
 Relatorio_Auditoria_*.xlsx
 heatmap*.png
 config.yaml

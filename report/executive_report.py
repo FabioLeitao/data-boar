@@ -10,6 +10,7 @@ from typing import Any
 
 from core.advisor import group_findings_by_risk
 from report.recommendation_engine import sort_apg_rows, top_n_recommendations
+from report.safe_prefix import safe_session_prefix
 
 
 def _executive_status_emoji_and_label(
@@ -96,12 +97,13 @@ def generate_executive_report(
 
     product = about.get("name", "Data Boar")
     version = about.get("version", "")
+    sid_show = safe_session_prefix(session_id, max_len=16)
     lines: list[str] = [
         f"# {product} — inteligência e governança de risco (relatório executivo)",
         "",
         "*Enterprise data discovery & risk governance engine — executive desk output.*",
         "",
-        f"**Versão:** `{version}` · **Sessão:** `{session_id[:16]}…` · **Emitido (UTC):** `{manifest['engine_signature']['manifest_generated_at_utc']}`",
+        f"**Versão:** `{version}` · **Sessão:** `{sid_show}…` · **Emitido (UTC):** `{manifest['engine_signature']['manifest_generated_at_utc']}`",
         "",
         "**Foco:** redução de risco e próximos passos de governança — não substitui parecer jurídico nem runbook de mudança em produção.",
         "",
@@ -250,7 +252,7 @@ def generate_executive_report(
             "",
             "---",
             "",
-            f"**Evidência técnica:** `scan_manifest_{session_id[:16]}.yaml`",
+            f"**Evidência técnica:** `scan_manifest_{sid_show}.yaml`",
             "",
         ]
     )
