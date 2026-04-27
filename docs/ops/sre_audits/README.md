@@ -16,6 +16,9 @@ verdicts).
 | Date       | Audit                                                                                                              | Scope                                                              |
 | :--------- | :----------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------- |
 | 2026-04-27 | [`DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md`](DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md)             | Verdict ledger for Dependabot PRs #221, #222, #223, #224, #226    |
+| 2026-04-27 | [`PR_SECURITY_AUDIT_2026-04-27.md`](PR_SECURITY_AUDIT_2026-04-27.md)                                                | Security audit of all open PRs against `main` at 2026-04-27.       |
+| 2026-04-27 | [`STALE_FEATURE_FLAG_AUDIT_2026-04-27.md`](STALE_FEATURE_FLAG_AUDIT_2026-04-27.md) ([pt-BR](STALE_FEATURE_FLAG_AUDIT_2026-04-27.pt_BR.md)) | Stale feature flag inventory + retire / promote candidates.        |
+| 2026-04-27 | [`CLOUD_AUTOMATION_SUBAGENT_MODEL_INCIDENT_2026-04-27.md`](CLOUD_AUTOMATION_SUBAGENT_MODEL_INCIDENT_2026-04-27.md) | Cloud-automation `Task` subagents → `composer-2-fast` while billing Opus 4.7 (paired with [ADR 0044](../../adr/0044-cloud-automations-no-subagents-while-only-composer-fast-whitelisted.md)). |
 
 ## When to add a new file here
 

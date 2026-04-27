@@ -1,0 +1,102 @@
+---
+description: Cloud Agents and Slack-trigger automations on this repo MUST run all reasoning in the parent agent (operator-paid Opus 4.7) and MUST NOT spawn Task subagents (which today are restricted to composer-2-fast). Hard rule.
+alwaysApply: true
+---
+
+# Cloud automation — no Task subagents, parent model only
+
+## Why this rule exists (operator economics)
+
+The operator (`@FabioLeitao`) **pays per token** for the parent model assigned to
+this repository's Cursor Cloud Agents and Slack-trigger automations
+(currently **Claude Opus 4.7**). The platform's `Task` tool, when invoked by
+those parents, is **only** allowed to spawn subagents on the
+`composer-2-fast` slug (see the `Task` tool description in the cloud agent
+runtime). Any time the parent delegates "exploration", "answering", or "the
+actual write-up" to a subagent:
+
+- The operator is **billed for the parent's Opus tokens** of the wrapping
+  request,
+- The actual reasoning/output is produced by `composer-2-fast`, a cheaper and
+  weaker model,
+- And the resulting PR/Slack reply *appears* to be Opus-quality work but is
+  not.
+
+This is the exact shortcut the operator has explicitly forbidden, more than
+once, on this repo. The Slack trigger
+**`automationId: def95df7-a634-431a-93e5-659e4d831725`**
+(Apr 2026, channel `#data-boar-ops`) is the canonical paper trail.
+
+## Hard rule (zero exceptions for cloud automations)
+
+When you are running as a **Cursor Cloud Agent** or a **Slack-trigger
+automation** on this repository (`FabioLeitao/data-boar`):
+
+1. **Do not call the `Task` tool.** Do not launch agents of
+   `subagent_type: "generalPurpose"`, `"explore"`, `"cursor-guide"`, or
+   `"best-of-n-runner"`. Do not pass a `model` parameter to `Task` to "force"
+   Opus — the platform whitelist makes that a silent no-op or rejection, and
+   the work still ships under `composer-2-fast`.
+2. **Do all investigation, reading, searching, and drafting in the parent
+   agent** using `Read`, `Grep`, `Glob`, `Shell`, `WebSearch`, `WebFetch`,
+   `ListMcpResources`, etc. directly. The parent is the operator-paid model
+   the operator wants to be answering.
+3. **No "fast triage subagent"**, **no "explore subagent for context"**,
+   **no "best-of-N drafting"**, **no "let a small model summarise the
+   logs"**. If the parent runs out of context, **stop and report**, do not
+   silently swap models.
+4. **If a future cloud agent runtime adds Opus (or another operator-approved
+   model) to the `Task` whitelist**, re-read this file and the linked
+   ADR before re-enabling subagents. Until then, treat the `Task` tool as
+   **disabled** for this repo when running in a cloud / automation context.
+
+## Scope: who this binds
+
+| Runtime context                                                    | Bound by this rule? |
+| ------------------------------------------------------------------ | ------------------- |
+| Cursor **Cloud Agent** spawned by a Slack automation               | **Yes**             |
+| Cursor **Cloud Agent** spawned by a GitHub trigger / cron          | **Yes**             |
+| Cursor **Background / Web** agent on this repo                     | **Yes**             |
+| Operator's **local** Cursor IDE session on the primary dev PC      | Soft — see below    |
+
+For the operator's **local IDE** session, the `Task` tool may legitimately use
+a faster model the operator picked deliberately for a specific exploration —
+that is the operator's own per-token decision, made interactively. This rule
+still suggests preferring direct tool use, but does not force it locally.
+
+## What to do instead (parent-only ritual)
+
+When the trigger asks for "investigation + RCA + PR":
+
+1. `Read` the manifesto / inspirations / linked rules **directly** in the
+   parent.
+2. `Grep` / `Glob` for code paths **directly** in the parent.
+3. `Shell` for `git fetch`, `gh pr view`, `gh pr checks`, `git log`
+   **directly** in the parent.
+4. Write the audit / ADR / PR body **in the parent's own message stream**.
+5. Use `OpenGitPr` and `SendSlackMessage` from the parent.
+
+If the parent agent is genuinely too constrained for the task (context
+window, RAM-only mode mentioned in the prompt), the correct fallback is
+**partial delivery + honest Slack reply explaining the constraint**, not
+delegation to a cheaper model behind the operator's back.
+
+## Cross-references
+
+- **ADR 0044** — *Cloud automations on Data Boar must not spawn Task
+  subagents while the platform whitelist is composer-2-fast only*
+  (`docs/adr/0044-cloud-automations-no-subagents-while-only-composer-fast-whitelisted.md`).
+- **`docs/ops/sre_audits/CLOUD_AUTOMATION_SUBAGENT_MODEL_INCIDENT_2026-04-27.md`**
+  — incident write-up for the Slack trigger that produced this rule.
+- **`.cursor/rules/cloud-agents-token-aware-safety.mdc`** — broader
+  cloud-agent posture (LAB-OP, secrets, light gates). This rule is
+  **stricter** on the model / subagent dimension and takes precedence
+  for cloud automations.
+- **`AGENTS.md`** — *Cloud Agents / Cursor Web* bullet (operator policy).
+
+## Truth vs wish
+
+Do **not** claim to have run "in Opus" while shipping subagent output. If
+this rule was violated in the same session, **say so** in the PR body and
+the Slack reply, with the timestamp and a one-line corrective action — the
+operator considers undeclared model swaps a serious trust break.
