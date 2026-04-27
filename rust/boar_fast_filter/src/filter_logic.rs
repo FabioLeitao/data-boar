@@ -46,6 +46,15 @@ impl CompiledPatterns {
 }
 
 /// Luhn check on digit runs; ignores spaces and hyphens in `card_number`.
+///
+/// Why `#[allow(clippy::manual_is_multiple_of)]`?
+/// `u32::is_multiple_of` was only stabilized in Rust 1.87. PyO3 0.23 (this
+/// crate's `[dependencies]`) is compatible with stable Rust ≥ 1.63, and we
+/// keep the explicit `% 10 == 0` form so contributors on slightly older
+/// toolColleague-Nns can still build and read the algorithm at a glance. The lint
+/// is suppressed locally — not globally — so any *new* manual divisibility
+/// check elsewhere in the crate is still flagged.
+#[allow(unknown_lints, clippy::manual_is_multiple_of)]
 pub fn check_luhn(card_number: &str) -> bool {
     let digits: Vec<u32> = card_number
         .chars()
