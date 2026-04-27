@@ -16,6 +16,7 @@ verdicts).
 | Date       | Audit                                                                                                              | Scope                                                              |
 | :--------- | :----------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------- |
 | 2026-04-27 | [`DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md`](DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md)             | Verdict ledger for Dependabot PRs #221, #222, #223, #224, #226    |
+| 2026-04-27 | [`STOP_DIRECTIVE_AUDITORIA_IA_REBASE_2026-04-27.md`](STOP_DIRECTIVE_AUDITORIA_IA_REBASE_2026-04-27.md)             | Slack STOP directive — pause Rust PR work until `auditoria-ia` is on `main` (PRs #255 / #256 / #258 / #260 / #263) |
 
 ## When to add a new file here
 
