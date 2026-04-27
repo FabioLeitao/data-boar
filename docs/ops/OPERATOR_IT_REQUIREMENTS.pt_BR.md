@@ -140,7 +140,7 @@ Ao enviar o pedido, você pode incluir:
 1. **Identidade:** A conta ou app (ex.: conta de serviço, app Azure AD) que será usada.
 1. **Acesso necessário:** “Somente leitura e listagem” (ou a linha da tabela resumo acima para essa fonte).
 1. **O que não precisamos:** “Sem gravar, excluir ou admin.”
-1. **Justificativa:** “Auditoria de conformidade/LGPD: descobrir e amostrar conteúdo para detecção de sensibilidade; sem modificação de dados nem exportação de conteúdo completo; achados são só metadados (local e tipo de padrão).”
+1. **Justificativa:** “Varredura de conformidade / descoberta de dados: descobrir e amostrar conteúdo para detecção de sensibilidade; sem modificação de dados nem exportação de conteúdo completo; achados são só metadados (local e tipo de padrão).”
 
 Se a TI pedir justificativa por escrito, você pode indicar este documento e o fato de que a aplicação foi desenhada para operar com **mínimo de privilégios**, de modo a permanecer compatível com zero-trust e políticas IAM restritivas.
 

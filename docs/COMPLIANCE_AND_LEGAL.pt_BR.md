@@ -64,6 +64,8 @@ Quando a empresa adota a **ISO 31000** como **referência de gestão de risco**,
 
 ## Evidência e saídas (para auditoria e governança)
 
+**Postura para stakeholders (PoC e comitês):** o **Markdown executivo** (`POC_SUMMARY_*.md`) e o **`scan_manifest_*.yaml`** associado são artefatos **adjacentes a GRC**: consolidam **status da sessão**, **achados agregados por sensibilidade**, **como as leituras foram delimitadas** (amostragem, timeouts, postura por dialeto quando relevante) e **prioridades de remediação** (incluindo **inventário por padrão** com ação técnica), mantendo o corpo do Markdown **sem dados pessoais em bruto**. Apoiam conversas de **risco e conformidade** e materiais para **DPO/CISO**; **não** substituem **suite GRC** corporativa completa, **certificado** regulatório nem **substituição** de parecer jurídico ou atestações conduzidas por assessoria. O operador pode **regenerar** o Markdown **só a partir do SQLite local** com **`data-boar-report`** (sem novas leituras ao vivo nos alvos). Detalhe operacional: [USAGE.pt_BR.md](USAGE.pt_BR.md) (seção 5); mapa de saídas: [REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md](REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md).
+
 - **Relatórios Excel** por **sessão** de varredura: achados por fonte, campo/caminho, tipo de padrão, sensibilidade e texto de recomendação orientado a framework (base legal, risco, ação sugerida, prioridade quando configurado).
 - **Heatmaps** e **visões de tendência** entre sessões para mostrar **evolução**, não só um instantâneo.
 - **Execuções repetíveis** (incluindo automação via API) para alinhar ao **modelo operacional**; detalhe técnico de agendamento e limites: [COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md](COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md).

@@ -52,10 +52,11 @@ def _emit_runtime_trust_info(
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
-            "LGPD/GDPR/CCPA data audit tool. "
-            "Loads a YAML/JSON config, scans configured databases/filesystems/APIs, "
-            "stores findings in SQLite and generates an Excel report with heatmaps. "
-            "Can run once from the CLI or start a REST API dashboard."
+            "Data Boar — enterprise data discovery and risk governance engine. "
+            "Loads YAML/JSON config, scans configured databases/filesystems/APIs/shares, "
+            "stores finding metadata in local SQLite, and generates Excel reports with heatmaps. "
+            "Run once from the CLI or start a REST API dashboard (LGPD/GDPR/CCPA-aware patterns; "
+            "additional frameworks via config)."
         ),
         epilog=(
             "Configuration:\n"

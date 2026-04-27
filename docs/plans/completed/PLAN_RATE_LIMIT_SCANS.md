@@ -1,6 +1,8 @@
 # Plan: Rate limiting and concurrency safeguards
 
-Goal: Add configurable rate limiting and concurrency safeguards so the LGPD audit scanner cannot accidentally DoS customer networks while keeping existing behaviour and docs in sync.
+<!-- plans-hub-summary: Rate limits and concurrency caps so discovery scans cannot overwhelm customer networks; behaviour and docs stay aligned. -->
+
+Goal: Add configurable rate limiting and concurrency safeguards so the Data Boar scan engine cannot accidentally DoS customer networks while keeping existing behaviour and docs in sync.
 
 ## Goals
 

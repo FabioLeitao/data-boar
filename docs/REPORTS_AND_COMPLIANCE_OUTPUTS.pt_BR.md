@@ -13,6 +13,7 @@
 | Saída | Estado | Notas |
 | ----- | ------ | ----- |
 | **Excel (XLSX)** por sessão de varredura | **Entregue** | Artefato tabular principal: achados, report info, tendências quando há histórico, planilhas opcionais de cruzamento e revisão sugerida — ver abaixo. |
+| **Markdown executivo (`POC_SUMMARY_*.md`) + YAML de evidência (`scan_manifest_*.yaml`)** | **Entregue** | Gravados junto ao XLSX quando `generate_report` roda. O Markdown é adequado a *stakeholders* externos: padrões e contagens agregadas, seção de **metodologia e segurança**, **Top 3** APG e **inventário completo por padrão** (remediação); sem nomes de coluna/tabela/caminho nem amostras de célula. O YAML consolida amostragem, timeouts e bullets DBA/SRE. Para gerar só o Markdown a partir do SQLite: **`data-boar-report`** — [USAGE.pt_BR.md](USAGE.pt_BR.md) (seção 5; [EN](USAGE.md)). |
 | **Heatmap PNG** | **Entregue** | Imagem de densidade associada à sessão. |
 | **Relatórios HTML** / views do dashboard | **Entregue** | Uso pelo operador; tier e config podem aplicar. |
 | **JSON de trilha de auditoria** (`--export-audit-trail`) | **Entregue** | Snapshot legível por máquina (resumo de sessões, log de wipe, runtime trust, transporte do dashboard, **contagens de integridade da maturidade**). Versão de esquema: ver `core/audit_export.py` e [ADR 0037](adr/0037-data-boar-self-audit-log-governance.md). |
@@ -31,7 +32,8 @@
    - **Report info** (sessão, versão, notas opcionais de jurisdição quando habilitadas — heurística, não conclusão jurídica).
    - Planilhas opcionais: **Trends**, **Cross-ref data – ident. risk**, **Suggested review (LOW)**, **Data source inventory**, **Scan failures**.
 3. A imagem do **heatmap** é gravada junto ao workbook.
-4. **Operadores** combinam Excel + heatmap + **JSON de trilha** opcional para governança e **preparação** a auditoria — ainda sem substituir assessoria ou fluxo GRC enterprise.
+4. **Markdown executivo + manifesto** (`POC_SUMMARY_*.md`, `scan_manifest_*.yaml`) são *best-effort*: falha **não** bloqueia o XLSX (ver [USAGE.pt_BR.md](USAGE.pt_BR.md), bloco *Resumo executivo*; [EN](USAGE.md), seção 5).
+5. **Operadores** combinam Excel + heatmap + **JSON de trilha** opcional e **Markdown de mesa** opcional para governança e **preparação** a auditoria — ainda sem substituir assessoria ou fluxo GRC enterprise.
 
 ---
 
@@ -66,5 +68,6 @@ Quando existir **PDF ligado ao scan**, um **contrato de dados** razoável tende 
 ## Onde configurar e testar
 
 - **Diretório e comportamento do relatório:** [USAGE.pt_BR.md](USAGE.pt_BR.md) — chaves `report` ([EN](USAGE.md)).
+- **Markdown executivo a partir do SQLite:** [USAGE.pt_BR.md](USAGE.pt_BR.md) — comando `data-boar-report` (bloco *Resumo executivo*; [EN](USAGE.md), seção 5).
 - **Caminho do pack de maturidade e portão:** [USAGE.pt_BR.md](USAGE.pt_BR.md) — `api.maturity_self_assessment_poc_enabled`, `api.maturity_assessment_pack_path` ([EN](USAGE.md)).
 - **Validação sintética / laboratório:** [TESTING_POC_GUIDE.pt_BR.md](TESTING_POC_GUIDE.pt_BR.md) para corpus e notas tipo SBOM para revisores — não substitui este mapa de saídas.

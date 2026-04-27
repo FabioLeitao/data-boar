@@ -1,4 +1,6 @@
 """
+Data Boar core engine — risk discovery and governance orchestration.
+
 AuditEngine: orchestrates targets from config via connector registry; uses LocalDBManager and DataScanner.
 Supports sequential or parallel (max_workers) scan; start_audit(), generate_final_reports(session_id).
 Exposes db_manager, is_running, get_current_findings_count() for API.
@@ -134,6 +136,8 @@ class AuditEngine:
         # Internal: best-effort strong-crypto signals collected per-target during this run.
         # Phase 1: populated for database-style targets only; not yet persisted or exposed.
         self._crypto_signals: list[tuple[str, set[StrongCryptoSignal]]] = []
+        # Declarative sampling / SRE posture for API ``audit_log`` (refreshed after each scan).
+        self._scan_audit_log: dict[str, Any] | None = None
 
     @property
     def is_running(self) -> bool:
@@ -152,6 +156,19 @@ class AuditEngine:
         """
 
         return list(self._crypto_signals)
+
+    def get_scan_audit_log(self) -> dict[str, Any]:
+        """
+        JSON-serializable security/sampling posture for the current config.
+
+        After at least one ``_run_audit_targets`` completion, reflects the same snapshot
+        captured at end-of-run; before that, returns a fresh build from ``self.config``.
+        """
+        from core.scan_audit_log import build_scan_audit_log
+
+        if self._scan_audit_log is not None:
+            return dict(self._scan_audit_log)
+        return build_scan_audit_log(self.config)
 
     def start_audit(
         self,
@@ -237,6 +254,9 @@ class AuditEngine:
                             final_status = "completed_errors"
         finally:
             self._is_running = False
+            from core.scan_audit_log import build_scan_audit_log
+
+            self._scan_audit_log = build_scan_audit_log(self.config)
             self.db_manager.finish_session(session_id, final_status)
 
     def _run_target(self, target: dict[str, Any]) -> None:

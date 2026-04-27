@@ -158,8 +158,8 @@
   "help": {
     "page_title": "Ajuda e documentação — Data Boar",
     "h1": "Ajuda e documentação",
-    "what_h2": "O que esta aplicação faz",
-    "what_p1": "Esta aplicação varre fontes de dados configuradas (bancos, sistemas de arquivos, APIs e compartilhamentos) em busca de dados pessoais e sensíveis, armazena apenas metadados em um SQLite local e gera relatórios Excel mais um PNG de mapa de calor sensibilidade/risco.",
+    "what_h2": "O que o Data Boar faz",
+    "what_p1": "O Data Boar é um motor de descoberta de dados e governança de risco corporativa: varre fontes configuradas (bancos, sistemas de arquivos, APIs e compartilhamentos) em busca de dados pessoais e sensíveis, armazena apenas metadados em um SQLite local e gera Excel, mapas de calor, Markdown executivo (APG + evidência) e exportações opcionais orientadas a GRC.",
     "what_p2": "Cada execução é uma sessão de varredura com tags opcionais de tenant/cliente e técnico/operador para atribuir resultados.",
     "run_h2": "Como executar uma varredura",
     "run_web_h3": "Pelo painel web",
