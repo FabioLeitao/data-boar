@@ -1,6 +1,10 @@
-# How to Use Data Boar (LGPD Audit Application)
+# Data Boar: Enterprise Data Discovery & Risk Governance Engine
 
-**Data Boar** is the product name. This guide covers **command-line arguments and outcomes**, **deploying and using the web API**, **configuration (targets and credentials)**, and **downloading reports** (current and previous sessions). Operators can use it to learn how to run, configure, and navigate the app. Install identity and PyPI **`data-boar`**: [CONTRIBUTING.md](../CONTRIBUTING.md#repository-and-install-identity-data-boar). (The repository still ships the historical **`lgpd_crawler`** Python package for imports — implementation detail, not the product name.)
+This page is the **operator usage guide**: **CLI**, **web API and dashboard**, **configuration** (targets, sampling, detection, credentials), and **deliverables** (Excel, heatmap, executive Markdown, evidence manifest — current and previous sessions). It complements the [technical guide](TECH_GUIDE.md) and the [root README](../README.md). Install identity and PyPI **`data-boar`**: [CONTRIBUTING.md](../CONTRIBUTING.md#repository-and-install-identity-data-boar).
+
+**Data Boar** is **compliance-aware discovery and mapping** of personal and sensitive data across databases, files, APIs, and shares (**LGPD**, **GDPR**, **CCPA**, **GLBA**, and configurable frameworks — not LGPD-only). Deliverables are **GRC-adjacent** (executive narrative, APG-style priorities, evidence manifests): they support **risk assessment** and **compliance discovery** workflows; they do **not** replace legal counsel or a full enterprise GRC platform. The repository still ships the historical **`lgpd_crawler`** Python package for imports — implementation detail, not the product name.
+
+**Warehouse and enterprise SQL:** The same engine covers **SQLAlchemy** database targets (**Microsoft SQL Server**, **PostgreSQL**, **MySQL/MariaDB**, **Oracle**, …) and optional **Snowflake** (install with ``uv sync --extra bigdata`` — [Snowflake (optional)](#snowflake-optional-bigdata)). Sampling uses **per-engine timeouts** and documented hints (e.g. SQL Server **`OPTION (MAX_EXECUTION_TIME=…)`** — see **SRE sampling** under global options). If **your** DBA policy uses **read-uncommitted** reads (for example **`NOLOCK`** hints in connector SQL), record that in **runbooks** and in **`scan_manifest_*.yaml`** / evidence text so stakeholders see **attributed posture**, not silent isolation semantics.
 
 **Português (Brasil):** [USAGE.pt_BR.md](USAGE.pt_BR.md)
 
@@ -1017,9 +1021,49 @@ scan:
 | **Last generated report**              | `GET /report` → save response as `.xlsx`.                                                                                                              |
 | **Report for a specific past session** | `GET /list` to get `session_id`s, then `GET /reports/<session_id>` → save as `.xlsx`.                                                                  |
 | **One-shot run (CLI)**                 | After `python main.py --config config.yaml`, the report path is printed; file is under `report.output_dir` as `Relatorio_Auditoria_<session_id>.xlsx`. |
+| **Executive Markdown + manifest**      | Written next to the Excel when the workbook is generated: `POC_SUMMARY_<session_prefix>.md` and `scan_manifest_<session_prefix>.yaml` (same directory). If this step fails, the Excel path is still returned — see subsection below. |
+| **Executive Markdown only (CLI)**    | `data-boar-report` — reads **local SQLite** from `sqlite_path` in config; no live database connector required. See subsection below.                    |
 
 - Reports are generated on demand for a given session (from SQLite findings). The heatmap PNG is written next to the Excel file when the report is generated.
 - No built-in retention policy; reports are files on disk. Clean up or archive them as needed.
+
+### Executive evidence, APG priorities, and `data-boar-report`
+
+When **`generate_report`** runs (CLI one-shot, **`GET /reports/{session_id}`**, **`GET /report`**, or dashboard **Download**), the product can emit:
+
+- **`POC_SUMMARY_<first_16_chars_of_session_id>.md`** — stakeholder-oriented Markdown: status, findings **aggregated by sensitivity** (pattern names and counts only), top **three** APG Phase A mitigation priorities, and a short DBA/SRE posture summary. It does **not** list column names, table names, file paths, or sampled cell content — share safely with audiences that should not see operational detail.
+- **`scan_manifest_<prefix>.yaml`** — evidence manifest (sampling caps, timeouts, audit trail bullets, scope snapshot, optional `apg_phase_a` block).
+
+Failing to write these files is **non-fatal**: Excel and heatmap generation still succeed; check logs if the Markdown or YAML is missing.
+
+**Console entry point** (installed with the `data-boar` package from `[project.scripts]`):
+
+```bash
+uv run data-boar-report --config config.yaml --session-id <session_id>
+```
+
+Write to a file instead of stdout:
+
+```bash
+uv run data-boar-report --config config.yaml --session-id <session_id> -o Executive_summary.md
+```
+
+**Useful flags:**
+
+| Flag | Meaning |
+| --- | --- |
+| `--sqlite <path>` | Override `sqlite_path` from the config (e.g. homelab copy of the audit DB). |
+| `--trial-rows-capped` | Adds the same “trial license may cap Excel rows” note as the bundled `POC_SUMMARY` when you regenerate from SQLite. |
+
+**Requirements:** Same **`config.yaml`** you use for scans (so sampling/timeout metadata in the manifest matches policy). **`session_id`** must exist in `scan_sessions` / findings tables.
+
+#### Local processing and privacy (`data-boar-report`)
+
+`data-boar-report` reads **only** the **local SQLite** artefact from your scan (`sqlite_path`, overridable with **`--sqlite`**). It **re-aggregates** session metadata into Markdown/YAML **without opening live connectors**. By design, the default executive Markdown (**`POC_SUMMARY_*.md`**) carries **pattern names, counts, APG Phase A priorities**, and posture narrative — **not** raw sampled values or free-text PII excerpts. Sensitive literals stay in the secured database tier (or in **redacted** exports **you** control).
+
+**Structure (PoC “desk” contract):** the Markdown uses a clear heading ladder (**H1–H4**): session status, sensitivity roll-up, **`## 3. Metodologia e segurança`** (sampling caps, statement timeouts, traceability comment, **SQL Server `WITH (NOLOCK)`** when that engine appears in the session, plus manifest **SRE/DBA** bullets), then **`## 4. Plano de ação (APG)`** with **Top 3** priorities and a **full per-pattern inventory** (finding → risk → technical recommendation).
+
+**Related:** [REPORTS_AND_COMPLIANCE_OUTPUTS.md](REPORTS_AND_COMPLIANCE_OUTPUTS.md) (output map).
 
 ### 5.1 Operator notifications (optional)
 
@@ -1082,6 +1126,7 @@ Full module docs: `deploy/opentofu/README.md` — design rationale: `docs/adr/00
 - **List sessions:** `GET /list` (JSON). For the HTML session list, open `/{locale}/reports` (e.g. `/en/reports`); bare `/reports` redirects there (no JSON list at `GET /reports`).
 - **Download last report:** `GET /report`
 - **Download report by session:** `GET /reports/{session_id}`
+- **Executive Markdown (local SQLite):** `uv run data-boar-report --config config.yaml --session-id <session_id>` (see section 5)
 - **Interactive API docs:** `http://<host>:<port>/docs`
 
 **Related documentation:** Full documentation index (all topics, both languages): [README](README.md) · [README.pt_BR.md](README.pt_BR.md). Technical guide: [TECH_GUIDE.md](TECH_GUIDE.md) · [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md). [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md) (ML/DL training terms; [pt-BR](SENSITIVITY_DETECTION.pt_BR.md)). For `recommendation_overrides` covering sensitive categories (health, religion, political, PEP, race, union, genetic, biometric, sex life), see the example above (Global options) and [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md). To add a new data-source connector (database, API, share), see [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md) ([pt-BR](ADDING_CONNECTORS.pt_BR.md)). Deploy: [deploy/DEPLOY.md](deploy/DEPLOY.md) · [deploy/DEPLOY.pt_BR.md](deploy/DEPLOY.pt_BR.md). Further: [TESTING](TESTING.md) ([pt-BR](TESTING.pt_BR.md)), [TOPOLOGY](TOPOLOGY.md) ([pt-BR](TOPOLOGY.pt_BR.md)), [COMMIT_AND_PR](ops/COMMIT_AND_PR.md) ([pt-BR](ops/COMMIT_AND_PR.pt_BR.md)), [compliance-frameworks](COMPLIANCE_FRAMEWORKS.md) ([pt-BR](COMPLIANCE_FRAMEWORKS.pt_BR.md)).

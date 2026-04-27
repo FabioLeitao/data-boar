@@ -80,6 +80,13 @@
 | `generate_grc_report.py` | Monta JSON ``data_boar_grc_executive_report_v1`` (*hook* de lab; *raw scan* opcional + ``lab_result.json``) | **`LAB_COMPLETAO_RUNBOOK.md`**, **[`REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md`](../REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md)**, **[`GRC_EXECUTIVE_REPORT_SCHEMA.pt_BR.md`](../GRC_EXECUTIVE_REPORT_SCHEMA.pt_BR.md)** |
 | `export_reports.py` | Planilha XLSX de remediação + PDF executivo a partir do mesmo JSON v1 | **`report/grc_export_multiformat.py`**, esquema + exemplo em **`schemas/`** |
 
+### Entry points de console do produto (PyPI `[project.scripts]`)
+
+| Comando | Função | Ligado a |
+| ------- | ------ | -------- |
+| `data-boar` | CLI / API principal (`main.py`) | **[`USAGE.pt_BR.md`](../USAGE.pt_BR.md)** |
+| `data-boar-report` | Markdown executivo a partir da sessão no **SQLite local** (`cli.reporter`); não abre conector SQL ao vivo | **[`USAGE.pt_BR.md`](../USAGE.pt_BR.md)** (*Resumo executivo*) · [EN](../USAGE.md), seção 5 |
+
 ---
 
 ## 4. Talent / ATS (maioria em `docs/private/commercial/`)

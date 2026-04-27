@@ -6,6 +6,10 @@ The application helps DPO, security, and compliance teams discover and map perso
 
 **Português (Brasil):** [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md)
 
+### Governance-ready exports (briefings vs configuration depth)
+
+**`norm_tag`**, **recommendation overrides**, and the Excel workbook remain the **primary** way to align **detection and report wording** with each **framework profile** you merge from [compliance-samples/](compliance-samples/). For **CISO/DPO read-outs** of a **completed** scan, the product may also emit **executive Markdown** and a **`scan_manifest_*.yaml`** alongside the XLSX: they summarise **execution posture** (sampling, timeouts, dialect notes where applicable) and **prioritised remediation** without pasting sensitive literals—useful when **counsel** asks both *what* was labelled and *how* reads were bounded. They are **governance-adjacent** artefacts, **not** a substitute for programme-level GRC tooling or legal sign-off—see **Evidence and outputs** in [COMPLIANCE_AND_LEGAL.md](COMPLIANCE_AND_LEGAL.md) and [REPORTS_AND_COMPLIANCE_OUTPUTS.md](REPORTS_AND_COMPLIANCE_OUTPUTS.md).
+
 ### Engine vocabulary (POC decks and technical docs)
 
 The root [README](../README.md) **“For decision-makers”** section stays in **plain stakeholder language** (for example **sniffing with judgment** on the **data soup** metaphor). It does **not** require the internal deck labels below.

@@ -1,6 +1,6 @@
 # Data Boar
 
-**Data Boar** — compliance-aware discovery and mapping of personal and sensitive data across your data soup.
+**Data Boar** — enterprise data discovery and risk governance: compliance-aware mapping of personal and sensitive data across your data soup (intelligence engine, not a single-jurisdiction “audit app”).
 
 ![Data Boar mascot](api/static/mascot/data_boar_mascote_color.svg)
 
@@ -12,7 +12,7 @@
 
 ## For decision-makers and compliance leads
 
-Your organization needs to know **where** personal and sensitive data lives—to comply with **LGPD**, **GDPR**, **CCPA**, **GLBA**, and other major frameworks, and to avoid costly surprises. **Data Boar** helps you build **compliance awareness** and surface **possible violations** without out-of-control cost: one configurable engine that scans your data and reports what it finds, so IT, cybersecurity, compliance, and DPOs can take informed action.
+Your organization needs to know **where** personal and sensitive data lives—to comply with **LGPD**, **GDPR**, **CCPA**, **GLBA**, and other major frameworks, and to avoid costly surprises. **Data Boar** is a **multi-dialect**, **SRE-friendly** engine for **data discovery** and **actionable compliance** (risk assessment and governance-oriented outputs — Excel, heatmaps, executive Markdown, evidence manifests). It helps you build **compliance awareness** and surface **possible violations** without out-of-control cost: one configurable engine that scans your data and reports what it finds, so IT, cybersecurity, compliance, and DPOs can take informed action.
 
 **What we surface:** Beyond obvious PII (CPF, CNPJ – including the new alphanumeric format, email, phone), we use **AI** (ML and optional DL) to detect **sensitive categories** (health, religion, political opinion, biometric, genetic—LGPD Art. 5 II, GDPR Art. 9), **field combinations that can re-identify individuals in context** (LGPD Art. 5, GDPR Recital 26), and **possible minor data** (LGPD Art. 14, GDPR Art. 8). We recognise regional document names and flag ambiguous identifiers for manual confirmation, and reveal exposure across **legacy columns**, **exports**, **dashboards**, and **multiple sources** in one view—so you see gaps that manual checks or rule-only tools often miss. Findings carry **norm_tag** and the same risk vocabulary as the Excel output; when jargon piles up (**quasi-identifier**, categories, cross-border nuance), the [Glossary](docs/GLOSSARY.md#glossary-stakeholder-jargon) aligns engineering, compliance, and procurement on one lexicon.
 
