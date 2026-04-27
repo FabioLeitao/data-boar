@@ -35,6 +35,11 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+# PowerShell 7+: native stderr from ssh (e.g. git fetch progress) becomes ErrorRecord and can break
+# StrictMode + Stop. Lab scripts need exit codes, not stderr-as-terminating-error.
+if ($PSVersionTable.PSVersion.Major -ge 7) {
+    $PSNativeCommandUseErrorActionPreference = $false
+}
 if (-not $RepoRoot) {
     $RepoRoot = (Get-Item $PSScriptRoot).Parent.FullName
 }
