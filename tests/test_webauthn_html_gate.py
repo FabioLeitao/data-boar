@@ -148,3 +148,72 @@ def test_csrf_required_on_config_post_when_gate_on(webauthn_gate_client):
         data={"yaml": "targets: []\n"},
     )
     assert r.status_code == 403
+
+
+# ---------------------------------------------------------------------------
+# Regression: post-login open-redirect via ``next=`` (login_next is rendered
+# verbatim into ``data-next`` on /static/webauthn-login.js, then assigned to
+# ``window.location.href`` after a successful WebAuthn ceremony). Any value
+# that the browser resolves to a cross-origin URL would phish the operator
+# *after* they tapped their security key, so this gate must be strict.
+# ---------------------------------------------------------------------------
+
+
+def _safe_next_path():
+    from api.webauthn_html_gate import safe_next_path
+
+    return safe_next_path
+
+
+@pytest.mark.parametrize(
+    "evil",
+    [
+        # Protocol-relative URL: browsers resolve //evil.com against the page
+        # scheme, so location.href = "//evil.com/x" navigates to https://evil.com/x.
+        "//evil.com/x",
+        "//attacker.example/admin",
+        # Backslash-normalized authority: modern browsers normalize \ to /,
+        # so /\evil.com behaves like //evil.com for navigation.
+        "/\\evil.com/x",
+        "/\\\\evil.com/admin",
+        # Absolute URLs and dangerous schemes — covered by previous logic and
+        # locked in here so the new code keeps rejecting them.
+        "https://evil.com",
+        "http://evil.com/",
+        "javascript:alert(1)",
+        # Embedded control characters can break a downstream URL parser or
+        # get stripped by the browser, re-shaping the URL into //evil.com.
+        "/\r//evil.com",
+        "/\n//evil.com",
+        "/\t//evil.com",
+        "/\x00x",
+    ],
+)
+def test_safe_next_path_rejects_cross_origin_and_control_chars(evil):
+    safe_next_path = _safe_next_path()
+    fallback = "/en/"
+    assert safe_next_path(evil, fallback) == fallback
+
+
+@pytest.mark.parametrize(
+    "ok",
+    [
+        "/en/",
+        "/en/reports",
+        "/en/reports?sort=date_desc",
+        "/pt-br/help",
+        "/safe/path?with=query&and=fragment#hash",
+    ],
+)
+def test_safe_next_path_allows_same_origin_paths(ok):
+    safe_next_path = _safe_next_path()
+    assert safe_next_path(ok, "/en/") == ok
+
+
+def test_safe_next_path_empty_or_long_returns_fallback():
+    safe_next_path = _safe_next_path()
+    fallback = "/en/"
+    assert safe_next_path(None, fallback) == fallback
+    assert safe_next_path("", fallback) == fallback
+    # Length cap — anything beyond 2048 chars collapses to fallback.
+    assert safe_next_path("/" + "a" * 2050, fallback) == fallback

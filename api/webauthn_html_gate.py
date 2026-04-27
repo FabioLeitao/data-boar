@@ -59,11 +59,43 @@ def is_locale_html_public_unauthenticated(method: str, rest: list[str]) -> bool:
 
 
 def safe_next_path(next_q: str | None, fallback: str) -> str:
-    """Reject open redirects; allow same-origin path starting with ``/``."""
+    r"""
+    Reject open redirects; allow only a same-origin path that starts with a
+    single ``/``.
+
+    Hardened against three browser URL-parsing tricks that the previous
+    "starts with ``/``" check did not catch:
+
+    1. **Protocol-relative URLs** — ``//evil.com/x``. Browsers resolve these
+       against the current scheme, so ``window.location.href = "//evil.com/x"``
+       on an HTTPS page navigates to ``https://evil.com/x``. The string still
+       starts with ``/``, so the old check passed.
+    2. **Backslash → slash normalization** — ``/\evil.com``. Modern browsers
+       normalize ``\`` to ``/`` in the authority component; ``/\evil.com``
+       becomes equivalent to ``//evil.com`` for navigation. Same bypass class.
+    3. **Embedded control characters / whitespace** — ``CR``, ``LF``, ``TAB``,
+       ``NULL`` inside the path. These can break a downstream parser or get
+       stripped by the browser before navigation, re-shaping the URL into the
+       protocol-relative form above.
+
+    Anything that fails these rules collapses to ``fallback`` (a same-origin
+    path the caller controls — typically the locale dashboard root). This is
+    the **diagnostic-on-fall** posture from
+    ``docs/ops/inspirations/THE_ART_OF_THE_FALLBACK.md``: refuse to navigate
+    rather than degrade silently to a weaker target.
+    """
     if not next_q:
         return fallback
     n = next_q.strip()
-    if not n.startswith("/") or "://" in n or "\n" in n or "\r" in n:
+    if not n.startswith("/"):
+        return fallback
+    # Protocol-relative URL or backslash-normalized authority.
+    if n.startswith("//") or n.startswith("/\\"):
+        return fallback
+    # CR/LF/TAB/NULL anywhere in the path can re-shape the URL in the browser.
+    if any(c in n for c in ("\r", "\n", "\t", "\x00")):
+        return fallback
+    if "://" in n:
         return fallback
     if len(n) > 2048:
         return fallback
