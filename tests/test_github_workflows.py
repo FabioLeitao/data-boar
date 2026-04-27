@@ -39,7 +39,7 @@ def test_slack_ci_failure_notify_workflow_present_and_valid() -> None:
     assert "workflow_run" in on
     wr = on["workflow_run"]
     assert isinstance(wr, dict)
-    assert wr.get("workflows") == ["CI", "Semgrep", "SBOM"]
+    assert wr.get("workflows") == ["CI", "Rust CI", "Semgrep", "SBOM"]
     assert "notify" in (data.get("jobs") or {})
 
 
@@ -228,6 +228,45 @@ def test_ci_yml_pins_actions_and_uv_cli() -> None:
         assert sha_40.search(code), (
             f"expected full commit SHA in uses line: {line.strip()!r}"
         )
+
+
+def test_rust_ci_workflow_present_and_valid() -> None:
+    """Rust CI gate exists, is path-scoped to rust/**, and uses a clippy `-D warnings` step.
+
+    Regression guard so removing the Rust gate (or quietly downgrading clippy)
+    is caught at PR time, not after a Rust regression lands on `main`.
+    """
+    data = _load_workflow("rust-ci.yml")
+    assert data.get("name") == "Rust CI"
+    perms = data.get("permissions") or {}
+    assert perms.get("contents") == "read"
+
+    on = data.get("on") or {}
+    push = on.get("push") or {}
+    pr = on.get("pull_request") or {}
+    push_paths = push.get("paths") or []
+    pr_paths = pr.get("paths") or []
+    assert any(p.startswith("rust/") for p in push_paths), (
+        "rust-ci.yml push trigger should be scoped to rust/**"
+    )
+    assert any(p.startswith("rust/") for p in pr_paths), (
+        "rust-ci.yml pull_request trigger should be scoped to rust/**"
+    )
+
+    jobs = data.get("jobs") or {}
+    assert jobs, "rust-ci.yml must define at least one job"
+    job = next(iter(jobs.values()))
+    assert isinstance(job, dict)
+    assert job.get("runs-on") == "ubuntu-latest"
+    defaults = job.get("defaults") or {}
+    run_defaults = defaults.get("run") or {}
+    assert run_defaults.get("working-directory") == "rust/boar_fast_filter"
+
+    runs = "\n".join(_ci_step_run_texts(job))
+    assert "cargo fmt --all -- --check" in runs
+    assert "cargo check --all-targets --locked" in runs
+    assert "cargo test --all-targets --locked" in runs
+    assert "cargo clippy --all-targets --locked -- -D warnings" in runs
 
 
 def test_ci_lint_job_runs_pre_commit_all_files() -> None:

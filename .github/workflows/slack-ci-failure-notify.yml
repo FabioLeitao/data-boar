@@ -8,7 +8,7 @@ permissions:
 
 'on':
   workflow_run:
-    workflows: [CI, Semgrep, SBOM]
+    workflows: [CI, Rust CI, Semgrep, SBOM]
     types: [completed]
 
 jobs:
