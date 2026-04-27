@@ -1,5 +1,7 @@
 # Actionable governance and trust (Data Boar doctrine)
 
+**Português (Brasil):** [ACTIONABLE_GOVERNANCE_AND_TRUST.pt_BR.md](ACTIONABLE_GOVERNANCE_AND_TRUST.pt_BR.md)
+
 > **Seeds:** [Tailscale narrative discipline](https://tailscale.com/blog) ·
 > [Charity Majors / Honeycomb](https://charity.wtf/) ·
 > [Cloudflare post-mortems](https://blog.cloudflare.com/)

@@ -1,5 +1,7 @@
 # Defensive scanning manifesto (Data Boar doctrine)
 
+**Português (Brasil):** [DEFENSIVE_SCANNING_MANIFESTO.pt_BR.md](DEFENSIVE_SCANNING_MANIFESTO.pt_BR.md)
+
 > **Seeds:** [NASA Software Engineering Lab](https://nasa.github.io/) ·
 > [Cloudflare Engineering blog](https://blog.cloudflare.com/) ·
 > [Steve Gibson / Security Now](https://www.grc.com/securitynow.htm)

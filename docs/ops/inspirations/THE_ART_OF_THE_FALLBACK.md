@@ -1,5 +1,7 @@
 # The art of the fallback (Data Boar doctrine)
 
+**Português (Brasil):** [THE_ART_OF_THE_FALLBACK.pt_BR.md](THE_ART_OF_THE_FALLBACK.pt_BR.md)
+
 > **Seeds:** [Usagi Electric](https://www.youtube.com/@UsagiElectric) ·
 > [The 8-Bit Guy](https://www.youtube.com/@The8BitGuy)
 >

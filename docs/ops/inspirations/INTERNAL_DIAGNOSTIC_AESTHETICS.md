@@ -1,5 +1,7 @@
 # Internal diagnostic aesthetics (Data Boar doctrine)
 
+**Português (Brasil):** [INTERNAL_DIAGNOSTIC_AESTHETICS.pt_BR.md](INTERNAL_DIAGNOSTIC_AESTHETICS.pt_BR.md)
+
 > **Seed:** [Mark Russinovich / Sysinternals](https://learn.microsoft.com/en-us/sysinternals/)
 >
 > *"A good diagnostic tool teaches you the system every time you run it."*

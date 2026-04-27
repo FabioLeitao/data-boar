@@ -19,6 +19,20 @@ Objetivo: fontes que informam **hardening** e escolhas de roadmap com viés comp
 - [Operação de banco enterprise + slots de evidência GRC](ENTERPRISE_DB_OPS_AND_GRC_EVIDENCE.pt_BR.md) ([EN](ENTERPRISE_DB_OPS_AND_GRC_EVIDENCE.md))
 - [Qualys Threat Research (blog / TRU)](QUALYS_THREAT_RESEARCH.pt_BR.md)
 
+## Doutrina (manifestos normativos)
+
+Manifestos curtos e normativos que consolidam o **DNA de engenharia** do
+Data Boar. Cada arquivo enuncia regras de **faça / não faça** e aponta para
+o código ou a regra que já força a doutrina.
+
+- [A arte do fallback](THE_ART_OF_THE_FALLBACK.pt_BR.md) — Parser SQL → Regex → String crua; nunca falhar em silêncio.
+- [Manifesto de varredura defensiva](DEFENSIVE_SCANNING_MANIFESTO.pt_BR.md) — tetos de amostragem, timeouts, `WITH (NOLOCK)`, comentário SQL líder.
+- [Disciplina de bancada de engenharia](ENGINEERING_BENCH_DISCIPLINE.pt_BR.md) — ergonomia de bancada, cultura de checklist, logs narrados.
+- [Estética interna de diagnóstico](INTERNAL_DIAGNOSTIC_AESTHETICS.pt_BR.md) — `--verbose` e JSON de auditoria no padrão Sysinternals.
+- [Governança acionável e confiança](ACTIONABLE_GOVERNANCE_AND_TRUST.pt_BR.md) — APG (caminho da cura), entregável que se explica.
+
+Plano motor: [PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md](../../plans/PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md).
+
 ## Craft de engenharia (pessoas, produtos, narrativa)
 
 Objetivo: **desenvolvedores, times ou canais** cujo ofício, consciência de segurança, produtos entregues, documentação ou narrativa pública (“como pensamos o problema”) informam **como construímos e explicamos** o Data Boar.

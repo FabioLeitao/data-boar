@@ -26,6 +26,24 @@ Página única de **navegação** para **insumos externos** escolhidos pelo mant
 
 ---
 
+## Doutrina (manifestos normativos)
+
+Manifestos curtos e normativos que consolidam o **DNA de engenharia** do
+Data Boar. Cada arquivo enuncia regras de **faça / não faça**, cita as
+sementes de mentor e aponta para o código ou regra que já força a doutrina.
+
+| Documento                                                                                | Sementes                                                       | Escopo                                                                                                                                    |
+| --------                                                                                 | --------                                                       | ------                                                                                                                                    |
+| [THE_ART_OF_THE_FALLBACK.pt_BR.md](THE_ART_OF_THE_FALLBACK.pt_BR.md)                     | Usagi Electric · The 8-Bit Guy                                 | Hierarquia de fallback: Parser SQL → Regex → String crua; nunca falhar em silêncio.                                                       |
+| [DEFENSIVE_SCANNING_MANIFESTO.pt_BR.md](DEFENSIVE_SCANNING_MANIFESTO.pt_BR.md)           | NASA SEL · Cloudflare · Steve Gibson                           | Tetos de amostragem, statement timeouts, postura `WITH (NOLOCK)`, comentários SQL líderes, regra "convidado no banco do cliente".         |
+| [ENGINEERING_BENCH_DISCIPLINE.pt_BR.md](ENGINEERING_BENCH_DISCIPLINE.pt_BR.md)           | Adam Savage · Julia Evans (b0rk) · Aviões e Músicas            | Ergonomia de bancada, cultura de checklist, logs narrados.                                                                                |
+| [INTERNAL_DIAGNOSTIC_AESTHETICS.pt_BR.md](INTERNAL_DIAGNOSTIC_AESTHETICS.pt_BR.md)       | Mark Russinovich (Sysinternals)                                | Como `--verbose`, `completão -Privileged` e o JSON de auditoria devem *parecer* — classe de diagnóstico de baixo nível.                   |
+| [ACTIONABLE_GOVERNANCE_AND_TRUST.pt_BR.md](ACTIONABLE_GOVERNANCE_AND_TRUST.pt_BR.md)     | Narrativa Tailscale · Charity Majors (Honeycomb) · Cloudflare  | O relatório executivo entrega o *caminho da cura* (APG); o sistema se explica.                                                            |
+
+Plano motor: [PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md](../../plans/PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md).
+
+---
+
 ## Craft de engenharia (pessoas, produtos, narrativa)
 
 | Documento                                                                                             | O que é                                                                                                                                                                                     |

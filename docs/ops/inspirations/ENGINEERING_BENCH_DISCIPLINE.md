@@ -1,5 +1,7 @@
 # Engineering bench discipline (Data Boar doctrine)
 
+**Português (Brasil):** [ENGINEERING_BENCH_DISCIPLINE.pt_BR.md](ENGINEERING_BENCH_DISCIPLINE.pt_BR.md)
+
 > **Seeds:** [Adam Savage / Tested.com](https://www.tested.com/) ·
 > [Julia Evans (b0rk)](https://jvns.ca/) ·
 > [Aviões e Músicas (Lito Sousa)](https://www.youtube.com/@avioesemusicas)
