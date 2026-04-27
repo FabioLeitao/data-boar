@@ -65,6 +65,21 @@ FEATURE_TIER_MAP: dict[str, Tier] = {
     "scheduled_scans": Tier.PRO,
     "api_key_management_ui": Tier.PRO,
     "dashboard_rbac": Tier.PRO,
+    # Pro: advanced audit log surface (who scanned what, when) for governance teams.
+    # Distinct from `audit_log_export` (Enterprise) which adds machine-readable export
+    # with retention controls and signature anchors for SIEM ingestion.
+    "audit_log_advanced": Tier.PRO,
+    "report_pdf_export": Tier.PRO,
+    # Enterprise connectors and capabilities reserved by SLA / cost-to-serve
+    # (PLAN_PRODUCT_TIERS_AND_OPEN_CORE.md Feature Matrix).
+    "connector_mainframe": Tier.ENTERPRISE,
+    "connector_sap_hr_totvs_rm": Tier.ENTERPRISE,
+    # High-frequency sampling = larger sample budgets / shorter cadences than the
+    # bounded community ceilings in DEFENSIVE_SCANNING_MANIFESTO.md §2. Hard caps
+    # in `connectors/sql_sampling.py` still apply — this only changes which budget
+    # the operator may pick, never lifts the absolute ceiling.
+    "high_frequency_sampling": Tier.ENTERPRISE,
+    "siem_export": Tier.ENTERPRISE,
     # GRC-style org maturity questionnaire UI (POC); not open core — see PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md
     "maturity_self_assessment_poc": Tier.PRO,
     "notifications_email": Tier.PRO,
