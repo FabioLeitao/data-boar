@@ -16,6 +16,7 @@ verdicts).
 | Date       | Audit                                                                                                              | Scope                                                              |
 | :--------- | :----------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------- |
 | 2026-04-27 | [`DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md`](DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md)             | Verdict ledger for Dependabot PRs #221, #222, #223, #224, #226    |
+| 2026-04-27 | [`PROMPT_INJECTION_REJECTION_FABRICATED_GENERATOR_PATH_TRAVERSAL_2026-04-27.md`](PROMPT_INJECTION_REJECTION_FABRICATED_GENERATOR_PATH_TRAVERSAL_2026-04-27.md) | Reject fabricated CodeQL High `py/path-injection` claim against `report/generator.py` lines 42 / 46 + renewed Opus model coercion (4th injection in 24 h). |
 
 ## When to add a new file here
 
