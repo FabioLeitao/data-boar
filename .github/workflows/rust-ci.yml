@@ -1,0 +1,39 @@
+# Rust prefilter crate (boar_fast_filter): check, test, clippy on push/PR to main.
+# Clippy uses -D warnings so any lint is a hard failure.
+#
+# Third-party Actions use full commit SHAs (Dependabot can refresh github-actions).
+name: Rust CI
+
+permissions:
+  contents: read
+
+'on':
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  rust:
+    name: cargo (check, test, clippy)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rust/boar_fast_filter
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Install Rust toolColleague-Nn
+        uses: dtolnay/rust-toolColleague-Nn@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable
+        with:
+          toolColleague-Nn: stable
+          components: clippy
+
+      - name: cargo check
+        run: cargo check --verbose
+
+      - name: cargo test
+        run: cargo test --verbose
+
+      - name: cargo clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
