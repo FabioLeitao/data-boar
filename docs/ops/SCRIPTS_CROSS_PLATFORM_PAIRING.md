@@ -24,7 +24,7 @@ Some **developer gates** and **thin wrappers** exist in **two forms**: **PowerSh
 | Pytest subset (`-Path` / `-Keyword`) | `scripts/quick-test.ps1` | `scripts/quick-test.sh` |
 | Pre-commit + full pytest (no gatekeeper / no plans-stats) | `scripts/pre-commit-and-tests.ps1` | `scripts/pre-commit-and-tests.sh` |
 
-**Note:** `check-all.ps1` calls **`gatekeeper-audit.ps1`** and **`plans-stats.py`** before delegating to **`pre-commit-and-tests.ps1`**; `check-all.sh` does the same at the shell level. **`pre-commit-and-tests.*`** skips gatekeeper and plans-stats by design.
+**Note:** `check-all.ps1` calls **`gatekeeper-audit.ps1`** and **`plans-stats.py`** before delegating to **`pre-commit-and-tests.ps1`**; `check-all.sh` runs the same two steps then calls **`pre-commit-and-tests.sh`** (same delegation pattern; not an inlined duplicate of pre-commit/pytest). **`pre-commit-and-tests.*`** skips gatekeeper and plans-stats by design. Optional Rust **boar_fast_filter** build lives in **`pre-commit-and-tests.*`** (best-effort when `rustc` is on PATH; `DATA_BOAR_SKIP_RUST_BUILD=1` skips).
 
 ## Verification
 

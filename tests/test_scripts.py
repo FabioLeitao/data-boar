@@ -636,6 +636,19 @@ def test_commit_or_pr_mentions_gh_default_repo_guard():
     assert "RunVersionSmoke" in text
 
 
+def test_check_all_sh_delegates_to_pre_commit_and_tests():
+    """check-all.sh mirrors check-all.ps1 by calling pre-commit-and-tests.sh (not inlining)."""
+    root = _project_root()
+    script = root / "scripts" / "check-all.sh"
+    if not script.exists():
+        return
+    text = script.read_text(encoding="utf-8", errors="replace")
+    assert "pre-commit-and-tests.sh" in text
+    assert "pre-commit run" not in text, (
+        "check-all.sh should delegate to pre-commit-and-tests.sh"
+    )
+
+
 def test_check_all_supports_optional_version_smoke():
     """check-all script exposes optional version readiness smoke switch."""
     root = _project_root()

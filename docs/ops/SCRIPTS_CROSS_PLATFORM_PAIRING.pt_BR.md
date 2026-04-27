@@ -24,7 +24,7 @@ Alguns **gates de desenvolvimento** e **wrappers finos** existem em **duas forma
 | Subconjunto *pytest* (`-Path` / `-Keyword`) | `scripts/quick-test.ps1` | `scripts/quick-test.sh` |
 | *Pre-commit* + *pytest* completo (sem *gatekeeper* / sem *plans-stats*) | `scripts/pre-commit-and-tests.ps1` | `scripts/pre-commit-and-tests.sh` |
 
-**Nota:** o **`check-all.ps1`** chama **`gatekeeper-audit.ps1`** e **`plans-stats.py`** antes de delegar ao **`pre-commit-and-tests.ps1`**; o **`check-all.sh`** faz o mesmo ao nível do *shell*. Os **`pre-commit-and-tests.*`** ignoram *gatekeeper* e *plans-stats* de propósito.
+**Nota:** o **`check-all.ps1`** chama **`gatekeeper-audit.ps1`** e **`plans-stats.py`** antes de delegar ao **`pre-commit-and-tests.ps1`**; o **`check-all.sh`** executa os mesmos dois passos e chama **`pre-commit-and-tests.sh`** (o mesmo padrão de delegação, sem duplicar *pre-commit*/*pytest*). Os **`pre-commit-and-tests.*`** ignoram *gatekeeper* e *plans-stats* de propósito. O *build* opcional do Rust **boar** fica em **`pre-commit-and-tests.*`** (melhor esforço com `rustc` no `PATH`; `DATA_BOAR_SKIP_RUST_BUILD=1` pula).
 
 ## Verificação
 

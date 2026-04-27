@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # pre-commit-and-tests.sh — Linux/macOS mirror of scripts/pre-commit-and-tests.ps1.
+# Optional: maturin develop for rust/boar_fast_filter when rustc is on PATH (see build-rust-prefilter.ps1).
 # Runs pre-commit (unless skipped) then full pytest with warnings as errors.
 # Usage (from repo root):
 #   ./scripts/pre-commit-and-tests.sh
@@ -32,6 +33,23 @@ if [[ ! -f .venv/pyvenv.cfg ]]; then
   if [[ ! -f .venv/pyvenv.cfg ]]; then
     echo "pre-commit-and-tests.sh: uv sync did not create .venv; fix disk path or UV_* env and retry." >&2
     exit 2
+  fi
+fi
+
+# Optional Rust native extension (parity with scripts/build-rust-prefilter.ps1).
+# Best-effort; set DATA_BOAR_SKIP_RUST_BUILD=1 to skip. Mirrors pre-commit-and-tests.ps1.
+RUST_MANIFEST="$REPO_ROOT/rust/boar_fast_filter/Cargo.toml"
+if [[ "$SKIP_PRECOMMIT" -eq 0 ]] && [[ -f "$RUST_MANIFEST" ]] && [[ "${DATA_BOAR_SKIP_RUST_BUILD:-}" != "1" ]]; then
+  if command -v rustc >/dev/null 2>&1; then
+    echo "Building Rust prefilter (boar_fast_filter)..." >&2
+    uv run pip install maturin >/dev/null 2>&1 || true
+    if uv run maturin develop --manifest-path "$RUST_MANIFEST" --release; then
+      :
+    else
+      echo "Rust prefilter build failed or incomplete; continuing without native extension (tests may skip)." >&2
+    fi
+  else
+    echo "rustc not on PATH; skipping Rust prefilter build." >&2
   fi
 fi
 
