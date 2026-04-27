@@ -6,12 +6,13 @@ This note separates **verified evidence** from **aspirational lab targets**. Onl
 
 ## Verified in this repository session (evidence-backed)
 
-Source of truth: [LAB_LESSONS_LEARNED.md](LAB_LESSONS_LEARNED.md) (hub; dated snapshot: [lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md](lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md)), `tests/benchmarks/official_benchmark_200k.json`, checkpoint file from kill test.
+Source of truth: [LAB_LESSONS_LEARNED.md](LAB_LESSONS_LEARNED.md) (hub; dated snapshots: [lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md](lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md), [lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_27_slice2.md](lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_27_slice2.md)), `tests/benchmarks/official_benchmark_200k.json`, checkpoint file from kill test.
 
 | Topic | Result |
 | ----- | ------ |
 | Rust extension `boar_fast_filter` | Built and importable in project `.venv` (PyO3 updated for CPython 3.13). |
-| Official benchmark (200k rows, 8 workers) | OpenCore `0.252242s`, Pro path `0.439419s`, `speedup_vs_opencore = 0.574` (Pro is **0.574x as fast as** OpenCore in this profile, i.e. ~`1.74x` more wall-clock — Pro **slower**). |
+| Official benchmark (200k rows, 8 workers) — Slice 1 (frozen) | OpenCore `0.252242s`, Pro path `0.439419s`, `speedup_vs_opencore = 0.574` (Pro **slower** in that profile). |
+| Official benchmark (200k rows, 8 workers) — Slice 2 (current) | OpenCore `0.108942s`, Pro path `0.091026s`, `speedup_vs_opencore = 1.197` (Pro **faster** after the fused-regex refactor; Python fallback path, `rust_worker_path: false`). |
 | Checkpoint + kill resume | `last_processed_id` advanced from `104000` to table end; second run completed with consistent finding counts. |
 | Throttling | `BoarThrottler` increased concurrency toward configured max during scan. |
 
@@ -30,7 +31,8 @@ The numbers below are **examples of what a future lab-op campaign might target**
 
 - **Checkpointing and throttling** are the strongest “mission critical” wins captured here.
 - **Performance marketing** needs a benchmark profile aligned with real workloads (chunk size, downstream ML cost, I/O realism) before quoting speedups.
-- **Direction vs ratio (do not double-invert).** `speedup_vs_opencore = 0.574` and the operator phrasing **"0.574x mais lento"** point to the **same** outcome (Pro slower); the JSON ratio is `OpenCore / Pro` time. Pro takes roughly **`1 / 0.574 ≈ 1.74x`** the OpenCore wall-clock in this profile. The regression guard [`tests/test_official_benchmark_200k_evidence.py`](../../tests/test_official_benchmark_200k_evidence.py) pins this direction plus the OpenCore ↔ Pro findings parity (`100,000` hits on both paths) so future executive copy or manifests cannot drift from the recorded artifact silently.
+- **Direction vs ratio (do not double-invert).** `speedup_vs_opencore = X` is `t_open / t_pro`. Slice 1 captured `X = 0.574` (Pro slower, ~`1.74x` OpenCore wall-clock); Slice 2 records `X = 1.197` (Pro faster) after the fused-regex refactor. The regression guard [`tests/test_official_benchmark_200k_evidence.py`](../../tests/test_official_benchmark_200k_evidence.py) now requires `speedup >= 0.95` (5 percent noise band) plus the OpenCore ↔ Pro findings parity (`100,000` hits on both paths), so future executive copy or manifests cannot drift from the recorded artifact silently.
+- **Refactor that fixed the regression (Slice 2).** Three concrete bottlenecks in the Python fallback: (a) double regex pass in `pro/worker_logic.basic_python_scan` (OpenCore regex, then card regex on the misses); (b) two `re.search` calls per row in `core/prefilter.OpenCorePreFilter._looks_sensitive`; (c) phantom `deep_ml_analysis` no-op hop in `pro/engine.process_chunk_worker`. The refactor fuses CPF / e-mail / card-shape into a single compiled alternation with named groups, short-circuits CPF and e-mail, fires Luhn arithmetic only when the regex actually matches a card-shape span, and removes the no-op hop. Same finding contract; zero database impact.
 
 ## Next verification steps
 

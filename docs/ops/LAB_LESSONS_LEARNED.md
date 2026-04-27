@@ -9,23 +9,37 @@
 
 ## Latest session (summary)
 
-**Date:** 2026-04-25 (UTC−3).
+**Date:** 2026-04-27 (UTC, Slice 2).
 
-**Verdict (short):** Rust `boar_fast_filter` import **OK**; checkpoint + kill-resume **OK**; throttler ramp to max workers **OK**; official 200k benchmark shows Pro path **slower** than OpenCore in the tested profile (**0.574x** — not a business-case speedup yet).
+**Verdict (short):** Pro Python fallback regression closed. Single-pass fused
+regex in `core/prefilter.py` and `pro/worker_logic.py::basic_python_scan`,
+plus removal of the no-op `deep_ml_analysis` hop in `pro/engine.py`, brings
+the official 200k benchmark from **`speedup_vs_opencore = 0.574`** (Pro
+slower) to **`1.197`** (Pro faster) on the same synthetic seed. Rust path
+remains unchanged; findings parity (`100,000 == 100,000`) and zero DB-lock
+impact are preserved per
+[`DEFENSIVE_SCANNING_MANIFESTO.md`](inspirations/DEFENSIVE_SCANNING_MANIFESTO.md)
+and the fallback hierarchy in
+[`THE_ART_OF_THE_FALLBACK.md`](inspirations/THE_ART_OF_THE_FALLBACK.md).
 
-> **Reading the 0.574x figure (operator note).** The recorded
-> `speedup_vs_opencore = 0.574` in
+**Previous session (frozen):** the `0.574x` figure and its reading guide are
+preserved at
+[`lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md`](lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md)
+and
+[`lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_27.md`](lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_27.md);
+the Slice 2 dated archive is
+[`lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_27_slice2.md`](lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_27_slice2.md).
+
+> **Reading the new ratio (operator note).** The artifact
 > [`tests/benchmarks/official_benchmark_200k.json`](../../tests/benchmarks/official_benchmark_200k.json)
-> means **Pro is 0.574x as fast as OpenCore** in this profile, i.e. Pro takes
-> roughly `1 / 0.574 ≈ 1.74x` more wall-clock time. The Slack handoff
-> phrasing **"0.574x mais lento"** is consistent in direction (Pro slower) but
-> arithmetically refers to the same ratio — do not double-invert it when
-> updating manifests, executive copy, or lab lessons. The regression guard at
+> now records `speedup_vs_opencore = 1.197` (Pro `0.091s` vs OpenCore
+> `0.109s` on the Cloud Agent VM). The number is `t_open / t_pro`, so
+> `> 1.0` means Pro **faster**, not slower; the regression guard at
 > [`tests/test_official_benchmark_200k_evidence.py`](../../tests/test_official_benchmark_200k_evidence.py)
-> pins this direction and the OpenCore ↔ Pro findings parity (`100,000` hits
-> on both paths) so prose and JSON cannot drift apart silently.
-
-**Full narrative (frozen):** [`lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md`](lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md)
+> now requires `speedup >= 0.95` (5 percent noise band on slow CI). Findings
+> parity (`100,000` on both paths) stays non-negotiable, with or without the
+> Rust extension. The `rust_worker_path` flag is now derived from
+> `pro.engine.RUST_AVAILABLE` instead of being hardcoded.
 
 **Evidence paths (repo):**
 
@@ -38,6 +52,7 @@
 | ------------ | -------- |
 | 2026-04-25 | [`lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md`](lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md) |
 | 2026-04-27 | [`lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_27.md`](lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_27.md) (reading guide / regression guard for the 0.574x figure; no new measurement) |
+| 2026-04-27 (Slice 2) | [`lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_27_slice2.md`](lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_27_slice2.md) (Pro Python fallback refactor; single-pass fused regex; new artifact, polarity-flipped guard) |
 
 ## Follow-ups → plans (tracked)
 
