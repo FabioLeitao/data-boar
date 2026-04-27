@@ -15,7 +15,10 @@ verdicts).
 
 | Date       | Audit                                                                                                              | Scope                                                              |
 | :--------- | :----------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------- |
+| 2026-04-27 | [`PR_SECURITY_AUDIT_2026-04-27.md`](PR_SECURITY_AUDIT_2026-04-27.md)                                               | Security pass over the five PRs open against `main` (PR #234)     |
+| 2026-04-27 | [`STALE_FEATURE_FLAG_AUDIT_2026-04-27.md`](STALE_FEATURE_FLAG_AUDIT_2026-04-27.md)                                 | Stale feature-flag sweep + flag-SDK creep guard (PR #251)         |
 | 2026-04-27 | [`DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md`](DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md)             | Verdict ledger for Dependabot PRs #221, #222, #223, #224, #226    |
+| 2026-04-27 | [`RUST_CI_CLIPPY_REGRESSION_2026-04-27.md`](RUST_CI_CLIPPY_REGRESSION_2026-04-27.md)                               | RCA for PR #255 `Rust CI` clippy `manual_is_multiple_of` failure   |
 
 ## When to add a new file here
 
