@@ -38,3 +38,20 @@ from boar_fast_filter import FastFilter
 f = FastFilter()
 print(f.filter_batch(["clean", "cpf 390.533.447-05", "mail a@example.test"]))
 ```
+
+## Rust-only test loop (no Python required)
+
+The crate exposes a pure-Rust API (`FastFilter::try_new`,
+`FastFilter::filter_batch_pure`, `FastFilter::check_luhn`) so `cargo test`
+exercises the same logic that PyO3 binds. From `rust/boar_fast_filter/`:
+
+```bash
+cargo fmt --all -- --check
+cargo check --all-targets --locked
+cargo test --all-targets --locked
+cargo clippy --all-targets --locked -- -D warnings
+```
+
+CI runs the same four steps via `.github/workflows/rust-ci.yml` (path-scoped
+to `rust/**` so unrelated PRs do not spin Rust builds). Clippy uses
+`-D warnings`, so any new lint promotes to a CI failure.
