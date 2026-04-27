@@ -144,3 +144,39 @@ def test_reporter_debug_traceback_flag_appends_traceback(
     assert "[data-boar-report] RCA" in err
     assert "[data-boar-report] full traceback (debug):" in err
     assert "Traceback" in err
+
+
+def test_reporter_empty_session_id_emits_rca_block_and_exits_two(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """An empty/whitespace ``--session-id`` is a CLI contract violation.
+
+    Regression guard: the previous implementation called a stale
+    ``_emit_rca_block(phase=..., symptom=..., hypotheses=..., next_step=...,
+    exit_code=...)`` signature that had been silently shadowed by a second
+    definition with kwargs ``step= / error= / config_path= / ...``. Operators
+    who forgot ``--session-id`` got a raw ``TypeError`` traceback and process
+    exit code 1, instead of the contracted exit code 2 + RCA block.
+
+    Doctrine: ``docs/ops/inspirations/INTERNAL_DIAGNOSTIC_AESTHETICS.md`` §2.2
+    (named pipeline step), ``THE_ART_OF_THE_FALLBACK.md`` §3 (every demotion
+    has a diagnostic), and ``DEFENSIVE_SCANNING_MANIFESTO.md`` §1 (the
+    error path opens no SQLite, so DBA locks are untouched).
+    """
+    rc = reporter_main(
+        [
+            "--config",
+            str(tmp_path / "anything.yaml"),
+            "--session-id",
+            "   ",
+        ]
+    )
+    assert rc == 2
+    captured = capsys.readouterr()
+    assert "TypeError" not in captured.err
+    err = captured.err
+    assert "[data-boar-report] RCA" in err
+    assert "step              parse_args" in err
+    assert "CLI contract violation" in err
+    assert "INTERNAL_DIAGNOSTIC_AESTHETICS" in err
+    assert "[data-boar-report] RCA" not in captured.out
