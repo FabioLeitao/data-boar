@@ -47,6 +47,31 @@ Net: the **client** gains a **repeatable, session-scoped governance narrative** 
 
 **Interpretation:** difference is **orchestrator wall time** (SSH, lab git ensure, inventory, smoke, optional GRC hooks) — not a micro-benchmark of Python hot paths. Call a swing **significant** only if repeats cluster (same manifest, same lab day) and network/sudo/Docker noise is ruled out.
 
+### 3.1 Pinned 200k A/B (OpenCore vs Pro path) — direction-only evidence
+
+**Artifact:** [`tests/benchmarks/official_benchmark_200k.json`](../../tests/benchmarks/official_benchmark_200k.json) (frozen 2026-04-25 lab session, untouched in this Slice).
+
+| Field | Value |
+| --- | --- |
+| `opencore_seconds` | `0.252242` |
+| `pro_seconds` | `0.439419` |
+| `speedup_vs_opencore` (`= t_open / t_pro`) | `0.574` |
+| `opencore_hits` / `pro_hits` | `100000` / `100000` (parity) |
+
+**Reading guide (Julia Evans-style — do not double-invert):**
+
+- `speedup_vs_opencore = 0.574` means **Pro is 0.574x as fast as** OpenCore.
+- The operator-chat phrasing **"0.574x mais lento"** points at the same direction (Pro slower) using the same numeric anchor.
+- Pro wall-clock ≈ `1 / 0.574 ≈ 1.74x` the OpenCore wall-clock in this profile.
+
+**Regression guard:** [`tests/test_official_benchmark_200k_evidence.py`](../../tests/test_official_benchmark_200k_evidence.py) pins direction (`pro_seconds > opencore_seconds`, `speedup < 1.0`), arithmetic (`recorded ≈ opencore_seconds / pro_seconds`), and findings parity (`opencore_hits == pro_hits`). Future executive copy or manifests that flip the sign without regenerating the JSON will fail CI loudly.
+
+**Doctrinal reading of the result** (see manifestos at [`docs/ops/inspirations/`](../ops/inspirations/)):
+
+- *DEFENSIVE_SCANNING_MANIFESTO* — sample caps and statement timeouts that protect the customer DB are not free; the Pro path's extra wall-clock in this profile is the cost of stricter sampling discipline (no `ORDER BY`, leading SQL comment, dialect-specific clamps). The recorded JSON is the *evidence* that those guarantees do not silently regress.
+- *THE_ART_OF_THE_FALLBACK* — findings parity (`100000 == 100000`) is asserted **before** any speed comparison: a defensive scanner protects detection coverage even when the Pro path is slower.
+- *ACTIONABLE_GOVERNANCE_AND_TRUST* — the 200k JSON sits next to the executive Markdown produced by `data-boar-report` and the manifest YAML; together they form the customer trust triangle. Removing any leg degrades the deliverable to a slide deck.
+
 ---
 
 ## 4. Security — “protocols” and scan posture (evidence model)

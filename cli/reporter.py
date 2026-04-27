@@ -1,6 +1,7 @@
 """
 CLI ``data-boar-report``: executive Markdown from local SQLite (same core as ``POC_SUMMARY_*.md``).
 
+
 Enterprise data discovery & risk governance desk output — no live connector required.
 
 Doctrine references:
@@ -31,6 +32,41 @@ from core.database import LocalDBManager
 from report.executive_report import generate_executive_report
 from report.safe_prefix import safe_session_prefix
 from report.scan_evidence import _aggregate_apg, _build_manifest
+
+
+def _emit_rca_block(
+    *,
+    phase: str,
+    symptom: str,
+    hypotheses: list[str],
+    next_step: str,
+    exit_code: int,
+) -> None:
+    """Print a Sysinternals-style RCA block for ``data-boar-report`` failures.
+
+    The block is intentionally short and human-readable; it is meant for the
+    Cursor/PowerShell terminal an operator (or this SRE agent) sees right after
+    a failed invocation. It also gives the lab orchestrator a stable string to
+    quote in completao logs.
+
+    The CLI's exit code is the canonical signal; the block adds context, it
+    does not replace ``return`` / non-zero exits.
+    """
+    print(f"--- RCA (data-boar-report phase={phase}) ---", file=sys.stderr)
+    print(f"symptom : {symptom}", file=sys.stderr)
+    print(f"exit    : {exit_code}", file=sys.stderr)
+    if hypotheses:
+        print("hypotheses (narrow):", file=sys.stderr)
+        for h in hypotheses:
+            print(f"  - {h}", file=sys.stderr)
+    if next_step:
+        print(f"next    : {next_step}", file=sys.stderr)
+    print(
+        "doctrine: docs/ops/inspirations/THE_ART_OF_THE_FALLBACK.md, "
+        "INTERNAL_DIAGNOSTIC_AESTHETICS.md",
+        file=sys.stderr,
+    )
+    print("--- end RCA ---", file=sys.stderr)
 
 
 def _session_meta(db_manager: LocalDBManager, session_id: str) -> dict[str, Any]:
@@ -237,6 +273,21 @@ def main(argv: list[str] | None = None) -> int:
     sid = (args.session_id or "").strip()
     if not sid:
         print("session-id vazio", file=sys.stderr)
+        _emit_rca_block(
+            phase="parse_args",
+            symptom="--session-id is empty after trimming.",
+            hypotheses=[
+                "The caller forgot to pass --session-id (CLI contract violation).",
+                "A wrapper script substituted an empty variable.",
+            ],
+            next_step=(
+                "Re-run with --session-id <UUID>; list available ids with: "
+                'uv run python -c "from core.database import LocalDBManager as M; '
+                "import sys; m=M(sys.argv[1]);"
+                " print([s.get('session_id') for s in m.list_sessions() or []])\" <sqlite_path>"
+            ),
+            exit_code=2,
+        )
         return 2
 
     # Track which pipeline step is in flight so the RCA block can name it
@@ -319,10 +370,10 @@ def main(argv: list[str] | None = None) -> int:
             sys.stderr.write("\n[data-boar-report] full traceback (debug):\n")
             traceback.print_exc(file=sys.stderr)
         return 3
+
     finally:
         if mgr is not None:
             mgr.dispose()
-
 
 if __name__ == "__main__":
     raise SystemExit(main())
