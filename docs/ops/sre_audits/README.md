@@ -1,21 +1,23 @@
-# SRE audits — index
+# SRE security audits (read-only deliverables)
 
-Read-only deliverables produced by the **SRE Automation Agent** (Slack-triggered
-review protocols). Each file is an **audit echo**: a snapshot of what the
-agent saw, why it stopped where it stopped, and what the operator should do
-next. The agent never commits to PR branches it audits; recommendations land
-here, in a fresh PR on its own branch.
+Each file in this folder is the deliverable of one **SRE Automation Agent**
+audit pass against open PRs and/or the `main` branch.
 
-| Date | File | Trigger / scope |
-| ---- | ---- | --------------- |
-| 2026-04-27 | [`STALE_FEATURE_FLAG_AUDIT_2026-04-27.md`](STALE_FEATURE_FLAG_AUDIT_2026-04-27.md) ([pt-BR](STALE_FEATURE_FLAG_AUDIT_2026-04-27.pt_BR.md)) | Stale feature-flag / dead conditional-branch removal protocol. |
+- **Naming:** `PR_SECURITY_AUDIT_YYYY-MM-DD.md` (one file per audit pass).
+- **Convention:** `[Severity] | [Issue] | [Impact]`. Only **Medium** /
+  **High** / **Critical** findings are reported per the protocol; "no
+  finding" outcomes are still recorded for traceability.
+- **Posture:** **audit-and-block, never push to audited branches.** The
+  agent does not `git push` to Dependabot or feature branches it is
+  reviewing; it opens its own PR with this report and a Slack thread reply.
+- **Doctrine:**
+  [`../inspirations/DEFENSIVE_SCANNING_MANIFESTO.md`](../inspirations/DEFENSIVE_SCANNING_MANIFESTO.md) ·
+  [`../inspirations/THE_ART_OF_THE_FALLBACK.md`](../inspirations/THE_ART_OF_THE_FALLBACK.md) ·
+  [`../inspirations/SUPPLY_Colleague-NN_AND_TRUST_SIGNALS.md`](../inspirations/SUPPLY_Colleague-NN_AND_TRUST_SIGNALS.md).
 
-> Other audit deliverables (e.g. PR-security audit from the same day under PR
-> #234) are in flight on their own branches and will appear in this index
-> when merged.
+## Index
 
-## Doctrine references
+| Date       | File                                                       | Scope                                       |
+| ---------- | ---------------------------------------------------------- | ------------------------------------------- |
+| 2026-04-27 | [PR_SECURITY_AUDIT_2026-04-27.md](PR_SECURITY_AUDIT_2026-04-27.md) | All five open PRs (1 cargo, 4 pip Dependabot). |
 
-- [`docs/ops/inspirations/DEFENSIVE_SCANNING_MANIFESTO.md`](../inspirations/DEFENSIVE_SCANNING_MANIFESTO.md)
-- [`docs/ops/inspirations/THE_ART_OF_THE_FALLBACK.md`](../inspirations/THE_ART_OF_THE_FALLBACK.md)
-- [`docs/ops/inspirations/SUPPLY_Colleague-NN_AND_TRUST_SIGNALS.md`](../inspirations/SUPPLY_Colleague-NN_AND_TRUST_SIGNALS.md)
