@@ -27,6 +27,7 @@ from core.about import get_about_info
 from core.aggregated_identification import run_aggregation
 from core.database import failure_hint
 from core.suggested_review import SUGGESTED_REVIEW_PATTERN
+from report.safe_prefix import safe_session_prefix
 from report.scan_evidence import write_scan_evidence_artifacts
 
 _logger = logging.getLogger(__name__)
@@ -40,10 +41,11 @@ def _heatmap_path_under_output_dir(heatmap_path: str, output_dir: str) -> Path |
     try:
         base = Path(output_dir).resolve()
         candidate = Path(heatmap_path).resolve()
-        candidate.relative_to(base)
-    except (ValueError, OSError):
+    except OSError:
         return None
-    return candidate if candidate.is_file() else None
+    if not candidate.is_relative_to(base) or not candidate.is_file():
+        return None
+    return candidate
 
 
 # Cross-ref aggregated sheet: first row explains sampling limits (FN-first; incomplete-data transparency).
@@ -173,7 +175,8 @@ def _create_heatmap(
             ax_inset.axis("off")
         except Exception:
             pass
-    out_path = Path(output_dir) / f"heatmap_{session_id[:12]}.png"
+    sid_prefix = safe_session_prefix(session_id, max_len=12)
+    out_path = Path(output_dir) / f"heatmap_{sid_prefix}.png"
     plt.savefig(out_path, bbox_inches="tight")
     plt.close()
     return str(out_path)
@@ -1281,7 +1284,8 @@ def generate_report(
         lic_footer = f"License: {lic_ctx.state}"
         if lic_ctx.watermark:
             lic_footer = f"{lic_footer} ({lic_ctx.watermark})"
-    out_path = Path(output_dir) / f"Relatorio_Auditoria_{session_id[:16]}.xlsx"
+    xlsx_prefix = safe_session_prefix(session_id, max_len=16)
+    out_path = Path(output_dir) / f"Relatorio_Auditoria_{xlsx_prefix}.xlsx"
     # Create heatmap PNG first so we can embed it in the Heatmap data sheet
     heatmap_path = _create_heatmap(
         db_rows_for_sheets,
