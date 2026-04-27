@@ -2,6 +2,11 @@
 # Copy to docker-compose.override.yml and use:
 #   docker stack deploy -c deploy/docker-compose.yml -c deploy/docker-compose.override.yml lgpd-audit
 # or: docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.override.yml up -d
+#
+# This override only swaps the bind mount. It MUST NOT downgrade the hardening
+# posture defined in deploy/docker-compose.yml (read_only, cap_drop, no-new-
+# privileges, user 1000:1000). If you need a writable extra path for ad-hoc
+# debugging, prefer adding another tmpfs entry rather than disabling read_only.
 version: "3.8"
 services:
   lgpd-audit:
