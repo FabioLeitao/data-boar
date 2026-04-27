@@ -1,6 +1,83 @@
+mod bounded_filter;
+
+use bounded_filter::{BoundedFilter, BudgetReport};
 use pyo3::exceptions::PyRuntimeError;
 use pyo3::prelude::*;
+use pyo3::types::{PyDict, PyList, PyTuple};
 use regex::Regex;
+
+/// PyO3 wrapper around `bounded_filter::BoundedFilter`.
+///
+/// Exposes one method, `filter_batch_bounded`, that returns a tuple of
+/// `(suspect_indices: list[int], report: dict[str, Any])`. The `report` dict
+/// keys are stable strings consumed by `core/scan_audit_log.py`; do not
+/// rename them without updating both ends and the manifesto cross-link in
+/// `docs/ops/inspirations/THE_ART_OF_THE_FALLBACK.md` §5.
+#[pyclass(name = "BoundedFilter")]
+pub struct PyBoundedFilter {
+    inner: BoundedFilter,
+}
+
+#[pymethods]
+impl PyBoundedFilter {
+    #[new]
+    fn new() -> PyResult<Self> {
+        let inner = BoundedFilter::new().map_err(|e| {
+            PyRuntimeError::new_err(format!("BoundedFilter regex compile error: {e}"))
+        })?;
+        Ok(Self { inner })
+    }
+
+    /// Filter a batch under a per-row size cap (bytes) and wall-clock budget (ms).
+    ///
+    /// Pass `0` for either argument to use the documented hard ceiling
+    /// (4 MiB / 60 s). Values above the ceiling are clamped, never honored.
+    #[pyo3(signature = (batch, max_row_bytes=0, wall_clock_ms=0))]
+    fn filter_batch_bounded<'py>(
+        &self,
+        py: Python<'py>,
+        batch: Vec<String>,
+        max_row_bytes: usize,
+        wall_clock_ms: u64,
+    ) -> PyResult<Bound<'py, PyTuple>> {
+        let (indices, report) =
+            self.inner
+                .filter_batch_bounded(&batch, max_row_bytes, wall_clock_ms);
+        let py_indices = PyList::new(py, indices)?;
+        let py_report = budget_report_to_pydict(py, &report)?;
+        PyTuple::new(py, &[py_indices.into_any(), py_report.into_any()])
+    }
+
+    /// Read-only access to the doctrine ceilings (so Python tests can
+    /// assert on the exact values without re-declaring them).
+    #[staticmethod]
+    fn hard_max_row_bytes() -> usize {
+        bounded_filter::HARD_MAX_ROW_BYTES
+    }
+
+    #[staticmethod]
+    fn hard_max_wall_clock_ms() -> u64 {
+        bounded_filter::HARD_MAX_WALL_CLOCK_MS
+    }
+}
+
+fn budget_report_to_pydict<'py>(
+    py: Python<'py>,
+    report: &BudgetReport,
+) -> PyResult<Bound<'py, PyDict>> {
+    let dict = PyDict::new(py);
+    dict.set_item("rows_scanned", report.rows_scanned)?;
+    dict.set_item("rows_skipped_oversize", report.rows_skipped_oversize)?;
+    dict.set_item("rows_skipped_budget", report.rows_skipped_budget)?;
+    dict.set_item("wall_clock_exceeded", report.wall_clock_exceeded)?;
+    dict.set_item("effective_max_row_bytes", report.effective_max_row_bytes)?;
+    dict.set_item("effective_wall_clock_ms", report.effective_wall_clock_ms)?;
+    match &report.demotion_reason {
+        Some(reason) => dict.set_item("demotion_reason", reason)?,
+        None => dict.set_item("demotion_reason", py.None())?,
+    }
+    Ok(dict)
+}
 
 #[pyclass]
 pub struct FastFilter {
@@ -84,5 +161,6 @@ impl FastFilter {
 #[pymodule]
 fn boar_fast_filter(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<FastFilter>()?;
+    m.add_class::<PyBoundedFilter>()?;
     Ok(())
 }
