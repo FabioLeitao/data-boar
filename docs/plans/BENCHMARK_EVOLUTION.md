@@ -2,6 +2,8 @@
 
 **Status:** living note — fill **Performance** numbers from `benchmark_runs/times.txt` after each `scripts/benchmark-ab.ps1` run. Replace **Business value** bullets with phrases copied from your generated Markdown under `benchmark_runs/<current>/` (no raw PII).
 
+**Doctrine cycle status (Slices 1–4):** Slice 1 (manifestos) and Slice 4 (this file) are doc-only. Slice 2 added a Sysinternals-style RCA block to `python -m cli.reporter` so a failed regen names the failed step (`load_config`, `open_sqlite`, `fetch_findings`, `build_manifest`, `render_markdown`, `write_output`) plus a narrowed hypothesis and the smallest deterministic command an operator can paste — **stdout** stays clean for piped Markdown, **stderr** carries the RCA. Slice 3 fused the Pro Python fallback into a single pass (`pro/worker_logic.py::basic_python_scan`) and skipped the redundant per-chunk string-coercion copy in `pro/engine.py::process_chunk_worker`; precision contract (CPF regex, email regex, Luhn validator, hard sample caps, statement timeouts) is unchanged. Pinned by `tests/test_cli_reporter_rca.py` and `tests/test_basic_python_scan_single_pass_parity.py`.
+
 **Scope:** Lab orchestration (`lab-completao-orchestrate.ps1`) plus optional **`data-boar-report`** (`python -m cli.reporter`, see [USAGE.md](../USAGE.md) section 5) when the benchmark script is invoked with `-ReportConfigYaml` / `-ReportSessionId`.
 
 ---
@@ -44,6 +46,31 @@ Net: the **client** gains a **repeatable, session-scoped governance narrative** 
 | **B — Current** | e.g. `origin/main` or feature branch via `-CurrentLabGitRef` | `current_total_seconds` / `current_total_milliseconds` | **TBD** |
 
 **Interpretation:** difference is **orchestrator wall time** (SSH, lab git ensure, inventory, smoke, optional GRC hooks) — not a micro-benchmark of Python hot paths. Call a swing **significant** only if repeats cluster (same manifest, same lab day) and network/sudo/Docker noise is ruled out.
+
+### 3.1 Pinned 200k A/B (OpenCore vs Pro path) — direction-only evidence
+
+**Artifact:** [`tests/benchmarks/official_benchmark_200k.json`](../../tests/benchmarks/official_benchmark_200k.json) (frozen 2026-04-25 lab session, untouched in this Slice).
+
+| Field | Value |
+| --- | --- |
+| `opencore_seconds` | `0.252242` |
+| `pro_seconds` | `0.439419` |
+| `speedup_vs_opencore` (`= t_open / t_pro`) | `0.574` |
+| `opencore_hits` / `pro_hits` | `100000` / `100000` (parity) |
+
+**Reading guide (Julia Evans-style — do not double-invert):**
+
+- `speedup_vs_opencore = 0.574` means **Pro is 0.574x as fast as** OpenCore.
+- The operator-chat phrasing **"0.574x mais lento"** points at the same direction (Pro slower) using the same numeric anchor.
+- Pro wall-clock ≈ `1 / 0.574 ≈ 1.74x` the OpenCore wall-clock in this profile.
+
+**Regression guard:** [`tests/test_official_benchmark_200k_evidence.py`](../../tests/test_official_benchmark_200k_evidence.py) pins direction (`pro_seconds > opencore_seconds`, `speedup < 1.0`), arithmetic (`recorded ≈ opencore_seconds / pro_seconds`), and findings parity (`opencore_hits == pro_hits`). Future executive copy or manifests that flip the sign without regenerating the JSON will fail CI loudly.
+
+**Doctrinal reading of the result** (see manifestos at [`docs/ops/inspirations/`](../ops/inspirations/)):
+
+- *DEFENSIVE_SCANNING_MANIFESTO* — sample caps and statement timeouts that protect the customer DB are not free; the Pro path's extra wall-clock in this profile is the cost of stricter sampling discipline (no `ORDER BY`, leading SQL comment, dialect-specific clamps). The recorded JSON is the *evidence* that those guarantees do not silently regress.
+- *THE_ART_OF_THE_FALLBACK* — findings parity (`100000 == 100000`) is asserted **before** any speed comparison: a defensive scanner protects detection coverage even when the Pro path is slower.
+- *ACTIONABLE_GOVERNANCE_AND_TRUST* — the 200k JSON sits next to the executive Markdown produced by `data-boar-report` and the manifest YAML; together they form the customer trust triangle. Removing any leg degrades the deliverable to a slide deck.
 
 ---
 
@@ -100,8 +127,34 @@ Compare **and** `SELECT COUNT(*) FROM database_findings` / `filesystem_findings`
 
 ---
 
+## 8. 0.574x Pro path — current technical debt baseline (operator-pinned)
+
+`tests/benchmarks/official_benchmark_200k.json` records a Pro-path **`speedup_vs_opencore = 0.574`** at 200k rows / 8 workers (`opencore_seconds = 0.252242`, `pro_seconds = 0.439419`). In plain English: in this profile the Pro path takes roughly `1 / 0.574 ≈ 1.74x` more time than the OpenCore baseline. **The direction is correct — Pro is slower in this profile** — and `tests/test_official_benchmark_200k_evidence.py` enforces it so a future commit cannot silently flip the sign without also updating the JSON artifact.
+
+**Why we are not chasing a "Pro faster" number in this PR cycle:**
+
+- The recorded Pro path runs without the Rust `boar_fast_filter` extension on the lab host (the Python fallback `pro.worker_logic.basic_python_scan` is the hot path). Until the Rust extension is universally available across the lab matrix, the operator-pinned benchmark is the **honest** A/B; inverting it would violate `docs/ops/inspirations/INTERNAL_DIAGNOSTIC_AESTHETICS.md` §4 ("no invented numbers").
+- Slice 3 addressed the **algorithmic** side of the bottleneck only: one fused predicate pass instead of two, and zero per-chunk string-coercion copy on the documented hot path. Sample caps, statement timeouts, isolation level, dialect posture, and precision logic were **not** modified — that is the safety rail the operator named in the Slack mission brief.
+- The next benchmark run on the lab will measure the algorithmic delta against the recorded baseline. The JSON artifact will be regenerated **on the lab host**, in the same `scripts/benchmark-ab.ps1` cycle — not on the agent VM, where wall-time is not comparable.
+
+**Reading the 0.574x figure (Julia Evans-style note):**
+
+```text
+opencore_seconds  = 0.252242  (Open Core regex prefilter)
+pro_seconds       = 0.439419  (Pro Python fallback after Slice 3 baseline)
+speedup_vs_open   = 0.574     (= opencore_seconds / pro_seconds, rounded)
+direction         = Pro slower in this profile (no Rust extension)
+fallback path     = pro.worker_logic.basic_python_scan
+                    (single-pass after Slice 3; was two-pass before)
+```
+
+The recorded `pro_hits == opencore_hits` (both 100_000) is the precision invariant: any commit that drops `pro_hits` below `opencore_hits` is a **scanner regression**, not a "performance optimization". `tests/test_official_benchmark_200k_evidence.py::test_benchmark_findings_parity` fails first if that ever happens.
+
+---
+
 ## Revision log
 
 | Date | Author | Change |
 | --- | --- | --- |
+| 2026-04-27 | doctrine-cycle | Closed Slices 1–3 of [PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md](PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md): manifestos shipped (Slice 1), RCA block in `cli/reporter.py` (Slice 2), single-pass Pro fallback + chunk-copy skip in `pro/worker_logic.py` / `pro/engine.py` (Slice 3). 0.574x recorded as the **technical debt baseline** (§8 above). |
 | (fill) | maintainer | Initial consolidation; performance TBD until local `times.txt` exists. |
