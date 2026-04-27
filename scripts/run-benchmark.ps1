@@ -7,6 +7,9 @@
   orchestrator contract intact; this script only sequences runs, measures wall time, copies
   artifacts you point at, and writes bench/COMPARISON.log.
 
+  For git checkout A/B on the canonical clone (legacy tag vs restored branch) plus benchmark_runs/times.txt,
+  use scripts/benchmark-ab.ps1 instead.
+
   The orchestrator does not emit a scan SQLite by itself (host smoke + optional GRC JSON). Pass
   -SqlitePath to copy the same file after each round if you run a separate main.py scan, or
   copy from a fixed lab path.
