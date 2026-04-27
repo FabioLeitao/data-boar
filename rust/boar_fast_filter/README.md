@@ -10,9 +10,13 @@ Current suspects include:
 
 ## Build (dev)
 
-From repository root:
+From repository root, either invoke `maturin` directly or use one of the
+cross-platform helper scripts (kept in lock-step per
+[`docs/ops/SCRIPTS_CROSS_PLATFORM_PAIRING.md`](../../docs/ops/SCRIPTS_CROSS_PLATFORM_PAIRING.md)).
 
-```powershell
+Direct (any OS):
+
+```bash
 uv run pip install maturin
 maturin develop --manifest-path rust/boar_fast_filter/Cargo.toml --release
 ```
@@ -23,12 +27,15 @@ Windows helper:
 
 ```powershell
 .\scripts\build-rust-prefilter.ps1
+.\scripts\build-rust-prefilter.ps1 -Target x86_64-pc-windows-msvc
 ```
 
-Target override example:
+Linux / macOS helper (twin of the PowerShell script):
 
-```powershell
-.\scripts\build-rust-prefilter.ps1 -Target x86_64-pc-windows-msvc
+```bash
+./scripts/build-rust-prefilter.sh
+./scripts/build-rust-prefilter.sh --target x86_64-unknown-linux-gnu
+./scripts/build-rust-prefilter.sh --debug   # skip --release
 ```
 
 ## Quick smoke
