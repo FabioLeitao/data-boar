@@ -1,4 +1,4 @@
-**Status:** Slice 1 in progress (manifestos doc-only) — Slices 2–4 pending
+**Status:** Slices 1–4 delivered in `cursor/sre-agent-protocol-c70a` (manifestos + RCA blocks + Methodology-of-Safety + doctrinal docstrings + benchmark evolution narrative) — pending merge / archive move
 
 # Plan — Engineering doctrine consolidation (Data Boar DNA)
 
@@ -166,10 +166,10 @@ green; only then mark Slice 4 done.
 | 6 | 1 | Add `ACTIONABLE_GOVERNANCE_AND_TRUST.md` | ✅ Done |
 | 7 | 1 | Wire new files into the inspirations hub | ✅ Done |
 | 8 | 1 | Add `PLANS_TODO.md` row + refresh `plans-stats` / `plans_hub_sync` | ✅ Done |
-| 9 | 2 | RCA block in `completão` failure path | ⬜ Pending (next PR) |
-| 10 | 2 | Methodology proof in `data-boar-report` | ⬜ Pending |
-| 11 | 3 | Doctrinal comments referencing manifestos (refactor only) | ⬜ Pending |
-| 12 | 4 | Refresh `BENCHMARK_EVOLUTION.md` with v1.7.3 → HEAD narrative | ⬜ Pending |
+| 9 | 2 | RCA block in `completão` failure path | ✅ Done (`scripts/lab-completao-orchestrate.ps1` `Write-CompletaoRcaBlock`) |
+| 10 | 2 | Methodology proof in `data-boar-report` | ✅ Done (`report/executive_report.py` Methodology-of-Safety block; `cli/reporter.py` `_emit_rca_block`) |
+| 11 | 3 | Doctrinal comments referencing manifestos (refactor only) | ✅ Done (`connectors/sql_sampling.py`, `core/scan_audit_log.py`, `report/executive_report.py` docstrings) |
+| 12 | 4 | Refresh `BENCHMARK_EVOLUTION.md` with v1.7.3 → HEAD narrative | ✅ Done (§3.1 reading guide + §8 v1.7.3 → HEAD narrative integrating the 200k 0.574x evidence) |
 
 ---
 
