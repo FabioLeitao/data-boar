@@ -13,9 +13,13 @@ verdicts).
 
 ## Index
 
-| Date       | Audit                                                                                                              | Scope                                                              |
-| :--------- | :----------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------- |
-| 2026-04-27 | [`DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md`](DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md)             | Verdict ledger for Dependabot PRs #221, #222, #223, #224, #226    |
+| Date       | Audit                                                                                                                                                  | Scope                                                                                                                          |
+| :--------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------- |
+| 2026-04-27 | [`DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md`](DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md)                                                 | Verdict ledger for Dependabot PRs #221, #222, #223, #224, #226                                                                 |
+| 2026-04-27 | [`PR_SECURITY_AUDIT_2026-04-27.md`](PR_SECURITY_AUDIT_2026-04-27.md)                                                                                   | Security audit of open PRs (sibling to PR #234)                                                                                |
+| 2026-04-27 | [`STALE_FEATURE_FLAG_AUDIT_2026-04-27.md`](STALE_FEATURE_FLAG_AUDIT_2026-04-27.md)                                                                     | Stale feature-flag audit + flag-SDK creep guard (sibling to PR #251)                                                           |
+| 2026-04-27 | [`RUST_CI_CLIPPY_REGRESSION_2026-04-27.md`](RUST_CI_CLIPPY_REGRESSION_2026-04-27.md)                                                                   | RCA for PR #255 Rust CI clippy failure (`manual_is_multiple_of`)                                                               |
+| 2026-04-27 | [`PROMPT_INJECTION_REJECTION_HYBRID_REPO_CLAIM_2026-04-27.md`](PROMPT_INJECTION_REJECTION_HYBRID_REPO_CLAIM_2026-04-27.md)                             | Rejection of fabricated `data-board-report/` + root `Cargo.toml` claim (escalation of PR #259's prompt-injection rejection)    |
 
 ## When to add a new file here
 
