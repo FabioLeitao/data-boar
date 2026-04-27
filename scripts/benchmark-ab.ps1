@@ -6,11 +6,14 @@
   Creates repo-local benchmark_runs/ with subfolders for each round, measures wall time with Measure-Command,
   writes benchmark_runs/times.txt, and copies completao logs (and optional SQLite / executive Markdown).
 
-  Round A checks out the legacy tag on THIS clone (scripts match that tag), runs completao with -LabGitRef
-  matching the tag so LAB clones align. Round B checks out your saved branch/HEAD and runs completao with
-  -LabGitRef default origin/main (override with -CurrentLabGitRef).
+  Round A runs completao with -LabGitRef matching the legacy tag so LAB clones align to that tag.
+  By default the local clone is NOT checked out to the legacy tag (orchestrator stays on your branch so
+  scripts like lab-op-git-ensure-ref.ps1 stay current; Debian ssh banners on stderr otherwise break older
+  script revisions under StrictMode). Pass -LocalLegacyCheckout to restore the old "checkout tag A then B"
+  behaviour when you need local files to match the tag.
 
-  Requires a clean working tree unless -AutoStash or -AllowDirty. Restores git state in a finally block.
+  Round B runs completao with -CurrentLabGitRef (default origin/main). Requires a clean working tree unless
+  -AutoStash or -AllowDirty. Restores git state in a finally block when -LocalLegacyCheckout was used.
 
   ASCII-only for Windows PowerShell 5.1. See LAB_COMPLETAO_RUNBOOK.md for manifest and SSH.
 
@@ -42,6 +45,7 @@ param(
     [switch] $AutoStash,
     [switch] $AllowDirty,
     [switch] $MoveCapturedArtifacts,
+    [switch] $LocalLegacyCheckout,
     [switch] $WhatIf
 )
 
@@ -148,6 +152,7 @@ $stashCreated = $false
 $savedBranch = ""
 $savedHead = ""
 $moveSwitch = [bool]$MoveCapturedArtifacts
+$didLegacyLocalCheckout = $false
 $script:benchLegacyShellMb = $null
 $script:benchCurrentShellMb = $null
 
@@ -236,13 +241,18 @@ try {
         Pop-Location
     }
 
-    Write-Host "[benchmark-ab] Round A: git checkout $LegacyTag"
-    Push-Location $r
-    try {
-        & git checkout $LegacyTag
-        if ($LASTEXITCODE -ne 0) { throw "git checkout $LegacyTag failed" }
-    } finally {
-        Pop-Location
+    if ($LocalLegacyCheckout) {
+        Write-Host "[benchmark-ab] Round A: git checkout $LegacyTag (local tree matches tag)"
+        Push-Location $r
+        try {
+            & git checkout $LegacyTag
+            if ($LASTEXITCODE -ne 0) { throw "git checkout $LegacyTag failed" }
+            $didLegacyLocalCheckout = $true
+        } finally {
+            Pop-Location
+        }
+    } else {
+        Write-Host "[benchmark-ab] Round A: lab ref $LegacyTag (local tree unchanged; orchestrator from current branch)"
     }
 
     $startA = Get-Date
@@ -252,17 +262,21 @@ try {
     Copy-CompletaoReportsSince -ReportsPath $reports -DestDir $dirLegacy -RoundStartLocal $startA -Move:$moveSwitch
     Copy-SqliteCandidatesSince -Repo $r -DestDir $dirLegacy -RoundStartLocal $startA -ExplicitSqlite $SqlitePath -Move:$moveSwitch
 
-    Write-Host "[benchmark-ab] Round B: restore branch or HEAD then run completao ($CurrentLabGitRef)"
-    Push-Location $r
-    try {
-        if ($savedBranch) {
-            & git checkout $savedBranch
-        } else {
-            & git checkout $savedHead
+    if ($didLegacyLocalCheckout) {
+        Write-Host "[benchmark-ab] Round B: restore branch or HEAD then run completao ($CurrentLabGitRef)"
+        Push-Location $r
+        try {
+            if ($savedBranch) {
+                & git checkout $savedBranch
+            } else {
+                & git checkout $savedHead
+            }
+            if ($LASTEXITCODE -ne 0) { throw "git checkout back to saved state failed" }
+        } finally {
+            Pop-Location
         }
-        if ($LASTEXITCODE -ne 0) { throw "git checkout back to saved state failed" }
-    } finally {
-        Pop-Location
+    } else {
+        Write-Host "[benchmark-ab] Round B: completao ($CurrentLabGitRef) (local tree unchanged)"
     }
 
     $startB = Get-Date
@@ -312,6 +326,7 @@ try {
         legacy_tag      = $LegacyTag
         current_lab_git_ref = $CurrentLabGitRef
         current_capture_dir = $CurrentCaptureDir
+        local_legacy_checkout = [bool]$LocalLegacyCheckout
         restored_branch = $savedBranch
         restored_head_sha = $savedHead
         legacy_wall_seconds = [math]::Round($swA.TotalSeconds, 3)
@@ -326,21 +341,23 @@ try {
     Write-Host "[benchmark-ab] wrote $telemetryPath"
 }
 finally {
-    Write-Host "[benchmark-ab] restoring git checkout"
-    Push-Location $r
-    try {
-        if ($savedBranch) {
-            & git checkout $savedBranch
-        } else {
-            & git checkout $savedHead
+    if ($didLegacyLocalCheckout) {
+        Write-Host "[benchmark-ab] restoring git checkout after legacy local checkout"
+        Push-Location $r
+        try {
+            if ($savedBranch) {
+                & git checkout $savedBranch
+            } else {
+                & git checkout $savedHead
+            }
+            if ($LASTEXITCODE -ne 0) {
+                Write-Warning "git checkout restore returned non-zero; fix branch/detached state manually."
+            }
+        } catch {
+            Write-Warning "git restore checkout may need manual fix: $_"
+        } finally {
+            Pop-Location
         }
-        if ($LASTEXITCODE -ne 0) {
-            Write-Warning "git checkout restore returned non-zero; fix branch/detached state manually."
-        }
-    } catch {
-        Write-Warning "git restore checkout may need manual fix: $_"
-    } finally {
-        Pop-Location
     }
     if ($stashCreated) {
         Write-Host "[benchmark-ab] attempting git stash pop"

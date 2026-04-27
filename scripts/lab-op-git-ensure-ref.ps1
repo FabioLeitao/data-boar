@@ -123,7 +123,7 @@ foreach ($h in $manifest.hosts) {
         }
     }
 
-    $probeCmd = "ssh.exe -o BatchMode=yes -o ConnectTimeout=12 $alias `"echo LABOP_SSH_OK`" 2>&1"
+    $probeCmd = "ssh.exe -q -o BatchMode=yes -o ConnectTimeout=12 $alias `"echo LABOP_SSH_OK`" 2>&1"
     $probeText = Invoke-CmdCapture -CmdLine $probeCmd
     if ($LASTEXITCODE -ne 0 -or $probeText -notmatch "LABOP_SSH_OK") {
         Write-Warning "SSH probe failed for $alias - skip."
@@ -143,7 +143,7 @@ foreach ($h in $manifest.hosts) {
         }
         # Do not route the remote bash through cmd.exe /c: cmd treats ^ as escape, which breaks
         # git's "ref^{commit}" syntax (becomes "ref{commit}" and rev-parse fails).
-        $remoteOut = & ssh.exe -o BatchMode=yes -o ConnectTimeout=180 $alias $remoteCmd 2>&1 | Out-String
+        $remoteOut = & ssh.exe -q -o BatchMode=yes -o ConnectTimeout=180 $alias $remoteCmd 2>&1 | Out-String
         $exitCode = $LASTEXITCODE
         Write-Host "--- repo: $rp ---"
         Write-Host $remoteOut
