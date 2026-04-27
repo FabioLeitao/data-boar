@@ -2,6 +2,24 @@
 Relatório de mesa — Markdown executivo (mitigação de risco, sem detalhe de código).
 
 Usa :func:`core.advisor.group_findings_by_risk` e o ranking APG de ``core.recommendations``.
+
+Doctrinal references (behaviour-preserving comments -- do not remove in refactors):
+
+- ``docs/ops/inspirations/ACTIONABLE_GOVERNANCE_AND_TRUST.md`` -- the executive
+  Markdown is part of the customer "trust triangle" (Markdown + manifest YAML
+  + reproducible CLI). Sections **3** (methodology / segurança) and **4** (APG)
+  are not optional: removing them turns the deliverable into a slide deck,
+  which is *not* what the customer paid for.
+- ``docs/ops/inspirations/DEFENSIVE_SCANNING_MANIFESTO.md`` -- the
+  Methodology-of-Safety proof block under section 3 narrates *why* the
+  sample row cap and statement timeout protect the customer DB. The values
+  it surfaces come from the ``manifest['safety_tags']`` dictionary built in
+  ``report/scan_evidence.py``; they are *clamped* in
+  ``connectors/sql_sampling.py`` and must not be re-derived here.
+- ``docs/ops/inspirations/THE_ART_OF_THE_FALLBACK.md`` -- when the manifest
+  lacks fields (e.g. older sessions), this module degrades gracefully (``cap
+  is None``, ``resolved is None``) instead of crashing -- the executive report
+  is a read-only consumer of evidence; it never invents numbers.
 """
 
 from __future__ import annotations
