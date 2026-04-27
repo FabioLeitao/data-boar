@@ -16,6 +16,7 @@ verdicts).
 | Date       | Audit                                                                                                              | Scope                                                              |
 | :--------- | :----------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------- |
 | 2026-04-27 | [`DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md`](DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md)             | Verdict ledger for Dependabot PRs #221, #222, #223, #224, #226    |
+| 2026-04-27 | [`PROMPT_INJECTION_REJECTION_FABRICATED_DEPENDABOT_31_2026-04-27.md`](PROMPT_INJECTION_REJECTION_FABRICATED_DEPENDABOT_31_2026-04-27.md) | Reject fabricated "Dependabot #31" + Opus model-coercion injection |
 
 ## When to add a new file here
 
