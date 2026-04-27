@@ -26,6 +26,24 @@ Single **navigation page** for maintainer-chosen **external inputs** that shape 
 
 ---
 
+## Doctrine (normative manifestos)
+
+Short, normative manifestos that consolidate our **engineering DNA**. Each
+file states **do / don't** rules, cites mentor seeds, and points at the code
+or rule that already enforces the doctrine.
+
+| Document                                                                                | Seeds                                                          | Scope                                                                                                                                  |
+| --------                                                                                | -----                                                          | -----                                                                                                                                  |
+| [THE_ART_OF_THE_FALLBACK.md](THE_ART_OF_THE_FALLBACK.md)                                | Usagi Electric · The 8-Bit Guy                                 | Fallback hierarchy: Parser SQL → Regex → Raw strings; never silently fail.                                                             |
+| [DEFENSIVE_SCANNING_MANIFESTO.md](DEFENSIVE_SCANNING_MANIFESTO.md)                      | NASA SEL · Cloudflare · Steve Gibson                           | Sampling caps, statement timeouts, `WITH (NOLOCK)` posture, leading SQL comments, "guest in the customer DB" rule.                     |
+| [ENGINEERING_BENCH_DISCIPLINE.md](ENGINEERING_BENCH_DISCIPLINE.md)                      | Adam Savage · Julia Evans (b0rk) · Aviões e Músicas            | Bench ergonomics, checklist culture, narrated logs.                                                                                    |
+| [INTERNAL_DIAGNOSTIC_AESTHETICS.md](INTERNAL_DIAGNOSTIC_AESTHETICS.md)                  | Mark Russinovich (Sysinternals)                                | What `--verbose`, `completão -Privileged`, and audit JSON should *feel* like — a low-level diagnostic class.                           |
+| [ACTIONABLE_GOVERNANCE_AND_TRUST.md](ACTIONABLE_GOVERNANCE_AND_TRUST.md)                | Tailscale narrative · Charity Majors (Honeycomb) · Cloudflare  | The executive report delivers the *path to the cure* (APG); the system explains itself.                                                |
+
+Driving plan: [PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md](../../plans/PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md).
+
+---
+
 ## Engineering craft (people, products, narrative)
 
 | Document                                                                                  | What it is                                                                                                                                                                    |

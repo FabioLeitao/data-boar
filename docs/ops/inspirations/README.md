@@ -19,6 +19,20 @@ Purpose: a small, high-signal list of sources that inform **hardening and compli
 - [Enterprise DB ops + GRC evidence slots](ENTERPRISE_DB_OPS_AND_GRC_EVIDENCE.md) ([pt-BR](ENTERPRISE_DB_OPS_AND_GRC_EVIDENCE.pt_BR.md))
 - [Qualys Threat Research (blog / TRU)](QUALYS_THREAT_RESEARCH.md)
 
+## Doctrine (normative manifestos)
+
+Short, normative manifestos consolidating the **Data Boar engineering DNA**.
+Each file states do / don't rules and points at the code or rule that
+already enforces it.
+
+- [The art of the fallback](THE_ART_OF_THE_FALLBACK.md) — Parser SQL → Regex → Raw strings; never silently fail.
+- [Defensive scanning manifesto](DEFENSIVE_SCANNING_MANIFESTO.md) — sampling caps, timeouts, `WITH (NOLOCK)`, leading SQL comments.
+- [Engineering bench discipline](ENGINEERING_BENCH_DISCIPLINE.md) — bench ergonomics, checklist culture, narrated logs.
+- [Internal diagnostic aesthetics](INTERNAL_DIAGNOSTIC_AESTHETICS.md) — Sysinternals-grade `--verbose` and audit JSON.
+- [Actionable governance and trust](ACTIONABLE_GOVERNANCE_AND_TRUST.md) — APG (path to the cure), self-explaining deliverable.
+
+Driving plan: [PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md](../../plans/PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md).
+
 ## Engineering craft (people, products, narrative)
 
 Purpose: named **developers, teams, or channels** whose craftsmanship, security awareness, shipped products, documentation, or public “how we thought about the problem” narrative informs **how we build and explain** Data Boar.
