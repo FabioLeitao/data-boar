@@ -16,6 +16,7 @@ verdicts).
 | Date       | Audit                                                                                                              | Scope                                                              |
 | :--------- | :----------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------- |
 | 2026-04-27 | [`DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md`](DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md)             | Verdict ledger for Dependabot PRs #221, #222, #223, #224, #226    |
+| 2026-04-27 | [`DEPENDABOT_ALERT_31_PYO3_RCA_2026-04-27.md`](DEPENDABOT_ALERT_31_PYO3_RCA_2026-04-27.md)                         | Alert-anchored RCA for **Dependabot alert #31** (`pyo3` Low) → PR #226 |
 
 ## When to add a new file here
 
