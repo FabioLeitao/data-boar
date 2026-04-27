@@ -2,6 +2,24 @@
 Relatório de mesa — Markdown executivo (mitigação de risco, sem detalhe de código).
 
 Usa :func:`core.advisor.group_findings_by_risk` e o ranking APG de ``core.recommendations``.
+
+Doctrinal references (behaviour-preserving comments -- do not remove in refactors):
+
+- ``docs/ops/inspirations/ACTIONABLE_GOVERNANCE_AND_TRUST.md`` -- the executive
+  Markdown is part of the customer "trust triangle" (Markdown + manifest YAML
+  + reproducible CLI). Sections **3** (methodology / segurança) and **4** (APG)
+  are not optional: removing them turns the deliverable into a slide deck,
+  which is *not* what the customer paid for.
+- ``docs/ops/inspirations/DEFENSIVE_SCANNING_MANIFESTO.md`` -- the
+  Methodology-of-Safety proof block under section 3 narrates *why* the
+  sample row cap and statement timeout protect the customer DB. The values
+  it surfaces come from the ``manifest['safety_tags']`` dictionary built in
+  ``report/scan_evidence.py``; they are *clamped* in
+  ``connectors/sql_sampling.py`` and must not be re-derived here.
+- ``docs/ops/inspirations/THE_ART_OF_THE_FALLBACK.md`` -- when the manifest
+  lacks fields (e.g. older sessions), this module degrades gracefully (``cap
+  is None``, ``resolved is None``) instead of crashing -- the executive report
+  is a read-only consumer of evidence; it never invents numbers.
 """
 
 from __future__ import annotations
@@ -195,6 +213,65 @@ def generate_executive_report(
         lines.append(f"- {b}")
     if len(bullets) > 12:
         lines.append(f"- *(+{len(bullets) - 12} itens no `scan_manifest_*.yaml`.)*")
+
+    # Methodology-of-Safety proof block.
+    #
+    # Doctrine: the scanner is a guest in the customer database (see
+    # docs/ops/inspirations/DEFENSIVE_SCANNING_MANIFESTO.md). The block below
+    # narrates *why* the values above (row cap, timeout hint, leading SQL
+    # comment) protect the customer instance and what the operator should
+    # check during DBA review. We surface only the values already on the
+    # manifest -- this is a reading guide, not a behavior change. Sample caps
+    # and timeouts remain enforced in connectors/sql_sampling.py
+    # (_HARD_MAX_SAMPLE = 10_000, statement timeout clamp <= 60_000 ms).
+    lines.extend(
+        [
+            "",
+            "**Compromisso de segurança operacional (proof block):**",
+            "",
+            (
+                "- **Não-bloqueio em produção:** sampling leituras evitam locks "
+                "exclusivos. Em SQL Server isso aparece como `WITH (NOLOCK)` no "
+                "bullet técnico acima quando o motor participa da sessão; em "
+                "PostgreSQL como timeout curto por transação. Validação: o DBA "
+                f"pode grepar `{lead_comment}` em `pg_stat_activity` / DMVs."
+            ),
+            (
+                "- **Caps são clamps, não sugestões:** o teto por coluna acima é "
+                "sempre clampado a `1..10_000` em código "
+                "(`connectors/sql_sampling.py` -> `_HARD_MAX_SAMPLE`). Mesmo se "
+                "alguém configurar valores absurdos via YAML ou variável de "
+                "ambiente `DATA_BOAR_SQL_SAMPLE_LIMIT`, o motor não excede esse "
+                "limite — uma das *relief valves* do manifesto defensivo."
+            ),
+            (
+                "- **Timeouts são clamps, não sugestões:** o orçamento de "
+                "timeout acima é sempre clampado a `1..60_000` ms via "
+                "`resolve_statement_timeout_ms_for_sampling`. Sem isso, "
+                "`DATA_BOAR_SAMPLE_STATEMENT_TIMEOUT_MS` ou um YAML mal "
+                "preenchido poderia fixar uma sessão indefinidamente — "
+                "incompatível com a regra de não bloqueio."
+            ),
+            (
+                "- **Sem `ORDER BY` em sampling automático:** a camada de "
+                "composição (`connectors/sql_sampling.py`) não injeta `ORDER BY` "
+                "em SQL de amostra; um `ORDER BY` em coluna não indexada força "
+                "um sort de tabela inteira — exatamente o oposto de leitura "
+                "estilo *compliance scan*. Caso futuro pedido de ordenação "
+                "determinística surja, será via ADR + flag explícita "
+                "(`--ordered-sample`), nunca silenciosamente."
+            ),
+            (
+                "- **Doctrinal references:** "
+                "`docs/ops/inspirations/DEFENSIVE_SCANNING_MANIFESTO.md` "
+                "(NASA / Cloudflare / Steve Gibson), "
+                "`docs/ops/inspirations/THE_ART_OF_THE_FALLBACK.md` "
+                "(Usagi Electric / The 8-Bit Guy), "
+                "`docs/ops/inspirations/ACTIONABLE_GOVERNANCE_AND_TRUST.md` "
+                "(Tailscale / Charity Majors / Cloudflare post-mortems)."
+            ),
+        ]
+    )
 
     sorted_apg = sort_apg_rows(apg_rows)
     lines.extend(

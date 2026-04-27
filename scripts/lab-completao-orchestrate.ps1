@@ -161,6 +161,69 @@ function Write-CompletaoOrchestrateEvent {
     [System.IO.File]::AppendAllText($ReportPath, $json + [Environment]::NewLine, $enc)
 }
 
+# RCA block (Sysinternals-style narrated diagnostic for a failure).
+#
+# Doctrine reference: docs/ops/inspirations/INTERNAL_DIAGNOSTIC_AESTHETICS.md
+# (Mark Russinovich / Sysinternals: a one-line "FAILED" is a regression in
+# diagnostic quality; the RCA block names the phase, the exit code, narrows
+# the hypothesis space, and points the operator at the next concrete check).
+# Doctrine reference: docs/ops/inspirations/THE_ART_OF_THE_FALLBACK.md
+# (no silent fall-throughs - every failure carries a written reason).
+#
+# Behaviour-preserving on success path: this helper only writes diagnostics;
+# the caller still decides whether to throw (hard) or warn-and-skip (soft).
+function Write-CompletaoRcaBlock {
+    param(
+        [Parameter(Mandatory = $true)][string]$ReportPath,
+        [Parameter(Mandatory = $true)][string]$Phase,
+        [Parameter(Mandatory = $true)][string]$Message,
+        [string[]]$Hypotheses = @(),
+        [string]$NextStep = "",
+        [int]$ExitCode = 0,
+        [string]$HostAlias = "",
+        [hashtable]$Detail = $null
+    )
+    $hostLabel = if ($HostAlias) { " host=$HostAlias" } else { "" }
+    Write-Host ("--- RCA (lab-completao-orchestrate phase=$Phase$hostLabel) ---") -ForegroundColor Yellow
+    Write-Host ("symptom : $Message") -ForegroundColor Yellow
+    if ($ExitCode -ne 0) {
+        Write-Host ("exit    : $ExitCode") -ForegroundColor Yellow
+    }
+    if ($Hypotheses -and $Hypotheses.Count -gt 0) {
+        Write-Host "hypotheses (narrow):" -ForegroundColor Yellow
+        foreach ($h in $Hypotheses) {
+            Write-Host ("  - $h") -ForegroundColor Yellow
+        }
+    }
+    if ($NextStep) {
+        Write-Host ("next    : $NextStep") -ForegroundColor Yellow
+    }
+    Write-Host ("doctrine: docs/ops/inspirations/INTERNAL_DIAGNOSTIC_AESTHETICS.md, THE_ART_OF_THE_FALLBACK.md") -ForegroundColor DarkYellow
+    Write-Host ("--- end RCA ---") -ForegroundColor Yellow
+
+    $rcaDetail = [ordered]@{
+        hypotheses = @($Hypotheses)
+        next_step  = $NextStep
+        doctrine   = @(
+            "docs/ops/inspirations/INTERNAL_DIAGNOSTIC_AESTHETICS.md",
+            "docs/ops/inspirations/THE_ART_OF_THE_FALLBACK.md"
+        )
+    }
+    if ($Detail) {
+        foreach ($k in $Detail.Keys) {
+            $rcaDetail[$k] = $Detail[$k]
+        }
+    }
+    Write-CompletaoOrchestrateEvent `
+        -ReportPath $ReportPath `
+        -Phase ("rca_" + $Phase) `
+        -Status "failed" `
+        -Message $Message `
+        -HostAlias $HostAlias `
+        -ExitCode $ExitCode `
+        -Detail $rcaDetail
+}
+
 function Add-CompletaoHostConnectivityRecord {
     param(
         [Parameter(Mandatory = $true)][System.Collections.Generic.List[object]]$Records,
@@ -322,6 +385,16 @@ if (-not $SkipInventoryPreflight) {
         } catch {
             Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "inventory_preflight" -Status "failed" -Message $_.Exception.Message
             $LabResultPhases.inventory_preflight = "failed"
+            Write-CompletaoRcaBlock `
+                -ReportPath $eventsPath `
+                -Phase "inventory_preflight" `
+                -Message $_.Exception.Message `
+                -Hypotheses @(
+                    "Private inventory map (LAB_SOFTWARE_INVENTORY.md / OPERATOR_SYSTEM_MAP.md) older than -InventoryMaxAgeDays ($InventoryMaxAgeDays).",
+                    "lab-op-sync-and-collect.ps1 failed for at least one host (SSH agent, key, or remote git pull).",
+                    "scripts/lab-completao-inventory-preflight.ps1 missing or modified on this clone."
+                ) `
+                -NextStep "Run scripts/lab-op-sync-and-collect.ps1 manually to refresh inventory, or pass -SkipInventoryPreflight to bypass for this run; see docs/ops/LAB_COMPLETAO_RUNBOOK.md (Inventory freshness)."
             throw
         }
     } else {
@@ -357,6 +430,17 @@ if ($effectiveLabRef -and -not $SkipLabGitRefCheck) {
     } catch {
         Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "lab_git_ensure_ref" -Status "failed" -Message $_.Exception.Message -Detail @{ ref = $effectiveLabRef; mode = $ensureMode }
         $LabResultPhases.lab_git_ensure_ref = "failed"
+        Write-CompletaoRcaBlock `
+            -ReportPath $eventsPath `
+            -Phase "lab_git_ensure_ref" `
+            -Message $_.Exception.Message `
+            -Hypotheses @(
+                "Lab clone diverged from $effectiveLabRef (force-push, deleted tag, or local commits on a manifest host).",
+                "git fetch on a remote host failed (network or auth on its origin).",
+                "Manifest repoPaths point at a path that no longer exists on the host."
+            ) `
+            -NextStep "Inspect repoPaths state with scripts/lab-op-repo-status.ps1; rerun with -AlignLabClonesToLabGitRef when intentional reset is desired; only the LAB-OP manifest hosts are aligned, never the primary dev workstation tree." `
+            -Detail @{ ref = $effectiveLabRef; mode = $ensureMode }
         throw
     }
 } elseif ($effectiveLabRef -and $SkipLabGitRefCheck) {
@@ -403,6 +487,17 @@ if (-not $SkipDataContractPreflight) {
         } catch {
             Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "data_contract_preflight" -Status "failed" -Message $_.Exception.Message -Detail @{ contractsPath = $contractsPath }
             $LabResultPhases.data_contract_preflight = "failed"
+            Write-CompletaoRcaBlock `
+                -ReportPath $eventsPath `
+                -Phase "data_contract_preflight" `
+                -Message $_.Exception.Message `
+                -Hypotheses @(
+                    "Lab schema drifted vs data contract YAML (column added/dropped/renamed).",
+                    "Connector env URL is wrong or the lab DB instance is down.",
+                    "scripts/lab_completao_data_contract_check.py raised on YAML shape (parser-level)."
+                ) `
+                -NextStep "Run uv run python scripts/lab_completao_data_contract_check.py --contracts $contractsPath manually for full traceback; pass -SkipDataContractPreflight to bypass for a partial run." `
+                -Detail @{ contractsPath = $contractsPath }
             throw
         }
     }
@@ -423,17 +518,49 @@ if (-not $SkiColleague-KagePreflight) {
         if (-not $probeHost) {
             Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "failed" -Message "no_ssh_host_for_image_probe"
             $LabResultPhases.image_preflight = "failed"
+            Write-CompletaoRcaBlock `
+                -ReportPath $eventsPath `
+                -Phase "image_preflight" `
+                -Message "completaoImageRefs is set but no probe host could be selected." `
+                -Hypotheses @(
+                    "Manifest has completaoImageRefs but no completaoImageProbeSshHost and no hosts[].sshHost.",
+                    "Manifest hosts array is empty or all entries are missing sshHost."
+                ) `
+                -NextStep "Add a non-empty sshHost to manifest hosts, or set completaoImageProbeSshHost; or pass -SkiColleague-KagePreflight."
             throw "completaoImageRefs is set but manifest has no sshHost. Add manifest key completaoImageProbeSshHost or sshHost entries."
         }
         if (-not (Test-CompletaoSshProbe -Alias $probeHost)) {
             Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "failed" -Message "ssh_probe_failed" -HostAlias $probeHost
             $LabResultPhases.image_preflight = "failed"
+            Write-CompletaoRcaBlock `
+                -ReportPath $eventsPath `
+                -Phase "image_preflight" `
+                -Message "SSH probe failed for image preflight host $probeHost." `
+                -Hypotheses @(
+                    "ssh_config alias '$probeHost' not present (or hostname stale).",
+                    "ssh-agent not warm in this Cursor terminal session.",
+                    "Host firewall / VPN interrupted the BatchMode probe."
+                ) `
+                -NextStep "ssh -v $probeHost in the same terminal; warm the agent; or pass -SkiColleague-KagePreflight to bypass." `
+                -HostAlias $probeHost
             throw "completaoImageRefs: SSH probe failed for image preflight host $probeHost"
         }
         foreach ($ir in $imgRefs) {
             if (-not (Test-CompletaoRemoteDockerImage -Alias $probeHost -ImageRef $ir)) {
                 Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "failed" -Message "image_missing" -HostAlias $probeHost -Detail @{ image = $ir }
                 $LabResultPhases.image_preflight = "failed"
+                Write-CompletaoRcaBlock `
+                    -ReportPath $eventsPath `
+                    -Phase "image_preflight" `
+                    -Message "Required image '$ir' not present on probe host $probeHost." `
+                    -Hypotheses @(
+                        "Image was pruned by docker-prune-local or vendor-side cleanup.",
+                        "Tag rotated on Docker Hub but lab host still references the old digest.",
+                        "Container runtime not installed (neither docker nor podman) on $probeHost."
+                    ) `
+                    -NextStep "On $probeHost, run docker pull $ir (or podman pull); rerun completao; or pass -SkiColleague-KagePreflight when the host is meant to use a different image set." `
+                    -HostAlias $probeHost `
+                    -Detail @{ image = $ir }
                 throw "completaoImageRefs: image not present on ${probeHost}: $ir (docker/podman image inspect). Pull on lab or use -SkiColleague-KagePreflight."
             }
         }
@@ -648,6 +775,21 @@ foreach ($h in $manifest.hosts) {
         Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "host_smoke" -Status "failed" -Message $_.Exception.Message -HostAlias $alias
         Write-Warning "lab-completao-orchestrate: unexpected error for host $alias : $($_.Exception.Message)"
         [void]$master.AppendLine("HOST_EXCEPTION $alias : $($_.Exception.Message)")
+        # Soft failure: the loop continues to the next host (skip-on-failure
+        # contract). The RCA block makes the loop's "completed_with_skips"
+        # outcome auditable per host - see internal diagnostic doctrine.
+        Write-CompletaoRcaBlock `
+            -ReportPath $eventsPath `
+            -Phase "host_smoke" `
+            -Message $_.Exception.Message `
+            -Hypotheses @(
+                "scripts/lab-completao-host-smoke.sh missing on the remote clone (MISSING_SCRIPT).",
+                "Non-interactive sudo -n denied for --privileged probes (sudoers narrow alias drift).",
+                "Container runtime expected (completaoEngineMode=container) but not installed.",
+                "Hardware profile path (LAB-NODE-04/LAB-NODE-03) raised before the smoke could run."
+            ) `
+            -NextStep "Inspect the per-host smoke log under docs/private/homelab/reports/; for sudo -n failures align the narrow sudoers per LAB_OP_PRIVILEGED_COLLECTION.md; for MISSING_SCRIPT run scripts/lab-op-repo-status.ps1 -PullFfOnly." `
+            -HostAlias $alias
     }
 }
 
@@ -876,6 +1018,16 @@ try {
         } catch {
             Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "grc_export_artifacts" -Status "failed" -Message $_.Exception.Message
             Write-Warning "GRC PDF/XLSX export skipped or failed: $($_.Exception.Message)"
+            Write-CompletaoRcaBlock `
+                -ReportPath $eventsPath `
+                -Phase "grc_export_artifacts" `
+                -Message $_.Exception.Message `
+                -Hypotheses @(
+                    "scripts/export_reports.py is missing optional deps (e.g. reportlab/openpyxl) - check uv sync extras.",
+                    "GRC JSON shape changed and the exporter has not yet been updated.",
+                    "Output path is not writable for the calling user."
+                ) `
+                -NextStep "Run uv run python scripts/export_reports.py --input $grcReportLatest manually for full traceback; the GRC JSON is still valid evidence even when only the PDF/XLSX artefacts are missing."
         }
     }
 
@@ -883,6 +1035,16 @@ try {
 } catch {
     Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "grc_executive_report" -Status "failed" -Message $_.Exception.Message
     Write-Warning "GRC executive report skipped or failed: $($_.Exception.Message)"
+    Write-CompletaoRcaBlock `
+        -ReportPath $eventsPath `
+        -Phase "grc_executive_report" `
+        -Message $_.Exception.Message `
+        -Hypotheses @(
+            "scripts/generate_grc_report.py raised on missing or malformed input (lab_result.json or raw_scan_results.json).",
+            "uv environment is missing the 'grc-dashboard' / report extras (uv sync --extra grc-dashboard).",
+            "Output directory under docs/private/homelab/reports/ is read-only or full."
+        ) `
+        -NextStep "Re-run with uv run python scripts/generate_grc_report.py --lab-result <path> --output <path> for full traceback; the lab_result.json was still written, so this is a downstream-only failure that does not invalidate the host smoke loop."
 }
 Write-Host "[FINISH] Completao cycle closed. Review reports (including GRC JSON) before commit." -ForegroundColor Cyan
 
