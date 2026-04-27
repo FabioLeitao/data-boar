@@ -172,6 +172,7 @@ See `**docs/private.example/homelab/lab-op-hosts.manifest.example.json`** for op
 ## Automation reuse and documented learnings
 
 - **Encode repeat work:** When a completão step is **repeatable**, add or extend `**scripts/`**, **Ansible** under `**ops/automation/ansible/`**, or **manifest** fields — hub: **[TOKEN_AWARE_SCRIPTS_HUB.md](TOKEN_AWARE_SCRIPTS_HUB.md)**; policy: `**lab-completao-workflow.mdc`** (*Automation reuse + documented learnings*).
+- **Git A/B on the Windows dev clone (timed):** **`scripts/benchmark-ab.ps1`** creates **`benchmark_runs/`**, guards a dirty tree (**`-AutoStash`** / **`-AllowDirty`**), checks out a legacy **tag** then restores your saved **branch/HEAD**, runs **`lab-completao-orchestrate.ps1`** twice with **`Measure-Command`**, copies recent **`docs/private/homelab/reports/`** files per round, and writes **`benchmark_runs/times.txt`**. Lighter ref-only harness without local checkout: **`scripts/run-benchmark.ps1`**.
 - **Capture signals in private session notes** (`docs/private/homelab/`, template `**COMPLETAO_SESSION_TEMPLATE.pt_BR.md*`*): **timeouts**, **wall-clock** duration, **unexpected slowness**, **FP/FN** vs **known synthetic** ground truth (report vs expected), **confidence** on **real** paths (e.g. system log trees, home-directory samples), **latency** over **public APIs** / **SSH** / **low-resource** lab hosts vs faster machines, and any **default**/**doc** mismatch. These feed `**PLANS_TODO.md`** / **issues** — **no** raw PII in public Git.
 
 ## Quick start
