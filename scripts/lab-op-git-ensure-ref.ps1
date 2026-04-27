@@ -105,6 +105,37 @@ function Build-RemoteResetCmd {
     return $s
 }
 
+function Invoke-SshRemoteCapture {
+    param(
+        [Parameter(Mandatory = $true)][string]$Alias,
+        [Parameter(Mandatory = $true)][string]$RemoteCmd,
+        [int]$ConnectTimeout = 180
+    )
+    $gid = [Guid]::NewGuid().ToString("n")
+    $stdoutPath = Join-Path ([IO.Path]::GetTempPath()) ("labop_ssh_out_" + $gid + ".txt")
+    $stderrPath = Join-Path ([IO.Path]::GetTempPath()) ("labop_ssh_err_" + $gid + ".txt")
+    try {
+        $null = New-Item -ItemType File -Path $stdoutPath -Force
+        $null = New-Item -ItemType File -Path $stderrPath -Force
+        $p = Start-Process -FilePath "ssh.exe" -ArgumentList @(
+            "-q",
+            "-o", "BatchMode=yes",
+            "-o", ("ConnectTimeout={0}" -f $ConnectTimeout),
+            $Alias,
+            $RemoteCmd
+        ) -Wait -PassThru -NoNewWindow -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath
+        $exitCode = $p.ExitCode
+        $outText = ""
+        if (Test-Path -LiteralPath $stdoutPath) {
+            $outText = [IO.File]::ReadAllText($stdoutPath)
+        }
+        return [pscustomobject]@{ ExitCode = $exitCode; StdOut = $outText }
+    } finally {
+        Remove-Item -LiteralPath $stdoutPath -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $stderrPath -Force -ErrorAction SilentlyContinue
+    }
+}
+
 $master = [System.Text.StringBuilder]::new()
 [void]$master.AppendLine("=== lab-op-git-ensure-ref $stamp ===")
 [void]$master.AppendLine("Mode: $Mode  Ref: $Ref")
@@ -148,9 +179,10 @@ foreach ($h in $manifest.hosts) {
         }
         # Do not route the remote bash through cmd.exe /c: cmd treats ^ as escape, which breaks
         # git's "ref^{commit}" syntax (becomes "ref{commit}" and rev-parse fails).
-        # Do not merge stderr (2>&1): git fetch progress on stderr becomes ErrorRecord under $ErrorActionPreference Stop.
-        $remoteOut = ( & ssh.exe -q -o BatchMode=yes -o ConnectTimeout=180 $alias $remoteCmd 2>$null ) | Out-String
-        $exitCode = $LASTEXITCODE
+        # Use Start-Process so git fetch progress on stderr never becomes a PowerShell ErrorRecord (Stop mode).
+        $sshResult = Invoke-SshRemoteCapture -Alias $alias -RemoteCmd $remoteCmd -ConnectTimeout 180
+        $exitCode = $sshResult.ExitCode
+        $remoteOut = $sshResult.StdOut
         Write-Host "--- repo: $rp ---"
         Write-Host $remoteOut
         [void]$master.AppendLine("--- repo: $rp ---")
