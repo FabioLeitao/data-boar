@@ -16,6 +16,9 @@ verdicts).
 | Date       | Audit                                                                                                              | Scope                                                              |
 | :--------- | :----------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------- |
 | 2026-04-27 | [`DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md`](DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md)             | Verdict ledger for Dependabot PRs #221, #222, #223, #224, #226    |
+| 2026-04-27 | [`PR_SECURITY_AUDIT_2026-04-27.md`](PR_SECURITY_AUDIT_2026-04-27.md)                                               | PR-level security audit (open PRs, 2026-04-27)                    |
+| 2026-04-27 | [`STALE_FEATURE_FLAG_AUDIT_2026-04-27.md`](STALE_FEATURE_FLAG_AUDIT_2026-04-27.md)                                 | Stale feature-flag audit (EN; pt-BR pair beside it)               |
+| 2026-04-27 | [`AUDIT_PR_SWARM_POSTMORTEM_2026-04-27.md`](AUDIT_PR_SWARM_POSTMORTEM_2026-04-27.md)                               | Postmortem — audit-PR swarm vs. one mergeable fix (PR #226 / #266) |
 
 ## When to add a new file here
 
