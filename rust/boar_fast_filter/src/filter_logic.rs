@@ -46,6 +46,13 @@ impl CompiledPatterns {
 }
 
 /// Luhn check on digit runs; ignores spaces and hyphens in `card_number`.
+//
+// `% 2` / `% 10` keep the canonical Luhn arithmetic readable. The
+// `clippy::manual_is_multiple_of` lint (clippy 1.95+) suggests
+// `.is_multiple_of(...)` but that std method only stabilized in Rust 1.87 for
+// unsigned ints, which would break older toolColleague-Nns used by contributors and
+// the lab. We choose readable + portable over chasing the newest clippy hint.
+#[allow(unknown_lints, clippy::manual_is_multiple_of)]
 pub fn check_luhn(card_number: &str) -> bool {
     let digits: Vec<u32> = card_number
         .chars()
