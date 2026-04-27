@@ -229,10 +229,36 @@ function Get-CompletaoImageRefsFromManifest {
     if ($null -eq $raw) {
         return ,$list.ToArray()
     }
+    # If JSON stored a single string, foreach over @($raw) would iterate characters ([char]) and break
+    # Test-CompletaoRemoteDockerImage -ImageRef ([string] binding).
+    if ($raw -is [string]) {
+        $v = $raw.Trim()
+        if ($v) {
+            $list.Add($v)
+        }
+        return ,$list.ToArray()
+    }
     foreach ($x in @($raw)) {
-        $s = [string]$x
-        if ($s) {
-            $list.Add($s)
+        if ($null -eq $x) {
+            continue
+        }
+        if ($x -is [string]) {
+            $s = $x.Trim()
+            if ($s) {
+                $list.Add($s)
+            }
+            continue
+        }
+        if ($null -ne $x.ref) {
+            $s = [string]$x.ref
+            if ($s -and $s.Trim()) {
+                $list.Add($s.Trim())
+            }
+        } elseif ($null -ne $x.image) {
+            $s = [string]$x.image
+            if ($s -and $s.Trim()) {
+                $list.Add($s.Trim())
+            }
         }
     }
     return ,$list.ToArray()
