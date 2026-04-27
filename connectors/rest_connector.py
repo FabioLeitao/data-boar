@@ -3,6 +3,20 @@ REST/API connector: call remote HTTP(S) endpoints with configurable authenticati
 (basic, bearer token, OAuth2 client credentials, or custom headers) to discover
 and scan response payloads for personal or sensitive data.
 Optional: register only when httpx is available. Used for type "api" or "rest" targets.
+
+SRE / chaos-audit notes (`docs/ops/inspirations/DEFENSIVE_SCANNING_MANIFESTO.md`,
+`THE_ART_OF_THE_FALLBACK.md`):
+
+- Every response read is **bounded** by ``DATA_BOAR_REST_MAX_RESPONSE_BYTES``
+  (default 25 MiB). Both ``Content-Length``-advertised oversize bodies and bodies
+  that grow past the cap mid-stream are refused before they fill memory.
+- The JSON walk in :func:`_flatten_sample` is depth- and width-bounded so
+  adversarial nesting (``{"a": {"a": {"a": ...}}}``) cannot trigger
+  ``RecursionError`` and a million-key dictionary cannot pin a CPU.
+- Truncation never falls through silently: a ``__truncated__`` row is emitted
+  in the flattened output and (when a `db_manager` is wired) ``save_failure``
+  records the demotion reason — same contract as
+  ``THE_ART_OF_THE_FALLBACK.md`` §3 ("diagnostic on fall").
 """
 
 import os
@@ -23,6 +37,112 @@ try:
 except ImportError:
     _HTTPX_AVAILABLE = False
     httpx = None
+
+
+# Defensive caps. Operators can tighten via env; the runtime clamps to safe ranges
+# so a misconfiguration cannot remove the cap entirely.
+_ENV_REST_MAX_RESPONSE_BYTES = "DATA_BOAR_REST_MAX_RESPONSE_BYTES"
+_DEFAULT_REST_MAX_RESPONSE_BYTES = 25 * 1024 * 1024  # 25 MiB
+_HARD_MIN_REST_MAX_RESPONSE_BYTES = 4 * 1024  # 4 KiB floor (protect against typos)
+_HARD_MAX_REST_MAX_RESPONSE_BYTES = 512 * 1024 * 1024  # 512 MiB ceiling
+
+# JSON walk caps for `_flatten_sample`. Depth 32 absorbs realistic OpenAPI nesting;
+# 200 keys per object is well past anything a sane API exposes per resource.
+_DEFAULT_FLATTEN_MAX_DEPTH = 32
+_DEFAULT_FLATTEN_MAX_KEYS_PER_LEVEL = 200
+# Hard total-row ceiling so a wide flat dict still cannot blow up memory.
+_DEFAULT_FLATTEN_MAX_TOTAL_ROWS = 5000
+
+
+def _resolve_max_response_bytes() -> int:
+    """Resolve the per-response byte cap from env, clamped to the hard range."""
+    raw = (os.environ.get(_ENV_REST_MAX_RESPONSE_BYTES) or "").strip()
+    if not raw:
+        return _DEFAULT_REST_MAX_RESPONSE_BYTES
+    try:
+        v = int(raw)
+    except ValueError:
+        return _DEFAULT_REST_MAX_RESPONSE_BYTES
+    return max(
+        _HARD_MIN_REST_MAX_RESPONSE_BYTES,
+        min(v, _HARD_MAX_REST_MAX_RESPONSE_BYTES),
+    )
+
+
+class _ResponseTooLarge(Exception):
+    """Raised when an HTTP response exceeds the configured byte cap."""
+
+    def __init__(self, limit_bytes: int, observed: str):
+        super().__init__(
+            f"response exceeded {limit_bytes} byte cap (observed {observed})"
+        )
+        self.limit_bytes = limit_bytes
+        self.observed = observed
+
+
+class _BoundedResponse:
+    """
+    Minimal response wrapper used by the connector after a bounded streamed read.
+
+    Mirrors the small surface :class:`RESTConnector` actually consumes
+    (``status_code``, ``raise_for_status``, ``json``, ``text``) so the rest of
+    the connector stays oblivious to whether we used streaming or a one-shot GET.
+    """
+
+    def __init__(self, status_code: int, body: bytes, encoding: str | None):
+        self.status_code = int(status_code)
+        self._body = body
+        self._encoding = encoding or "utf-8"
+
+    def raise_for_status(self) -> None:
+        if 400 <= self.status_code:
+            raise httpx.HTTPStatusError(
+                f"HTTP {self.status_code}",
+                request=None,  # type: ignore[arg-type]
+                response=None,  # type: ignore[arg-type]
+            )
+
+    @property
+    def text(self) -> str:
+        try:
+            return self._body.decode(self._encoding, errors="replace")
+        except (LookupError, TypeError):
+            return self._body.decode("utf-8", errors="replace")
+
+    def json(self) -> Any:
+        return json.loads(self.text)
+
+
+def _read_bounded_response_body(
+    client: "httpx.Client", path_str: str, max_bytes: int
+) -> _BoundedResponse:
+    """
+    Stream a GET and refuse bodies above ``max_bytes``.
+
+    The Content-Length pre-check fails fast (no body read) when the server
+    advertises an oversized payload; servers that omit the header still get
+    bounded by the streamed read so we never buffer more than ``max_bytes + 1``.
+    Raises :class:`_ResponseTooLarge` when the cap is exceeded.
+    """
+    with client.stream("GET", path_str) as response:
+        cl_header = response.headers.get("Content-Length")
+        if cl_header is not None:
+            try:
+                advertised = int(cl_header)
+            except (TypeError, ValueError):
+                advertised = None
+            if advertised is not None and advertised > max_bytes:
+                raise _ResponseTooLarge(max_bytes, f"Content-Length={advertised}")
+        chunks: list[bytes] = []
+        total = 0
+        for chunk in response.iter_bytes():
+            total += len(chunk)
+            if total > max_bytes:
+                raise _ResponseTooLarge(max_bytes, f">{max_bytes} bytes streamed")
+            chunks.append(chunk)
+        encoding = response.encoding or "utf-8"
+        status_code = response.status_code
+    return _BoundedResponse(status_code, b"".join(chunks), encoding)
 
 
 def _build_auth(client: "httpx.Client", target: dict[str, Any]) -> None:
@@ -120,50 +240,114 @@ def _scalar_to_connector_data_type(value: Any, max_varchar: int = 4000) -> str |
 
 
 def _flatten_sample(
-    obj: Any, prefix: str = "", max_len: int = 500
+    obj: Any,
+    prefix: str = "",
+    max_len: int = 500,
+    *,
+    max_depth: int = _DEFAULT_FLATTEN_MAX_DEPTH,
+    max_keys_per_level: int = _DEFAULT_FLATTEN_MAX_KEYS_PER_LEVEL,
+    max_total_rows: int = _DEFAULT_FLATTEN_MAX_TOTAL_ROWS,
 ) -> list[tuple[str, str, Any | None]]:
     """
-    Recursively flatten JSON-like structure into (key_path, string_value, raw_scalar).
+    Recursively flatten JSON-like structure into ``(key_path, string_value, raw_scalar)``.
 
-    ``raw_scalar`` is the leaf JSON value before string coercion when applicable (used with
-    :func:`_scalar_to_connector_data_type`). Non-leaf paths use ``None``.
+    ``raw_scalar`` is the leaf JSON value before string coercion when applicable
+    (used with :func:`_scalar_to_connector_data_type`). Non-leaf paths use ``None``.
+
+    **Defensive caps** (chaos-audit hardening — see module docstring):
+
+    - ``max_depth`` bounds JSON nesting; a deeper path emits a single
+      ``__truncated__`` audit row instead of raising :class:`RecursionError`.
+    - ``max_keys_per_level`` bounds object width; extra keys past the cap also
+      surface as ``__truncated__`` so reviewers know we stopped intentionally.
+    - ``max_total_rows`` bounds the total flattened output, protecting the
+      detector loop downstream from pathological payloads.
+
+    A trailing :class:`RecursionError` guard is the belt-and-suspenders fallback
+    in case a future caller forgets to lower ``max_depth`` below the host limit.
     """
+
     out: list[tuple[str, str, Any | None]] = []
-    if obj is None:
-        out.append((prefix or "value", "", None))
-        return out
-    if isinstance(obj, bool):
-        out.append((prefix or "value", "true" if obj else "false", obj))
-        return out
-    if isinstance(obj, int):
-        out.append((prefix or "value", str(obj)[:max_len], obj))
-        return out
-    if isinstance(obj, float):
-        out.append((prefix or "value", str(obj)[:max_len], obj))
-        return out
-    if isinstance(obj, str):
-        out.append((prefix or "value", obj[:max_len], obj))
-        return out
-    if isinstance(obj, list):
-        for i, item in enumerate(obj[:3]):  # sample first 3
-            out.extend(
-                _flatten_sample(item, f"{prefix}[{i}]" if prefix else f"[{i}]", max_len)
+    truncated_reasons: set[str] = set()
+
+    def _record_truncation(reason: str, path: str) -> None:
+        if reason in truncated_reasons:
+            return
+        truncated_reasons.add(reason)
+        out.append((path or "value", reason, None))
+
+    def _walk(value: Any, key_prefix: str, depth: int) -> None:
+        if len(out) >= max_total_rows:
+            _record_truncation(
+                f"max_total_rows={max_total_rows}", key_prefix or (prefix or "value")
             )
-        return out
-    if isinstance(obj, dict):
-        for k, v in obj.items():
-            key = f"{prefix}.{k}" if prefix else k
-            if isinstance(v, (dict, list)) and v:
-                out.extend(_flatten_sample(v, key, max_len))
-            else:
-                if v is None:
+            return
+        if depth > max_depth:
+            _record_truncation(
+                f"max_depth={max_depth}", key_prefix or (prefix or "value")
+            )
+            return
+        if value is None:
+            out.append((key_prefix or "value", "", None))
+            return
+        if isinstance(value, bool):
+            out.append((key_prefix or "value", "true" if value else "false", value))
+            return
+        if isinstance(value, int):
+            out.append((key_prefix or "value", str(value)[:max_len], value))
+            return
+        if isinstance(value, float):
+            out.append((key_prefix or "value", str(value)[:max_len], value))
+            return
+        if isinstance(value, str):
+            out.append((key_prefix or "value", value[:max_len], value))
+            return
+        if isinstance(value, list):
+            for i, item in enumerate(value[:3]):
+                if len(out) >= max_total_rows:
+                    _record_truncation(
+                        f"max_total_rows={max_total_rows}",
+                        key_prefix or (prefix or "value"),
+                    )
+                    return
+                child_prefix = f"{key_prefix}[{i}]" if key_prefix else f"[{i}]"
+                _walk(item, child_prefix, depth + 1)
+            return
+        if isinstance(value, dict):
+            items = list(value.items())
+            if len(items) > max_keys_per_level:
+                _record_truncation(
+                    f"max_keys_per_level={max_keys_per_level}",
+                    key_prefix or (prefix or "value"),
+                )
+                items = items[:max_keys_per_level]
+            for k, v in items:
+                if len(out) >= max_total_rows:
+                    _record_truncation(
+                        f"max_total_rows={max_total_rows}",
+                        key_prefix or (prefix or "value"),
+                    )
+                    return
+                key = f"{key_prefix}.{k}" if key_prefix else str(k)
+                if isinstance(v, (dict, list)) and v:
+                    _walk(v, key, depth + 1)
+                elif v is None:
                     out.append((key, "", None))
                 elif isinstance(v, (dict, list)) and not v:
                     out.append((key, str(v)[:max_len], None))
                 else:
                     out.append((key, str(v)[:max_len], v))
-        return out
-    out.append((prefix or "value", str(obj)[:max_len], None))
+            return
+        out.append((key_prefix or "value", str(value)[:max_len], None))
+
+    try:
+        _walk(obj, prefix, 0)
+    except RecursionError:
+        # Belt-and-suspenders: if max_depth was misconfigured above the host
+        # recursion limit, still degrade gracefully with an audit row instead
+        # of crashing the connector.
+        _record_truncation("recursion_limit_reached", prefix or "value")
+
     return out
 
 
@@ -233,12 +417,15 @@ class RESTConnector:
             )
             return
         self.connect()
+        max_bytes = _resolve_max_response_bytes()
         try:
             paths = self.config.get("paths") or self.config.get("endpoints") or []
             discover_url = self.config.get("discover_url")
             if discover_url and not paths:
                 try:
-                    r = self._client.get(discover_url)
+                    r = _read_bounded_response_body(
+                        self._client, discover_url, max_bytes
+                    )
                     r.raise_for_status()
                     data = r.json()
                     if isinstance(data, list):
@@ -250,6 +437,15 @@ class RESTConnector:
                         paths = data["paths"]
                     elif isinstance(data, dict) and "endpoints" in data:
                         paths = data["endpoints"]
+                except _ResponseTooLarge as e:
+                    # Manifesto §3 ("diagnostic on fall"): refuse big payloads
+                    # before they fill memory and log the demotion reason.
+                    self.db_manager.save_failure(
+                        self.config.get("name", "api"),
+                        "error",
+                        f"Discover refused: response cap ({e.observed} > {e.limit_bytes} bytes)",
+                    )
+                    return
                 except Exception as e:
                     self.db_manager.save_failure(
                         self.config.get("name", "api"), "error", f"Discover failed: {e}"
@@ -277,8 +473,17 @@ class RESTConnector:
                     continue
                 path_str = path_str if path_str.startswith("/") else "/" + path_str
                 try:
-                    r = self._client.get(path_str)
+                    r = _read_bounded_response_body(self._client, path_str, max_bytes)
                     r.raise_for_status()
+                except _ResponseTooLarge as e:
+                    # Manifesto §3: log the demotion reason; never silently drop
+                    # a path because it was too big.
+                    self.db_manager.save_failure(
+                        target_name,
+                        "error",
+                        f"GET {path_str}: response cap ({e.observed} > {e.limit_bytes} bytes)",
+                    )
+                    continue
                 except Exception as e:
                     self.db_manager.save_failure(
                         target_name, "error", f"GET {path_str}: {e}"
