@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from core.prefilter import OpenCorePreFilter
-from pro.engine import process_chunk_worker
+from pro.engine import RUST_AVAILABLE, process_chunk_worker
 
 
 def generate_test_data(rows: int = 200_000) -> list[str]:
@@ -75,7 +75,11 @@ def run_benchmark(rows: int, workers: int) -> dict[str, Any]:
         "speedup_vs_opencore": round(speedup, 4),
         "opencore_hits": core_hits,
         "pro_hits": pro_hits,
-        "rust_worker_path": True,
+        # Reflect real provenance — the Pro path falls back to Python when the
+        # ``boar_fast_filter`` extension is not built in this environment.
+        # Telling the truth here keeps marketing copy and tests honest
+        # (publication-truthfulness rule, no invented facts).
+        "rust_worker_path": bool(RUST_AVAILABLE),
         "generated_at_epoch": time.time(),
     }
 

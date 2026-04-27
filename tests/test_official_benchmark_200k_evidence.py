@@ -2,32 +2,33 @@
 
 Pin the published numbers in ``tests/benchmarks/official_benchmark_200k.json``
 so executive material cannot accidentally claim a Pro+ "speedup" that
-contradicts the recorded artifact.
+contradicts the recorded artifact — and, after Slice 2 (PR #233-class), so
+the **direction** stays the doctrinal one: Pro must be at least as fast as
+OpenCore on the seeded synthetic workload.
 
 Why this lives in the test suite (Julia Evans-style note):
 
-- The Slack handoff for this run added context that the 200k A/B confirmed the
-  Pro profile is **0.574x mais lento** than OpenCore. Strictly, the JSON stores
-  ``speedup_vs_opencore = 0.574``, which means Pro is *0.574x as fast as*
-  OpenCore (i.e. Pro takes roughly ``1 / 0.574 ~= 1.74x`` more time). Either
-  reading agrees on direction: **Pro is slower in this profile**.
-- The hub (`docs/ops/LAB_LESSONS_LEARNED.md`) and the post-mortem
-  (`docs/ops/SPRINT_GREAT_LEAP_POSTMORTEM.md`) already separate verified vs
-  aspirational claims; this test is the **machine-readable** echo so a future
-  doc PR or executive deck cannot silently flip the sign without also touching
-  the JSON artifact.
+- Slice 1 pinned a recorded ``speedup_vs_opencore = 0.574`` (Pro **slower**
+  than OpenCore by ~1.74x wall-clock). That number was a real measurement and
+  a real regression — the Pro Python fallback was running the OpenCore regex
+  twice and the worker pipeline added a no-op pass through ``deep_ml_analysis``.
+- Slice 2 fuses the candidate regex into a single alternation and does a
+  single-pass scan inside the worker (CPF / e-mail short-circuit; Luhn only
+  fires on card-shape matches). The new artifact records the corrected
+  measurement, and this test asserts the **fixed direction** plus the still
+  non-negotiable findings parity.
 
-Defensive posture (DEFENSIVE_SCANNING_MANIFESTO spirit):
+Defensive posture (``DEFENSIVE_SCANNING_MANIFESTO.md``):
 
 - The check is a **read-only** JSON parse. No database connection, no SQLite
   write, no file lock acquisition; safe to run alongside scans.
 
-Fallback posture (THE_ART_OF_THE_FALLBACK spirit):
+Fallback posture (``THE_ART_OF_THE_FALLBACK.md``):
 
 - If the artifact is ever regenerated with a different profile (larger chunks,
-  heavier downstream stage), the assertions surface the change immediately so
-  the operator updates marketing prose **and** the JSON together, instead of
-  one drifting from the other.
+  heavier downstream stage, Rust path enabled), the assertions surface the
+  change immediately so the operator updates marketing prose **and** the JSON
+  together, instead of one drifting from the other.
 """
 
 from __future__ import annotations
@@ -61,13 +62,16 @@ def test_benchmark_shape_is_official_pro_v1(benchmark_payload: dict) -> None:
     assert benchmark_payload.get("workers") == 8
 
 
-def test_benchmark_pro_path_is_slower_in_this_profile(
+def test_benchmark_pro_path_is_at_least_as_fast(
     benchmark_payload: dict,
 ) -> None:
-    """Direction of the recorded A/B: Pro path is slower than OpenCore.
+    """Direction of the recorded A/B: Pro path must be at least as fast as OpenCore.
 
-    If a future profile flips this (Pro faster), update the JSON **and** the
-    LAB_LESSONS / post-mortem prose in the same commit so they stop disagreeing.
+    Slice 2 closed the regression captured in Slice 1 (``0.574x`` ratio). The
+    guard now refuses any artifact that records Pro slower than OpenCore by
+    more than a small noise band (5 percent), forcing whoever regresses
+    performance to either fix the code or write up a post-mortem and adjust
+    the slack consciously.
     """
     opencore_seconds = float(benchmark_payload["opencore_seconds"])
     pro_seconds = float(benchmark_payload["pro_seconds"])
@@ -75,13 +79,15 @@ def test_benchmark_pro_path_is_slower_in_this_profile(
 
     assert opencore_seconds > 0
     assert pro_seconds > 0
-    assert pro_seconds > opencore_seconds, (
-        "Recorded Pro time is not greater than OpenCore: artifact disagrees "
-        "with LAB_LESSONS_LEARNED narrative; refresh both together."
-    )
-    assert speedup < 1.0, (
-        f"speedup_vs_opencore={speedup} >= 1.0 contradicts the documented "
-        "'Pro slower in this profile' result."
+
+    # Tolerate a 5 percent noise band on slow CI runners; anything beyond that
+    # is a real regression and should fail loud.
+    noise_band_ratio = 0.95
+    assert speedup >= noise_band_ratio, (
+        f"speedup_vs_opencore={speedup} fell below the {noise_band_ratio} "
+        "noise band: Pro path regressed against OpenCore. Investigate "
+        "core/prefilter.py and pro/worker_logic.py before refreshing the "
+        "artifact."
     )
 
 
