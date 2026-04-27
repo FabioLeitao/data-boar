@@ -15,6 +15,8 @@ data/qa_completao_*.json
 data/lab_completao_benchmark.db
 # Local A/B completão benchmark harness (scripts/run-benchmark.ps1)
 bench/
+# Git checkout A/B harness (scripts/benchmark-ab.ps1)
+benchmark_runs/
 Relatorio_Auditoria_*.xlsx
 heatmap*.png
 config.yaml
