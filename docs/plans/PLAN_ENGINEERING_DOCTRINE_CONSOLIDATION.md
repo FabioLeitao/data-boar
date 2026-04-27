@@ -127,9 +127,12 @@ Slice 1, only on the files that already implement the doctrine:
 # (Ref: docs/ops/inspirations/DEFENSIVE_SCANNING_MANIFESTO.md)
 ```
 
-Plus a new **Methodology of Safety** section in the `data-boar-report`
-executive Markdown explaining how we treat the customer database with the same
-respect a pilot gives a running turbine.
+Plus a new **Methodology of Safety** section in the executive Markdown produced
+by the **`data-boar-report`** CLI (**Python:** `cli/reporter.py` / console script
+in `pyproject.toml` — **not** the Rust crate). The Rust optional pre-filter lives
+only in **`rust/boar_fast_filter/`** (`boar_fast_filter`). The Markdown section
+explains how we treat the customer database with the same respect a pilot gives
+a running turbine.
 
 **Constraint:** `refactor:` only — no behavior change. Tests:
 `tests/test_executive_report*.py`, `tests/test_scan_audit_log.py`,

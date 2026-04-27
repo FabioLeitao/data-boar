@@ -4,6 +4,10 @@
 # Triggers: every push and PR targeting main or master, scoped via path filters
 # so unrelated Python-only changes do not spend a Rust runner.
 #
+# Path filters must stay on rust/** (this workflow file). The Python executive
+# Markdown CLI is the console script data-boar-report (cli/reporter.py); that
+# string is not a repo directory -- do not use it in paths: or pathspecs here.
+#
 # Action pins follow the existing repo convention (full commit SHA + version
 # comment). The Rust toolColleague-Nn itself is provided by the runner image; we
 # install/refresh it deterministically with `rustup` instead of adding a new

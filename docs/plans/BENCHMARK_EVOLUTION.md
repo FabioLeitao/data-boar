@@ -6,6 +6,11 @@
 
 **Scope:** Lab orchestration (`lab-completao-orchestrate.ps1`) plus optional **`data-boar-report`** (`python -m cli.reporter`, see [USAGE.md](../USAGE.md) section 5) when the benchmark script is invoked with `-ReportConfigYaml` / `-ReportSessionId`.
 
+**Nomenclature (avoid `paths:` / pathspec mistakes):**
+
+- **`data-boar-report`** is the **console script name** for the **Python** executive-report CLI (`cli/reporter.py`, entry `cli.reporter:main` in `pyproject.toml`). It reads **local SQLite** and writes stakeholder Markdown — it is **not** a Rust crate and **not** a directory under the repo root.
+- The **Rust** optional pre-filter is the **`boar_fast_filter`** package in **`rust/boar_fast_filter/`** (Cargo `name = "boar_fast_filter"`). GitHub Actions **`Rust CI`** (`.github/workflows/rust-ci.yml`) must list **`rust/**`** (and the workflow file) under `on.push.paths` / `on.pull_request.paths`. Using an unrelated label (for example the **Python** CLI name above) in those filters causes **wrong or empty pathspec matches** and skips CI when only the Rust tree changes.
+
 ---
 
 ## 1. Executive Markdown (`data-boar-report`) — required sections (code contract)
@@ -152,9 +157,22 @@ The recorded `pro_hits == opencore_hits` (both 100_000) is the precision invaria
 
 ---
 
+## 9. Rust CI, local Rust guard, and Python 3.14+ (ABI3)
+
+### Rust CI Infrastructure
+
+- [x] **Rust CI Infrastructure** — **`.github/workflows/rust-ci.yml`** runs `cargo fmt`, `cargo check`, `cargo test`, and `cargo clippy` with `defaults.run.working-directory: rust/boar_fast_filter`, and `on.<event>.paths` includes **`rust/**`** plus the workflow file so edits to the **real** crate path always trigger the job (see § *Nomenclature* above).
+
+### Local build / gate (ABI3 forward compatibility)
+
+- The **`boar_fast_filter`** crate enables PyO3 **`abi3-py37`** (`rust/boar_fast_filter/Cargo.toml`). For **CPython 3.14+** on the operator workstation, the full local gate (**`scripts/check-all.ps1`** / **`scripts/check-all.sh`**) sets **`PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1`** for the nested **`cargo fmt` / `cargo check` / `cargo test`** step in **`rust/boar_fast_filter/`**, so the Rust guard stays green while upstream PyO3 finalizes support for newer ABIs.
+
+---
+
 ## Revision log
 
 | Date | Author | Change |
 | --- | --- | --- |
 | 2026-04-27 | doctrine-cycle | Closed Slices 1–3 of [PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md](PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md): manifestos shipped (Slice 1), RCA block in `cli/reporter.py` (Slice 2), single-pass Pro fallback + chunk-copy skip in `pro/worker_logic.py` / `pro/engine.py` (Slice 3). 0.574x recorded as the **technical debt baseline** (§8 above). |
+| 2026-04-27 | maintainer | §9 + preamble **nomenclature**: distinguish **`data-boar-report`** (Python CLI, `cli/reporter.py`) from **`boar_fast_filter`** (`rust/boar_fast_filter/`); document correct **`paths:`** filters vs pathspec confusion; mark **Rust CI Infrastructure** complete; note **`PYO3_USE_ABI3_FORWARD_COMPATIBILITY`** for local **check-all** Rust guard on Python **3.14+**. |
 | (fill) | maintainer | Initial consolidation; performance TBD until local `times.txt` exists. |

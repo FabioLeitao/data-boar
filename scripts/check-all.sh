@@ -41,6 +41,18 @@ else
   echo "check-all.sh: WARN: pwsh not on PATH; skipping gatekeeper-audit.ps1 (install PowerShell for parity)." >&2
 fi
 
+# Rust guard (pyo3 / local Python 3.14 forward compat + fmt, check, test)
+echo "Running Rust guard (cargo fmt, check, test)..." >&2
+if ! (
+  export PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
+  cd "$REPO_ROOT/rust/boar_fast_filter" || exit 1
+  cargo fmt -- --check && cargo check && cargo test --quiet
+); then
+  printf '\033[31m%s\033[0m\n' "Rust Guard... Failed" >&2
+  exit 1
+fi
+printf '\033[32m%s\033[0m\n' "Rust Guard... Passed" >&2
+
 # Plan dashboard
 PY=python3
 if ! command -v python3 >/dev/null 2>&1; then
