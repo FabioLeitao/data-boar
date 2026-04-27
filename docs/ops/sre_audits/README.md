@@ -16,6 +16,9 @@ verdicts).
 | Date       | Audit                                                                                                              | Scope                                                              |
 | :--------- | :----------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------- |
 | 2026-04-27 | [`DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md`](DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md)             | Verdict ledger for Dependabot PRs #221, #222, #223, #224, #226    |
+| 2026-04-27 | [`PR_SECURITY_AUDIT_2026-04-27.md`](PR_SECURITY_AUDIT_2026-04-27.md)                                                | Security audit of the same five open PRs (Medium+ findings)       |
+| 2026-04-27 | [`STALE_FEATURE_FLAG_AUDIT_2026-04-27.md`](STALE_FEATURE_FLAG_AUDIT_2026-04-27.md)                                  | Stale feature-flag audit (adjacent scope, not Dependabot)         |
+| 2026-04-27 | [`SLACK_TRIGGER_RECONCILIATION_2026-04-27.md`](SLACK_TRIGGER_RECONCILIATION_2026-04-27.md)                          | Reconciles Slack-triggered "Dependabot #31" + reconfirms PR #226  |
 
 ## When to add a new file here
 
