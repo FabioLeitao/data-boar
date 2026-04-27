@@ -41,10 +41,12 @@ from typing import Any
 
 import re
 
+from core.brazilian_cpf import cpf_checksum_valid, normalize_cpf_digits
 from core.column_name_normalize import normalize_column_name_for_ml
 from core.dl_backend import DLClassifier, is_available as dl_available
 from core.embedding_prototype_hint import try_embedding_prototype_elevation
 from core.fuzzy_column_match import try_fuzzy_elevation
+from core.luhn import luhn_check
 from core.suggested_review import column_name_suggests_identifier_review
 from utils.file_encoding import read_text_with_encoding
 
@@ -1040,6 +1042,32 @@ def _format_hint_suggests_sensitive_column(
     return None
 
 
+def _any_match_passes_checksum(pattern_name: str, matches: list[re.Match[str]]) -> bool:
+    """
+    Algorithmic post-filter for shape-only regex hits.
+
+    Returns True if any of the supplied regex matches survives the relevant
+    check-digit algorithm: modulo-11 for CPF (``core.brazilian_cpf``) or Luhn
+    modulo-10 for credit card numbers (``core.luhn``). Returns True for any
+    other ``pattern_name`` (no algorithmic test defined → keep the match).
+
+    Used by the opt-in ``checksum_validation`` gate; see the constructor
+    docstring for the corresponding configuration flag.
+    """
+    if pattern_name == "LGPD_CPF":
+        for match in matches:
+            digits = normalize_cpf_digits(match.group(0))
+            if digits and cpf_checksum_valid(digits):
+                return True
+        return False
+    if pattern_name == "CREDIT_CARD":
+        for match in matches:
+            if luhn_check(match.group(0)):
+                return True
+        return False
+    return True
+
+
 class SensitivityDetector:
     """
     Hybrid detector: regex first, then ML (TF-IDF + RandomForest), then optional DL (sentence embeddings + classifier).
@@ -1161,6 +1189,15 @@ class SensitivityDetector:
         self._connector_format_id_hint = bool(
             det.get("connector_format_id_hint", False)
         )
+        # Optional: algorithmic checksum validation gate for high-confidence
+        # numeric PII (CPF mod-11, credit card Luhn mod-10). When enabled and
+        # the *only* regex hits are CPF or CREDIT_CARD shapes that fail the
+        # check digit, the detector demotes the finding from HIGH to MEDIUM
+        # with pattern_detected ``CHECKSUM_REJECTED`` so reviewers can see
+        # *why* a shape match was downgraded (defensive scanning manifesto:
+        # truthful diagnostic over silent suppression). Off by default to
+        # preserve current behaviour (FN-first); see ADR 0044.
+        self._checksum_validation = bool(det.get("checksum_validation", False))
         # Optional semantic hint from DL embedding similarity to sensitive-term prototype (Plan §5).
         self._embedding_prototype_hint = bool(
             det.get("embedding_prototype_hint", False)
@@ -1229,10 +1266,24 @@ class SensitivityDetector:
         )
 
         found_patterns: list[tuple[str, str]] = []
+        checksum_rejected_names: list[str] = []
         for name, (_, norm_tag) in self.patterns.items():
             rex = self._compiled.get(name)
-            if rex and rex.search(combined):
-                found_patterns.append((name, norm_tag))
+            if not rex:
+                continue
+            matches = list(rex.finditer(combined))
+            if not matches:
+                continue
+            # Algorithmic checksum gate (opt-in): keep the regex hit only if at
+            # least one shape match passes the relevant check digit. This is
+            # the "shape match + check digit holds" upgrade — random 11-digit
+            # IDs and 16-digit barcodes that happened to look like CPF / cards
+            # no longer reach the HIGH branch on shape alone.
+            if self._checksum_validation and name in ("LGPD_CPF", "CREDIT_CARD"):
+                if not _any_match_passes_checksum(name, matches):
+                    checksum_rejected_names.append(name)
+                    continue
+            found_patterns.append((name, norm_tag))
 
         ml_confidence = 0
         if self._ml_available and self._model and self._vectorizer:
@@ -1328,6 +1379,19 @@ class SensitivityDetector:
             )
             if proto is not None:
                 return proto
+        # Algorithmic checksum gate (opt-in): when at least one regex shape
+        # match was rejected by its check digit and no surviving regex hit
+        # exists, prefer the truthful ``CHECKSUM_REJECTED`` diagnostic over
+        # an ML-only HIGH on the same shape. Operators who enabled this flag
+        # explicitly trust modulo-10 / modulo-11 over fuzzy ML for CPF/cards.
+        if checksum_rejected_names and not found_patterns:
+            rejected = ",".join(sorted(set(checksum_rejected_names)))
+            return (
+                "MEDIUM",
+                f"CHECKSUM_REJECTED:{rejected}",
+                "Shape match without valid check digit",
+                min(combined_confidence, 55),
+            )
         if combined_confidence >= 70:
             if entertainment_context:
                 # ML-only confidence in entertainment context (lyrics/tabs/cifras) → cap at MEDIUM
@@ -1361,4 +1425,17 @@ class SensitivityDetector:
                     norm,
                     max(combined_confidence, med_thr),
                 )
+        # Truthful-fallback diagnostic: when the algorithmic checksum gate
+        # rejected every regex shape match and nothing else elevated the
+        # column, surface a MEDIUM ``CHECKSUM_REJECTED`` finding instead of
+        # silent ``LOW``. Reviewers see *why* a CPF/card-shaped value was not
+        # treated as HIGH (Art of the Fallback: never demote silently).
+        if checksum_rejected_names:
+            rejected = ",".join(sorted(set(checksum_rejected_names)))
+            return (
+                "MEDIUM",
+                f"CHECKSUM_REJECTED:{rejected}",
+                "Shape match without valid check digit",
+                combined_confidence,
+            )
         return "LOW", "GENERAL", "Non-personal", combined_confidence

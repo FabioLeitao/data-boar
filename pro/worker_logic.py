@@ -7,10 +7,10 @@ picklable by ``ProcessPoolExecutor``.
 
 from __future__ import annotations
 
-import re
 from collections.abc import Sequence
 from typing import Any
 
+from core.luhn import string_contains_luhn_valid_card
 from core.prefilter import OpenCorePreFilter
 
 try:
@@ -21,7 +21,6 @@ except Exception:
     FastFilter = None  # type: ignore[assignment]
     HAS_RUST = False
 
-_CARD_PATTERN = re.compile(r"\b(?:\d[ -]?){13,19}\b")
 _open_core = OpenCorePreFilter()
 _filter_instance: Any = None
 
@@ -53,6 +52,10 @@ def process_chunk_pro(chunk: Sequence[Any]) -> list[str]:
 def basic_python_scan(payloads: list[str]) -> list[str]:
     """
     Open Core fallback that keeps CPF/email candidates plus Luhn-valid cards.
+
+    The Luhn step is delegated to ``core.luhn.string_contains_luhn_valid_card``
+    so the Open Core fallback, the Pro Rust filter, and the high-confidence
+    detector path agree on what "valid card shape + check digit" means.
     """
     candidates = _open_core.filter_candidates(payloads)
     out = list(candidates)
@@ -60,24 +63,6 @@ def basic_python_scan(payloads: list[str]) -> list[str]:
     for value in payloads:
         if value in known:
             continue
-        if _contains_luhn_valid_card(value):
+        if string_contains_luhn_valid_card(value):
             out.append(value)
     return out
-
-
-def _contains_luhn_valid_card(value: str) -> bool:
-    return any(_check_luhn(m.group(0)) for m in _CARD_PATTERN.finditer(value))
-
-
-def _check_luhn(card_number: str) -> bool:
-    digits = [int(ch) for ch in card_number if ch.isdigit()]
-    if len(digits) < 13 or len(digits) > 19:
-        return False
-    total = 0
-    for idx, digit in enumerate(reversed(digits)):
-        if idx % 2 == 1:
-            doubled = digit * 2
-            total += doubled - 9 if doubled > 9 else doubled
-        else:
-            total += digit
-    return total % 10 == 0
