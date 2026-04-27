@@ -16,7 +16,10 @@ Path safety: session_id is validated before use in file paths. Report paths use
 ``_real_file_under_out_dir_str`` / ``_resolved_existing_file_under_out_dir``: CodeQL's
 documented ``normpath(join(base, filename))`` + ``startswith(base)`` + ``isfile``, with
 basename allowlists. Heatmap GET handlers return PNG bytes via ``_heatmap_png_response`` to
-avoid ``FileResponse(path=...)`` as an extra sink. See ``tests/test_report_path_safety.py``.
+avoid ``FileResponse(path=...)`` as an extra sink. ``GET /logs`` and
+``GET /logs/{session_id}`` follow the same pattern: ``_AUDIT_LOG_FILENAME_PATTERN`` allowlist
++ ``_safe_audit_log_path`` containment + ``_audit_log_text_response`` (bytes body, capped
+read at ``_AUDIT_LOG_MAX_READ_BYTES``). See ``tests/test_report_path_safety.py``.
 
 Cache: static assets get long-lived Cache-Control; API/HTML get no-store. Sessions list is cached
 in-memory for a short TTL when no scan is running to reduce SQLite reads on repeated dashboard loads.
@@ -316,6 +319,14 @@ _TEMPLATE_CONFIG = "config.html"
 _SESSION_ID_PATTERN = re.compile(r"^\w{12,64}$", re.ASCII)
 _REPORT_FILENAME_PATTERN = re.compile(r"^Relatorio_Auditoria_[A-Za-z0-9_]{4,64}\.xlsx$")
 _HEATMAP_FILENAME_PATTERN = re.compile(r"^heatmap_[A-Za-z0-9_]{4,64}\.png$")
+# Audit log filenames are emitted by logging_custom as ``audit_YYYYMMDD.log``.
+# Anchor an exact allowlist so /logs and /logs/{session_id} cannot be steered to
+# a non-log file even if one were dropped beside the runtime CWD.
+_AUDIT_LOG_FILENAME_PATTERN = re.compile(r"^audit_\d{8}\.log$")
+# Cap how much log text we read into memory before scanning for session_id.
+# Audit logs are line-oriented and small in practice; this is a relief valve
+# (DEFENSIVE_SCANNING_MANIFESTO §2) so a pathological file does not OOM the API.
+_AUDIT_LOG_MAX_READ_BYTES = 10 * 1024 * 1024  # 10 MiB
 
 
 def _report_output_dir_resolved(engine) -> Path:
@@ -441,6 +452,74 @@ def _heatmap_png_path_for_download(engine, session_key: str) -> Path | None:
     return _resolved_existing_file_under_out_dir(
         _report_output_dir_resolved(engine), heatmap_filename
     )
+
+
+def _audit_log_dir_resolved() -> Path:
+    """Canonical base directory for ``audit_YYYYMMDD.log`` discovery (process CWD).
+
+    Returns ``realpath(abspath('.'))`` so the path-injection barrier in
+    :func:`_real_file_under_out_dir_str` has a stable anchor — same shape as
+    :func:`_report_output_dir_resolved` for reports/heatmaps. Centralised here
+    so a future config knob (``api.audit_log_dir``) only changes one symbol.
+    """
+    return Path(os.path.realpath(os.path.abspath(os.fspath(Path("."))))).resolve()
+
+
+def _safe_audit_log_path(filename: str) -> str | None:
+    """Allowlisted, contained path for an ``audit_YYYYMMDD.log`` filename.
+
+    Mirrors the documented CodeQL ``py/path-injection`` barrier already used
+    for reports and heatmaps: regex allowlist on the basename, then
+    ``normpath(join(base, name))`` with ``startswith(base)`` and ``isfile``.
+    Returns ``None`` (404 sink) when any check fails.
+    """
+    if not filename or not _AUDIT_LOG_FILENAME_PATTERN.fullmatch(filename):
+        return None
+    return _real_file_under_out_dir_str(_audit_log_dir_resolved(), filename)
+
+
+def _audit_log_text_response(safe_path: str, *, filename: str):
+    """Return audit-log bytes via :class:`Response` (no ``FileResponse(path=...)``).
+
+    ``FileResponse(path=...)`` is a documented CodeQL path sink even when the
+    incoming string was previously validated; emitting bytes after
+    :func:`_safe_audit_log_path` matches the pattern already used by
+    :func:`_heatmap_png_response`. Reads are capped at
+    :data:`_AUDIT_LOG_MAX_READ_BYTES` so a pathological file cannot OOM the API.
+    """
+    try:
+        with open(safe_path, "rb") as fh:
+            body = fh.read(_AUDIT_LOG_MAX_READ_BYTES + 1)
+    except OSError:
+        return None
+    truncated = len(body) > _AUDIT_LOG_MAX_READ_BYTES
+    if truncated:
+        body = body[:_AUDIT_LOG_MAX_READ_BYTES]
+    headers: dict[str, str] = {
+        "Content-Disposition": f'attachment; filename="{filename}"',
+    }
+    if truncated:
+        headers["X-Data-Boar-Log-Truncated"] = "1"
+    return Response(
+        content=body,
+        media_type="text/plain; charset=utf-8",
+        headers=headers,
+    )
+
+
+def _audit_log_contains_session_id(safe_path: str, session_id: str) -> bool:
+    """Bounded substring search for ``session_id`` inside an audit log file.
+
+    Reads at most :data:`_AUDIT_LOG_MAX_READ_BYTES` bytes and decodes with
+    ``errors="ignore"`` to keep behaviour identical to the previous
+    ``Path.read_text`` call but without unbounded memory use.
+    """
+    try:
+        with open(safe_path, "rb") as fh:
+            chunk = fh.read(_AUDIT_LOG_MAX_READ_BYTES)
+    except OSError:
+        return False
+    return session_id in chunk.decode("utf-8", errors="ignore")
 
 
 def _heatmap_png_response(engine, session_key: str):
@@ -1349,40 +1428,62 @@ async def download_heatmap_by_session(session_id: str):
 @app.get("/logs", responses=_NOT_FOUND_404)
 async def download_latest_log():
     """
-    Download the most recent audit_YYYYMMDD.log file from the current working directory.
-    This file contains connection and finding logs for recent scan sessions.
+    Download the most recent ``audit_YYYYMMDD.log`` from the runtime CWD.
+
+    Path safety: the basename is matched against
+    :data:`_AUDIT_LOG_FILENAME_PATTERN` and resolved through
+    :func:`_safe_audit_log_path` (CodeQL ``py/path-injection`` barrier). The
+    response is emitted as bytes via :func:`_audit_log_text_response` to avoid
+    ``FileResponse(path=...)`` as an extra sink — same posture as
+    :func:`_heatmap_png_response`.
     """
-    log_dir = Path(".")
+    log_dir = _audit_log_dir_resolved()
     candidates = sorted(
-        log_dir.glob("audit_*.log"), key=lambda p: p.stat().st_mtime, reverse=True
+        Path(log_dir).glob("audit_*.log"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
     )
-    if not candidates:
-        raise HTTPException(status_code=404, detail="No log files found.")
-    latest = candidates[0]
-    return FileResponse(latest, filename=latest.name, media_type="text/plain")
+    for cand in candidates:
+        safe_path = _safe_audit_log_path(cand.name)
+        if not safe_path:
+            continue
+        resp = _audit_log_text_response(safe_path, filename=os.path.basename(safe_path))
+        if resp is not None:
+            return resp
+    raise HTTPException(status_code=404, detail="No log files found.")
 
 
 @app.get("/logs/{session_id}", responses=_SESSION_RESPONSES)
 async def download_log_for_session(session_id: str):
     """
-    Download the first audit_YYYYMMDD.log file that contains the given session_id.
-    This allows linking scan sessions to their corresponding console/audit trace.
-    Paths used are only from glob("audit_*.log"); session_id is not used in path expressions.
+    Download the first ``audit_YYYYMMDD.log`` that contains ``session_id``.
+
+    Path safety: ``session_id`` is regex-validated by
+    :func:`_validate_session_id` before any file access; candidate filenames
+    come from ``glob("audit_*.log")`` and are re-validated against
+    :data:`_AUDIT_LOG_FILENAME_PATTERN` before the containment check. Reads are
+    bounded by :data:`_AUDIT_LOG_MAX_READ_BYTES` so a pathological log cannot
+    OOM the API. The matched file is streamed back as bytes (no
+    ``FileResponse(path=...)`` sink).
     """
     _validate_session_id(session_id)
-    log_dir = Path(".")
+    log_dir = _audit_log_dir_resolved()
     candidates = sorted(
-        log_dir.glob("audit_*.log"), key=lambda p: p.stat().st_mtime, reverse=True
+        Path(log_dir).glob("audit_*.log"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
     )
     if not candidates:
         raise HTTPException(status_code=404, detail="No log files found.")
-    for p in candidates:
-        try:
-            text = p.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
+    for cand in candidates:
+        safe_path = _safe_audit_log_path(cand.name)
+        if not safe_path:
             continue
-        if session_id in text:
-            return FileResponse(p, filename=p.name, media_type="text/plain")
+        if not _audit_log_contains_session_id(safe_path, session_id):
+            continue
+        resp = _audit_log_text_response(safe_path, filename=os.path.basename(safe_path))
+        if resp is not None:
+            return resp
     raise HTTPException(
         status_code=404, detail=f"No log file contains session_id {session_id}."
     )
