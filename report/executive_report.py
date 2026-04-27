@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Any
 
 from core.advisor import group_findings_by_risk
+from report.dpo_action_plan import build_dpo_action_plan, render_dpo_action_plan_md
 from report.recommendation_engine import sort_apg_rows, top_n_recommendations
 from report.safe_prefix import safe_session_prefix
 
@@ -115,11 +116,23 @@ def generate_executive_report(
         f"- **Volume agregado:** {fc['database_findings']} achados em base · "
         f"{fc['filesystem_findings']} em arquivos · {fc['scan_failures']} falhas de alvo",
         "",
-        "## 2. Achados por nível de sensibilidade (apenas padrões e contagens)",
+        "## 2. Resumo executivo (DPO/CISO) — plano de ação",
         "",
-        "*Não são listados nomes de colunas nem conteúdo amostrado — reduz exposição desnecessária para quem não tem acesso ao detalhe operacional.*",
+        "*Linguagem executiva: cada tipo de dado encontrado é mapeado a um artigo da "
+        "LGPD/GDPR e a uma remediação de maior alavancagem. Não substitui parecer "
+        "jurídico — o DPO valida o enquadramento por engajamento.*",
         "",
     ]
+    dpo_payload = build_dpo_action_plan(apg_rows)
+    lines.extend(render_dpo_action_plan_md(dpo_payload))
+    lines.extend(
+        [
+            "## 3. Achados por nível de sensibilidade (apenas padrões e contagens)",
+            "",
+            "*Não são listados nomes de colunas nem conteúdo amostrado — reduz exposição desnecessária para quem não tem acesso ao detalhe operacional.*",
+            "",
+        ]
+    )
 
     for key in ("HIGH", "MEDIUM", "LOW"):
         block = by_risk.get(key) or {"total": 0, "pattern_counts": {}}
@@ -150,7 +163,7 @@ def generate_executive_report(
 
     lines.extend(
         [
-            "## 3. Metodologia e segurança",
+            "## 4. Metodologia e segurança",
             "",
             f"- **Duração aproximada do scan:** {dur_txt}",
             (
@@ -200,9 +213,9 @@ def generate_executive_report(
     lines.extend(
         [
             "",
-            "## 4. Plano de ação (APG)",
+            "## 5. Plano de ação (APG) — detalhe técnico",
             "",
-            "### 4.1 Prioridades imediatas (Top 3)",
+            "### 5.1 Prioridades imediatas (Top 3)",
             "",
         ]
     )
@@ -221,7 +234,7 @@ def generate_executive_report(
     lines.extend(
         [
             "",
-            "### 4.2 Inventário por tipo de dado (achado → risco → recomendação técnica)",
+            "### 5.2 Inventário por tipo de dado (achado → risco → recomendação técnica)",
             "",
         ]
     )
