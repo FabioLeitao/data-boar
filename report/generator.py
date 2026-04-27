@@ -15,6 +15,7 @@ so branches stay in sync with main and merge conflicts are avoided (see CONTRIBU
 """
 
 import logging
+import os
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Callable
@@ -27,23 +28,125 @@ from core.about import get_about_info
 from core.aggregated_identification import run_aggregation
 from core.database import failure_hint
 from core.suggested_review import SUGGESTED_REVIEW_PATTERN
+from report.safe_prefix import safe_session_prefix
 from report.scan_evidence import write_scan_evidence_artifacts
 
 _logger = logging.getLogger(__name__)
 
 
+def _safe_basename_under_dir(filename: str, base_dir: str) -> str | None:
+    """
+    Return ``fullpath`` for ``(base_dir / basename(filename))`` only if it exists as a
+    file under ``base_dir`` (path-injection barrier; CodeQL ``py/path-injection``).
+
+    Mirrors :func:`api.routes._real_file_under_out_dir_str`: canonical
+    ``base = realpath(abspath(base_dir))`` then ``normpath(join(base, basename))``
+    then ``fullpath.startswith(base)`` then ``os.path.isfile(fullpath)``. Filter-string
+    tricks like ``..//`` or ``....//`` collapse under ``normpath`` and fail the
+    ``startswith`` check — which is why we do **not** rely on naive ``replace("..", "")``
+    sanitization (those filters are easy to bypass).
+    """
+    if not filename or not isinstance(filename, str) or "\x00" in filename:
+        return None
+    if not isinstance(base_dir, str) or "\x00" in base_dir:
+        return None
+    name = os.path.basename(filename.replace("\\", "/"))
+    if not name or "/" in name or "\\" in name or "\x00" in name:
+        return None
+    if name in (".", "..") or name.startswith(".."):
+        return None
+    try:
+        base_path = os.path.realpath(os.path.abspath(os.fspath(base_dir)))
+    except OSError:
+        return None
+    fullpath = os.path.normpath(os.path.join(base_path, name))
+    if not fullpath.startswith(base_path + os.sep) and fullpath != base_path:
+        return None
+    if not os.path.isfile(fullpath):
+        return None
+    return fullpath
+
+
+def _resolve_under_output_dir(output_dir: str, filename: str) -> Path | None:
+    """
+    Build a *write* path ``output_dir / filename`` and confirm jail containment.
+
+    Like :func:`_safe_basename_under_dir`, but the file is **created** by the caller
+    (so we cannot require ``isfile`` here). Steps:
+
+    1. Reject empty / non-string inputs.
+    2. Reduce ``filename`` to a single basename — drop any directory component the
+       caller may have accidentally injected and reject ``..`` segments.
+    3. Resolve ``output_dir`` to a canonical absolute path
+       (``realpath(abspath(...))``); create the directory if it does not exist
+       (matches legacy behavior — callers used to pass ``"."`` and rely on cwd).
+    4. Confirm ``normpath(join(base, basename))`` is contained under ``base``.
+
+    Returns the safe :class:`pathlib.Path` to write to, or ``None`` on any failure.
+    Logs at WARNING when the input is rejected so a defective caller is visible
+    without crashing the report generator (see ``THE_ART_OF_THE_FALLBACK.md`` §3:
+    *diagnostic on fall, never silent*).
+    """
+    if not filename or not isinstance(filename, str):
+        _logger.warning("safe-write: rejected empty/non-string filename.")
+        return None
+    if not output_dir or not isinstance(output_dir, str):
+        _logger.warning("safe-write: rejected empty/non-string output_dir.")
+        return None
+    if "\x00" in filename:
+        _logger.warning("safe-write: rejected filename with NUL byte.")
+        return None
+    name = os.path.basename(filename.replace("\\", "/"))
+    if not name or "/" in name or "\\" in name or "\x00" in name:
+        _logger.warning(
+            "safe-write: rejected filename with path separators: %r", filename
+        )
+        return None
+    if name in (".", "..") or name.startswith(".."):
+        _logger.warning("safe-write: rejected parent-traversal filename: %r", filename)
+        return None
+    if "\x00" in output_dir:
+        _logger.warning("safe-write: rejected output_dir with NUL byte.")
+        return None
+    try:
+        base_abs = os.path.abspath(os.fspath(output_dir))
+        os.makedirs(base_abs, exist_ok=True)
+        base_path = os.path.realpath(base_abs)
+    except OSError as exc:
+        _logger.warning(
+            "safe-write: could not resolve output_dir %r: %s", output_dir, exc
+        )
+        return None
+    fullpath = os.path.normpath(os.path.join(base_path, name))
+    # Containment: must equal base_path or sit strictly under it.
+    if fullpath != base_path and not fullpath.startswith(base_path + os.sep):
+        _logger.warning(
+            "safe-write: candidate %r escapes base %r — refusing to write.",
+            fullpath,
+            base_path,
+        )
+        return None
+    return Path(fullpath)
+
+
 def _heatmap_path_under_output_dir(heatmap_path: str, output_dir: str) -> Path | None:
     """
-    Return resolved heatmap path only if it lies under output_dir (guards path injection
-    for embedded images). Caller must pass the same output_dir used to build the heatmap.
+    Return the heatmap path only if it lies under ``output_dir`` (path-injection guard
+    for the embedded ``OpenpyxlImage`` sink; CodeQL ``py/path-injection``).
+
+    Defense in depth (zero-trust):
+    1. Reject empty / non-string inputs.
+    2. Reduce ``heatmap_path`` to a single basename (drop any directory component
+       supplied by an upstream caller).
+    3. Use :func:`_safe_basename_under_dir` (CodeQL-canonical
+       ``normpath`` + ``startswith`` + ``isfile`` barrier) to confirm containment.
     """
-    try:
-        base = Path(output_dir).resolve()
-        candidate = Path(heatmap_path).resolve()
-        candidate.relative_to(base)
-    except (ValueError, OSError):
+    if not heatmap_path or not isinstance(heatmap_path, str):
         return None
-    return candidate if candidate.is_file() else None
+    if not output_dir or not isinstance(output_dir, str):
+        return None
+    safe_str = _safe_basename_under_dir(heatmap_path, output_dir)
+    return Path(safe_str) if safe_str else None
 
 
 # Cross-ref aggregated sheet: first row explains sampling limits (FN-first; incomplete-data transparency).
@@ -173,7 +276,14 @@ def _create_heatmap(
             ax_inset.axis("off")
         except Exception:
             pass
-    out_path = Path(output_dir) / f"heatmap_{session_id[:12]}.png"
+    safe_prefix = safe_session_prefix(session_id, max_len=12)
+    out_path = _resolve_under_output_dir(output_dir, f"heatmap_{safe_prefix}.png")
+    if out_path is None:
+        _logger.warning(
+            "Refusing to write heatmap PNG: filename did not pass containment check under output_dir."
+        )
+        plt.close()
+        return None
     plt.savefig(out_path, bbox_inches="tight")
     plt.close()
     return str(out_path)
@@ -1281,7 +1391,15 @@ def generate_report(
         lic_footer = f"License: {lic_ctx.state}"
         if lic_ctx.watermark:
             lic_footer = f"{lic_footer} ({lic_ctx.watermark})"
-    out_path = Path(output_dir) / f"Relatorio_Auditoria_{session_id[:16]}.xlsx"
+    safe_prefix = safe_session_prefix(session_id, max_len=16)
+    out_path = _resolve_under_output_dir(
+        output_dir, f"Relatorio_Auditoria_{safe_prefix}.xlsx"
+    )
+    if out_path is None:
+        raise ValueError(
+            "Report output_dir cannot be created or output filename failed the "
+            "containment check (refusing to write Relatorio_Auditoria_*.xlsx)."
+        )
     # Create heatmap PNG first so we can embed it in the Heatmap data sheet
     heatmap_path = _create_heatmap(
         db_rows_for_sheets,
