@@ -41,3 +41,4 @@ external-facing material (none today).
   references.
 * [ADR 0005](../../adr/0005-ci-github-actions-supply-Colleague-Nn-pins.md) —
   audit-and-block posture for CI / supply Colleague-Nn.
+

@@ -94,7 +94,14 @@ def test_build_mssql_top_nolock():
     assert "OPTION (MAX_EXECUTION_TIME" not in s
 
 
-def test_build_mssql_option_max_execution_when_timeout():
+def test_build_mssql_never_emits_option_max_execution_time():
+    """
+    Regression: SQL Server has no ``OPTION (MAX_EXECUTION_TIME = N)`` query
+    hint (MAX_EXECUTION_TIME is MySQL-only). Emitting it produced syntax
+    errors swallowed by the connector and silent zero-finding scans on every
+    MSSQL target. The MSSQL plan must remain TOP + NOLOCK + IS NOT NULL even
+    when an explicit per-target timeout is set.
+    """
     q = SqlColumnSampleQueryBuilder.build(
         "mssql",
         safe_col="c",
@@ -105,7 +112,11 @@ def test_build_mssql_option_max_execution_when_timeout():
         statement_timeout_ms=2500,
     )
     s = str(q)
-    assert "OPTION (MAX_EXECUTION_TIME = 2500)" in s
+    assert "OPTION" not in s
+    assert "MAX_EXECUTION_TIME" not in s
+    assert "TOP (3)" in s
+    assert "WITH (NOLOCK)" in s
+    assert '"c" IS NOT NULL' in s
 
 
 def test_build_mssql_tablesample_when_large(monkeypatch):
