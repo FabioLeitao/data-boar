@@ -140,7 +140,7 @@ When you send your request, you can include:
 1. **Identity:** The account or app (e.g. service account, Azure AD app) that will be used.
 1. **Required access:** “Read and list only” (or the row from the summary table above for that source).
 1. **What we do not need:** “No write, delete, or admin.”
-1. **Justification:** “Compliance/LGPD audit: discover and sample content for sensitivity detection; no data modification or export of full content; findings are metadata only (location and pattern type).”
+1. **Justification:** “Compliance / data-discovery scan: discover and sample content for sensitivity detection; no data modification or export of full content; findings are metadata only (location and pattern type).”
 
 If IT asks for a written justification, you can point them to this document and to the fact that the application is designed to operate with **least privilege** so it remains compatible with zero-trust and strict IAM policies.
 

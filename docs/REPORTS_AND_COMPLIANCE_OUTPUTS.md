@@ -13,6 +13,7 @@
 | Output | Status | Notes |
 | ------ | ------ | ----- |
 | **Excel (XLSX)** per scan session | **Shipped** | Primary tabular artefact: findings, report info, trends when history exists, optional cross-ref and suggested-review sheets—see below. |
+| **Executive Markdown (`POC_SUMMARY_*.md`) + evidence YAML (`scan_manifest_*.yaml`)** | **Shipped** | Written alongside the XLSX when `generate_report` runs. Markdown is stakeholder-safe: aggregated patterns/counts, **methodology / security** narrative, **Top 3** APG priorities, and a **full per-pattern remediation inventory**; no column/table/path/cell samples. YAML captures sampling/timeouts and DBA/SRE audit bullets. Regenerate Markdown from SQLite only: **`data-boar-report`** — [USAGE.md](USAGE.md) (section 5) ([pt-BR](USAGE.pt_BR.md)). |
 | **Heatmap PNG** | **Shipped** | Visual density companion to the session report. |
 | **HTML** reports / dashboard views | **Shipped** | Operator-facing; tier and config may apply. |
 | **Audit trail JSON** (`--export-audit-trail`) | **Shipped** | Machine-readable governance snapshot (sessions summary, wipe log, runtime trust, dashboard transport, **maturity integrity counts**). Schema version field: see `core/audit_export.py` and [ADR 0037](adr/0037-data-boar-self-audit-log-governance.md). |
@@ -31,7 +32,8 @@
    - **Report info** (session, version, optional jurisdiction-hint notes when enabled—heuristic, not legal conclusion).
    - Optional sheets: **Trends**, **Cross-ref data – ident. risk**, **Suggested review (LOW)**, **Data source inventory**, **Scan failures**.
 3. **Heatmap** image is written alongside the workbook.
-4. **Operators** combine Excel + heatmap + optional **audit trail JSON** for governance and audit **preparation**—still not a substitute for counsel or enterprise GRC workflow.
+4. **Executive Markdown + manifest** (`POC_SUMMARY_*.md`, `scan_manifest_*.yaml`) are best-effort: failure does not block the XLSX (see [USAGE.md](USAGE.md) section 5, [pt-BR](USAGE.pt_BR.md)).
+5. **Operators** combine Excel + heatmap + optional **audit trail JSON** and optional **desk-summary Markdown** for governance and audit **preparation**—still not a substitute for counsel or enterprise GRC workflow.
 
 ---
 
@@ -66,5 +68,6 @@ When a **scan-linked PDF** ships, a sensible **data contract** is likely to merg
 ## Where to configure and test
 
 - **Report output directory and behaviour:** [USAGE.md](USAGE.md) — `report` keys ([pt-BR](USAGE.pt_BR.md)).
+- **Executive Markdown from SQLite:** [USAGE.md](USAGE.md) (section 5) — `data-boar-report` ([pt-BR](USAGE.pt_BR.md)).
 - **POC maturity pack path and gate:** [USAGE.md](USAGE.md) — `api.maturity_self_assessment_poc_enabled`, `api.maturity_assessment_pack_path` ([pt-BR](USAGE.pt_BR.md)).
 - **Synthetic / lab validation:** [TESTING_POC_GUIDE.md](TESTING_POC_GUIDE.md) ([pt-BR](TESTING_POC_GUIDE.pt_BR.md)) for corpus and SBOM-style reviewer notes—not a substitute for this output map.

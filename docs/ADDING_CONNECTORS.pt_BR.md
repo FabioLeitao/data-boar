@@ -1,6 +1,6 @@
 # Como adicionar um novo conector
 
-Este guia explica como adicionar um novo conector de fonte de dados à solução de auditoria LGPD, para que alvos de um novo tipo (por exemplo Snowflake, uma API customizada ou outro banco) possam ser escaneados a partir do `config.yaml` e incluídos no mesmo fluxo de relatórios Excel/heatmap.
+Este guia explica como adicionar um novo conector de fonte de dados ao **Data Boar**, para que alvos de um novo tipo (por exemplo Snowflake, uma API customizada ou outro banco) possam ser escaneados a partir do `config.yaml` e incluídos no mesmo fluxo de relatórios Excel/heatmap.
 
 **English:** [ADDING_CONNECTORS.md](ADDING_CONNECTORS.md)
 

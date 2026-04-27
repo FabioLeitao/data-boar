@@ -6,6 +6,10 @@ A aplicação auxilia times de DPO, segurança e **conformidade** a descobrir e 
 
 **Tomadores de decisão (jurídico / compliance):** Para visão executiva, evidências de relatório e serviços opcionais, veja primeiro [COMPLIANCE_AND_LEGAL.pt_BR.md](COMPLIANCE_AND_LEGAL.pt_BR.md). Detalhes técnicos (codificações, limites de API, timeouts) estão em [COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md](COMPLIANCE_TECHNICAL_REFERENCE.pt_BR.md).
 
+### Saídas “prontas para comitê” (briefings vs profundidade de config)
+
+**`norm_tag`**, **overrides de recomendação** e o **Excel** continuam sendo o **eixo principal** para alinhar **detecção e texto de relatório** a cada **perfil de framework** que você mescla a partir de [compliance-samples/](compliance-samples/). Para **leitura DPO/CISO** de uma varredura **já concluída**, o produto pode também emitir **Markdown executivo** e **`scan_manifest_*.yaml`** junto do XLSX: resumem **postura de execução** (amostragem, timeouts, notas de dialeto quando couber) e **priorização de remediação** sem colar literais sensíveis — útil quando a **assessoria** pergunta *o quê* foi rotulado e *como* as leituras foram limitadas. São artefatos **adjacentes à governança**, **não** substituto de **suite GRC** de programa nem de **chancela** jurídica — veja a seção **Evidência e saídas** em [COMPLIANCE_AND_LEGAL.pt_BR.md](COMPLIANCE_AND_LEGAL.pt_BR.md) e [REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md](REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md).
+
 ### Vocabulário do motor (POC, decks e docs técnicos)
 
 O [README.md](../README.md) na seção **“Para gestores e líderes de conformidade”** permanece em **linguagem executiva acessível** (por exemplo **farejando com critério** na metáfora da **sopa de dados**). **Não** é obrigatório usar os rótulos internos abaixo nesse bloco.

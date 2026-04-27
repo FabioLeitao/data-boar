@@ -1,6 +1,6 @@
 # Adding a New Connector
 
-This guide explains how to add a new data-source connector to the LGPD audit solution so that targets of a new type (e.g. Snowflake, a custom API, or another database) can be scanned from `config.yaml` and reported in the same Excel/heatmap flow.
+This guide explains how to add a new data-source connector to **Data Boar** so that targets of a new type (e.g. Snowflake, a custom API, or another database) can be scanned from `config.yaml` and reported in the same Excel/heatmap flow.
 
 **Português (Brasil):** [ADDING_CONNECTORS.pt_BR.md](ADDING_CONNECTORS.pt_BR.md)
 

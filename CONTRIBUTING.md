@@ -28,7 +28,10 @@ $env:UV_PUBLISH_TOKEN = "<PyPI API token>"   # never commit this
 .\scripts\pypi-publish.ps1
 ```
 
-Or: **`uv build`** then **`uv publish dist/*`** with **`UV_PUBLISH_TOKEN`** set. The console script **`data-boar`** maps to **`main:main`**.
+Or: **`uv build`** then **`uv publish dist/*`** with **`UV_PUBLISH_TOKEN`** set. PyPI installs expose two **first-class** console entry points (same package, same quality bar — regressions in either block the merge gate):
+
+- **`data-boar`** → **`main:main`** (CLI, one-shot scan, `--web` API server).
+- **`data-boar-report`** → **`cli.reporter:main`** (executive Markdown from the local SQLite session — no live SQL connector; see [docs/USAGE.md](docs/USAGE.md) section 5, [pt-BR](docs/USAGE.pt_BR.md)).
 
 ## Quick start (development)
 

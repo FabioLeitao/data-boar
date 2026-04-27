@@ -1,6 +1,6 @@
 # Data Boar
 
-**Data Boar** — descoberta e mapeamento de dados pessoais e sensíveis com consciência de conformidade na sua sopa de dados.
+**Data Boar** — descoberta de dados e governança de risco corporativa: mapeamento com consciência de conformidade na sua sopa de dados (motor de inteligência, não um “app de auditoria” de um só marco).
 
 ![Data Boar mascot](api/static/mascot/data_boar_mascote_color.svg)
 
@@ -12,7 +12,7 @@
 
 ## Para gestores e líderes de conformidade
 
-Sua organização precisa saber **onde** estão os dados pessoais e sensíveis — para cumprir **LGPD**, **GDPR**, **CCPA**, **GLBA** e outros marcos relevantes, e evitar surpresas custosas. O **Data Boar** ajuda a construir **consciência de conformidade** e a trazer à tona **possíveis violações** sem custo fora de controle: um único motor configurável que varre seus dados e reporta o que encontra, para que TI, cibersegurança, conformidade e DPOs possam agir com base em informação.
+Sua organização precisa saber **onde** estão os dados pessoais e sensíveis — para cumprir **LGPD**, **GDPR**, **CCPA**, **GLBA** e outros marcos relevantes, e evitar surpresas custosas. O **Data Boar** é um motor **multi-dialeto**, amigável a **SRE**, para **descoberta de dados** e **conformidade acionável** (avaliação de risco e entregáveis orientados a governança — Excel, heatmaps, Markdown executivo, manifestos de evidência). Ajuda a construir **consciência de conformidade** e a trazer à tona **possíveis violações** sem custo fora de controle: um único motor configurável que varre seus dados e reporta o que encontra, para que TI, cibersegurança, conformidade e DPOs possam agir com base em informação.
 
 **O que trazemos à tona:** Além de PII óbvio (CPF, CNPJ — incluindo o novo formato alfanumérico, e-mail, telefone), usamos **IA** (ML e DL opcional) para detectar **categorias sensíveis** (saúde, religião, opinião política, biométrico, genético—LGPD Art. 5 II, GDPR Art. 9), **combinações de campos com risco de reidentificação no contexto** (LGPD Art. 5, GDPR Recital 26) e **possíveis dados de menores** (LGPD Art. 14, GDPR Art. 8). Reconhecemos nomes regionais de documentos e sinalizamos identificadores ambíguos para confirmação manual, e revelamos exposição em **colunas legadas**, **exportações**, **dashboards** e **múltiplas fontes** em uma visão—para você enxergar lacunas que checagens manuais ou ferramentas só de regras costumam perder. Os achados trazem **`norm_tag`** e o mesmo vocabulário de risco do Excel; quando o jargão acumula (**quasi-identificador**, categorias, matizes entre jurisdições), o [Glossário](docs/GLOSSARY.pt_BR.md#glossary-stakeholder-jargon) alinha TI, jurídico e compras na mesma língua.
 

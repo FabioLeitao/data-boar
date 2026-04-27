@@ -81,6 +81,13 @@
 | `generate_grc_report.py` | Build ``data_boar_grc_executive_report_v1`` JSON (lab hook; optional raw scan + ``lab_result.json``) | **`LAB_COMPLETAO_RUNBOOK.md`**, **[`REPORTS_AND_COMPLIANCE_OUTPUTS.md`](../REPORTS_AND_COMPLIANCE_OUTPUTS.md)**, **[`GRC_EXECUTIVE_REPORT_SCHEMA.md`](../GRC_EXECUTIVE_REPORT_SCHEMA.md)** |
 | `export_reports.py` | XLSX remediation table + executive PDF from the same v1 JSON | **`report/grc_export_multiformat.py`**, schema + example under **`schemas/`** |
 
+### Product console entrypoints (PyPI `[project.scripts]`)
+
+| Command | Role | Wired to |
+| ------- | ---- | -------- |
+| `data-boar` | Main CLI / API entry (`main.py`) | **[`USAGE.md`](../USAGE.md)** |
+| `data-boar-report` | Executive Markdown from **local SQLite** session (`cli.reporter`); no live SQL connector | **[`USAGE.md`](../USAGE.md)** (section 5, *Executive desk summary*) · [pt-BR](../USAGE.pt_BR.md) |
+
 ---
 
 ## 4. Talent / ATS (mostly `docs/private/commercial/`)
