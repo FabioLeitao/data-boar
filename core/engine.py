@@ -13,6 +13,30 @@ from typing import Any
 from config.scan_defaults import DEFAULT_FILE_SAMPLE_MAX_CHARS
 
 
+def _format_circuit_failure_details(
+    telemetry: Any, *, fallback_reason: str | None = None
+) -> str:
+    """Compose a structured one-line ``save_failure`` detail for circuit_open.
+
+    Mirrors the "blast radius" posture from the defensive scanning manifesto:
+    one target is skipped, the rest of the scan keeps running, and the audit
+    row carries everything a reviewer needs to reproduce the decision —
+    consecutive failures, cooldown left, and the last seen reason.
+    """
+    reason = telemetry.last_failure_reason or fallback_reason or "unknown"
+    err_class = telemetry.last_failure_class or "unknown"
+    return (
+        f"circuit_open breaker={telemetry.name} state={telemetry.state} "
+        f"failures={telemetry.consecutive_failures} "
+        f"total_failures={telemetry.total_failures} "
+        f"short_circuits={telemetry.total_short_circuits} "
+        f"retry_after_s={telemetry.retry_after_seconds:.0f} "
+        f"cooldown_s={telemetry.cooldown_seconds:.0f} "
+        f"err_class={err_class} last_reason={reason} "
+        f"blast_radius=target_only"
+    )
+
+
 def _compute_config_scope_hash(config: dict[str, Any]) -> str:
     """
     Compute a non-reversible digest of the scan scope (target names, types, file_scan.extensions only).
@@ -90,6 +114,12 @@ except ImportError:
 from core.connector_registry import connector_for_target
 from core.crypto_audit import StrongCryptoSignal, summarize_crypto_from_connection_info
 from core.database import LocalDBManager
+from core.resilience import (
+    CircuitOpenError,
+    all_circuit_telemetry,
+    get_circuit_breaker,
+    load_breaker_config_from_target,
+)
 from core.sampling import SamplingPolicy
 from core.scanner import DataScanner
 from core.session import new_session_id
@@ -167,8 +197,25 @@ class AuditEngine:
         from core.scan_audit_log import build_scan_audit_log
 
         if self._scan_audit_log is not None:
-            return dict(self._scan_audit_log)
-        return build_scan_audit_log(self.config)
+            base = dict(self._scan_audit_log)
+        else:
+            base = build_scan_audit_log(self.config)
+        base["circuit_breakers"] = [
+            {
+                "name": t.name,
+                "state": t.state,
+                "consecutive_failures": t.consecutive_failures,
+                "total_failures": t.total_failures,
+                "total_successes": t.total_successes,
+                "total_short_circuits": t.total_short_circuits,
+                "last_failure_reason": t.last_failure_reason,
+                "last_failure_class": t.last_failure_class,
+                "cooldown_seconds": t.cooldown_seconds,
+                "retry_after_seconds": t.retry_after_seconds,
+            }
+            for t in all_circuit_telemetry()
+        ]
+        return base
 
     def start_audit(
         self,
@@ -351,14 +398,58 @@ class AuditEngine:
             signals = summarize_crypto_from_connection_info(conn_info)
             if signals:
                 self._crypto_signals.append((name, signals))
+        target_label = (target.get("name") or "unknown").strip() or "unknown"
+        breaker = get_circuit_breaker(
+            f"target:{target_label}",
+            config=load_breaker_config_from_target(target),
+        )
+        if breaker.state.value == "open":
+            telemetry = breaker.telemetry()
+            self.db_manager.save_failure(
+                target_label,
+                "circuit_open",
+                _format_circuit_failure_details(telemetry),
+            )
+            try:
+                from utils.logger import get_logger
+
+                get_logger().error(
+                    "Skipping target=%s — circuit_open retry_after=%.0fs failures=%d "
+                    "blast_radius=target_only",
+                    target_label,
+                    telemetry.retry_after_seconds,
+                    telemetry.consecutive_failures,
+                )
+            except Exception:
+                pass
+            return
+
         try:
             connector.run()
+        except CircuitOpenError as e:
+            # A connector tripped the breaker mid-run (e.g. its own connect/
+            # sample call wraps the breaker). Log it as ``circuit_open`` and
+            # keep the scan going for the other targets.
+            telemetry = breaker.telemetry()
+            self.db_manager.save_failure(
+                target_label,
+                "circuit_open",
+                _format_circuit_failure_details(telemetry, fallback_reason=str(e)),
+            )
+            try:
+                from utils.logger import get_logger
+
+                get_logger().error(
+                    "Connector tripped circuit target=%s err=%s",
+                    target_label,
+                    str(e),
+                )
+            except Exception:
+                pass
         except Exception as e:
             from core.validation import clean_error
 
-            self.db_manager.save_failure(
-                target.get("name", "unknown"), "error", clean_error(e)
-            )
+            self.db_manager.save_failure(target_label, "error", clean_error(e))
 
     def generate_final_reports(self, session_id: str | None = None) -> str | None:
         """

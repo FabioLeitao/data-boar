@@ -30,6 +30,10 @@ from connectors.sql_sampling import (
     resolve_sql_sample_limit,
 )
 from core.connector_registry import register
+from core.resilience import (
+    get_circuit_breaker,
+    load_breaker_config_from_target,
+)
 from core.sampling import SamplingPolicy
 from core.suggested_review import (
     SUGGESTED_REVIEW_PATTERN,
@@ -106,7 +110,16 @@ class SnowflakeConnector:
             params["schema"] = schema
         if role:
             params["role"] = role
-        self._conn = snowflake.connector.connect(**params)  # type: ignore[operator]
+        # Snowflake connect() goes over HTTPS to the warehouse — perfect place
+        # for retry+jitter and circuit-breaker semantics. See
+        # ``core/resilience.py`` for the full ladder.
+        breaker = get_circuit_breaker(
+            f"target:{cfg.get('name') or 'snowflake'}",
+            config=load_breaker_config_from_target(cfg),
+        )
+        self._conn = breaker.call(
+            lambda: snowflake.connector.connect(**params)  # type: ignore[operator]
+        )
 
     def close(self) -> None:
         if self._conn is not None:

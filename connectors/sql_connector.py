@@ -18,6 +18,10 @@ from connectors.sql_sampling import (
     resolve_sql_sample_limit,
 )
 from core.connector_registry import register
+from core.resilience import (
+    get_circuit_breaker,
+    load_breaker_config_from_target,
+)
 from core.sampling import SamplingPolicy
 from core.suggested_review import (
     SUGGESTED_REVIEW_PATTERN,
@@ -275,10 +279,25 @@ class SQLConnector:
         )
 
     def connect(self) -> None:
+        # Connect under a per-target circuit breaker. Transient driver
+        # errors (Operational/Interface/Timeout/...) are retried with
+        # exponential backoff + full jitter (1s → 4s → 10s ladder by
+        # default). After the configured failure threshold the breaker
+        # trips and subsequent calls short-circuit until the cooldown
+        # elapses — protecting both Data Boar and the customer DB. See
+        # ``core/resilience.py`` and ``DEFENSIVE_SCANNING_MANIFESTO.md``.
+        breaker = get_circuit_breaker(
+            f"target:{self.config.get('name') or 'database'}",
+            config=load_breaker_config_from_target(self.config),
+        )
         url = _build_url(self.config)
         connect_args = _connect_args_from_target(self.config)
-        self.engine = create_engine(url, pool_pre_ping=True, connect_args=connect_args)
-        self._connection = self.engine.connect()
+
+        def _open_engine() -> tuple[Any, Any]:
+            engine = create_engine(url, pool_pre_ping=True, connect_args=connect_args)
+            return engine, engine.connect()
+
+        self.engine, self._connection = breaker.call(_open_engine)
         self._table_row_cache = {}
 
     def close(self) -> None:

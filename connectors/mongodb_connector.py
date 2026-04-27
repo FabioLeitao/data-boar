@@ -17,6 +17,10 @@ except ImportError:
     MongoClient = None
 
 from core.connector_registry import register
+from core.resilience import (
+    get_circuit_breaker,
+    load_breaker_config_from_target,
+)
 from core.suggested_review import (
     SUGGESTED_REVIEW_PATTERN,
     augment_low_id_like_for_persist,
@@ -60,12 +64,27 @@ class MongoDBConnector:
             uri = f"mongodb://{host}:{port}"
         connect_s = max(1, int(self.config.get("connect_timeout_seconds", 25)))
         read_s = max(1, int(self.config.get("read_timeout_seconds", 90)))
-        self._client = MongoClient(
-            uri,
-            serverSelectionTimeoutMS=connect_s * 1000,
-            connectTimeoutMS=connect_s * 1000,
-            socketTimeoutMS=read_s * 1000,
+        # Wrap connect+ping in the breaker so a zombie Mongo replica set is
+        # treated like any other unresponsive target — see
+        # ``core/resilience.py`` for the retry ladder + cooldown contract.
+        breaker = get_circuit_breaker(
+            f"target:{self.config.get('name') or 'mongodb'}",
+            config=load_breaker_config_from_target(self.config),
         )
+
+        def _open_client() -> Any:
+            client = MongoClient(
+                uri,
+                serverSelectionTimeoutMS=connect_s * 1000,
+                connectTimeoutMS=connect_s * 1000,
+                socketTimeoutMS=read_s * 1000,
+            )
+            # Force a real round-trip so a dead host fails fast and the
+            # breaker counts it (instead of "lazy" success on construction).
+            client.admin.command("ping")
+            return client
+
+        self._client = breaker.call(_open_client)
         self._db = self._client[database]
 
     def close(self) -> None:
