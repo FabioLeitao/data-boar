@@ -144,6 +144,20 @@ $stashCreated = $false
 $savedBranch = ""
 $savedHead = ""
 $moveSwitch = [bool]$MoveCapturedArtifacts
+$script:benchLegacyShellMb = $null
+$script:benchCurrentShellMb = $null
+
+function Get-LocalShellWorkingSetMbMax {
+    $maxMb = 0.0
+    foreach ($name in @("powershell", "pwsh")) {
+        Get-Process -Name $name -ErrorAction SilentlyContinue | ForEach-Object {
+            $mb = [double]($_.WorkingSet64 / 1MB)
+            if ($mb -gt $maxMb) { $maxMb = $mb }
+        }
+    }
+    if ($maxMb -eq 0.0) { return $null }
+    return [math]::Round($maxMb, 2)
+}
 
 if ($WhatIf) {
     Write-Host "WhatIf: benchmark_runs under $bench ; legacy $LegacyTag then restore HEAD."
@@ -230,6 +244,7 @@ try {
     $startA = Get-Date
     $tagPin = $LegacyTag -match '^v[0-9]'
     $swA = Invoke-CompletaoRound -LabGitRef $LegacyTag -TagPinInventorySkip:$tagPin
+    $script:benchLegacyShellMb = Get-LocalShellWorkingSetMbMax
     Copy-CompletaoReportsSince -ReportsPath $reports -DestDir $dirLegacy -RoundStartLocal $startA -Move:$moveSwitch
     Copy-SqliteCandidatesSince -Repo $r -DestDir $dirLegacy -RoundStartLocal $startA -ExplicitSqlite $SqlitePath -Move:$moveSwitch
 
@@ -249,6 +264,7 @@ try {
     $startB = Get-Date
     $pinB = $CurrentLabGitRef -match '^v[0-9]'
     $swB = Invoke-CompletaoRound -LabGitRef $CurrentLabGitRef -TagPinInventorySkip:$pinB
+    $script:benchCurrentShellMb = Get-LocalShellWorkingSetMbMax
     Copy-CompletaoReportsSince -ReportsPath $reports -DestDir $dirCurrent -RoundStartLocal $startB -Move:$moveSwitch
     Copy-SqliteCandidatesSince -Repo $r -DestDir $dirCurrent -RoundStartLocal $startB -ExplicitSqlite $SqlitePath -Move:$moveSwitch
 
@@ -283,6 +299,27 @@ try {
     $lines += "restored_head_sha=$savedHead"
     Set-Content -LiteralPath $timesFile -Value ($lines -join "`r`n") -Encoding ascii
     Write-Host "[benchmark-ab] wrote $timesFile"
+
+    $telemetryPath = Join-Path $bench "telemetry.json"
+    $telemetry = [ordered]@{
+        generated_utc = (Get-Date -Format o)
+        computer_name = $env:COMPUTERNAME
+        user_name       = $env:USERNAME
+        legacy_tag      = $LegacyTag
+        current_lab_git_ref = $CurrentLabGitRef
+        current_capture_dir = $CurrentCaptureDir
+        restored_branch = $savedBranch
+        restored_head_sha = $savedHead
+        legacy_wall_seconds = [math]::Round($swA.TotalSeconds, 3)
+        current_wall_seconds = [math]::Round($swB.TotalSeconds, 3)
+        delta_seconds = [math]::Round(($swB.TotalSeconds - $swA.TotalSeconds), 3)
+        local_process_note = "post_each_round snapshot of powershell/pwsh WorkingSet64 on dev PC (orchestrator host), not lab CPU during remote smoke"
+        legacy_post_round_local_shell_mb = $script:benchLegacyShellMb
+        current_post_round_local_shell_mb = $script:benchCurrentShellMb
+    }
+    $telemetryJson = ($telemetry | ConvertTo-Json -Depth 6 -Compress)
+    Set-Content -LiteralPath $telemetryPath -Value $telemetryJson -Encoding ascii
+    Write-Host "[benchmark-ab] wrote $telemetryPath"
 }
 finally {
     Write-Host "[benchmark-ab] restoring git checkout"
