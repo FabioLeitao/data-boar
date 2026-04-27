@@ -65,29 +65,43 @@ def process_chunk_worker(chunk: Sequence[str]) -> list[str]:
     Process worker entrypoint for ``ProcessPoolExecutor``.
 
     The Rust filter is lazily initialized inside each child process.
+
+    Slice 2 perf note: the previous implementation chained an extra
+    ``deep_ml_analysis`` no-op that materialised a second list per chunk and
+    paid an extra dispatch on the hottest path of the 200k benchmark. The
+    placeholder is now a passthrough handled inline; a real ML/DL stage will
+    arrive behind a feature flag (and an ADR) instead of as a phantom hop.
     """
     global _worker_filter_instance
 
-    data_batch = [str(item) for item in chunk]
     if _worker_filter_instance is None and RUST_AVAILABLE and FastFilter is not None:
         _worker_filter_instance = FastFilter()
 
+    # Fast path: avoid the extra ``str(item)`` materialisation when the chunk
+    # already contains strings (the common case from ``ProOrchestrator``).
+    data_batch: list[str] = (
+        list(chunk)
+        if all(isinstance(item, str) for item in chunk)
+        else [str(item) for item in chunk]
+    )
+
     if _worker_filter_instance is not None:
         suspect_indices = _worker_filter_instance.filter_batch(data_batch)
-        suspects = [
+        return [
             data_batch[i]
             for i in suspect_indices
             if isinstance(i, int) and 0 <= i < len(data_batch)
         ]
-        return deep_ml_analysis(suspects)
 
-    return deep_ml_analysis(basic_python_scan(data_batch))
+    return basic_python_scan(data_batch)
 
 
 def deep_ml_analysis(suspects: list[str]) -> list[str]:
     """
     Placeholder for heavier ML/DL stage in Pro+.
 
-    Current implementation keeps candidates unchanged to preserve compatibility.
+    Kept for backward compatibility with callers that imported the symbol;
+    ``process_chunk_worker`` no longer routes through this function on the hot
+    path. Returning the suspects unchanged preserves the historical contract.
     """
     return suspects
