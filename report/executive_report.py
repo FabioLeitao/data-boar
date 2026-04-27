@@ -196,6 +196,65 @@ def generate_executive_report(
     if len(bullets) > 12:
         lines.append(f"- *(+{len(bullets) - 12} itens no `scan_manifest_*.yaml`.)*")
 
+    # Methodology-of-Safety proof block.
+    #
+    # Doctrine: the scanner is a guest in the customer database (see
+    # docs/ops/inspirations/DEFENSIVE_SCANNING_MANIFESTO.md). The block below
+    # narrates *why* the values above (row cap, timeout hint, leading SQL
+    # comment) protect the customer instance and what the operator should
+    # check during DBA review. We surface only the values already on the
+    # manifest -- this is a reading guide, not a behavior change. Sample caps
+    # and timeouts remain enforced in connectors/sql_sampling.py
+    # (_HARD_MAX_SAMPLE = 10_000, statement timeout clamp <= 60_000 ms).
+    lines.extend(
+        [
+            "",
+            "**Compromisso de segurança operacional (proof block):**",
+            "",
+            (
+                "- **Não-bloqueio em produção:** sampling leituras evitam locks "
+                "exclusivos. Em SQL Server isso aparece como `WITH (NOLOCK)` no "
+                "bullet técnico acima quando o motor participa da sessão; em "
+                "PostgreSQL como timeout curto por transação. Validação: o DBA "
+                f"pode grepar `{lead_comment}` em `pg_stat_activity` / DMVs."
+            ),
+            (
+                "- **Caps são clamps, não sugestões:** o teto por coluna acima é "
+                "sempre clampado a `1..10_000` em código "
+                "(`connectors/sql_sampling.py` -> `_HARD_MAX_SAMPLE`). Mesmo se "
+                "alguém configurar valores absurdos via YAML ou variável de "
+                "ambiente `DATA_BOAR_SQL_SAMPLE_LIMIT`, o motor não excede esse "
+                "limite — uma das *relief valves* do manifesto defensivo."
+            ),
+            (
+                "- **Timeouts são clamps, não sugestões:** o orçamento de "
+                "timeout acima é sempre clampado a `1..60_000` ms via "
+                "`resolve_statement_timeout_ms_for_sampling`. Sem isso, "
+                "`DATA_BOAR_SAMPLE_STATEMENT_TIMEOUT_MS` ou um YAML mal "
+                "preenchido poderia fixar uma sessão indefinidamente — "
+                "incompatível com a regra de não bloqueio."
+            ),
+            (
+                "- **Sem `ORDER BY` em sampling automático:** a camada de "
+                "composição (`connectors/sql_sampling.py`) não injeta `ORDER BY` "
+                "em SQL de amostra; um `ORDER BY` em coluna não indexada força "
+                "um sort de tabela inteira — exatamente o oposto de leitura "
+                "estilo *compliance scan*. Caso futuro pedido de ordenação "
+                "determinística surja, será via ADR + flag explícita "
+                "(`--ordered-sample`), nunca silenciosamente."
+            ),
+            (
+                "- **Doctrinal references:** "
+                "`docs/ops/inspirations/DEFENSIVE_SCANNING_MANIFESTO.md` "
+                "(NASA / Cloudflare / Steve Gibson), "
+                "`docs/ops/inspirations/THE_ART_OF_THE_FALLBACK.md` "
+                "(Usagi Electric / The 8-Bit Guy), "
+                "`docs/ops/inspirations/ACTIONABLE_GOVERNANCE_AND_TRUST.md` "
+                "(Tailscale / Charity Majors / Cloudflare post-mortems)."
+            ),
+        ]
+    )
+
     sorted_apg = sort_apg_rows(apg_rows)
     lines.extend(
         [
