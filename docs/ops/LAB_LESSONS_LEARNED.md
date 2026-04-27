@@ -13,6 +13,18 @@
 
 **Verdict (short):** Rust `boar_fast_filter` import **OK**; checkpoint + kill-resume **OK**; throttler ramp to max workers **OK**; official 200k benchmark shows Pro path **slower** than OpenCore in the tested profile (**0.574x** — not a business-case speedup yet).
 
+> **Reading the 0.574x figure (operator note).** The recorded
+> `speedup_vs_opencore = 0.574` in
+> [`tests/benchmarks/official_benchmark_200k.json`](../../tests/benchmarks/official_benchmark_200k.json)
+> means **Pro is 0.574x as fast as OpenCore** in this profile, i.e. Pro takes
+> roughly `1 / 0.574 ≈ 1.74x` more wall-clock time. The Slack handoff
+> phrasing **"0.574x mais lento"** is consistent in direction (Pro slower) but
+> arithmetically refers to the same ratio — do not double-invert it when
+> updating manifests, executive copy, or lab lessons. The regression guard at
+> [`tests/test_official_benchmark_200k_evidence.py`](../../tests/test_official_benchmark_200k_evidence.py)
+> pins this direction and the OpenCore ↔ Pro findings parity (`100,000` hits
+> on both paths) so prose and JSON cannot drift apart silently.
+
 **Full narrative (frozen):** [`lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md`](lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md)
 
 **Evidence paths (repo):**
@@ -25,6 +37,7 @@
 | Session date | Snapshot |
 | ------------ | -------- |
 | 2026-04-25 | [`lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md`](lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_25.md) |
+| 2026-04-27 | [`lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_27.md`](lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_27.md) (reading guide / regression guard for the 0.574x figure; no new measurement) |
 
 ## Follow-ups → plans (tracked)
 
