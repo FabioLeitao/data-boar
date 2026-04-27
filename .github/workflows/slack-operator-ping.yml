@@ -20,9 +20,26 @@ permissions:
 jobs:
   ping:
     runs-on: ubuntu-latest
-    if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+    # Do not use `secrets.*` in job-level `if:` — it can cause GitHub Actions to
+    # record a phantom failed run with 0 jobs ("workflow file issue"). The
+    # webhook presence is detected at step level instead. See ADR/runbook in
+    # docs/ops/OPERATOR_NOTIFICATION_CHANNELS.md and the same posture used by
+    # the `sonar` job in ci.yml (commit 881bdec).
     steps:
+      - name: Detect Slack webhook
+        id: webhook
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -n "$SLACK_WEBHOOK_URL" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "SLACK_WEBHOOK_URL is unset; downstream steps will skip cleanly."
+          fi
+
       - name: Post to Slack incoming webhook
+        if: steps.webhook.outputs.present == 'true'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           NOTIFY_TEXT: ${{ inputs.message }}
