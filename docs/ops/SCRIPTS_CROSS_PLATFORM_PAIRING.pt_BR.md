@@ -23,8 +23,11 @@ Alguns **gates de desenvolvimento** e **wrappers finos** existem em **duas forma
 | Só *lint* / *hooks* | `scripts/lint-only.ps1` | `scripts/lint-only.sh` |
 | Subconjunto *pytest* (`-Path` / `-Keyword`) | `scripts/quick-test.ps1` | `scripts/quick-test.sh` |
 | *Pre-commit* + *pytest* completo (sem *gatekeeper* / sem *plans-stats*) | `scripts/pre-commit-and-tests.ps1` | `scripts/pre-commit-and-tests.sh` |
+| Build do pré-filtro Rust Pro+ (`maturin develop` do `boar_fast_filter`) | `scripts/build-rust-prefilter.ps1` | `scripts/build-rust-prefilter.sh` |
 
 **Nota:** o **`check-all.ps1`** chama **`gatekeeper-audit.ps1`** e **`plans-stats.py`** antes de delegar ao **`pre-commit-and-tests.ps1`**; o **`check-all.sh`** faz o mesmo ao nível do *shell*. Os **`pre-commit-and-tests.*`** ignoram *gatekeeper* e *plans-stats* de propósito.
+
+**Twin do builder Rust:** `build-rust-prefilter.{ps1,sh}` rodam `maturin develop --manifest-path rust/boar_fast_filter/Cargo.toml`, têm `--release` como padrão e aceitam override de `--target`/`-Target`. O twin bash mapeia `-Release` ↔ `--release`, `-Debug`/`--no-release` ↔ profile debug, e `-Target X` ↔ `--target X`. Mantenha os dois alinhados ao adicionar flags (por exemplo *features* de cargo ou perfis adicionais).
 
 ## Verificação
 

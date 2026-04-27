@@ -865,6 +865,106 @@ def test_paired_dev_gate_shell_scripts_bash_syntax():
         )
 
 
+# ---------------------------------------------------------------------------
+# Cross-platform pairing guard (Windows .ps1 <-> Linux/macOS .sh).
+# Drift in this contract regularly bites operators who run the bash side. Every
+# entry below MUST keep both members tracked. Add a row when introducing a new
+# paired wrapper; remove only with an ADR / explicit single-platform note in
+# docs/ops/SCRIPTS_CROSS_PLATFORM_PAIRING.md.
+# ---------------------------------------------------------------------------
+
+_PAIRED_WRAPPER_SCRIPTS: tuple[tuple[str, str], ...] = (
+    ("scripts/check-all.ps1", "scripts/check-all.sh"),
+    ("scripts/lint-only.ps1", "scripts/lint-only.sh"),
+    ("scripts/quick-test.ps1", "scripts/quick-test.sh"),
+    ("scripts/pre-commit-and-tests.ps1", "scripts/pre-commit-and-tests.sh"),
+    ("scripts/build-rust-prefilter.ps1", "scripts/build-rust-prefilter.sh"),
+)
+
+
+def test_cross_platform_wrapper_pairing_present():
+    """Both members of each documented Windows/Unix script pair must be tracked.
+
+    Mirrors docs/ops/SCRIPTS_CROSS_PLATFORM_PAIRING.md rule 1: when one side
+    changes (or appears), the sibling must land in the same PR. This guard
+    catches the regression class where a new .ps1 ships without its .sh twin.
+    """
+    root = _project_root()
+    missing: list[str] = []
+    for ps1_rel, sh_rel in _PAIRED_WRAPPER_SCRIPTS:
+        for rel in (ps1_rel, sh_rel):
+            if not (root / rel).is_file():
+                missing.append(rel)
+    assert not missing, (
+        "cross-platform wrapper pair drift; missing tracked file(s):\n  "
+        + "\n  ".join(missing)
+        + "\nSee docs/ops/SCRIPTS_CROSS_PLATFORM_PAIRING.md."
+    )
+
+
+def test_build_rust_prefilter_sh_syntax():
+    """scripts/build-rust-prefilter.sh has valid bash syntax (bash -n).
+
+    Twin of scripts/build-rust-prefilter.ps1; required by the cross-platform
+    pairing contract. Skipped on Windows because bash -n with a Windows path
+    can be flaky.
+    """
+    if sys.platform == "win32":
+        return
+    root = _project_root()
+    script = root / "scripts" / "build-rust-prefilter.sh"
+    if not script.exists():
+        return
+    try:
+        proc = subprocess.run(
+            ["bash", "-n", str(script)],
+            cwd=str(root),
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+    except FileNotFoundError:
+        return
+    assert proc.returncode == 0, f"bash -n failed: {proc.stderr or proc.stdout}"
+
+
+def test_build_rust_prefilter_ps1_syntax():
+    """scripts/build-rust-prefilter.ps1 has valid PowerShell syntax (parse-only)."""
+    root = _project_root()
+    script = root / "scripts" / "build-rust-prefilter.ps1"
+    if not script.exists():
+        return
+    assert _parse_powershell_script(script, root), (
+        "build-rust-prefilter.ps1 parse failed"
+    )
+
+
+def test_build_rust_prefilter_pair_documents_target_flag():
+    """Both Rust builder twins must expose a --target / -Target override.
+
+    Locks the documented behaviour in
+    rust/boar_fast_filter/README.md and docs/ops/SCRIPTS_CROSS_PLATFORM_PAIRING.md
+    so future edits do not silently strip cross-compile from one side.
+    """
+    root = _project_root()
+    ps1 = root / "scripts" / "build-rust-prefilter.ps1"
+    sh = root / "scripts" / "build-rust-prefilter.sh"
+    if not ps1.exists() or not sh.exists():
+        return
+    ps1_text = ps1.read_text(encoding="utf-8", errors="replace")
+    sh_text = sh.read_text(encoding="utf-8", errors="replace")
+    assert "Target" in ps1_text, "build-rust-prefilter.ps1 lost -Target parameter"
+    assert "--target" in sh_text, "build-rust-prefilter.sh lost --target option"
+    # Both must call maturin develop against the boar_fast_filter manifest.
+    for name, text in (("ps1", ps1_text), ("sh", sh_text)):
+        assert "maturin" in text, (
+            f"build-rust-prefilter.{name}: maturin invocation missing"
+        )
+        assert "boar_fast_filter" in text, (
+            f"build-rust-prefilter.{name}: manifest reference missing"
+        )
+
+
 def test_es_find_ps1_syntax():
     """scripts/es-find.ps1 has valid PowerShell syntax (parse-only)."""
     root = _project_root()

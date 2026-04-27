@@ -23,8 +23,11 @@ Some **developer gates** and **thin wrappers** exist in **two forms**: **PowerSh
 | Lint / hooks only | `scripts/lint-only.ps1` | `scripts/lint-only.sh` |
 | Pytest subset (`-Path` / `-Keyword`) | `scripts/quick-test.ps1` | `scripts/quick-test.sh` |
 | Pre-commit + full pytest (no gatekeeper / no plans-stats) | `scripts/pre-commit-and-tests.ps1` | `scripts/pre-commit-and-tests.sh` |
+| Pro+ Rust pre-filter build (`maturin develop` for `boar_fast_filter`) | `scripts/build-rust-prefilter.ps1` | `scripts/build-rust-prefilter.sh` |
 
 **Note:** `check-all.ps1` calls **`gatekeeper-audit.ps1`** and **`plans-stats.py`** before delegating to **`pre-commit-and-tests.ps1`**; `check-all.sh` does the same at the shell level. **`pre-commit-and-tests.*`** skips gatekeeper and plans-stats by design.
+
+**Rust builder twin:** `build-rust-prefilter.{ps1,sh}` both call `maturin develop --manifest-path rust/boar_fast_filter/Cargo.toml`, default to `--release`, and accept a `--target`/`-Target` override. The bash twin maps `-Release` ↔ `--release`, `-Debug`/`--no-release` ↔ debug profile, and `-Target X` ↔ `--target X`. Keep both in sync when adding flags (e.g. cargo features, off-by-default profiles).
 
 ## Verification
 
