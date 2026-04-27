@@ -13,13 +13,25 @@ permissions:
 jobs:
   notify:
     runs-on: ubuntu-latest
-    if: >-
-      ${{
-        secrets.SLACK_WEBHOOK_URL != '' &&
-        vars.SLACK_NOTIFY_RELEASE_PUBLISHED == 'true'
-      }}
+    # Opt-in toggle stays at job level (vars context is safe). Webhook presence
+    # is detected at step level — `secrets.*` in a job-level `if:` can cause a
+    # phantom failed run with 0 jobs.
+    if: ${{ vars.SLACK_NOTIFY_RELEASE_PUBLISHED == 'true' }}
     steps:
+      - name: Detect Slack webhook
+        id: webhook
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -n "$SLACK_WEBHOOK_URL" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "SLACK_WEBHOOK_URL is unset; downstream steps will skip cleanly."
+          fi
+
       - name: Post release published summary to Slack
+        if: steps.webhook.outputs.present == 'true'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           REPO: ${{ github.repository }}

@@ -21,20 +21,34 @@ permissions:
 jobs:
   notify:
     runs-on: ubuntu-latest
+    # Event/opt-in checks stay at job level (no secrets context). Webhook
+    # presence is detected at step level — `secrets.*` in a job-level `if:`
+    # can produce a phantom failed run with 0 jobs.
     if: >-
       ${{
-        secrets.SLACK_WEBHOOK_URL != '' &&
-        (
-          github.event_name == 'workflow_dispatch' ||
-          vars.SLACK_NOTIFY_DAILY_DIGEST == 'true'
-        )
+        github.event_name == 'workflow_dispatch' ||
+        vars.SLACK_NOTIFY_DAILY_DIGEST == 'true'
       }}
     steps:
+      - name: Detect Slack webhook
+        id: webhook
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -n "$SLACK_WEBHOOK_URL" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "SLACK_WEBHOOK_URL is unset; downstream steps will skip cleanly."
+          fi
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        if: steps.webhook.outputs.present == 'true'
         with:
           fetch-depth: 0
 
       - name: Build digest payload
+        if: steps.webhook.outputs.present == 'true'
         id: digest
         env:
           GH_TOKEN: ${{ github.token }}
@@ -49,6 +63,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Post digest to Slack
+        if: steps.webhook.outputs.present == 'true'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           REPO: ${{ github.repository }}
