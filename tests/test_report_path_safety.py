@@ -1,7 +1,9 @@
 """API report/heatmap path containment (aligned with CodeQL py/path-injection patterns)."""
 
+import os
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 
 
@@ -138,3 +140,124 @@ def test_download_heatmap_rejects_report_path_outside_configured_output_dir(
         assert resp.status_code == 404
     finally:
         _restore_routes_context(routes, orig)
+
+
+# -- /logs and /logs/{session_id} containment (CodeQL py/path-injection on audit logs) --
+
+
+@pytest.fixture
+def _chdir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """Run /logs handlers against ``tmp_path`` as runtime CWD (audit log dir)."""
+    monkeypatch.chdir(tmp_path)
+    return tmp_path
+
+
+def test_audit_log_filename_pattern_only_accepts_dated_audit_logs():
+    """Allowlist must be exactly ``audit_YYYYMMDD.log`` — no traversal sneakers."""
+    import api.routes as routes
+
+    pat = routes._AUDIT_LOG_FILENAME_PATTERN
+    assert pat.fullmatch("audit_20260427.log")
+    # Reject traversal, wrong extension, missing date, separator confusion.
+    for bad in (
+        "../audit_20260427.log",
+        "audit_20260427.log.bak",
+        "audit_2026-04-27.log",
+        "audit_.log",
+        "AUDIT_20260427.LOG",
+        "config.yaml",
+        "",
+    ):
+        assert pat.fullmatch(bad) is None, bad
+
+
+def test_safe_audit_log_path_rejects_non_log_basename(_chdir: Path):
+    import api.routes as routes
+
+    (_chdir / "config.yaml").write_text("targets: []", encoding="utf-8")
+    assert routes._safe_audit_log_path("config.yaml") is None
+    assert routes._safe_audit_log_path("../etc/passwd") is None
+    assert routes._safe_audit_log_path("") is None
+
+
+def test_safe_audit_log_path_returns_existing_log_under_cwd(_chdir: Path):
+    import api.routes as routes
+
+    log = _chdir / "audit_20260427.log"
+    log.write_text("session=abcdef abcdef\n", encoding="utf-8")
+    safe = routes._safe_audit_log_path("audit_20260427.log")
+    assert safe is not None
+    assert os.path.basename(safe) == "audit_20260427.log"
+
+
+def test_get_logs_returns_bytes_response_not_fileresponse(_chdir: Path):
+    """``GET /logs`` must stream bytes (no ``FileResponse(path=...)`` sink)."""
+    import api.routes as routes
+
+    log = _chdir / "audit_20260427.log"
+    log.write_text("hello world\n", encoding="utf-8")
+    client = TestClient(routes.app)
+    resp = client.get("/logs")
+    assert resp.status_code == 200
+    assert resp.headers["content-type"].startswith("text/plain")
+    assert "audit_20260427.log" in resp.headers.get("content-disposition", "")
+    assert resp.content == b"hello world\n"
+
+
+def test_get_logs_skips_non_allowlisted_files(_chdir: Path):
+    """A file matching ``audit_*.log`` glob but not the YYYYMMDD allowlist is skipped."""
+    import api.routes as routes
+
+    # glob("audit_*.log") would match this, but the allowlist must reject it.
+    bogus = _chdir / "audit_evil.log"
+    bogus.write_text("nope", encoding="utf-8")
+    client = TestClient(routes.app)
+    resp = client.get("/logs")
+    assert resp.status_code == 404
+
+
+def test_get_logs_session_id_search_skips_non_allowlisted_files(_chdir: Path):
+    import api.routes as routes
+
+    bogus = _chdir / "audit_evil.log"
+    bogus.write_text("session=abcdef123456789\n", encoding="utf-8")
+    client = TestClient(routes.app)
+    resp = client.get("/logs/abcdef123456789")
+    assert resp.status_code == 404
+
+
+def test_get_logs_session_id_returns_bytes_for_matching_log(_chdir: Path):
+    import api.routes as routes
+
+    log = _chdir / "audit_20260427.log"
+    log.write_text("session=abcdef123456789 finding=42\n", encoding="utf-8")
+    client = TestClient(routes.app)
+    resp = client.get("/logs/abcdef123456789")
+    assert resp.status_code == 200
+    assert resp.headers["content-type"].startswith("text/plain")
+    assert b"abcdef123456789" in resp.content
+
+
+def test_get_logs_invalid_session_id_returns_400(_chdir: Path):
+    import api.routes as routes
+
+    client = TestClient(routes.app)
+    # Path traversal-shaped id is rejected by _validate_session_id before any file open.
+    resp = client.get("/logs/..%2Fetc%2Fpasswd")
+    assert resp.status_code in (400, 404)  # routing may collapse %2F to /
+
+
+def test_audit_log_read_bound_caps_memory(
+    _chdir: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """A pathologically large audit log must not load fully into memory."""
+    import api.routes as routes
+
+    monkeypatch.setattr(routes, "_AUDIT_LOG_MAX_READ_BYTES", 16, raising=True)
+    log = _chdir / "audit_20260427.log"
+    log.write_bytes(b"A" * 4096)
+    client = TestClient(routes.app)
+    resp = client.get("/logs")
+    assert resp.status_code == 200
+    assert len(resp.content) == 16
+    assert resp.headers.get("X-Data-Boar-Log-Truncated") == "1"
