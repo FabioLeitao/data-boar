@@ -62,6 +62,7 @@ Short, durable notes that capture **why** the project chose an approach—not on
 | 0041  | [Lab completão optional data contract preflight before host smoke](0041-lab-completao-data-contract-preflight.md) | Accepted |
 | 0042  | [Public LAB lessons archive + hub (dated snapshots)](0042-lab-lessons-learned-archive-contract.md) | Accepted |
 | 0043  | [SQL column sampling — non-null filter and strategy hook](0043-sql-column-sampling-non-null-and-strategy-hook.md) | Accepted |
+| 0044  | [Container image hardening — `databoar` user, read-only rootfs, no package managers](0044-container-image-hardening-databoar-user.md) | Accepted |
 
 ## Related docs
 
