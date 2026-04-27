@@ -202,8 +202,9 @@ class SMBConnector:
                     finally:
                         try:
                             os.unlink(temp_path)
+                        # Best-effort temp-file cleanup; OS-level removal failures must not abort the scan.
                         except Exception:
-                            pass
+                            pass  # nosec B110
                     continue
                 if self.scan_compressed and ext in self.compressed_extensions:
                     fd, temp_path = tempfile.mkstemp(suffix=ext)
@@ -234,8 +235,9 @@ class SMBConnector:
                     finally:
                         try:
                             os.unlink(temp_path)
+                        # Best-effort temp-file cleanup; OS-level removal failures must not abort the scan.
                         except Exception:
-                            pass
+                            pass  # nosec B110
                     continue
                 fd, temp_path = tempfile.mkstemp(suffix=ext)
                 try:
@@ -277,8 +279,9 @@ class SMBConnector:
                 finally:
                     try:
                         os.unlink(temp_path)
+                    # Best-effort temp-file cleanup; OS-level removal failures must not abort the scan.
                     except Exception:
-                        pass
+                        pass  # nosec B110
 
 
 if _SMB_AVAILABLE:

@@ -25,7 +25,8 @@ except ImportError:
     httpx = None
 
 _PBI_BASE = "https://api.powerbi.com/v1.0"
-_AZURE_TOKEN_URL_TMPL = (
+# public Azure AD endpoint URL template, not a credential.
+_AZURE_TOKEN_URL_TMPL = (  # nosec B105
     "https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
 )
 _PBI_SCOPE = "https://analysis.windows.net/powerbi/api/.default"
@@ -263,7 +264,8 @@ class PowerBIConnector:
                                             norm_tag=res.get("norm_tag", ""),
                                             ml_confidence=res.get("ml_confidence", 0),
                                         )
-                            except Exception:
+                            # Per-table sampling fallback; one bad table must not abort discovery (Art of the Fallback).
+                            except Exception:  # nosec B112
                                 # Sampling fallback is best-effort for table metadata gaps.
                                 continue
                             continue

@@ -171,8 +171,9 @@ def _create_heatmap(
             )
             ax_inset.imshow(img)
             ax_inset.axis("off")
+        # Optional report ornament (heatmap/inset/page-fit); failure must not break the audit report.
         except Exception:
-            pass
+            pass  # nosec B110
     out_path = Path(output_dir) / f"heatmap_{session_id[:12]}.png"
     plt.savefig(out_path, bbox_inches="tight")
     plt.close()
@@ -946,8 +947,9 @@ def _write_excel_sheets(
             img.width = 48
             img.height = 48
             ws.add_image(img, "D1")
+        # Optional report ornament (heatmap/inset/page-fit); failure must not break the audit report.
         except Exception:
-            pass
+            pass  # nosec B110
     if report_cfg.get("include_executive_summary", False) and (
         db_rows_for_sheets or fs_rows_for_sheets
     ):
@@ -1064,8 +1066,9 @@ def _write_excel_sheets(
                 ws.sheet_properties.pageSetUpPr = PageSetupProperties(fitToPage=True)
                 ws.page_setup.fitToWidth = 1
                 ws.page_setup.fitToHeight = 1
+            # Optional report ornament (heatmap/inset/page-fit); failure must not break the audit report.
             except Exception:
-                pass
+                pass  # nosec B110
 
 
 def _apply_trial_row_cap(

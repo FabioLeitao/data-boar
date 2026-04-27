@@ -10,7 +10,10 @@ from __future__ import annotations
 
 import json
 import re
-import subprocess
+
+# Subprocess is used to invoke ffprobe with a fixed argv (no shell, no user-controlled
+# binary path). See _ffprobe_metadata_text for the call site rationale.
+import subprocess  # nosec B404
 from pathlib import Path
 from typing import Any
 
@@ -112,7 +115,10 @@ def _mutagen_audio_tags(path: Path) -> str:
 
 def _ffprobe_metadata_text(path: Path) -> str:
     try:
-        proc = subprocess.run(
+        # Fixed argv (shell=False); only `path` varies and is already validated upstream.
+        # ffprobe is intentionally resolved via PATH so operators install it system-wide;
+        # a missing binary degrades to "" via FileNotFoundError per THE_ART_OF_THE_FALLBACK.md.
+        proc = subprocess.run(  # nosec B603 B607
             [
                 "ffprobe",
                 "-v",

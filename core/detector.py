@@ -1240,8 +1240,9 @@ class SensitivityDetector:
                 X = self._vectorizer.transform([ml_dl_text.lower()])
                 prob = self._model.predict_proba(X)[0][1]
                 ml_confidence = int(round(prob * 100))
+            # ML inference is best-effort; missing/invalid model must not break detection (heuristic fallback continues).
             except Exception:
-                pass
+                pass  # nosec B110
 
         # Hybrid DL step: when available, combine with ML (take max to avoid missing semantic matches)
         dl_confidence = 0

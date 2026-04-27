@@ -760,7 +760,8 @@ class LocalDBManager:
                 reason,
                 stored_details,
             )
-        except Exception:
+        # Telemetry log must not break persistence (Defensive Scanning Manifesto clause 1).
+        except Exception:  # nosec B110
             # Logging must not break persistence.
             pass
         session = self._session_factory()

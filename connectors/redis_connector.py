@@ -121,7 +121,8 @@ class RedisConnector:
                         res["sensitivity_level"],
                         res["pattern_detected"],
                     )
-                except Exception:
+                # Optional finding telemetry; must not abort key iteration.
+                except Exception:  # nosec B112
                     # Finding log is optional telemetry and must not fail the connector flow.
                     continue
         except Exception as e:

@@ -265,8 +265,9 @@ class SharePointConnector:
             finally:
                 try:
                     os.unlink(temp_path)
+                # Best-effort temp-file cleanup; OS-level removal failures must not abort the scan.
                 except Exception:
-                    pass
+                    pass  # nosec B110
 
 
 if _REQUESTS_NTLM_AVAILABLE:

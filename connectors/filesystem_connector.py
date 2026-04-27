@@ -433,14 +433,16 @@ def _scan_sqlite_file_as_db(
                                     log_key,
                                     plan.strategy_label,
                                 )
+                            # Per-row/per-file sampling best-effort; one row/file failure must not abort the file scan.
                             except Exception:
-                                pass
+                                pass  # nosec B110
                         row = conn.execute(plan.query)
                         for r in row:
                             if r[0] is not None:
                                 sample_parts.append(str(r[0])[:200])
+                    # Per-row/per-file sampling best-effort; one row/file failure must not abort the file scan.
                     except Exception:
-                        pass
+                        pass  # nosec B110
                     sample = " ".join(sample_parts)
                     res = scanner.scan_column(cname, sample, connector_data_type=ctype)
                     if res["sensitivity_level"] == "LOW":
@@ -456,8 +458,9 @@ def _scan_sqlite_file_as_db(
                             "ml_confidence": res.get("ml_confidence", 0),
                         }
                     )
+    # Per-row/per-file sampling best-effort; one row/file failure must not abort the file scan.
     except Exception:
-        pass
+        pass  # nosec B110
     finally:
         engine.dispose()
     return findings
@@ -597,8 +600,9 @@ class FilesystemConnector:
                 "filesystem",
                 format_filesystem_scan_root_for_audit_log(path),
             )
+        # Per-row/per-file sampling best-effort; one row/file failure must not abort the file scan.
         except Exception:
-            pass
+            pass  # nosec B110
         pattern = "**/*" if recursive else "*"
         for file_path in path.glob(pattern):
             if not file_path.is_file():
@@ -650,8 +654,9 @@ class FilesystemConnector:
                             finding["sensitivity_level"],
                             finding["pattern_detected"],
                         )
+                    # Per-row/per-file sampling best-effort; one row/file failure must not abort the file scan.
                     except Exception:
-                        pass
+                        pass  # nosec B110
                 continue
             # Optional: when use_content_type is enabled, use shared helper for the narrow PDF-only
             # slice so renamed PDFs are treated as .pdf for extraction.
@@ -701,8 +706,9 @@ class FilesystemConnector:
                     res["sensitivity_level"],
                     res["pattern_detected"],
                 )
+            # Per-row/per-file sampling best-effort; one row/file failure must not abort the file scan.
             except Exception:
-                pass
+                pass  # nosec B110
 
 
 def scan_archive_at_path(
@@ -812,8 +818,9 @@ def scan_archive_at_path(
                         res["sensitivity_level"],
                         res["pattern_detected"],
                     )
+                # Per-row/per-file sampling best-effort; one row/file failure must not abort the file scan.
                 except Exception:
-                    pass
+                    pass  # nosec B110
             finally:
                 if tmp_path and tmp_path.exists():
                     tmp_path.unlink(missing_ok=True)

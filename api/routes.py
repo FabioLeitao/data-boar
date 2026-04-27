@@ -542,8 +542,9 @@ def _get_config_yaml_for_display() -> str:
             return yaml.dump(
                 redacted, default_flow_style=False, allow_unicode=True, sort_keys=False
             )
+    # Optional config redaction display path; falls back to raw YAML on parse error.
     except Exception:
-        pass
+        pass  # nosec B110
     return raw
 
 

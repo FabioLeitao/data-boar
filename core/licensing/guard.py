@@ -312,7 +312,16 @@ class LicenseGuard:
 
     @property
     def context(self) -> LicenseContext:
-        assert self._context is not None
+        # Defensive invariant: callers obtain LicenseGuard instances via load_license_context(),
+        # which always sets _context before returning. Use assert to keep the invariant cheap and
+        # explicit; raise a typed error so production callers (where -O strips asserts) still fail
+        # loudly instead of silently dereferencing None. See PLAN_BANDIT_SECURITY_LINTER.md.
+        if self._context is None:  # pragma: no cover - defensive guard
+            raise RuntimeError(
+                "LicenseGuard.context accessed before load_license_context()"
+            )
+        # Assert kept after the explicit raise above to narrow the type for mypy/pyright.
+        assert self._context is not None  # nosec B101
         return self._context
 
     def allows_scan(self) -> bool:

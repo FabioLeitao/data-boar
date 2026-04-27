@@ -38,8 +38,9 @@ def get_runtime_tier_for_features(cfg: dict[str, Any]) -> Tier:
         c = g.context
         if c.state in ("VALID", "GRACE"):
             dbtier_claim = str(getattr(c, "dbtier", "") or "").strip().lower()
+    # Optional license claim parsing; missing field falls back to default tier.
     except Exception:
-        pass
+        pass  # nosec B110
     lc = cfg.get("licensing") if isinstance(cfg.get("licensing"), dict) else {}
     yaml_tier = str(lc.get("effective_tier") or "").strip().lower()
     if dbtier_claim:

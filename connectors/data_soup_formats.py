@@ -51,8 +51,9 @@ def sample_epub_text(path: Path, max_chars: int) -> str:
                     continue
                 try:
                     raw = z.read(name).decode("utf-8", errors="replace")
+                # Per-entry decode best-effort; unreadable archive members are skipped (Art of the Fallback).
                 except Exception:
-                    continue
+                    continue  # nosec B112
                 # Strip tags; keep text nodes roughly
                 text = re.sub(r"<[^>]+>", " ", raw)
                 text = re.sub(r"\s+", " ", text).strip()
