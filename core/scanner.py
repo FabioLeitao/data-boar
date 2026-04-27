@@ -2,6 +2,10 @@
 Unified scanner that uses core.detector only (regex + ML + optional DL).
 Interface: scan_column(label, sample, connector_data_type=...) and scan_file_content(content, path) returning
 structured result for LocalDBManager.save_finding.
+
+**Postura de segurança / evidência:** metadados de amostragem, timeouts e rastro DBA para relatórios
+ficam no ``scan_manifest`` (``report.scan_evidence``) e no ``audit_log`` da API quando aplicável —
+não duplicar aqui para evitar acoplamento ao fluxo de detecção.
 """
 
 from pathlib import Path

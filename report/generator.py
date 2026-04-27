@@ -14,6 +14,7 @@ Structure: generate_report() delegates all sheet writing to _write_excel_sheets(
 so branches stay in sync with main and merge conflicts are avoided (see CONTRIBUTING.md).
 """
 
+import logging
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Callable
@@ -26,6 +27,9 @@ from core.about import get_about_info
 from core.aggregated_identification import run_aggregation
 from core.database import failure_hint
 from core.suggested_review import SUGGESTED_REVIEW_PATTERN
+from report.scan_evidence import write_scan_evidence_artifacts
+
+_logger = logging.getLogger(__name__)
 
 
 def _heatmap_path_under_output_dir(heatmap_path: str, output_dir: str) -> Path | None:
@@ -684,11 +688,12 @@ def _trends_rows(
 
 
 def _get_session_metadata(db_manager: Any, session_id: str) -> dict[str, Any]:
-    """Return started_at, tenant_name, technician_name, config_scope_hash, jurisdiction_hint."""
+    """Return started_at, finished_at, tenant_name, technician_name, config_scope_hash, jurisdiction_hint."""
     for s in db_manager.list_sessions() or []:
         if s.get("session_id") == session_id:
             return {
                 "started_at": s.get("started_at"),
+                "finished_at": s.get("finished_at"),
                 "tenant_name": s.get("tenant_name"),
                 "technician_name": s.get("technician_name"),
                 "config_scope_hash": s.get("config_scope_hash"),
@@ -696,6 +701,7 @@ def _get_session_metadata(db_manager: Any, session_id: str) -> dict[str, Any]:
             }
     return {
         "started_at": None,
+        "finished_at": None,
         "tenant_name": None,
         "technician_name": None,
         "config_scope_hash": None,
@@ -1238,6 +1244,7 @@ def generate_report(
     )
     suggested_review_rows = _build_suggested_review_rows(db_rows, fs_rows, config)
     lic_ctx = None
+    report_rows_capped = False
     if config:
         from core.licensing.guard import get_license_guard
 
@@ -1253,6 +1260,7 @@ def generate_report(
             db_rows_for_sheets, fs_rows_for_sheets = _apply_trial_row_cap(
                 db_rows_for_sheets, fs_rows_for_sheets, cap
             )
+            report_rows_capped = True
     db_rows_for_sheets, fs_rows_for_sheets = _remove_suggested_review_from_main_sheets(
         db_rows_for_sheets, fs_rows_for_sheets, report_cfg
     )
@@ -1300,5 +1308,21 @@ def generate_report(
             output_dir,
             heatmap_path=heatmap_path,
             suggested_review_rows=suggested_review_rows,
+        )
+    try:
+        write_scan_evidence_artifacts(
+            output_dir=output_dir,
+            session_id=session_id,
+            meta=meta,
+            about=about,
+            config=config,
+            db_rows=db_rows,
+            fs_rows=fs_rows,
+            fail_rows=fail_rows,
+            report_rows_capped=report_rows_capped,
+        )
+    except Exception:
+        _logger.exception(
+            "Falha ao gravar manifest/POC_SUMMARY (evidência + APG); Excel já foi emitido."
         )
     return str(out_path)

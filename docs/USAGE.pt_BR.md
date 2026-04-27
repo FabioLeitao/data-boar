@@ -1,6 +1,12 @@
-# Como usar o Data Boar (aplicação de auditoria LGPD) — pt-BR
+# Data Boar: motor de descoberta de dados e governança de risco corporativa — pt-BR
 
-**Data Boar** é o nome do produto. Identidade de instalação e PyPI **`data-boar`**: [CONTRIBUTING.pt_BR.md](../CONTRIBUTING.pt_BR.md#repositório-e-identidade-de-instalação-data-boar). O repositório ainda contém o pacote Python histórico **`lgpd_crawler`** (imports) — detalhe de implementação, não o nome do produto. Este documento complementa o `docs/USAGE.md` em inglês e descreve, em português, como:
+Esta página é o **guia de uso do operador**: **CLI**, **API web e dashboard**, **configuração** (alvos, amostragem, detecção, credenciais) e **entregáveis** (Excel, heatmap, Markdown executivo, manifesto de evidência — sessões atuais e anteriores). Complementa o [guia técnico](TECH_GUIDE.pt_BR.md) e o [README raiz](../README.pt_BR.md). Identidade de instalação e PyPI **`data-boar`**: [CONTRIBUTING.pt_BR.md](../CONTRIBUTING.pt_BR.md#repositório-e-identidade-de-instalação-data-boar).
+
+**Data Boar** faz **descoberta e mapeamento com consciência de conformidade** de dados pessoais e sensíveis em bases, arquivos, APIs e compartilhamentos (**LGPD**, **GDPR**, **CCPA**, **GLBA** e *frameworks* configuráveis — não é só LGPD). Os entregáveis são **adjacentes a GRC** (narrativa executiva, prioridades estilo APG, manifestos de evidência): apoiam **avaliação de risco** e **descoberta para conformidade**; **não** substituem assessoria jurídica nem uma plataforma GRC corporativa completa. O repositório ainda contém o pacote Python histórico **`lgpd_crawler`** (imports) — detalhe de implementação, não o nome do produto.
+
+**Data warehouse e SQL corporativo:** o mesmo motor cobre alvos **SQLAlchemy** (**Microsoft SQL Server**, **PostgreSQL**, **MySQL/MariaDB**, **Oracle**, …) e **Snowflake** opcional (instale com ``uv sync --extra bigdata`` — ver [Snowflake (optional, .[bigdata])](USAGE.md#snowflake-optional-bigdata) no guia em inglês). A amostragem usa **timeouts por motor** e *hints* documentados (por exemplo **`OPTION (MAX_EXECUTION_TIME=…)`** no SQL Server — ver **amostragem SRE** nas opções globais e bullets em [USAGE.md](USAGE.md)). Se a política do **DBA** usar leituras **read-uncommitted** (por exemplo *hints* **`NOLOCK`** no SQL do conector), registre isso em **runbooks** e no **`scan_manifest_*.yaml`** / texto de evidência para que *stakeholders* vejam a **postura atribuída**, não semântica de isolamento omitida.
+
+O documento descreve, em português, como:
 
 - Executar a aplicação via **CLI** e **API web**;
 - Entender os parâmetros (`--config`, `--web`, `--port`, `--host`, `--https-cert-file`, `--https-key-file`, `--allow-insecure-http`, `--tenant`, `--technician`, `--scan-compressed`, `--content-type-check`, `--scan-stego`, `--jurisdiction-hint`);
@@ -312,6 +318,44 @@ curl -o audit_20250301.log \
 ```
 
 Esse endpoint procura, entre os arquivos `audit_YYYYMMDD.log` disponíveis (do mais recente para o mais antigo), o primeiro cujo conteúdo contenha o `session_id` informado e devolve esse arquivo.
+
+### Evidência executiva, prioridades APG e o comando `data-boar-report`
+
+Quando o **`generate_report`** roda (CLI one-shot, **`GET /reports/{session_id}`**, **`GET /report`** ou **Download** no dashboard), o produto pode gravar, **no mesmo diretório do Excel** (`report.output_dir`):
+
+- **`POC_SUMMARY_<primeiros_16_chars_do_session_id>.md`** — Markdown com tom executivo: status, achados **agregados por sensibilidade** (só nomes de **padrão** e contagens), as **três** prioridades de mitigação da **APG Fase A** e um resumo curto de postura DBA/SRE. **Não** lista nomes de colunas, tabelas, caminhos de arquivo nem conteúdo amostrado — adequado para quem não deve ver detalhe operacional.
+- **`scan_manifest_<prefixo>.yaml`** — manifesto de evidência (tetos de amostragem, timeouts, bullets de auditoria, recorte de escopo, bloco opcional `apg_phase_a`).
+
+Se a gravação desses artefatos falhar, o fluxo **não** invalida o Excel nem o heatmap; veja os logs se o `.md` ou o `.yaml` não aparecerem.
+
+**Ponto de entrada no console** (instalado com o pacote PyPI **`data-boar`**, ver `[project.scripts]` no repositório):
+
+```bash
+uv run data-boar-report --config config.yaml --session-id <session_id>
+```
+
+Sem **`-o` / `--output`**, o CLI grava **`executive_report_<prefixo_seguro>.md`** ao lado do YAML de configuração (evita despejar o relatório completo no stdout em logs de CI). Com **`-o`**, define o caminho explicitamente:
+
+```bash
+uv run data-boar-report --config config.yaml --session-id <session_id> -o Resumo_executivo.md
+```
+
+**Flags úteis:**
+
+| Flag | Significado |
+| --- | --- |
+| `--sqlite <caminho>` | Sobrescreve `sqlite_path` do config (ex.: cópia do banco de auditoria em outro host). |
+| `--trial-rows-capped` | Inclui a mesma nota sobre possível limite de linhas no Excel sob licença de avaliação, alinhada ao `POC_SUMMARY` gerado junto ao relatório. |
+
+**Requisitos:** o mesmo **`config.yaml`** usado nas varreduras (para o manifesto refletir política de amostragem/timeouts) e um **`session_id`** que exista nas tabelas de sessão/achados.
+
+#### Processamento local e privacidade (`data-boar-report`)
+
+O `data-boar-report` lê **apenas** o artefato **SQLite local** da varredura (`sqlite_path`, sobrescrevível com **`--sqlite`**). Ele **reagrega** metadados da sessão em Markdown/YAML **sem abrir conectores ao vivo**. Por desenho, o Markdown executivo padrão (**`POC_SUMMARY_*.md`**) traz **nomes de padrão, contagens, prioridades APG Fase A** e narrativa de postura — **não** valores amostrados brutos nem trechos livres de PII. Literais sensíveis ficam no nível de banco protegido (ou em exportações **redigidas** que **você** controla).
+
+**Estrutura (contrato “mesa” do PoC):** o Markdown segue hierarquia clara (**H1–H4**): status, achados por sensibilidade, **`## 3. Metodologia e segurança`** (amostragem, timeouts, comentário de rastreio, **`WITH (NOLOCK)`** no SQL Server quando esse motor aparece na sessão, mais bullets SRE/DBA do manifesto), depois **`## 4. Plano de ação (APG)`** com **Top 3** e **inventário completo por padrão** (achado → risco → recomendação técnica).
+
+**Ver também:** [REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md](REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md) (mapa de saídas).
 
 ---
 

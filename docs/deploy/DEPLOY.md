@@ -1,4 +1,4 @@
-# Deploy LGPD Audit (Docker, Compose, Swarm, Kubernetes)
+# Deploy Data Boar (Docker, Compose, Swarm, Kubernetes)
 
 **Português:** [DEPLOY.pt_BR.md](DEPLOY.pt_BR.md)
 

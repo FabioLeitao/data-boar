@@ -28,7 +28,10 @@ $env:UV_PUBLISH_TOKEN = "<token de API PyPI>"
 .\scripts\pypi-publish.ps1
 ```
 
-Ou **`uv build`** e **`uv publish dist/*`** com **`UV_PUBLISH_TOKEN`** definido. O entry point de **linha de comando** **`data-boar`** aponta para **`main:main`**.
+Ou **`uv build`** e **`uv publish dist/*`** com **`UV_PUBLISH_TOKEN`** definido. Instalações via PyPI expõem **dois** entry points de console de **mesmo nível** (mesmo pacote, mesma régua de qualidade — regressão em qualquer um bloqueia o *gate* de merge):
+
+- **`data-boar`** → **`main:main`** (CLI, varredura *one-shot*, servidor API com `--web`).
+- **`data-boar-report`** → **`cli.reporter:main`** (Markdown executivo a partir da sessão no SQLite local — sem conector SQL ao vivo; ver [docs/USAGE.pt_BR.md](docs/USAGE.pt_BR.md) *Resumo executivo*, [EN](docs/USAGE.md) seção 5).
 
 ## Início rápido (desenvolvimento)
 

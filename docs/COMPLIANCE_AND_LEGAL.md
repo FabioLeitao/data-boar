@@ -62,6 +62,8 @@ When your organization uses **ISO 31000** as its **risk-management framework**, 
 
 ## Evidence and outputs (for audits and governance)
 
+**Stakeholder posture (PoC and committees):** **Executive Markdown** (`POC_SUMMARY_*.md`) and the companion **`scan_manifest_*.yaml`** are **GRC-adjacent** artefacts: they summarise **session status**, **sensitivity roll-up**, **how reads were bounded** (sampling, timeouts, dialect posture where relevant), and **remediation-oriented priorities** (including a **per-pattern action inventory**) while keeping the Markdown body **free of raw personal data**. They support **risk and compliance** conversations and **DPO/CISO** briefing packs; they are **not** a full enterprise GRC suite, a **regulatory certificate**, or a substitute for **counsel-led** attestations. Operators may regenerate the Markdown from **local SQLite only** using **`data-boar-report`** (no new live connector reads). Operational detail: [USAGE.md](USAGE.md) section 5; artefact map: [REPORTS_AND_COMPLIANCE_OUTPUTS.md](REPORTS_AND_COMPLIANCE_OUTPUTS.md).
+
 - **Excel reports** per scan **session**: findings by source, field/path, pattern type, sensitivity, and framework-oriented recommendation text (legal basis, risk, suggested action, priority where configured).
 - **Heatmaps** and **trend views** across sessions to show **evolution**, not only a point-in-time snapshot.
 - **Repeatable runs** (including automation via API) so monitoring can match your **operating model**; technical detail of scheduling and limits: [COMPLIANCE_TECHNICAL_REFERENCE.md](COMPLIANCE_TECHNICAL_REFERENCE.md).

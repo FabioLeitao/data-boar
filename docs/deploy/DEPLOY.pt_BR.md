@@ -1,4 +1,4 @@
-# Implantar auditoria LGPD (Docker, Compose, Swarm, Kubernetes)
+# Implantar o Data Boar (Docker, Compose, Swarm, Kubernetes)
 
 **English:** [DEPLOY.md](DEPLOY.md)
 

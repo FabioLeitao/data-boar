@@ -89,7 +89,7 @@ Design history for minor detection lives in a **completed** plan file under `doc
 
 | Question | Read first |
 | -------- | ---------- |
-| How do SQLite findings become **Excel**, **heatmap**, **audit JSON**, and **maturity CSV/MD**? What is **planned** vs **shipped** for a scan-linked **PDF**? Where is the **GRC risk-matrix JSON** contract? | **[REPORTS_AND_COMPLIANCE_OUTPUTS.md](REPORTS_AND_COMPLIANCE_OUTPUTS.md)** ([pt-BR](REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md)) · **[GRC_EXECUTIVE_REPORT_SCHEMA.md](GRC_EXECUTIVE_REPORT_SCHEMA.md)** ([pt-BR](GRC_EXECUTIVE_REPORT_SCHEMA.pt_BR.md)) |
+| How do SQLite findings become **Excel**, **heatmap**, **executive Markdown** (`POC_SUMMARY_*.md`), **evidence YAML** (`scan_manifest_*.yaml`), **audit JSON**, and **maturity CSV/MD**? How do I regenerate the desk summary from SQLite (`data-boar-report`)? What is **planned** vs **shipped** for a scan-linked **PDF**? Where is the **GRC risk-matrix JSON** contract? | **[REPORTS_AND_COMPLIANCE_OUTPUTS.md](REPORTS_AND_COMPLIANCE_OUTPUTS.md)** ([pt-BR](REPORTS_AND_COMPLIANCE_OUTPUTS.pt_BR.md)) · **[USAGE.md](USAGE.md)** section 5 ([pt-BR](USAGE.pt_BR.md)) · **[GRC_EXECUTIVE_REPORT_SCHEMA.md](GRC_EXECUTIVE_REPORT_SCHEMA.md)** ([pt-BR](GRC_EXECUTIVE_REPORT_SCHEMA.pt_BR.md)) |
 
 ---
 
