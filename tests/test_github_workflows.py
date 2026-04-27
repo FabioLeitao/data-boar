@@ -230,6 +230,55 @@ def test_ci_yml_pins_actions_and_uv_cli() -> None:
         )
 
 
+def test_rust_prefilter_ci_workflow_present_and_pinned() -> None:
+    """Regression guard for the Rust prefilter CI workflow.
+
+    Ensures the dedicated ``Rust prefilter CI`` workflow:
+      * exists and parses as valid YAML,
+      * triggers only on rust/** + the workflow file (paths-filtered),
+      * defines a ``rust`` job that runs the three doctrine gates
+        (cargo check, cargo test, clippy with -D warnings),
+      * pins third-party Actions to full commit SHAs (ADR 0005).
+    """
+    data = _load_workflow("rust-prefilter-ci.yml")
+    assert data.get("name") == "Rust prefilter CI"
+    on = data.get("on") or {}
+    assert "push" in on
+    assert "pull_request" in on
+    for trig in ("push", "pull_request"):
+        spec = on[trig]
+        assert isinstance(spec, dict)
+        paths = spec.get("paths") or []
+        assert "rust/**" in paths, (
+            f"{trig} trigger must filter on rust/** so Python-only PRs do "
+            f"not pay the Rust toolColleague-Nn cost"
+        )
+    jobs = data.get("jobs") or {}
+    assert "rust" in jobs, "expected the rust job"
+    rust = jobs["rust"]
+    assert rust.get("runs-on") == "ubuntu-latest"
+    runs = "\n".join(_ci_step_run_texts(rust))
+    assert "cargo check" in runs
+    assert "cargo test" in runs
+    assert "cargo clippy" in runs
+    assert "-D warnings" in runs, (
+        "clippy must fail on warnings (DEFENSIVE_SCANNING_MANIFESTO §6 — "
+        "lint regressions are not allowed to drift)"
+    )
+
+    text = (WORKFLOWS / "rust-prefilter-ci.yml").read_text(encoding="utf-8")
+    sha_40 = re.compile(r"@[0-9a-f]{40}")
+    for line in text.splitlines():
+        code = line.split("#", 1)[0]
+        if "uses:" not in code or "docker://" in code:
+            continue
+        if not any(p in code for p in ("actions/", "github/", "dtolnay/")):
+            continue
+        assert sha_40.search(code), (
+            f"expected full commit SHA in uses line: {line.strip()!r}"
+        )
+
+
 def test_ci_lint_job_runs_pre_commit_all_files() -> None:
     """Regression guard: lint job must run pre-commit so CI matches local hook bundle (incl. Ruff, plans-stats)."""
     data = _load_workflow("ci.yml")

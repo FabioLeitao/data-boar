@@ -116,6 +116,7 @@ Operator-facing example:
 | SQL sampling SQL composition | [`connectors/sql_sampling.py`](../../../connectors/sql_sampling.py) | Strategy label per plan; no implicit `ORDER BY`; dialect-aware. |
 | Audit log shape | [`core/scan_audit_log.py`](../../../core/scan_audit_log.py) | Provider summary + per-connector strategy summary. |
 | Executive report methodology | [`report/executive_report.py`](../../../report/executive_report.py) | Section 3 — last demotion reason quoted. |
+| Rust prefilter (Pro+) | [`rust/boar_fast_filter/src/bounded_filter.rs`](../../../rust/boar_fast_filter/src/bounded_filter.rs) | `BoundedFilter` clamps per-row size + wall-clock to `HARD_MAX_*` ceilings; emits `BudgetReport` with `demotion_reason` ∈ {`row_size_cap_exceeded`, `wall_clock_budget_exceeded`}. |
 | Plan that drives Slices 2–3 | [`PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md`](../../plans/PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md) | Adds RCA block + doctrinal comments referencing this file. |
 
 ---

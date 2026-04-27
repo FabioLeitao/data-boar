@@ -1,0 +1,62 @@
+# Rust prefilter crate (boar_fast_filter): cargo check, test, clippy.
+#
+# Why a dedicated workflow:
+#   The Rust crate has a small, fast surface (~1 file). Folding it into
+#   `ci.yml` would force every Python-only change to spin up the Rust
+#   toolColleague-Nn. This workflow runs only when the crate or its CI definition
+#   changes, keeping mainline `ci.yml` cheap.
+#
+# Doctrine references:
+#   docs/ops/inspirations/DEFENSIVE_SCANNING_MANIFESTO.md  (relief valves)
+#   docs/ops/inspirations/THE_ART_OF_THE_FALLBACK.md       (diagnostic on fall)
+#
+# Third-party Actions are pinned to full commit SHAs (ADR 0005, same bar as
+# `ci.yml`). Dependabot (github-actions) refreshes the SHAs.
+name: Rust prefilter CI
+
+permissions:
+  contents: read
+
+'on':
+  push:
+    branches: [main, master]
+    paths:
+      - "rust/**"
+      - ".github/workflows/rust-prefilter-ci.yml"
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "rust/**"
+      - ".github/workflows/rust-prefilter-ci.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: rust-prefilter-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust:
+    name: cargo (check, test, clippy)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: rust/boar_fast_filter
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Install Rust toolColleague-Nn
+        uses: dtolnay/rust-toolColleague-Nn@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable
+        with:
+          toolColleague-Nn: stable
+          components: clippy
+
+      - name: cargo check
+        run: cargo check --verbose
+
+      - name: cargo test
+        run: cargo test --verbose
+
+      - name: cargo clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
