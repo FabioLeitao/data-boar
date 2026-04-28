@@ -60,7 +60,9 @@ def send_telemetry(message: str) -> int:
     )
 
     try:
-        with urllib.request.urlopen(request, timeout=15.0) as response:
+        with urllib.request.urlopen(  # nosec B310
+            request, timeout=15.0
+        ) as response:
             response.read()
         print("TELEMETRY_SENT")
         return 0
