@@ -1,0 +1,126 @@
+# U.S. H.R. 8250 — "Parents Decide Act" (companion: "App Store Accountability Act") — sample profile (technical mapping)
+#
+# NOT LEGAL ADVICE. H.R. 8250 (119th Congress, 2025-2026) was introduced and
+# referred to the House Committee on Energy and Commerce; it has NOT been
+# enacted. Companion legislation in the Senate ("App Store Accountability Act")
+# follows a similar approach. Status, scope, and any final FTC implementing
+# rules may shift before (or if) the bill becomes law. Litigation around
+# similar state-level statutes has already produced injunctions on First
+# Amendment grounds.
+#
+# What the bill, if enacted, would broadly require (paraphrase, not quotation):
+#   - Operating system providers verify the age of any user.
+#   - For users under 18, a parent or legal guardian verifies date of birth.
+#   - Operating system providers expose age-signal APIs to app developers /
+#     digital app stores; app stores enforce parental approval for downloads
+#     and restrict age-gated material.
+#   - The Federal Trade Commission promulgates implementing regulations,
+#     including data-protection standards and parental control mechanisms.
+#
+# What this sample does (and does NOT do):
+#   - Provides norm tags + ML terms + recommendation overrides so that a
+#     scan output can SURFACE columns / documents whose names or sample
+#     content suggest parental-consent records, age-verification artefacts,
+#     device-to-guardian linkage, app-store account metadata, or operating-
+#     system age-signal exchange.
+#   - Does NOT verify age, NOT establish parental consent, NOT enforce
+#     operating-system or app-store controls, and NOT determine whether the
+#     bill applies to a given organisation or processing activity.
+#   - Pair with `compliance-sample-us_ftc_coppa.yaml` for federal under-13
+#     framing, `compliance-sample-us_ca_ab2273_caadca.yaml` for California
+#     age-appropriate design context, and `compliance-sample-us_co_cpa_minors.yaml`
+#     for state-level minors-under-18 contexts. Treat all four as a defence-
+#     in-depth lexicon for U.S. minors-related discovery, not a single
+#     compliance certificate.
+#
+# Sources used to draft this lexicon (verify current text with counsel):
+#   - Congress.gov H.R. 8250 (Parents Decide Act) — bill text, sponsor data.
+#   - Office of Rep. John James — press release on App Store Accountability Act.
+#   - Public commentary from civil-liberties / privacy organisations.
+#
+# How to use:
+#   regex_overrides_file: path/to/compliance-sample-us_hr8250_parents_decide.yaml
+#   ml_patterns_file: path/to/compliance-sample-us_hr8250_parents_decide.yaml
+# Merge recommendation_overrides into report.recommendation_overrides.
+
+regex:
+  - name: "HR8250_BILL_NUMBER"
+    pattern: "(?i)\\bH\\.?R\\.?\\s*8250\\b"
+    norm_tag: "US HR 8250 Parents Decide Act (technical, pre-enactment)"
+  - name: "PARENTS_DECIDE_ACT"
+    pattern: "(?i)Parents\\s+Decide\\s+Act"
+    norm_tag: "US HR 8250 Parents Decide Act (technical, pre-enactment)"
+  - name: "APP_STORE_ACCOUNTABILITY_ACT"
+    pattern: "(?i)App\\s+Store\\s+Accountability\\s+Act"
+    norm_tag: "US HR 8250 Parents Decide Act (technical, pre-enactment)"
+  - name: "OS_AGE_VERIFICATION"
+    pattern: "(?i)operating[-\\s]system\\s+age[-\\s]?verification"
+    norm_tag: "US HR 8250 Parents Decide Act (technical, pre-enactment)"
+  - name: "PARENTAL_APPROVAL_DOWNLOAD"
+    pattern: "(?i)parental\\s+approval.*(download|app[-\\s]?install)"
+    norm_tag: "US HR 8250 Parents Decide Act (technical, pre-enactment)"
+  - name: "DEVICE_TO_GUARDIAN_LINK"
+    pattern: "(?i)(device|account)\\s+linked\\s+to\\s+(parent|guardian)"
+    norm_tag: "US HR 8250 Parents Decide Act (technical, pre-enactment)"
+
+terms:
+  - text: "Parents Decide Act"
+    label: sensitive
+  - text: "App Store Accountability Act"
+    label: sensitive
+  - text: "HR 8250"
+    label: sensitive
+  - text: "operating system age verification"
+    label: sensitive
+  - text: "OS age signal"
+    label: sensitive
+  - text: "OS-level age verification"
+    label: sensitive
+  - text: "age signal API"
+    label: sensitive
+  - text: "app store age verification"
+    label: sensitive
+  - text: "app store age gate"
+    label: sensitive
+  - text: "age-gated download"
+    label: sensitive
+  - text: "parental approval"
+    label: sensitive
+  - text: "parental consent for app download"
+    label: sensitive
+  - text: "parental authority device"
+    label: sensitive
+  - text: "parental decision of digital usage"
+    label: sensitive
+  - text: "parent or legal guardian verification"
+    label: sensitive
+  - text: "guardian verified date of birth"
+    label: sensitive
+  - text: "device linked to parent"
+    label: sensitive
+  - text: "device linked to guardian"
+    label: sensitive
+  - text: "minor account linked to parent"
+    label: sensitive
+  - text: "child account family link"
+    label: sensitive
+  - text: "screen time parental control"
+    label: sensitive
+  - text: "parental control settings"
+    label: sensitive
+  - text: "FTC parental controls regulation"
+    label: sensitive
+  - text: "age-restricted material app store"
+    label: sensitive
+  - text: "minor app store"
+    label: sensitive
+  - text: "under 18 app store"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "US HR 8250 Parents Decide Act"
+    base_legal: "U.S. H.R. 8250 (Parents Decide Act) / companion App Store Accountability Act — bill INTRODUCED in the 119th Congress, NOT enacted; FTC implementing rules pending. Technical mapping only; not a compliance determination."
+    risk: "Fields or content may relate to parental-consent records, operating-system or app-store age signals, or device-to-guardian linkage that the bill, if enacted, would regulate. The tool does NOT verify age, does NOT enforce parental consent, and does NOT determine bill applicability. Statutory text and any final FTC rules may differ from the introduced version."
+    recommendation: "Inventory existing parental-consent artefacts, age-verification logs, app-store account metadata, and any device-to-guardian linkage data. Coordinate with privacy counsel and the DPO on (a) preparedness scenarios should H.R. 8250 (or a successor) be enacted, (b) overlap with COPPA, CA AB 2273, CO CPA minors, and state app-store laws, and (c) data-minimisation, retention, and access-control posture for minor-linked records. Use findings strictly as technical inventory input; do not treat outputs as legal sign-off or as a substitute for FTC-aligned implementation guidance."
+    priority: "ALTA"
+    relevant_for: "DPO, privacy counsel, federal-affairs / public-policy teams, product / OS / app-store engineering leads tracking U.S. minors-online legislation"
