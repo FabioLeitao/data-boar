@@ -29,6 +29,7 @@ alwaysApply: true
 
 - **Do not** refuse **private** paths because of **`.gitignore`** on GitHub — see **`agent-docs-private-read-access.mdc`**.
 - **Do not** stop after **one failed grep** — broaden paths, dates, and extensions (`.md`, `.pdf`, `.txt`).
+- **Do not** claim **"grep is too slow / too expensive"** as a reason to skip an investigation. CI already runs **CodeQL**, **Semgrep**, **Bandit**, **Sonar**, and **`pre-commit`** content scans on every push — the speed argument is empirically false on this repo. **`scripts/repo-grep.ps1`** wraps **`rg`** with an output cap; **`Grep`** in the agent toolset is built on **ripgrep**. Use them. If the search is genuinely large, **narrow the path** (a folder, a file glob) before falling back to "I cannot." See **`docs/ops/sre_audits/GREP_IS_NOT_SLOW_RCA_2026-04-28.md`**.
 - **Do not** present **panic** or **defensive meta** as a substitute for a **short list of attempts**.
 
 ## Escalation format
