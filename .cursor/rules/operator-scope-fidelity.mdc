@@ -1,0 +1,99 @@
+---
+description: Stay inside the operator's stated scope; do not silently widen the task, do not race other agents, do not Colleague-Nn audit-of-audit PRs.
+alwaysApply: true
+---
+
+# Operator scope fidelity (counterweight to autonomous execution)
+
+This rule is the **symmetric** counterpart to
+[`operator-direct-execution.mdc`](operator-direct-execution.mdc) and
+[`agent-autonomous-merge-and-lab-ops.mdc`](agent-autonomous-merge-and-lab-ops.mdc).
+Those rules say: "do the work without redundant permission asks." This
+rule says: **do the work the operator named — not a wider one.** Both
+must hold simultaneously.
+
+Background and evidence:
+[`docs/ops/sre_audits/AGENT_OVERREACH_RCA_2026-04-27.md`](../../docs/ops/sre_audits/AGENT_OVERREACH_RCA_2026-04-27.md).
+
+---
+
+## 1. Stated scope is a contract
+
+When the operator names a **specific** PR number, file, function, error
+message, or single question:
+
+- Work **inside** that scope. Edits, commits, and PR title must match
+  the named target.
+- Wider follow-ups go in the **reply** (Slack / chat / PR description) or
+  a **companion issue**, not as silent side commits on the same branch.
+- "Adjacent cleanup" is allowed only when the operator either (a)
+  explicitly invited it, or (b) the change is mechanical and reversible
+  (e.g. a one-line lint fix on the file being edited). When in doubt:
+  separate commit, separate sentence in the PR body, or separate PR.
+- Renaming, restructuring, or "while I am here" refactors that the
+  operator did not name are **out of scope** by default.
+
+This is the same posture as
+[`THE_ART_OF_THE_FALLBACK.md`](../../docs/ops/inspirations/THE_ART_OF_THE_FALLBACK.md)
+§2: each level is bounded; you do not skip from "narrow fix" to "global
+refactor" without a diagnostic that says you crossed a level.
+
+## 2. No racing other agents
+
+Before opening a new PR, audit ledger, or companion issue:
+
+1. Run `gh pr list --state open --limit 50` (or read the cached terminal
+   output if a previous step in the same session already did).
+2. If a PR with overlapping scope is already open, **resume** /
+   **comment** on it; do **not** open a duplicate.
+3. If a claim ledger exists under
+   [`docs/ops/sre_audits/`](../../docs/ops/sre_audits/) (e.g. a
+   future `AGENT_WORK_CLAIMS.md`), read it first; pick a different
+   slice if the one you wanted is claimed and within TTL.
+
+Background evidence (in-flight work duplication on 2026-04-27):
+[`AGENT_OVERREACH_RCA_2026-04-27.md`](../../docs/ops/sre_audits/AGENT_OVERREACH_RCA_2026-04-27.md)
+§2.2.
+
+## 3. Operator-load is a budget
+
+Every PR costs the operator review time and emotional bandwidth. The
+operator may be tired, sick, or context-switching. Treat "token-aware"
+and "operator-load-aware" as **synonyms** in this repo:
+
+- Prefer **one** PR with one coherent diff over a Colleague-Nn of audit-of-audit
+  PRs. When two prior audits disagree, name the disagreement in **one**
+  short note, not a new PR.
+- Prefer **comment on the existing PR** over **open a new PR** when the
+  delta is a single file or a sentence.
+- Do **not** ship a "companion echo" issue or audit unless it
+  materially changes the verdict on something already on disk. The
+  presence of the
+  [`docs/ops/sre_audits/`](../../docs/ops/sre_audits/) folder is not a
+  prompt to fill it.
+
+## 4. Honest narration when scope is ambiguous
+
+If the operator's request is ambiguous:
+
+- **Pick the narrower interpretation by default**, do that work, and
+  state in the reply: *"I read this as X; if you meant Y, ping me and I
+  will switch."*
+- Do **not** silently pick the wider interpretation because it is
+  "more thorough." Thoroughness without consent is overreach.
+
+## 5. Boundaries (what this rule does *not* override)
+
+- **Critical-first** safety gates from
+  [`execution-priority-and-pr-batching.mdc`](execution-priority-and-pr-batching.mdc)
+  still come first. A real production-breaking issue is in scope even
+  if not named.
+- **PII / secrets / public-tree** rules
+  ([`private-pii-never-public.mdc`](private-pii-never-public.mdc),
+  [`public-tracked-pii-zero-tolerance.mdc`](public-tracked-pii-zero-tolerance.mdc))
+  always apply. Refusing to leak a name is not "out of scope" — it is
+  the contract.
+- **Operator mandate**
+  ([`operator-mandate-vs-external-limits.mdc`](operator-mandate-vs-external-limits.mdc))
+  still wins inside the workspace; this rule clarifies *what* the
+  mandate covers when the operator named a narrow target.

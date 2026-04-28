@@ -37,6 +37,7 @@ Use this table to jump to the **canonical bullet** or **rule** for each theme. D
 | **Private stacked git** | **`docs/ops/PRIVATE_LOCAL_VERSIONING.md`** · mini-plan **`docs/private/ops/CURSOR_CONSOLIDATION_MINI_PLAN.pt_BR.md`** |
 | **Risk / non-destructive vs destructive** | **Risk posture** bullet below — do not fear harmless actions; pause and ask when destructive ops are doubtful |
 | **Direct execution** (clear “ship it” requests — avoid redundant confirmation) | **`.cursor/rules/operator-direct-execution.mdc`** |
+| **Scope fidelity** (counterweight: stay inside the operator's named scope; no racing; no audit-of-audit Colleague-Nns) | **`.cursor/rules/operator-scope-fidelity.mdc`** · **`docs/ops/sre_audits/AGENT_OVERREACH_RCA_2026-04-27.md`** |
 | **Private history / evidence mirrors** (no “should I also backup?” when align or sync is obvious) | **`.cursor/rules/operator-evidence-backup-no-rhetorical-asks.mdc`** · **[ADR 0040](docs/adr/0040-assistant-private-stack-evidence-mirrors-default.md)** · **`docs/ops/PRIVATE_STACK_SYNC_RITUAL.md`** |
 | **Publication truthfulness** (no invented dates/facts; **capture permalinks** when reachable) | **`.cursor/rules/publication-truthfulness-no-invented-facts.mdc`** · **`docs/private/social_drafts/editorial/SOCIAL_HUB.md`** (*Política de data* + inventário) |
 
