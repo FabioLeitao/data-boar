@@ -85,7 +85,7 @@ jobs:
         run: uv run pre-commit run --all-files
 
   bandit:
-    name: Bandit (medium+)
+    name: Bandit (strict)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -104,12 +104,11 @@ jobs:
           version: "0.11.2"
 
       - name: Install dependencies
-        run: uv sync --extra shares
+        run: uv sync --extra shares --group dev
 
-      # -ll = medium and high only; [tool.bandit] in pyproject.toml (skips, exclude_dirs). See PLAN_BANDIT_SECURITY_LINTER.md.
-      - name: Run Bandit
-        run: >-
-          uv run bandit -c pyproject.toml -r api core config connectors database file_scan report main.py -ll -q
+      # Strict merge gate: -ll = MEDIUM+ severity, -ii = MEDIUM+ confidence. [tool.bandit] applies (exclude_dirs, skips).
+      - name: Run Bandit (Strict Mode)
+        run: uv run bandit -r . -c pyproject.toml -ll -ii
 
   audit:
     name: Dependency audit

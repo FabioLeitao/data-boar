@@ -9,6 +9,8 @@
 # On Windows, prefer .\scripts\check-all.ps1 (identical flow).
 # Full parity with Windows requires pwsh for gatekeeper-audit.ps1; install
 # PowerShell Core where possible. Rust requires cargo on PATH.
+# Memory safety: pre-commit-and-tests.sh runs tests/security/test_mem_integrity.py first (Hypothesis),
+# then full pytest with --deselect on that file (parity with check-all.ps1).
 set -euo pipefail
 
 REPO_ROOT=$(cd "$(dirname "$0")/.." && pwd)

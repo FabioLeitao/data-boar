@@ -47,9 +47,19 @@ if [[ "$SKIP_PRECOMMIT" -eq 0 ]]; then
   fi
 fi
 
+echo "Memory safety gate (Hypothesis + PyO3, tests/security/test_mem_integrity.py)..." >&2
+set +e
+uv run pytest tests/security/test_mem_integrity.py -v -W error --tb=short
+rc=$?
+set -e
+if [[ "$rc" -ne 0 ]]; then
+  echo "Memory safety pytest failed. Fix failures before committing or pushing." >&2
+  exit "$rc"
+fi
+
 echo "Running pytest (full suite, warnings treated as errors)..." >&2
 set +e
-uv run pytest -v -W error --tb=short
+uv run pytest -v -W error --tb=short --deselect tests/security/test_mem_integrity.py
 rc=$?
 set -e
 if [[ "$rc" -ne 0 ]]; then

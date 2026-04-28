@@ -43,8 +43,15 @@ if (-not $SkipPreCommit) {
     }
 }
 
+Write-Host "Memory safety gate (Hypothesis + PyO3, tests/security/test_mem_integrity.py)..." -ForegroundColor Cyan
+uv run pytest tests/security/test_mem_integrity.py -v -W error --tb=short
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Memory safety pytest failed. Fix failures before committing or pushing." -ForegroundColor Red
+    exit $LASTEXITCODE
+}
+
 Write-Host "Running pytest (full suite, warnings treated as errors)..." -ForegroundColor Cyan
-uv run pytest -v -W error --tb=short
+uv run pytest -v -W error --tb=short --deselect tests/security/test_mem_integrity.py
 if ($LASTEXITCODE -ne 0) {
     Write-Host "pytest failed. Fix test failures before committing or pushing." -ForegroundColor Red
 }
