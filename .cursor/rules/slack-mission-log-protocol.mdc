@@ -1,0 +1,47 @@
+---
+description: Optional Slack #data-boar-ops mission-event log format for Cursor Web / operator audit trail (no secrets in repo)
+alwaysApply: false
+---
+
+# Slack mission log (`#data-boar-ops`) — optional audit trail
+
+Use when the operator enables **mission-style telemetry** for **Cursor Web / Cloud Agents** sessions: treat `#data-boar-ops` as an **event log**, not casual chat.
+
+## Hard constraints (repository safety)
+
+- **Never** paste **`SLACK_WEBHOOK_URL`**, tokens, or webhook URLs into tracked files, issues, PRs, or chat transcripts destined for GitHub.
+- **Agents cannot POST to Slack** unless the runtime exposes a **configured** Slack tool or the **operator** runs a local/script step with secrets from env — see **`docs/ops/OPERATOR_NOTIFICATION_CHANNELS.md`** (`SLACK_WEBHOOK_URL` in GitHub Actions or gitignored config).
+- **Redact by default:** branch names and PR numbers are OK; avoid third-party identifiers, reproduction steps with private data, and large log dumps.
+
+## When to emit a line (mission events)
+
+Post (or, if Slack POST is unavailable, **echo this block in the Cursor thread** so the operator can paste once) on:
+
+- **START** — task id + goal one-liner.
+- **RCA / pivot** — hypothesis, evidence tried, next step (before large code edits).
+- **PR** — opened or updated (title scope); link when available from `gh` / UI.
+- **CI / tests** — **FAIL** (first failing test name + <=10 lines) or **SUCCESS** after a gate you ran.
+- **HEARTBEAT** — if work spans **> ~15 minutes** wall time without a state change, send a one-line still-alive + what is running.
+
+## Message template (copy-friendly)
+
+```text
+[TASK_ID] | [PERSONA: NASA/Gibson] | [STATUS: RUNNING|FAIL|SUCCESS]
+Summary: <one sentence, active voice>
+Drift Check: <locale/tests/docs alignment — e.g. EN/pt-BR guard status>
+Performance: <current vs target — use N/A unless you have measured metrics>
+```
+
+- **`TASK_ID`:** short slug (e.g. `cursor/fix-auth-3be5`, issue `#nnn`, or date `YYYY-MM-DD-scope`).
+- **`PERSONA`:** optional voice constraint for the run; keep labels **ASCII** for Slack search.
+- **`Performance`:** do **not** invent numbers; use **`N/A`** or cite a real metric from the last command output.
+
+## Integration hints
+
+- **GitHub Actions → Slack** already uses **`SLACK_WEBHOOK_URL`** for CI failure and manual ping — that is **system** telemetry, separate from this **session** protocol.
+- **Product / local notify:** `scripts/notify_webhook.py` posts via app config when enabled — also separate from agent chat paste.
+
+## Related
+
+- **`docs/ops/OPERATOR_NOTIFICATION_CHANNELS.md`** — webhook setup, secrets, `#data-boar-ops`
+- **`.cursor/rules/cloud-agents-token-aware-safety.mdc`** — Cloud Agent limits vs desktop `check-all`

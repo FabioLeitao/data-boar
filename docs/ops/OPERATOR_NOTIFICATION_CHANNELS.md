@@ -160,6 +160,14 @@ An **incoming webhook** only **posts to a channel**. That is not the same as a *
 
 **Do not** paste your member ID into public issues or commits; keep it in the **Variables** UI only.
 
+### 4.3 Cursor Web / optional “mission event log” in `#data-boar-ops`
+
+Some sessions use **`#data-boar-ops`** as a **structured audit trail** (not chat): start, RCA, PR, test/CI outcome, **HEARTBEAT** on long silences. Canonical **message template and redaction rules** live in [`.cursor/rules/slack-mission-log-protocol.mdc`](../../.cursor/rules/slack-mission-log-protocol.mdc). The repo root [`.cursorrules`](../../.cursorrules) carries a short copy for environments that read **User Rules** only.
+
+**Posting mechanics:** An agent **cannot** reliably POST to Slack **unless** the runtime provides a **Slack-capable tool** (e.g. a configured Slack MCP server) **or** the **operator** runs a step with **`SLACK_WEBHOOK_URL`** in the environment (local shell, GitHub Actions, or `scripts/notify_webhook.py` when product notifications are enabled). **Never** embed the webhook URL in tracked files. If no POST path exists, the agent should **print the same formatted block in Cursor chat** so you paste once into Slack—still useful for a shared trail.
+
+**MCP note:** The tracked [`.cursor/mcp.json`](../../.cursor/mcp.json) in this repository configures **Docker MCP gateway** only; it does **not** include Slack. Adding Slack would be a **separate** MCP server plus secrets **outside** Git.
+
 ---
 
 ## 5. Multi-channel pattern

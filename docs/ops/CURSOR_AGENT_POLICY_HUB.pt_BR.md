@@ -44,6 +44,7 @@ Esta página é a **fase B de consolidação**: o mesmo mapa **tema → primeiro
 | **Execução direta** (pedido claro de fechar — evitar confirmação redundante) | [`.cursor/rules/operator-direct-execution.mdc`](../../.cursor/rules/operator-direct-execution.mdc) |
 | **Histórico privado / espelhos de evidência** (conjunto completo de espelhos não-GitHub quando alinhar ou sync é óbvio) | [`.cursor/rules/operator-evidence-backup-no-rhetorical-asks.mdc`](../../.cursor/rules/operator-evidence-backup-no-rhetorical-asks.mdc) · [ADR 0040](../adr/0040-assistant-private-stack-evidence-mirrors-default.md) (EN) · [`PRIVATE_STACK_SYNC_RITUAL.md`](PRIVATE_STACK_SYNC_RITUAL.md) |
 | **Verdade em publicação** (sem inventar datas/fatos; **capturar permalinks** quando der) | [`.cursor/rules/publication-truthfulness-no-invented-facts.mdc`](../../.cursor/rules/publication-truthfulness-no-invented-facts.mdc) · [`docs/private/social_drafts/editorial/SOCIAL_HUB.md`](../private/social_drafts/editorial/SOCIAL_HUB.md) (*Política de data* + inventário) |
+| **Log de missão Slack `#data-boar-ops`** (trilha opcional no Cursor Web — modelo + higiene de segredos) | [`.cursor/rules/slack-mission-log-protocol.mdc`](../../.cursor/rules/slack-mission-log-protocol.mdc) (**situacional** — **`@slack-mission-log-protocol.mdc`**) · [`OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md`](OPERATOR_NOTIFICATION_CHANNELS.pt_BR.md) ([EN](OPERATOR_NOTIFICATION_CHANNELS.md)) §4.3 · [`.cursorrules`](../../.cursorrules) (cópia curta para User Rules) |
 
 ## Runbooks relacionados
 

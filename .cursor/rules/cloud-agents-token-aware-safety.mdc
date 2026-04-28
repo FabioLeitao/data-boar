@@ -69,3 +69,7 @@ uv run pytest -q
 - any action that depends on private inventory values
 - any destructive actions (mass deletes, force pushes, infra changes) without explicit operator intent
 
+## Optional Slack `#data-boar-ops` mission log (operator-requested)
+
+When the operator wants **audit-trail style** updates aligned with **`#data-boar-ops`**, follow **`.cursor/rules/slack-mission-log-protocol.mdc`** (situational — **`@slack-mission-log-protocol.mdc`** if globs miss). **Never** put webhook URLs or tokens in tracked files. Cloud Agents usually **cannot POST to Slack** without a configured Slack-capable tool or an operator-run step with **`SLACK_WEBHOOK_URL`** in env — if posting is impossible, **emit the formatted block in chat** so the operator can paste once.
+

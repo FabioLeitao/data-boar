@@ -1,0 +1,20 @@
+# Data Boar — optional Cursor user rules (project root)
+
+This repository’s canonical agent instructions live under **`.cursor/rules/`** and **`AGENTS.md`**.
+
+## Slack mission log (`#data-boar-ops`) — optional
+
+When the operator asks for **audit-trail style** updates in Slack, treat `#data-boar-ops` as a **mission event log** (not casual chat). Do **not** put webhook URLs or tokens in files, issues, or PRs.
+
+**Message template:**
+
+```text
+[TASK_ID] | [PERSONA: NASA/Gibson] | [STATUS: RUNNING|FAIL|SUCCESS]
+Summary: <one sentence, active voice>
+Drift Check: <locale/tests/docs alignment>
+Performance: <N/A or real metric from last command — never invented>
+```
+
+Emit on: session start, RCA before big edits, PR open/update, test/CI fail or pass, and **HEARTBEAT** if idle > ~15 minutes between state changes. If Slack POST is not available, print the same block in chat for the operator to forward.
+
+Full policy: **`.cursor/rules/slack-mission-log-protocol.mdc`** · **`docs/ops/OPERATOR_NOTIFICATION_CHANNELS.md`**.
