@@ -22,6 +22,32 @@ if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
 
+try {
+    $prevPyO3Abi3 = $env:PYO3_USE_ABI3_FORWARD_COMPATIBILITY
+    $env:PYO3_USE_ABI3_FORWARD_COMPATIBILITY = "1"
+    Push-Location (Join-Path $repoRoot "rust\boar_fast_filter")
+    try {
+        Write-Host "Running Rust guard (cargo fmt, check, test)..." -ForegroundColor Yellow
+        cargo fmt -- --check
+        if ($LASTEXITCODE -ne 0) { throw "cargo fmt --check failed." }
+        cargo check
+        if ($LASTEXITCODE -ne 0) { throw "cargo check failed." }
+        cargo test --quiet
+        if ($LASTEXITCODE -ne 0) { throw "cargo test failed." }
+    } finally {
+        Pop-Location
+        if ($null -ne $prevPyO3Abi3) {
+            $env:PYO3_USE_ABI3_FORWARD_COMPATIBILITY = $prevPyO3Abi3
+        } else {
+            Remove-Item Env:\PYO3_USE_ABI3_FORWARD_COMPATIBILITY -ErrorAction SilentlyContinue
+        }
+    }
+    Write-Host "Rust Guard... Passed" -ForegroundColor Green
+} catch {
+    Write-Host "Rust Guard... Failed" -ForegroundColor Red
+    exit 1
+}
+
 Write-Host "=== check-all: lint + tests ===" -ForegroundColor Cyan
 
 # Keep plan dashboard stats in sync before lint/tests.

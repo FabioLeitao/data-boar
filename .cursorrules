@@ -1,0 +1,48 @@
+{
+  "linguistic_rules": {
+    "tone": "NASA Command / Tech Lead de Trincheira",
+    "forbidden_passive_voice": [
+      "foram feitos",
+      "é permitido",
+      "são aplicados"
+    ],
+    "enforced_active_voice": [
+      "O sistema impõe",
+      "O script executa",
+      "O gate impede"
+    ],
+    "lexicon_stability": {
+      "Data Sniffing": "Discovery and sampling pass",
+      "Deep Boring": "Structured compliance-report depth",
+      "Safe-Hold": "Estado de suspensão segura por falta de evidência"
+    },
+    "lcm_level": "Use verbos de ação concretos (Level 1 e 2 no Linguistic Category Model) para descrever funções de código."
+  },
+  "slack_protocol": {
+    "channel": "#data-boar-ops",
+    "mandatory_notification_events": [
+      "RCA",
+      "PR_OPEN",
+      "TEST_FAILURE",
+      "STATE_CHANGE"
+    ],
+    "heartbeat_required_when_long_running": true,
+    "message_format": "[TASK_ID] | [PERSONA: NASA/Gibson] | [STATUS: RUNNING/FAIL/SUCCESS]",
+    "message_fields": [
+      "Summary: (1 sentence active voice)",
+      "Drift Check: (Linguistic/Functional status)",
+      "Performance: (Current vs Target 0.574x)"
+    ],
+    "operational_silence_forbidden": true
+  },
+  "web_cursor_session_contract": {
+    "telemetry_channel": "#data-boar-ops",
+    "pre_code_rca_required": true,
+    "lexicon_source_of_truth": "public bundle + canonical repo docs",
+    "safe_hold_on_missing_evidence": true
+  },
+  "security_ops_van_allen_belt": {
+    "audit_first": "Write/adjust unit test before implementation where feasible.",
+    "log_mirroring": "Mirror critical errors/events to Slack protocol entries for mobile auditability."
+  }
+}

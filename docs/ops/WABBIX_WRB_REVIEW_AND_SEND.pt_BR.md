@@ -141,7 +141,7 @@ Resumo (âncora rápida):
 
 Código, documentação e planos
 
-Pedimos que considerem, onde fizer sentido para vocês, uma leitura articulada em três famílias de artefatos. No código, interessa-nos qualidade, clareza, cobertura de testes, possíveis regressões, riscos de segurança e consistência de comportamento entre CLI, API e relatórios. No nosso roadmap recente, temos atenção a temas de confiança de runtime, trilha de auditoria exportável e integração com licenciamento e integridade, quando aplicável.
+Pedimos que considerem, onde fizer sentido para vocês, uma leitura articulada em três famílias de artefatos. No código, interessa-nos qualidade, clareza, cobertura de testes, possíveis regressões, riscos de segurança e consistência de comportamento entre CLI, API e relatórios. No nosso roadmap recente, temos atenção a temas de confiança de runtime, Rastro de Auditoria (Audit Trail) exportável e integração com licenciamento e integridade, quando aplicável.
 
 Na documentação, agradecemos qualquer observação sobre operação (USAGE, deploy, SECURITY), material de compliance e jurídico, e pitch ou material privado se for referenciado. Onde existir par inglês e português, a sincronização e a clareza para o operador são importantes; e, no texto jurídico ou de compliance, evitar overclaim em relação ao que o produto já garante de fato.
 

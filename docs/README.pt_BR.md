@@ -2,6 +2,8 @@
 
 **English:** [README.md](README.md)
 
+O Data Boar não é um software de prateleira; é um instrumento de precisão para auditoria forense. Cada linha de código segue o rigor da engenharia de voo. Se a documentação não reflete o código, a documentação é um bug.
+
 Esta pasta centraliza a **documentação da aplicação**. A raiz do repositório mantém os arquivos que o GitHub e as ferramentas esperam (ex.: **README.md**, **SECURITY.md**, **CONTRIBUTING.md**, **CODE_OF_CONDUCT.md**, **LICENSE**). Use este índice para encontrar guias em **inglês** e **português (Brasil)** e para alternar entre idiomas. **Navegue pelas tabelas abaixo por tópico**; cada linha traz links para a versão em inglês e em português (Brasil), quando existir, para você acessar qualquer documento e trocar de idioma a qualquer momento. **Parceiros / investidores** chegando pelo GitHub: a seção **The Architect's Vault** no README da raiz ([README.pt_BR.md](../README.pt_BR.md)) reúne numa tabela o **briefing para decisores**, o **índice de ADRs**, o placeholder de **histórico de narrativa**, o ADR de **governança do auditor** e este índice — sem linkar planos de execução a partir da superfície de pitch ([ADR 0004](adr/0004-external-docs-no-markdown-links-to-plans.md) — inglês). **Navegação por preocupação (CISO / DPO: menores, hints de jurisdição, amostras EUA menores):** [MAP.pt_BR.md](MAP.pt_BR.md) ([EN](MAP.md)).
 
 ## Política de documentação
