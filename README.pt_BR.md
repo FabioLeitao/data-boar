@@ -30,7 +30,7 @@ Idiomas e encodings legados são suportados; **timeouts configuráveis** e **end
 
 **Roadmap:** Seguimos ampliando a **descoberta** (arquivos e mídia mais ricos, conectores em **nuvem** e **enterprise**), melhorando **alertas** ao fim da varredura e mantendo **segurança e dependências** em dia. A **cobertura de idiomas** na interface e na documentação, e as **amostras regionais** de conformidade, crescem **aos poucos**, conforme a demanda — não todos os mercados de uma vez. **Já entregue (opt-in):** **notas heurísticas de jurisdição** na planilha **Report info** — a partir de **metadados** dos achados (**não** conclusão jurídica), para equipes multinacionais **priorizarem revisão com assessoria**. Ative em config, CLI, dashboard ou API; detalhes: [USAGE.pt_BR](docs/USAGE.pt_BR.md). **Para diretoria e auditoria:** dá para apresentar **prioridades e evidências objetivas** — visibilidade de dados e postura de conformidade — **sem** fazer da apresentação um mergulho em roadmap técnico. **Lista de frameworks**, **normas com foco em auditoria** (ex.: ISO 27701, SOC 2), amostras sobre **menores**, SBOM e sinais da API: [COMPLIANCE_FRAMEWORKS.pt_BR.md](docs/COMPLIANCE_FRAMEWORKS.pt_BR.md). **O que já está entregue** vs **roadmap em fases:** [docs/releases/](docs/releases/).
 
-**Convidamos você a entrar em contato** para ver como o Data Boar pode apoiar sua jornada de conformidade.
+**Fale conosco** para ver como o Data Boar pode apoiar sua jornada de conformidade.
 
 **Cenários típicos:** Preparação para auditoria ou pedido do regulador; mapeamento de dados antes de migração ou implantação de DLP; conscientização de conformidade sem war room completo.
 
@@ -55,6 +55,10 @@ Investidores, parceiros de integração e revisores técnicos seniores costumam 
 | **Dados de menores / crianças** (limiares, cruzamento, amostras — guia do operador) | [MINOR_DETECTION.pt_BR.md](docs/MINOR_DETECTION.pt_BR.md) · [EN](docs/MINOR_DETECTION.md) |
 | **Índice completo da documentação** (todos os tópicos; entrada para referência interna num só lugar) | [docs/README.pt_BR.md](docs/README.pt_BR.md) · [EN](docs/README.md) |
 | **Por que evidência primeiro** (filosofia pública — sem história pessoal) | [THE_WHY.pt_BR.md](docs/philosophy/THE_WHY.pt_BR.md) · [EN](docs/philosophy/THE_WHY.md) |
+
+### Motor nativo, benchmark e rastro público
+
+O filtro rápido **`boar_fast_filter`** (Rust via PyO3) compõe o núcleo de desempenho do produto — mudanças no **hot path** exigem **clippy** e narrativa alinhada ao artefato **`tests/benchmarks/official_benchmark_200k.json`**. O valor **`speedup_vs_opencore = 0,574`** significa que, naquele perfil, o caminho Pro corre a **0,574× a velocidade** do OpenCore (Pro **mais lento**; ~**1,74×** mais tempo de relógio). O repositório trava essa leitura em **`tests/test_official_benchmark_200k_evidence.py`** e documenta o contexto em **`docs/ops/LAB_LESSONS_LEARNED.md`**. Protocolo operacional de integridade (LCM, Rust, ADR de regressão): **`docs/ops/AUDIT_PROTOCOL.md`**.
 
 ---
 
