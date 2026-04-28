@@ -1,5 +1,7 @@
 #!/usr/bin/env pwsh
 # Single gate script: run lint/format (via pre-commit) + full pytest suite.
+# Memory safety: pre-commit-and-tests runs tests/security/test_mem_integrity.py first (Hypothesis),
+# then the rest of the suite with --deselect to avoid double-running those examples.
 # Regression hooks include tests/test_detector_entertainment_regression.py (ML vs lyrics/OSS Markdown).
 # Linux/macOS twin: scripts/check-all.sh
 # Usage (from repo root):

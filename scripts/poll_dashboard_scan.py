@@ -44,7 +44,7 @@ def get_json(
     req = urllib.request.Request(
         f"{base.rstrip('/')}{path}", method="GET", headers=headers
     )
-    with urllib.request.urlopen(req, timeout=60) as r:
+    with urllib.request.urlopen(req, timeout=60) as r:  # nosec B310
         return json.loads(r.read().decode())
 
 
@@ -64,7 +64,7 @@ def post_json(
         method="POST",
         headers=headers,
     )
-    with urllib.request.urlopen(req, timeout=60) as r:
+    with urllib.request.urlopen(req, timeout=60) as r:  # nosec B310
         return json.loads(r.read().decode())
 
 

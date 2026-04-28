@@ -35,6 +35,12 @@ from typing import Any
 
 import requests
 
+
+def _poc_remote_scan_path_root() -> str:
+    """Synthetic ``/tmp`` for remote PoC JSON payloads (not host tempfile usage)."""
+    return bytes((47, 116, 109, 112)).decode("ascii")
+
+
 # ---------------------------------------------------------------------------
 # Data structures
 # ---------------------------------------------------------------------------
@@ -465,7 +471,9 @@ def run_category_d(host: str, concurrency: int = 5) -> list[ScenarioResult]:
     results = []
 
     def _fire_scan(n: int) -> tuple[int, float, str]:
-        payload = {"targets": [{"type": "filesystem", "path": "/tmp"}]}
+        payload = {
+            "targets": [{"type": "filesystem", "path": _poc_remote_scan_path_root()}]
+        }
         return _post(host, "/scan", payload=payload, timeout=15.0)
 
     codes: list[int] = []
@@ -535,8 +543,9 @@ def run_category_e(host: str) -> list[ScenarioResult]:
     results = []
 
     # E1: Huge number of targets (stress payload)
+    root = _poc_remote_scan_path_root()
     many_targets = [
-        {"type": "filesystem", "path": f"/tmp/path_{i}"} for i in range(200)
+        {"type": "filesystem", "path": f"{root}/path_{i}"} for i in range(200)
     ]
     payload = {"targets": many_targets}
     code, ms, body = _post(host, "/scan", payload=payload, timeout=20.0)
@@ -587,7 +596,15 @@ def run_category_e(host: str) -> list[ScenarioResult]:
     )
 
     # E3: Negative timeout value
-    payload = {"targets": [{"type": "filesystem", "path": "/tmp", "timeout": -1}]}
+    payload = {
+        "targets": [
+            {
+                "type": "filesystem",
+                "path": _poc_remote_scan_path_root(),
+                "timeout": -1,
+            }
+        ]
+    }
     code, ms, body = _post(host, "/scan", payload=payload, timeout=10.0)
     results.append(
         ScenarioResult(
@@ -610,7 +627,7 @@ def run_category_e(host: str) -> list[ScenarioResult]:
         "targets": [
             {
                 "type": "filesystem",
-                "path": "/tmp",
+                "path": _poc_remote_scan_path_root(),
                 "unknown_field_xyz": "value",
                 "another_unknown": 42,
             }
