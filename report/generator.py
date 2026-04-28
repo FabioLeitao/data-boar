@@ -15,6 +15,8 @@ so branches stay in sync with main and merge conflicts are avoided (see CONTRIBU
 """
 
 import logging
+import os
+import re
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Callable
@@ -27,23 +29,80 @@ from core.about import get_about_info
 from core.aggregated_identification import run_aggregation
 from core.database import failure_hint
 from core.suggested_review import SUGGESTED_REVIEW_PATTERN
+from report.safe_prefix import safe_session_prefix
 from report.scan_evidence import write_scan_evidence_artifacts
 
 _logger = logging.getLogger(__name__)
 
+# Allowlist for the basename component of report/heatmap output filenames.
+# Applied BEFORE any path concatenation so CodeQL py/path-injection sees the
+# value cleansed at the source (sanitizer at the boundary, not after join).
+# Matches the pattern enforced at the API download surface
+# (api.routes._REPORT_FILENAME_PATTERN / _HEATMAP_FILENAME_PATTERN).
+_SAFE_FILENAME_BASENAME = re.compile(r"^[A-Za-z0-9_.-]+$")
 
-def _heatmap_path_under_output_dir(heatmap_path: str, output_dir: str) -> Path | None:
+
+def get_safe_report_path(
+    output_dir: str | os.PathLike[str],
+    filename: str,
+) -> Path | None:
     """
-    Return resolved heatmap path only if it lies under output_dir (guards path injection
-    for embedded images). Caller must pass the same output_dir used to build the heatmap.
+    Return ``output_dir / filename`` only when ``filename`` is a clean basename
+    AND the resolved candidate lies inside the resolved ``output_dir``.
+
+    Implementation contract (mirrors the CodeQL "safe path join" recipe used in
+    ``api.routes._real_file_under_out_dir_str``):
+
+    1. Reject empty / non-basename input (no separators, no ``..``, allowlist match).
+    2. Compute ``base_path = realpath(abspath(output_dir))`` once.
+    3. Compute ``fullpath = normpath(join(base_path, filename))``.
+    4. Require ``fullpath.startswith(base_path + sep)`` (or equality) — same
+       string both sides — so the analyzer's path-injection barrier applies.
+
+    Returns the resolved ``Path`` or ``None``. Existence is **not** required:
+    callers writing a new file (heatmap PNG, XLSX) need a containment-checked
+    target path; callers reading a file should additionally check ``is_file()``.
     """
-    try:
-        base = Path(output_dir).resolve()
-        candidate = Path(heatmap_path).resolve()
-        candidate.relative_to(base)
-    except (ValueError, OSError):
+    if not filename or not isinstance(filename, str):
         return None
-    return candidate if candidate.is_file() else None
+    # Reject any path separator or parent-traversal token before joining.
+    # CodeQL recognizes basename allowlists as taint sanitizers when applied
+    # to the value used in the join (see CWE-22 / py/path-injection docs).
+    if "/" in filename or "\\" in filename or filename in (".", ".."):
+        return None
+    if filename.startswith(".."):
+        return None
+    if _SAFE_FILENAME_BASENAME.fullmatch(filename) is None:
+        return None
+    try:
+        base_path = os.path.realpath(os.path.abspath(os.fspath(output_dir)))
+    except (OSError, ValueError):
+        return None
+    fullpath = os.path.normpath(os.path.join(base_path, filename))
+    # Same-string startswith barrier (CodeQL-recognized). Append os.sep to avoid
+    # a prefix collision such as ``/tmp/out`` vs ``/tmp/out_evil``.
+    if fullpath != base_path and not fullpath.startswith(base_path + os.sep):
+        return None
+    return Path(fullpath)
+
+
+def _heatmap_path_for_embed(heatmap_path: str, output_dir: str) -> Path | None:
+    """
+    Read-side wrapper used when embedding the heatmap image in the XLSX.
+
+    The caller passes the path returned by ``_create_heatmap`` plus the same
+    ``output_dir`` used to build it. We re-validate the basename against the
+    allowlist + containment check (defense in depth: even if upstream code
+    later changes, the embed step refuses anything that escaped). Existence
+    is required here because we only embed real PNG files.
+    """
+    if not heatmap_path:
+        return None
+    name = os.path.basename(os.fspath(heatmap_path).replace("\\", "/"))
+    candidate = get_safe_report_path(output_dir, name)
+    if candidate is None or not candidate.is_file():
+        return None
+    return candidate
 
 
 # Cross-ref aggregated sheet: first row explains sampling limits (FN-first; incomplete-data transparency).
@@ -173,10 +232,20 @@ def _create_heatmap(
             ax_inset.axis("off")
         except Exception:
             pass
-    out_path = Path(output_dir) / f"heatmap_{session_id[:12]}.png"
-    plt.savefig(out_path, bbox_inches="tight")
+    # Sanitize session_id BEFORE join: produces a basename-safe prefix
+    # ([A-Za-z0-9_-]+, max 12 chars) so the resulting path cannot escape
+    # output_dir even if the caller passed a hostile session_id like
+    # "../../etc/passwd". get_safe_report_path then re-validates containment.
+    sid_prefix = safe_session_prefix(session_id, max_len=12)
+    safe_out = get_safe_report_path(output_dir, f"heatmap_{sid_prefix}.png")
+    if safe_out is None:
+        # Allowlist or containment check refused: skip heatmap rather than
+        # write outside the configured output directory (defense in depth).
+        plt.close()
+        return None
+    plt.savefig(safe_out, bbox_inches="tight")
     plt.close()
-    return str(out_path)
+    return str(safe_out)
 
 
 # Keywords that suggest existing data protection (column name or pattern_detected)
@@ -1046,9 +1115,7 @@ def _write_excel_sheets(
         summary.to_excel(writer, sheet_name=_SHEET_HEATMAP_DATA)
         # Embed heatmap image below the table (no overlap); scale to fit letter/A4 when printed
         safe_heatmap = (
-            _heatmap_path_under_output_dir(heatmap_path, output_dir)
-            if heatmap_path
-            else None
+            _heatmap_path_for_embed(heatmap_path, output_dir) if heatmap_path else None
         )
         if safe_heatmap:
             try:
@@ -1281,7 +1348,20 @@ def generate_report(
         lic_footer = f"License: {lic_ctx.state}"
         if lic_ctx.watermark:
             lic_footer = f"{lic_footer} ({lic_ctx.watermark})"
-    out_path = Path(output_dir) / f"Relatorio_Auditoria_{session_id[:16]}.xlsx"
+    # Sanitize session_id at the boundary (allowlist), then enforce
+    # containment via get_safe_report_path. Falls back to a fixed safe name
+    # rather than risking a path outside output_dir.
+    xlsx_prefix = safe_session_prefix(session_id, max_len=16)
+    safe_xlsx = get_safe_report_path(
+        output_dir, f"Relatorio_Auditoria_{xlsx_prefix}.xlsx"
+    )
+    if safe_xlsx is None:
+        _logger.warning(
+            "Refusing to write XLSX report: output_dir=%r failed containment check.",
+            output_dir,
+        )
+        return None
+    out_path = safe_xlsx
     # Create heatmap PNG first so we can embed it in the Heatmap data sheet
     heatmap_path = _create_heatmap(
         db_rows_for_sheets,
