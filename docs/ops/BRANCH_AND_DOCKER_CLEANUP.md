@@ -99,6 +99,37 @@ Or use the GitHub UI: **Repository → Branches →** delete stale feature branc
 
 **Dependabot branches:** Usually delete after you merge or supersede the dependency update; keep the PR/merge commit on `main` as the record.
 
+### 3.1 Find branches with **no open PR** (operator-rule helper)
+
+When `git branch -r` no longer fits on one screen, the question to answer first is: **"which remote branches have no open PR backing them?"** Per the operator rule (Slack 2026-04-28, message `ts 1777370978.136399`): *se não tem PR aberto, não tem por que ter branch no `origin`*.
+
+The rule has one important qualifier: **a branch that backs an OPEN PR is not orphan** — deleting its head ref auto-closes the PR and loses the audit paper trail (see [docs/ops/sre_audits/BRANCH_HYGIENE_RCA_2026-04-28.md](sre_audits/BRANCH_HYGIENE_RCA_2026-04-28.md)). Use the read-only lister:
+
+```powershell
+# Windows PowerShell
+.\scripts\git-list-remote-orphan-branches.ps1
+.\scripts\git-list-remote-orphan-branches.ps1 -Pattern 'cursor/sre-'
+.\scripts\git-list-remote-orphan-branches.ps1 -IncludeStaleDays 14
+```
+
+```bash
+# Linux / macOS
+./scripts/git-list-remote-orphan-branches.sh
+./scripts/git-list-remote-orphan-branches.sh --pattern 'cursor/sre-*'
+./scripts/git-list-remote-orphan-branches.sh --include-stale-days 14
+```
+
+The script:
+
+- Runs `git fetch --prune origin` first.
+- Computes `(remote branches) ∖ (open-PR head refs from gh) ∖ (keep-list: main, auditoria-ia, release/beta branches)`.
+- Prints suggested `git push origin --delete <branch>` lines you can copy after a final review.
+- **Never deletes anything itself** — per the [DEFENSIVE_SCANNING_MANIFESTO](inspirations/DEFENSIVE_SCANNING_MANIFESTO.md) §1.3 *no surprise side effects* contract.
+
+**Reading the output:** Treat each row as a candidate, not a decision. The operator's secondary rule applies (*se não for sidequest investigativa óbvia progredindo, não tem por que ter dangling branch*) — but "investigative sidequest" vs "abandoned" is a human read on `ahead=…` / last commit / linked work. The script surfaces the row and waits.
+
+If `git branch -r` is still long after deleting orphans, the dominant term is the **open-PR backlog**, not orphan branches. The lever there is closing/merging PRs (see [PR #273](https://github.com/FabioLeitao/data-boar/pull/273) — *audit-PR swarm vs. one mergeable fix*).
+
 ---
 
 ## 4. Docker: retention policy for Data Boar images

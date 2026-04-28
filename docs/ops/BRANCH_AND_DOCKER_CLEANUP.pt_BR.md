@@ -59,6 +59,28 @@ git log origin/main..origin/NOME-DA-BRANCH
 git push origin --delete NOME-DA-BRANCH
 ```
 
+### 2.1 Encontrar branches **sem PR aberto** (helper da regra do operador)
+
+Quando `git branch -r` deixa de caber em uma tela, a primeira pergunta a responder é: **"quais branches remotas não têm PR aberto agora?"** Pela regra do operador (Slack 2026-04-28, mensagem `ts 1777370978.136399`): *se não tem PR aberto, não tem por que ter branch no `origin`*.
+
+A regra tem um qualificador importante: **branch que sustenta um PR aberto não é órfã** — apagar a head ref auto-fecha o PR e perde a trilha de auditoria (ver [docs/ops/sre_audits/BRANCH_HYGIENE_RCA_2026-04-28.md](sre_audits/BRANCH_HYGIENE_RCA_2026-04-28.md)). Use o lister read-only:
+
+```powershell
+# Windows PowerShell
+.\scripts\git-list-remote-orphan-branches.ps1
+.\scripts\git-list-remote-orphan-branches.ps1 -Pattern 'cursor/sre-'
+```
+
+```bash
+# Linux / macOS
+./scripts/git-list-remote-orphan-branches.sh
+./scripts/git-list-remote-orphan-branches.sh --pattern 'cursor/sre-*'
+```
+
+O script roda `git fetch --prune origin`, computa `(branches remotas) ∖ (head refs de PRs abertos via gh) ∖ (keep-list: main, auditoria-ia, release/beta)` e imprime sugestões `git push origin --delete <branch>` para você copiar após revisão. **Nunca apaga nada por conta própria** — contrato *no surprise side effects* do [DEFENSIVE_SCANNING_MANIFESTO](inspirations/DEFENSIVE_SCANNING_MANIFESTO.md) §1.3.
+
+Se `git branch -r` continua longo após remover órfãs, o termo dominante é o **backlog de PRs abertos**, não branches órfãs. A alavanca é fechar/mergear PRs (ver [PR #273](https://github.com/FabioLeitao/data-boar/pull/273)).
+
 ---
 
 ## 3. Docker: política de retenção (Data Boar)
