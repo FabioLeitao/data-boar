@@ -940,6 +940,18 @@ def test_smoke_webauthn_json_ps1_parses():
     )
 
 
+def test_ops_notify_script_mentions_slack_webhook_env_vars():
+    """ops_notify.py reads Slack webhook only from env (project-standard + optional alias)."""
+    root = _project_root()
+    script = root / "scripts" / "ops_notify.py"
+    if not script.exists():
+        return
+    text = script.read_text(encoding="utf-8", errors="replace")
+    assert "SLACK_WEBHOOK_URL" in text
+    assert "SLACK_WEBHOOK_DATA_BOAR_OPS" in text
+    assert "requests.post" in text
+
+
 # ---------------------------------------------------------------------------
 # PowerShell ASCII-safety guard
 # Non-ASCII characters (em-dash U+2014, curly quotes, etc.) cause
