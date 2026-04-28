@@ -25,6 +25,7 @@ from core.sampling import SamplingProvider
 from report.evidence_collector import EvidenceCollector
 from report.executive_report import generate_executive_report
 from report.recommendation_engine import RecommendationEngine, apg_row_for_pattern
+from report.safe_paths import get_safe_report_path
 from report.safe_prefix import safe_session_prefix
 
 # Env keys (documented in USAGE.md).
@@ -360,15 +361,10 @@ def write_scan_evidence_artifacts(
     apg_rows = _aggregate_apg(db_rows, fs_rows)
     manifest["apg_phase_a"] = apg_rows
 
-    man_path = (out / f"scan_manifest_{prefix}.yaml").resolve()
-    poc_path = (out / f"POC_SUMMARY_{prefix}.md").resolve()
-    try:
-        man_path.relative_to(out)
-        poc_path.relative_to(out)
-    except ValueError as exc:
-        raise ValueError(
-            "output_dir resolves outside allowed base after artifact join"
-        ) from exc
+    man_path = get_safe_report_path(out, f"scan_manifest_{prefix}.yaml")
+    poc_path = get_safe_report_path(out, f"POC_SUMMARY_{prefix}.md")
+    if man_path is None or poc_path is None:
+        raise ValueError("output_dir resolves outside allowed base after artifact join")
 
     man_path.write_text(
         yaml.safe_dump(

@@ -27,6 +27,7 @@ from core.about import get_about_info
 from core.aggregated_identification import run_aggregation
 from core.database import failure_hint
 from core.suggested_review import SUGGESTED_REVIEW_PATTERN
+from report.safe_paths import existing_safe_report_path, get_safe_report_path
 from report.safe_prefix import safe_session_prefix
 from report.scan_evidence import write_scan_evidence_artifacts
 
@@ -36,16 +37,9 @@ _logger = logging.getLogger(__name__)
 def _heatmap_path_under_output_dir(heatmap_path: str, output_dir: str) -> Path | None:
     """
     Return resolved heatmap path only if it lies under output_dir (guards path injection
-    for embedded images). Caller must pass the same output_dir used to build the heatmap.
+    for embedded images). Delegates to :func:`report.safe_paths.existing_safe_report_path`.
     """
-    try:
-        base = Path(output_dir).resolve()
-        candidate = Path(heatmap_path).resolve()
-    except OSError:
-        return None
-    if not candidate.is_relative_to(base) or not candidate.is_file():
-        return None
-    return candidate
+    return existing_safe_report_path(output_dir, heatmap_path)
 
 
 # Cross-ref aggregated sheet: first row explains sampling limits (FN-first; incomplete-data transparency).
@@ -176,8 +170,11 @@ def _create_heatmap(
         except Exception:
             pass
     sid_prefix = safe_session_prefix(session_id, max_len=12)
-    out_path = Path(output_dir) / f"heatmap_{sid_prefix}.png"
-    plt.savefig(out_path, bbox_inches="tight")
+    out_path = get_safe_report_path(output_dir, f"heatmap_{sid_prefix}.png")
+    if out_path is None:
+        plt.close()
+        return None
+    plt.savefig(str(out_path), bbox_inches="tight")
     plt.close()
     return str(out_path)
 
@@ -1285,7 +1282,14 @@ def generate_report(
         if lic_ctx.watermark:
             lic_footer = f"{lic_footer} ({lic_ctx.watermark})"
     xlsx_prefix = safe_session_prefix(session_id, max_len=16)
-    out_path = Path(output_dir) / f"Relatorio_Auditoria_{xlsx_prefix}.xlsx"
+    out_path = get_safe_report_path(
+        output_dir, f"Relatorio_Auditoria_{xlsx_prefix}.xlsx"
+    )
+    if out_path is None:
+        _logger.error(
+            "Refusing to write Excel: output_dir or session-derived filename failed safety checks."
+        )
+        return None
     # Create heatmap PNG first so we can embed it in the Heatmap data sheet
     heatmap_path = _create_heatmap(
         db_rows_for_sheets,
