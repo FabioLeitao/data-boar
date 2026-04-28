@@ -107,6 +107,7 @@ Implement **one generic “notify” step** in CI (bash/PowerShell) that posts t
 1. **Ops digest (manual + scheduled opt-in):** workflow **`Slack ops digest`** (`.github/workflows/slack-ops-digest.yml`) supports `workflow_dispatch` and weekday schedule. Scheduled posts are enabled only with **`SLACK_NOTIFY_DAILY_DIGEST=true`**; manual dispatch always works when secret exists.
 1. **Product / scan-complete:** reuse the same webhook URL in Data Boar **`config.yaml`** or env (see [USAGE.md](../USAGE.md) — operator notifications); separate from Actions workflows above.
 1. **Backlog (optional):** scheduled digest via [scripts/notify_webhook.py](../../scripts/notify_webhook.py) or KPI export once you want EOD/sprint summaries (see §7).
+1. **Ops telemetry (config-less, env-driven):** [scripts/ops_notify.py](../../scripts/ops_notify.py) posts a short message to Slack using `SLACK_WEBHOOK_DATA_BOAR_OPS` (preferred for ops telemetry) or `SLACK_WEBHOOK_URL` (fallback). Hardened with explicit timeout, bounded retries (3 attempts, exponential backoff), explicit exit codes (`0`/`1`/`2`/`3`), and `--dry-run`. Use for completão heartbeats and CI-side ops pings where there is no `config.yaml` in scope. Does **not** replace `notify_webhook.py` for product scan-complete notifications.
 
 ### 4.2 Slack incoming webhook — operator how-to (grab URL, store it, verify)
 

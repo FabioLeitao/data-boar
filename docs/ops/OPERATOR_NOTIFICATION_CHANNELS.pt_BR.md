@@ -104,6 +104,7 @@ Um passo genérico “notify” pode enviar o mesmo texto ao **Slack** e/ou ao *
 1. **Digest operacional (manual + agendado opt-in):** workflow **`Slack ops digest`** (`.github/workflows/slack-ops-digest.yml`) aceita `workflow_dispatch` e agendamento em dias úteis. O agendamento só roda com **`SLACK_NOTIFY_DAILY_DIGEST=true`**; o disparo manual funciona sempre que o secret existir.
 1. **Produto / fim de scan:** reutilize a mesma URL no **`config.yaml`** ou env do Data Boar (ver [USAGE.pt_BR.md](../USAGE.pt_BR.md) — notificações ao operador); caminho separado dos workflows do Actions acima.
 1. **Backlog (opcional):** digest agendado com [scripts/notify_webhook.py](../../scripts/notify_webhook.py) ou export KPI quando quiser resumos EOD/sprint (ver §7).
+1. **Telemetria de ops (sem config, baseada em env):** [scripts/ops_notify.py](../../scripts/ops_notify.py) posta uma mensagem curta no Slack usando `SLACK_WEBHOOK_DATA_BOAR_OPS` (preferido para telemetria de ops) ou `SLACK_WEBHOOK_URL` (fallback). Endurecido com `timeout` explícito, retries limitados (3 tentativas, backoff exponencial), exit codes explícitos (`0`/`1`/`2`/`3`) e `--dry-run`. Use para heartbeats de completão e pings de ops em CI onde não há `config.yaml` no escopo. **Não** substitui `notify_webhook.py` para notificações de fim de scan do produto.
 
 ### 4.2 Webhook Slack — how-to do operador (pegar URL, guardar, conferir)
 
