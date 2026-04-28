@@ -42,6 +42,10 @@ or rule that already enforces the doctrine.
 
 Driving plan: [PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md](../../plans/PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md).
 
+**Cursor rule binding (situational):** [`.cursor/rules/engineering-doctrine-and-performance-baseline.mdc`](../../../.cursor/rules/engineering-doctrine-and-performance-baseline.mdc) — loaded by globs on `rust/`, `pro/`, `connectors/sql_sampling.py`, the executive-report surfaces, the manifestos themselves, and `.github/PULL_REQUEST_TEMPLATE.md`. It pins the diagnostic voice (Sysinternals bar), names the manifesto clauses contributors must cite in PR copy, and reminds reviewers how to read the recorded `speedup_vs_opencore = 0.574` figure (Pro is **0.574x as fast as** OpenCore — a debt baseline, not a floor) without double-inverting it.
+
+> **Bench voice (internal use only).** *"Data Boar is not shelf software; it is a precision instrument for forensic auditing. Every line of code follows flight-engineering rigor. If documentation does not reflect code, the documentation is a bug."* This phrasing belongs in maintainer-facing surfaces (this hub, `--verbose` output, lab postmortems) — not in the README executive pitch slice, which is contractually plain-language per [ADR 0035](../../adr/0035-readme-stakeholder-pitch-vs-deck-vocabulary.md) and pinned by `tests/test_readme_stakeholder_pitch_contract.py`.
+
 ---
 
 ## Engineering craft (people, products, narrative)
