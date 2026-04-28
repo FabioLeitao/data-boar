@@ -153,5 +153,5 @@ Use os blocos literais do **[`LAB_COMPLETAO_FRESH_AGENT_BRIEF.md`](LAB_COMPLETAO
 - **Prompt-mestre de checklist de release (arquivo 1.7.3 + *tier* parametrizado):** [COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.pt_BR.md) ([EN](COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT.md)); cópias por semver: **`COMPLETAO_MESTRE_RELEASE_CHECKLIST_PROMPT_<semver>.md`** (ver **`completao-chat-starter.ps1 -Tier release-master`**)
 - **Escada de arranque:** [OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md](OPERATOR_AGENT_COLD_START_LADDER.pt_BR.md) ([EN](OPERATOR_AGENT_COLD_START_LADDER.md))
 - **Personas:** [LAB_OP_HOST_PERSONAS.pt_BR.md](LAB_OP_HOST_PERSONAS.pt_BR.md) ([EN](LAB_OP_HOST_PERSONAS.md))
-- **Runbook (inclui `lab_result.json`, trilha de auditoria, contrato de *exit code*):** [LAB_COMPLETAO_RUNBOOK.pt_BR.md](LAB_COMPLETAO_RUNBOOK.pt_BR.md) ([EN](LAB_COMPLETAO_RUNBOOK.md))
+- **Runbook (inclui `lab_result.json`, Rastro de Auditoria (Audit Trail), contrato de *exit code*):** [LAB_COMPLETAO_RUNBOOK.pt_BR.md](LAB_COMPLETAO_RUNBOOK.pt_BR.md) ([EN](LAB_COMPLETAO_RUNBOOK.md))
 - **Mapa de scripts:** [TOKEN_AWARE_SCRIPTS_HUB.pt_BR.md](TOKEN_AWARE_SCRIPTS_HUB.pt_BR.md) ([EN](TOKEN_AWARE_SCRIPTS_HUB.md))

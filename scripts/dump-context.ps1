@@ -73,7 +73,7 @@ function New-OrderedFileList {
 
     foreach ($f in $targetFiles) {
         if ((Test-Path -LiteralPath $f) -and -not (Test-ExcludedPath -PathValue $f)) {
-            [void]$files.Add($f -replace "\\", "/")
+            [void]$files.Add(($f -replace "\\", "/"))
         }
     }
 
@@ -97,7 +97,7 @@ function New-OrderedFileList {
         }
     }
 
-    return @($files.ToArray() | Sort-Object)
+    return @($files | Sort-Object)
 }
 
 function Write-FileBlock {

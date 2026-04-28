@@ -31,11 +31,13 @@ Insert rows from your operational procedures (shell script, DBA tool, or a futur
 
 `claims.json` must include at least `sub`, `exp`, `iat` (unix seconds). Optional: `dbcid`, `dbcname`, `dbenv`, `dbmfp`, `dbtrial`, `dbmaxrows`, `dbissuer`, `dbkid`, `dbgrace` (see `docs/LICENSING_SPEC.md` in the main app repo).
 
-## Security
+## 🛡️ Protocolo de Custódia de Chaves (Estilo Gibson)
 
-- Generate **Ed25519** keys offline; store private key in Bitwarden / HSM / hardware token as policy dictates.
-- Use a **different** key than your **Git commit-signing** key.
-- Restrict `studio` binary execution to authorized workstations (MDM, filesystem ACLs).
+O `license-studio` não é um brinquedo; é a prensa que assina a confiança do produto.
+
+- **Isolamento de Ar (Air-gapping):** As chaves Ed25519 devem ser geradas em ambiente offline. Se a chave tocou a internet sem criptografia de hardware, considere-a comprometida.
+- **Assinatura de Commit:** Não confunda sua chave de desenvolvedor com a chave de emissão de licenças. São ferramentas de calibres diferentes para propósitos diferentes.
+- **Verificabilidade:** Todo binário `studio` deve ter seu hash conferido antes da execução em estações de trabalho autorizadas.
 
 ## Legal
 

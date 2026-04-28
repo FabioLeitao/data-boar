@@ -1,0 +1,21 @@
+---
+description: Impoe o tom de voz NASA e o gate de performance de 0.574x.
+alwaysApply: true
+---
+
+# Rigor Linguistico e de Performance
+
+## 1. Voz Ativa e Comando (NASA Style)
+
+- **Proibido:** Voz passiva ("Os logs sao gerados", "E permitido").
+- **Obrigatorio:** Verbos de acao direta ("O sistema gera logs", "O gate impede a execucao").
+- **Abstracao (LCM):** Use descricoes concretas de funcoes de codigo, nao metaforas vagas.
+
+## 2. Gate de Performance
+
+- O motor Rust e a prioridade. NUNCA mascare lentidao com "ajustes de sintaxe" em Python.
+- Se a performance cair abaixo de **0.574x**, entre em **NASA Safe-Hold**: pare tudo e reporte o gargalo.
+
+## 3. Taxonomia Sagrada
+
+Mantenha os termos originais: Data Sniffing, Deep Boring, Safe-Hold, Audit Trail.

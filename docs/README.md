@@ -2,6 +2,8 @@
 
 **Português (Brasil):** [README.pt_BR.md](README.pt_BR.md)
 
+Data Boar is not shelfware; it is a precision instrument for forensic auditing. Every code path follows flight-engineering rigor. If documentation does not reflect code, documentation is a bug.
+
 This folder centralizes **application documentation**. Repository root keeps the files that GitHub and tooling expect (e.g. **README.md**, **SECURITY.md**, **CONTRIBUTING.md**, **CODE_OF_CONDUCT.md**, **LICENSE**). Use this index to find guides in **English** and **Português (Brasil)** and to jump between languages. **Browse the tables below by topic**; each row links to the English and Português (Brasil) version when available, so you can reach every document and switch language at any time. **Partners / investors** landing from GitHub: the root README section **The Architect's Vault** ([README.md](../README.md)) surfaces the **decision-maker value brief**, **ADR index**, **narrative history** placeholder, **governance-of-the-auditor** ADR, and this index in one table—without linking execution plans from the pitch surface ([ADR 0004](adr/0004-external-docs-no-markdown-links-to-plans.md)). **Concern-first navigation (CISO / DPO: minors, jurisdiction hints, child-privacy samples):** [MAP.md](MAP.md) ([pt-BR](MAP.pt_BR.md)).
 
 ## Documentation policy

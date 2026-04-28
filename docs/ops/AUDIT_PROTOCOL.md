@@ -1,89 +1,29 @@
-# Data Boar Audit Protocol (Agent Governance Dump)
+# Protocolo de Auditoria de Integridade
 
-## Purpose
+Este documento rege a conformidade entre o código e a promessa técnica do Data Boar.
 
-This protocol defines a reproducible "truth serum" dump for external audits of
-agent behavior and governance infrastructure in Data Boar.
+## Rigor de Tradução (LCM)
 
-The dump captures one consolidated `.txt` with:
+As traduções para PT-BR devem seguir o **Linguistic Category Model** de alto impacto:
 
-- agent governance surfaces (`AGENTS.md`, rules, skills),
-- CI/editor posture (`.github`, `.vscode`, pre-commit),
-- operational doctrine and rituals (`docs/ops/inspirations`),
-- wrapper/gate scripts (`check-all`, `pre-commit-and-tests`, related scripts).
+- **Evitar:** "O script permite você..." (Tradução direta).
+- **Adotar:** "O script expõe a funcionalidade...", "A ferramenta assegura o rastro...".
 
-It is designed for transparency and troubleshooting before support escalations,
-security triage, or strategic reviews.
+## Gestão de Performance
 
-## Scripts
+Qualquer queda na eficiência do `boar_fast_filter` deve disparar um **ADR de Regressão**.
 
-- Windows/PowerShell: `scripts/dump-context.ps1`
-- Linux/macOS Bash: `scripts/dump-context.sh`
+## Contrato de Bancada (Adam Savage)
 
-Default output: `data-boar-blackbox-audit.txt` at repo root.
+- Ferramenta que não funciona não permanece na bancada.
+- Scripts órfãos ou quebrados devem ser removidos ou corrigidos antes de encerrar a tarefa.
 
-## Privacy Contract (Strict)
+## Registro de Ritual e Contrato
 
-Both scripts must strictly exclude:
+Toda alteração de ritual operacional ou contrato de execução deve ser registrada neste arquivo
+antes do fechamento da sessão.
 
-- any path containing a directory segment named `private`,
-- any file whose basename starts with `.env`.
+## Warning de Integridade (Doutrina NASA)
 
-This protects local secrets and private operator context from audit bundles.
-
-## File Boundary Contract
-
-Every captured file must include explicit boundaries:
-
-- `#### START_FILE: <relative/path> ####`
-- metadata lines (`TIMESTAMP`, `PERMISSIONS` when available, `SIZE_BYTES`)
-- `#### END_FILE: <relative/path> ####`
-
-This makes the dump deterministic and diff-friendly for external reviewers.
-
-## Linux Sync Integrity Check
-
-The Bash script validates local git state against `origin/<branch>` (or `@{u}`
-fallback) and records a sync status line in the dump:
-
-- `SYNC_OK: ...` when aligned
-- `WARNING: ...` when local HEAD diverges or cannot be validated
-
-This avoids cross-environment drift during audit handoffs.
-
-## When To Run
-
-Run the dump before:
-
-- support escalation,
-- external review of agent behavior,
-- strategic governance/risk assessment,
-- post-incident evidence packaging.
-
-## Usage
-
-From repo root:
-
-```powershell
-.\scripts\dump-context.ps1
-```
-
-```bash
-./scripts/dump-context.sh
-```
-
-Optional custom output file:
-
-```powershell
-.\scripts\dump-context.ps1 -OutputFile "audit-2026-04-28.txt"
-```
-
-```bash
-./scripts/dump-context.sh audit-2026-04-28.txt
-```
-
-## Validation Expectation
-
-Changes to these scripts should pass repository lint/gates (`check-all` or
-`lint-only`) and avoid risky patterns (no command injection helpers, no dynamic
-eval, no secret scraping behavior).
+Quando o Founder solicitar uma ação que viole a doutrina de integridade (por exemplo, pular
+testes obrigatórios), o agente deve emitir um **Warning de Integridade** antes de executar.
