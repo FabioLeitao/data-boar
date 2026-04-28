@@ -15,6 +15,8 @@ so branches stay in sync with main and merge conflicts are avoided (see CONTRIBU
 """
 
 import logging
+import os
+import re
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Callable
@@ -27,23 +29,74 @@ from core.about import get_about_info
 from core.aggregated_identification import run_aggregation
 from core.database import failure_hint
 from core.suggested_review import SUGGESTED_REVIEW_PATTERN
+from report.safe_prefix import safe_session_prefix
 from report.scan_evidence import write_scan_evidence_artifacts
 
 _logger = logging.getLogger(__name__)
 
 
-def _heatmap_path_under_output_dir(heatmap_path: str, output_dir: str) -> Path | None:
+# Heatmap basename allowlist (whitelist barrier for CodeQL py/path-injection).
+# Mirrors api.routes._HEATMAP_FILENAME_PATTERN so CodeQL sees the same documented
+# sanitizer mold (re.fullmatch + normpath(join(base, name)) + startswith + isfile).
+_HEATMAP_BASENAME_PATTERN = re.compile(r"^heatmap_[A-Za-z0-9_-]{4,64}\.png$")
+
+
+def _heatmap_basename(heatmap_path: str) -> str | None:
     """
-    Return resolved heatmap path only if it lies under output_dir (guards path injection
-    for embedded images). Caller must pass the same output_dir used to build the heatmap.
+    Reduce ``heatmap_path`` to a single allowlisted basename (whitelist barrier).
+
+    Strips any directory component before validation so CodeQL's taint tracking
+    sees the user-influenced segment cleanly truncated by ``os.path.basename``
+    and then matched against an allowlist regex (``re.fullmatch``). This is the
+    documented "barrier" pattern in CodeQL's py/path-injection query.
     """
-    try:
-        base = Path(output_dir).resolve()
-        candidate = Path(heatmap_path).resolve()
-        candidate.relative_to(base)
-    except (ValueError, OSError):
+    if not heatmap_path:
         return None
-    return candidate if candidate.is_file() else None
+    raw = os.fspath(heatmap_path).replace("\\", "/")
+    name = os.path.basename(raw)
+    if not name or _HEATMAP_BASENAME_PATTERN.fullmatch(name) is None:
+        return None
+    return name
+
+
+def _safe_heatmap_path_under_output_dir(
+    heatmap_path: str, output_dir: str
+) -> Path | None:
+    """
+    Resolve ``heatmap_path`` to a real file strictly under ``output_dir``.
+
+    Two sanitizers stacked (matches the CodeQL py/path-injection sanitizer mold
+    already accepted in ``api.routes._real_file_under_out_dir_str``):
+
+    1. **Whitelist barrier:** :func:`_heatmap_basename` reduces the input to a
+       single basename and requires ``re.fullmatch`` on the heatmap allowlist.
+    2. **Containment:** ``normpath(join(base, name))`` then
+       ``startswith(base)`` + ``isfile()``. ``base`` is realpath-canonical.
+
+    The full ``heatmap_path`` argument is **never** passed to ``os.path.join``
+    or ``Path.resolve``; only the validated basename is joined with the
+    operator-controlled ``output_dir`` so CodeQL's data-flow stops at the
+    barrier — no ``Path.is_relative_to`` reliance (CodeQL does not recognize
+    that method as a sanitizer; see PR #283 RCA in ADR 0044).
+    """
+    name = _heatmap_basename(heatmap_path)
+    if name is None:
+        return None
+    try:
+        base_path = os.path.realpath(os.path.abspath(os.fspath(output_dir)))
+    except (OSError, ValueError):
+        return None
+    fullpath = os.path.normpath(os.path.join(base_path, name))
+    if not fullpath.startswith(base_path):
+        return None
+    if not os.path.isfile(fullpath):
+        return None
+    return Path(fullpath)
+
+
+# Backwards-compatible alias kept for tests/external callers that imported the
+# previous helper name. New code should call :func:`_safe_heatmap_path_under_output_dir`.
+_heatmap_path_under_output_dir = _safe_heatmap_path_under_output_dir
 
 
 # Cross-ref aggregated sheet: first row explains sampling limits (FN-first; incomplete-data transparency).
@@ -173,7 +226,8 @@ def _create_heatmap(
             ax_inset.axis("off")
         except Exception:
             pass
-    out_path = Path(output_dir) / f"heatmap_{session_id[:12]}.png"
+    sid_prefix = safe_session_prefix(session_id, max_len=12)
+    out_path = Path(output_dir) / f"heatmap_{sid_prefix}.png"
     plt.savefig(out_path, bbox_inches="tight")
     plt.close()
     return str(out_path)
@@ -1044,9 +1098,11 @@ def _write_excel_sheets(
             .unstack(fill_value=0)
         )
         summary.to_excel(writer, sheet_name=_SHEET_HEATMAP_DATA)
-        # Embed heatmap image below the table (no overlap); scale to fit letter/A4 when printed
+        # Embed heatmap image below the table (no overlap); scale to fit letter/A4 when printed.
+        # Two sanitizers stacked: basename allowlist (re.fullmatch) + normpath/startswith/isfile
+        # under the operator-controlled output_dir. See _safe_heatmap_path_under_output_dir.
         safe_heatmap = (
-            _heatmap_path_under_output_dir(heatmap_path, output_dir)
+            _safe_heatmap_path_under_output_dir(heatmap_path, output_dir)
             if heatmap_path
             else None
         )
@@ -1281,7 +1337,8 @@ def generate_report(
         lic_footer = f"License: {lic_ctx.state}"
         if lic_ctx.watermark:
             lic_footer = f"{lic_footer} ({lic_ctx.watermark})"
-    out_path = Path(output_dir) / f"Relatorio_Auditoria_{session_id[:16]}.xlsx"
+    xlsx_prefix = safe_session_prefix(session_id, max_len=16)
+    out_path = Path(output_dir) / f"Relatorio_Auditoria_{xlsx_prefix}.xlsx"
     # Create heatmap PNG first so we can embed it in the Heatmap data sheet
     heatmap_path = _create_heatmap(
         db_rows_for_sheets,
