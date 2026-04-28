@@ -58,3 +58,9 @@ the **next** maintainer (human or agent) needs *one* file to skim before opening
 - [`codeql-priority-matrix.mdc`](../../../.cursor/rules/codeql-priority-matrix.mdc) — how a
   *real* CodeQL alert is triaged once the empirical-evidence gate (F6 follow-up) is in
   place.
+
+## Not in this index (different shape — recorded, not conflated)
+
+| Date (UTC) | Family | Trigger ts | Why it is *not* a fabrication row |
+| --- | --- | --- | --- |
+| 2026-04-28 ~13:28 | `doctrinal-triad-validation` | `1777382927.346569` | Operator asked whether the Slack-notification / bootstrap-context / `0.574x` triad disciplines a generic AI agent. No fabricated CodeQL alert, Dependabot alert, file path, or test count. Answered as a doctrinal validation note in [`DOCTRINAL_TRIAD_VALIDATION_2026-04-28.md`](DOCTRINAL_TRIAD_VALIDATION_2026-04-28.md) (agreement with scope limits + recorded disagreements). Logged here so a future grep of this index does not silently absorb doctrine probes into fabrication rows. |

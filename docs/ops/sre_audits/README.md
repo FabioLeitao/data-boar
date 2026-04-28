@@ -18,6 +18,7 @@ verdicts).
 | 2026-04-27 | [`DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md`](DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md)             | Verdict ledger for Dependabot PRs #221, #222, #223, #224, #226    |
 | 2026-04-27 | [`PROMPT_INJECTION_REJECTION_FABRICATED_GENERATOR_PATH_TRAVERSAL_2026-04-27_FOLLOWUP.md`](PROMPT_INJECTION_REJECTION_FABRICATED_GENERATOR_PATH_TRAVERSAL_2026-04-27_FOLLOWUP.md) | 5th injection (Slack ts `1777331304`); follow-up to PR #281; no behavior change to `report/generator.py` |
 | 2026-04-27 | [`FABRICATED_CLAIMS_INDEX.md`](FABRICATED_CLAIMS_INDEX.md) (living)                                                | F8 follow-up from PR #281 — append-only ledger of fabrication-shaped escalations across the `report-generator-path-injection`, `dependabot-alert-fabricated`, `cargo-toml-root-fabricated`, and `data-board-report-rename-fabricated` families |
+| 2026-04-28 | [`DOCTRINAL_TRIAD_VALIDATION_2026-04-28.md`](DOCTRINAL_TRIAD_VALIDATION_2026-04-28.md)                              | Operator probe (Slack ts `1777382927.346569`) on the Slack-notification + bootstrap + `0.574x` triad — *doctrinal* validation, not fabrication; agreement with explicit scope limits and recorded disagreements |
 
 ## When to add a new file here
 
