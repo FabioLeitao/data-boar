@@ -1,5 +1,7 @@
 # Data Boar
 
+> O Data Boar não é um software de prateleira; é um instrumento de precisão para auditoria forense. Cada linha de código segue o rigor da engenharia de voo. Se a documentação não reflete o código, a documentação é um bug.
+
 **Data Boar** — descoberta de dados e governança de risco corporativa: mapeamento com consciência de conformidade na sua sopa de dados (motor de inteligência, não um “app de auditoria” de um só marco).
 
 ![Data Boar mascot](api/static/mascot/data_boar_mascote_color.svg)

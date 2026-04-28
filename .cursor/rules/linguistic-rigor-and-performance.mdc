@@ -1,0 +1,34 @@
+---
+description: Persona de rigor (voz ativa), baseline de performance 200k e léxico de produto (ADR 0035).
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Rigor linguístico e de performance
+
+## 1. Persona e voz (operador + código)
+
+- Prefira **voz ativa** e verbos operacionais: o sistema faz X, o gate bloqueia Y, o operador executa Z.
+- Evite abstrações vazias; amarre afirmações a **módulos**, **flags** ou **artefatos** (paths reais) quando descrever comportamento.
+- Em narrativa **pt-BR**, siga **`.cursor/rules/docs-locale-pt-br-contract.mdc`** (léxico brasileiro, não pt-PT).
+
+## 2. Motor Rust e caminho Pro — prioridade de engenharia
+
+- O pré-filtro **`boar_fast_filter`** mora em **`rust/boar_fast_filter/`**. Mudanças que tocam Python **e** o hot path Pro devem considerar o crate explicitamente (build local: **`maturin`** / scripts em **`scripts/build-rust-prefilter.ps1`** quando aplicável ao host).
+- **Não** use “ajuste cosmético” em Python para mascarar regressão no pré-filtro ou no throughput do worker quando o escopo for performance.
+
+## 3. Gate de performance — baseline **0.574x** (perfil 200k documentado)
+
+- O repositório fixa o perfil oficial em **`tests/benchmarks/official_benchmark_200k.json`** (`speedup_vs_opencore = 0.574` — Pro **mais lento** que OpenCore neste perfil; ver **`tests/test_official_benchmark_200k_evidence.py`** e **`docs/plans/BENCHMARK_EVOLUTION.md`** §8).
+- **Safe-Hold (NASA-style):** antes de tratar trabalho como “pronto” ou pedir merge autónomo, confirme que **`uv run pytest tests/test_official_benchmark_200k_evidence.py`** ainda passa. Se o perfil mudar de forma intencional, o mesmo PR deve atualizar **JSON + teste + narrativa** coerente — nunca um silêncio entre artefato e docs.
+- Uma queda de performance **abaixo** do que o JSON/teste permitem não é “aceitável com CI verde” se o contrato do benchmark foi violado sem atualização explícita.
+
+## 4. Taxonomia e marca (não traduzir à toa)
+
+- Mantenha os rótulos canónicos de produto em inglês quando forem **marca ou camada nomeada**: **Data Sniffing**, **Deep Boring**, **Safe-Hold**, **Audit Trail** — alinhado a **ADR 0035** e **`docs/GLOSSARY.md`**.
+- Não traduza esses termos para português em docs públicos só para “naturalizar”; use a forma fixa e explique na primeira ocorrência se necessário.
+
+## 5. Fonte de verdade técnica
+
+- Alterou comportamento, CLI, API ou conectores? Atualize **`docs/TECH_GUIDE.md`** e **`docs/TECH_GUIDE.pt_BR.md`** no mesmo esforço quando a mudança for relevante para operadores (regra espelhada no checklist de PR).
+- Desvio entre código e **TECH_GUIDE** / benchmark evidenciado é **bug de documentação ou de contrato** — trate como tal antes de integrar.
