@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 # check-all.sh — Linux/macOS (bash) mirror of scripts/check-all.ps1.
-# Full gate: optional gatekeeper (requires pwsh) + plans dashboard + pre-commit + pytest.
+# Same gates: gatekeeper (pwsh) + Rust (cargo fmt/check/test, PYO3 ABI3 hint) +
+# plans-stats --write + pre-commit-and-tests.sh (venv + pre-commit + pytest).
 # From repo root:
 #   ./scripts/check-all.sh
 #   ./scripts/check-all.sh --skip-pre-commit
 #   ./scripts/check-all.sh --include-version-smoke
 # On Windows, prefer .\scripts\check-all.ps1 (identical flow).
+# Full parity with Windows requires pwsh for gatekeeper-audit.ps1; install
+# PowerShell Core where possible. Rust requires cargo on PATH.
 set -euo pipefail
 
 REPO_ROOT=$(cd "$(dirname "$0")/.." && pwd)
@@ -32,16 +35,21 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-echo "=== check-all.sh: lint + tests (repo: $REPO_ROOT) ===" >&2
-
 # PII gate (parity with check-all.ps1) — reuses PowerShell script.
 if command -v pwsh >/dev/null 2>&1; then
-  pwsh "$REPO_ROOT/scripts/gatekeeper-audit.ps1" || exit "$?"
+  if ! pwsh "$REPO_ROOT/scripts/gatekeeper-audit.ps1"; then
+    echo "check-all.sh: ABORTED by gatekeeper-audit (PII seed hit in staged files)." >&2
+    exit "$?"
+  fi
 else
-  echo "check-all.sh: WARN: pwsh not on PATH; skipping gatekeeper-audit.ps1 (install PowerShell for parity)." >&2
+  echo "check-all.sh: WARN: pwsh not on PATH; skipping gatekeeper-audit.ps1 (install PowerShell for parity with check-all.ps1)." >&2
 fi
 
-# Rust guard (pyo3 / local Python 3.14 forward compat + fmt, check, test)
+# Rust guard (same commands as check-all.ps1: fmt --check, check, test --quiet)
+if ! command -v cargo >/dev/null 2>&1; then
+  printf '\033[31m%s\033[0m\n' "Rust Guard... Failed (cargo not on PATH)" >&2
+  exit 1
+fi
 echo "Running Rust guard (cargo fmt, check, test)..." >&2
 if ! (
   export PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
@@ -53,7 +61,9 @@ if ! (
 fi
 printf '\033[32m%s\033[0m\n' "Rust Guard... Passed" >&2
 
-# Plan dashboard
+echo "=== check-all.sh: lint + tests (repo: $REPO_ROOT) ===" >&2
+
+# Keep plan dashboard stats in sync before lint/tests (same as check-all.ps1).
 PY=python3
 if ! command -v python3 >/dev/null 2>&1; then
   PY=python
@@ -61,36 +71,18 @@ fi
 echo "Refreshing plans status dashboard..." >&2
 "$PY" "$REPO_ROOT/scripts/plans-stats.py" --write
 
-# Recover from missing venv
-if [[ ! -f .venv/pyvenv.cfg ]]; then
-  echo "No .venv/pyvenv.cfg - running uv sync to recreate the environment..." >&2
-  uv sync
-  if [[ ! -f .venv/pyvenv.cfg ]]; then
-    echo "check-all.sh: uv sync did not create .venv; fix disk path or UV_* env and retry." >&2
-    exit 2
-  fi
+# Delegate: same behaviour as pre-commit-and-tests.ps1 (venv recovery, pre-commit, pytest).
+pct_args=()
+if [[ "$SKIP_PRECOMMIT" -eq 1 ]]; then
+  pct_args+=(--skip-pre-commit)
 fi
-
-if [[ "$SKIP_PRECOMMIT" -eq 0 ]]; then
-  echo "Running pre-commit (Ruff + markdown + pt-BR locale guards)..." >&2
-  if ! uv run pre-commit run --all-files; then
-    echo "pre-commit failed. Attempting to auto-apply Ruff formatting and re-run pre-commit once..." >&2
-    uv run ruff format . 2>/dev/null || true
-    if ! uv run pre-commit run --all-files; then
-      echo "pre-commit still failing after auto-format. Fix issues above before committing or pushing." >&2
-      exit 1
-    fi
-  fi
-fi
-
-echo "Running pytest (full suite, warnings treated as errors)..." >&2
 set +e
-uv run pytest -v -W error --tb=short
-pytest_rc=$?
+bash "$REPO_ROOT/scripts/pre-commit-and-tests.sh" "${pct_args[@]}"
+exit_code=$?
 set -e
-if [[ "$pytest_rc" -ne 0 ]]; then
-  echo "pytest failed. Fix test failures before committing or pushing." >&2
-  exit "$pytest_rc"
+if [[ "$exit_code" -ne 0 ]]; then
+  echo "check-all.sh: FAILED (see output above)." >&2
+  exit "$exit_code"
 fi
 
 if [[ "$INCLUDE_VERSION_SMOKE" -eq 1 ]]; then
