@@ -123,6 +123,14 @@
 | `generate-sbom.ps1` | SBOM | **`WORKFLOW_DEFERRED_FOLLOWUPS.md`**, security docs |
 | `gitlab-mirror-health-check.ps1` | Mirror health | **`GITLAB_GITHUB_MIRROR.md`** |
 | `docker-lab-build.ps1`, `docker-hub-pull.ps1`, `docker-prune-local.ps1`, `docker-scout-critical-gate.ps1` | Docker lab / Hub / Scout | **`docker-smoke-container-hygiene`** SKILL, **`token-aware-automation`** SKILL |
+| `run-upstream-tools-history-rewrite.ps1` | `git filter-repo` helper for **upstream tool** mirrors (same guard pattern as PII rewrite) | **`.gitignore`** (comment); **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.md`** — **not** for canonical primary dev PC tree |
+
+### 5a. Public-tree codename hygiene (rare)
+
+| Script | Role | Wired to |
+| ------ | ---- | -------- |
+| `strip_workstation_codename_public_index.py` | Strip legacy codename token from a **generated** public index (dry-run first) | Docstring in script; **`AUDIT_PROTOCOL.md`** (workbench rule) |
+| `replace_public_workstation_codename_token.py` | Replace token across worktree or scan-only (`--dry-run`, `--scan-worktree`) | Docstring in script; **`AUDIT_PROTOCOL.md`** (workbench rule) |
 
 ---
 

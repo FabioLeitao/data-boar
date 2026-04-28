@@ -122,6 +122,14 @@
 | `generate-sbom.ps1` | SBOM | **`WORKFLOW_DEFERRED_FOLLOWUPS.md`**, docs de seguranca |
 | `gitlab-mirror-health-check.ps1` | Saúde do mirror | **`GITLAB_GITHUB_MIRROR.md`** |
 | `docker-lab-build.ps1`, `docker-hub-pull.ps1`, `docker-prune-local.ps1`, `docker-scout-critical-gate.ps1` | Docker lab / Hub / Scout | SKILL **`docker-smoke-container-hygiene`**, **`token-aware-automation`** |
+| `run-upstream-tools-history-rewrite.ps1` | Helper `git filter-repo` para mirrors de **ferramentas upstream** (mesmo padrao de guarda que reescrita PII) | **`.gitignore`** (comentario); **`PRIMARY_WINDOWS_WORKSTATION_PROTECTION.pt_BR.md`** — **nao** usar na arvore canonica do PC de desenvolvimento principal |
+
+### 5a. Higiene de codename na arvore publica (raro)
+
+| Script | Funcao | Ligado a |
+| ------ | ---- | -------- |
+| `strip_workstation_codename_public_index.py` | Remove token legado de codename de um indice publico **gerado** (dry-run primeiro) | Docstring no script; **`AUDIT_PROTOCOL.pt_BR.md`** (regra da bancada) |
+| `replace_public_workstation_codename_token.py` | Substitui token na worktree ou so varredura (`--dry-run`, `--scan-worktree`) | Docstring no script; **`AUDIT_PROTOCOL.pt_BR.md`** (regra da bancada) |
 
 ---
 
