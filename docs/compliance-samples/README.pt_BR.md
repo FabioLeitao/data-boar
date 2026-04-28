@@ -19,6 +19,7 @@ Para governança operacional (escopo, minimização, retenção e rastreabilidad
 | **compliance-sample-popia.yaml**               | POPIA (África do Sul): responsável pelo tratamento, informação pessoal e identificadores sul-africanos.                                                                                             |
 | **compliance-sample-appi.yaml**                | APPI (Japão): informação pessoal e dados pessoais retidos; termos e overrides alinhados à PPC.                                                                                                      |
 | **compliance-sample-pci_dss.yaml**             | PCI-DSS (dados de cartão de pagamento): padrões de cartão/financeiro e recommendation overrides para comerciantes e avaliadores.                                                                    |
+| **compliance-sample-eu_age_verification.yaml** | UE — *age assurance* (DSA Art. 28 proteção de menores + EUDI Wallet com atestação de idade no eIDAS 2.0): termos e overrides de **mapeamento técnico**; **não** realiza verificação de idade, **não** integra com wallet e **não** é aconselhamento jurídico. |
 | **compliance-sample-us_ftc_coppa.yaml**        | EUA FTC COPPA (privacidade online de crianças): termos e overrides de **mapeamento técnico**; sem verificação de idade nem aconselhamento jurídico.                                                 |
 | **compliance-sample-us_ca_ab2273_caadca.yaml** | Califórnia AB 2273 (Age-Appropriate Design): **rotulagem** para escopo voluntário; aplicabilidade exige assessoria jurídica.                                                                        |
 | **compliance-sample-us_co_cpa_minors.yaml**    | Colorado CPA — contextos com menores de 18 anos: **norm tags técnicos**; não estabelece “menor conhecido” no sentido jurídico.                                                                      |
@@ -60,6 +61,7 @@ Ao escolher ou criar uma amostra, considere o(s) **idioma(s)** da região alvo p
 | **Rússia (152-FZ)**              | Russo e inglês (ex.: персональные данные / personal data); rever termos quando houver alteração normativa. |
 | **Suíça (FADP)**                 | Inglês; opcional DE/FR/IT.                                                                                 |
 | **EUA (COPPA, AB 2273, CO CPA)** | Inglês (implantações e programas de privacidade nos EUA).                                                  |
+| **UE (DSA Art. 28 + EUDI Wallet — atestação de idade)** | Inglês; adições opcionais em idioma nacional (ex.: FR para CNIL, IT para AGCOM, DE para BfDI) por implantação. |
 
 Documente no cabeçalho da amostra ou em [COMPLIANCE_FRAMEWORKS](../COMPLIANCE_FRAMEWORKS.pt_BR.md) quando uma amostra incluir termos em mais de um idioma. Veja também a regra **.cursor/rules/compliance-samples-language.mdc**.
 

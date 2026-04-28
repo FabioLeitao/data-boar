@@ -36,6 +36,7 @@ For operational governance (scope, minimization, retention, traceability), use [
 | **compliance-sample-nigeria_ndpr.yaml**        | Nigeria NDPR 2019: NITDA; personal data, data controller; EN.                                                                                                       |
 | **compliance-sample-morocco_09_08.yaml**       | Morocco Law 09-08: CNDP; données à caractère personnel; FR + EN terms; CIN regex.                                                                                   |
 | **compliance-sample-switzerland_fadp.yaml**    | Switzerland revised FADP: FDPIC; personal data; EN + optional DE/FR/IT terms; AHV/UID regex.                                                                        |
+| **compliance-sample-eu_age_verification.yaml** | EU age verification (DSA Art. 28 minor protection + EUDI Wallet age attestation under eIDAS 2.0): **technical mapping** terms and overrides; **not** age verification, **not** wallet integration, **not** legal advice. |
 | **compliance-sample-us_ftc_coppa.yaml**        | U.S. FTC COPPA (children's online privacy): **technical mapping** terms and overrides; not age verification or legal advice.                                        |
 | **compliance-sample-us_ca_ab2273_caadca.yaml** | California AB 2273 (Age-Appropriate Design Code): **labelling** for voluntary scoping; applicability requires counsel.                                              |
 | **compliance-sample-us_co_cpa_minors.yaml**    | Colorado Privacy Act — minors / under-18 contexts: **technical** norm tags; does not establish “known minor” legally.                                               |
@@ -76,6 +77,7 @@ When choosing or authoring a sample, consider the **language(s)** of the target 
 | **Russia (152-FZ)**               | Russian and English (e.g. персональные данные / personal data); revalidate terms when regulations are amended. |
 | **Switzerland (FADP)**            | English; optional DE/FR/IT.                                                                                    |
 | **U.S. (COPPA, AB 2273, CO CPA)** | English (column names and privacy programs in U.S. deployments).                                               |
+| **EU (DSA Art. 28 + EUDI Wallet age attestation)** | English; optional national-language additions (e.g. FR for CNIL, IT for AGCOM, DE for BfDI) per deployment.    |
 
 Document in the sample header or in [COMPLIANCE_FRAMEWORKS](../COMPLIANCE_FRAMEWORKS.md) when a sample includes multi-language terms. See also the rule **.cursor/rules/compliance-samples-language.mdc**.
 
