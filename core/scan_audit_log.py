@@ -3,6 +3,19 @@ Declarative scan security / sampling posture for API and engine consumers.
 
 This is **not** per-query telemetry: it documents what the product is configured to do
 and which dialect-specific behaviours apply when database targets use those engines.
+
+Doctrinal references (behaviour-preserving comments -- do not remove in refactors):
+
+- ``docs/ops/inspirations/DEFENSIVE_SCANNING_MANIFESTO.md`` -- *test what you
+  fly*: ``nolock``, ``statement_timeout_ms``, ``leading_sql_comment``, and the
+  ``connector_default_statement_timeout_ms_when_unset`` constant below are the
+  audit-log echo of the relief valves enforced in
+  ``connectors/sql_sampling.py``. Anything ``GET /status`` or the executive
+  report claims here must be backed by code that actually clamps.
+- ``docs/ops/inspirations/ACTIONABLE_GOVERNANCE_AND_TRUST.md`` -- the
+  ``disclaimer`` field below is the Tailscale / Charity Majors discipline:
+  the system explains itself instead of pretending guarantees the runtime
+  cannot deliver. Do not delete the disclaimer to make the JSON look tidier.
 """
 
 from __future__ import annotations

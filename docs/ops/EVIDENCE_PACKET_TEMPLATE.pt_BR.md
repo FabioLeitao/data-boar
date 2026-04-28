@@ -20,7 +20,7 @@ Use este template para produzir um pacote objetivo após cada ciclo relevante de
 ## 3) Artefatos de evidência
 
 - Referências de relatórios:
-- Referências de logs/trilha de auditoria:
+- Referências de logs/Rastro de Auditoria (Audit Trail):
 - Referências de testes/validação:
 - Referências de versão/build:
 
