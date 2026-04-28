@@ -1,0 +1,160 @@
+---
+description: Engineering doctrine binding (manifestos, diagnostic voice, performance baseline) — load when editing rust/, pro/, connectors/sql_sampling.py, report/executive_report.py, the inspirations manifestos, or the PR template.
+globs: ["rust/**/*", "pro/**/*.py", "connectors/sql_sampling.py", "core/scan_audit_log.py", "report/executive_report.py", "report/scan_evidence.py", "cli/reporter.py", "docs/ops/inspirations/**/*.md", ".github/PULL_REQUEST_TEMPLATE.md", "docs/plans/PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md", "docs/plans/BENCHMARK_EVOLUTION.md"]
+alwaysApply: false
+---
+
+# Engineering doctrine, diagnostic voice, and performance baseline
+
+This rule **binds** the normative manifestos under
+[`docs/ops/inspirations/`](../../docs/ops/inspirations/) to a small,
+machine-checkable contract for code, docs, and PR review. It is
+**situational** by design (loaded by the globs above, by `@`-mention, or by
+an operator session keyword) so the always-applied rule set stays small.
+
+It does **not** introduce new behavior. It points at contracts the repo
+already encodes (tests, ADRs, manifestos) and asks contributors and agents
+to honor them.
+
+## 1. Manifestos are normative — read before editing the surfaces they govern
+
+| Manifesto | Governs |
+| --------- | ------- |
+| [`THE_ART_OF_THE_FALLBACK.md`](../../docs/ops/inspirations/THE_ART_OF_THE_FALLBACK.md) | Parser SQL → Regex → Raw string hierarchy. Never silently demote. |
+| [`DEFENSIVE_SCANNING_MANIFESTO.md`](../../docs/ops/inspirations/DEFENSIVE_SCANNING_MANIFESTO.md) | Sample caps, statement timeouts, `WITH (NOLOCK)` posture, leading SQL comment, no `ORDER BY` on auto-sampling. |
+| [`INTERNAL_DIAGNOSTIC_AESTHETICS.md`](../../docs/ops/inspirations/INTERNAL_DIAGNOSTIC_AESTHETICS.md) | What `--verbose`, `completão -Privileged`, audit JSON, and the executive report Section 3 should *feel* like (Sysinternals bar). |
+| [`ENGINEERING_BENCH_DISCIPLINE.md`](../../docs/ops/inspirations/ENGINEERING_BENCH_DISCIPLINE.md) | Bench ergonomics, checklist culture, narrated logs. |
+| [`ACTIONABLE_GOVERNANCE_AND_TRUST.md`](../../docs/ops/inspirations/ACTIONABLE_GOVERNANCE_AND_TRUST.md) | Why the executive report must surface fallback evidence. |
+
+When editing files governed by a manifesto, **state in the PR which clause
+is engaged** (e.g. *DEFENSIVE_SCANNING §3 dialect posture*). Do not mark
+"compliance scan" SQL changes as "minor" — they are protocol changes.
+
+## 2. Diagnostic voice (active, factual, named)
+
+The `--verbose`, audit log, and executive-report methodology surfaces follow
+the **Sysinternals bar** (
+[`INTERNAL_DIAGNOSTIC_AESTHETICS.md`](../../docs/ops/inspirations/INTERNAL_DIAGNOSTIC_AESTHETICS.md)).
+For tracked **English** prose written for those surfaces:
+
+- **Prefer active voice with a named subject.** *"The connector caps the
+  sample at 10 000 rows."* — not *"The sample is capped."*
+- **Name the unknown explicitly.** When a value is unverified, say
+  `not verified` (Sysinternals convention), not silence.
+- **No invented metrics.** If a number is an estimate, write
+  `~estimate=...`, not `count=...`. Aligns with
+  `.cursor/rules/publication-truthfulness-no-invented-facts.mdc`.
+
+For **Portuguese** prose, the `pt-BR` locale contract still applies
+(`.cursor/rules/docs-locale-pt-br-contract.mdc`,
+`.cursor/rules/docs-pt-br-locale.mdc`). Voice and lexical bar are
+**orthogonal**: write **Brazilian Portuguese** in active voice with a named
+subject — not pt-PT, and not passive ornament.
+
+## 3. Performance baseline — read the 0.574x figure correctly
+
+The 200k A/B benchmark recorded in
+[`tests/benchmarks/official_benchmark_200k.json`](../../tests/benchmarks/official_benchmark_200k.json)
+shows `speedup_vs_opencore = 0.574` for the Pro Python fallback path, with
+`opencore_seconds = 0.252242` and `pro_seconds = 0.439419`.
+
+**Read it once, do not double-invert:**
+
+- `0.574` means **Pro is 0.574x as fast as OpenCore** in this profile.
+- Equivalent statement: Pro takes roughly `1 / 0.574 ≈ 1.74x` more
+  wall-clock than OpenCore.
+- This is the **technical-debt baseline** to improve from, not a floor we
+  must stay above. A future change may **raise** the ratio toward `1.0` (or
+  beyond) — that is the **goal**.
+
+Pinned by:
+
+- Regression guard: [`tests/test_official_benchmark_200k_evidence.py`](../../tests/test_official_benchmark_200k_evidence.py).
+- Single-pass parity guard: [`tests/test_basic_python_scan_single_pass_parity.py`](../../tests/test_basic_python_scan_single_pass_parity.py).
+- Code anchors: [`pro/worker_logic.py`](../../pro/worker_logic.py), [`pro/engine.py`](../../pro/engine.py).
+- Postmortem: [`docs/ops/SPRINT_GREAT_LEAP_POSTMORTEM.md`](../../docs/ops/SPRINT_GREAT_LEAP_POSTMORTEM.md).
+- Reading guide: [`docs/plans/BENCHMARK_EVOLUTION.md`](../../docs/plans/BENCHMARK_EVOLUTION.md) §8.
+
+**Do not** re-state the figure as "Pro must stay above 0.574x" or "fail
+below 0.574x". That inverts the measurement. If you change `pro/`,
+`rust/boar_fast_filter`, or any code on the Pro hot path, regenerate the
+benchmark on the **lab host** (`scripts/benchmark-ab.ps1`) — the agent VM
+is **not** comparable for wall-time.
+
+## 4. Sacred taxonomy — keep audience-correct labels
+
+Two product labels are stable across decks, glossary, and compliance docs:
+
+- **Data Sniffing** — the discovery / sampling pass.
+- **Deep Boring** — the structured report depth.
+
+Per [ADR 0035](../../docs/adr/0035-readme-stakeholder-pitch-vs-deck-vocabulary.md)
+they belong in **`docs/COMPLIANCE_FRAMEWORKS.md`**, **`docs/GLOSSARY.md`**,
+**`docs/COMPLIANCE_TECHNICAL_REFERENCE.md`**, and slide-bank decks.
+
+They **must not** be inserted into the README executive pitch
+(`## For decision-makers and compliance leads` / `## Para gestores e líderes
+de conformidade` blocks). The pitch is anchored on
+**`Sniffing with judgment:`** / **`Farejando com critério:`** and is pinned
+by [`tests/test_readme_stakeholder_pitch_contract.py`](../../tests/test_readme_stakeholder_pitch_contract.py).
+Do **not translate or substitute** these labels — they are product
+identifiers in the same sense as `Data Boar` itself.
+
+Other repo-wide labels that stay English (per `AGENTS.md`): `Safe-Hold`,
+`Audit Trail`, manifesto file names, ADR titles.
+
+## 5. Rust core — do not mask Python regressions with Rust ornament
+
+If a slowdown appears in the Pro hot path, the **first** investigation is
+the algorithmic shape in `pro/worker_logic.py` and `pro/engine.py`
+(single-pass, no redundant `set` membership probe — see Slice 3 of
+[`PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md`](../../docs/plans/PLAN_ENGINEERING_DOCTRINE_CONSOLIDATION.md)).
+Only after the algorithmic shape is honest does it make sense to push more
+work into [`rust/boar_fast_filter`](../../rust/boar_fast_filter). Reverse
+order tends to produce Rust that wraps a Python anti-pattern.
+
+Rust contracts (when editing `rust/boar_fast_filter`):
+
+- `cargo fmt --check`, `cargo clippy --locked -- -D warnings`, and
+  `cargo test --locked` must pass before PR.
+- Build wheel via [`scripts/build-rust-prefilter.ps1`](../../scripts/build-rust-prefilter.ps1)
+  (or `maturin develop --release` per `rust/boar_fast_filter/README.md`)
+  before re-running the 200k benchmark.
+
+## 6. PR-time confirmations (paired with `.github/PULL_REQUEST_TEMPLATE.md`)
+
+When a PR touches files governed by §1, §3, or §5, the author confirms:
+
+1. **Source of truth aligned.** If code changed, the matching
+   `docs/USAGE*.md`, `docs/TECH_GUIDE*.md`, manifesto, or ADR is updated in
+   the same PR (or explicitly deferred with rationale).
+2. **Performance baseline honest.** If `pro/`, `rust/`, or
+   `tests/benchmarks/` changed, either re-run the 200k benchmark on the
+   lab host and update `docs/plans/BENCHMARK_EVOLUTION.md` §8, or state
+   that the change is **algorithmic-only** and the regression guard
+   (`tests/test_official_benchmark_200k_evidence.py`) is unaffected.
+3. **Lexicon respected.** No deck-only labels in the README pitch slice;
+   no translation or substitution of `Data Sniffing` / `Deep Boring` /
+   `Safe-Hold` / `Audit Trail` in tracked prose.
+
+## 7. Where this rule deliberately stops
+
+- It does **not** introduce a new "fail below 0.574x" gate. The recorded
+  ratio is a **debt baseline**, not a floor; the existing regression guard
+  pins direction, not policy.
+- It does **not** re-author the README pitch. ADR 0035 +
+  `tests/test_readme_stakeholder_pitch_contract.py` already encode that
+  boundary — a wholesale rewrite would either break the test or leak deck
+  vocabulary into stakeholder copy.
+- It does **not** override the always-applied rules
+  (`docs-locale-pt-br-contract`, `private-pii-never-public`,
+  `publication-truthfulness-no-invented-facts`, etc.). It complements them.
+
+## References
+
+- [ADR 0035](../../docs/adr/0035-readme-stakeholder-pitch-vs-deck-vocabulary.md) — README pitch vs deck vocabulary.
+- [ADR 0042](../../docs/adr/0042-lab-lessons-learned-archive-contract.md) — Lab lessons archive contract.
+- [`docs/ops/SPRINT_GREAT_LEAP_POSTMORTEM.md`](../../docs/ops/SPRINT_GREAT_LEAP_POSTMORTEM.md) — original 200k profile reading.
+- [`docs/ops/lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_27.md`](../../docs/ops/lab_lessons_learned/LAB_LESSONS_LEARNED_2026_04_27.md) — operator-facing reading guide.
+- `.cursor/rules/quality-sonarqube-codeql.mdc` — Python/markdown quality bar.
+- `.cursor/rules/check-all-gate.mdc` — Always-on automation script discipline.
