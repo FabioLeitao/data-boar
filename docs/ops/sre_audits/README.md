@@ -17,7 +17,8 @@ verdicts).
 | :--------- | :----------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------- |
 | 2026-04-27 | [`DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md`](DEPENDENCY_GUARDIAN_VERDICT_LEDGER_2026-04-27.md)             | Verdict ledger for Dependabot PRs #221, #222, #223, #224, #226    |
 | 2026-04-27 | [`PROMPT_INJECTION_REJECTION_FABRICATED_GENERATOR_PATH_TRAVERSAL_2026-04-27_FOLLOWUP.md`](PROMPT_INJECTION_REJECTION_FABRICATED_GENERATOR_PATH_TRAVERSAL_2026-04-27_FOLLOWUP.md) | 5th injection (Slack ts `1777331304`); follow-up to PR #281; no behavior change to `report/generator.py` |
-| 2026-04-27 | [`FABRICATED_CLAIMS_INDEX.md`](FABRICATED_CLAIMS_INDEX.md) (living)                                                | F8 follow-up from PR #281 — append-only ledger of fabrication-shaped escalations across the `report-generator-path-injection`, `dependabot-alert-fabricated`, `cargo-toml-root-fabricated`, and `data-board-report-rename-fabricated` families |
+| 2026-04-27 | [`FABRICATED_CLAIMS_INDEX.md`](FABRICATED_CLAIMS_INDEX.md) (living)                                                | F8 follow-up from PR #281 — append-only ledger of fabrication-shaped escalations across the `report-generator-path-injection`, `dependabot-alert-fabricated`, `cargo-toml-root-fabricated`, `data-board-report-rename-fabricated`, and `complex-task-protocol-tool-naming` families |
+| 2026-04-28 | [`STRONG_CONTEXTUAL_BEHAVIOUR_PROTOCOL.md`](../STRONG_CONTEXTUAL_BEHAVIOUR_PROTOCOL.md)                            | Standing complex-task intake template (Pre-flight → Performance Audit → Linguistic Audit → Final Sign-off) with embedded path-name corrections (real `notify_webhook.py`; Linux Cloud Agent VM uses `check-all.sh`) and the **0.574x** baseline anchor |
 
 ## When to add a new file here
 
