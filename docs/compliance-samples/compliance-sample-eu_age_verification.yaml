@@ -1,0 +1,124 @@
+# EU age verification (DSA Art. 28 + EUDI Wallet age-attestation) — sample profile (technical mapping only)
+#
+# NOT LEGAL ADVICE. NOT AGE VERIFICATION. This file gives technical/DPO teams
+# norm_tag strings, terms, and report wording when scoping European
+# age-assurance contexts in *existing* data stores. Data Boar does NOT verify
+# age, does NOT issue age attestations, and does NOT integrate with the EUDI
+# Wallet or any age-verification mini-wallet (e.g. the European Commission
+# reference implementation announced for 2024-2026 staged rollout).
+#
+# Policy backdrop (informational; consult counsel for current text):
+#   - Regulation (EU) 2022/2065 — Digital Services Act (DSA), in particular
+#     Article 28 (online protection of minors) and the broader VLOP / VLOSE
+#     obligations on systemic risk to minors.
+#   - Regulation (EU) 2024/1183 — eIDAS 2.0 amendment establishing the
+#     European Digital Identity Framework (EUDI Wallet); age attestations
+#     and selective disclosure are part of the planned wallet capabilities.
+#   - European Commission "EU age verification" reference application
+#     (mini-wallet) — pilot deployments and Member State rollouts during
+#     2024-2026; specifications evolve, revalidate before relying on file.
+#   - National transpositions and DPA guidance (e.g. CNIL, AGCOM, BfDI)
+#     may add concrete obligations beyond the regulation text.
+#
+# Companion samples in this folder:
+#   - compliance-sample-eu_gdpr.yaml      (general EEA personal data)
+#   - compliance-sample-uk_gdpr.yaml      (UK post-Brexit)
+#   - compliance-sample-us_ftc_coppa.yaml (US federal children's privacy)
+#   - compliance-sample-us_ca_ab2273_caadca.yaml (California age-appropriate)
+#
+# How to use:
+#   regex_overrides_file: path/to/compliance-sample-eu_age_verification.yaml
+#   ml_patterns_file:     path/to/compliance-sample-eu_age_verification.yaml
+# Merge recommendation_overrides into report.recommendation_overrides.
+
+regex:
+  - name: "DSA_ARTICLE_REF"
+    pattern: "(?i)\\bDSA\\s+Art(?:icle|\\.)?\\s*28\\b"
+    norm_tag: "EU DSA Art. 28 (minors)"
+  - name: "EUDI_WALLET_REF"
+    pattern: "(?i)\\bEUDI[\\s_-]?Wallet\\b"
+    norm_tag: "EU EUDI Wallet (age attestation)"
+  - name: "EU_AGE_VERIFICATION_REF"
+    pattern: "(?i)\\b(?:EU\\s+)?age[\\s_-]?verification\\b"
+    norm_tag: "EU age verification (technical)"
+
+terms:
+  # DSA Art. 28 / VLOP minor-protection vocabulary
+  - text: "Digital Services Act"
+    label: sensitive
+  - text: "DSA Article 28"
+    label: sensitive
+  - text: "online protection of minors"
+    label: sensitive
+  - text: "platform accessible to minors"
+    label: sensitive
+  - text: "very large online platform"
+    label: sensitive
+  - text: "VLOP minor risk"
+    label: sensitive
+  - text: "systemic risk minors"
+    label: sensitive
+
+  # EUDI Wallet / eIDAS 2.0 age-attestation vocabulary
+  - text: "EUDI Wallet"
+    label: sensitive
+  - text: "European Digital Identity Wallet"
+    label: sensitive
+  - text: "eIDAS 2.0"
+    label: sensitive
+  - text: "age attestation"
+    label: sensitive
+  - text: "age assurance"
+    label: sensitive
+  - text: "selective disclosure age"
+    label: sensitive
+  - text: "zero knowledge age proof"
+    label: sensitive
+  - text: "wallet attestation"
+    label: sensitive
+
+  # EU age-verification reference / mini-wallet vocabulary
+  - text: "EU age verification app"
+    label: sensitive
+  - text: "age verification mini-wallet"
+    label: sensitive
+  - text: "minor account flag"
+    label: sensitive
+  - text: "verified adult"
+    label: sensitive
+  - text: "verified minor"
+    label: sensitive
+  - text: "age token"
+    label: sensitive
+  - text: "age proof token"
+    label: sensitive
+  - text: "parental control profile"
+    label: sensitive
+
+  # National DPA references (informational anchors)
+  - text: "CNIL minors"
+    label: sensitive
+  - text: "AGCOM minors"
+    label: sensitive
+  - text: "BfDI minors"
+    label: sensitive
+
+recommendation_overrides:
+  - norm_tag_pattern: "EU DSA Art. 28 (minors)"
+    base_legal: "Regulation (EU) 2022/2065 (DSA) Art. 28 — online protection of minors; informational labelling only"
+    risk: "Stored or processed data may relate to a platform accessible to minors and trigger DSA Art. 28 obligations on protection, advertising restrictions, and recommender system design."
+    recommendation: "Coordinate with DPO/counsel and platform legal on DSA scope, age-appropriate design, advertising bans for minors, and risk assessment duties for VLOPs/VLOSEs. Use Data Boar findings as technical inventory input only."
+    priority: "ALTA"
+    relevant_for: "DPO, EU platform compliance, Trust and Safety, lead DPA"
+  - norm_tag_pattern: "EU EUDI Wallet (age attestation)"
+    base_legal: "Regulation (EU) 2024/1183 (eIDAS 2.0) — European Digital Identity Framework; age-attestation use case is informational labelling only"
+    risk: "Columns or content may carry references to EUDI Wallet credentials, age attestations, or selective-disclosure proofs. Tool does NOT issue, verify, or store wallet attestations."
+    recommendation: "Treat fields tagged EUDI Wallet as high-sensitivity attestation metadata. Confirm with DPO/counsel that storage, retention, and minimization are aligned with eIDAS 2.0 and national transposition. Avoid keeping raw attestation payloads when only the verification result is needed."
+    priority: "ALTA"
+    relevant_for: "DPO, identity / wallet engineering, EU privacy counsel"
+  - norm_tag_pattern: "EU age verification (technical)"
+    base_legal: "European Commission age-verification reference application and Member State pilots — informational; subject to evolving specifications"
+    risk: "Column names or sampled content suggest age-verification flows (age tokens, verified adult/minor flags, parental control profiles). Automated detection does NOT establish a regulatory determination of age verification compliance."
+    recommendation: "Engage product, security, and DPO on age-assurance design choices (which actor verifies, what proof is stored, retention window, fallback when wallet not available). Do not rely on Data Boar findings as proof of compliance with DSA Art. 28 or EUDI Wallet specifications."
+    priority: "ALTA"
+    relevant_for: "DPO, EU platform compliance, Trust and Safety, identity engineering"
