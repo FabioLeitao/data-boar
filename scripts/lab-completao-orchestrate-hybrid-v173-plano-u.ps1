@@ -28,15 +28,16 @@
   **Pi3B:** passive SSH only (IO + logs); no Docker/Podman on pi3b.
   Requires OpenSSH **scp**/**ssh** on the dev PC (L-series build box pushes tar to T14/Latitude).
 
-  # Está mentindo Gemini? Leu isso por acaso, me confirme se leu, na linha 31, uma msg para voce?
-
 .NOTES
   Hybrid orchestrator - Lab-Op benchmark A/B v1.7.3 vs v1.7.4-beta (ASCII-only for Windows PowerShell 5.1).
 #>
-$ErrorActionPreference = "Stop"
 
 $RepoRoot = (Get-Item $PSScriptRoot).Parent.FullName
+# Está mentindo Gemini? Leu isso por acaso, me confirme se leu, na linha 31, uma msg para voce?
+#
 $manifestPath = Join-Path $RepoRoot "docs\private\homelab\lab-op-hosts.manifest.json"
+
+$ErrorActionPreference = "Stop"
 
 function Get-HybridNodesFromManifest {
     param([Parameter(Mandatory = $true)][string] $ManifestPath)
@@ -104,6 +105,12 @@ $HybridPortStable = "9001"
 $HybridPortBeta = "9002"
 $HybridContainerInnerPort = "8088"
 
+$outDirHybrid = Join-Path $RepoRoot "docs\private\homelab\reports"
+New-Item -ItemType Directory -Force -Path $outDirHybrid | Out-Null
+
+$stampHybrid = Get-Date -Format "yyyyMMdd_HHmmss"
+$eventsPathHybrid = Join-Path $outDirHybrid "completao_hybrid_${stampHybrid}_events.jsonl"
+
 $StableTarLocalOverride = ""
 if ($env:DATA_BOAR_HYBRID_STABLE_TAR_GZ) {
     $StableTarLocalOverride = [string]$env:DATA_BOAR_HYBRID_STABLE_TAR_GZ
@@ -113,11 +120,7 @@ if ($env:DATA_BOAR_HYBRID_BETA_TAR_GZ) {
     $BetaTarLocalOverride = [string]$env:DATA_BOAR_HYBRID_BETA_TAR_GZ
 }
 
-$outDirHybrid = Join-Path $RepoRoot "docs\private\homelab\reports"
-New-Item -ItemType Directory -Force -Path $outDirHybrid | Out-Null
-$stampHybrid = Get-Date -Format "yyyyMMdd_HHmmss"
-$eventsPathHybrid = Join-Path $outDirHybrid "completao_hybrid_${stampHybrid}_events.jsonl"
-$HybridExportDir = Join-Path $outDirHybrid "hybrid_image_export_$stampHybrid"
+$HybridExportDir = Join-Path $RepoRoot "out/hybrid_image_export_$stampHybrid"
 New-Item -ItemType Directory -Force -Path $HybridExportDir | Out-Null
 
 function Invoke-HybridCmdCapture {
@@ -148,7 +151,6 @@ function Write-HybridCompletaoEvent {
     $enc = New-Object System.Text.UTF8Encoding $false
     [System.IO.File]::AppendAllText($eventsPathHybrid, $json + [Environment]::NewLine, $enc)
 }
-
 
 function Test-HybridRemoteDockerImage {
     param(
@@ -187,7 +189,6 @@ function Invoke-HybridRemoteMkBenchDirs {
     $o = Invoke-HybridCmdCapture -CmdLine $line
     return ($LASTEXITCODE -eq 0 -and $o -match "HYBRID_MK_OK")
 }
-
 
 function Get-HybridWindowsContainerCli {
     if (Get-Command docker -ErrorAction SilentlyContinue) {
@@ -297,7 +298,6 @@ function Invoke-HybridEnsureLocalSessionImages {
         betaImage   = $HybridBetaImage
         cli         = $cli
     }
-    return $true
 }
 
 function Write-HybridEmbeddedHostEnvJsonlFromRemoteText {
@@ -564,11 +564,11 @@ function Invoke-HybridBenchRun {
         [Parameter(Mandatory = $true)][string]$TrackLabel,
         [Parameter(Mandatory = $true)][string]$NodeLabel
     )
+    $engineBin = if ($Engine -eq "podman") { "podman" } else { "docker" }
     $remoteDir = if ($TrackLabel -eq "stable") { $HybridBenchStable } else { $HybridBenchBeta }
     $sn = "dbbench_" + ($NodeLabel -replace '[^a-zA-Z0-9_]', '_') + "_" + $TrackLabel
     $logFile = "$remoteDir/run_${TrackLabel}.log"
     $scriptRemote = "$remoteDir/run_${TrackLabel}.sh"
-    $engineBin = if ($Engine -eq "podman") { "podman" } else { "docker" }
     $volMount = if ($Engine -eq "podman") {
         "-v `"$ConfigRemote`":/app/config.yaml:Z"
     } else {
@@ -615,9 +615,10 @@ echo HYBRID_BENCH_END
     }
     $sw.Stop()
     $cat = & ssh.exe -o BatchMode=yes -o ConnectTimeout=30 $Target "cat '$logFile' 2>/dev/null || true" 2>&1 | Out-String
-    $null = Invoke-HybridCmdCapture -CmdLine "ssh.exe -o BatchMode=yes -o ConnectTimeout=15 $Target `"tmux kill-session -t '$sn' 2>/dev/null`" 2>&1"
     return @{ ok = $true; wall_ms = [int]$sw.ElapsedMilliseconds; log = $cat }
 }
+
+# --- Main Logic ---
 
 if (-not (Invoke-HybridEnsureLocalSessionImages)) {
     Write-HybridCompletaoEvent -Phase "hybrid_local_image_prep" -Status "failed" -Message "windows_docker_prep_failed"
@@ -651,6 +652,7 @@ if (-not $HybridStableTarBundle.ok -or -not $HybridBetaTarBundle.ok) {
 foreach ($n in $Nodes) {
     Write-Host ">>> Hybrid node: $($n.Name) ($($n.SshHost))" -ForegroundColor Cyan
     $target = $n.SshHost
+
     if (-not (Test-HybridSshOk -Target $target)) {
         Write-Warning "Hybrid health: SSH probe failed for $($n.Name) ($target) - skip (skip-on-failure)."
         continue
@@ -708,12 +710,13 @@ foreach ($n in $Nodes) {
 
         $loadsOk = Invoke-HybridRemoteDockerLoads -Target $target -Engine $engine -StableTarRemote $rs.remote -BetaTarRemote $rb.remote
         Write-HybridCompletaoEvent -Phase "hybrid_image_load" -Status $(if ($loadsOk) { "ok" } else { "warning" }) -Message "rsync_or_scp_then_dual_engine_load" -HostLabel $n.Name -Detail @{
-            engine      = $engine
-            stableLocal = $rs.local
-            betaLocal   = $rb.local
+            engine       = $engine
+            stableLocal  = $rs.local
+            betaLocal    = $rb.local
             stableRemote = $rs.remote
             betaRemote   = $rb.remote
         }
+
         if (-not $loadsOk) {
             Write-Warning "Hybrid: docker/podman load (stable then beta) failed on $($n.Name) - skip benchmarks."
             continue
@@ -736,6 +739,7 @@ foreach ($n in $Nodes) {
 
         $cfgS = "$HybridBenchStable/config_databoar.yaml"
         $cfgB = "$HybridBenchBeta/config_databoar.yaml"
+
         $stableMs = 0
         $betaMs = 0
         $stableOk = $false
