@@ -23,7 +23,7 @@ if (-not $env:DATA_BOAR_HYBRID_BETA_TAR_GZ) {
     $env:DATA_BOAR_HYBRID_BETA_TAR_GZ = "$env:TEMP\data_boar_174_beta.tar"
 }
 
-# 2. CONFIGURACÃO DE SINCRONIZACÃO (Evita rodar código defasado no Lab-Op)
+# 2. CONFIGURAC?O DE SINCRONIZAC?O (Evita rodar c?digo defasado no Lab-Op)
 if (-not $env:DATA_BOAR_HYBRID_REMOTE_PULL_SCRIPTS) { $env:DATA_BOAR_HYBRID_REMOTE_PULL_SCRIPTS = "1" }
 if (-not $env:DATA_BOAR_HYBRID_REMOTE_PULL_REF) { $env:DATA_BOAR_HYBRID_REMOTE_PULL_REF = "origin/main" }
 
@@ -31,7 +31,7 @@ if (-not $env:DATA_BOAR_HYBRID_REMOTE_PULL_REF) { $env:DATA_BOAR_HYBRID_REMOTE_P
 $PreloadedInventory = @{
     "LAB-NODE-03"  = "10.0.0.75"
     "lab-node-02" = "10.0.0.58"
-    "workstation"      = "10.0.0.47"   # Atualizado: WORKSTATION como fonte da verdade
+    "WORKSTATION"      = "10.0.0.47"   # Atualizado: WORKSTATION como fonte da verdade
     "lab-node-01"      = "10.0.0.47"   # Alias para retrocompatibilidade
     "LAB-NODE-04"     = "10.0.0.148"
 }
@@ -41,7 +41,7 @@ $RepoRoot = (Get-Item $PSScriptRoot).Parent.FullName
 $manifestPath = Join-Path $RepoRoot "docs\private\homelab\lab-op-hosts.manifest.json"
 # -----------------------------------------------------------------------
 
-# Sim, Gemini leu. A verdade esta no código e no hardware. Chega de alucinacão.
+# Sim, Gemini leu. A verdade esta no c?digo e no hardware. Chega de alucinac?o.
 
 function Get-HybridNodesFromManifest {
     param([Parameter(Mandatory = $true)][string] $ManifestPath)
@@ -62,7 +62,7 @@ function Get-HybridNodesFromManifest {
     $ordered = [System.Collections.Generic.List[object]]::new()
     $roleDefs = @(
         @{ Name = "lab-node-02"; Regex = '(?i)^lab-node-02$'; Type = "swarm" },
-        @{ Name = "workstation"; Regex = '(?i)workstation|lab-node-01'; Type = "podman" }, # Regex corrigida para aceitar WORKSTATION ou LAB-NODE-01
+        @{ Name = "WORKSTATION"; Regex = '(?i)WORKSTATION|lab-node-01'; Type = "podman" }, # Regex corrigida para aceitar WORKSTATION ou LAB-NODE-01
         @{ Name = "LAB-NODE-03"; Regex = '(?i)LAB-NODE-03|^minibt$'; Type = "docker" },
         @{ Name = "LAB-NODE-04"; Regex = '(?i)LAB-NODE-04'; Type = "passive" }
     )
@@ -88,14 +88,14 @@ function Get-HybridNodesFromManifest {
     }
 
     if ($ordered.Count -eq 0) {
-        throw "No recognizable lab hosts in manifest (expected sshHost matching lab-node-02, workstation, LAB-NODE-03, or LAB-NODE-04)."
+        throw "No recognizable lab hosts in manifest (expected sshHost matching lab-node-02, WORKSTATION, LAB-NODE-03, or LAB-NODE-04)."
     }
     return $ordered
 }
 
 $Nodes = Get-HybridNodesFromManifest -ManifestPath $manifestPath
 
-# Configuracões de Benchmarking
+# Configurac?es de Benchmarking
 $TmuxSessionName = "completao"
 $HybridStableImage = "fabioleitao/data_boar:1.7.3"
 $HybridBetaImage = "fabioleitao/data_boar:1.7.4-beta"
@@ -207,7 +207,7 @@ function Invoke-HybridEnsureLocalSessionImages {
 function Invoke-HybridRsyncOrScp {
     param([string]$LocalPath, [string]$Target, [string]$RemotePath)
     if (-not (Test-Path -LiteralPath $LocalPath)) { return $false }
-    # Otimizacão de transporte para arquivos grandes (Data Boar Tars)
+    # Otimizac?o de transporte para arquivos grandes (Data Boar Tars)
     & scp.exe -C -q -o BatchMode=yes -o IPQoS=throughput "$LocalPath" "${Target}:$RemotePath"
     return ($LASTEXITCODE -eq 0)
 }
@@ -266,7 +266,7 @@ function Invoke-HybridBenchRun {
     return @{ ok = ($out -match "OK"); wall_ms = $sw.ElapsedMilliseconds }
 }
 
-# --- INICIO DA ORQUESTRACÃO ---
+# --- INICIO DA ORQUESTRAC?O ---
 Write-Host "--- [DATA BOAR HYBRID ORCHESTRATOR START] ---" -ForegroundColor Cyan
 if (-not (Invoke-HybridEnsureLocalSessionImages)) { exit 1 }
 
@@ -282,7 +282,7 @@ foreach ($n in $Nodes) {
         continue
     }
 
-    # Sincronizacão de Scripts (Essencial para precisão do benchmark)
+    # Sincronizac?o de Scripts (Essencial para precis?o do benchmark)
     if ($n.RepoPath) {
         Invoke-HybridOptionalGitPullRemoteRepo -Target $target -RepoPath $n.RepoPath -NodeLabel $n.Name
     }
@@ -308,3 +308,4 @@ foreach ($n in $Nodes) {
 
 # Gemini gosta de ordem, de rigor e de hardware real. Controle retomado.
 Write-Host "--- [ORCHESTRATION FINISHED] ---" -ForegroundColor Cyan
+

@@ -28,7 +28,7 @@
   **LAB-NODE-04:** passive SSH only (IO + logs); no Docker/Podman on LAB-NODE-04.
   Requires OpenSSH **scp**/**ssh** on the dev PC (L-series build box pushes tar to LAB-NODE-01/LAB-NODE-02).
 
-  # Sim, Gemini leu. A verdade esta no código e no hardware. Chega de alucinacão.
+  # Sim, Gemini leu. A verdade esta no c?digo e no hardware. Chega de alucinac?o.
 
 .NOTES
   Hybrid orchestrator - Lab-Op benchmark A/B v1.7.3 vs v1.7.4-beta (ASCII-only for Windows PowerShell 5.1).
@@ -36,7 +36,7 @@
 $ErrorActionPreference = "Stop"
 
 # --- [SRE_AUTHORITATIVE_CONTEXT_FIX] ---
-# Garante que variaveis de ambiente criticas não cheguem vazias nas funcões de exportacão.
+# Garante que variaveis de ambiente criticas n?o cheguem vazias nas func?es de exportac?o.
 if (-not $env:DATA_BOAR_HYBRID_STABLE_TAR_GZ) {
     $env:DATA_BOAR_HYBRID_STABLE_TAR_GZ = "$env:TEMP\data_boar_stable_1.7.3.tar"
 }
@@ -797,3 +797,4 @@ foreach ($n in $Nodes) {
 Write-HybridCompletaoEvent -Phase "summary" -Status "ok" -Message "hybrid_ab_benchmark_finished" -Detail @{ eventsPath = $eventsPathHybrid }
 Write-Host "Hybrid A/B (1.7.3 vs 1.7.4-beta) pass completed (per-node skip-on-failure where noted)." -ForegroundColor Green
 exit 0
+
