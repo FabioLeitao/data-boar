@@ -23,15 +23,40 @@ fi
 
 LC_PRIV=0
 LC_SKIP_ENGINE=0
+LC_EMIT_JSONL_ONLY=0
 LC_HEALTH_URL="${LAB_COMPLETAO_HEALTH_URL:-}"
 LC_REPO_ROOT=""
 LC_BENCH_TRACK=""
 LC_BENCH_ROOT=""
 
+_lc_emit_host_env_audit_line() {
+  local _uv="uv_missing"
+  command -v uv >/dev/null 2>&1 && _uv=$(uv --version 2>/dev/null | head -n1 | tr -d '\r')
+  local _py="python_missing"
+  if command -v python3 >/dev/null 2>&1; then
+    _py=$(python3 --version 2>&1 | tr -d '\r')
+  elif command -v python >/dev/null 2>&1; then
+    _py=$(python --version 2>&1 | tr -d '\r')
+  fi
+  local _alias="${LAB_COMPLETAO_SSH_HOST_ALIAS:-}"
+  local _hn
+  _hn="$(hostname 2>/dev/null || echo unknown)"
+  if command -v python3 >/dev/null 2>&1; then
+    UV_JSON="$_uv" PY_JSON="$_py" HOST_JSON="$_alias" HN_JSON="$_hn" python3 -c "import json, os, datetime
+ts = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+kv = os.environ
+d = {'v': 1, 'ts': ts, 'phase': 'host_env_audit', 'status': 'ok', 'message': 'runtime_versions', 'host': kv.get('HOST_JSON', ''), 'detail': {'ssh_alias': kv.get('HOST_JSON', ''), 'hostname': kv.get('HN_JSON', ''), 'uv_version': kv.get('UV_JSON', ''), 'python_version': kv.get('PY_JSON', '')}}
+print('DATA_BOAR_COMPLETAO_JSONL_MIN_EVENT:' + json.dumps(d, separators=(',', ':')))"
+  else
+    echo "DATA_BOAR_COMPLETAO_JSONL_MIN_EVENT:{\"v\":1,\"phase\":\"host_env_audit\",\"status\":\"warning\",\"message\":\"no_python3_for_json\",\"host\":\"${_alias}\",\"detail\":{\"uv_version\":\"${_uv}\",\"python_version\":\"${_py}\"}}"
+  fi
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --privileged) LC_PRIV=1 ;;
     --skip-engine-import) LC_SKIP_ENGINE=1 ;;
+    --emit-jsonl-host-env-and-exit) LC_EMIT_JSONL_ONLY=1 ;;
     --bench-track)
       LC_BENCH_TRACK="${2:-}"
       shift
@@ -50,6 +75,7 @@ Usage: bash scripts/lab-completao-host-smoke.sh [--privileged] [--skip-engine-im
 
   --privileged          Best-effort read-only probes via sudo -n (iptables/nft/ufw/fail2ban status).
   --skip-engine-import  Skip uv / import core.engine (hosts that run Data Boar only via Docker/Swarm/Podman).
+  --emit-jsonl-host-env-and-exit  Print one DATA_BOAR_COMPLETAO_JSONL_MIN_EVENT line (uv/python versions) and exit 0.
   --bench-track         Ephemeral A/B workdir under /tmp/databoar_bench/<stable|beta> (checkpoint isolation).
   --health-url          Override LAB_COMPLETAO_HEALTH_URL (e.g. http://127.0.0.1:8088/health).
   --repo-root           Repo root (default: infer from script location).
@@ -72,6 +98,11 @@ EOF
   esac
   shift
 done
+
+if [[ "$LC_EMIT_JSONL_ONLY" == "1" ]]; then
+  _lc_emit_host_env_audit_line
+  exit 0
+fi
 
 if [[ -z "$LC_REPO_ROOT" ]]; then
   _here=$(cd "$(dirname "$0")/.." && pwd)
@@ -175,6 +206,8 @@ echo "PRIVILEGED: $LC_PRIV"
 if [[ -n "$LC_BENCH_TRACK" ]]; then
   echo "BENCH_TRACK: $LC_BENCH_TRACK ROOT: ${LC_BENCH_ROOT:-}"
 fi
+
+_lc_emit_host_env_audit_line
 
 _lc_undervoltage_check
 

@@ -280,12 +280,29 @@ function Test-CompletaoHostEntryIsPi3b {
     return $false
 }
 
+function Test-CompletaoHostEntrySkipsImageProbe {
+    param($HostEntry, [string]$Alias)
+    if (Test-CompletaoHostEntryIsPi3b -HostEntry $HostEntry -Alias $Alias) {
+        return $true
+    }
+    if ($Alias -match '(?i)mini-bt|^minibt$') {
+        return $true
+    }
+    if ($HostEntry) {
+        $p = Get-CompletaoHardwareProfile -HostEntry $HostEntry -Alias $Alias
+        if ($p -match '^mini-bt-void') {
+            return $true
+        }
+    }
+    return $false
+}
+
 function Get-CompletaoImageProbeAlias {
     param($ManifestObj)
     if (-not $ManifestObj) {
         return ""
     }
-    # Pi3b is passive-only: never use it for docker/podman image inspect (LAB benchmark A/B contract).
+    # Skip passive pi3b and mini-bt Void (no container engine / missing deps): never use them for image inspect.
     if ($ManifestObj.PSObject.Properties.Name -contains "completaoImageProbeSshHost" -and $ManifestObj.completaoImageProbeSshHost) {
         $cand = [string]$ManifestObj.completaoImageProbeSshHost
         $he = $null
@@ -295,7 +312,7 @@ function Get-CompletaoImageProbeAlias {
                 break
             }
         }
-        if (-not (Test-CompletaoHostEntryIsPi3b -HostEntry $he -Alias $cand)) {
+        if (-not (Test-CompletaoHostEntrySkipsImageProbe -HostEntry $he -Alias $cand)) {
             return $cand
         }
     }
@@ -304,12 +321,39 @@ function Get-CompletaoImageProbeAlias {
             continue
         }
         $a2 = [string]$h2.sshHost
-        if (Test-CompletaoHostEntryIsPi3b -HostEntry $h2 -Alias $a2) {
+        if (Test-CompletaoHostEntrySkipsImageProbe -HostEntry $h2 -Alias $a2) {
             continue
         }
         return $a2
     }
     return ""
+}
+
+function Write-CompletaoHostSmokeEmbeddedJsonlLines {
+    param(
+        [Parameter(Mandatory = $true)][string]$ReportPath,
+        [Parameter(Mandatory = $true)][string]$RemoteText
+    )
+    if (-not $RemoteText) {
+        return
+    }
+    $enc = New-Object System.Text.UTF8Encoding $false
+    foreach ($line in ($RemoteText -split "`r?`n")) {
+        $m = [regex]::Match($line, '^DATA_BOAR_COMPLETAO_JSONL_MIN_EVENT:(.+)$')
+        if (-not $m.Success) {
+            continue
+        }
+        $payload = $m.Groups[1].Value.Trim()
+        if (-not $payload) {
+            continue
+        }
+        try {
+            $null = $payload | ConvertFrom-Json
+            [System.IO.File]::AppendAllText($ReportPath, $payload + [Environment]::NewLine, $enc)
+        } catch {
+            Write-Warning "lab-completao-orchestrate: host_smoke embedded JSONL line skipped (parse): $($line.Substring(0, [Math]::Min(120, $line.Length)))"
+        }
+    }
 }
 
 function Test-CompletaoRemoteDockerImage {
@@ -479,9 +523,9 @@ if (-not $SkipImagePreflight) {
     if ($imgRefs.Count -gt 0) {
         $probeHost = Get-CompletaoImageProbeAlias -ManifestObj $manifest
         if (-not $probeHost) {
-            Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "warning" -Message "no_non_pi3b_probe_host_skipped" -Detail @{ note = "pi3b excluded from image inspect; add a non-passive sshHost or completaoImageProbeSshHost" }
+            Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "warning" -Message "no_engine_probe_host_skipped" -Detail @{ note = "pi3b and mini-bt-void excluded from image inspect; set completaoImageProbeSshHost to an engine host (Latitude/T14) or add one before mini-bt in manifest order" }
             $LabResultPhases.image_preflight = "skipped_no_engine_probe_host"
-            Write-Warning "lab-completao-orchestrate: completaoImageRefs set but no non-pi3b host for image inspect (non-blocking)."
+            Write-Warning "lab-completao-orchestrate: completaoImageRefs set but no engine host for image inspect after skipping pi3b/mini-bt (non-blocking)."
         } elseif (-not (Test-CompletaoSshProbe -Alias $probeHost)) {
             Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "warning" -Message "ssh_probe_failed_nonblocking" -HostAlias $probeHost
             $LabResultPhases.image_preflight = "warning_ssh_probe_failed"
@@ -701,6 +745,7 @@ foreach ($h in $manifest.hosts) {
         $remoteCmdEsc = $remoteCmd.Replace('"', '\"')
         $remoteLine = "ssh.exe -o BatchMode=yes -o ConnectTimeout=180 -o ServerAliveInterval=15 -o ServerAliveCountMax=8 $alias `"$remoteCmdEsc`" 2>&1"
         $remoteOut = Invoke-CmdCapture -CmdLine $remoteLine
+        Write-CompletaoHostSmokeEmbeddedJsonlLines -ReportPath $eventsPath -RemoteText $remoteOut
         [void]$hostLogSb.AppendLine("--- repo: $rp ---")
         [void]$hostLogSb.AppendLine($remoteOut)
         [void]$master.AppendLine("--- repo: $rp ---")

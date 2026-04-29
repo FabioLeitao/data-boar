@@ -11,13 +11,17 @@
   and **`/tmp/databoar_bench/beta`** (separate config YAML; no shared checkpoints). Published ports **9001** (stable) and
   **9002** (beta) mapped to container **8088**. Long runs use a **detached tmux** session per step, then log capture
   (disconnect-safe). **Pi3b** stays **passive** (no image preflight / no container on pi3b).
-  **Image distribution from the primary Windows dev workstation (no docker pull on T14/Latitude):** exports **stable 1.7.3** and **beta 1.7.4-beta** with
-  **`docker save`** or **`podman save`** on the Windows box when pre-built tars are not supplied, then syncs with
+  **Image distribution from the primary Windows dev workstation (no Hub pull on lab targets):** before the host loop, ensures
+  **`fabioleitao/data_boar:1.7.3`** exists ( **`docker pull` / `podman pull` on Windows only** when no stable tar override), and builds
+  **`fabioleitao/data_boar:1.7.4-beta`** with **`docker build -f Dockerfile`** from the repo (session tag; not pushed to Hub) unless
+  **`DATA_BOAR_HYBRID_SKIP_LOCAL_BETA_BUILD=1`** reuses an existing beta image or **`DATA_BOAR_HYBRID_*_TAR_GZ`** supplies tars.
+  Then **`docker save`** or **`podman save`** exports both when pre-built tars are not supplied, then syncs with
   **`rsync`** (if **`rsync`** is on PATH) else **`scp`**, then runs **`docker load`/`podman load`** for **both** archives
   **before** writing ephemeral **`config_databoar.yaml`** and copying scripts. Optional pre-built paths:
   **`DATA_BOAR_HYBRID_STABLE_TAR_GZ`**, **`DATA_BOAR_HYBRID_BETA_TAR_GZ`** (either may be **.tar** or **.tar.gz**).
   **Ephemeral scripts:** copies **`scripts/lab-completao-host-smoke.sh`** (and **`scripts/lab_completao_data_contract_check.py`**
-  when present) into **`.../stable/scripts/`** and **`.../beta/scripts/`** for direct SSH runs from `/tmp/databoar_bench/*`.
+  when present) into **`.../stable/scripts/`** and **`.../beta/scripts/`** for direct SSH runs from `/tmp/databoar_bench/*`, then runs
+  **`--emit-jsonl-host-env-and-exit`** so **`uv --version`** and **`python --version`** append to the hybrid JSONL.
   Optional **`DATA_BOAR_HYBRID_REMOTE_PULL_SCRIPTS=1`** plus **`DATA_BOAR_HYBRID_REMOTE_PULL_REF`** (default **`origin/main`**)
   runs **`git pull --ff-only`** on the manifest **`repoPaths[0]`** clone on the target so lab smoke matches the synced orchestrator working tree.
   **Containers (T14 / mini-bt / latitude):** if operator **`tmux has-session -t completao`** exists, **send-keys** path still applies as a shortcut; otherwise **detached tmux** bench session is created automatically.
@@ -211,6 +215,125 @@ function Invoke-HybridLocalExportImageTar {
         & podman save -o $OutTarPath $ImageRef
     }
     return (Test-Path -LiteralPath $OutTarPath)
+}
+
+function Test-HybridLocalImagePresent {
+    param([Parameter(Mandatory = $true)][string]$ImageRef)
+    $cli = Get-HybridWindowsContainerCli
+    if (-not $cli) {
+        return $false
+    }
+    if ($cli -eq "docker") {
+        & docker image inspect $ImageRef 2>$null | Out-Null
+    } else {
+        & podman image inspect $ImageRef 2>$null | Out-Null
+    }
+    return ($LASTEXITCODE -eq 0)
+}
+
+function Invoke-HybridEnsureLocalSessionImages {
+    $hasStableTar = ($StableTarLocalOverride -and (Test-Path -LiteralPath $StableTarLocalOverride))
+    $hasBetaTar = ($BetaTarLocalOverride -and (Test-Path -LiteralPath $BetaTarLocalOverride))
+    if ($hasStableTar -and $hasBetaTar) {
+        Write-HybridCompletaoEvent -Phase "hybrid_local_image_prep" -Status "ok" -Message "tar_overrides_skip_docker_prep" -Detail @{
+            stableTar = $StableTarLocalOverride
+            betaTar   = $BetaTarLocalOverride
+        }
+        return $true
+    }
+    $cli = Get-HybridWindowsContainerCli
+    if (-not $cli) {
+        Write-Warning "Hybrid: docker.exe or podman.exe required on Windows to build/pull session images."
+        return $false
+    }
+    if (-not $hasStableTar) {
+        if (-not (Test-HybridLocalImagePresent -ImageRef $HybridStableImage)) {
+            Write-Host "Hybrid: pulling $HybridStableImage on orchestrator only (lab targets never pull from Hub)." -ForegroundColor Cyan
+            if ($cli -eq "docker") {
+                & docker pull $HybridStableImage
+            } else {
+                & podman pull $HybridStableImage
+            }
+        }
+        if (-not (Test-HybridLocalImagePresent -ImageRef $HybridStableImage)) {
+            Write-Warning "Hybrid: stable image still missing after pull: $HybridStableImage"
+            return $false
+        }
+    }
+    if (-not $hasBetaTar) {
+        $skipBuild = ($env:DATA_BOAR_HYBRID_SKIP_LOCAL_BETA_BUILD -eq "1")
+        if ($skipBuild -and (Test-HybridLocalImagePresent -ImageRef $HybridBetaImage)) {
+            Write-Host "Hybrid: reusing existing $HybridBetaImage (DATA_BOAR_HYBRID_SKIP_LOCAL_BETA_BUILD=1)." -ForegroundColor DarkGray
+        } elseif ($cli -ne "docker") {
+            Write-Warning "Hybrid: session beta build uses docker build; install Docker Desktop or set DATA_BOAR_HYBRID_BETA_TAR_GZ."
+            if (-not (Test-HybridLocalImagePresent -ImageRef $HybridBetaImage)) {
+                return $false
+            }
+        } else {
+            Write-Host "Hybrid: docker build -t $HybridBetaImage from repo (session-local tag; not pushed to Hub)." -ForegroundColor Cyan
+            Push-Location $RepoRoot
+            $buildOk = $false
+            try {
+                & docker build -t $HybridBetaImage -f Dockerfile .
+                $buildOk = ($LASTEXITCODE -eq 0)
+            } finally {
+                Pop-Location
+            }
+            if (-not $buildOk) {
+                Write-Warning "Hybrid: docker build failed for $HybridBetaImage."
+                return $false
+            }
+            if (-not (Test-HybridLocalImagePresent -ImageRef $HybridBetaImage)) {
+                return $false
+            }
+        }
+    }
+    Write-HybridCompletaoEvent -Phase "hybrid_local_image_prep" -Status "ok" -Message "windows_engine_images_ready" -Detail @{
+        stableImage = $HybridStableImage
+        betaImage   = $HybridBetaImage
+        cli         = $cli
+    }
+    return $true
+}
+
+function Write-HybridEmbeddedHostEnvJsonlFromRemoteText {
+    param(
+        [Parameter(Mandatory = $true)][string]$RemoteText
+    )
+    if (-not $RemoteText) {
+        return
+    }
+    $enc = New-Object System.Text.UTF8Encoding $false
+    foreach ($line in ($RemoteText -split "`r?`n")) {
+        $m = [regex]::Match($line, '^DATA_BOAR_COMPLETAO_JSONL_MIN_EVENT:(.+)$')
+        if (-not $m.Success) {
+            continue
+        }
+        $payload = $m.Groups[1].Value.Trim()
+        if (-not $payload) {
+            continue
+        }
+        try {
+            $null = $payload | ConvertFrom-Json
+            [System.IO.File]::AppendAllText($eventsPathHybrid, $payload + [Environment]::NewLine, $enc)
+        } catch {
+            Write-Warning "Hybrid: host_env JSONL line skipped (parse)."
+        }
+    }
+}
+
+function Invoke-HybridRemoteHostEnvAuditLine {
+    param(
+        [Parameter(Mandatory = $true)][string]$Target,
+        [Parameter(Mandatory = $true)][string]$SshAliasForEnv
+    )
+    $ae = $SshAliasForEnv -replace "'", "'\''"
+    $inner = "export LAB_COMPLETAO_SSH_HOST_ALIAS='$ae'; bash '${HybridBenchStable}/scripts/lab-completao-host-smoke.sh' --emit-jsonl-host-env-and-exit 2>&1"
+    $innerEsc = $inner.Replace('"', '\"')
+    $line = "ssh.exe -o BatchMode=yes -o ConnectTimeout=45 $Target `"$innerEsc`" 2>&1"
+    $out = Invoke-HybridCmdCapture -CmdLine $line
+    Write-HybridEmbeddedHostEnvJsonlFromRemoteText -RemoteText $out
+    return ($LASTEXITCODE -eq 0)
 }
 
 function Invoke-HybridRsyncOrScp {
@@ -492,6 +615,25 @@ echo HYBRID_BENCH_END
     return @{ ok = $true; wall_ms = [int]$sw.ElapsedMilliseconds; log = $cat }
 }
 
+if (-not (Invoke-HybridEnsureLocalSessionImages)) {
+    Write-HybridCompletaoEvent -Phase "hybrid_local_image_prep" -Status "failed" -Message "windows_docker_prep_failed"
+    Write-Warning "Hybrid: aborting (fix Docker on Windows, set DATA_BOAR_HYBRID_*_TAR_GZ overrides, or DATA_BOAR_HYBRID_SKIP_LOCAL_BETA_BUILD=1 with an existing beta image)."
+    exit 1
+}
+
+$HybridStableTarBundle = Resolve-HybridLocalImageTar -OverridePath $StableTarLocalOverride -ImageRef $HybridStableImage `
+    -ExportFileName "data_boar_stable_1.7.3.tar" -RemoteBenchDir $HybridBenchStable -RemoteBaseName "data_boar_stable_export"
+$HybridBetaTarBundle = Resolve-HybridLocalImageTar -OverridePath $BetaTarLocalOverride -ImageRef $HybridBetaImage `
+    -ExportFileName "data_boar_beta_1.7.4-beta.tar" -RemoteBenchDir $HybridBenchBeta -RemoteBaseName "data_boar_beta_export"
+if (-not $HybridStableTarBundle.ok -or -not $HybridBetaTarBundle.ok) {
+    Write-HybridCompletaoEvent -Phase "hybrid_image_export" -Status "failed" -Message "local_tar_resolve_failed" -Detail @{
+        stable_ok = [bool]$HybridStableTarBundle.ok
+        beta_ok   = [bool]$HybridBetaTarBundle.ok
+    }
+    Write-Warning "Hybrid: aborting (docker save/export failed after local image prep)."
+    exit 1
+}
+
 foreach ($n in $Nodes) {
     Write-Host ">>> Hybrid node: $($n.Name) ($($n.SshHost))" -ForegroundColor Cyan
     $target = $n.SshHost
@@ -536,18 +678,8 @@ foreach ($n in $Nodes) {
             continue
         }
 
-        $rs = Resolve-HybridLocalImageTar -OverridePath $StableTarLocalOverride -ImageRef $HybridStableImage `
-            -ExportFileName "data_boar_stable_1.7.3.tar" -RemoteBenchDir $HybridBenchStable -RemoteBaseName "data_boar_stable_export"
-        $rb = Resolve-HybridLocalImageTar -OverridePath $BetaTarLocalOverride -ImageRef $HybridBetaImage `
-            -ExportFileName "data_boar_beta_1.7.4-beta.tar" -RemoteBenchDir $HybridBenchBeta -RemoteBaseName "data_boar_beta_export"
-        if (-not $rs.ok -or -not $rb.ok) {
-            Write-Warning "Hybrid: local stable/beta image tar resolve failed on $($n.Name) (export or DATA_BOAR_HYBRID_* override) - skip container step."
-            Write-HybridCompletaoEvent -Phase "hybrid_image_export" -Status "failed" -HostLabel $n.Name -Detail @{
-                stable_ok = [bool]$rs.ok
-                beta_ok   = [bool]$rb.ok
-            }
-            continue
-        }
+        $rs = $HybridStableTarBundle
+        $rb = $HybridBetaTarBundle
 
         if (-not (Invoke-HybridRsyncOrScp -LocalPath $rs.local -Target $target -RemotePath $rs.remote)) {
             Write-Warning "Hybrid: scp/rsync stable tar failed for $($n.Name) - skip."
@@ -575,6 +707,8 @@ foreach ($n in $Nodes) {
             Write-Warning "Hybrid: completao script sync to bench dirs failed on $($n.Name) - skip benchmarks."
             continue
         }
+
+        $null = Invoke-HybridRemoteHostEnvAuditLine -Target $target -SshAliasForEnv $n.SshHost
 
         $repoForPull = [string]$n.RepoPath
         if ($repoForPull) {
