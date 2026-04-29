@@ -7,12 +7,25 @@
   Manifest-driven orchestration remains the default: .\\scripts\\lab-completao-orchestrate.ps1 (no -HybridLabOpHighDensity173).
   Resolves SSH targets from **docs/private/homelab/lab-op-hosts.manifest.json** (`sshHost` + first `repoPaths` entry), same family as **lab-completao-orchestrate.ps1**.
   **Latitude scan path:** uses **`/home/leitao/Documents`** if present, else **`/home/leitao/documents`** (Zorin/GNOME vs lowercase checklist path).
-  **Containers (T14 / mini-bt / latitude):** if **`tmux has-session -t completao`** succeeds on the host, sends **`tmux send-keys -t completao '...' Enter`** (container runs **asynchronously** in that pane). Otherwise runs **`podman`/`docker`** via **`ssh ... bash -lc '...'`** (one-shot, no tmux required). Narrow **sudoers** / **-Privileged** in **lab-completao-host-smoke** is for **read-only host probes** only.
-  **Pi3B:** passive SSH uses the manifest **repo** path so **`.venv/bin/python3`** is the clone venv under **`Projects/dev/data-boar`**, not **`~/.venv`**.
-  Requires OpenSSH **scp**/**ssh** on the dev PC and non-interactive SSH.
+  **Benchmark A/B (v1.7.3 stable vs v1.7.4-beta):** isolated workdirs on each engine host: **`/tmp/databoar_bench/stable`**
+  and **`/tmp/databoar_bench/beta`** (separate config YAML; no shared checkpoints). Published ports **9001** (stable) and
+  **9002** (beta) mapped to container **8088**. Long runs use a **detached tmux** session per step, then log capture
+  (disconnect-safe). **Pi3b** stays **passive** (no image preflight / no container on pi3b).
+  **Image distribution from the primary Windows dev workstation (no docker pull on T14/Latitude):** exports **stable 1.7.3** and **beta 1.7.4-beta** with
+  **`docker save`** or **`podman save`** on the Windows box when pre-built tars are not supplied, then syncs with
+  **`rsync`** (if **`rsync`** is on PATH) else **`scp`**, then runs **`docker load`/`podman load`** for **both** archives
+  **before** writing ephemeral **`config_databoar.yaml`** and copying scripts. Optional pre-built paths:
+  **`DATA_BOAR_HYBRID_STABLE_TAR_GZ`**, **`DATA_BOAR_HYBRID_BETA_TAR_GZ`** (either may be **.tar** or **.tar.gz**).
+  **Ephemeral scripts:** copies **`scripts/lab-completao-host-smoke.sh`** (and **`scripts/lab_completao_data_contract_check.py`**
+  when present) into **`.../stable/scripts/`** and **`.../beta/scripts/`** for direct SSH runs from `/tmp/databoar_bench/*`.
+  Optional **`DATA_BOAR_HYBRID_REMOTE_PULL_SCRIPTS=1`** plus **`DATA_BOAR_HYBRID_REMOTE_PULL_REF`** (default **`origin/main`**)
+  runs **`git pull --ff-only`** on the manifest **`repoPaths[0]`** clone on the target so lab smoke matches the synced orchestrator working tree.
+  **Containers (T14 / mini-bt / latitude):** if operator **`tmux has-session -t completao`** exists, **send-keys** path still applies as a shortcut; otherwise **detached tmux** bench session is created automatically.
+  **Pi3B:** passive SSH only (IO + logs); no Docker/Podman on pi3b.
+  Requires OpenSSH **scp**/**ssh** on the dev PC (L-series build box pushes tar to T14/Latitude).
 
 .NOTES
-  Hybrid orchestrator v1.7.3 - Lab-Op High-Density Test (ASCII-only for Windows PowerShell 5.1).
+  Hybrid orchestrator - Lab-Op benchmark A/B v1.7.3 vs v1.7.4-beta (ASCII-only for Windows PowerShell 5.1).
 #>
 $ErrorActionPreference = "Stop"
 
@@ -77,13 +90,29 @@ $Nodes = Get-HybridNodesFromManifest -ManifestPath $manifestPath
 # Optional tmux target (operator may `tmux new -s completao` on a node); detected per host before container step.
 $TmuxSessionName = "completao"
 
-# Docker Hub semver tag (see docs/releases/1.7.3.md); avoid :v1.7.3 unless that tag exists on Hub.
-$ImageRef = "fabioleitao/data_boar:1.7.3"
+$HybridStableImage = "fabioleitao/data_boar:1.7.3"
+$HybridBetaImage = "fabioleitao/data_boar:1.7.4-beta"
+$HybridBenchStable = "/tmp/databoar_bench/stable"
+$HybridBenchBeta = "/tmp/databoar_bench/beta"
+$HybridPortStable = "9001"
+$HybridPortBeta = "9002"
+$HybridContainerInnerPort = "8088"
+
+$StableTarLocalOverride = ""
+if ($env:DATA_BOAR_HYBRID_STABLE_TAR_GZ) {
+    $StableTarLocalOverride = [string]$env:DATA_BOAR_HYBRID_STABLE_TAR_GZ
+}
+$BetaTarLocalOverride = ""
+if ($env:DATA_BOAR_HYBRID_BETA_TAR_GZ) {
+    $BetaTarLocalOverride = [string]$env:DATA_BOAR_HYBRID_BETA_TAR_GZ
+}
 
 $outDirHybrid = Join-Path $RepoRoot "docs\private\homelab\reports"
 New-Item -ItemType Directory -Force -Path $outDirHybrid | Out-Null
 $stampHybrid = Get-Date -Format "yyyyMMdd_HHmmss"
 $eventsPathHybrid = Join-Path $outDirHybrid "completao_hybrid_${stampHybrid}_events.jsonl"
+$HybridExportDir = Join-Path $outDirHybrid "hybrid_image_export_$stampHybrid"
+New-Item -ItemType Directory -Force -Path $HybridExportDir | Out-Null
 
 function Invoke-HybridCmdCapture {
     param([Parameter(Mandatory = $true)][string]$CmdLine)
@@ -135,14 +164,198 @@ function Test-HybridRemoteDockerImage {
     return ($LASTEXITCODE -eq 0 -and $out -match "HYBRID_IMG_OK")
 }
 
-Write-HybridCompletaoEvent -Phase "hybrid_orchestrate" -Status "ok" -Message "start" -Detail @{ image = $ImageRef }
+Write-HybridCompletaoEvent -Phase "hybrid_orchestrate" -Status "ok" -Message "start_ab_benchmark" -Detail @{
+    stableImage = $HybridStableImage
+    betaImage   = $HybridBetaImage
+    stablePort  = $HybridPortStable
+    betaPort    = $HybridPortBeta
+    benchDirs   = "$HybridBenchStable , $HybridBenchBeta"
+}
 
-function Deploy-Config {
+function Invoke-HybridRemoteMkBenchDirs {
+    param([Parameter(Mandatory = $true)][string] $Target)
+    $inner = "mkdir -p '$HybridBenchStable/scripts' '$HybridBenchBeta/scripts' && echo HYBRID_MK_OK"
+    $innerEsc = $inner.Replace('"', '\"')
+    $line = "ssh.exe -o BatchMode=yes -o ConnectTimeout=25 $Target `"$innerEsc`" 2>&1"
+    $o = Invoke-HybridCmdCapture -CmdLine $line
+    return ($LASTEXITCODE -eq 0 -and $o -match "HYBRID_MK_OK")
+}
+
+function Get-HybridWindowsContainerCli {
+    if (Get-Command docker -ErrorAction SilentlyContinue) {
+        return "docker"
+    }
+    if (Get-Command podman -ErrorAction SilentlyContinue) {
+        return "podman"
+    }
+    return ""
+}
+
+function Invoke-HybridLocalExportImageTar {
+    param(
+        [Parameter(Mandatory = $true)][string]$ImageRef,
+        [Parameter(Mandatory = $true)][string]$OutTarPath
+    )
+    $cli = Get-HybridWindowsContainerCli
+    if (-not $cli) {
+        Write-Warning "Hybrid: no docker.exe or podman.exe on PATH (Windows orchestrator) - cannot export $ImageRef"
+        return $false
+    }
+    $parent = Split-Path -Parent $OutTarPath
+    if (-not (Test-Path -LiteralPath $parent)) {
+        New-Item -ItemType Directory -Force -Path $parent | Out-Null
+    }
+    if ($cli -eq "docker") {
+        & docker save -o $OutTarPath $ImageRef
+    } else {
+        & podman save -o $OutTarPath $ImageRef
+    }
+    return (Test-Path -LiteralPath $OutTarPath)
+}
+
+function Invoke-HybridRsyncOrScp {
+    param(
+        [Parameter(Mandatory = $true)][string]$LocalPath,
+        [Parameter(Mandatory = $true)][string]$Target,
+        [Parameter(Mandatory = $true)][string]$RemotePath
+    )
+    if (-not (Test-Path -LiteralPath $LocalPath)) {
+        return $false
+    }
+    $rsyncCmd = Get-Command rsync -ErrorAction SilentlyContinue
+    if ($rsyncCmd) {
+        $rs = $rsyncCmd.Source
+        & $rs -avz -e "ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new" -- "$LocalPath" "${Target}:$RemotePath"
+        if ($LASTEXITCODE -eq 0) {
+            return $true
+        }
+        Write-Warning "Hybrid: rsync failed (exit $LASTEXITCODE) - falling back to scp for $RemotePath"
+    }
+    & scp.exe -q -o BatchMode=yes "$LocalPath" "${Target}:$RemotePath"
+    return ($LASTEXITCODE -eq 0)
+}
+
+function Invoke-HybridRemoteDockerLoads {
+    param(
+        [Parameter(Mandatory = $true)][string]$Target,
+        [Parameter(Mandatory = $true)][string]$Engine,
+        [Parameter(Mandatory = $true)][string]$StableTarRemote,
+        [Parameter(Mandatory = $true)][string]$BetaTarRemote
+    )
+    $bin = if ($Engine -eq "podman") { "podman" } else { "docker" }
+    $st = $StableTarRemote -replace "'", "'\''"
+    $bt = $BetaTarRemote -replace "'", "'\''"
+    $inner = "$bin load -i '$st' && $bin load -i '$bt' && echo HYBRID_LOADS_OK"
+    $innerEsc = $inner.Replace('"', '\"')
+    $line = "ssh.exe -o BatchMode=yes -o ConnectTimeout=900 -o ServerAliveInterval=15 $Target `"$innerEsc`" 2>&1"
+    $out = Invoke-HybridCmdCapture -CmdLine $line
+    return ($LASTEXITCODE -eq 0 -and $out -match "HYBRID_LOADS_OK")
+}
+
+function Invoke-HybridSyncCompletaoScriptsToBench {
+    param([Parameter(Mandatory = $true)][string]$Target)
+    $scriptFiles = @(
+        "lab-completao-host-smoke.sh",
+        "lab_completao_data_contract_check.py"
+    )
+    foreach ($track in @("stable", "beta")) {
+        $rd = if ($track -eq "stable") { $HybridBenchStable } else { $HybridBenchBeta }
+        foreach ($sf in $scriptFiles) {
+            $lp = Join-Path $RepoRoot "scripts\$sf"
+            if (-not (Test-Path -LiteralPath $lp)) {
+                continue
+            }
+            $rp = "${rd}/scripts/$sf"
+            if (-not (Invoke-HybridRsyncOrScp -LocalPath $lp -Target $Target -RemotePath $rp)) {
+                Write-Warning "Hybrid: failed to sync $sf to $($Target):$rp"
+                return $false
+            }
+        }
+        $chmodInner = "chmod +x '${rd}/scripts/lab-completao-host-smoke.sh' 2>/dev/null; echo HYBRID_CHMOD_SCRIPTS_OK"
+        $chmodEsc = $chmodInner.Replace('"', '\"')
+        $null = Invoke-HybridCmdCapture -CmdLine "ssh.exe -o BatchMode=yes -o ConnectTimeout=25 $Target `"$chmodEsc`" 2>&1"
+    }
+    return $true
+}
+
+function Resolve-HybridLocalImageTar {
+    param(
+        [Parameter(Mandatory = $true)][string]$OverridePath,
+        [Parameter(Mandatory = $true)][string]$ImageRef,
+        [Parameter(Mandatory = $true)][string]$ExportFileName,
+        [Parameter(Mandatory = $true)][string]$RemoteBenchDir,
+        [Parameter(Mandatory = $true)][string]$RemoteBaseName
+    )
+    $local = $null
+    if ($OverridePath -and (Test-Path -LiteralPath $OverridePath)) {
+        $local = $OverridePath
+    } else {
+        $exportPath = Join-Path $HybridExportDir $ExportFileName
+        if (-not (Invoke-HybridLocalExportImageTar -ImageRef $ImageRef -OutTarPath $exportPath)) {
+            return @{ ok = $false; local = $null; remote = $null }
+        }
+        $local = $exportPath
+    }
+    if (-not (Test-Path -LiteralPath $local)) {
+        return @{ ok = $false; local = $null; remote = $null }
+    }
+    $ext = [System.IO.Path]::GetExtension($local)
+    if (-not $ext) {
+        $ext = ".tar"
+    }
+    $remote = "$RemoteBenchDir/${RemoteBaseName}$ext"
+    return @{ ok = $true; local = $local; remote = $remote }
+}
+
+function Invoke-HybridOptionalGitPullRemoteRepo {
+    param(
+        [Parameter(Mandatory = $true)][string]$Target,
+        [Parameter(Mandatory = $true)][string]$RepoPath,
+        [Parameter(Mandatory = $true)][string]$NodeLabel
+    )
+    if (-not $env:DATA_BOAR_HYBRID_REMOTE_PULL_SCRIPTS -or "$env:DATA_BOAR_HYBRID_REMOTE_PULL_SCRIPTS" -ne "1") {
+        return $true
+    }
+    if (-not $RepoPath) {
+        return $true
+    }
+    $remoteName = "origin"
+    $branchName = "main"
+    if ($env:DATA_BOAR_HYBRID_REMOTE_PULL_REF) {
+        $raw = [string]$env:DATA_BOAR_HYBRID_REMOTE_PULL_REF.Trim()
+        if ($raw -match '^(?<r>[^/]+)/(?<b>.+)$') {
+            $remoteName = $Matches['r']
+            $branchName = $Matches['b']
+        } elseif ($raw -match '^origin/(?<b>.+)$') {
+            $remoteName = "origin"
+            $branchName = $Matches['b']
+        } elseif ($raw.Length -gt 0) {
+            $branchName = $raw
+        }
+    }
+    $rn = $remoteName -replace "'", "'\''"
+    $bn = $branchName -replace "'", "'\''"
+    $rp = $RepoPath -replace "'", "'\''"
+    $inner = "cd '$rp' && git fetch '$rn' && git pull --ff-only '$rn' '$bn' && echo HYBRID_GIT_PULL_OK"
+    $innerEsc = $inner.Replace('"', '\"')
+    $line = "ssh.exe -o BatchMode=yes -o ConnectTimeout=120 $Target `"$innerEsc`" 2>&1"
+    $out = Invoke-HybridCmdCapture -CmdLine $line
+    if ($LASTEXITCODE -ne 0 -or $out -notmatch "HYBRID_GIT_PULL_OK") {
+        Write-Warning "Hybrid: optional git pull failed on $NodeLabel ($Target) ref=$remoteName/$branchName"
+        return $false
+    }
+    return $true
+}
+
+function Deploy-ConfigTrack {
     param(
         [Parameter(Mandatory = $true)] $Node,
-        [Parameter(Mandatory = $true)][string] $Path
+        [Parameter(Mandatory = $true)][string] $Path,
+        [Parameter(Mandatory = $true)][ValidateSet("stable", "beta")][string] $Track
     )
-    $projectName = "Lab-Completao-$($Node.Name)"
+    $suffix = if ($Track -eq "stable") { "v173-stable" } else { "v174b-beta" }
+    $projectName = "Lab-Bench-$($Node.Name)-$suffix"
+    $remoteDir = if ($Track -eq "stable") { $HybridBenchStable } else { $HybridBenchBeta }
     $content = @"
 project_name: "$projectName"
 scan_options:
@@ -155,7 +368,7 @@ targets:
     $temp = New-TemporaryFile
     try {
         Set-Content -LiteralPath $temp.FullName -Value $content -Encoding ascii
-        $dest = "$($Node.SshHost):/tmp/config_databoar.yaml"
+        $dest = "$($Node.SshHost):${remoteDir}/config_databoar.yaml"
         & scp.exe -q $temp.FullName $dest
         if ($LASTEXITCODE -ne 0) {
             throw "scp failed for $($Node.Name) -> $dest"
@@ -171,10 +384,10 @@ function Invoke-Pi3bPassiveSsh {
         [Parameter(Mandatory = $true)][string] $RepoPath
     )
     $e = $RepoPath -replace "'", "'\''"
-    $inner = "cd '$e' && { echo '=== pi3b passive (repo .venv under clone) ==='; if [ -x .venv/bin/python3 ]; then echo 'using .venv/bin/python3 -m databoar'; .venv/bin/python3 -m databoar --help 2>&1 | head -n 40 || true; elif command -v python3 >/dev/null 2>&1; then echo 'fallback: python3 -m databoar'; python3 -m databoar --help 2>&1 | head -n 40 || true; else echo 'SKIP_NO_PYTHON_OR_VENV'; fi; echo '=== logs ==='; journalctl -n 100 --no-pager 2>/dev/null || true; df -h 2>/dev/null | head -n 16 || true; } 2>&1"
+    $inner = "cd '$e' && { echo '=== pi3b passive (repo .venv under clone) ==='; if [ -x .venv/bin/python3 ]; then echo 'using .venv/bin/python3 -m databoar'; .venv/bin/python3 -m databoar --help 2>&1 | head -n 40 || true; elif command -v python3 >/dev/null 2>&1; then echo 'fallback: python3 -m databoar'; python3 -m databoar --help 2>&1 | head -n 40 || true; else echo 'SKIP_NO_PYTHON_OR_VENV'; fi; echo '=== pi3b IO latency (/tmp) ==='; sync 2>/dev/null || true; rm -f /tmp/databoar_pi3b_iolat 2>/dev/null || true; dd if=/dev/zero of=/tmp/databoar_pi3b_iolat bs=4096 count=256 conv=fdatasync 2>&1 | tail -n 6 || true; rm -f /tmp/databoar_pi3b_iolat 2>/dev/null || true; echo '=== logs ==='; journalctl -n 100 --no-pager 2>/dev/null || true; df -h 2>/dev/null | head -n 16 || true; } 2>&1"
     $innerEsc = $inner.Replace('"', '\"')
     $target = $Node.SshHost
-    & ssh.exe -o BatchMode=yes -o ConnectTimeout=30 $target $innerEsc
+    & ssh.exe -o BatchMode=yes -o ConnectTimeout=30 -o ServerAliveInterval=15 -o ServerAliveCountMax=8 $target $innerEsc
     if ($LASTEXITCODE -ne 0) {
         Write-Warning "pi3b passive SSH failed for $($Node.Name) ($target) (skip-on-failure)."
     }
@@ -214,32 +427,69 @@ function Test-HybridTmuxSession {
     return ($out -match "HYBRID_TMUX_OK")
 }
 
-function Invoke-HybridContainerRun {
+function Invoke-HybridBenchRun {
     param(
-        [Parameter(Mandatory = $true)][string] $Target,
-        [Parameter(Mandatory = $true)][string] $Engine,
-        [Parameter(Mandatory = $true)][string] $Image,
-        [Parameter(Mandatory = $true)][string] $NodeLabel,
-        [int]$ConnectTimeoutSec = 300
+        [Parameter(Mandatory = $true)][string]$Target,
+        [Parameter(Mandatory = $true)][string]$Engine,
+        [Parameter(Mandatory = $true)][string]$Image,
+        [Parameter(Mandatory = $true)][string]$HostPort,
+        [Parameter(Mandatory = $true)][string]$ConfigRemote,
+        [Parameter(Mandatory = $true)][string]$TrackLabel,
+        [Parameter(Mandatory = $true)][string]$NodeLabel
     )
-    if ($Engine -eq "podman") {
-        $runLine = "podman run --rm -v /tmp/config_databoar.yaml:/app/config.yaml:Z $Image"
+    $remoteDir = if ($TrackLabel -eq "stable") { $HybridBenchStable } else { $HybridBenchBeta }
+    $sn = "dbbench_" + ($NodeLabel -replace '[^a-zA-Z0-9_]', '_') + "_" + $TrackLabel
+    $logFile = "$remoteDir/run_${TrackLabel}.log"
+    $scriptRemote = "$remoteDir/run_${TrackLabel}.sh"
+    $engineBin = if ($Engine -eq "podman") { "podman" } else { "docker" }
+    $volMount = if ($Engine -eq "podman") {
+        "-v `"$ConfigRemote`":/app/config.yaml:Z"
     } else {
-        $runLine = "docker run --rm -v /tmp/config_databoar.yaml:/app/config.yaml $Image"
+        "-v `"$ConfigRemote`":/app/config.yaml"
     }
-
+    $shBody = @"
+#!/bin/sh
+set -e
+exec >"$logFile" 2>&1
+echo HYBRID_BENCH_START track=$TrackLabel port=$HostPort
+$engineBin run --rm -p ${HostPort}:${HybridContainerInnerPort} $volMount "$Image"
+echo HYBRID_BENCH_END
+"@
+    $tmp = New-TemporaryFile
+    try {
+        $enc = New-Object System.Text.UTF8Encoding $false
+        [System.IO.File]::WriteAllText($tmp.FullName, $shBody, $enc)
+        & scp.exe -q $tmp.FullName "${Target}:${scriptRemote}"
+        if ($LASTEXITCODE -ne 0) {
+            return @{ ok = $false; wall_ms = 0; log = "scp_script_failed" }
+        }
+    } finally {
+        Remove-Item -LiteralPath $tmp.FullName -Force -ErrorAction SilentlyContinue
+    }
+    $chmodInner = "chmod +x '${scriptRemote}' && echo HYBRID_CHMOD_OK"
+    $chmodEsc = $chmodInner.Replace('"', '\"')
+    $null = Invoke-HybridCmdCapture -CmdLine "ssh.exe -o BatchMode=yes -o ConnectTimeout=30 $Target `"$chmodEsc`" 2>&1"
     if (Test-HybridTmuxSession -Target $Target -SessionName $TmuxSessionName) {
-        Write-Host "Hybrid ${NodeLabel}: tmux session '$TmuxSessionName' found - send-keys (run continues in pane)." -ForegroundColor DarkCyan
-        $remote = "tmux send-keys -t $TmuxSessionName '$runLine' Enter"
+        Write-Host "Hybrid ${NodeLabel}: tmux session '$TmuxSessionName' found - send-keys bench ($TrackLabel)." -ForegroundColor DarkCyan
+        $remote = "tmux send-keys -t $TmuxSessionName `"sh $scriptRemote`" Enter"
         & ssh.exe -o BatchMode=yes -o ConnectTimeout=30 $Target $remote
-        return $LASTEXITCODE
+        return @{ ok = ($LASTEXITCODE -eq 0); wall_ms = 0; log = "dispatched_operator_tmux" }
     }
-
-    Write-Host "Hybrid ${NodeLabel}: no tmux session '$TmuxSessionName' - direct run (bash -lc)." -ForegroundColor DarkGray
-    $inner = $runLine
-    $remote = "bash -lc '$inner'"
-    & ssh.exe -o BatchMode=yes -o ConnectTimeout=$ConnectTimeoutSec -o ServerAliveInterval=15 -o ServerAliveCountMax=20 $Target $remote
-    return $LASTEXITCODE
+    $tm = "tmux kill-session -t '$sn' 2>/dev/null; tmux new-session -d -s '$sn' '$scriptRemote'"
+    $tmEsc = $tm.Replace('"', '\"')
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    $null = Invoke-HybridCmdCapture -CmdLine "ssh.exe -o BatchMode=yes -o ConnectTimeout=30 -o ServerAliveInterval=15 -o ServerAliveCountMax=20 $Target `"$tmEsc`" 2>&1"
+    for ($i = 0; $i -lt 7200; $i++) {
+        $chk = & ssh.exe -o BatchMode=yes -o ConnectTimeout=15 $Target "tmux has-session -t '$sn' 2>/dev/null && echo yes || echo no" 2>&1 | Out-String
+        if ($chk -notmatch "yes") {
+            break
+        }
+        Start-Sleep -Seconds 1
+    }
+    $sw.Stop()
+    $cat = & ssh.exe -o BatchMode=yes -o ConnectTimeout=30 $Target "cat '$logFile' 2>/dev/null || true" 2>&1 | Out-String
+    $null = Invoke-HybridCmdCapture -CmdLine "ssh.exe -o BatchMode=yes -o ConnectTimeout=15 $Target `"tmux kill-session -t '$sn' 2>/dev/null`" 2>&1"
+    return @{ ok = $true; wall_ms = [int]$sw.ElapsedMilliseconds; log = $cat }
 }
 
 foreach ($n in $Nodes) {
@@ -281,19 +531,102 @@ foreach ($n in $Nodes) {
 
     $engine = if ($n.Type -eq "podman") { "podman" } else { "docker" }
     try {
-        Deploy-Config -Node $n -Path $scanPath
-        if (-not (Test-HybridRemoteDockerImage -Target $target -Engine $engine -Image $ImageRef)) {
-            Write-HybridCompletaoEvent -Phase "image_preflight" -Status "skipped" -Message "image_missing_skip_container_run" -HostLabel $n.Name -Detail @{ image = $ImageRef; engine = $engine }
-            Write-Warning "Hybrid: image $ImageRef not present on $($n.Name) ($target) - skip container run (idempotent preflight)."
+        if (-not (Invoke-HybridRemoteMkBenchDirs -Target $target)) {
+            Write-Warning "Hybrid: mkdir $HybridBenchStable / $HybridBenchBeta failed on $($n.Name) - skip."
             continue
         }
-        Write-HybridCompletaoEvent -Phase "image_preflight" -Status "ok" -Message "image_present" -HostLabel $n.Name -Detail @{ image = $ImageRef }
-        $rc = Invoke-HybridContainerRun -Target $target -Engine $engine -Image $ImageRef -NodeLabel $n.Name
-        if ($rc -ne 0) {
-            Write-HybridCompletaoEvent -Phase "container_run" -Status "failed" -Message "nonzero_exit" -HostLabel $n.Name -Detail @{ exitCode = $rc; engine = $engine }
-            Write-Warning "Hybrid: $engine run failed on $($n.Name) ($target) exit=$rc - skip-on-failure."
+
+        $rs = Resolve-HybridLocalImageTar -OverridePath $StableTarLocalOverride -ImageRef $HybridStableImage `
+            -ExportFileName "data_boar_stable_1.7.3.tar" -RemoteBenchDir $HybridBenchStable -RemoteBaseName "data_boar_stable_export"
+        $rb = Resolve-HybridLocalImageTar -OverridePath $BetaTarLocalOverride -ImageRef $HybridBetaImage `
+            -ExportFileName "data_boar_beta_1.7.4-beta.tar" -RemoteBenchDir $HybridBenchBeta -RemoteBaseName "data_boar_beta_export"
+        if (-not $rs.ok -or -not $rb.ok) {
+            Write-Warning "Hybrid: local stable/beta image tar resolve failed on $($n.Name) (export or DATA_BOAR_HYBRID_* override) - skip container step."
+            Write-HybridCompletaoEvent -Phase "hybrid_image_export" -Status "failed" -HostLabel $n.Name -Detail @{
+                stable_ok = [bool]$rs.ok
+                beta_ok   = [bool]$rb.ok
+            }
+            continue
+        }
+
+        if (-not (Invoke-HybridRsyncOrScp -LocalPath $rs.local -Target $target -RemotePath $rs.remote)) {
+            Write-Warning "Hybrid: scp/rsync stable tar failed for $($n.Name) - skip."
+            continue
+        }
+        if (-not (Invoke-HybridRsyncOrScp -LocalPath $rb.local -Target $target -RemotePath $rb.remote)) {
+            Write-Warning "Hybrid: scp/rsync beta tar failed for $($n.Name) - skip."
+            continue
+        }
+
+        $loadsOk = Invoke-HybridRemoteDockerLoads -Target $target -Engine $engine -StableTarRemote $rs.remote -BetaTarRemote $rb.remote
+        Write-HybridCompletaoEvent -Phase "hybrid_image_load" -Status $(if ($loadsOk) { "ok" } else { "warning" }) -Message "rsync_or_scp_then_dual_engine_load" -HostLabel $n.Name -Detail @{
+            engine      = $engine
+            stableLocal = $rs.local
+            betaLocal   = $rb.local
+            stableRemote = $rs.remote
+            betaRemote   = $rb.remote
+        }
+        if (-not $loadsOk) {
+            Write-Warning "Hybrid: docker/podman load (stable then beta) failed on $($n.Name) - skip benchmarks."
+            continue
+        }
+
+        if (-not (Invoke-HybridSyncCompletaoScriptsToBench -Target $target)) {
+            Write-Warning "Hybrid: completao script sync to bench dirs failed on $($n.Name) - skip benchmarks."
+            continue
+        }
+
+        $repoForPull = [string]$n.RepoPath
+        if ($repoForPull) {
+            $null = Invoke-HybridOptionalGitPullRemoteRepo -Target $target -RepoPath $repoForPull -NodeLabel $n.Name
+        }
+
+        Deploy-ConfigTrack -Node $n -Path $scanPath -Track stable
+        Deploy-ConfigTrack -Node $n -Path $scanPath -Track beta
+
+        $cfgS = "$HybridBenchStable/config_databoar.yaml"
+        $cfgB = "$HybridBenchBeta/config_databoar.yaml"
+        $stableMs = 0
+        $betaMs = 0
+        $stableOk = $false
+        $betaOk = $false
+
+        if (Test-HybridRemoteDockerImage -Target $target -Engine $engine -Image $HybridStableImage) {
+            Write-HybridCompletaoEvent -Phase "image_preflight" -Status "ok" -Message "stable_present_after_load" -HostLabel $n.Name -Detail @{ image = $HybridStableImage; port = $HybridPortStable }
+            $br = Invoke-HybridBenchRun -Target $target -Engine $engine -Image $HybridStableImage -HostPort $HybridPortStable -ConfigRemote $cfgS -TrackLabel stable -NodeLabel $n.Name
+            $stableMs = [int]$br.wall_ms
+            $stableOk = [bool]$br.ok
+            Write-HybridCompletaoEvent -Phase "benchmark_stable" -Status $(if ($stableOk) { "ok" } else { "warning" }) -HostLabel $n.Name -Detail @{
+                wall_ms   = $stableMs
+                image     = $HybridStableImage
+                port      = $HybridPortStable
+                narrative = "v1.7.3 stable reference (Python scan path); use wall_ms vs beta for A/B"
+            }
         } else {
-            Write-HybridCompletaoEvent -Phase "container_run" -Status "ok" -Message "completed_or_dispatched_tmux" -HostLabel $n.Name -Detail @{ exitCode = $rc }
+            Write-HybridCompletaoEvent -Phase "image_preflight" -Status "skipped" -Message "stable_missing_after_load" -HostLabel $n.Name -Detail @{ image = $HybridStableImage }
+        }
+
+        if (Test-HybridRemoteDockerImage -Target $target -Engine $engine -Image $HybridBetaImage) {
+            Write-HybridCompletaoEvent -Phase "image_preflight" -Status "ok" -Message "beta_present_after_load" -HostLabel $n.Name -Detail @{ image = $HybridBetaImage; port = $HybridPortBeta }
+            $brb = Invoke-HybridBenchRun -Target $target -Engine $engine -Image $HybridBetaImage -HostPort $HybridPortBeta -ConfigRemote $cfgB -TrackLabel beta -NodeLabel $n.Name
+            $betaMs = [int]$brb.wall_ms
+            $betaOk = [bool]$brb.ok
+            Write-HybridCompletaoEvent -Phase "benchmark_beta" -Status $(if ($betaOk) { "ok" } else { "warning" }) -HostLabel $n.Name -Detail @{
+                wall_ms   = $betaMs
+                image     = $HybridBetaImage
+                port      = $HybridPortBeta
+                narrative = "v1.7.4-beta Rust boar_fast_filter / FFI; compare wall_ms to stable for serialization boundary"
+            }
+        } else {
+            Write-HybridCompletaoEvent -Phase "image_preflight" -Status "skipped" -Message "beta_missing_after_load" -HostLabel $n.Name -Detail @{ image = $HybridBetaImage; hint = "Verify tar matches fabioleitao/data_boar:1.7.4-beta tag" }
+        }
+
+        $delta = $betaMs - $stableMs
+        Write-HybridCompletaoEvent -Phase "benchmark_compare" -Status "ok" -HostLabel $n.Name -Detail @{
+            stable_wall_ms = $stableMs
+            beta_wall_ms   = $betaMs
+            delta_ms       = $delta
+            note           = "Interpret delta_ms with container logs; FFI + Python boundary may dominate vs pure Rust microbench."
         }
     } catch {
         Write-HybridCompletaoEvent -Phase "hybrid_node" -Status "failed" -Message $_.Exception.Message -HostLabel $n.Name
@@ -301,6 +634,6 @@ foreach ($n in $Nodes) {
     }
 }
 
-Write-HybridCompletaoEvent -Phase "summary" -Status "ok" -Message "hybrid_pass_finished" -Detail @{ eventsPath = $eventsPathHybrid }
-Write-Host "Hybrid v1.7.3 orchestration pass completed (per-node skip-on-failure where noted)." -ForegroundColor Green
+Write-HybridCompletaoEvent -Phase "summary" -Status "ok" -Message "hybrid_ab_benchmark_finished" -Detail @{ eventsPath = $eventsPathHybrid }
+Write-Host "Hybrid A/B (1.7.3 vs 1.7.4-beta) pass completed (per-node skip-on-failure where noted)." -ForegroundColor Green
 exit 0
