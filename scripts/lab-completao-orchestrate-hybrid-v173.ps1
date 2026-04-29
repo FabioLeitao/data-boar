@@ -621,7 +621,8 @@ if (-not (Invoke-HybridEnsureLocalSessionImages)) {
     exit 1
 }
 
-$HybridStableTarBundle = Resolve-HybridLocalImageTar -OverridePath $StableTarLocalOverride -ImageRef $HybridStableImage `
+#$HybridStableTarBundle = Resolve-HybridLocalImageTar -OverridePath $StableTarLocalOverride -ImageRef $HybridStableImage `
+$HybridStableTarBundle = Resolve-HybridLocalImageTar -OverridePath ($StableTarLocalOverride -ne "" ? $StableTarLocalOverride : $null) -ImageRef $HybridStableImage `
     -ExportFileName "data_boar_stable_1.7.3.tar" -RemoteBenchDir $HybridBenchStable -RemoteBaseName "data_boar_stable_export"
 $HybridBetaTarBundle = Resolve-HybridLocalImageTar -OverridePath $BetaTarLocalOverride -ImageRef $HybridBetaImage `
     -ExportFileName "data_boar_beta_1.7.4-beta.tar" -RemoteBenchDir $HybridBenchBeta -RemoteBaseName "data_boar_beta_export"
