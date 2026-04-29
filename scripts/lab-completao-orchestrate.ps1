@@ -8,8 +8,12 @@
   Optional per-host "completaoHealthUrl" for remote curl from the dev PC after SSH smoke.
   Optional per-host "completaoEngineMode":"container" or "completaoSkipEngineImport":true when the host
   runs Data Boar only via Docker/Swarm/Podman (skip bare-metal uv / import core.engine) - see LAB_COMPLETAO_RUNBOOK.md.
-  Optional "completaoHardwareProfile":"LAB-NODE-04" (or sshHost matching LAB-NODE-04): no Docker/container smoke on that host;
-  local python3/.venv only, else skip with warning, plus journal/syslog tail for analysis on LAB-NODE-01/LAB-NODE-02.
+  Optional "completaoHardwareProfile":"LAB-NODE-04" (or sshHost matching LAB-NODE-04): PASSIVE target only - no Docker/Podman,
+  no image_preflight probe on LAB-NODE-04, skip undervoltage gate for LAB-NODE-04 in host-smoke; IO latency snippet over SSH;
+  local python3/.venv plus journal/syslog tail for LAB-NODE-01/LAB-NODE-02 review.
+  Optional root "completaoMainEngineSshHost": SSH alias of the primary benchmark/engine host; undervoltage on other
+  hosts is logged as warning only (host-smoke never fails the orchestrator for power throttling alone).
+  Image preflight is non-blocking: missing images or probe SSH failure logs warnings and continues host smoke.
   Optional "completaoHardwareProfile":"LAB-NODE-03-void" (or sshHost matching LAB-NODE-03): forces skip-engine-import and logs
   Void xbps hint for mysqlclient build deps; keep DB/Swarm-heavy work on LAB-NODE-02 and LAB-NODE-01.
 
@@ -17,8 +21,8 @@
   preflight). Runs after lab-op-git-ensure-ref when present and the file exists. See docs/private.example/homelab/completao_data_contracts.example.yaml.
 
   Optional root "completaoImageRefs": JSON array of image refs (e.g. fabioleitao/data_boar:lab). When set and
-  -SkiColleague-KagePreflight is not used, probes completaoImageProbeSshHost or the first manifest sshHost with docker/podman
-  image inspect (read-only) before host smoke; fails fast if an image is missing (idempotent: no pull/create).
+  -SkiColleague-KagePreflight is not used, probes completaoImageProbeSshHost or the first non-LAB-NODE-04 manifest sshHost with docker/podman
+  image inspect (read-only) before host smoke; missing images log warnings and the run continues (idempotent: no pull/create).
 
   Writes docs/private/homelab/reports/completao_<stamp>_orchestrate_events.jsonl (one JSON object per line) for tooling.
 
@@ -130,8 +134,8 @@ function Test-CompletaoSshRepoDir {
 
 function Build-LAB-NODE-04PassiveRemoteCmd {
     param([string]$RepoPathEsc)
-    # Single-line bash for ssh: no Docker; try venv/system python -m databoar; collect logs for LAB-NODE-01/LAB-NODE-02 review.
-    return "cd '$RepoPathEsc' && { echo '=== LAB-NODE-04 passive path (hardware: no Docker) ==='; if [ -x .venv/bin/python3 ]; then echo 'using .venv/bin/python3 -m databoar --help'; .venv/bin/python3 -m databoar --help 2>&1 | head -n 50 || true; elif command -v python3 >/dev/null 2>&1; then echo 'no .venv; trying python3 -m databoar --help'; python3 -m databoar --help 2>&1 | head -n 50 || true; else echo 'SKIP_NO_PYTHON_OR_VENV'; fi; echo '=== recent logs (journal/syslog) ==='; journalctl -n 120 --no-pager 2>/dev/null || true; test -r /var/log/syslog && tail -n 80 /var/log/syslog 2>/dev/null || true; test -r /var/log/messages && tail -n 80 /var/log/messages 2>/dev/null || true; df -h 2>/dev/null | head -n 24 || true; } 2>&1"
+    # Single-line bash for ssh: no Docker/Podman; IO latency on /tmp; venv/system databoar --help; logs for LAB-NODE-01/LAB-NODE-02.
+    return "cd '$RepoPathEsc' && { echo '=== LAB-NODE-04 passive path (no container engine) ==='; if [ -x .venv/bin/python3 ]; then echo 'using .venv/bin/python3 -m databoar --help'; .venv/bin/python3 -m databoar --help 2>&1 | head -n 50 || true; elif command -v python3 >/dev/null 2>&1; then echo 'no .venv; trying python3 -m databoar --help'; python3 -m databoar --help 2>&1 | head -n 50 || true; else echo 'SKIP_NO_PYTHON_OR_VENV'; fi; echo '=== LAB-NODE-04 IO latency (isolated /tmp file, fdatasync) ==='; sync 2>/dev/null || true; rm -f /tmp/databoar_LAB-NODE-04_iolat 2>/dev/null || true; dd if=/dev/zero of=/tmp/databoar_LAB-NODE-04_iolat bs=4096 count=256 conv=fdatasync 2>&1 | tail -n 6 || true; rm -f /tmp/databoar_LAB-NODE-04_iolat 2>/dev/null || true; echo '=== recent logs (journal/syslog) ==='; journalctl -n 120 --no-pager 2>/dev/null || true; test -r /var/log/syslog && tail -n 80 /var/log/syslog 2>/dev/null || true; test -r /var/log/messages && tail -n 80 /var/log/messages 2>/dev/null || true; df -h 2>/dev/null | head -n 24 || true; } 2>&1"
 }
 
 function Write-CompletaoOrchestrateEvent {
@@ -264,18 +268,46 @@ function Get-CompletaoImageRefsFromManifest {
     return ,$list.ToArray()
 }
 
+function Test-CompletaoHostEntryIsLAB-NODE-04 {
+    param($HostEntry, [string]$Alias)
+    if ($Alias -match '(?i)LAB-NODE-04') {
+        return $true
+    }
+    if ($HostEntry) {
+        $p = Get-CompletaoHardwareProfile -HostEntry $HostEntry -Alias $Alias
+        return ($p -match '^LAB-NODE-04')
+    }
+    return $false
+}
+
 function Get-CompletaoImageProbeAlias {
     param($ManifestObj)
     if (-not $ManifestObj) {
         return ""
     }
+    # LAB-NODE-04 is passive-only: never use it for docker/podman image inspect (LAB benchmark A/B contract).
     if ($ManifestObj.PSObject.Properties.Name -contains "completaoImageProbeSshHost" -and $ManifestObj.completaoImageProbeSshHost) {
-        return [string]$ManifestObj.completaoImageProbeSshHost
+        $cand = [string]$ManifestObj.completaoImageProbeSshHost
+        $he = $null
+        foreach ($hx in $ManifestObj.hosts) {
+            if ($hx.sshHost -and [string]$hx.sshHost -eq $cand) {
+                $he = $hx
+                break
+            }
+        }
+        if (-not (Test-CompletaoHostEntryIsLAB-NODE-04 -HostEntry $he -Alias $cand)) {
+            return $cand
+        }
     }
     foreach ($h2 in $ManifestObj.hosts) {
-        if ($h2.sshHost) {
-            return [string]$h2.sshHost
+        if (-not $h2.sshHost) {
+            continue
         }
+        $a2 = [string]$h2.sshHost
+        if (Test-CompletaoHostEntryIsLAB-NODE-04 -HostEntry $h2 -Alias $a2) {
+            continue
+        }
+        return $a2
     }
     return ""
 }
@@ -447,31 +479,37 @@ if (-not $SkiColleague-KagePreflight) {
     if ($imgRefs.Count -gt 0) {
         $probeHost = Get-CompletaoImageProbeAlias -ManifestObj $manifest
         if (-not $probeHost) {
-            Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "failed" -Message "no_ssh_host_for_image_probe"
-            $LabResultPhases.image_preflight = "failed"
-            throw "completaoImageRefs is set but manifest has no sshHost. Add manifest key completaoImageProbeSshHost or sshHost entries."
-        }
-        if (-not (Test-CompletaoSshProbe -Alias $probeHost)) {
-            Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "failed" -Message "ssh_probe_failed" -HostAlias $probeHost
-            $LabResultPhases.image_preflight = "failed"
-            throw "completaoImageRefs: SSH probe failed for image preflight host $probeHost"
-        }
-        foreach ($ir in $imgRefs) {
-            if ($null -eq $ir) {
-                continue
+            Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "warning" -Message "no_non_LAB-NODE-04_probe_host_skipped" -Detail @{ note = "LAB-NODE-04 excluded from image inspect; add a non-passive sshHost or completaoImageProbeSshHost" }
+            $LabResultPhases.image_preflight = "skipped_no_engine_probe_host"
+            Write-Warning "lab-completao-orchestrate: completaoImageRefs set but no non-LAB-NODE-04 host for image inspect (non-blocking)."
+        } elseif (-not (Test-CompletaoSshProbe -Alias $probeHost)) {
+            Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "warning" -Message "ssh_probe_failed_nonblocking" -HostAlias $probeHost
+            $LabResultPhases.image_preflight = "warning_ssh_probe_failed"
+            Write-Warning "lab-completao-orchestrate: image preflight SSH probe failed for $probeHost (non-blocking)."
+        } else {
+            $missingList = New-Object System.Collections.Generic.List[string]
+            foreach ($ir in $imgRefs) {
+                if ($null -eq $ir) {
+                    continue
+                }
+                $imageRef = [Convert]::ToString($ir, [System.Globalization.CultureInfo]::InvariantCulture).Trim()
+                if (-not $imageRef) {
+                    continue
+                }
+                if (-not (Test-CompletaoRemoteDockerImage -Alias $probeHost -ImageRef $imageRef)) {
+                    [void]$missingList.Add($imageRef)
+                }
             }
-            $imageRef = [Convert]::ToString($ir, [System.Globalization.CultureInfo]::InvariantCulture).Trim()
-            if (-not $imageRef) {
-                continue
-            }
-            if (-not (Test-CompletaoRemoteDockerImage -Alias $probeHost -ImageRef $imageRef)) {
-                Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "failed" -Message "image_missing" -HostAlias $probeHost -Detail @{ image = $imageRef }
-                $LabResultPhases.image_preflight = "failed"
-                throw "completaoImageRefs: image not present on ${probeHost}: $imageRef (docker/podman image inspect). Pull on lab or use -SkiColleague-KagePreflight."
+            if ($missingList.Count -gt 0) {
+                $joined = ($missingList.ToArray() -join ",")
+                Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "warning" -Message "image_missing_nonblocking" -HostAlias $probeHost -Detail @{ missing = $joined }
+                $LabResultPhases.image_preflight = "warning_missing_images"
+                Write-Warning "lab-completao-orchestrate: image(s) not on ${probeHost}: $joined (non-blocking). Pull/load on lab or use -SkiColleague-KagePreflight."
+            } else {
+                Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "ok" -Message "all_images_present" -HostAlias $probeHost -Detail @{ images = (($imgRefs | ForEach-Object { [Convert]::ToString($_, [System.Globalization.CultureInfo]::InvariantCulture) }) -join ",") }
+                $LabResultPhases.image_preflight = "ok"
             }
         }
-        Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "ok" -Message "all_images_present" -HostAlias $probeHost -Detail @{ images = (($imgRefs | ForEach-Object { [Convert]::ToString($_, [System.Globalization.CultureInfo]::InvariantCulture) }) -join ",") }
-        $LabResultPhases.image_preflight = "ok"
     }
     if ($LabResultPhases.image_preflight -eq "not_run") {
         $LabResultPhases.image_preflight = "not_configured"
@@ -485,6 +523,11 @@ $fping = Get-Command fping -ErrorAction SilentlyContinue
 
 $privArg = ""
 if ($Privileged) { $privArg = " --privileged" }
+
+$completaoMainEngineSshHost = ""
+if ($manifest.PSObject.Properties.Name -contains "completaoMainEngineSshHost" -and $manifest.completaoMainEngineSshHost) {
+    $completaoMainEngineSshHost = [string]$manifest.completaoMainEngineSshHost
+}
 
 $master = [System.Text.StringBuilder]::new()
 [void]$master.AppendLine("=== lab-completao-orchestrate $stamp ===")
@@ -600,7 +643,7 @@ foreach ($h in $manifest.hosts) {
         $rpEsc = $piRp -replace "'", "'\''"
         $piRemote = Build-LAB-NODE-04PassiveRemoteCmd -RepoPathEsc $rpEsc
         $piRemoteEsc = $piRemote.Replace('"', '\"')
-        $piLine = "ssh.exe -o BatchMode=yes -o ConnectTimeout=180 $alias `"$piRemoteEsc`" 2>&1"
+        $piLine = "ssh.exe -o BatchMode=yes -o ConnectTimeout=180 -o ServerAliveInterval=15 -o ServerAliveCountMax=8 $alias `"$piRemoteEsc`" 2>&1"
         $piOut = Invoke-CmdCapture -CmdLine $piLine
         [void]$hostLogSb.AppendLine("--- LAB-NODE-04 passive (no Docker / no container smoke) repo: $piRp ---")
         [void]$hostLogSb.AppendLine($piOut)
@@ -639,10 +682,24 @@ foreach ($h in $manifest.hosts) {
         }
         $skipEsc = ""
         if ($skipEngineImport) { $skipEsc = " --skip-engine-import" }
+        $benchEsc = ""
+        if ($h.PSObject.Properties.Name -contains "completaoBenchTrack" -and $h.completaoBenchTrack) {
+            $bt = [string]$h.completaoBenchTrack
+            if ($bt -match "^(stable|beta)$") {
+                $benchEsc = " --bench-track $bt"
+            }
+        }
+        $mePrefix = ""
+        if ($completaoMainEngineSshHost) {
+            $meEsc = $completaoMainEngineSshHost -replace "'", "'\''"
+            $mePrefix = "export LAB_COMPLETAO_MAIN_ENGINE_SSH_HOST='$meEsc'; "
+        }
+        $aliasEsc = $alias -replace "'", "'\''"
+        $aliasExport = "export LAB_COMPLETAO_SSH_HOST_ALIAS='$aliasEsc'; "
         # Require an up-to-date clone (script ships on main); clear message if missing after git sync.
-        $remoteCmd = "cd '$rpEsc' && if [ ! -f scripts/lab-completao-host-smoke.sh ]; then echo 'MISSING_SCRIPT: scripts/lab-completao-host-smoke.sh not in clone - on the host: cd to repo, git fetch origin && integrate origin/main (see docs/ops/LAB_COMPLETAO_RUNBOOK.md)'; exit 2; fi && bash scripts/lab-completao-host-smoke.sh$privArg$healthEsc$skipEsc 2>&1"
+        $remoteCmd = "${mePrefix}${aliasExport}cd '$rpEsc' && if [ ! -f scripts/lab-completao-host-smoke.sh ]; then echo 'MISSING_SCRIPT: scripts/lab-completao-host-smoke.sh not in clone - on the host: cd to repo, git fetch origin && integrate origin/main (see docs/ops/LAB_COMPLETAO_RUNBOOK.md)'; exit 2; fi && bash scripts/lab-completao-host-smoke.sh$privArg$healthEsc$skipEsc$benchEsc 2>&1"
         $remoteCmdEsc = $remoteCmd.Replace('"', '\"')
-        $remoteLine = "ssh.exe -o BatchMode=yes -o ConnectTimeout=180 $alias `"$remoteCmdEsc`" 2>&1"
+        $remoteLine = "ssh.exe -o BatchMode=yes -o ConnectTimeout=180 -o ServerAliveInterval=15 -o ServerAliveCountMax=8 $alias `"$remoteCmdEsc`" 2>&1"
         $remoteOut = Invoke-CmdCapture -CmdLine $remoteLine
         [void]$hostLogSb.AppendLine("--- repo: $rp ---")
         [void]$hostLogSb.AppendLine($remoteOut)
