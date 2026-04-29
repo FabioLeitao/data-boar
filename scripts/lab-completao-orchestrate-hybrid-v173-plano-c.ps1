@@ -23,11 +23,11 @@ if (-not $env:DATA_BOAR_HYBRID_BETA_TAR_GZ) {
     $env:DATA_BOAR_HYBRID_BETA_TAR_GZ = "$env:TEMP\data_boar_174_beta.tar"
 }
 
-# 2. CONFIGURAÇÃO DE SINCRONIZAÇÃO (Evita rodar código defasado no Lab-Op)
+# 2. CONFIGURACÃO DE SINCRONIZACÃO (Evita rodar código defasado no Lab-Op)
 if (-not $env:DATA_BOAR_HYBRID_REMOTE_PULL_SCRIPTS) { $env:DATA_BOAR_HYBRID_REMOTE_PULL_SCRIPTS = "1" }
 if (-not $env:DATA_BOAR_HYBRID_REMOTE_PULL_REF) { $env:DATA_BOAR_HYBRID_REMOTE_PULL_REF = "origin/main" }
 
-# 3. INVENTÁRIO DE HARDWARE (Mapeamento determinístico de IPs)
+# 3. INVENTARIO DE HARDWARE (Mapeamento deterministico de IPs)
 $PreloadedInventory = @{
     "LAB-NODE-03"  = "10.0.0.75"
     "lab-node-02" = "10.0.0.58"
@@ -41,7 +41,7 @@ $RepoRoot = (Get-Item $PSScriptRoot).Parent.FullName
 $manifestPath = Join-Path $RepoRoot "docs\private\homelab\lab-op-hosts.manifest.json"
 # -----------------------------------------------------------------------
 
-# Sim, Gemini leu. A verdade está no código e no hardware. Chega de alucinação.
+# Sim, Gemini leu. A verdade esta no código e no hardware. Chega de alucinacão.
 
 function Get-HybridNodesFromManifest {
     param([Parameter(Mandatory = $true)][string] $ManifestPath)
@@ -95,7 +95,7 @@ function Get-HybridNodesFromManifest {
 
 $Nodes = Get-HybridNodesFromManifest -ManifestPath $manifestPath
 
-# Configurações de Benchmarking
+# Configuracões de Benchmarking
 $TmuxSessionName = "completao"
 $HybridStableImage = "fabioleitao/data_boar:1.7.3"
 $HybridBetaImage = "fabioleitao/data_boar:1.7.4-beta"
@@ -207,7 +207,7 @@ function Invoke-HybridEnsureLocalSessionImages {
 function Invoke-HybridRsyncOrScp {
     param([string]$LocalPath, [string]$Target, [string]$RemotePath)
     if (-not (Test-Path -LiteralPath $LocalPath)) { return $false }
-    # Otimização de transporte para arquivos grandes (Data Boar Tars)
+    # Otimizacão de transporte para arquivos grandes (Data Boar Tars)
     & scp.exe -C -q -o BatchMode=yes -o IPQoS=throughput "$LocalPath" "${Target}:$RemotePath"
     return ($LASTEXITCODE -eq 0)
 }
@@ -266,7 +266,7 @@ function Invoke-HybridBenchRun {
     return @{ ok = ($out -match "OK"); wall_ms = $sw.ElapsedMilliseconds }
 }
 
-# --- INÍCIO DA ORQUESTRAÇÃO ---
+# --- INICIO DA ORQUESTRACÃO ---
 Write-Host "--- [DATA BOAR HYBRID ORCHESTRATOR START] ---" -ForegroundColor Cyan
 if (-not (Invoke-HybridEnsureLocalSessionImages)) { exit 1 }
 
@@ -282,7 +282,7 @@ foreach ($n in $Nodes) {
         continue
     }
 
-    # Sincronização de Scripts (Essencial para precisão do benchmark)
+    # Sincronizacão de Scripts (Essencial para precisão do benchmark)
     if ($n.RepoPath) {
         Invoke-HybridOptionalGitPullRemoteRepo -Target $target -RepoPath $n.RepoPath -NodeLabel $n.Name
     }
