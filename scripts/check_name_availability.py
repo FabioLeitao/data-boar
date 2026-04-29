@@ -19,7 +19,9 @@ def safe_get(url: str, timeout: int = TIMEOUT) -> tuple[int | None, str | None]:
         req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
         ctx = ssl.create_default_context()
         ctx.minimum_version = ssl.TLSVersion.TLSv1_2  # S4423: enforce strong TLS
-        with urllib.request.urlopen(req, timeout=timeout, context=ctx) as r:
+        with urllib.request.urlopen(  # nosec B310
+            req, timeout=timeout, context=ctx
+        ) as r:
             return r.status, r.read().decode("utf-8", errors="replace")
     except urllib.error.HTTPError as e:
         return e.code, None

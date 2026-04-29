@@ -24,7 +24,7 @@ Alguns **gates de desenvolvimento** e **wrappers finos** existem em **duas forma
 | Subconjunto *pytest* (`-Path` / `-Keyword`) | `scripts/quick-test.ps1` | `scripts/quick-test.sh` |
 | *Pre-commit* + *pytest* completo (sem *gatekeeper* / sem *plans-stats*) | `scripts/pre-commit-and-tests.ps1` | `scripts/pre-commit-and-tests.sh` |
 
-**Nota:** o **`check-all.ps1`** chama **`gatekeeper-audit.ps1`**, o **guard Rust** (`cargo fmt` / `check` / `test` em **`rust/boar_fast_filter/`**), depois **`plans-stats.py --write`** e delega ao **`pre-commit-and-tests.ps1`**. O **`check-all.sh`** espelha essa ordem (*gatekeeper* via **`pwsh`** quando existir, mesmo guard Rust com **`PYO3_USE_ABI3_FORWARD_COMPATIBILITY`**, **`plans-stats.py`**, depois **`pre-commit-and-tests.sh`**). Os **`pre-commit-and-tests.*`** ignoram *gatekeeper*, Rust e *plans-stats* de propósito.
+**Nota:** o **`check-all.ps1`** chama **`gatekeeper-audit.ps1`**, o **guard Rust** (`cargo fmt` / `check` / `test` em **`rust/boar_fast_filter/`**), depois **`plans-stats.py --write`** e delega ao **`pre-commit-and-tests.ps1`**. O **`check-all.sh`** espelha essa ordem (*gatekeeper* via **`pwsh`** quando existir, mesmo guard Rust com **`PYO3_USE_ABI3_FORWARD_COMPATIBILITY`**, **`plans-stats.py`**, depois **`pre-commit-and-tests.sh`**). Os **`pre-commit-and-tests.*`** ignoram *gatekeeper*, Rust e *plans-stats* de propósito; executam primeiro **`tests/security/test_mem_integrity.py`** (Hypothesis + PyO3) e depois o *pytest* completo com **`--deselect`** nesse arquivo para não duplicar os exemplos Hypothesis.
 
 ## Verificação
 
