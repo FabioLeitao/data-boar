@@ -280,12 +280,29 @@ function Test-CompletaoHostEntryIsLAB-NODE-04 {
     return $false
 }
 
+function Test-CompletaoHostEntrySkipsImageProbe {
+    param($HostEntry, [string]$Alias)
+    if (Test-CompletaoHostEntryIsLAB-NODE-04 -HostEntry $HostEntry -Alias $Alias) {
+        return $true
+    }
+    if ($Alias -match '(?i)LAB-NODE-03|^minibt$') {
+        return $true
+    }
+    if ($HostEntry) {
+        $p = Get-CompletaoHardwareProfile -HostEntry $HostEntry -Alias $Alias
+        if ($p -match '^LAB-NODE-03-void') {
+            return $true
+        }
+    }
+    return $false
+}
+
 function Get-CompletaoImageProbeAlias {
     param($ManifestObj)
     if (-not $ManifestObj) {
         return ""
     }
-    # LAB-NODE-04 is passive-only: never use it for docker/podman image inspect (LAB benchmark A/B contract).
+    # Skip passive LAB-NODE-04 and LAB-NODE-03 Void (no container engine / missing deps): never use them for image inspect.
     if ($ManifestObj.PSObject.Properties.Name -contains "completaoImageProbeSshHost" -and $ManifestObj.completaoImageProbeSshHost) {
         $cand = [string]$ManifestObj.completaoImageProbeSshHost
         $he = $null
@@ -295,7 +312,7 @@ function Get-CompletaoImageProbeAlias {
                 break
             }
         }
-        if (-not (Test-CompletaoHostEntryIsLAB-NODE-04 -HostEntry $he -Alias $cand)) {
+        if (-not (Test-CompletaoHostEntrySkipsImageProbe -HostEntry $he -Alias $cand)) {
             return $cand
         }
     }
@@ -304,12 +321,39 @@ function Get-CompletaoImageProbeAlias {
             continue
         }
         $a2 = [string]$h2.sshHost
-        if (Test-CompletaoHostEntryIsLAB-NODE-04 -HostEntry $h2 -Alias $a2) {
+        if (Test-CompletaoHostEntrySkipsImageProbe -HostEntry $h2 -Alias $a2) {
             continue
         }
         return $a2
     }
     return ""
+}
+
+function Write-CompletaoHostSmokeEmbeddedJsonlLines {
+    param(
+        [Parameter(Mandatory = $true)][string]$ReportPath,
+        [Parameter(Mandatory = $true)][string]$RemoteText
+    )
+    if (-not $RemoteText) {
+        return
+    }
+    $enc = New-Object System.Text.UTF8Encoding $false
+    foreach ($line in ($RemoteText -split "`r?`n")) {
+        $m = [regex]::Match($line, '^DATA_BOAR_COMPLETAO_JSONL_MIN_EVENT:(.+)$')
+        if (-not $m.Success) {
+            continue
+        }
+        $payload = $m.Groups[1].Value.Trim()
+        if (-not $payload) {
+            continue
+        }
+        try {
+            $null = $payload | ConvertFrom-Json
+            [System.IO.File]::AppendAllText($ReportPath, $payload + [Environment]::NewLine, $enc)
+        } catch {
+            Write-Warning "lab-completao-orchestrate: host_smoke embedded JSONL line skipped (parse): $($line.Substring(0, [Math]::Min(120, $line.Length)))"
+        }
+    }
 }
 
 function Test-CompletaoRemoteDockerImage {
@@ -479,9 +523,9 @@ if (-not $SkiColleague-KagePreflight) {
     if ($imgRefs.Count -gt 0) {
         $probeHost = Get-CompletaoImageProbeAlias -ManifestObj $manifest
         if (-not $probeHost) {
-            Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "warning" -Message "no_non_LAB-NODE-04_probe_host_skipped" -Detail @{ note = "LAB-NODE-04 excluded from image inspect; add a non-passive sshHost or completaoImageProbeSshHost" }
+            Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "warning" -Message "no_engine_probe_host_skipped" -Detail @{ note = "LAB-NODE-04 and LAB-NODE-03-void excluded from image inspect; set completaoImageProbeSshHost to an engine host (LAB-NODE-02/LAB-NODE-01) or add one before LAB-NODE-03 in manifest order" }
             $LabResultPhases.image_preflight = "skipped_no_engine_probe_host"
-            Write-Warning "lab-completao-orchestrate: completaoImageRefs set but no non-LAB-NODE-04 host for image inspect (non-blocking)."
+            Write-Warning "lab-completao-orchestrate: completaoImageRefs set but no engine host for image inspect after skipping LAB-NODE-04/LAB-NODE-03 (non-blocking)."
         } elseif (-not (Test-CompletaoSshProbe -Alias $probeHost)) {
             Write-CompletaoOrchestrateEvent -ReportPath $eventsPath -Phase "image_preflight" -Status "warning" -Message "ssh_probe_failed_nonblocking" -HostAlias $probeHost
             $LabResultPhases.image_preflight = "warning_ssh_probe_failed"
@@ -701,6 +745,7 @@ foreach ($h in $manifest.hosts) {
         $remoteCmdEsc = $remoteCmd.Replace('"', '\"')
         $remoteLine = "ssh.exe -o BatchMode=yes -o ConnectTimeout=180 -o ServerAliveInterval=15 -o ServerAliveCountMax=8 $alias `"$remoteCmdEsc`" 2>&1"
         $remoteOut = Invoke-CmdCapture -CmdLine $remoteLine
+        Write-CompletaoHostSmokeEmbeddedJsonlLines -ReportPath $eventsPath -RemoteText $remoteOut
         [void]$hostLogSb.AppendLine("--- repo: $rp ---")
         [void]$hostLogSb.AppendLine($remoteOut)
         [void]$master.AppendLine("--- repo: $rp ---")
