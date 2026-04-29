@@ -621,20 +621,44 @@ if (-not (Invoke-HybridEnsureLocalSessionImages)) {
     exit 1
 }
 
+#Tentativa 0 (original do cursor)
 #$HybridStableTarBundle = Resolve-HybridLocalImageTar -OverridePath $StableTarLocalOverride -ImageRef $HybridStableImage `
+#Tentativa 1
 #$HybridStableTarBundle = Resolve-HybridLocalImageTar -OverridePath ($StableTarLocalOverride -ne "" ? $StableTarLocalOverride : $null) -ImageRef $HybridStableImage `
+#$params = @{
+#    ImageRef = $HybridStableImage
+#}
+#if (-not [string]::IsNullOrWhiteSpace($StableTarLocalOverride)) {
+#    $params["OverridePath"] = $StableTarLocalOverride
+#}
+#
+#$HybridStableTarBundle = Resolve-HybridLocalImageTar @params
+#Tentativa 2
+#    -ExportFileName "data_boar_stable_1.7.3.tar" -RemoteBenchDir $HybridBenchStable -RemoteBaseName "data_boar_stable_export"
+#    $HybridStableTarBundle = Resolve-HybridLocalImageTar @stableParams
+#$HybridBetaTarBundle = Resolve-HybridLocalImageTar -OverridePath $BetaTarLocalOverride -ImageRef $HybridBetaImage `
+#    -ExportFileName "data_boar_beta_1.7.4-beta.tar" -RemoteBenchDir $HybridBenchBeta -RemoteBaseName "data_boar_beta_export"
+#if (-not $HybridStableTarBundle.ok -or -not $HybridBetaTarBundle.ok) {
+# Tentativa 3
+#$params = @{
+#    ImageRef = $HybridStableImage
+#}
+#if (-not [string]::IsNullOrWhiteSpace($StableTarLocalOverride)) {
+#    $params["OverridePath"] = $StableTarLocalOverride
+#}
+#Tentativa 4
 $params = @{
-    ImageRef = $HybridStableImage
+    ImageRef       = $HybridStableImage
+    ExportFileName = "data_boar_stable_1.7.3.tar"
+    RemoteBenchDir = $HybridBenchStable
+    RemoteBaseName = "data_boar_stable_export"
 }
+
 if (-not [string]::IsNullOrWhiteSpace($StableTarLocalOverride)) {
     $params["OverridePath"] = $StableTarLocalOverride
 }
 
 $HybridStableTarBundle = Resolve-HybridLocalImageTar @params
-    -ExportFileName "data_boar_stable_1.7.3.tar" -RemoteBenchDir $HybridBenchStable -RemoteBaseName "data_boar_stable_export"
-$HybridBetaTarBundle = Resolve-HybridLocalImageTar -OverridePath $BetaTarLocalOverride -ImageRef $HybridBetaImage `
-    -ExportFileName "data_boar_beta_1.7.4-beta.tar" -RemoteBenchDir $HybridBenchBeta -RemoteBaseName "data_boar_beta_export"
-if (-not $HybridStableTarBundle.ok -or -not $HybridBetaTarBundle.ok) {
     Write-HybridCompletaoEvent -Phase "hybrid_image_export" -Status "failed" -Message "local_tar_resolve_failed" -Detail @{
         stable_ok = [bool]$HybridStableTarBundle.ok
         beta_ok   = [bool]$HybridBetaTarBundle.ok
