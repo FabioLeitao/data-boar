@@ -8,6 +8,8 @@ The application uses a **hybrid** pipeline to classify column names and sampled 
 
 You can **set the training words for both ML and DL** in the main config file (inline) or in separate YAML/JSON files.
 
+**Not generative LLMs:** This hybrid path stays **deterministic + supervised**—it scores **evidence already in** the sample; it does **not** call a cloud **large language model** to “explain” your database. That design choice keeps sessions **diffable** and aligns with **quasi-identifier** aggregation, **minor** signals, and **jurisdiction** heuristics as **structured report outputs**, not open-ended prose. See [TECH_GUIDE.md](TECH_GUIDE.md#detection-stack-vs-generative-llms), [COMPLIANCE_FRAMEWORKS.md](COMPLIANCE_FRAMEWORKS.md#deterministic-detection-vs-generative-llm-hype), [GLOSSARY.md](GLOSSARY.md) §8, and [docs/ops/LLM_AGENT_EDITING_CAUTION.md](ops/LLM_AGENT_EDITING_CAUTION.md).
+
 **Português (Brasil):** [SENSITIVITY_DETECTION.pt_BR.md](SENSITIVITY_DETECTION.pt_BR.md)
 
 **Minor data detection:** The application can flag possible data of minors (DOB/age columns) and apply differential treatment in reports (LGPD Art. 14, GDPR Art. 8). The age threshold (default 18) is configurable in the external config file. See [MINOR_DETECTION.md](MINOR_DETECTION.md) for configuration and fine-tuning.

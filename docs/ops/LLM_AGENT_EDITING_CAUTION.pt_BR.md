@@ -8,6 +8,8 @@ O Data Boar já inclui **regras** Cursor, **skills**, **palavras-chave** de sess
 
 Esta página é um **aviso público curto** para mantenedores e colaboradores. O **registo completo** (capturas, export de chat, âncoras de branch/commit e narrativa justa) fica só em **`docs/private/`** na estação do operador — ver **`docs/private/ops/INCIDENT_VENDOR_CHAT_ORCHESTRATION_MISMATCH_2026-04-28_29.pt_BR.md`** (gitignored do GitHub; **não** colar esse caminho em **issues** ou **PRs** com segredos).
 
+**Contraste com o produto entregue:** Sinais de sensibilidade e inventário no Data Boar seguem caminho **determinístico + supervisionado** (regex, ML/DL com sementes fixas, relatórios estruturados) — veja [TECH_GUIDE.pt_BR.md](../TECH_GUIDE.pt_BR.md#detection-stack-vs-generative-llms), [COMPLIANCE_FRAMEWORKS.pt_BR.md](../COMPLIANCE_FRAMEWORKS.pt_BR.md#detecção-determinística-vs-hype-de-llm-generativo) e [GLOSSARY.pt_BR.md](../GLOSSARY.pt_BR.md) §8–9.
+
 ## O que correu mal (padrão genérico)
 
 - O operador pediu **fidelidade literal (*as-is*)** a um script já revisto, incluindo **comentários de auditoria / cadeia de custódia** e linhas de prova deliberadas.
