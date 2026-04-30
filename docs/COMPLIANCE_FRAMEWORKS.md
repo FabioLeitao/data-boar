@@ -16,6 +16,12 @@ The root [README](../README.md) **“For decision-makers”** section stays in *
 
 For **slide banks, workshop handouts, and structured compliance technical docs** (this page, [COMPLIANCE_TECHNICAL_REFERENCE.md](COMPLIANCE_TECHNICAL_REFERENCE.md), [GLOSSARY.md](GLOSSARY.md)), optional paired labels **Data Sniffing** (the **discovery and sampling pass**: connectors, bounded reads, sensitivity detection) and **Deep Boring** (the **structured compliance-report depth**: Excel workbooks, **norm_tag** alignment, **recommendation overrides**, heatmaps) keep vocabulary stable. They are **two halves of one session**, not competing features. Internal plans may still say *“deep sniffing”* or *“sniffing harder”*; when you promote copy to **decks** or **technical** prose for procurement/DPO workshops, you may standardise on **Data Sniffing** / **Deep Boring** as defined in [GLOSSARY.md](GLOSSARY.md#1-product-identity--data-landscape)—without treating the README executive blurb as the place to introduce those names.
 
+<a id="deterministic-detection-vs-generative-llm-hype"></a>
+
+### Deterministic detection vs generative LLM hype (product posture)
+
+**Discovered evidence vs narrated “AI”.** The engine produces **repeatable** **findings** from **regex**, **named patterns**, and **supervised** **ML/DL** on **your** training terms—plus structured signals such as **quasi-identifier** aggregation, **minor**-related columns, and **jurisdiction hints / tension** (always **heuristic**, never “applicable law” in software). That is a different contract from **generative LLMs**, which optimise for fluent text and may vary run-to-run. For architecture and audit expectations, see [TECH_GUIDE.md](TECH_GUIDE.md#detection-stack-vs-generative-llms); for terminology (**LLM**, **deterministic detection stack**, **Google Gemini** maintainer tooling), see [GLOSSARY.md](GLOSSARY.md) §8–9 and [docs/ops/LLM_AGENT_EDITING_CAUTION.md](ops/LLM_AGENT_EDITING_CAUTION.md). For a **vendor-neutral** timeline from **1950s** symbolic work through **AI winters**, **expert systems**, statistical ML, **deep learning**, and today’s **LLMs**—and where each family fits—see [AI_EVOLUTION_PRIMER.md](AI_EVOLUTION_PRIMER.md) ([pt-BR](AI_EVOLUTION_PRIMER.pt_BR.md)).
+
 ---
 
 ## Regulations we support today (built-in and config examples)
