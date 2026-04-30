@@ -37,6 +37,7 @@ This note is for **integrators, compliance readers, and maintainers** who hear �
 | **Classical ML** (trees, SVMs, linear models, **TF-IDF** + forest) | Labeled **tabular/text** slices | **Reproducible** with fixed seeds and versioned features | Needs **quality labels**; **domain shift** |
 | **Deep learning** (CNNs, transformers **as encoders**) | Vision, speech **features**, embeddings | Rich representations | **Compute**, tuning, **black-box** behaviour in places |
 | **Reinforcement learning (RL)** | Games, robotics **policies**, recommender **simulation** | Strong when **environment** is cheap to sample | **Sample inefficiency**; **safety** and **verification** in production are hard |
+| **Deep RL (DRL)** | **RL** with **deep neural** policies or value networks (e.g. DQN, PPO on pixels) | Handles **high-dimensional** state; same reward-driven loop as tabular RL | **Not** “RDL” as a standard acronym—use **DRL** (**deep reinforcement learning**). Inherits **RL + DL** risks (reward hacking, opaque failures) |
 | **Language models (LM)—classical to “large”** | Ranking, completion, **ASR** rescoring, assistants | **Fluency**, broad priors when **weights** fit in **RAM/GPU** | **Confabulation** risk grows with open-ended prompts; **PII** in prompts |
 | **LLM (generative, chat-oriented)** | Drafts, brainstorming, **IDE** assist | Fast iteration on **language** | **Not** a substitute for **git/CI** on regulated artefacts |
 
