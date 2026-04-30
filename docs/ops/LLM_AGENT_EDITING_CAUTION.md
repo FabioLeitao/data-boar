@@ -8,6 +8,8 @@ Data Boar ships strong **Cursor** rules, **skills**, **session keywords**, **pre
 
 This page is a **short, public** warning for maintainers and collaborators. A **full, concrete evidence index** (screenshots, chat exports, branch/commit anchors, and a fair narrative) lives only under **`docs/private/`** on the operator workstation — see **`docs/private/ops/INCIDENT_VENDOR_CHAT_ORCHESTRATION_MISMATCH_2026-04-28_29.pt_BR.md`** (gitignored from GitHub; never paste that path into **issues** or **PRs** with secrets).
 
+**Contrast with the shipped product:** Sensitivity and inventory signals in Data Boar stay on a **deterministic + supervised** path (regex, ML/DL with fixed seeds, structured reports)—see [TECH_GUIDE.md](../TECH_GUIDE.md#detection-stack-vs-generative-llms), [COMPLIANCE_FRAMEWORKS.md](../COMPLIANCE_FRAMEWORKS.md#deterministic-detection-vs-generative-llm-hype), and [GLOSSARY.md](../GLOSSARY.md) §8–9.
+
 ## What went wrong (generic pattern)
 
 - The operator asked for **literal fidelity** (*as-is*) to an already-reviewed script, including **audit / chain-of-custody comments** and deliberate “probe” lines.

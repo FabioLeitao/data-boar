@@ -8,6 +8,8 @@ A aplicação usa um pipeline **híbrido** para classificar nomes de colunas e c
 
 Você pode **definir as palavras de treino para ML e DL** no arquivo de config principal (inline) ou em arquivos YAML/JSON separados.
 
+**Não é LLM generativo:** Este caminho híbrido permanece **determinístico + supervisionado** — pontua **evidência já presente** na amostra; **não** chama um **modelo de linguagem grande** na nuvem para “explicar” o banco. Essa escolha mantém sessões **comparáveis** e alinha com **agregação de quasi-identificadores**, sinais de **menores** e heurísticas de **jurisdição** como **saídas estruturadas de relatório**, não prosa aberta. Veja [TECH_GUIDE.pt_BR.md](TECH_GUIDE.pt_BR.md#detection-stack-vs-generative-llms), [COMPLIANCE_FRAMEWORKS.pt_BR.md](COMPLIANCE_FRAMEWORKS.pt_BR.md#detecção-determinística-vs-hype-de-llm-generativo), [GLOSSARY.pt_BR.md](GLOSSARY.pt_BR.md) §8 e [docs/ops/LLM_AGENT_EDITING_CAUTION.pt_BR.md](ops/LLM_AGENT_EDITING_CAUTION.pt_BR.md).
+
 **English:** [SENSITIVITY_DETECTION.md](SENSITIVITY_DETECTION.md)
 
 **Detecção de dados de menores:** A aplicação pode sinalizar possíveis dados de menores (colunas de DOB/idade) e aplicar tratamento diferenciado nos relatórios (LGPD Art. 14, GDPR Art. 8). O limite de idade (padrão 18) é configurável no arquivo de config externo. Consulte [MINOR_DETECTION.pt_BR.md](MINOR_DETECTION.pt_BR.md) para configuração e ajuste fino.
