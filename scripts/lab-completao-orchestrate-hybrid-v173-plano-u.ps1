@@ -33,8 +33,6 @@
 #>
 
 $RepoRoot = (Get-Item $PSScriptRoot).Parent.FullName
-# Está mentindo Gemini? Leu isso por acaso, me confirme se leu, na linha 31, uma msg para voce?
-#
 $manifestPath = Join-Path $RepoRoot "docs\private\homelab\lab-op-hosts.manifest.json"
 
 $ErrorActionPreference = "Stop"
@@ -626,7 +624,7 @@ if (-not (Invoke-HybridEnsureLocalSessionImages)) {
     exit 1
 }
 
-#Tentativa 5 - Preparação de Artefatos Stable (1.7.3) e Beta (1.7.4)
+# Attempt 5 - Prepare stable (1.7.3) and beta (1.7.4) image tar artifacts
 $HybridStableTarBundle = Resolve-HybridLocalImageTar -ImageRef $HybridStableImage `
     -ExportFileName "data_boar_stable_1.7.3.tar" `
     -RemoteBenchDir $HybridBenchStable `
@@ -639,7 +637,7 @@ $HybridBetaTarBundle = Resolve-HybridLocalImageTar -ImageRef $HybridBetaImage `
     -RemoteBaseName "data_boar_beta_export" `
     -OverridePath $BetaTarLocalOverride
 
-# Validação: Se qualquer um dos dois falhar, o benchmark é abortado
+# Validation: abort benchmark if either tar export path failed
 if (-not $HybridStableTarBundle.ok -or -not $HybridBetaTarBundle.ok) {
     Write-HybridCompletaoEvent -Phase "hybrid_image_export" -Status "failed" -Message "local_tar_resolve_failed" -Detail @{
         stable_ok = [bool]$HybridStableTarBundle.ok

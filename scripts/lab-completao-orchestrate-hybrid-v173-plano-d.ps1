@@ -1,16 +1,16 @@
 <#
 .SYNOPSIS
     Data Boar Orchestrator - Hybrid Lab Execution (v173)
-    Orquestrador de auditoria para ambientes distribuídos (WORKSTATION, LAB-NODE-02, LAB-NODE-03, LAB-NODE-04).
-    Foco em benchmarking de performance e integridade de dados (LGPD/GDPR/CCPA).
+    Audit-style orchestration for distributed lab nodes (ThinkPad LAB-NODE-01, LAB-NODE-02, LAB-NODE-03, LAB-NODE-04).
+    Focus on performance benchmarking and data-inventory signals (LGPD/GDPR/CCPA framing).
 
 .DESCRIPTION
-    Este script realiza o deploy, execução e coleta de resultados do Data Boar
-    em múltiplos nós via SSH, consolidando logs e métricas em um ambiente híbrido.
+    Deploys, runs, and collects Data Boar results on multiple SSH targets,
+    consolidating logs and metrics in a hybrid lab layout.
 
-    Autor: Fabio Leitao (SRE)
-    Versão: 1.7.3-stable
-    Data: 29/04/2026
+    Author: Fabio Leitao (SRE)
+    Version: 1.7.3-stable
+    Date: 2026-04-29
 #>
 
 # --- INITIALIZATION & AUDIT TRAIL ---
@@ -28,7 +28,7 @@ if (!(Test-Path $ResultsDir)) {
 # --- INVENTORY & TOPOLOGY ---
 $Inventory = @(
     @{
-        Name   = "WORKSTATION-01"
+        Name   = "ThinkPad-LAB-NODE-01-lab"
         IP     = "10.0.0.100"
         User   = "leitao"
         Path   = "/home/leitao/Projects/dev/data-boar"
@@ -82,8 +82,8 @@ function Write-SRELog {
 
 # --- DATABASE & METRICS INITIALIZATION ---
 function Initialize-AuditDB {
-    Write-SRELog "Inicializando base de dados SQLite para métricas..."
-    # Lógica para garantir que a tabela de benchmarks existe
+    Write-SRELog "Initializing SQLite metrics database..."
+    # Ensure benchmark table exists (placeholder)
     # CREATE TABLE IF NOT EXISTS benchmarks (id INTEGER PRIMARY KEY, node TEXT, timestamp TEXT, duration REAL, findings INTEGER);
 }
 
@@ -115,7 +115,7 @@ Write-SRELog "INICIANDO ORQUESTRACAO DATA BOAR v$Version" "SUCCESS"
 foreach ($Node in $Inventory) {
     if (-not $Node.Active) { continue }
 
-    Write-SRELog ">>> PROCESSANDO NÓ: $($Node.Name) [$($Node.IP)]"
+    Write-SRELog ">>> PROCESSING NODE: $($Node.Name) [$($Node.IP)]"
     $Payload = Get-RemotePayload -TargetDir $Node.Path -Branch $TargetBranch
 
     try {
@@ -124,9 +124,9 @@ foreach ($Node in $Inventory) {
         $NodeOutput | Out-File -FilePath $Global:LogFile -Append
 
         if ($NodeOutput -match "FATAL") {
-            Write-SRELog "FALHA NO NÓ $($Node.Name)" "ERROR"
+            Write-SRELog "FAILURE ON NODE $($Node.Name)" "ERROR"
         } else {
-            Write-SRELog "SUCESSO NO NÓ $($Node.Name)" "SUCCESS"
+            Write-SRELog "SUCCESS ON NODE $($Node.Name)" "SUCCESS"
         }
     }
     catch {
@@ -143,7 +143,7 @@ function Parse-JSONL {
             # Processamento de sensibilidade (PII detection)
             $Severity = $Item.severity
             $File = $Item.file_path
-            Write-SRELog "DETECÇÃO: $File [$Severity]" "WARN"
+            Write-SRELog "DETECTION: $File [$Severity]" "WARN"
         }
     }
 }
@@ -158,7 +158,7 @@ foreach ($Node in $Inventory) {
 
 # --- REPORT GENERATION & METRICS ANALYSIS ---
 function Generate-FinalReport {
-    Write-SRELog "Agregando resultados finais para relatório de conformidade..."
+    Write-SRELog "Aggregating final results for compliance report..."
     $TotalFindings = 0
     $NodeStats = @()
 
@@ -171,14 +171,14 @@ function Generate-FinalReport {
         }
     }
 
-    Write-SRELog "Total de vulnerabilidades/sensibilidades detectadas: $TotalFindings" "WARN"
+    Write-SRELog "Total sensitivity findings: $TotalFindings" "WARN"
     $NodeStats | Format-Table | Out-String | Write-SRELog
 }
 
 Generate-FinalReport
 
 # --- CLEANUP ---
-Write-SRELog "Limpando containers remotos e artefatos temporários..."
+Write-SRELog "Cleaning remote containers and temporary artifacts..."
 foreach ($Node in $Inventory) {
     if ($Node.Active) {
         ssh "$($Node.User)@$($Node.IP)" "docker ps -a -q --filter 'name=data-boar' | xargs -r docker rm -f"
