@@ -39,6 +39,17 @@ def _collect_md_files(root: Path, exclude_dirs: frozenset[str]) -> list[Path]:
     return sorted(set(out))
 
 
+def _markdown_lint_skip_ephemeral_root_markdown(root: Path, path: Path) -> bool:
+    """Root-level executive desk Markdown from local runs (gitignored; not maintained to docs bar)."""
+    try:
+        rel = path.relative_to(root)
+    except ValueError:
+        return False
+    if len(rel.parts) != 1:
+        return False
+    return rel.name.startswith("POC_SUMMARY_") and rel.suffix.lower() == ".md"
+
+
 # Exclude tooling/dependency dirs and docs/private (git-ignored user content; not part of repo lint).
 # .cursor is included so rules/skills pass MD031, MD060, etc.
 MARKDOWN_LINT_EXCLUDE_DIRS = frozenset(
@@ -334,6 +345,7 @@ def test_markdown_lint_no_violations(include_private_lint: bool):
         p
         for p in md_files
         if p.relative_to(root).as_posix() not in MARKDOWN_LINT_EXCLUDE_FILES
+        and not _markdown_lint_skip_ephemeral_root_markdown(root, p)
     ]
     all_violations: list[tuple[Path, int, str]] = []
     for path in md_files:
