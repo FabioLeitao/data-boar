@@ -39,7 +39,12 @@ def test_slack_ci_failure_notify_workflow_present_and_valid() -> None:
     assert "workflow_run" in on
     wr = on["workflow_run"]
     assert isinstance(wr, dict)
-    assert wr.get("workflows") == ["CI", "Semgrep", "SBOM"]
+    assert wr.get("workflows") == [
+        "CI",
+        "Semgrep",
+        "SBOM",
+        "Dependabot requirements.txt sync",
+    ]
     assert "notify" in (data.get("jobs") or {})
 
 
@@ -224,6 +229,37 @@ def test_ci_yml_pins_actions_and_uv_cli() -> None:
         if not any(
             p in code for p in ("actions/", "github/", "astral-sh/", "SonarSource/")
         ):
+            continue
+        assert sha_40.search(code), (
+            f"expected full commit SHA in uses line: {line.strip()!r}"
+        )
+
+
+def test_dependabot_sync_workflow_present_and_valid() -> None:
+    """Dependabot PRs that touch the lockfile get requirements.txt regenerated on-branch."""
+    data = _load_workflow("dependabot-sync.yml")
+    assert data.get("name")
+    on = data.get("on") or {}
+    assert "pull_request" in on
+    pr = on["pull_request"]
+    assert isinstance(pr, dict)
+    assert pr.get("branches") == ["main", "master"]
+    paths = pr.get("paths") or []
+    assert "uv.lock" in paths
+    assert "pyproject.toml" in paths
+    jobs = data.get("jobs") or {}
+    sync = jobs.get("sync-requirements")
+    assert isinstance(sync, dict)
+    assert "dependabot[bot]" in str(sync.get("if") or "")
+    perms = sync.get("permissions") or {}
+    assert perms.get("contents") == "write"
+    text = (WORKFLOWS / "dependabot-sync.yml").read_text(encoding="utf-8")
+    sha_40 = re.compile(r"@[0-9a-f]{40}")
+    for line in text.splitlines():
+        code = line.split("#", 1)[0]
+        if "uses:" not in code or "docker://" in code:
+            continue
+        if not any(p in code for p in ("actions/", "github/", "astral-sh/")):
             continue
         assert sha_40.search(code), (
             f"expected full commit SHA in uses line: {line.strip()!r}"

@@ -1,4 +1,4 @@
-# Posts a short message to Slack when CI or Semgrep fails (workflow_run).
+# Posts a short message to Slack when selected workflows fail (workflow_run).
 # Requires repository secret SLACK_WEBHOOK_URL (same as Slack operator ping).
 # Skips if secret unset. No checkout needed.
 name: Slack CI failure notify
@@ -8,7 +8,11 @@ permissions:
 
 'on':
   workflow_run:
-    workflows: [CI, Semgrep, SBOM]
+    workflows:
+      - CI
+      - Semgrep
+      - SBOM
+      - Dependabot requirements.txt sync
     types: [completed]
 
 jobs:

@@ -1,0 +1,55 @@
+# Keeps requirements.txt in sync when Dependabot updates uv.lock / pyproject.toml.
+# Third-party Actions use full commit SHAs (tag in comment); bump via Dependabot (github-actions).
+# Incident context: CI drift when lock changes without regenerating requirements.txt (e.g. run #25080647534).
+name: Dependabot requirements.txt sync
+
+permissions:
+  contents: read
+
+# Quoted key: PyYAML 1.1 treats bare `on` as boolean true (see semgrep.yml).
+'on':
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "uv.lock"
+      - "pyproject.toml"
+
+concurrency:
+  group: dependabot-sync-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  sync-requirements:
+    name: Regenerate requirements.txt
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.2"
+          enable-cache: true
+
+      - name: Regenerate requirements.txt
+        run: uv export --no-emit-package pyproject.toml -o requirements.txt
+
+      - name: Commit and push changes
+        run: |
+          set -eux
+          if [ -n "$(git status --porcelain requirements.txt)" ]; then
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git config user.name "github-actions[bot]"
+            git add requirements.txt
+            git commit -m "chore(deps): auto-regenerate requirements.txt after uv.lock update"
+            git push origin "HEAD:${{ github.event.pull_request.head.ref }}"
+          else
+            echo "No changes to requirements.txt"
+          fi
