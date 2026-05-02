@@ -18,7 +18,7 @@ Production “soup” is not only obvious `.csv` and `.pdf` trees. It includes *
 | Signal | Direction in this repo |
 | ------ | ------------------------ |
 | **Files on disk / in shares** | Magic-byte cloaking, compressed innards, rich media metadata, optional **stego**, **Tier 3b** telemetry strings, **Tier 4** document tricks—see sections below. |
-| **Breadcrumbs from other tools** | Offline exports → canonical scope hints — [PLAN_SCOPE_IMPORT_FROM_EXPORTS.md](PLAN_SCOPE_IMPORT_FROM_EXPORTS.md). |
+| **Breadcrumbs from other tools** | Offline exports → canonical scope hints — [PLAN_SCOPE_IMPORT_FROM_EXPORTS.md](PLAN_SCOPE_IMPORT_FROM_EXPORTS.md). **Medium-term:** lakehouse **inventory / UC-backed** tables as another channel for the same target list — [PLAN_DATABRICKS_UNITY_LAKEHOUSE_SCOPE_AND_SCAN.md](PLAN_DATABRICKS_UNITY_LAKEHOUSE_SCOPE_AND_SCAN.md). |
 | **Listeners not in any inventory** | Allowlisted TCP connect + short read (technician-flagged) — [PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md](PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md) (incl. worst-case zero-inventory). |
 
 **Guardrail:** “Sniff harder” is **not** covert or boundary-less; it is **explicitly enabled**, rate-limited, and auditable where the plan says so.

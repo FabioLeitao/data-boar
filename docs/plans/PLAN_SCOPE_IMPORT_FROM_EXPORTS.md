@@ -8,10 +8,10 @@
 
 **Intended order:** (1) **[PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md](PLAN_MATURITY_SELF_ASSESSMENT_GRC_QUESTIONNAIRE.md)** — DOCX → curated YAML, architecture **A** POC; (2) **this plan** — **manual CSV / export breadcrumbs** → canonical asset list → config fragments (Phases B/C), even when the customer only has a **hand-maintained spreadsheet**; (3) **[#86](https://github.com/FabioLeitao/data-boar/issues/86)** — session + **passwordless (Bitwarden Passwordless.dev minimum)** + RBAC on **`/{locale}/…`** per [PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md](PLAN_DASHBOARD_REPORTS_ACCESS_CONTROL.md). **Yes, this sequence is achievable** as a roadmap; delivery is **token- and sprint-paced** — see [TOKEN_AWARE_USAGE.md](TOKEN_AWARE_USAGE.md).
 
-**Related plans:** [PLAN_NEXT_WAVE_PLATFORM_AND_GTM.md](PLAN_NEXT_WAVE_PLATFORM_AND_GTM.md) (N2 modular runtime + GTM), [PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md](PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md) (active probes — complementary), [PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md](PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md) (live back-office connectors — different scope), [PLAN_DATA_SOURCE_VERSIONS_AND_HARDENING.md](PLAN_DATA_SOURCE_VERSIONS_AND_HARDENING.md) (future: tags from imported asset metadata).
+**Related plans:** [PLAN_NEXT_WAVE_PLATFORM_AND_GTM.md](PLAN_NEXT_WAVE_PLATFORM_AND_GTM.md) (N2 modular runtime + GTM), [PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md](PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md) (active probes — complementary), [PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md](PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md) (live back-office connectors — different scope), [PLAN_DATA_SOURCE_VERSIONS_AND_HARDENING.md](PLAN_DATA_SOURCE_VERSIONS_AND_HARDENING.md) (future: tags from imported asset metadata), [PLAN_DATABRICKS_UNITY_LAKEHOUSE_SCOPE_AND_SCAN.md](PLAN_DATABRICKS_UNITY_LAKEHOUSE_SCOPE_AND_SCAN.md) (lakehouse scan + catalog-driven scope — medium-term).
 
 <!-- plans-hub-summary: Phase B–D: generic CSV → YAML targets fragment + docs/quickstart EN+pt-BR; vendor adapters (Phase E) backlog. -->
-<!-- plans-hub-related: PLAN_NEXT_WAVE_PLATFORM_AND_GTM.md, PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md, PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md -->
+<!-- plans-hub-related: PLAN_NEXT_WAVE_PLATFORM_AND_GTM.md, PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md, PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md, PLAN_DATABRICKS_UNITY_LAKEHOUSE_SCOPE_AND_SCAN.md -->
 
 ---
 
@@ -49,6 +49,7 @@ Typical sources (examples, not an exhaustive commitment):
 | [PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md](PLAN_OPT_IN_NETWORK_PORT_SERVICE_HINTS.md) | **Complements:** passive **export → config** vs optional **active** TCP probes on allowlisted scope. |
 | [PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md](PLAN_ENTERPRISE_HR_SST_ERP_CONNECTORS.md) | **Distinct:** enterprise plan targets **sampling business data** via connectors; this plan targets **bootstrap scope** from files. |
 | [PLAN_DATA_SOURCE_VERSIONS_AND_HARDENING.md](PLAN_DATA_SOURCE_VERSIONS_AND_HARDENING.md) | **Future:** imported asset IDs / owners may **enrich** `data_source_inventory` or report metadata. |
+| [PLAN_DATABRICKS_UNITY_LAKEHOUSE_SCOPE_AND_SCAN.md](PLAN_DATABRICKS_UNITY_LAKEHOUSE_SCOPE_AND_SCAN.md) | **Future / medium-term:** when customers land **inventory or CMDB exports in a lakehouse**, **Track B** here aligns with the same CSV/SQL → **targets** model (catalog is a **channel**, not a different product contract). |
 
 ---
 
