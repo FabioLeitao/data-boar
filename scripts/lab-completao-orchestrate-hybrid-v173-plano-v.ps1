@@ -1018,16 +1018,16 @@ function Invoke-DataBoarPlanVResilientRun {
                     # Re-verifica a evidencia apos o sudo
                     $evp = Get-DataBoarPlanVMountMaterialEvidence -NodeName ([string]$node.Name) -SshTarget $ssP -ConnectTimeoutSeconds 20
 
-                    # Logica de DecisA£o: Se o alvo no config for local (/home/*), o FAIL de rede A© ignorado
+                    # Logica de DecisAo: Se o alvo no config for local (/home/*), o FAIL de rede A ignorado
                     $isLocalTarget = (Get-Content $BoarConfigLocalPath | Select-String "path: .*/home/").Count -gt 0
 
                     if (-not $evp.AllProtocolsOk -and -not $isLocalTarget) {
-                        # So aborta de verdade se continuar falhando E o alvo NAƒO for local
+                        # So aborta de verdade se continuar falhando E o alvo NAO for local
                         Invoke-DataBoarPlanVWriteMountAbortForensic -LocalLogDir $logDir -RunId $RunId -NodeName ([string]$node.Name) -Evidence $evp
                         [void]$skippedSet.Add([string]$node.Name)
                         continue
                     }
-                    Write-Host "[SRE-REMEDY] No $($node.Name) liberado para o Plano-V (Alvo local ou RemediaA§A£o OK)." -ForegroundColor Cyan
+                    Write-Host "[SRE-REMEDY] No $($node.Name) liberado para o Plano-V (Alvo local ou RemediaAAo OK)." -ForegroundColor Cyan
                 }
             }
         }
