@@ -1011,23 +1011,23 @@ function Invoke-DataBoarPlanVResilientRun {
                 $sshP = Resolve-DataBoarSshTarget -NodeName ([string]$node.Name) -IpAddress ([string]$node.Ip) -SshUser $nUser
                 $evP = Get-DataBoarPlanVMountMaterialEvidence -NodeName ([string]$node.Name) -SshTarget $sshP -ConnectTimeoutSeconds 20
 		if (-not $evp.AllProtocolsOk) {
-                    # REMEDIAÇÃO SRE: Tenta montar usando o seu alias privilegiado
-                    Write-Host "[SRE-REMEDY] Protocolos FAIL no nó $($node.Name). Tentando LABOP_SHARE_CLIENTS..." -ForegroundColor Yellow
+                    # REMEDIACAO SRE: Tenta montar usando o seu alias privilegiado
+                    Write-Host "[SRE-REMEDY] Protocolos FAIL no no $($node.Name). Tentando LABOP_SHARE_CLIENTS..." -ForegroundColor Yellow
                     ssh $ssP "sudo /home/leitao/Projects/dev/data-boar/scripts/labop-share-client-install.sh --apply"
 
-                    # Re-verifica a evidência após o sudo
+                    # Re-verifica a evidencia apos o sudo
                     $evp = Get-DataBoarPlanVMountMaterialEvidence -NodeName ([string]$node.Name) -SshTarget $ssP -ConnectTimeoutSeconds 20
 
-                    # Lógica de Decisão: Se o alvo no config for local (/home/*), o FAIL de rede é ignorado
+                    # Logica de Decisão: Se o alvo no config for local (/home/*), o FAIL de rede é ignorado
                     $isLocalTarget = (Get-Content $BoarConfigLocalPath | Select-String "path: .*/home/").Count -gt 0
 
                     if (-not $evp.AllProtocolsOk -and -not $isLocalTarget) {
-                        # Só aborta de verdade se continuar falhando E o alvo NÃO for local
+                        # So aborta de verdade se continuar falhando E o alvo NÃO for local
                         Invoke-DataBoarPlanVWriteMountAbortForensic -LocalLogDir $logDir -RunId $RunId -NodeName ([string]$node.Name) -Evidence $evp
                         [void]$skippedSet.Add([string]$node.Name)
                         continue
                     }
-                    Write-Host "[SRE-REMEDY] Nó $($node.Name) liberado para o Plano-V (Alvo local ou Remediação OK)." -ForegroundColor Cyan
+                    Write-Host "[SRE-REMEDY] No $($node.Name) liberado para o Plano-V (Alvo local ou Remediação OK)." -ForegroundColor Cyan
                 }
             }
         }
