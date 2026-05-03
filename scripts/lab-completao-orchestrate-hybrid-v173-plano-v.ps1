@@ -593,7 +593,7 @@ function Copy-DataBoarPlanVToRemote {
 }
 
 # ==============================================================================
-# [SRE TELEMETRY CORE] - Injecão de Benchmark para validacão Rust vs Python
+# [SRE TELEMETRY CORE] - Injecao de Benchmark para validacao Rust vs Python
 # ==============================================================================
 $Script:PlanVBenchmark = [System.Diagnostics.Stopwatch]::new()
 
@@ -610,7 +610,7 @@ function Invoke-DataBoarPlanVBenchmarkWrapper {
         & $ScriptBlockToMeasure
     }
     catch {
-        Write-Error "[BENCHMARK FATAL] Falha durante a execucão de $ExecutionLabel : $_"
+        Write-Error "[BENCHMARK FATAL] Falha durante a execucao de $ExecutionLabel : $_"
         throw
     }
     finally {
