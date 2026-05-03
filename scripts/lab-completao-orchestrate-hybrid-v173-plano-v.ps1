@@ -7,8 +7,10 @@
   Slice 2 - Test-DataBoarMounts / Test-LocalSource: SSH material checks (mounts + paths).
 
   Slice 3 - Invoke-DataBoarPlanVInventoryOrchestration: for each inventory row, mkdir ephemeral tree on Linux,
-  SCP boar_config.yaml, then Swarm stack deploy OR podman run OR metal nohup. Stack names, stack files,
-  and podman container names include RunID to avoid collisions.
+  material mount evidence (ls -A | wc -l per SMB/NFS/SSHFS; zero count aborts that node with local forensic log),
+  synthetic Postgres/MariaDB/Mongo (Swarm stack deploy or Podman runs), TCP readiness wait (5432/3306/27017),
+  SCP boar_config.yaml, then Swarm stack deploy for scanner OR podman scanner OR metal nohup. Stack names,
+  stack files, and container names include RunId-derived slugs to avoid collisions.
 
   Slice 4 - Invoke-DataBoarPlanVResilientRun: on terminating error, catch renames remote boar_config.yaml/config.yaml
   to *.failed (forensic); finally always prints coverage report (RunId, SMB/NFS/SSHFS probe, local log paths);
@@ -232,6 +234,338 @@ function Invoke-DataBoarPlanVRemoteSh {
     return $LASTEXITCODE
 }
 
+function Invoke-DataBoarPlanVRemoteShCapture {
+    param(
+        [Parameter(Mandatory = $true)][string] $SshTarget,
+        [Parameter(Mandatory = $true)][string] $RemoteShellSnippet,
+        [int] $ConnectTimeoutSeconds = 45
+    )
+    $innerEsc = $RemoteShellSnippet.Replace('"', '\"')
+    $cap = & ssh.exe -o BatchMode=yes -o ConnectTimeout=$ConnectTimeoutSeconds -o StrictHostKeyChecking=accept-new $SshTarget $innerEsc 2>&1 | Out-String
+    return @{ Exit = $LASTEXITCODE; Out = $cap }
+}
+
+function Get-DataBoarPlanVShortSlug {
+    param([Parameter(Mandatory = $true)][string] $RunId)
+    $s = ($RunId -replace '[^a-zA-Z0-9]', '').ToLowerInvariant()
+    if ($s.Length -gt 22) {
+        $s = $s.Substring(0, 22)
+    }
+    if (-not $s) {
+        $s = "run"
+    }
+    return $s
+}
+
+function Get-DataBoarPlanVSyntheticHostPorts {
+    param([Parameter(Mandatory = $true)][string] $Seed)
+    $h = 0
+    foreach ($ch in $Seed.ToCharArray()) {
+        $h = (($h * 31) + [int][char]$ch) -band 0x7fffffff
+    }
+    $base = 52000 + ($h % 3500)
+    return @{
+        Postgres = $base
+        MariaDb  = ($base + 1)
+        Mongo    = ($base + 2)
+    }
+}
+
+function Get-DataBoarPlanVMountMaterialEvidence {
+    <#
+    .SYNOPSIS
+      Per-protocol mount material check using ls -A | wc -l (same remote primitive as Get-RemoteMountEntryCount).
+    #>
+    param(
+        [Parameter(Mandatory = $true)][string] $NodeName,
+        [Parameter(Mandatory = $true)][string] $SshTarget,
+        [int] $ConnectTimeoutSeconds = 20
+    )
+    $mounts = @(
+        @{ Key = "Smb"; Path = "/mnt/smb_synthetic" },
+        @{ Key = "Nfs"; Path = "/mnt/nfs_bench" },
+        @{ Key = "Sshfs"; Path = "/mnt/sshfs_lab" }
+    )
+    $rows = @{}
+    $allOk = $true
+    foreach ($m in $mounts) {
+        $r = Get-RemoteMountEntryCount -SshTarget $SshTarget -MountPath $m.Path -ConnectTimeoutSeconds $ConnectTimeoutSeconds
+        $n = -1
+        if ($r.Exit -eq 0) {
+            $line = ($r.Raw -split "`r?`n" | Where-Object { $_ -match "DATABOAR_COUNT:" } | Select-Object -First 1)
+            if ($line -and ($line -notmatch "DATABOAR_COUNT_MISSING")) {
+                $digits = [regex]::Match($line, "DATABOAR_COUNT:\s*(\d+)").Groups[1].Value
+                if ($digits) {
+                    [void][int]::TryParse($digits, [ref]$n)
+                }
+            }
+        }
+        if ($n -le 0) {
+            $allOk = $false
+        }
+        $rows[$m.Key] = @{
+            Path = $m.Path
+            Count = $n
+            Exit  = $r.Exit
+            Raw   = $r.Raw
+        }
+    }
+    return [pscustomobject]@{
+        Node         = $NodeName
+        SshTarget    = $SshTarget
+        AllProtocolsOk = $allOk
+        Smb          = $rows["Smb"]
+        Nfs          = $rows["Nfs"]
+        Sshfs        = $rows["Sshfs"]
+    }
+}
+
+function Invoke-DataBoarPlanVWriteMountAbortForensic {
+    param(
+        [Parameter(Mandatory = $true)][string] $LocalLogDir,
+        [Parameter(Mandatory = $true)][string] $RunId,
+        [Parameter(Mandatory = $true)][string] $NodeName,
+        [Parameter(Mandatory = $true)] $Evidence
+    )
+    if (-not (Test-Path -LiteralPath $LocalLogDir)) {
+        New-Item -ItemType Directory -Force -Path $LocalLogDir | Out-Null
+    }
+    $safeNode = ($NodeName -replace '[^a-zA-Z0-9_-]', '_')
+    $p = Join-Path $LocalLogDir "PLANV_MOUNT_ABORT_${safeNode}_${RunId}.log"
+    $sb = New-Object System.Text.StringBuilder
+    [void]$sb.AppendLine("ts_utc=$(([datetime]::UtcNow).ToString('o'))")
+    [void]$sb.AppendLine("run_id=$RunId")
+    [void]$sb.AppendLine("node=$NodeName")
+    [void]$sb.AppendLine("ssh=$($Evidence.SshTarget)")
+    [void]$sb.AppendLine("all_protocols_ok=$($Evidence.AllProtocolsOk)")
+    foreach ($k in @("Smb", "Nfs", "Sshfs")) {
+        $blk = $Evidence.$k
+        [void]$sb.AppendLine("${k}_path=$($blk.Path)")
+        [void]$sb.AppendLine("${k}_count=$($blk.Count)")
+        [void]$sb.AppendLine("${k}_ssh_exit=$($blk.Exit)")
+        [void]$sb.AppendLine("${k}_raw<<EOF")
+        [void]$sb.AppendLine([string]$blk.Raw)
+        [void]$sb.AppendLine("EOF")
+    }
+    $enc = New-Object System.Text.UTF8Encoding $false
+    [System.IO.File]::WriteAllText($p, $sb.ToString(), $enc)
+    Write-Warning "PlanV: node ABORTED (mount material) evidence=$p"
+}
+
+function New-DataBoarPlanVSwarmDbStackYamlText {
+    param(
+        [Parameter(Mandatory = $true)][string] $Slug,
+        [Parameter(Mandatory = $true)][hashtable] $HostPorts
+    )
+    $tok = Get-DataBoarPlanVShortSlug -RunId $Slug
+    $pg = [int]$HostPorts.Postgres
+    $my = [int]$HostPorts.MariaDb
+    $mo = [int]$HostPorts.Mongo
+    $net = "planvdb_${tok}"
+    return @"
+version: '3.8'
+services:
+  lab_postgres_${tok}:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - target: 5432
+        published: ${pg}
+        protocol: tcp
+        mode: host
+    networks:
+      - ${net}
+  lab_mariadb_${tok}:
+    image: mariadb:11
+    environment:
+      MYSQL_ROOT_PASSWORD: planv_synth_root
+      MYSQL_DATABASE: planv_synth
+    ports:
+      - target: 3306
+        published: ${my}
+        protocol: tcp
+        mode: host
+    networks:
+      - ${net}
+  lab_mongodb_${tok}:
+    image: mongo:7
+    ports:
+      - target: 27017
+        published: ${mo}
+        protocol: tcp
+        mode: host
+    networks:
+      - ${net}
+networks:
+  ${net}:
+    driver: overlay
+    attachable: true
+"@
+}
+
+function New-DataBoarPlanVSwarmScannerStackYamlText {
+    param(
+        [Parameter(Mandatory = $true)][string] $Slug,
+        [Parameter(Mandatory = $true)][string] $RemoteBenchRoot,
+        [Parameter(Mandatory = $true)][string] $ImageRef,
+        [Parameter(Mandatory = $true)][string] $OverlayNetName
+    )
+    $cfgPath = "$RemoteBenchRoot/config/boar_config.yaml"
+    $tok = Get-DataBoarPlanVShortSlug -RunId $Slug
+    $svc = "scanner_${tok}"
+    return @"
+version: '3.8'
+services:
+  ${svc}:
+    image: ${ImageRef}
+    volumes:
+      - type: bind
+        source: ${cfgPath}
+        target: /app/config.yaml
+        read_only: true
+    networks:
+      - planv_scan_join
+networks:
+  planv_scan_join:
+    external: true
+    name: ${OverlayNetName}
+"@
+}
+
+function Invoke-DataBoarPlanVWaitRemoteTcpPorts {
+    param(
+        [Parameter(Mandatory = $true)][string] $SshTarget,
+        [Parameter(Mandatory = $true)][int[]] $HostPorts,
+        [int] $MaxWaitSeconds = 120,
+        [int] $ConnectTimeoutSeconds = 45
+    )
+    $portsCsv = ($HostPorts | ForEach-Object { [string]$_ }) -join ','
+    $mx = [string][int]$MaxWaitSeconds
+    $inner = @'
+set -e
+ports="PORTS_CSV"
+deadline=$(( $(date +%s) + MX_SEC ))
+for p in $(echo "$ports" | tr "," " "); do
+  ok=0
+  while [ $(date +%s) -lt $deadline ]; do
+    if command -v nc >/dev/null 2>&1; then
+      if nc -z 127.0.0.1 $p 2>/dev/null; then ok=1; break; fi
+    else
+      if timeout 1 bash -c "echo > /dev/tcp/127.0.0.1/$p" 2>/dev/null; then ok=1; break; fi
+    fi
+    sleep 1
+  done
+  if [ "$ok" != "1" ]; then echo "PLANV_TCP_FAIL:$p"; exit 19; fi
+  echo "PLANV_TCP_OK:$p"
+done
+echo PLANV_TCP_ALL_OK
+'@.Replace('PORTS_CSV', $portsCsv).Replace('MX_SEC', $mx)
+    $r = Invoke-DataBoarPlanVRemoteShCapture -SshTarget $SshTarget -RemoteShellSnippet $inner -ConnectTimeoutSeconds $ConnectTimeoutSeconds
+    if ($r.Exit -ne 0) {
+        Write-Warning "PlanV: TCP wait failed ssh=$SshTarget exit=$($r.Exit) out=$($r.Out)"
+        return $false
+    }
+    if ($r.Out -notmatch "PLANV_TCP_ALL_OK") {
+        Write-Warning "PlanV: TCP wait unexpected output ssh=$SshTarget out=$($r.Out)"
+        return $false
+    }
+    return $true
+}
+
+function Invoke-DataBoarPlanVDeploySyntheticSwarm {
+    param(
+        [Parameter(Mandatory = $true)][string] $SshTarget,
+        [Parameter(Mandatory = $true)][string] $RemoteYamlPath,
+        [Parameter(Mandatory = $true)][string] $DbStackName,
+        [Parameter(Mandatory = $true)][int] $ConnectTimeoutSeconds
+    )
+    $yr = $RemoteYamlPath -replace "'", "'\''"
+    $sn = $DbStackName -replace "'", "'\''"
+    $dep = "docker stack deploy -c '$yr' '$sn' && echo PLANV_DB_STACK_OK"
+    if ((Invoke-DataBoarPlanVRemoteSh -SshTarget $SshTarget -RemoteShellSnippet $dep -ConnectTimeoutSeconds 180) -ne 0) {
+        return $false
+    }
+    return $true
+}
+
+function Invoke-DataBoarPlanVDeploySyntheticPodman {
+    param(
+        [Parameter(Mandatory = $true)][string] $SshTarget,
+        [Parameter(Mandatory = $true)][string] $Tok,
+        [Parameter(Mandatory = $true)][hashtable] $HostPorts,
+        [Parameter(Mandatory = $true)][int] $ConnectTimeoutSeconds
+    )
+    $pg = [int]$HostPorts.Postgres
+    $my = [int]$HostPorts.MariaDb
+    $mo = [int]$HostPorts.Mongo
+    $net = "planvpod_${Tok}"
+    $npg = "planv_${Tok}_pg"
+    $nmy = "planv_${Tok}_my"
+    $nmo = "planv_${Tok}_mo"
+    $inner = "set -e; podman network exists '$net' 2>/dev/null || podman network create '$net'; podman rm -f '$npg' '$nmy' '$nmo' 2>/dev/null || true; podman run -d --network '$net' --name '$npg' --network-alias lab_postgres -p ${pg}:5432 -e POSTGRES_HOST_AUTH_METHOD=trust postgres:16-alpine; podman run -d --network '$net' --name '$nmy' --network-alias lab_mariadb -p ${my}:3306 -e MYSQL_ROOT_PASSWORD=planv_synth_root -e MYSQL_DATABASE=planv_synth mariadb:11; podman run -d --network '$net' --name '$nmo' --network-alias lab_mongodb -p ${mo}:27017 mongo:7; echo PLANV_PODMAN_SYNTH_OK"
+    if ((Invoke-DataBoarPlanVRemoteSh -SshTarget $SshTarget -RemoteShellSnippet $inner -ConnectTimeoutSeconds $ConnectTimeoutSeconds) -ne 0) {
+        return $false
+    }
+    return $true
+}
+
+function Get-DataBoarPlanVSwarmDbOverlayNetworkName {
+    param(
+        [Parameter(Mandatory = $true)][string] $DbStackName,
+        [Parameter(Mandatory = $true)][string] $Slug
+    )
+    $tok = Get-DataBoarPlanVShortSlug -RunId $Slug
+    $net = "planvdb_${tok}"
+    return "${DbStackName}_${net}"
+}
+
+function Get-DataBoarPlanVInventoryFromManifest {
+    <#
+    .SYNOPSIS
+      Map docs/private/homelab/lab-op-hosts.manifest.json hosts to Plan V inventory (same host order idea as hybrid v173).
+    #>
+    param([Parameter(Mandatory = $true)][string] $ManifestPath)
+    if (-not (Test-Path -LiteralPath $ManifestPath)) {
+        throw "Get-DataBoarPlanVInventoryFromManifest: missing $ManifestPath"
+    }
+    $m = Get-Content -LiteralPath $ManifestPath -Raw -Encoding utf8 | ConvertFrom-Json
+    $roleDefs = @(
+        @{ Name = "LAB-NODE-02"; Regex = '(?i)^lab-node-02$'; Type = "Swarm" },
+        @{ Name = "LAB-NODE-01-Pro"; Regex = '(?i)lab-node-01'; Type = "Podman" },
+        @{ Name = "LAB-NODE-03"; Regex = '(?i)LAB-NODE-03|^minibt$'; Type = "Swarm" }
+    )
+    $ordered = [System.Collections.Generic.List[object]]::new()
+    foreach ($rd in $roleDefs) {
+        foreach ($h in $m.hosts) {
+            if (-not $h.sshHost) {
+                continue
+            }
+            if ([string]$h.sshHost -match $rd.Regex) {
+                $sh = [string]$h.sshHost
+                $user = "leitao"
+                $hostPart = $sh
+                if ($sh -match '@') {
+                    $parts = $sh.Split('@')
+                    $user = $parts[0]
+                    $hostPart = $parts[1]
+                }
+                $ordered.Add(@{
+                    Name    = $rd.Name
+                    Ip      = $hostPart
+                    Type    = $rd.Type
+                    SshUser = $user
+                })
+                break
+            }
+        }
+    }
+    if ($ordered.Count -eq 0) {
+        throw "Get-DataBoarPlanVInventoryFromManifest: no hosts matched (lab-node-02 / lab-node-01 / LAB-NODE-03)."
+    }
+    return $ordered
+}
+
 function Copy-DataBoarPlanVToRemote {
     param(
         [Parameter(Mandatory = $true)][string] $LocalFile,
@@ -252,48 +586,42 @@ function Copy-DataBoarPlanVToRemote {
     return ($LASTEXITCODE -eq 0)
 }
 
-function New-DataBoarPlanVSwarmStackYamlText {
-    param(
-        [Parameter(Mandatory = $true)][string] $RunId,
-        [Parameter(Mandatory = $true)][string] $RemoteBenchRoot,
-        [Parameter(Mandatory = $true)][string] $ImageRef
+# ==============================================================================
+# [SRE TELEMETRY CORE] - Injeção de Benchmark para validação Rust vs Python
+# ==============================================================================
+$Script:PlanVBenchmark = [System.Diagnostics.Stopwatch]::new()
+
+function Invoke-DataBoarPlanVBenchmarkWrapper {
+    param (
+        [Parameter(Mandatory=$true)][string]$ExecutionLabel,
+        [Parameter(Mandatory=$true)][scriptblock]$ScriptBlockToMeasure
     )
-    $cfgPath = "$RemoteBenchRoot/config/boar_config.yaml"
-    $yaml = @"
-version: '3.8'
-services:
-  scanner_${RunId}:
-    image: ${ImageRef}
-    volumes:
-      - type: bind
-        source: ${cfgPath}
-        target: /app/config.yaml
-        read_only: true
-    networks:
-      - databoar_planv_${RunId}
-networks:
-  databoar_planv_${RunId}:
-    driver: overlay
-"@
-    return $yaml
+
+    Write-Host "`n[BENCHMARK] Iniciando etapa: $ExecutionLabel" -ForegroundColor Magenta
+    $Script:PlanVBenchmark.Restart()
+
+    try {
+        & $ScriptBlockToMeasure
+    }
+    catch {
+        Write-Error "[BENCHMARK FATAL] Falha durante a execução de $ExecutionLabel : $_"
+        throw
+    }
+    finally {
+        $Script:PlanVBenchmark.Stop()
+        $elapsed = $Script:PlanVBenchmark.Elapsed
+        $metrics = "[BENCHMARK] $ExecutionLabel concluído em: {0:00}h {1:00}m {2:00}s {3:000}ms" -f $elapsed.Hours, $elapsed.Minutes, $elapsed.Seconds, $elapsed.Milliseconds
+        Write-Host $metrics -ForegroundColor Green
+    }
 }
 
 function Invoke-DataBoarPlanVInventoryOrchestration {
     <#
     .SYNOPSIS
-      Slice 3: loop inventory - SCP boar_config.yaml, then Swarm / Podman / Metal runtime branch.
-    .PARAMETER RunId
-      Ephemeral id (e.g. yyyyMMdd_HHmmss) - must be safe for docker stack and container names.
-    .PARAMETER Inventory
-      Array of hashtables: Name, Ip, Type (Swarm|Podman|Metal), optional SshUser, optional MetalBinary (remote path for Metal).
-    .PARAMETER BoarConfigLocalPath
-      Local path to boar_config.yaml (or operator-named YAML) to upload as remote .../config/boar_config.yaml.
+      Slice 3: per-node mkdir, mount material gate (ls -A | wc -l), synthetic DB stack (Swarm or Podman), TCP readiness,
+      SCP boar_config.yaml, then scanner Swarm stack / Podman scanner / Metal nohup. SkippedNodeNames bypasses a node.
     .PARAMETER StackYamlLocalPath
-      Optional local compose/stack file for Swarm. When omitted, a minimal stack is generated (bind config only).
-    .PARAMETER PodmanImage
-      Image ref for Podman branch (and generated Swarm stack when no StackYamlLocalPath).
-    .PARAMETER ConnectTimeoutSeconds
-      SSH connect timeout.
+      When set to an existing file, Swarm path deploys that compose only (operator owns synth + scanner); synthetic helpers are skipped.
     #>
     param(
         [Parameter(Mandatory = $true)][string] $RunId,
@@ -301,6 +629,8 @@ function Invoke-DataBoarPlanVInventoryOrchestration {
         [Parameter(Mandatory = $true)][string] $BoarConfigLocalPath,
         [string] $StackYamlLocalPath = "",
         [string] $PodmanImage = "",
+        [string[]] $SkippedNodeNames = @(),
+        [string] $LocalForensicLogDir = "",
         [int] $ConnectTimeoutSeconds = 45
     )
     if (-not $PodmanImage) {
@@ -310,9 +640,11 @@ function Invoke-DataBoarPlanVInventoryOrchestration {
         $PodmanImage = "fabioleitao/data_boar:latest"
     }
     $remoteRoot = Get-DataBoarPlanVRemoteBenchRoot -RunId $RunId
-    $stackName = "databoar_$RunId"
-    $stackRemotePath = "$remoteRoot/config/stack.yaml"
-    $tmpStack = [System.IO.Path]::GetTempFileName()
+    $stackRemotePath = "$remoteRoot/config/stack_scanner.yaml"
+    $stackDbRemotePath = "$remoteRoot/config/stack_db.yaml"
+    $tmpDb = [System.IO.Path]::GetTempFileName()
+    $tmpScan = [System.IO.Path]::GetTempFileName()
+    $ctx = $script:DataBoarPlanVRunContext
     try {
         foreach ($node in $Inventory) {
             $nName = [string]$node.Name
@@ -322,44 +654,113 @@ function Invoke-DataBoarPlanVInventoryOrchestration {
             $ssh = Resolve-DataBoarSshTarget -NodeName $nName -IpAddress $nIp -SshUser $nUser
             Write-Host "PlanV orchestrate: node=$nName type=$nType ssh=$ssh root=$remoteRoot" -ForegroundColor Cyan
 
+            if ($SkippedNodeNames -and ($SkippedNodeNames -contains $nName)) {
+                Write-Warning "PlanV: skipping node (preflight mount abort list): $nName"
+                continue
+            }
+
             $mk = "mkdir -p '$remoteRoot/bin' '$remoteRoot/config' '$remoteRoot/results' '$remoteRoot/logs' && echo PLANV_MK_OK"
             if ((Invoke-DataBoarPlanVRemoteSh -SshTarget $ssh -RemoteShellSnippet $mk -ConnectTimeoutSeconds $ConnectTimeoutSeconds) -ne 0) {
                 throw "PlanV: mkdir failed on $nName ($ssh)"
             }
-            $remoteCfg = "$remoteRoot/config/boar_config.yaml"
-            if (-not (Copy-DataBoarPlanVToRemote -LocalFile $BoarConfigLocalPath -SshTarget $ssh -RemotePath $remoteCfg)) {
-                throw "PlanV: scp boar_config failed on $nName ($ssh)"
+
+            if ($LocalForensicLogDir) {
+                $ev2 = Get-DataBoarPlanVMountMaterialEvidence -NodeName $nName -SshTarget $ssh -ConnectTimeoutSeconds 20
+                if (-not $ev2.AllProtocolsOk) {
+                    Invoke-DataBoarPlanVWriteMountAbortForensic -LocalLogDir $LocalForensicLogDir -RunId $RunId -NodeName $nName -Evidence $ev2
+                    Write-Warning "PlanV: node ABORTED mid-orchestration (mount material): $nName"
+                    continue
+                }
             }
+
+            $slug = Get-DataBoarPlanVShortSlug -RunId ($RunId + "_" + $nName)
+            $ports = Get-DataBoarPlanVSyntheticHostPorts -Seed ($RunId + "_" + $nName)
+            $remoteCfg = "$remoteRoot/config/boar_config.yaml"
 
             if ($nType -eq "swarm") {
                 if ($StackYamlLocalPath -and (Test-Path -LiteralPath $StackYamlLocalPath)) {
+                    if (-not (Copy-DataBoarPlanVToRemote -LocalFile $BoarConfigLocalPath -SshTarget $ssh -RemotePath $remoteCfg)) {
+                        throw "PlanV: scp boar_config failed on $nName ($ssh)"
+                    }
                     if (-not (Copy-DataBoarPlanVToRemote -LocalFile $StackYamlLocalPath -SshTarget $ssh -RemotePath $stackRemotePath)) {
-                        throw "PlanV: scp stack yaml failed on $nName"
+                        throw "PlanV: scp operator stack yaml failed on $nName"
                     }
-                } else {
-                    $body = New-DataBoarPlanVSwarmStackYamlText -RunId $RunId -RemoteBenchRoot $remoteRoot -ImageRef $PodmanImage
-                    $enc = New-Object System.Text.UTF8Encoding $false
-                    [System.IO.File]::WriteAllText($tmpStack, $body, $enc)
-                    if (-not (Copy-DataBoarPlanVToRemote -LocalFile $tmpStack -SshTarget $ssh -RemotePath $stackRemotePath)) {
-                        throw "PlanV: scp generated stack failed on $nName"
+                    $opStack = "databoar_" + $slug
+                    $sr = $stackRemotePath -replace "'", "'\''"
+                    $deployOp = "docker stack deploy -c '$sr' '$opStack' && echo PLANV_STACK_OK"
+                    if ((Invoke-DataBoarPlanVRemoteSh -SshTarget $ssh -RemoteShellSnippet $deployOp -ConnectTimeoutSeconds 180) -ne 0) {
+                        throw "PlanV: docker stack deploy (operator file) failed on $nName stack=$opStack"
                     }
+                    if ($null -ne $ctx -and $ctx.ContainsKey("SwarmCleanup")) {
+                        $ctx.SwarmCleanup.Add(@{ SshTarget = $ssh; DbStack = ""; ScanStack = $opStack })
+                    }
+                    Write-Host "  Swarm operator stack deployed: $opStack" -ForegroundColor DarkGreen
+                    continue
                 }
-                $sr = $stackRemotePath -replace "'", "'\''"
-                $deploy = "docker stack deploy -c '$sr' '$stackName' && echo PLANV_STACK_OK"
-                if ((Invoke-DataBoarPlanVRemoteSh -SshTarget $ssh -RemoteShellSnippet $deploy -ConnectTimeoutSeconds 120) -ne 0) {
-                    throw "PlanV: docker stack deploy failed on $nName stack=$stackName"
+
+                $dbStackName = "dbpv-" + $slug
+                $scanStackName = "scpv-" + $slug
+                $dbBody = New-DataBoarPlanVSwarmDbStackYamlText -Slug $slug -HostPorts $ports
+                $enc = New-Object System.Text.UTF8Encoding $false
+                [System.IO.File]::WriteAllText($tmpDb, $dbBody, $enc)
+                if (-not (Copy-DataBoarPlanVToRemote -LocalFile $tmpDb -SshTarget $ssh -RemotePath $stackDbRemotePath)) {
+                    throw "PlanV: scp generated db stack failed on $nName"
                 }
-                Write-Host "  Swarm stack deployed: $stackName (compose $stackRemotePath)" -ForegroundColor DarkGreen
+                if (-not (Invoke-DataBoarPlanVDeploySyntheticSwarm -SshTarget $ssh -RemoteYamlPath $stackDbRemotePath -DbStackName $dbStackName -ConnectTimeoutSeconds $ConnectTimeoutSeconds)) {
+                    throw "PlanV: docker stack deploy (synthetic DB) failed on $nName stack=$dbStackName"
+                }
+                $overlayNet = Get-DataBoarPlanVSwarmDbOverlayNetworkName -DbStackName $dbStackName -Slug $slug
+                if (-not (Invoke-DataBoarPlanVWaitRemoteTcpPorts -SshTarget $ssh -HostPorts @($ports.Postgres, $ports.MariaDb) -MaxWaitSeconds 120 -ConnectTimeoutSeconds $ConnectTimeoutSeconds)) {
+                    throw "PlanV: synthetic TCP wait failed on $nName (postgres/mariadb host ports $($ports.Postgres), $($ports.MariaDb))"
+                }
+                $null = Invoke-DataBoarPlanVWaitRemoteTcpPorts -SshTarget $ssh -HostPorts @($ports.Mongo) -MaxWaitSeconds 120 -ConnectTimeoutSeconds $ConnectTimeoutSeconds
+
+                if (-not (Copy-DataBoarPlanVToRemote -LocalFile $BoarConfigLocalPath -SshTarget $ssh -RemotePath $remoteCfg)) {
+                    throw "PlanV: scp boar_config failed on $nName ($ssh)"
+                }
+                $scanBody = New-DataBoarPlanVSwarmScannerStackYamlText -Slug $slug -RemoteBenchRoot $remoteRoot -ImageRef $PodmanImage -OverlayNetName $overlayNet
+                [System.IO.File]::WriteAllText($tmpScan, $scanBody, $enc)
+                if (-not (Copy-DataBoarPlanVToRemote -LocalFile $tmpScan -SshTarget $ssh -RemotePath $stackRemotePath)) {
+                    throw "PlanV: scp generated scanner stack failed on $nName"
+                }
+                $sr2 = $stackRemotePath -replace "'", "'\''"
+                $deployScan = "docker stack deploy -c '$sr2' '$scanStackName' && echo PLANV_SCAN_STACK_OK"
+                if ((Invoke-DataBoarPlanVRemoteSh -SshTarget $ssh -RemoteShellSnippet $deployScan -ConnectTimeoutSeconds 180) -ne 0) {
+                    throw "PlanV: docker stack deploy (scanner) failed on $nName stack=$scanStackName"
+                }
+                if ($null -ne $ctx -and $ctx.ContainsKey("SwarmCleanup")) {
+                    $ctx.SwarmCleanup.Add(@{ SshTarget = $ssh; DbStack = $dbStackName; ScanStack = $scanStackName })
+                }
+                Write-Host "  Swarm synthetic DB stack=$dbStackName scanner stack=$scanStackName overlay=$overlayNet" -ForegroundColor DarkGreen
             }
             elseif ($nType -eq "podman") {
-                $slug = ($nName -replace '[^a-zA-Z0-9]', '_').ToLowerInvariant()
-                $cname = "databoar_${RunId}_$slug"
-                $cfgEsc = $remoteCfg -replace "'", "'\''"
-                $runInner = "podman rm -f '$cname' 2>/dev/null || true; podman run -d --name '$cname' --privileged -v /:/host:ro -v '$cfgEsc':/app/config.yaml:ro '$PodmanImage' && echo PLANV_PODMAN_OK"
-                if ((Invoke-DataBoarPlanVRemoteSh -SshTarget $ssh -RemoteShellSnippet $runInner -ConnectTimeoutSeconds 120) -ne 0) {
-                    throw "PlanV: podman run failed on $nName container=$cname"
+                $tok = Get-DataBoarPlanVShortSlug -RunId ($RunId + "_" + $nName)
+                if (-not (Invoke-DataBoarPlanVDeploySyntheticPodman -SshTarget $ssh -Tok $tok -HostPorts $ports -ConnectTimeoutSeconds $ConnectTimeoutSeconds)) {
+                    throw "PlanV: podman synthetic DB bring-up failed on $nName"
                 }
-                Write-Host "  Podman container: $cname (privileged + host bind per operator spec)" -ForegroundColor DarkGreen
+                if (-not (Invoke-DataBoarPlanVWaitRemoteTcpPorts -SshTarget $ssh -HostPorts @($ports.Postgres, $ports.MariaDb, $ports.Mongo) -MaxWaitSeconds 120 -ConnectTimeoutSeconds $ConnectTimeoutSeconds)) {
+                    throw "PlanV: podman synthetic TCP wait failed on $nName"
+                }
+                if (-not (Copy-DataBoarPlanVToRemote -LocalFile $BoarConfigLocalPath -SshTarget $ssh -RemotePath $remoteCfg)) {
+                    throw "PlanV: scp boar_config failed on $nName ($ssh)"
+                }
+                $slugPod = ($nName -replace '[^a-zA-Z0-9]', '_').ToLowerInvariant()
+                $cname = "databoar_${RunId}_$slugPod"
+                $net = "planvpod_${tok}"
+                $cfgEsc = $remoteCfg -replace "'", "'\''"
+                $runInner = "podman rm -f '$cname' 2>/dev/null || true; podman run -d --name '$cname' --network '$net' --privileged -v /:/host:ro -v '$cfgEsc':/app/config.yaml:ro '$PodmanImage' && echo PLANV_PODMAN_OK"
+                if ((Invoke-DataBoarPlanVRemoteSh -SshTarget $ssh -RemoteShellSnippet $runInner -ConnectTimeoutSeconds 120) -ne 0) {
+                    throw "PlanV: podman scanner run failed on $nName container=$cname"
+                }
+                if ($null -ne $ctx -and $ctx.ContainsKey("PodmanCleanup")) {
+                    $ctx.PodmanCleanup.Add(@{
+                        SshTarget = $ssh
+                        Net       = $net
+                        Scanner   = $cname
+                        Tok       = $tok
+                    })
+                }
+                Write-Host "  Podman synthetic net=$net scanner=$cname (privileged + host bind per operator spec)" -ForegroundColor DarkGreen
             }
             elseif ($nType -eq "metal") {
                 $metalBin = [string]$node.MetalBinary
@@ -368,6 +769,9 @@ function Invoke-DataBoarPlanVInventoryOrchestration {
                 }
                 if (-not $metalBin) {
                     $metalBin = "/usr/local/bin/databoar"
+                }
+                if (-not (Copy-DataBoarPlanVToRemote -LocalFile $BoarConfigLocalPath -SshTarget $ssh -RemotePath $remoteCfg)) {
+                    throw "PlanV: scp boar_config failed on $nName ($ssh)"
                 }
                 $mb = $metalBin -replace "'", "'\''"
                 $logF = "$remoteRoot/logs/metal_${RunId}.log" -replace "'", "'\''"
@@ -384,11 +788,13 @@ function Invoke-DataBoarPlanVInventoryOrchestration {
         }
     }
     finally {
-        if (Test-Path -LiteralPath $tmpStack) {
-            Remove-Item -LiteralPath $tmpStack -Force -ErrorAction SilentlyContinue
+        foreach ($t in @($tmpDb, $tmpScan)) {
+            if (Test-Path -LiteralPath $t) {
+                Remove-Item -LiteralPath $t -Force -ErrorAction SilentlyContinue
+            }
         }
     }
-    Write-Host "PlanV orchestration finished for RunId=$RunId stack_or_prefix=$stackName" -ForegroundColor Cyan
+    Write-Host "PlanV orchestration finished for RunId=$RunId" -ForegroundColor Cyan
 }
 
 function Invoke-DataBoarPlanVForensicConfigRenameOnAllNodes {
@@ -436,6 +842,12 @@ function Invoke-DataBoarPlanVWriteCoverageReport {
     $ok = $ctx.OrchestrationOk
     Write-Host ("Orchestration completed without throw: {0}" -f $ok)
     Write-Host ("Fatal path handled (forensic rename attempted): {0}" -f $ctx.TrapFired)
+    if ($ctx.ContainsKey("SkippedNodeNames") -and $null -ne $ctx.SkippedNodeNames -and $ctx.SkippedNodeNames.Count -gt 0) {
+        Write-Host "Nodes skipped (mount material abort, see PLANV_MOUNT_ABORT_*.log):" -ForegroundColor Yellow
+        foreach ($sn in $ctx.SkippedNodeNames) {
+            Write-Host ("  - {0}" -f $sn)
+        }
+    }
     Write-Host "=== Fim do relatorio ===" -ForegroundColor Yellow
     Write-Host ""
 }
@@ -443,31 +855,67 @@ function Invoke-DataBoarPlanVWriteCoverageReport {
 function Invoke-DataBoarPlanVCleanupSessionResources {
     <#
     .SYNOPSIS
-      Stop podman containers, remove swarm stack, stop metal PID for this RunId; light remote wait to reap children.
+      Remove Swarm DB+scanner stacks (per recorded cleanup rows), Podman synth+scanner+network, metal PID; light reap.
     #>
     $ctx = $script:DataBoarPlanVRunContext
     if (-not $ctx -or -not $ctx.Inventory) {
         return
     }
     $runId = [string]$ctx.RunId
-    $stackName = [string]$ctx.StackName
+    if ($ctx.ContainsKey("SwarmCleanup") -and $null -ne $ctx.SwarmCleanup -and $ctx.SwarmCleanup.Count -gt 0) {
+        foreach ($rec in $ctx.SwarmCleanup) {
+            $tssh = [string]$rec.SshTarget
+            $sc = [string]$rec.ScanStack
+            $db = [string]$rec.DbStack
+            if ($sc) {
+                $s1 = $sc -replace "'", "'\''"
+                $inner1 = "docker stack rm '$s1' 2>/dev/null || true; echo PLANV_SCAN_RM"
+                $null = Invoke-DataBoarPlanVRemoteSh -SshTarget $tssh -RemoteShellSnippet $inner1 -ConnectTimeoutSeconds 120
+            }
+            if ($db) {
+                $s2 = $db -replace "'", "'\''"
+                $inner2 = "docker stack rm '$s2' 2>/dev/null || true; echo PLANV_DB_RM"
+                $null = Invoke-DataBoarPlanVRemoteSh -SshTarget $tssh -RemoteShellSnippet $inner2 -ConnectTimeoutSeconds 120
+            }
+        }
+    }
+    if ($ctx.ContainsKey("PodmanCleanup") -and $null -ne $ctx.PodmanCleanup -and $ctx.PodmanCleanup.Count -gt 0) {
+        foreach ($rec in $ctx.PodmanCleanup) {
+            $tssh = [string]$rec.SshTarget
+            $tok = [string]$rec.Tok
+            $net = [string]$rec.Net
+            $scan = [string]$rec.Scanner
+            $npg = "planv_${tok}_pg"
+            $nmy = "planv_${tok}_my"
+            $nmo = "planv_${tok}_mo"
+            $scanE = $scan -replace "'", "'\''"
+            $netE = $net -replace "'", "'\''"
+            $inner = "podman stop '$scanE' 2>/dev/null || true; podman rm -f '$scanE' 2>/dev/null || true; podman rm -f '$npg' '$nmy' '$nmo' 2>/dev/null || true; podman network rm '$netE' 2>/dev/null || true; echo PLANV_PODMAN_SYNTH_CLEAN"
+            $null = Invoke-DataBoarPlanVRemoteSh -SshTarget $tssh -RemoteShellSnippet $inner -ConnectTimeoutSeconds 90
+        }
+    }
+    else {
+        foreach ($node in $ctx.Inventory) {
+            $nName = [string]$node.Name
+            $nIp = [string]$node.Ip
+            $nType = ([string]$node.Type).Trim().ToLowerInvariant()
+            $nUser = [string]$node.SshUser
+            $ssh = Resolve-DataBoarSshTarget -NodeName $nName -IpAddress $nIp -SshUser $nUser
+            if ($nType -eq "podman") {
+                $slug = ($nName -replace '[^a-zA-Z0-9]', '_').ToLowerInvariant()
+                $cname = "databoar_${runId}_$slug"
+                $inner = "podman stop '$cname' 2>/dev/null || true; podman rm -f '$cname' 2>/dev/null || true; echo PLANV_PODMAN_RM_DONE"
+                $null = Invoke-DataBoarPlanVRemoteSh -SshTarget $ssh -RemoteShellSnippet $inner -ConnectTimeoutSeconds 60
+            }
+        }
+    }
     foreach ($node in $ctx.Inventory) {
         $nName = [string]$node.Name
         $nIp = [string]$node.Ip
         $nType = ([string]$node.Type).Trim().ToLowerInvariant()
         $nUser = [string]$node.SshUser
         $ssh = Resolve-DataBoarSshTarget -NodeName $nName -IpAddress $nIp -SshUser $nUser
-        if ($nType -eq "swarm") {
-            $inner = "docker stack rm '$stackName' 2>/dev/null || true; echo PLANV_STACK_RM_DONE"
-            $null = Invoke-DataBoarPlanVRemoteSh -SshTarget $ssh -RemoteShellSnippet $inner -ConnectTimeoutSeconds 90
-        }
-        elseif ($nType -eq "podman") {
-            $slug = ($nName -replace '[^a-zA-Z0-9]', '_').ToLowerInvariant()
-            $cname = "databoar_${runId}_$slug"
-            $inner = "podman stop '$cname' 2>/dev/null || true; podman rm -f '$cname' 2>/dev/null || true; echo PLANV_PODMAN_RM_DONE"
-            $null = Invoke-DataBoarPlanVRemoteSh -SshTarget $ssh -RemoteShellSnippet $inner -ConnectTimeoutSeconds 60
-        }
-        elseif ($nType -eq "metal") {
+        if ($nType -eq "metal") {
             $pidFile = ([string]$ctx.RemoteRoot) + "/logs/metal_${runId}.pid"
             $pf = $pidFile -replace "'", "'\''"
             $inner = 'if [ -f ''' + $pf + ''' ]; then kill $(cat ''' + $pf + ''') 2>/dev/null || true; rm -f ''' + $pf + '''; fi; wait 2>/dev/null || true; echo PLANV_METAL_STOP_DONE'
@@ -491,7 +939,7 @@ function Invoke-DataBoarPlanVResilientRun {
     .PARAMETER TearDownAfterRun
       When true (default), removes stack/podman/metal resources for this RunId after the run (lab hygiene).
     .PARAMETER RunPreflightMounts
-      When true, runs Test-DataBoarMounts before orchestration (fails fast).
+      When true, runs per-node mount material evidence (ls -A | wc -l); failing nodes are skipped with forensic logs, others run.
     .PARAMETER StartTranscript
       When true, writes Start-Transcript to LocalLogRoot (Windows orchestrator).
     #>
@@ -513,8 +961,10 @@ function Invoke-DataBoarPlanVResilientRun {
     $logDir = Join-Path $localRoot "logs"
     New-Item -ItemType Directory -Force -Path $logDir | Out-Null
     $remoteRoot = Get-DataBoarPlanVRemoteBenchRoot -RunId $RunId
-    $stackName = "databoar_$RunId"
     $protocolRows = New-Object System.Collections.Generic.List[object]
+    $skippedSet = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    $swarmCleanupList = [System.Collections.Generic.List[object]]::new()
+    $podmanCleanupList = [System.Collections.Generic.List[object]]::new()
     foreach ($node in $Inventory) {
         $nUser = [string]$node.SshUser
         $ssh = Resolve-DataBoarSshTarget -NodeName ([string]$node.Name) -IpAddress ([string]$node.Ip) -SshUser $nUser
@@ -538,8 +988,10 @@ function Invoke-DataBoarPlanVResilientRun {
         OrchestrationOk    = $false
         TrapFired          = $false
         TearDownAfterRun   = $TearDownAfterRun
-        StackName          = $stackName
         TranscriptPath     = $transcriptPath
+        SkippedNodeNames   = $skippedSet
+        SwarmCleanup       = $swarmCleanupList
+        PodmanCleanup      = $podmanCleanupList
     }
 
     # Resilience / Lessons Learned (PS 5.1): a bare trap+try/finally runs finally before trap on
@@ -550,13 +1002,16 @@ function Invoke-DataBoarPlanVResilientRun {
         if ($RunPreflightMounts) {
             foreach ($node in $Inventory) {
                 $nUser = [string]$node.SshUser
-                $ok = Test-DataBoarMounts -NodeName ([string]$node.Name) -IpAddress ([string]$node.Ip) -SshUser $nUser -ConnectTimeoutSeconds 20
-                if (-not $ok) {
-                    throw "PlanV preflight mounts failed for node $($node.Name)"
+                $sshP = Resolve-DataBoarSshTarget -NodeName ([string]$node.Name) -IpAddress ([string]$node.Ip) -SshUser $nUser
+                $evP = Get-DataBoarPlanVMountMaterialEvidence -NodeName ([string]$node.Name) -SshTarget $sshP -ConnectTimeoutSeconds 20
+                if (-not $evP.AllProtocolsOk) {
+                    Invoke-DataBoarPlanVWriteMountAbortForensic -LocalLogDir $logDir -RunId $RunId -NodeName ([string]$node.Name) -Evidence $evP
+                    [void]$skippedSet.Add([string]$node.Name)
                 }
             }
         }
-        Invoke-DataBoarPlanVInventoryOrchestration -RunId $RunId -Inventory $Inventory -BoarConfigLocalPath $BoarConfigLocalPath -StackYamlLocalPath $StackYamlLocalPath -PodmanImage $PodmanImage -ConnectTimeoutSeconds $ConnectTimeoutSeconds
+        $skipArr = @($skippedSet.ToArray())
+        Invoke-DataBoarPlanVInventoryOrchestration -RunId $RunId -Inventory $Inventory -BoarConfigLocalPath $BoarConfigLocalPath -StackYamlLocalPath $StackYamlLocalPath -PodmanImage $PodmanImage -SkippedNodeNames $skipArr -LocalForensicLogDir $logDir -ConnectTimeoutSeconds $ConnectTimeoutSeconds
         $script:DataBoarPlanVRunContext["OrchestrationOk"] = $true
     } catch {
         $script:DataBoarPlanVRunContext["TrapFired"] = $true
@@ -582,13 +1037,20 @@ function Invoke-DataBoarPlanVResilientRun {
     }
 }
 
-# Example (documentation IPs only - replace for real lab):
-# $RunID = Get-Date -Format "yyyyMMdd_HHmmss"
-# $Inventory = @(
-#   @{ Name = "LAB-NODE-02"; Ip = "192.0.2.50"; Type = "Swarm" },
-#   @{ Name = "LAB-NODE-01-Pro"; Ip = "192.0.2.60"; Type = "Podman" },
-#   @{ Name = "Lab-Op-1"; Ip = "192.0.2.71"; Type = "Metal"; MetalBinary = "/opt/databoar/bin/databoar" }
-# )
-# Invoke-DataBoarPlanVResilientRun -RunId $RunID -Inventory $Inventory -BoarConfigLocalPath "C:\path\boar_config.yaml" -TearDownAfterRun:$true
-# (or invoke orchestration only without Invoke-DataBoarPlanVResilientRun:)
-# Invoke-DataBoarPlanVInventoryOrchestration -RunId $RunID -Inventory $Inventory -BoarConfigLocalPath "C:\path\boar_config.yaml"
+# Default entry (not when dot-sourced): manifest inventory + resilient run + mount preflight.
+# Optional: dot-source this file to define functions only:  . .\lab-completao-orchestrate-hybrid-v173-plano-v.ps1
+if ($MyInvocation.InvocationName -ne '.') {
+    $RepoRootV = (Get-Item $PSScriptRoot).Parent.FullName
+    $manifestPathV = Join-Path $RepoRootV "docs\private\homelab\lab-op-hosts.manifest.json"
+    if (-not (Test-Path -LiteralPath $manifestPathV)) {
+        Write-Error "Plan V requires lab manifest at $manifestPathV (copy from docs/private.example/homelab/lab-op-hosts.manifest.example.json)."
+        exit 2
+    }
+    $InventoryV = Get-DataBoarPlanVInventoryFromManifest -ManifestPath $manifestPathV
+    $cfgPathV = Join-Path $RepoRootV "config\boar_config.yaml"
+    if (-not (Test-Path -LiteralPath $cfgPathV)) {
+        Write-Error "Plan V requires repo config at $cfgPathV"
+        exit 2
+    }
+    Invoke-DataBoarPlanVResilientRun -Inventory $InventoryV -BoarConfigLocalPath $cfgPathV -RunPreflightMounts $true
+}
