@@ -483,8 +483,11 @@ function Invoke-DataBoarPlanVDeploySyntheticSwarm {
     $yr = $RemoteYamlPath -replace "'", "'\''"
     $sn = $DbStackName -replace "'", "'\''"
     $dep = "docker stack deploy -c '$yr' '$sn' && echo PLANV_DB_STACK_OK"
-    if ((Invoke-DataBoarPlanVRemoteSh -SshTarget $SshTarget -RemoteShellSnippet $dep -ConnectTimeoutSeconds 180) -ne 0) {
-        return $false
+    Invoke-DataBoarPlanVBenchmarkWrapper -ExecutionLabel "Deploy & Scan Swarm ($sn)" -ScriptBlockToMeasure {
+        $exitCode = Invoke-DataBoarPlanVRemoteSh -SshTarget $SshTarget -RemoteShellSnippet $dep -ConnectTimeoutSeconds 180
+        if ($exitCode -ne 0) {
+            throw "Swarm Deploy/Scan falhou com exit code $exitCode"
+        }
     }
     return $true
 }
@@ -504,8 +507,11 @@ function Invoke-DataBoarPlanVDeploySyntheticPodman {
     $nmy = "planv_${Tok}_my"
     $nmo = "planv_${Tok}_mo"
     $inner = "set -e; podman network exists '$net' 2>/dev/null || podman network create '$net'; podman rm -f '$npg' '$nmy' '$nmo' 2>/dev/null || true; podman run -d --network '$net' --name '$npg' --network-alias lab_postgres -p ${pg}:5432 -e POSTGRES_HOST_AUTH_METHOD=trust postgres:16-alpine; podman run -d --network '$net' --name '$nmy' --network-alias lab_mariadb -p ${my}:3306 -e MYSQL_ROOT_PASSWORD=planv_synth_root -e MYSQL_DATABASE=planv_synth mariadb:11; podman run -d --network '$net' --name '$nmo' --network-alias lab_mongodb -p ${mo}:27017 mongo:7; echo PLANV_PODMAN_SYNTH_OK"
-    if ((Invoke-DataBoarPlanVRemoteSh -SshTarget $SshTarget -RemoteShellSnippet $inner -ConnectTimeoutSeconds $ConnectTimeoutSeconds) -ne 0) {
-        return $false
+	Invoke-DataBoarPlanVBenchmarkWrapper -ExecutionLabel "Deploy & Scan Podman ($Tok)" -ScriptBlockToMeasure {
+        $exitCode = Invoke-DataBoarPlanVRemoteSh -SshTarget $SshTarget -RemoteShellSnippet $inner -ConnectTimeoutSeconds $ConnectTimeoutSeconds
+        if ($exitCode -ne 0) {
+            throw "Podman Deploy/Scan falhou com exit code $exitCode"
+        }
     }
     return $true
 }
@@ -687,7 +693,7 @@ function Invoke-DataBoarPlanVInventoryOrchestration {
                     }
                     $opStack = "databoar_" + $slug
                     $sr = $stackRemotePath -replace "'", "'\''"
-                    $deployOp = "docker stack deploy -c '$sr' '$opStack' && echo PLANV_STACK_OK"
+                    $deployOp = "d\ocker stack deploy -c '$sr' '$opStack' && echo PLANV_STACK_OK"
                     if ((Invoke-DataBoarPlanVRemoteSh -SshTarget $ssh -RemoteShellSnippet $deployOp -ConnectTimeoutSeconds 180) -ne 0) {
                         throw "PlanV: docker stack deploy (operator file) failed on $nName stack=$opStack"
                     }
